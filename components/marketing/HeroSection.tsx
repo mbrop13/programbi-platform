@@ -275,7 +275,7 @@ export default function HeroSection() {
               <div className="flex flex-wrap gap-8 lg:gap-12 mt-12 justify-center lg:justify-start">
                 <div>
                   <div className="text-3xl lg:text-4xl font-black text-gray-900">
-                    +<CountUp target={1500} duration={2.5} />
+                    +<CountUp target={5000} duration={2.5} />
                   </div>
                   <p className="text-sm text-gray-500 font-medium mt-1">Estudiantes</p>
                 </div>
