@@ -154,8 +154,8 @@ export const courses: Course[] = [
       "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop",
     icon: "Zap",
     accentColor: "#0078D4",
-    isFeatured: true,
-    sortOrder: 2,
+    isFeatured: false,
+    sortOrder: 4,
     whatYouLearn: [
       "Crear Cloud Flows automatizados",
       "Desktop Flows y RPA sin código",
@@ -220,8 +220,8 @@ export const courses: Course[] = [
       "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=2070&auto=format&fit=crop",
     icon: "HardHat",
     accentColor: "#B45309",
-    isFeatured: true,
-    sortOrder: 3,
+    isFeatured: false,
+    sortOrder: 5,
     youtubeVideoId: "LiupEKDc3Ms",
     whatYouLearn: [
       "KPIs mineros: tonelaje, disponibilidad, LTIF",
@@ -339,8 +339,8 @@ export const courses: Course[] = [
       "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/Tamano_personalizado_1_9d2f2efd-3f0e-40d7-a62b-fb7a0ba08d83.png?v=1720500191",
     icon: "PieChart",
     accentColor: "#F2C811",
-    isFeatured: false,
-    sortOrder: 5,
+    isFeatured: true,
+    sortOrder: 2,
     youtubeVideoId: "7197F-yNw04",
     whatYouLearn: [
       "ETL con Power Query",
@@ -470,8 +470,8 @@ export const courses: Course[] = [
       "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/Tamano_personalizado_1.png?v=1720132741",
     icon: "Database",
     accentColor: "#64748B",
-    isFeatured: false,
-    sortOrder: 7,
+    isFeatured: true,
+    sortOrder: 3,
     youtubeVideoId: "HOObY8gOVQg",
     whatYouLearn: [
       "Consultas SELECT complejas",
