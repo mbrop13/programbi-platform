@@ -462,6 +462,7 @@ function AdminMembers() {
               <thead>
                  <tr className="bg-gray-50/80 text-gray-400 font-semibold text-xs uppercase tracking-wider">
                     <th className="px-5 py-3.5">Usuario</th>
+                    <th className="px-5 py-3.5">Email</th>
                     <th className="px-5 py-3.5">Rol</th>
                     <th className="px-5 py-3.5 hidden sm:table-cell">Registrado</th>
                     <th className="px-5 py-3.5 text-right">Acciones</th>
@@ -478,9 +479,11 @@ function AdminMembers() {
                            </div>
                            <div>
                              <div className="font-semibold text-gray-900">{u.full_name || 'Sin Nombre'}</div>
-                             <div className="text-xs text-gray-400">{u.email}</div>
                            </div>
                          </div>
+                       </td>
+                       <td className="px-5 py-4">
+                          <div className="text-sm text-gray-600">{u.email}</div>
                        </td>
                        <td className="px-5 py-4">
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold
