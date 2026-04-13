@@ -1,0 +1,571 @@
+"use server";
+
+import { createClient } from "./server";
+import { revalidatePath } from "next/cache";
+import { isCurrentUserAdmin } from "./comunidad";
+
+// ─── AI CONVERSATIONS ───
+
+export async function getAIConversations() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("ai_conversations")
+    .select("id, title, created_at, updated_at")
+    .eq("profile_id", user.id)
+    .order("updated_at", { ascending: false });
+
+  if (error) { console.error("Error fetching AI conversations:", error); return []; }
+  return data || [];
+}
+
+export async function getAIMessages(conversationId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data: conv } = await supabase
+    .from("ai_conversations").select("id").eq("id", conversationId).eq("profile_id", user.id).single();
+  if (!conv) return [];
+
+  const { data, error } = await supabase
+    .from("ai_messages").select("id, role, content, created_at")
+    .eq("conversation_id", conversationId).order("created_at", { ascending: true });
+
+  if (error) { console.error("Error fetching AI messages:", error); return []; }
+  return data || [];
+}
+
+export async function createAIConversation(title: string = "Nueva Conversación") {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Debes autenticarte");
+
+  const { data, error } = await supabase
+    .from("ai_conversations").insert({ profile_id: user.id, title }).select("id").single();
+  if (error) throw new Error(error.message);
+  return data.id;
+}
+
+export async function deleteAIConversation(conversationId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Debes autenticarte");
+
+  const { error } = await supabase
+    .from("ai_conversations").delete().eq("id", conversationId).eq("profile_id", user.id);
+  if (error) throw new Error(error.message);
+}
+
+export async function updateAIConversationTitle(conversationId: string, title: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Debes autenticarte");
+
+  await supabase
+    .from("ai_conversations").update({ title: title.substring(0, 80) })
+    .eq("id", conversationId).eq("profile_id", user.id);
+}
+
+// ─── ADMIN: COURSE MANAGEMENT ───
+
+export async function adminGetCourses() {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await supabase
+    .from("courses")
+    .select("id, slug, title, category, level, is_published, is_featured, image_url, accent_color, badge_label, duration_hours, tech_stack, created_at, lessons(id)")
+    .order("sort_order", { ascending: true });
+
+  if (error) { console.error("Error:", error); return []; }
+  return (data || []).map((c: any) => ({ ...c, lesson_count: c.lessons?.length || 0, lessons: undefined }));
+}
+
+export async function adminCreateCourse(courseData: {
+  title: string; slug: string; description: string; category: string;
+  level?: string; image_url?: string; short_description?: string;
+}) {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await supabase
+    .from("courses").insert({ ...courseData, is_published: false }).select("id, slug").single();
+  if (error) throw new Error(error.message);
+  revalidatePath("/(comunidad)", "layout");
+  return data;
+}
+
+export async function adminAddLesson(lessonData: {
+  course_id: string; title: string; module_name: string;
+  module_order: number; lesson_order: number; video_url: string;
+  duration_minutes?: number; is_free_preview?: boolean;
+  superclass_language?: string | null;
+}) {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await supabase
+    .from("lessons").insert({
+      course_id: lessonData.course_id,
+      title: lessonData.title,
+      module_name: lessonData.module_name,
+      module_order: lessonData.module_order,
+      lesson_order: lessonData.lesson_order,
+      video_url: lessonData.video_url,
+      duration_minutes: lessonData.duration_minutes || 0,
+      content_type: "video",
+      is_free_preview: lessonData.is_free_preview || false,
+      superclass_language: lessonData.superclass_language || null,
+    }).select("id").single();
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/(comunidad)", "layout");
+  return data;
+}
+
+export async function adminGetLessons(courseId: string) {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await supabase
+    .from("lessons")
+    .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language")
+    .eq("course_id", courseId)
+    .order("module_order", { ascending: true })
+    .order("lesson_order", { ascending: true });
+
+  if (error) { console.error("Error:", error); return []; }
+  return data || [];
+}
+
+export async function adminTogglePublish(courseId: string) {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data: course } = await supabase.from("courses").select("is_published").eq("id", courseId).single();
+  if (!course) throw new Error("Curso no encontrado");
+
+  await supabase.from("courses").update({ is_published: !course.is_published }).eq("id", courseId);
+  revalidatePath("/(comunidad)", "layout");
+}
+
+export async function adminToggleHidden(courseId: string) {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data: course } = await supabase.from("courses").select("is_hidden").eq("id", courseId).single();
+  if (!course) throw new Error("Curso no encontrado");
+
+  await supabase.from("courses").update({ is_hidden: !course.is_hidden }).eq("id", courseId);
+  revalidatePath("/(comunidad)", "layout");
+}
+
+export async function adminDeleteLesson(lessonId: string) {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  await supabase.from("lessons").delete().eq("id", lessonId);
+  revalidatePath("/(comunidad)", "layout");
+}
+
+export async function adminToggleFreePreview(lessonId: string) {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data: lesson } = await supabase.from("lessons").select("is_free_preview").eq("id", lessonId).single();
+  if (!lesson) throw new Error("Lección no encontrada");
+
+  await supabase.from("lessons").update({ is_free_preview: !lesson.is_free_preview }).eq("id", lessonId);
+  revalidatePath("/(comunidad)", "layout");
+}
+
+// ─── ADMIN: ENROLLMENT MANAGEMENT ───
+
+export async function adminGetAllUsers() {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, full_name, email, role, avatar_url, created_at")
+    .order("created_at", { ascending: false });
+
+  if (error) { console.error("Error:", error); return []; }
+  return data || [];
+}
+
+export async function adminGetUserEnrollments(userId: string) {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await supabase
+    .from("enrollments")
+    .select("id, course_slug, status, access_type, enrolled_at")
+    .eq("user_id", userId);
+
+  if (error) { console.error("Error:", error); return []; }
+  
+  // Enrich with course title
+  if (data && data.length > 0) {
+    const slugs = data.map((e: any) => e.course_slug);
+    const { data: courses } = await supabase.from("courses").select("slug, title").in("slug", slugs);
+    const courseMap = Object.fromEntries((courses || []).map((c: any) => [c.slug, c.title]));
+    return data.map((e: any) => ({ ...e, course: { title: courseMap[e.course_slug] || e.course_slug } }));
+  }
+  return data || [];
+}
+
+export async function adminEnrollUser(userId: string, courseSlug: string, accessType: string = "full") {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await supabase.from("enrollments").upsert({
+    user_id: userId, course_slug: courseSlug, status: "active", access_type: accessType,
+  }, { onConflict: "user_id,course_slug" });
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/(comunidad)", "layout");
+}
+
+export async function adminRemoveEnrollment(userId: string, courseSlug: string) {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await supabase.from("enrollments").delete()
+    .eq("user_id", userId).eq("course_slug", courseSlug);
+  if (error) throw new Error(error.message);
+  revalidatePath("/(comunidad)", "layout");
+}
+
+export async function adminUpdateUserRole(userId: string, role: string) {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await supabase.from("profiles").update({ role }).eq("id", userId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/(comunidad)", "layout");
+}
+
+export async function adminGetExportData() {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  // Fetch all users with profile data
+  const { data: users, error: usersErr } = await supabase
+    .from("profiles")
+    .select("id, full_name, email, role, subscription_plan, created_at")
+    .order("created_at", { ascending: false });
+
+  if (usersErr) throw new Error(usersErr.message);
+
+  // Fetch all enrollments
+  const { data: enrollments, error: enrollErr } = await supabase
+    .from("enrollments")
+    .select("user_id, course_slug, access_type, status");
+
+  if (enrollErr) throw new Error(enrollErr.message);
+
+  // Join them
+  const result = (users || []).map((u: any) => {
+    const userEnrollments = (enrollments || []).filter((e: any) => e.user_id === u.id);
+    return {
+      ...u,
+      enrollments: userEnrollments
+    };
+  });
+
+  return result;
+}
+
+// ─── ADMIN: CSV BULK IMPORT ───
+
+export async function adminBulkImport(rows: { email: string; curso_slug: string; access_type: string }[]) {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  let success = 0;
+  let failed = 0;
+  const errors: string[] = [];
+
+  for (const row of rows) {
+    try {
+      // Find user by email
+      const { data: profile } = await supabase
+        .from("profiles").select("id").eq("email", row.email).single();
+
+      if (!profile) {
+        errors.push(`${row.email}: usuario no encontrado`);
+        failed++;
+        continue;
+      }
+
+      // Find course by slug
+      const { data: course } = await supabase
+        .from("courses").select("id").eq("slug", row.curso_slug).single();
+
+      if (!course) {
+        errors.push(`${row.curso_slug}: curso no encontrado`);
+        failed++;
+        continue;
+      }
+
+      // Create enrollment
+      const { error } = await supabase.from("enrollments").upsert({
+        user_id: profile.id,
+        course_slug: row.curso_slug,
+        status: "active",
+        access_type: row.access_type || "full",
+      }, { onConflict: "user_id,course_slug" });
+
+      if (error) {
+        errors.push(`${row.email}/${row.curso_slug}: ${error.message}`);
+        failed++;
+      } else {
+        success++;
+      }
+    } catch (err: any) {
+      errors.push(`${row.email}: ${err.message}`);
+      failed++;
+    }
+  }
+
+  revalidatePath("/(comunidad)", "layout");
+  return { success, failed, errors };
+}
+
+// ─── STUDENT: COURSES ───
+
+export async function getAllPublishedCourses() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("courses")
+    .select("id, slug, title, short_description, category, badge_label, badge_color, tech_stack, duration_hours, level, image_url, icon, accent_color, is_featured, sort_order, price_clp")
+    .eq("is_published", true)
+    .eq("is_hidden", false)
+    .order("sort_order", { ascending: true });
+
+  if (error) { console.error("Error:", error); return []; }
+  return data || [];
+}
+
+export async function getMyEnrollments() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { enrollments: [], programSiblings: [] };
+
+  const { data, error } = await supabase
+    .from("enrollments")
+    .select("course_slug, status, access_type, enrolled_at")
+    .eq("user_id", user.id)
+    .eq("status", "active");
+
+  if (error) { console.error("Error:", error); return { enrollments: [], programSiblings: [] }; }
+  if (!data || data.length === 0) return { enrollments: [], programSiblings: [] };
+
+  const slugs = data.map((e: any) => e.course_slug);
+
+  // Get full course data for enrolled courses
+  const { data: courses } = await supabase
+    .from("courses")
+    .select("id, slug, title, short_description, category, badge_label, badge_color, tech_stack, duration_hours, level, image_url, icon, accent_color, is_featured, sort_order, price_clp")
+    .in("slug", slugs);
+
+  // Count lessons per course
+  const { data: lessonCounts } = await supabase
+    .from("lessons")
+    .select("course_id, created_at")
+    .in("course_id", (courses || []).map(c => c.id));
+
+  // Build lesson stats per course id
+  const lessonStats: Record<string, { count: number; latest: string | null }> = {};
+  (lessonCounts || []).forEach((l: any) => {
+    if (!lessonStats[l.course_id]) lessonStats[l.course_id] = { count: 0, latest: null };
+    lessonStats[l.course_id].count++;
+    if (!lessonStats[l.course_id].latest || l.created_at > lessonStats[l.course_id].latest!) {
+      lessonStats[l.course_id].latest = l.created_at;
+    }
+  });
+
+  const enrichedEnrollments = data.map((e: any) => {
+    const c = courses?.find(c => c.slug === e.course_slug);
+    const stats = c ? lessonStats[c.id] : null;
+    return {
+      ...e,
+      course: c ? { ...c, lesson_count: stats?.count || 0, latest_lesson_at: stats?.latest || null } : null
+    };
+  });
+
+  // Discover program siblings: for each unique category among enrolled courses,
+  // fetch ALL courses in that category (including unenrolled ones) so frontend
+  // can render "Próximamente" cards for sub-courses not yet activated.
+  const enrolledCategories = [...new Set(
+    (courses || []).map(c => c.category).filter(Boolean)
+  )];
+
+  let programSiblings: any[] = [];
+  if (enrolledCategories.length > 0) {
+    const { data: siblings } = await supabase
+      .from("courses")
+      .select("id, slug, title, short_description, category, badge_label, badge_color, tech_stack, duration_hours, level, image_url, icon, accent_color, is_featured, sort_order, price_clp")
+      .in("category", enrolledCategories)
+      .eq("is_published", true);
+
+    // Enrich siblings with lesson counts too
+    const siblingIds = (siblings || []).map(s => s.id);
+    const { data: sibLessonCounts } = await supabase
+      .from("lessons")
+      .select("course_id, created_at")
+      .in("course_id", siblingIds);
+
+    const sibStats: Record<string, { count: number; latest: string | null }> = {};
+    (sibLessonCounts || []).forEach((l: any) => {
+      if (!sibStats[l.course_id]) sibStats[l.course_id] = { count: 0, latest: null };
+      sibStats[l.course_id].count++;
+      if (!sibStats[l.course_id].latest || l.created_at > sibStats[l.course_id].latest!) {
+        sibStats[l.course_id].latest = l.created_at;
+      }
+    });
+
+    programSiblings = (siblings || []).map(s => ({
+      ...s,
+      lesson_count: sibStats[s.id]?.count || 0,
+      latest_lesson_at: sibStats[s.id]?.latest || null,
+    }));
+  }
+
+  return { enrollments: enrichedEnrollments, programSiblings };
+}
+
+export async function getCourseLessons(courseId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { lessons: [], access: null };
+
+  // Check enrollment - need to get slug from courseId first
+  const { data: courseData } = await supabase.from("courses").select("slug").eq("id", courseId).single();
+  const { data: enrollment } = await supabase
+    .from("enrollments")
+    .select("access_type")
+    .eq("user_id", user.id)
+    .eq("course_slug", courseData?.slug || '')
+    .eq("status", "active")
+    .single();
+
+  const { data: lessons } = await supabase
+    .from("lessons")
+    .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language")
+    .eq("course_id", courseId)
+    .order("module_order", { ascending: true })
+    .order("lesson_order", { ascending: true });
+
+  return {
+    lessons: lessons || [],
+    access: enrollment?.access_type || null,
+  };
+}
+
+// ─── ADMIN: DASHBOARD STATS ───
+
+export async function adminGetDashboardStats() {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+  const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0).toISOString();
+
+  // Total revenue (all time paid payments)
+  const { data: allPayments } = await supabase
+    .from("payments")
+    .select("amount, paid_at, course_id")
+    .eq("status", "paid");
+
+  // Revenue this month
+  const thisMonthPayments = (allPayments || []).filter(p => p.paid_at && p.paid_at >= startOfMonth);
+  const lastMonthPayments = (allPayments || []).filter(p => p.paid_at && p.paid_at >= startOfLastMonth && p.paid_at <= endOfLastMonth);
+
+  const revenueThisMonth = thisMonthPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+  const revenueLastMonth = lastMonthPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+  const revenueChange = revenueLastMonth > 0 
+    ? (((revenueThisMonth - revenueLastMonth) / revenueLastMonth) * 100).toFixed(1)
+    : revenueThisMonth > 0 ? "+100" : "0";
+
+  // Total users
+  const { count: totalUsers } = await supabase
+    .from("profiles")
+    .select("id", { count: "exact", head: true });
+
+  // Active enrollments
+  const { count: totalEnrollments } = await supabase
+    .from("enrollments")
+    .select("id", { count: "exact", head: true })
+    .eq("status", "active");
+
+  // Sales this month
+  const salesThisMonth = thisMonthPayments.length;
+  const salesLastMonth = lastMonthPayments.length;
+  const salesChange = salesLastMonth > 0 
+    ? (((salesThisMonth - salesLastMonth) / salesLastMonth) * 100).toFixed(1) 
+    : salesThisMonth > 0 ? "+100" : "0";
+
+  // Best selling course
+  const courseCount: Record<string, number> = {};
+  (allPayments || []).forEach(p => {
+    if (p.course_id) courseCount[p.course_id] = (courseCount[p.course_id] || 0) + 1;
+  });
+  const bestCourseId = Object.entries(courseCount).sort(([,a], [,b]) => b - a)[0]?.[0];
+  let bestCourseName = "—";
+  if (bestCourseId) {
+    const { data: course } = await supabase.from("courses").select("title").eq("id", bestCourseId).single();
+    bestCourseName = course?.title || "—";
+  }
+
+  // Recent transactions
+  const { data: recentPayments } = await supabase
+    .from("payments")
+    .select("id, amount, status, payer_email, paid_at, created_at, course:courses(title)")
+    .order("created_at", { ascending: false })
+    .limit(10);
+
+  return {
+    revenue: {
+      total: (allPayments || []).reduce((sum, p) => sum + (p.amount || 0), 0),
+      thisMonth: revenueThisMonth,
+      change: revenueChange,
+    },
+    users: {
+      total: totalUsers || 0,
+    },
+    enrollments: {
+      total: totalEnrollments || 0,
+    },
+    sales: {
+      thisMonth: salesThisMonth,
+      change: salesChange,
+    },
+    bestCourse: bestCourseName,
+    recentPayments: recentPayments || [],
+  };
+}
+

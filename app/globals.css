@@ -1,0 +1,215 @@
+@import "tailwindcss";
+
+/* ============================================ */
+/* ProgramBI Design System                       */
+/* ============================================ */
+
+@theme {
+  /* Brand Colors */
+  --color-brand-blue: #1890FF;
+  --color-brand-blue-dark: #0050b3;
+  --color-brand-blue-light: #E6F7FF;
+  --color-brand-dark: #0F172A;
+
+  /* Accent Colors */
+  --color-accent-yellow: #F2C811;
+  --color-accent-copper: #B45309;
+  --color-accent-emerald: #10B981;
+  --color-accent-purple: #7C3AED;
+  --color-accent-automate: #0078D4;
+
+  /* Surface Colors */
+  --color-surface-0: #FFFFFF;
+  --color-surface-1: #F8FAFC;
+  --color-surface-2: #F1F5F9;
+  --color-surface-3: #E2E8F0;
+
+  /* Text Colors */
+  --color-text-primary: #0F172A;
+  --color-text-secondary: #4B5563;
+  --color-text-muted: #64748B;
+  --color-text-faint: #94A3B8;
+
+  /* Fonts */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Fira Code', ui-monospace, monospace;
+
+  /* Animations */
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-fade-in-up: fade-in-up 0.6s ease-out;
+  --animate-slide-in-right: slide-in-right 0.4s ease-out;
+  --animate-pulse-slow: pulse 4s infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-scroll: scroll 40s linear infinite;
+}
+
+/* Keyframes */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in-right {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ============================================ */
+/* Base Styles                                   */
+/* ============================================ */
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-0);
+}
+
+/* ============================================ */
+/* Custom Utilities                              */
+/* ============================================ */
+
+/* Gradient text utility */
+.text-gradient-brand {
+  background: linear-gradient(135deg, #1890FF 0%, #6366F1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-copper {
+  background: linear-gradient(135deg, #B45309 0%, #0F172A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glassmorphism */
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Logo slider mask */
+.logo-slider-mask {
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+
+/* Data grid pattern */
+.data-grid-pattern {
+  background-size: 60px 60px;
+  background-image: 
+    linear-gradient(to right, rgba(24, 144, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(24, 144, 255, 0.03) 1px, transparent 1px);
+}
+
+/* Dot pattern */
+.dot-pattern {
+  background-image: radial-gradient(#E2E8F0 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Scrollbar hidden */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Button primary gradient */
+.btn-gradient {
+  background: linear-gradient(135deg, #1890FF 0%, #0050b3 100%);
+  box-shadow: 0 12px 35px -8px rgba(24, 144, 255, 0.4);
+}
+
+.btn-gradient:hover {
+  box-shadow: 0 16px 45px -8px rgba(24, 144, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Section padding utility */
+.section-padding {
+  @apply py-16 lg:py-24 px-4 sm:px-6 lg:px-8;
+}
+
+/* Container */
+.container-narrow {
+  @apply max-w-7xl mx-auto;
+}
+
+.container-wide {
+  @apply max-w-[1400px] mx-auto;
+}
+
+/* Selection color */
+::selection {
+  background: rgba(24, 144, 255, 0.15);
+  color: #0F172A;
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid #1890FF;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Smooth image rendering */
+img {
+  image-rendering: auto;
+}
+
+/* Premium scrollbar (WebKit) */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F8FAFC;
+}
+::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* Text gradient expert (for mentor section) */
+.text-gradient-expert {
+  background: linear-gradient(to right, #B45309, #0F172A);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Font display class */
+.font-display {
+  font-family: var(--font-display);
+}
+
