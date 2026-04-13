@@ -17,18 +17,24 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { courseId } = body;
+    const { courseId, courseSlug } = body;
 
-    if (!courseId) {
-      return NextResponse.json({ error: "courseId requerido" }, { status: 400 });
+    if (!courseId && !courseSlug) {
+      return NextResponse.json({ error: "courseId o courseSlug requerido" }, { status: 400 });
     }
 
-    // Get course info
-    const { data: course } = await supabase
+    // Get course info — look up by slug first, fallback to id
+    let courseQuery = supabase
       .from("courses")
-      .select("id, title, slug, price_clp")
-      .eq("id", courseId)
-      .single();
+      .select("id, title, slug, price_clp");
+    
+    if (courseSlug) {
+      courseQuery = courseQuery.eq("slug", courseSlug);
+    } else {
+      courseQuery = courseQuery.eq("id", courseId);
+    }
+
+    const { data: course } = await courseQuery.single();
 
     if (!course) {
       return NextResponse.json({ error: "Curso no encontrado" }, { status: 404 });
