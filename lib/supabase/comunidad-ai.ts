@@ -49,6 +49,22 @@ export async function createAIConversation(title: string = "Nueva Conversación"
   return data.id;
 }
 
+// ─── ADMIN: LEADS / CONTACTS ───
+
+export async function adminGetLeads() {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await supabase
+    .from("course_leads")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) { console.error("Error fetching leads:", error); return []; }
+  return data || [];
+}
+
 export async function deleteAIConversation(conversationId: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();

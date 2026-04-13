@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads } from "@/lib/supabase/comunidad-ai";
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -10,6 +10,7 @@ export default function AdminPanel() {
   const sidebarItems = [
     { id: "overview", label: "Estadísticas", icon: BarChart3 },
     { id: "members", label: "Miembros", icon: Users },
+    { id: "leads", label: "Contactos", icon: Mail },
     { id: "courses", label: "Cursos", icon: GraduationCap },
     { id: "export_csv", label: "Exportar Datos", icon: Download },
     { id: "import", label: "Importar CSV", icon: Upload },
@@ -59,6 +60,7 @@ export default function AdminPanel() {
             >
               {activeTab === "overview" && <AdminOverview />}
               {activeTab === "members" && <AdminMembers />}
+              { activeTab === "leads" && <AdminLeads /> }
               { activeTab === "courses" && <AdminCourses /> }
               { activeTab === "export_csv" && <AdminExportCsv /> }
               { activeTab === "import" && <AdminImport /> }
@@ -66,6 +68,114 @@ export default function AdminPanel() {
               { activeTab === "settings" && <AdminSettings /> }
             </motion.div>
         </div>
+    </div>
+  );
+}
+
+// ─── LEADS / CONTACTOS ───
+function AdminLeads() {
+  const [leads, setLeads] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await adminGetLeads();
+        setLeads(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const exportToCSV = () => {
+    if (leads.length === 0) return;
+    const headers = ["Nombre,Email,WhatsApp,Cursos Interés,Mensaje,Origen,Fecha"];
+    const rows = leads.map(l => {
+      const date = new Date(l.created_at).toLocaleDateString('es-CL');
+      const courses = (l.selected_courses || []).join(" | ");
+      return `"${l.name}","${l.email}","${l.whatsapp || ''}","${courses}","${(l.message || '').replace(/"/g, '""')}","${l.source_course || ''}","${date}"`;
+    });
+    const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `programbi_leads_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  if (loading) {
+    return (
+      <div className="p-6 sm:p-8 flex flex-col items-center justify-center py-20">
+        <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
+        <span className="text-sm text-gray-400 mt-3">Cargando contactos...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 sm:p-8">
+       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+         <div>
+           <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Contactos (Leads)</h2>
+           <p className="text-sm text-gray-400">Solicitudes de información desde los cursos</p>
+         </div>
+         <button onClick={exportToCSV} className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-2 rounded-xl text-sm font-bold hover:bg-emerald-100 transition-colors border-none cursor-pointer">
+           <Download className="w-4 h-4" /> Exportar a CSV
+         </button>
+       </div>
+
+       {leads.length === 0 ? (
+         <div className="text-center py-12 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50">
+           <Mail className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+           <h3 className="text-gray-900 font-bold mb-1">No hay contactos</h3>
+           <p className="text-gray-400 text-sm">Aún no hay solicitudes de información.</p>
+         </div>
+       ) : (
+         <div className="overflow-x-auto rounded-xl border border-gray-200">
+           <table className="w-full text-left border-collapse">
+             <thead>
+               <tr className="bg-[#F8FAFC] border-b border-gray-200">
+                 <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Contacto</th>
+                 <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Detalles</th>
+                 <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">Mensaje</th>
+                 <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Fecha</th>
+               </tr>
+             </thead>
+             <tbody className="divide-y divide-gray-100 bg-white">
+               {leads.map(lead => (
+                 <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors">
+                   <td className="px-4 py-4">
+                     <div className="font-bold text-gray-900 text-sm">{lead.name}</div>
+                     <div className="text-xs text-brand-blue">{lead.email}</div>
+                     {lead.whatsapp && <div className="text-xs text-gray-500 mt-0.5 whitespace-nowrap">WA: {lead.whatsapp}</div>}
+                   </td>
+                   <td className="px-4 py-4">
+                     <div className="flex flex-wrap gap-1 max-w-[200px]">
+                       {(lead.selected_courses || []).map((c: string, i: number) => (
+                         <span key={i} className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-brand-blue border border-blue-100">{c}</span>
+                       ))}
+                     </div>
+                     {lead.source_course && <div className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-semibold">Origen: {lead.source_course}</div>}
+                   </td>
+                   <td className="px-4 py-4 hidden md:table-cell max-w-xs">
+                     <div className="text-xs text-gray-600 line-clamp-3">{lead.message || <span className="text-gray-300 italic">Sin mensaje</span>}</div>
+                   </td>
+                   <td className="px-4 py-4 whitespace-nowrap">
+                     <div className="text-xs font-medium text-gray-900">{new Date(lead.created_at).toLocaleDateString('es-CL')}</div>
+                     <div className="text-[10px] text-gray-400">{new Date(lead.created_at).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}</div>
+                   </td>
+                 </tr>
+               ))}
+             </tbody>
+           </table>
+         </div>
+       )}
     </div>
   );
 }

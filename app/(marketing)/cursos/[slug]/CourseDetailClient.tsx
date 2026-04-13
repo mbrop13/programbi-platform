@@ -654,17 +654,40 @@ function CourseContactForm({ course }: { course: Course }) {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // TODO: Connect to Supabase "leads" or "contacts" table here
-    // Currently simulating a backend request
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const formData = new FormData(e.target as HTMLFormElement);
+      const name = formData.get('name') as string;
+      const email = formData.get('email') as string;
+      const whatsapp = formData.get('whatsapp') as string;
+      const message = formData.get('message') as string;
+
+      const res = await fetch('/api/leads/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name,
+          email,
+          whatsapp,
+          message,
+          selectedCourses,
+          sourceCourse: course.title
+        })
+      });
+
+      if (!res.ok) throw new Error("Error submitting form");
+
       setIsSuccess(true);
-    }, 1500);
+    } catch(err) {
+      console.error(err);
+      alert("Hubo un problema al enviar tu solicitud. Inténtalo de nuevo.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <section className="py-16 lg:py-24 bg-[#F8FAFC]">
-      <div className="max-w-[1000px] mx-auto px-5 lg:px-10">
+      <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Left: Info */}
           <FadeIn>
@@ -723,6 +746,7 @@ function CourseContactForm({ course }: { course: Course }) {
                     <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre Completo *</label>
                     <input
                       type="text"
+                      name="name"
                       required
                       placeholder="Ej: Juan Pérez"
                       className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
@@ -734,6 +758,7 @@ function CourseContactForm({ course }: { course: Course }) {
                       <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email *</label>
                       <input
                         type="email"
+                        name="email"
                         required
                         placeholder="juan@empresa.com"
                         className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
@@ -743,6 +768,7 @@ function CourseContactForm({ course }: { course: Course }) {
                       <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">WhatsApp</label>
                       <input
                         type="tel"
+                        name="whatsapp"
                         placeholder="+56 9..."
                         className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
                       />
@@ -771,6 +797,7 @@ function CourseContactForm({ course }: { course: Course }) {
                   <div className="space-y-2">
                     <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Mensaje (Opcional)</label>
                     <textarea
+                      name="message"
                       rows={3}
                       placeholder={`¿Tienes alguna duda adicional sobre los cursos seleccionados?`}
                       className="w-full rounded-xl p-4 resize-none text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
