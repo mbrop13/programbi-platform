@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "./server";
+import { createClient, createAdminClient } from "./server";
 import { revalidatePath } from "next/cache";
 import { isCurrentUserAdmin } from "./comunidad";
 
@@ -52,11 +52,11 @@ export async function createAIConversation(title: string = "Nueva Conversación"
 // ─── ADMIN: LEADS / CONTACTS ───
 
 export async function adminGetLeads() {
-  const supabase = await createClient();
+  const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { data, error } = await supabase
+  const { data, error } = await adminDb
     .from("course_leads")
     .select("*")
     .order("created_at", { ascending: false });
@@ -209,11 +209,11 @@ export async function adminToggleFreePreview(lessonId: string) {
 // ─── ADMIN: ENROLLMENT MANAGEMENT ───
 
 export async function adminGetAllUsers() {
-  const supabase = await createClient();
+  const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { data, error } = await supabase
+  const { data, error } = await adminDb
     .from("profiles")
     .select("id, full_name, email, role, avatar_url, created_at")
     .order("created_at", { ascending: false });
@@ -223,11 +223,11 @@ export async function adminGetAllUsers() {
 }
 
 export async function adminGetUserEnrollments(userId: string) {
-  const supabase = await createClient();
+  const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { data, error } = await supabase
+  const { data, error } = await adminDb
     .from("enrollments")
     .select("id, course_slug, status, access_type, enrolled_at")
     .eq("user_id", userId);
@@ -237,7 +237,7 @@ export async function adminGetUserEnrollments(userId: string) {
   // Enrich with course title
   if (data && data.length > 0) {
     const slugs = data.map((e: any) => e.course_slug);
-    const { data: courses } = await supabase.from("courses").select("slug, title").in("slug", slugs);
+    const { data: courses } = await adminDb.from("courses").select("slug, title").in("slug", slugs);
     const courseMap = Object.fromEntries((courses || []).map((c: any) => [c.slug, c.title]));
     return data.map((e: any) => ({ ...e, course: { title: courseMap[e.course_slug] || e.course_slug } }));
   }
@@ -245,11 +245,11 @@ export async function adminGetUserEnrollments(userId: string) {
 }
 
 export async function adminEnrollUser(userId: string, courseSlug: string, accessType: string = "full") {
-  const supabase = await createClient();
+  const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { error } = await supabase.from("enrollments").upsert({
+  const { error } = await adminDb.from("enrollments").upsert({
     user_id: userId, course_slug: courseSlug, status: "active", access_type: accessType,
   }, { onConflict: "user_id,course_slug" });
 
@@ -258,33 +258,33 @@ export async function adminEnrollUser(userId: string, courseSlug: string, access
 }
 
 export async function adminRemoveEnrollment(userId: string, courseSlug: string) {
-  const supabase = await createClient();
+  const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { error } = await supabase.from("enrollments").delete()
+  const { error } = await adminDb.from("enrollments").delete()
     .eq("user_id", userId).eq("course_slug", courseSlug);
   if (error) throw new Error(error.message);
   revalidatePath("/(comunidad)", "layout");
 }
 
 export async function adminUpdateUserRole(userId: string, role: string) {
-  const supabase = await createClient();
+  const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { error } = await supabase.from("profiles").update({ role }).eq("id", userId);
+  const { error } = await adminDb.from("profiles").update({ role }).eq("id", userId);
   if (error) throw new Error(error.message);
   revalidatePath("/(comunidad)", "layout");
 }
 
 export async function adminGetExportData() {
-  const supabase = await createClient();
+  const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
   // Fetch all users with profile data
-  const { data: users, error: usersErr } = await supabase
+  const { data: users, error: usersErr } = await adminDb
     .from("profiles")
     .select("id, full_name, email, role, subscription_plan, created_at")
     .order("created_at", { ascending: false });
@@ -292,7 +292,7 @@ export async function adminGetExportData() {
   if (usersErr) throw new Error(usersErr.message);
 
   // Fetch all enrollments
-  const { data: enrollments, error: enrollErr } = await supabase
+  const { data: enrollments, error: enrollErr } = await adminDb
     .from("enrollments")
     .select("user_id, course_slug, access_type, status");
 
@@ -502,7 +502,7 @@ export async function getCourseLessons(courseId: string) {
 // ─── ADMIN: DASHBOARD STATS ───
 
 export async function adminGetDashboardStats() {
-  const supabase = await createClient();
+  const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
@@ -512,7 +512,7 @@ export async function adminGetDashboardStats() {
   const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0).toISOString();
 
   // Total revenue (all time paid payments)
-  const { data: allPayments } = await supabase
+  const { data: allPayments } = await adminDb
     .from("payments")
     .select("amount, paid_at, course_id")
     .eq("status", "paid");
@@ -528,12 +528,12 @@ export async function adminGetDashboardStats() {
     : revenueThisMonth > 0 ? "+100" : "0";
 
   // Total users
-  const { count: totalUsers } = await supabase
+  const { count: totalUsers } = await adminDb
     .from("profiles")
     .select("id", { count: "exact", head: true });
 
   // Active enrollments
-  const { count: totalEnrollments } = await supabase
+  const { count: totalEnrollments } = await adminDb
     .from("enrollments")
     .select("id", { count: "exact", head: true })
     .eq("status", "active");
