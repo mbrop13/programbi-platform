@@ -16,7 +16,7 @@ export default function GallerySection() {
   };
 
   return (
-    <section className="py-16 lg:py-24 bg-[#F8FAFC] relative overflow-hidden">
+    <section className="pt-8 pb-16 lg:pt-12 lg:pb-24 bg-[#F8FAFC] relative overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-5 lg:px-10 relative z-10">
         {/* Header */}
         <FadeIn>

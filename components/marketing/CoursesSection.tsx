@@ -20,7 +20,7 @@ export default function CoursesSection() {
   const standard = getStandardCourses();
 
   return (
-    <section className="relative overflow-hidden bg-slate-50 pt-24 pb-32">
+    <section className="relative overflow-hidden bg-slate-50 pt-24 pb-8">
       {/* Premium Background Elements */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#1890FF] rounded-full blur-[150px] opacity-5 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#6366F1] rounded-full blur-[150px] opacity-5 pointer-events-none" />
