@@ -15,6 +15,7 @@ import { FadeIn, StaggerChildren, StaggerItem, CountUp } from "@/components/shar
 import { createBrowserClient } from "@supabase/ssr";
 import AuthModal from "@/components/shared/AuthModal";
 import PythonSyllabus from "./syllabuses/PythonSyllabus";
+import SqlSyllabus from "./syllabuses/SqlSyllabus";
 
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
@@ -483,6 +484,8 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       {/* ════ SYLLABUS ════ */}
       {course.slug === 'python' ? (
         <PythonSyllabus />
+      ) : course.slug === 'sql-server' ? (
+        <SqlSyllabus />
       ) : (
         <section id="temario" className="py-10 lg:py-14 bg-[#F8FAFC]">
           <div className="max-w-3xl mx-auto px-5">
