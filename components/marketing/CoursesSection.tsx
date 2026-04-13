@@ -109,56 +109,7 @@ export default function CoursesSection() {
           ))}
         </StaggerChildren>
 
-        <div className="flex items-center gap-6 mb-16">
-          <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-slate-200"></div>
-          <h3 className="font-display text-xl font-bold text-slate-400 uppercase tracking-widest">
-            Catálogo Individual
-          </h3>
-          <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-slate-200"></div>
-        </div>
 
-        {/* ════ STANDARD GRID (LIGHT THEME) ════ */}
-        <StaggerChildren className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {standard.map((course) => (
-            <StaggerItem key={course.slug}>
-              <Link href={`/cursos/${course.slug}`} className="group block no-underline h-full">
-                <motion.div
-                  className="bg-white rounded-3xl overflow-hidden border border-slate-100 h-full flex flex-col transition-all duration-300 hover:border-transparent"
-                  whileHover={{ y: -8, boxShadow: "0 20px 40px -10px rgba(15,23,42,0.08)" }}
-                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                >
-                  {/* Image */}
-                  <div className="h-[180px] relative overflow-hidden bg-[#F8FAFC]">
-                    <div className="absolute inset-0 bg-[#0F172A]/5 z-10 group-hover:bg-transparent transition-colors" />
-                    <Image
-                      src={course.imageUrl}
-                      alt={course.title}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
-                      unoptimized
-                    />
-                    <div className="absolute top-4 right-4 z-20 bg-white/95 backdrop-blur-md w-10 h-10 rounded-xl flex items-center justify-center shadow-lg transition-transform group-hover:scale-110" style={{ color: course.accentColor }}>
-                      <DynamicIcon name={course.icon} className="w-5 h-5" />
-                    </div>
-                  </div>
-                  {/* Body */}
-                  <div className="p-6 flex flex-col flex-grow relative">
-                    <div className="absolute top-0 left-0 w-full h-1 group-hover:opacity-100 transition-opacity" style={{ background: course.accentColor, opacity: 0 }} />
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest mb-3 text-slate-400 group-hover:text-[#1890FF] transition-colors">
-                      {course.categoryLabel}
-                    </span>
-                    <h3 className="font-display text-[18px] font-bold text-slate-800 mb-2 leading-tight group-hover:text-[#1890FF] transition-colors">{course.title}</h3>
-                    <p className="text-slate-500 text-[13px] leading-relaxed mb-6 line-clamp-2">{course.shortDescription}</p>
-                    <div className="mt-auto flex items-center justify-between font-bold text-[#1890FF] text-[13px]">
-                      <span className="flex items-center gap-1"><Clock size={12}/> {course.durationHours}h</span>
-                      <span className="flex items-center gap-1 group-hover:gap-2 transition-all">Ver Curso <ArrowRight size={14} /></span>
-                    </div>
-                  </div>
-                </motion.div>
-              </Link>
-            </StaggerItem>
-          ))}
-        </StaggerChildren>
 
         {/* CTA */}
         <FadeIn delay={0.3}>
