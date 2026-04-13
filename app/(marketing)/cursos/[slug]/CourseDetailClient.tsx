@@ -17,6 +17,7 @@ import AuthModal from "@/components/shared/AuthModal";
 import PythonSyllabus from "./syllabuses/PythonSyllabus";
 import SqlSyllabus from "./syllabuses/SqlSyllabus";
 import PowerBiSyllabus from "./syllabuses/PowerBiSyllabus";
+import ExcelSyllabus from "./syllabuses/ExcelSyllabus";
 
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
@@ -483,7 +484,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       )}
 
       {/* ════ SYLLABUS ════ */}
-      {course.slug === 'power-bi' ? (
+      {course.slug === 'excel' ? (
+        <ExcelSyllabus />
+      ) : course.slug === 'power-bi' ? (
         <PowerBiSyllabus />
       ) : course.slug === 'python' ? (
         <PythonSyllabus />
