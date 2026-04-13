@@ -14,6 +14,7 @@ import { type Course, courses } from "@/lib/data/courses";
 import { FadeIn, StaggerChildren, StaggerItem, CountUp } from "@/components/shared/AnimatedComponents";
 import { createBrowserClient } from "@supabase/ssr";
 import AuthModal from "@/components/shared/AuthModal";
+import PythonSyllabus from "./syllabuses/PythonSyllabus";
 
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
@@ -480,8 +481,11 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       )}
 
       {/* ════ SYLLABUS ════ */}
-      <section id="temario" className="py-10 lg:py-14 bg-[#F8FAFC]">
-        <div className="max-w-3xl mx-auto px-5">
+      {course.slug === 'python' ? (
+        <PythonSyllabus />
+      ) : (
+        <section id="temario" className="py-10 lg:py-14 bg-[#F8FAFC]">
+          <div className="max-w-3xl mx-auto px-5">
           <FadeIn>
             <div className="text-center mb-16">
               <h2 className="font-display font-black text-3xl sm:text-4xl text-[#0F172A] mb-4">Temario Completo</h2>
@@ -590,6 +594,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
           </div>
         </div>
       </section>
+      )}
 
       {/* ════ CONTACT FORM ════ */}
       <CourseContactForm course={course} />
