@@ -553,12 +553,12 @@ export async function adminGetDashboardStats() {
   const bestCourseId = Object.entries(courseCount).sort(([,a], [,b]) => b - a)[0]?.[0];
   let bestCourseName = "—";
   if (bestCourseId) {
-    const { data: course } = await supabase.from("courses").select("title").eq("id", bestCourseId).single();
+    const { data: course } = await adminDb.from("courses").select("title").eq("id", bestCourseId).single();
     bestCourseName = course?.title || "—";
   }
 
   // Recent transactions
-  const { data: recentPayments } = await supabase
+  const { data: recentPayments } = await adminDb
     .from("payments")
     .select("id, amount, status, payer_email, paid_at, created_at, course:courses(title)")
     .order("created_at", { ascending: false })
