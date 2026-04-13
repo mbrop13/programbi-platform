@@ -158,7 +158,10 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         <div className="relative z-10 max-w-[1400px] mx-auto px-5 lg:px-8">
           {/* Breadcrumb */}
           <FadeIn>
-            <Link href="/cursos" className="inline-flex items-center gap-2 text-gray-400 hover:text-[#1890FF] text-sm font-medium mb-8 no-underline transition-colors">
+            <Link href="/cursos" 
+                  className="inline-flex items-center gap-2 text-gray-400 hover:text-emerald-600 text-sm font-medium mb-8 no-underline transition-colors"
+                  style={{ '--hover-color': course.accentColor } as any}
+            >
               <ArrowLeft className="w-4 h-4" /> Volver a Cursos
             </Link>
           </FadeIn>
@@ -237,7 +240,10 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                   )}
                   <Link
                     href="#temario"
-                    className="bg-white text-[#0F172A] border-2 border-gray-200 px-8 py-4 rounded-2xl font-bold text-lg no-underline hover:border-[#1890FF] transition-all flex items-center justify-center gap-2 shadow-sm"
+                    className="bg-white text-[#0F172A] border-2 border-gray-200 px-8 py-4 rounded-2xl font-bold text-lg no-underline transition-all flex items-center justify-center gap-2 shadow-sm"
+                    style={{ borderColor: 'var(--course-border)', '--course-border': '#e5e7eb' } as any}
+                    onMouseEnter={(e) => e.currentTarget.style.borderColor = course.accentColor}
+                    onMouseLeave={(e) => e.currentTarget.style.borderColor = '#e5e7eb'}
                   >
                     <BookOpen className="w-5 h-5" /> Ver Temario
                   </Link>
