@@ -39,8 +39,12 @@ export async function isCurrentUserAdmin() {
   
   if (!user) return false;
 
+  // Fetch as admin to bypass RLS entirely, ensuring we get the true role even if RLS Select policies are missing
+  const { createAdminClient } = await import("./server");
+  const adminDb = createAdminClient();
+
   // 1. Check profiles table
-  const { data: profile } = await supabase
+  const { data: profile } = await adminDb
     .from("profiles")
     .select("role")
     .eq("id", user.id)
@@ -49,7 +53,7 @@ export async function isCurrentUserAdmin() {
   if (profile?.role === "admin") return true;
 
   // 2. Check community_members table
-  const { data: adminCheck } = await supabase
+  const { data: adminCheck } = await adminDb
     .from("community_members")
     .select("role")
     .eq("profile_id", user.id)
