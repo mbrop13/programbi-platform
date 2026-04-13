@@ -640,10 +640,22 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 function CourseContactForm({ course }: { course: Course }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [selectedCourses, setSelectedCourses] = useState<string[]>([course.title]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const toggleCourse = (title: string) => {
+    setSelectedCourses(prev => 
+      prev.includes(title) 
+        ? prev.filter(t => t !== title)
+        : [...prev, title]
+    );
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    
+    // TODO: Connect to Supabase "leads" or "contacts" table here
+    // Currently simulating a backend request
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSuccess(true);
@@ -737,11 +749,30 @@ function CourseContactForm({ course }: { course: Course }) {
                     </div>
                   </div>
 
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Cursos de tu interés</label>
+                    <div className="flex flex-wrap gap-2">
+                      {courses.map(c => {
+                        const isSelected = selectedCourses.includes(c.title);
+                        return (
+                          <button
+                            key={c.slug}
+                            type="button"
+                            onClick={() => toggleCourse(c.title)}
+                            className={`px-4 py-2 rounded-full text-xs font-bold transition-all border cursor-pointer ${isSelected ? 'bg-blue-50 border-brand-blue text-brand-blue' : 'bg-white border-gray-200 text-gray-500 hover:border-blue-200 hover:bg-blue-50/50'}`}
+                          >
+                            {c.title}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Mensaje</label>
+                    <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Mensaje (Opcional)</label>
                     <textarea
                       rows={3}
-                      placeholder={`Me interesa el curso de ${course.title}...`}
+                      placeholder={`¿Tienes alguna duda adicional sobre los cursos seleccionados?`}
                       className="w-full rounded-xl p-4 resize-none text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
                     />
                   </div>
