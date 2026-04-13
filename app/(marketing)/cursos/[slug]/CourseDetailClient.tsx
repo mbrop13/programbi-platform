@@ -368,7 +368,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                     </div>
 
                     {/* ORDER BUMP SECTION */}
-                    {['python', 'sql-server', 'power-bi'].includes(course.slug) && bumpOptions.length > 0 && (
+                    {isLoggedIn && ['python', 'sql-server', 'power-bi'].includes(course.slug) && bumpOptions.length > 0 && (
                       <div className="mt-8 mb-4 rounded-2xl bg-white border border-gray-200 overflow-hidden" style={{boxShadow: '0 10px 30px -10px rgba(0,0,0,0.06)'}}>
                         <div className="bg-gradient-to-r from-slate-900 to-[#0F172A] px-5 py-3.5 flex items-center justify-between shadow-inner">
                           <span className="text-[12px] font-black tracking-widest text-white uppercase flex items-center gap-2">
@@ -562,6 +562,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       <CourseContactForm course={course} />
 
       {/* ════ RELATED COURSES ════ */}
+      {isLoggedIn && relatedCourses.length > 0 && (
       <section className="py-16 lg:py-20 pb-32 lg:pb-40 bg-white">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
           <FadeIn>
@@ -592,6 +593,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
           </StaggerChildren>
         </div>
       </section>
+      )}
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
