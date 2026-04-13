@@ -213,13 +213,34 @@ export async function adminGetAllUsers() {
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { data, error } = await adminDb
+  const { data: profiles, error } = await adminDb
     .from("profiles")
     .select("id, full_name, email, role, avatar_url, created_at")
     .order("created_at", { ascending: false });
 
   if (error) { console.error("Error:", error); return []; }
-  return data || [];
+
+  // Auto-backfill missing emails from auth.users (common after Firebase -> Supabase migration)
+  const profilesMissingEmail = (profiles || []).filter(p => !p.email);
+  if (profilesMissingEmail.length > 0) {
+    try {
+      const { data: authData } = await adminDb.auth.admin.listUsers({ perPage: 1000 });
+      if (authData && authData.users) {
+        const authMap = Object.fromEntries(authData.users.map(u => [u.id, u.email]));
+        for (const p of (profiles || [])) {
+          if (!p.email && authMap[p.id]) {
+             p.email = authMap[p.id]; // Set locally for immediate display
+             // Backfill in the database silently
+             adminDb.from("profiles").update({ email: authMap[p.id] }).eq("id", p.id).then();
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Failed to backfill missing emails:", err);
+    }
+  }
+
+  return profiles || [];
 }
 
 export async function adminGetUserEnrollments(userId: string) {
