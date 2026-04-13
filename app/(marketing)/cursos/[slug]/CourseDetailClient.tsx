@@ -16,6 +16,7 @@ import { createBrowserClient } from "@supabase/ssr";
 import AuthModal from "@/components/shared/AuthModal";
 import PythonSyllabus from "./syllabuses/PythonSyllabus";
 import SqlSyllabus from "./syllabuses/SqlSyllabus";
+import PowerBiSyllabus from "./syllabuses/PowerBiSyllabus";
 
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
@@ -482,7 +483,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       )}
 
       {/* ════ SYLLABUS ════ */}
-      {course.slug === 'python' ? (
+      {course.slug === 'power-bi' ? (
+        <PowerBiSyllabus />
+      ) : course.slug === 'python' ? (
         <PythonSyllabus />
       ) : course.slug === 'sql-server' ? (
         <SqlSyllabus />
