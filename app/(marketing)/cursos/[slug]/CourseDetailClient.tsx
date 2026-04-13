@@ -213,13 +213,23 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
               <FadeIn delay={0.5}>
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <Link
-                    href="/auth/login?redirect=/comunidad/cursos"
-                    className="group px-8 py-4 rounded-2xl text-white font-bold text-lg no-underline transition-all flex items-center justify-center gap-2 hover:-translate-y-1"
-                    style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 12px 35px -8px ${course.accentColor}60` }}
-                  >
-                    Ver Precio y Acceder <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                  {isLoggedIn ? (
+                    <button
+                      onClick={() => document.getElementById('pricing-card')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="group px-8 py-4 rounded-2xl text-white font-bold text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-2 hover:-translate-y-1"
+                      style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 12px 35px -8px ${course.accentColor}60` }}
+                    >
+                      Ver Precio y Acceder <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setShowAuthModal(true)}
+                      className="group px-8 py-4 rounded-2xl text-white font-bold text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-2 hover:-translate-y-1"
+                      style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 12px 35px -8px ${course.accentColor}60` }}
+                    >
+                       Ver Precio y Acceder <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  )}
                   <Link
                     href="#temario"
                     className="bg-white text-[#0F172A] border-2 border-gray-200 px-8 py-4 rounded-2xl font-bold text-lg no-underline hover:border-[#1890FF] transition-all flex items-center justify-center gap-2 shadow-sm"
@@ -241,7 +251,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
       {/* ════ LEVEL SELECTOR + WHAT YOU LEARN + DETAILS ════ */}
       {(course.whatYouLearn?.length > 0 || levels.length > 0) && (
-        <section className="py-16 lg:py-24 bg-white">
+        <section className="py-10 lg:py-14 bg-white">
           <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
 
             {/* Level Selector Pills */}
@@ -298,7 +308,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
               {/* Program Details Card */}
               <FadeIn delay={0.2}>
-                <div className="relative bg-[#F8FAFC] rounded-[2rem] border border-gray-200 sticky top-28 overflow-hidden"
+                <div id="pricing-card" className="relative bg-[#F8FAFC] rounded-[2rem] border border-gray-200 sticky top-28 overflow-hidden"
                   style={{ boxShadow: "0 20px 50px -15px rgba(0,0,0,0.08)" }}>
                   
                   <div className={`p-8 lg:p-10 ${!isLoggedIn && !checkingAuth ? 'pb-4' : ''}`}>
@@ -369,19 +379,18 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
                     {/* ORDER BUMP SECTION */}
                     {isLoggedIn && ['python', 'sql-server', 'power-bi'].includes(course.slug) && bumpOptions.length > 0 && (
-                      <div className="mt-8 mb-4 rounded-2xl bg-white border border-gray-200 overflow-hidden" style={{boxShadow: '0 10px 30px -10px rgba(0,0,0,0.06)'}}>
-                        <div className="bg-gradient-to-r from-slate-900 to-[#0F172A] px-5 py-3.5 flex items-center justify-between shadow-inner">
-                          <span className="text-[12px] font-black tracking-widest text-white uppercase flex items-center gap-2">
-                            <Star className="w-4 h-4 text-amber-400 fill-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
-                            Potencia tu Especialidad
+                      <div className="mt-8 mb-4 rounded-3xl bg-white border-2 border-brand-blue/20 overflow-hidden shadow-[0_8px_30px_-12px_rgba(24,144,255,0.15)]">
+                        <div className="bg-white border-b border-gray-100 flex items-center justify-between px-6 py-4">
+                          <span className="text-[13px] font-black tracking-widest text-[#0F172A] uppercase">
+                             Potencia tu Especialidad
                           </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded text-slate-300 font-bold bg-white/10 uppercase tracking-widest">Opcional</span>
+                          <span className="text-[10px] px-2 py-0.5 rounded text-brand-blue font-bold bg-blue-50 uppercase tracking-widest">Opcional</span>
                         </div>
-                        <div className="flex flex-col divide-y divide-gray-100/80">
+                        <div className="flex flex-col divide-y divide-gray-50">
                           {bumpOptions.map(bump => {
                             const isSelected = !!bumpSelections.find(b => b.id === bump.id);
                             return (
-                              <label key={bump.id} className={`group flex items-center justify-between p-4 cursor-pointer transition-all ${isSelected ? 'bg-blue-50/40' : 'hover:bg-slate-50'}`}>
+                              <label key={bump.id} className={`group flex items-center justify-between px-6 py-4 cursor-pointer transition-all hover:bg-slate-50 ${isSelected ? 'bg-blue-50/30' : ''}`}>
                                 <div className="flex items-center gap-4">
                                   <div className="relative flex items-center justify-center">
                                     <input 
@@ -392,15 +401,15 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                                     />
                                   </div>
                                   <div className="flex flex-col flex-1">
-                                    <span className={`text-sm font-bold leading-tight mb-0.5 transition-colors ${isSelected ? 'text-brand-blue' : 'text-[#0F172A] group-hover:text-brand-blue'}`}>+{bump.name.replace('Plan', 'Nivel')}</span>
+                                    <span className={`text-sm font-bold leading-tight mb-0.5 transition-colors ${isSelected ? 'text-brand-blue' : 'text-[#0F172A]'}`}>+{bump.name.replace('Plan', 'Nivel')}</span>
                                     <span className="text-[11px] font-semibold text-gray-400">Desbloqueo vitalicio</span>
                                   </div>
                                 </div>
                                 <div className="flex flex-col items-end gap-1">
-                                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 tracking-wider">OFERTA</span>
+                                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-100/60 text-emerald-700 tracking-wider">OFERTA</span>
                                   <div className="flex items-center gap-1.5">
                                     <span className="text-xs text-gray-400 line-through font-medium">$249.000</span>
-                                    <span className={`text-sm font-black ${isSelected ? 'text-brand-blue' : 'text-gray-500'}`}>$99.000</span>
+                                    <span className={`text-sm font-black ${isSelected ? 'text-brand-blue' : 'text-[#0F172A]'}`}>$99.000</span>
                                   </div>
                                 </div>
                               </label>
@@ -471,7 +480,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       )}
 
       {/* ════ SYLLABUS ════ */}
-      <section id="temario" className="py-16 lg:py-24 bg-[#F8FAFC]">
+      <section id="temario" className="py-10 lg:py-14 bg-[#F8FAFC]">
         <div className="max-w-3xl mx-auto px-5">
           <FadeIn>
             <div className="text-center mb-16">
@@ -480,12 +489,35 @@ export default function CourseDetailClient({ course }: { course: Course }) {
             </div>
           </FadeIn>
 
+          {/* Syllabus level selector */}
+          {levels.length > 0 && (
+            <div className="flex justify-center mb-10">
+              <div className="inline-flex bg-white border border-brand-blue/20 rounded-full p-1.5 gap-1 shadow-sm">
+                {levels.map((level, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedLevel(idx)}
+                    className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
+                      selectedLevel === idx
+                        ? 'bg-brand-blue text-white shadow-md'
+                        : 'text-gray-500 hover:text-gray-900 hover:bg-blue-50/50'
+                    }`}
+                  >
+                    Temario {level.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Progress line */}
           <div className="relative">
             <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200 z-0" />
             <div className="space-y-4 relative z-10">
-              {course.syllabus.map((module, idx) => (
-                <FadeIn key={idx} delay={idx * 0.1}>
+              {course.syllabus.map((module, idx) => {
+                if (levels.length > 0 && idx !== selectedLevel) return null;
+                return (
+                <FadeIn key={idx} delay={0.1}>
                   <motion.div
                     className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-blue-200 transition-all ml-4"
                     whileHover={{ boxShadow: "0 10px 30px -10px rgba(24,144,255,0.15)" }}
@@ -552,7 +584,8 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                     </AnimatePresence>
                   </motion.div>
                 </FadeIn>
-              ))}
+                );
+              })}
             </div>
           </div>
         </div>
