@@ -22,7 +22,7 @@ const navLinks = [
   { href: "/comunidad", label: "Comunidad" },
 ];
 
-const featuredSlugs = ["analisis-de-datos", "power-automate", "analitica-mineria"];
+const featuredSlugs = ["analisis-de-datos", "power-bi", "sql-server"];
 
 function CourseIcon({ name, className }: { name: string; className?: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
@@ -191,7 +191,7 @@ export default function Navbar() {
                             <div className="absolute top-0 right-0 w-48 h-48 bg-blue-100/50 rounded-full blur-3xl opacity-50 -mt-10 -mr-10 pointer-events-none" />
                             <div className="relative z-10">
                               <h3 className="text-xs font-black tracking-widest uppercase text-[#1890FF] mb-5 flex items-center gap-2">
-                                <Sparkles size={14} /> Rutas Completas
+                                <Sparkles size={14} /> Más Comprados
                               </h3>
                               <div className="space-y-4">
                                 {featured.map((course) => (
