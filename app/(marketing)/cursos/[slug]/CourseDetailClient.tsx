@@ -104,7 +104,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const rawPrice = activeLevel?.price || null;
   
   // Calculate discount
-  const isSpecialization = course.durationHours > 50 || course.slug === "analisis-de-datos" || course.slug === "analitica-mineria" || course.slug === "analitica-finanzas";
+  const isSpecialization = course.durationHours > 50 || course.slug === "analisis-de-datos" || course.slug === "analitica-mineria" || course.slug === "analitica-financiera";
   let discPercent = 0;
   if (userPlan === 'pro') discPercent = isSpecialization ? 10 : 20;
   else if (userPlan === 'max') discPercent = isSpecialization ? 12.5 : 25;
@@ -125,6 +125,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           courseSlug: course.slug,
+          levelName: activeLevel?.name, // Send the selected level to the backend
           bumpSelections: bumpSelections.map(b => ({ slug: b.slug, level: b.level }))
         }),
       });
@@ -317,172 +318,42 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 </AnimatePresence>
               </FadeIn>
 
-              {/* Program Details Card */}
+              {/* Lead Capture Form — replaces Detalles del Programa */}
               <FadeIn delay={0.2}>
-                <div id="pricing-card" className="relative bg-[#F8FAFC] rounded-[2rem] border border-gray-200 sticky top-28 overflow-hidden"
+                <div id="pricing-card" className="relative bg-white rounded-[2rem] border border-gray-200 sticky top-28 overflow-hidden"
                   style={{ boxShadow: "0 20px 50px -15px rgba(0,0,0,0.08)" }}>
                   
-                  <div className={`p-8 lg:p-10 ${!isLoggedIn && !checkingAuth ? 'pb-4' : ''}`}>
-                    <h3 className="font-display font-bold text-xl text-[#0F172A] mb-8">Detalles del Programa</h3>
-                    <div className="space-y-0">
+                  <div className="p-8 lg:p-10">
+                    {/* Course quick info */}
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ backgroundColor: `${course.accentColor}15`, color: course.accentColor }}>
+                        <DynamicIcon name={course.icon} className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <h3 className="font-display font-bold text-lg text-[#0F172A]">
+                          {activeLevel ? `${course.title} — ${activeLevel.name.split("—")[0].trim()}` : course.title}
+                        </h3>
+                        <p className="text-xs text-gray-400">{activeLevel?.durationHours || course.durationHours} horas · {course.modality} · Certificado incluido</p>
+                      </div>
+                    </div>
+
+                    {/* Quick details */}
+                    <div className="flex flex-wrap gap-2 mb-6">
                       {[
-                        { label: "Duración", value: `${activeLevel?.durationHours || course.durationHours} horas` },
-                        { label: "Modalidad", value: course.modality },
-                        { label: "Nivel", value: activeLevel ? activeLevel.name.split("—")[0].trim() : course.level },
-                        { label: "Módulos", value: `${course.syllabus.length} módulos` },
-                        { label: "Certificado", value: "✓ Incluido", green: true },
-                      ].map((row, i) => (
-                        <div key={i} className="flex justify-between items-center py-4 border-b border-gray-200 last:border-0">
-                          <span className="text-gray-500 font-medium text-sm">{row.label}</span>
-                          <span className={`font-bold capitalize ${row.green ? "text-emerald-600" : "text-[#0F172A]"}`}>{row.value}</span>
-                        </div>
+                        { icon: "🕐", text: `${activeLevel?.durationHours || course.durationHours}h` },
+                        { icon: "🎓", text: "Certificado" },
+                        { icon: "🌐", text: "Online" },
+                        { icon: "📹", text: "Clases en vivo" },
+                      ].map((tag, i) => (
+                        <span key={i} className="flex items-center gap-1.5 text-xs font-medium text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
+                          {tag.icon} {tag.text}
+                        </span>
                       ))}
-
-                      {/* Price Row — blurred or visible */}
-                      <div className="flex justify-between items-center py-4 border-t border-gray-200 relative">
-                        <span className="text-gray-500 font-medium text-sm">Precio</span>
-                        
-                        <div className="flex flex-col items-end">
-                          {isLoggedIn ? (
-                            <>
-                              {discPercent > 0 && rawPrice ? (
-                                <div className="text-xs font-bold text-emerald-500 mb-1 bg-emerald-50 px-2 py-0.5 rounded-md">
-                                  Ahorras {discPercent}%
-                                </div>
-                              ) : null}
-                              
-                              <div className="flex items-center gap-2">
-                                {discPercent > 0 && rawPrice ? (
-                                  <span className="text-sm text-gray-400 line-through font-medium">{formatCLP(rawPrice)}</span>
-                                ) : null}
-                                <span className="font-black text-2xl" style={{ color: course.accentColor }}>
-                                  {currentPrice ? formatCLP(currentPrice) : "Próximamente"}
-                                </span>
-                              </div>
-                            </>
-                          ) : (
-                            <div className="relative">
-                              <span className="font-black text-2xl text-gray-300 blur-sm select-none pointer-events-none">
-                                $149.990
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                        
-                        {/* Lock overlay if not logged in */}
-                      </div>
-
-                      {/* Community Discount Hint for logged in users */}
-                      {isLoggedIn && !checkingAuth && (
-                        <div className={`mt-4 p-4 rounded-xl border ${discPercent > 0 ? 'bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-100/60' : 'bg-blue-50 border-blue-100/50'}`}>
-                          <p className={`text-sm font-bold mb-1.5 flex items-center gap-2 ${discPercent > 0 ? 'text-emerald-800' : 'text-blue-900'}`}>
-                            {discPercent > 0 ? <CheckCircle2 className="w-4 h-4 text-emerald-600" /> : '✨'} 
-                            {discPercent > 0 ? `Descuento ${userPlan?.toUpperCase()} Aplicado` : 'Beneficio Comunidad'}
-                          </p>
-                          <p className={`text-xs leading-relaxed ${discPercent > 0 ? 'text-emerald-700/80' : 'text-blue-700/80'}`}>
-                            {discPercent > 0 
-                              ? <>Estás ahorrando un <strong className="font-bold text-emerald-700">{discPercent}% de descuento</strong> exclusivo por tu suscripción activa. Tu acceso al curso será de por vida.</> 
-                              : <>Activa cualquier plan de suscripción a la comunidad y obtén hasta un <strong>40% de descuento</strong>, conservando tu acceso de por vida.</>}
-                          </p>
-                        </div>
-                      )}
                     </div>
 
-                    {/* ORDER BUMP SECTION */}
-                    {isLoggedIn && ['python', 'sql-server', 'power-bi'].includes(course.slug) && bumpOptions.length > 0 && (
-                      <div className="mt-8 mb-4 rounded-3xl bg-white border-2 border-brand-blue/20 overflow-hidden shadow-[0_8px_30px_-12px_rgba(24,144,255,0.15)]">
-                        <div className="bg-white border-b border-gray-100 flex items-center justify-between px-6 py-4">
-                          <span className="text-[13px] font-black tracking-widest text-[#0F172A] uppercase">
-                             Potencia tu Especialidad
-                          </span>
-                          <span className="text-[10px] px-2 py-0.5 rounded text-brand-blue font-bold bg-blue-50 uppercase tracking-widest">Opcional</span>
-                        </div>
-                        <div className="flex flex-col divide-y divide-gray-50">
-                          {bumpOptions.map(bump => {
-                            const isSelected = !!bumpSelections.find(b => b.id === bump.id);
-                            return (
-                              <label key={bump.id} className={`group flex items-center justify-between px-6 py-4 cursor-pointer transition-all hover:bg-slate-50 ${isSelected ? 'bg-blue-50/30' : ''}`}>
-                                <div className="flex items-center gap-4">
-                                  <div className="relative flex items-center justify-center">
-                                    <input 
-                                      type="checkbox" 
-                                      className="peer w-5 h-5 rounded shadow-sm text-brand-blue border-gray-300 focus:ring-brand-blue focus:ring-offset-0 transition-all cursor-pointer"
-                                      checked={isSelected}
-                                      onChange={() => toggleBump(bump)}
-                                    />
-                                  </div>
-                                  <div className="flex flex-col flex-1">
-                                    <span className={`text-sm font-bold leading-tight mb-0.5 transition-colors ${isSelected ? 'text-brand-blue' : 'text-[#0F172A]'}`}>+{bump.name.replace('Plan', 'Nivel')}</span>
-                                    <span className="text-[11px] font-semibold text-gray-400">Desbloqueo vitalicio</span>
-                                  </div>
-                                </div>
-                                <div className="flex flex-col items-end gap-1">
-                                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-100/60 text-emerald-700 tracking-wider">OFERTA</span>
-                                  <div className="flex items-center gap-1.5">
-                                    <span className="text-xs text-gray-400 line-through font-medium">$249.000</span>
-                                    <span className={`text-sm font-black ${isSelected ? 'text-brand-blue' : 'text-[#0F172A]'}`}>$99.000</span>
-                                  </div>
-                                </div>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    )}
+                    {/* Lead Form */}
+                    <CourseLeadCaptureForm course={course} levelName={activeLevel?.name || "Básico"} />
                   </div>
-                  
-                  {/* Dynamic Total when Bumps are selected */}
-                  {bumpSelections.length > 0 && grandTotal && (
-                    <div className="px-8 lg:px-10 pb-4 bg-[#F8FAFC]">
-                      <div className="flex justify-between items-center py-4 border-t-2 border-dashed border-gray-300">
-                        <span className="font-bold text-gray-600">Total Bundle</span>
-                        <span className="font-black text-2xl" style={{ color: course.accentColor }}>{formatCLP(grandTotal)}</span>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* CTA Button */}
-                  {checkingAuth ? (
-                    <div className="mt-2 h-14 bg-gray-100 rounded-2xl animate-pulse mx-8 mb-8" />
-                  ) : isLoggedIn ? (
-                    <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} className="mx-8 mb-8 mt-2">
-                        <button
-                        onClick={handleCheckout}
-                        disabled={!currentPrice}
-                        className={`flex items-center justify-center w-full gap-2 text-white py-4 rounded-2xl font-bold text-lg border-none cursor-pointer transition-all ${
-                            currentPrice ? '' : 'opacity-50 cursor-not-allowed'
-                        }`}
-                        style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 10px 30px -5px ${course.accentColor}40` }}
-                        >
-                        <ShoppingCart className="w-5 h-5" /> Inscribirme Ahora
-                        </button>
-                    </motion.div>
-                  ) : null}
-
-
-                  {/* Blurred Overlay for non-logged-in users */}
-                  {!isLoggedIn && !checkingAuth && (
-                    <div className="relative px-8 lg:px-10 pb-8 lg:pb-10 pt-4">
-                      <div className="absolute inset-x-0 -top-8 h-8 bg-gradient-to-b from-transparent to-[#F8FAFC] z-10" />
-                      <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-gray-200 p-6 text-center relative z-20">
-                        <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-3">
-                          <Lock className="w-6 h-6 text-brand-blue" />
-                        </div>
-                        <h4 className="font-bold text-gray-900 mb-1">Regístrate para ver el precio</h4>
-                        <p className="text-xs text-gray-500 mb-4">Crea tu cuenta gratis y accede a toda la información.</p>
-                        <button
-                          onClick={() => setShowAuthModal(true)}
-                          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-bold text-sm transition-all hover:-translate-y-0.5 border-none cursor-pointer"
-                          style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 8px 20px -6px ${course.accentColor}50` }}
-                        >
-                          <UserPlus className="w-4 h-4" /> Registrarse Gratis
-                        </button>
-                        <p className="text-[10px] text-gray-400 mt-2">
-                          ¿Ya tienes cuenta? <button onClick={() => setShowAuthModal(true)} className="text-brand-blue font-bold bg-transparent border-none cursor-pointer p-0">Inicia sesión</button>
-                        </p>
-                      </div>
-                    </div>
-                  )}
                 </div>
               </FadeIn>
             </div>
@@ -659,29 +530,146 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   );
 }
 
-/* ─── Inline Contact Form Component ─── */
+/* ─── Lead Capture Form (replaces pricing card) ─── */
+function CourseLeadCaptureForm({ course, levelName }: { course: Course; levelName: string }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formName, setFormName] = useState("");
+  const [formEmail, setFormEmail] = useState("");
+  const [formWhatsapp, setFormWhatsapp] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formName || !formEmail) return;
+    setIsSubmitting(true);
+
+    try {
+      // Save lead
+      await fetch("/api/leads/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formName,
+          email: formEmail,
+          whatsapp: formWhatsapp,
+          selectedCourses: [course.title],
+          sourceCourse: course.slug,
+          leadType: "contact",
+        }),
+      });
+
+      // Redirect to /pago with context
+      const params = new URLSearchParams({
+        curso: course.slug,
+        nivel: levelName,
+        nombre: formName,
+        email: formEmail,
+      });
+      window.location.href = `/pago?${params.toString()}`;
+    } catch (err) {
+      console.error(err);
+      alert("Hubo un problema. Inténtalo de nuevo.");
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="text-center mb-2">
+        <h4 className="font-bold text-[#0F172A] text-base mb-1">Solicita tu Cotización</h4>
+        <p className="text-xs text-gray-400">Completa tus datos y accede a fechas, precios y opciones de pago</p>
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre completo *</label>
+        <input
+          type="text"
+          required
+          value={formName}
+          onChange={e => setFormName(e.target.value)}
+          placeholder="Ej: Juan Pérez"
+          className="w-full rounded-xl p-3.5 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email *</label>
+        <input
+          type="email"
+          required
+          value={formEmail}
+          onChange={e => setFormEmail(e.target.value)}
+          placeholder="juan@empresa.com"
+          className="w-full rounded-xl p-3.5 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+        />
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">WhatsApp (opcional)</label>
+        <input
+          type="tel"
+          value={formWhatsapp}
+          onChange={e => setFormWhatsapp(e.target.value)}
+          placeholder="+56 9..."
+          className="w-full rounded-xl p-3.5 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+        />
+      </div>
+
+      <motion.button
+        type="submit"
+        disabled={isSubmitting || !formName || !formEmail}
+        className="w-full py-4 rounded-xl text-white font-bold text-base flex justify-center items-center gap-2 transition-all disabled:opacity-60 border-none cursor-pointer"
+        style={{
+          background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`,
+          boxShadow: `0 10px 30px -5px ${course.accentColor}40`,
+        }}
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.98 }}
+      >
+        {isSubmitting ? (
+          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+        ) : (
+          <>Ver Fechas y Precios <ArrowRight className="w-4 h-4" /></>
+        )}
+      </motion.button>
+
+      <p className="text-[10px] text-gray-400 text-center">
+        Al continuar, aceptas nuestras políticas de privacidad.
+      </p>
+    </form>
+  );
+}
+
+/* ─── Enterprise Contact Form Component ─── */
 function CourseContactForm({ course }: { course: Course }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [selectedCourses, setSelectedCourses] = useState<string[]>([course.title]);
+  const [selectedServices, setSelectedServices] = useState<string[]>(["Capacitación In-Company"]);
 
-  const toggleCourse = (title: string) => {
-    setSelectedCourses(prev => 
-      prev.includes(title) 
-        ? prev.filter(t => t !== title)
-        : [...prev, title]
+  const enterpriseServices = [
+    "Capacitación In-Company",
+    "Dashboards Personalizados",
+    "Automatización de Procesos",
+    "Consultoría en Datos",
+    "Mentoría Corporativa",
+  ];
+
+  const toggleService = (service: string) => {
+    setSelectedServices(prev =>
+      prev.includes(service) ? prev.filter(s => s !== service) : [...prev, service]
     );
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     try {
       const formData = new FormData(e.target as HTMLFormElement);
       const name = formData.get('name') as string;
       const email = formData.get('email') as string;
-      const whatsapp = formData.get('whatsapp') as string;
+      const company = formData.get('company') as string;
+      const position = formData.get('position') as string;
+      const employeeCount = formData.get('employeeCount') as string;
       const message = formData.get('message') as string;
 
       const res = await fetch('/api/leads/create', {
@@ -690,17 +678,19 @@ function CourseContactForm({ course }: { course: Course }) {
         body: JSON.stringify({
           name,
           email,
-          whatsapp,
+          company,
+          position,
+          employeeCount,
           message,
-          selectedCourses,
-          sourceCourse: course.title
+          selectedCourses: selectedServices,
+          sourceCourse: course.title,
+          leadType: "enterprise",
         })
       });
 
       if (!res.ok) throw new Error("Error submitting form");
-
       setIsSuccess(true);
-    } catch(err) {
+    } catch (err) {
       console.error(err);
       alert("Hubo un problema al enviar tu solicitud. Inténtalo de nuevo.");
     } finally {
@@ -712,39 +702,40 @@ function CourseContactForm({ course }: { course: Course }) {
     <section className="py-16 lg:py-24 bg-[#F8FAFC]">
       <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
-          {/* Left: Info */}
+          {/* Left: Enterprise Info */}
           <FadeIn>
             <div>
-              <span className="inline-block text-[#1890FF] font-bold tracking-widest uppercase text-xs bg-blue-50 px-4 py-1.5 rounded-full mb-6">
-                Inscripción
+              <span className="inline-flex items-center gap-2 text-indigo-600 font-bold tracking-widest uppercase text-xs bg-indigo-50 px-4 py-1.5 rounded-full mb-6">
+                🏢 Soluciones Empresariales
               </span>
               <h2 className="font-display font-black text-3xl sm:text-4xl text-[#0F172A] mb-5 leading-tight">
-                Solicita información sobre{" "}
-                <span style={{ color: course.accentColor }}>{course.title}</span>
+                Capacita a tu equipo{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-[#1890FF]">con expertos</span>
               </h2>
               <p className="text-gray-500 text-lg leading-relaxed mb-8">
-                Completa el formulario y te enviaremos el plan de estudios detallado, precios y fechas de inicio.
+                Diseñamos programas de capacitación a medida para empresas. Cursos grupales, dashboards personalizados y automatización.
               </p>
 
               <div className="space-y-4">
                 {[
-                  { icon: "✓", text: `${course.durationHours} horas de contenido práctico` },
-                  { icon: "✓", text: "Clases en vivo + grabaciones ilimitadas" },
-                  { icon: "✓", text: "Certificado al completar el programa" },
-                  { icon: "✓", text: "Soporte directo con el instructor" },
+                  { icon: "🏢", text: "Capacitación grupal in-company o virtual" },
+                  { icon: "📊", text: "Dashboards personalizados para tu empresa" },
+                  { icon: "⚡", text: "Automatización de procesos corporativos" },
+                  { icon: "📋", text: "Certificación para todos los participantes" },
+                  { icon: "💰", text: "Precios corporativos con descuento por volumen" },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3 text-gray-600">
-                    <div className="w-6 h-6 rounded-full bg-emerald-50 text-emerald-500 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                    <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center text-sm flex-shrink-0">
                       {item.icon}
                     </div>
-                    <span className="text-sm">{item.text}</span>
+                    <span className="text-sm font-medium">{item.text}</span>
                   </div>
                 ))}
               </div>
             </div>
           </FadeIn>
 
-          {/* Right: Form */}
+          {/* Right: Enterprise Form */}
           <FadeIn delay={0.2}>
             <div
               className="bg-white rounded-[2rem] p-8 lg:p-10 border border-gray-200"
@@ -756,61 +747,55 @@ function CourseContactForm({ course }: { course: Course }) {
                   animate={{ opacity: 1, scale: 1 }}
                   className="text-center py-10"
                 >
-                  <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-5 text-green-500 text-3xl">✓</div>
-                  <h3 className="text-xl font-black text-gray-900 mb-2">¡Mensaje Enviado!</h3>
-                  <p className="text-gray-500 text-sm">Te contactaremos en menos de 24 horas.</p>
+                  <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-5 text-emerald-500 text-3xl">✓</div>
+                  <h3 className="text-xl font-black text-gray-900 mb-2">¡Solicitud Enviada!</h3>
+                  <p className="text-gray-500 text-sm">Te contactaremos en menos de 24 horas con una cotización personalizada.</p>
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-5">
-                  <h3 className="font-display font-bold text-xl text-[#0F172A] mb-1">Postula al Programa</h3>
-                  <p className="text-sm text-gray-400 mb-4">Te responderemos en menos de 24 horas.</p>
-
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre Completo *</label>
-                    <input
-                      type="text"
-                      name="name"
-                      required
-                      placeholder="Ej: Juan Pérez"
-                      className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
-                    />
-                  </div>
+                  <h3 className="font-display font-bold text-xl text-[#0F172A] mb-1">Cotización Empresarial</h3>
+                  <p className="text-sm text-gray-400 mb-4">Te enviaremos una propuesta personalizada en menos de 24 horas.</p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email *</label>
-                      <input
-                        type="email"
-                        name="email"
-                        required
-                        placeholder="juan@empresa.com"
-                        className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
-                      />
+                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre *</label>
+                      <input type="text" name="name" required placeholder="Tu nombre"
+                        className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">WhatsApp</label>
-                      <input
-                        type="tel"
-                        name="whatsapp"
-                        placeholder="+56 9..."
-                        className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
-                      />
+                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email corporativo *</label>
+                      <input type="email" name="email" required placeholder="contacto@empresa.com"
+                        className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Empresa *</label>
+                      <input type="text" name="company" required placeholder="Nombre empresa"
+                        className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Cargo</label>
+                      <input type="text" name="position" placeholder="Ej: Gerente TI"
+                        className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">N° personas</label>
+                      <input type="number" name="employeeCount" min="1" placeholder="10"
+                        className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
                     </div>
                   </div>
 
                   <div className="space-y-3">
-                    <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Cursos de tu interés</label>
+                    <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Servicios de interés</label>
                     <div className="flex flex-wrap gap-2">
-                      {courses.map(c => {
-                        const isSelected = selectedCourses.includes(c.title);
+                      {enterpriseServices.map(service => {
+                        const isSelected = selectedServices.includes(service);
                         return (
-                          <button
-                            key={c.slug}
-                            type="button"
-                            onClick={() => toggleCourse(c.title)}
-                            className={`px-4 py-2 rounded-full text-xs font-bold transition-all border cursor-pointer ${isSelected ? 'bg-blue-50 border-brand-blue text-brand-blue' : 'bg-white border-gray-200 text-gray-500 hover:border-blue-200 hover:bg-blue-50/50'}`}
-                          >
-                            {c.title}
+                          <button key={service} type="button" onClick={() => toggleService(service)}
+                            className={`px-4 py-2 rounded-full text-xs font-bold transition-all border cursor-pointer ${isSelected ? 'bg-indigo-50 border-indigo-400 text-indigo-600' : 'bg-white border-gray-200 text-gray-500 hover:border-indigo-200 hover:bg-indigo-50/50'}`}>
+                            {service}
                           </button>
                         );
                       })}
@@ -818,30 +803,22 @@ function CourseContactForm({ course }: { course: Course }) {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Mensaje (Opcional)</label>
-                    <textarea
-                      name="message"
-                      rows={3}
-                      placeholder={`¿Tienes alguna duda adicional sobre los cursos seleccionados?`}
-                      className="w-full rounded-xl p-4 resize-none text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
-                    />
+                    <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Detalle de requerimientos</label>
+                    <textarea name="message" rows={3}
+                      placeholder="Cuéntanos tus necesidades: ¿cuántas personas? ¿qué herramientas usan actualmente?"
+                      className="w-full rounded-xl p-4 resize-none text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
                   </div>
 
-                  <motion.button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-4 rounded-xl text-white font-bold text-base flex justify-center items-center gap-2 transition-all disabled:opacity-70"
-                    style={{
-                      background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`,
-                      boxShadow: `0 10px 30px -5px ${course.accentColor}40`,
-                    }}
+                  <motion.button type="submit" disabled={isSubmitting}
+                    className="w-full py-4 rounded-xl text-white font-bold text-base flex justify-center items-center gap-2 transition-all disabled:opacity-70 border-none cursor-pointer"
+                    style={{ background: "linear-gradient(135deg, #6366F1, #4338CA)", boxShadow: "0 10px 30px -5px rgba(99,102,241,0.3)" }}
                     whileHover={{ y: -2 }}
                     whileTap={{ scale: 0.98 }}
                   >
                     {isSubmitting ? (
                       <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
-                      <>Solicitar Información<ArrowRight className="w-4 h-4" /></>
+                      <>🏢 Solicitar Cotización Empresarial</>
                     )}
                   </motion.button>
                 </form>

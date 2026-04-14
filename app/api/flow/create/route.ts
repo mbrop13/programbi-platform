@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { courseId, courseSlug } = body;
+    const { courseId, courseSlug, levelName } = body;
 
     if (!courseId && !courseSlug) {
       return NextResponse.json({ error: "courseId o courseSlug requerido" }, { status: 400 });
@@ -40,7 +40,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Curso no encontrado" }, { status: 404 });
     }
 
-    if (!course.price_clp || course.price_clp <= 0) {
+    // --- PRICE CALCULATION LOGIC ---
+    // We use the local courses data as the source of truth for level-specific pricing
+    const { courses: masterCourses } = await import("@/lib/data/courses");
+    const masterCourse = masterCourses.find(c => c.slug === course.slug);
+    
+    let basePrice = course.price_clp || 0;
+
+    if (masterCourse) {
+      if (levelName) {
+        // Search for the level in the master data
+        const masterLevel = masterCourse.levels?.find(l => 
+          l.name.toLowerCase().includes(levelName.toLowerCase()) || 
+          levelName.toLowerCase().includes(l.name.toLowerCase())
+        );
+        if (masterLevel && masterLevel.price) {
+          basePrice = masterLevel.price;
+        }
+      } else if (masterCourse.levels && masterCourse.levels.length > 0) {
+        // Fallback to the first level's price if no level specified but levels exist
+        basePrice = masterCourse.levels[0].price || basePrice;
+      }
+    }
+
+    if (basePrice <= 0) {
       return NextResponse.json({ error: "Este curso aún no tiene precio definido" }, { status: 400 });
     }
 
@@ -48,7 +71,12 @@ export async function POST(req: NextRequest) {
     let discountMultiplier = 1;
     const { data: profile } = await supabase.from('profiles').select('subscription_plan').eq('id', user.id).single();
     if (profile?.subscription_plan) {
-      const isSpec = course.title?.toLowerCase().includes("analítica") || course.title?.toLowerCase().includes("análisis");
+      const isSpec = masterCourse && (
+        masterCourse.durationHours > 50 || 
+        masterCourse.slug === "analisis-de-datos" || 
+        masterCourse.slug === "analitica-mineria" || 
+        masterCourse.slug === "analitica-financiera"
+      );
       const userPlan = profile.subscription_plan;
       let discPercent = 0;
       if (userPlan === 'pro') discPercent = isSpec ? 10 : 20;
@@ -58,7 +86,7 @@ export async function POST(req: NextRequest) {
       discountMultiplier = 1 - (discPercent / 100);
     }
     
-    let finalPriceClp = Math.floor(course.price_clp * discountMultiplier);
+    let finalPriceClp = Math.floor(basePrice * discountMultiplier);
 
     // Check if already enrolled
     const { data: existing } = await supabase
@@ -101,6 +129,7 @@ export async function POST(req: NextRequest) {
         userId: user.id,
         courseSlug: course.slug,
         courseId: course.id,
+        levelName, // Store selected level name
         bumpSelections: JSON.stringify(bumpSelections), // Pass the array as JSON string
       },
     });

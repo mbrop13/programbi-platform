@@ -606,3 +606,67 @@ export async function adminGetDashboardStats() {
   };
 }
 
+// ─── COURSE SCHEDULES ───
+
+export async function getActiveSchedules() {
+  const adminDb = createAdminClient();
+  const { data, error } = await adminDb
+    .from("course_schedules")
+    .select("*")
+    .eq("is_active", true)
+    .order("start_date", { ascending: true });
+
+  if (error) { console.error("Error fetching schedules:", error); return []; }
+  return data || [];
+}
+
+export async function adminGetSchedules() {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await adminDb
+    .from("course_schedules")
+    .select("*")
+    .order("start_date", { ascending: true });
+
+  if (error) { console.error("Error fetching schedules:", error); return []; }
+  return data || [];
+}
+
+export async function adminAddSchedule(schedule: {
+  course_slug: string;
+  level_name: string;
+  start_date: string;
+  schedule_days: string;
+  schedule_time: string;
+  duration_hours: number;
+}) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await adminDb.from("course_schedules").insert(schedule);
+  if (error) throw new Error(error.message);
+}
+
+export async function adminDeleteSchedule(scheduleId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await adminDb.from("course_schedules").delete().eq("id", scheduleId);
+  if (error) throw new Error(error.message);
+}
+
+export async function adminToggleScheduleActive(scheduleId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data: current } = await adminDb.from("course_schedules").select("is_active").eq("id", scheduleId).single();
+  if (!current) throw new Error("Horario no encontrado");
+
+  const { error } = await adminDb.from("course_schedules").update({ is_active: !current.is_active }).eq("id", scheduleId);
+  if (error) throw new Error(error.message);
+}

@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive } from "@/lib/supabase/comunidad-ai";
+import { Calendar } from "lucide-react";
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -12,6 +13,7 @@ export default function AdminPanel() {
     { id: "members", label: "Miembros", icon: Users },
     { id: "leads", label: "Contactos", icon: Mail },
     { id: "courses", label: "Cursos", icon: GraduationCap },
+    { id: "schedules", label: "Horarios", icon: Calendar },
     { id: "export_csv", label: "Exportar Datos", icon: Download },
     { id: "import", label: "Importar CSV", icon: Upload },
     { id: "plans", label: "Planes", icon: CreditCard },
@@ -62,6 +64,7 @@ export default function AdminPanel() {
               {activeTab === "members" && <AdminMembers />}
               { activeTab === "leads" && <AdminLeads /> }
               { activeTab === "courses" && <AdminCourses /> }
+              { activeTab === "schedules" && <AdminSchedules /> }
               { activeTab === "export_csv" && <AdminExportCsv /> }
               { activeTab === "import" && <AdminImport /> }
               { activeTab === "plans" && <AdminPlans /> }
@@ -142,6 +145,7 @@ function AdminLeads() {
              <thead>
                <tr className="bg-[#F8FAFC] border-b border-gray-200">
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Contacto</th>
+                 <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Tipo</th>
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Detalles</th>
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">Mensaje</th>
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Fecha</th>
@@ -155,6 +159,15 @@ function AdminLeads() {
                      <div className="text-xs text-brand-blue">{lead.email}</div>
                      {lead.whatsapp && <div className="text-xs text-gray-500 mt-0.5 whitespace-nowrap">WA: {lead.whatsapp}</div>}
                    </td>
+                   <td className="px-4 py-4">
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
+                        lead.lead_type === 'enterprise' ? 'bg-indigo-50 text-indigo-600' :
+                        lead.lead_type === 'notify' ? 'bg-amber-50 text-amber-600' :
+                        'bg-blue-50 text-blue-600'
+                      }`}>
+                        {lead.lead_type === 'enterprise' ? '🏢 Empresa' : lead.lead_type === 'notify' ? '🔔 Notificar' : '📩 Contacto'}
+                      </span>
+                    </td>
                    <td className="px-4 py-4">
                      <div className="flex flex-wrap gap-1 max-w-[200px]">
                        {(lead.selected_courses || []).map((c: string, i: number) => (
@@ -1060,6 +1073,166 @@ function AdminPlans() {
               </div>
            </div>
        </div>
+    </div>
+  )
+}
+
+// ─── SCHEDULES ───
+function AdminSchedules() {
+  const [schedules, setSchedules] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAdd, setShowAdd] = useState(false);
+  const [newSchedule, setNewSchedule] = useState({
+    course_slug: '', level_name: 'Básico', start_date: '',
+    schedule_days: 'Lunes y Miércoles', schedule_time: '19:30 a 21:30', duration_hours: 16,
+  });
+
+  useEffect(() => {
+    async function load() {
+      try { const data = await adminGetSchedules(); setSchedules(data); }
+      catch (err) { console.error(err); }
+      finally { setLoading(false); }
+    }
+    load();
+  }, []);
+
+  const handleAdd = async () => {
+    if (!newSchedule.course_slug || !newSchedule.start_date) return;
+    try {
+      await adminAddSchedule(newSchedule);
+      const data = await adminGetSchedules();
+      setSchedules(data);
+      setShowAdd(false);
+      setNewSchedule({ course_slug: '', level_name: 'Básico', start_date: '', schedule_days: 'Lunes y Miércoles', schedule_time: '19:30 a 21:30', duration_hours: 16 });
+    } catch (err) { console.error(err); }
+  };
+
+  const handleDelete = async (id: string) => {
+    try { await adminDeleteSchedule(id); setSchedules(prev => prev.filter(s => s.id !== id)); }
+    catch (err) { console.error(err); }
+  };
+
+  const handleToggle = async (id: string) => {
+    try { await adminToggleScheduleActive(id); setSchedules(prev => prev.map(s => s.id === id ? { ...s, is_active: !s.is_active } : s)); }
+    catch (err) { console.error(err); }
+  };
+
+  const courseOptions = [
+    { slug: 'power-bi', name: 'Power BI' },
+    { slug: 'python', name: 'Python' },
+    { slug: 'sql-server', name: 'SQL Server' },
+    { slug: 'excel', name: 'Excel' },
+    { slug: 'analisis-de-datos', name: 'Análisis de Datos' },
+    { slug: 'machine-learning', name: 'Machine Learning' },
+    { slug: 'ia-productividad', name: 'IA en Productividad' },
+    { slug: 'power-automate', name: 'Power Automate' },
+  ];
+
+  return (
+    <div className="p-6 sm:p-8">
+       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+         <div>
+           <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Horarios de Cursos</h2>
+           <p className="text-sm text-gray-400">Gestiona fechas y horarios de inicio de cada curso</p>
+         </div>
+         <button onClick={() => setShowAdd(!showAdd)}
+           className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors shadow-sm border-none cursor-pointer">
+           <Plus className="w-4 h-4" /> Agregar Horario
+         </button>
+       </div>
+
+       {/* Add form */}
+       <AnimatePresence>
+         {showAdd && (
+           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mb-6">
+             <div className="bg-blue-50/50 rounded-2xl border border-blue-100 p-6 space-y-4">
+               <h3 className="font-bold text-sm text-gray-900">Nuevo Horario</h3>
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 <select value={newSchedule.course_slug} onChange={e => setNewSchedule(p => ({ ...p, course_slug: e.target.value }))}
+                   className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none">
+                   <option value="">Seleccionar curso...</option>
+                   {courseOptions.map(c => (<option key={c.slug} value={c.slug}>{c.name}</option>))}
+                 </select>
+                 <select value={newSchedule.level_name} onChange={e => setNewSchedule(p => ({ ...p, level_name: e.target.value }))}
+                   className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none">
+                   <option value="Básico">Básico</option>
+                   <option value="Intermedio">Intermedio</option>
+                   <option value="Avanzado">Avanzado</option>
+                 </select>
+                 <input type="date" value={newSchedule.start_date} onChange={e => setNewSchedule(p => ({ ...p, start_date: e.target.value }))}
+                   className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                 <select value={newSchedule.schedule_days} onChange={e => setNewSchedule(p => ({ ...p, schedule_days: e.target.value }))}
+                   className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none">
+                   <option value="Lunes y Miércoles">Lunes y Miércoles</option>
+                   <option value="Martes y Jueves">Martes y Jueves</option>
+                   <option value="Sábados">Sábados</option>
+                 </select>
+                 <input type="text" placeholder="Horario (ej: 19:30 a 21:30)" value={newSchedule.schedule_time}
+                   onChange={e => setNewSchedule(p => ({ ...p, schedule_time: e.target.value }))}
+                   className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                 <div className="flex items-center gap-2">
+                   <label className="text-xs font-semibold text-gray-500">Duración (hrs)</label>
+                   <input type="number" min={1} value={newSchedule.duration_hours} onChange={e => setNewSchedule(p => ({ ...p, duration_hours: parseInt(e.target.value) || 16 }))}
+                     className="w-20 px-3 py-2 rounded-xl border border-gray-200 text-sm text-center outline-none" />
+                 </div>
+               </div>
+               <div className="flex justify-end gap-2">
+                 <button onClick={() => setShowAdd(false)} className="px-4 py-2 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors border-none cursor-pointer bg-transparent">Cancelar</button>
+                 <button onClick={handleAdd} disabled={!newSchedule.course_slug || !newSchedule.start_date}
+                   className="px-5 py-2 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors disabled:opacity-40 border-none cursor-pointer">
+                   Guardar Horario
+                 </button>
+               </div>
+             </div>
+           </motion.div>
+         )}
+       </AnimatePresence>
+
+       {loading ? (
+         <div className="py-20 flex flex-col items-center gap-3">
+           <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
+           <span className="text-sm text-gray-400">Cargando horarios...</span>
+         </div>
+       ) : schedules.length === 0 ? (
+         <div className="text-center py-12 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50">
+           <Calendar className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+           <h3 className="text-gray-900 font-bold mb-1">No hay horarios</h3>
+           <p className="text-gray-400 text-sm">Agrega el primer horario de curso.</p>
+         </div>
+       ) : (
+         <div className="space-y-3">
+           {schedules.map(sched => (
+             <motion.div key={sched.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
+               className={`flex items-center gap-4 p-5 rounded-2xl border transition-all ${sched.is_active ? 'bg-white border-gray-200' : 'bg-gray-50 border-gray-100 opacity-60'}`}>
+               <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+                 <Calendar className="w-6 h-6 text-brand-blue" />
+               </div>
+               <div className="flex-1 min-w-0">
+                 <div className="flex items-center gap-2 mb-1">
+                   <span className="font-bold text-gray-900 text-sm capitalize">{sched.course_slug.replace(/-/g, ' ')}</span>
+                   <span className="text-[10px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">{sched.level_name}</span>
+                   {!sched.is_active && <span className="text-[10px] font-bold bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">Inactivo</span>}
+                 </div>
+                 <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-500">
+                   <span>📅 {new Date(sched.start_date + 'T12:00:00').toLocaleDateString('es-CL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                   <span>📆 {sched.schedule_days} · {sched.schedule_time}</span>
+                   <span>⏱ {sched.duration_hours}h</span>
+                 </div>
+               </div>
+               <div className="flex items-center gap-2 shrink-0">
+                 <button onClick={() => handleToggle(sched.id)}
+                   className={`py-1.5 px-3 rounded-xl text-[11px] font-bold transition-colors border-none cursor-pointer ${sched.is_active ? 'bg-gray-50 text-gray-500 hover:bg-gray-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}>
+                   {sched.is_active ? 'Desactivar' : 'Activar'}
+                 </button>
+                 <button onClick={() => handleDelete(sched.id)}
+                   className="p-2 rounded-xl text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors border-none cursor-pointer bg-transparent">
+                   <Trash2 className="w-4 h-4" />
+                 </button>
+               </div>
+             </motion.div>
+           ))}
+         </div>
+       )}
     </div>
   )
 }

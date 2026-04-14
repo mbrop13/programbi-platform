@@ -324,7 +324,7 @@ export const courses: Course[] = [
   },
   {
     slug: "power-bi",
-    title: "Power BI Expert",
+    title: "Power BI",
     shortDescription:
       "Dashboards interactivos para decisiones estratégicas. Domina DAX y Modelado.",
     description:
@@ -520,11 +520,11 @@ export const courses: Course[] = [
   },
   {
     slug: "excel",
-    title: "Excel Experto",
+    title: "Excel",
     shortDescription:
       "Tablas dinámicas, fórmulas avanzadas y Power Query para reportes empresariales.",
     description:
-      "Domina Excel al nivel experto. Desde tablas dinámicas y fórmulas avanzadas hasta Power Query, macros VBA y dashboards profesionales.",
+      "Domina Excel al máximo nivel. Desde tablas dinámicas y fórmulas avanzadas hasta Power Query, macros VBA y dashboards profesionales.",
     category: "fundamental",
     categoryLabel: "Fundamental",
     techStack: ["Excel", "Power Query", "VBA"],

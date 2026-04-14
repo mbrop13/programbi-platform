@@ -67,7 +67,7 @@ export default function PowerBiSyllabus() {
                }`}
             >
               <span>Nivel III: Avanzado</span>
-              <span className={`text-[10px] uppercase tracking-wider mt-0.5 ${activeTab === "nivel3" ? "text-gray-400" : "text-gray-400"}`}>Expert & AI (16h)</span>
+              <span className={`text-[10px] uppercase tracking-wider mt-0.5 ${activeTab === "nivel3" ? "text-gray-400" : "text-gray-400"}`}>Avanzado & AI (16h)</span>
             </button>
           </div>
         </div>
