@@ -32,8 +32,8 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
       if (onSubscribe) {
         onSubscribe(planId);
       } else {
-        // Prod Flow Subscription
-        const res = await fetch("/api/flow/subscription/register", {
+        // Redirigir al checkout de suscripción de Mercado Pago
+        const res = await fetch("/api/mercadopago/subscribe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ planId }),
@@ -287,7 +287,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
 
       <div className="mt-20 flex flex-col sm:flex-row items-center gap-6 opacity-60 pb-4">
         <span className="text-sm font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-          <Shield className="w-4 h-4" /> Pagos Seguros con Flow
+          <Shield className="w-4 h-4" /> Pagos Procesados de Forma Segura
         </span>
         <div className="hidden sm:block h-4 w-px bg-slate-300" />
         <span className="text-sm font-medium text-slate-500">Cancela cuando quieras, sin amarras institucionales.</span>
