@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
 import PagoClient from "./PagoClient";
 
 export const metadata: Metadata = {
@@ -7,7 +9,14 @@ export const metadata: Metadata = {
   description: "Selecciona tus cursos, revisa fechas disponibles y completa tu inscripción en ProgramBI.",
 };
 
-export default function PagoPage() {
+export default async function PagoPage() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/");
+  }
+
   return (
     <Suspense fallback={
       <section className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">

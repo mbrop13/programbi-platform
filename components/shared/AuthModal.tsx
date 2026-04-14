@@ -22,6 +22,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
 
   // Reset state when modal opens/closes or tab changes
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
     setEmail("");
     setPassword("");
     setFullName("");
+    setWhatsapp("");
   }, [isOpen, tab]);
 
   // Update tab when defaultTab changes
@@ -92,6 +94,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
         options: {
           data: {
             full_name: fullName,
+            whatsapp: whatsapp || null,
           },
         },
       });
@@ -316,23 +319,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                   ) : (
                     <motion.form initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="space-y-4" onSubmit={handleRegister}>
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nombre Completo</label>
-                        <div className="relative">
-                          <input
-                            type="text"
-                            placeholder="Tu nombre"
-                            value={fullName}
-                            onChange={(e) => setFullName(e.target.value)}
-                            disabled={loading}
-                            autoComplete="name"
-                            name="name"
-                            className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
-                          />
-                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Correo Electrónico</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Correo Electrónico *</label>
                         <div className="relative">
                           <input
                             type="email"
@@ -347,6 +334,38 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                           />
                           <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                         </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                         <div>
+                           <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nombre (Opcional)</label>
+                           <div className="relative">
+                             <input
+                               type="text"
+                               placeholder="Tu nombre"
+                               value={fullName}
+                               onChange={(e) => setFullName(e.target.value)}
+                               disabled={loading}
+                               autoComplete="name"
+                               name="name"
+                               className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
+                             />
+                             <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                           </div>
+                         </div>
+                         <div>
+                           <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">WhatsApp (Opcional)</label>
+                           <div className="relative">
+                             <input
+                               type="tel"
+                               placeholder="+56 9..."
+                               value={whatsapp}
+                               onChange={(e) => setWhatsapp(e.target.value)}
+                               disabled={loading}
+                               name="whatsapp"
+                               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
+                             />
+                           </div>
+                         </div>
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Contraseña</label>
