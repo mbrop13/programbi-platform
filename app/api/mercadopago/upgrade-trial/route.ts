@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { cancelMPSubscription, createMPSubscription } from "@/lib/mercadopago/client";
-import { communityPlans } from "@/lib/data/plans";
+import { communityPlans } from "@/lib/data/community_plans";
 
 export async function GET(req: NextRequest) {
   try {
