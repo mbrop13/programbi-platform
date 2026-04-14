@@ -186,87 +186,78 @@ export default function Navbar() {
                         onMouseEnter={handleMegaEnter}
                         onMouseLeave={handleMegaLeave}
                       >
-                        <div className="grid grid-cols-[1.4fr_1fr]">
-                          <div className="p-7 relative overflow-hidden bg-slate-900 text-white">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-[#1890FF] rounded-full blur-[100px] opacity-20 -mr-20 -mt-20 pointer-events-none"></div>
-                            <div className="flex items-center justify-between mb-5 relative z-10">
-                              <div className="flex items-center gap-2">
-                                <Sparkles size={16} className="text-[#1890FF]" />
-                                <h3 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                                  Rutas Especializadas
-                                </h3>
+                        <div className="flex bg-white">
+                          <div className="w-[45%] p-8 bg-slate-50/50 border-r border-slate-100 relative">
+                            <div className="absolute top-0 right-0 w-48 h-48 bg-blue-100/50 rounded-full blur-3xl opacity-50 -mt-10 -mr-10 pointer-events-none" />
+                            <div className="relative z-10">
+                              <h3 className="text-xs font-black tracking-widest uppercase text-[#1890FF] mb-5 flex items-center gap-2">
+                                <Sparkles size={14} /> Rutas Completas
+                              </h3>
+                              <div className="space-y-4">
+                                {featured.map((course) => (
+                                  <Link
+                                    key={course.slug}
+                                    href={`/cursos/${course.slug}`}
+                                    onClick={() => setIsMegaOpen(false)}
+                                    className="group/item flex gap-4 p-3 rounded-2xl hover:bg-white hover:shadow-lg hover:shadow-slate-200/40 transition-all no-underline border border-transparent hover:border-slate-100/60 items-center relative overflow-hidden"
+                                  >
+                                    <div className="w-14 h-14 rounded-xl overflow-hidden flex-shrink-0 relative bg-slate-100">
+                                      <Image
+                                        src={course.imageUrl}
+                                        alt={course.title}
+                                        fill
+                                        className="object-cover transition-transform duration-500 group-hover/item:scale-110"
+                                        unoptimized
+                                      />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <h4 className="font-bold text-[14px] text-slate-900 group-hover/item:text-[#1890FF] transition-colors truncate mb-0.5">{course.title}</h4>
+                                      <p className="text-[11px] text-slate-500 line-clamp-1">{course.shortDescription}</p>
+                                    </div>
+                                    <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center flex-shrink-0 group-hover/item:bg-[#1890FF] group-hover/item:border-[#1890FF] group-hover/item:text-white transition-all text-slate-400">
+                                       <ArrowRight size={14} className="group-hover/item:translate-x-0.5 transition-transform" />
+                                    </div>
+                                  </Link>
+                                ))}
                               </div>
                             </div>
-                            <div className="space-y-3 relative z-10">
-                              {featured.map((course) => (
-                                <Link
-                                  key={course.slug}
-                                  href={`/cursos/${course.slug}`}
-                                  onClick={() => setIsMegaOpen(false)}
-                                  className="group/item flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-[#1890FF]/30 transition-all no-underline relative overflow-hidden"
-                                >
-                                  <div className="absolute inset-0 bg-gradient-to-r from-[#1890FF]/0 via-[#1890FF]/0 to-[#1890FF]/5 opacity-0 group-hover/item:opacity-100 transition-opacity" />
-                                  <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 relative shadow-lg shadow-black/20">
-                                    <Image
-                                      src={course.imageUrl}
-                                      alt={course.title}
-                                      fill
-                                      className="object-cover transition-transform duration-700 group-hover/item:scale-110"
-                                      unoptimized
-                                    />
-                                    <div className="absolute inset-0 border border-white/10 rounded-xl" />
-                                  </div>
-                                  <div className="flex-1 min-w-0">
-                                    <h4 className="font-bold text-[15px] text-white transition-colors truncate mb-1">{course.title}</h4>
-                                    <p className="text-[12px] text-slate-400 line-clamp-1 mb-2">{course.shortDescription}</p>
-                                    <div className="flex gap-1.5 flex-wrap">
-                                      {course.techStack.slice(0, 3).map((t) => (
-                                        <span key={t} className="px-1.5 py-0.5 bg-slate-800 rounded font-mono text-[9px] text-slate-300 border border-slate-700">{t}</span>
-                                      ))}
-                                    </div>
-                                  </div>
-                                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0 group-hover/item:bg-[#1890FF] group-hover/item:text-white transition-all text-slate-400">
-                                     <ArrowRight size={14} className="group-hover/item:translate-x-0.5 transition-transform" />
-                                  </div>
-                                </Link>
-                              ))}
-                            </div>
                           </div>
-                          <div className="p-7 bg-[#F8FAFC]">
-                            <p className="text-[11px] font-extrabold text-slate-400 uppercase tracking-[0.15em] mb-4 flex items-center gap-2">
-                                <BookOpen size={12} /> Catálogo Completo
-                            </p>
-                            <div className="grid grid-cols-1 gap-1">
+                          
+                          <div className="w-[55%] p-8">
+                            <div className="flex justify-between items-center mb-5">
+                              <h3 className="text-xs font-black tracking-widest uppercase text-slate-400 flex items-center gap-2">
+                                <BookOpen size={14} /> Catálogo de Cursos
+                              </h3>
+                              <Link
+                                href="/cursos"
+                                onClick={() => setIsMegaOpen(false)}
+                                className="text-xs font-bold text-[#1890FF] hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors no-underline flex items-center gap-1"
+                              >
+                                Explorar todo <ArrowRight size={12} />
+                              </Link>
+                            </div>
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-3">
                               {otherCourses.map((course) => (
                                 <Link
                                   key={course.slug}
                                   href={`/cursos/${course.slug}`}
                                   onClick={() => setIsMegaOpen(false)}
-                                  className="flex items-start gap-3 p-3 rounded-xl hover:bg-white hover:shadow-md hover:shadow-slate-200/50 transition-all no-underline group/sm border border-transparent hover:border-slate-100"
+                                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 transition-all no-underline group/sm border border-transparent hover:border-slate-100"
                                 >
                                   <div
-                                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm"
+                                    className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
                                     style={{ backgroundColor: `${course.accentColor}12`, color: course.accentColor }}
                                   >
-                                    <CourseIcon name={course.icon} className="w-5 h-5" />
+                                    <CourseIcon name={course.icon} className="w-[18px] h-[18px]" />
                                   </div>
-                                  <div className="flex-1 min-w-0 pt-0.5">
-                                    <span className="text-[14px] text-slate-700 group-hover/sm:text-[#1890FF] font-bold transition-colors block truncate mb-0.5">{course.title}</span>
-                                    <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
-                                      <Clock size={10} className="text-slate-300"/> {course.durationHours} hrs &nbsp;•&nbsp; {course.level}
+                                  <div className="flex-1 min-w-0">
+                                    <span className="text-[13px] text-slate-800 group-hover/sm:text-[#1890FF] font-bold transition-colors block truncate leading-tight">{course.title}</span>
+                                    <span className="text-[10px] font-medium text-slate-400 mt-0.5 flex items-center gap-1 opacity-80">
+                                      {course.level}
                                     </span>
                                   </div>
                                 </Link>
                               ))}
-                            </div>
-                            <div className="mt-5 pt-5 border-t border-slate-200">
-                              <Link
-                                href="/cursos"
-                                onClick={() => setIsMegaOpen(false)}
-                                className="flex items-center justify-center gap-2 py-3 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-[13px] hover:border-[#1890FF] hover:text-[#1890FF] hover:shadow-md transition-all no-underline group/btn"
-                              >
-                                Ver todos los cursos <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
-                              </Link>
                             </div>
                           </div>
                         </div>
