@@ -153,15 +153,76 @@ export async function pauseMPSubscription(subscriptionId: string): Promise<MPSub
   return updateMPSubscription(subscriptionId, { status: "paused" });
 }
 
+// ─── One-Time Payments (Preferences Checkout Pro) ───
+
+export interface MPPreference {
+  id: string;
+  init_point: string;
+}
+
+export async function createMPPreference(data: {
+  title: string;
+  price: number;
+  payerEmail: string;
+  externalReference: string;
+  planId: string;
+  backUrl: string;
+}): Promise<MPPreference> {
+  return mpFetch<MPPreference>("/checkout/preferences", {
+    method: "POST",
+    body: JSON.stringify({
+      items: [
+        {
+          title: data.title,
+          quantity: 1,
+          unit_price: data.price,
+          currency_id: "CLP",
+        }
+      ],
+      payer: {
+        email: data.payerEmail,
+      },
+      external_reference: data.externalReference,
+      metadata: {
+        plan_id: data.planId,
+      },
+      back_urls: {
+        success: data.backUrl,
+        failure: data.backUrl,
+        pending: data.backUrl,
+      },
+      auto_return: "approved",
+    }),
+  });
+}
+
+/**
+ * Get Payment Details (for webhook)
+ */
+export async function getMPPayment(paymentId: string | number): Promise<any> {
+  return mpFetch<any>(`/v1/payments/${paymentId}`);
+}
+
 // ─── Plan ID Mapping ───
 
 /**
- * Maps our internal plan IDs (e.g. "max_mensual") to Mercado Pago preapproval_plan IDs.
- * Loaded from .env.local
+ * Maps our internal plan IDs to Mercado Pago preapproval_plan IDs.
+ * Hardcoded to prevent Next.js .env restart issues.
  */
-export const MP_PLAN_MAP: Record<string, string> = process.env.MP_PLAN_IDS
-  ? JSON.parse(process.env.MP_PLAN_IDS)
-  : {};
+export const MP_PLAN_MAP: Record<string, string> = {
+  "pro_mensual": "b5065c784a6a48dca35209606af765f9",
+  "pro_semestral": "950a4ede583a48ac9905214533db3319",
+  "pro_anual": "016de16c81dc4299be7e7d1ee5428000",
+  "max_mensual": "682dae66e5734571864f906d7c04d495",
+  "max_semestral": "9410305196d549ed95353acbd087e879",
+  "max_anual": "a51caecceceb4af29278f6c665d592a4",
+  "ultra_mensual": "5c2ef0a0b35f45f4b78c4f4366433c81",
+  "ultra_semestral": "a3caff5fefc04f6a9679a46de48bf2b5",
+  "ultra_anual": "13d9850258a5468f9b7cd4b5101fc9a5",
+  "ultraplus_mensual": "d2c1d575e2f54335a2ff6fc61bc2a267",
+  "ultraplus_semestral": "ab5806b2279b4ab4abe4aae640c19f30",
+  "ultraplus_anual": "23de33023ebe4cbb9d474922fe4a5351"
+};
 
 export function setMPPlanMap(map: Record<string, string>) {
   Object.assign(MP_PLAN_MAP, map);

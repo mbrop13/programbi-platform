@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { createMPSubscription, MP_PLAN_MAP } from "@/lib/mercadopago/client";
+import { createMPSubscription, createMPPreference, MP_PLAN_MAP } from "@/lib/mercadopago/client";
+import { communityPlans } from "@/lib/data/community_plans";
 
 export async function POST(req: NextRequest) {
   try {
@@ -8,11 +9,6 @@ export async function POST(req: NextRequest) {
 
     if (!planId) {
       return NextResponse.json({ error: "No planId provided" }, { status: 400 });
-    }
-
-    const mpPlanId = MP_PLAN_MAP[planId];
-    if (!mpPlanId) {
-      return NextResponse.json({ error: "Invalid planId or not found in mapping" }, { status: 400 });
     }
 
     const supabase = await createClient();
@@ -26,8 +22,39 @@ export async function POST(req: NextRequest) {
     const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const backUrl = `${APP_URL}/api/mercadopago/return?planId=${planId}`;
 
-    // Create a subscription in Mercado Pago
-    // Mercado Pago will return an `init_point` which is the checkout URL
+    // Si es anual o semestral, cobrar la cantidad completa por Checkout Pro (Pago Único)
+    if (!planId.endsWith("_mensual")) {
+      const basePlanId = planId.split("_")[0];
+      const planInfo = communityPlans.find(p => p.id === basePlanId);
+      if (!planInfo) {
+        return NextResponse.json({ error: "Plan base not found" }, { status: 400 });
+      }
+
+      let price = planInfo.price;
+      if (planId.endsWith("_semestral")) {
+        price = planInfo.priceSemiannual || (planInfo.price * 6 * 0.9);
+      } else if (planId.endsWith("_anual")) {
+        price = planInfo.priceAnnual || (planInfo.price * 12 * 0.7);
+      }
+
+      const preference = await createMPPreference({
+        title: `ProgramBI Community - ${planId.replace("_", " ").toUpperCase()}`,
+        price: Math.round(price),
+        payerEmail: userEmail,
+        externalReference: user.id,
+        planId: planId,
+        backUrl: backUrl,
+      });
+
+      return NextResponse.json({ url: preference.init_point });
+    }
+
+    // De otra forma es mensual, procesar como suscripción recurrente
+    const mpPlanId = MP_PLAN_MAP[planId];
+    if (!mpPlanId) {
+      return NextResponse.json({ error: "Invalid planId or not found in mapping" }, { status: 400 });
+    }
+
     const subscription = await createMPSubscription({
       preapprovalPlanId: mpPlanId,
       payerEmail: userEmail,

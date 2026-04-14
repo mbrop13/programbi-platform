@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
-import { getMPSubscription } from "@/lib/mercadopago/client";
+import { getMPSubscription, getMPPayment } from "@/lib/mercadopago/client";
 
 export async function POST(req: NextRequest) {
   try {
@@ -8,7 +8,9 @@ export async function POST(req: NextRequest) {
     console.log("🔔 MP Webhook received:", JSON.stringify(body));
 
     // Webhooks de Preapproval envían action="created" o "updated"
-    // y type="subscription_preapproval"
+    // Webhooks de Pagos Únicos (Preferences) envían type="payment" y action="payment.created" o similar.
+    
+    // 1. Manejo de Suscripciones (Preapproval)
     if (body.action === "created" || body.action === "updated") {
       const dataInfo = body.data; // { id: "string" }
       
@@ -17,20 +19,15 @@ export async function POST(req: NextRequest) {
         
         // Consultar la suscripción completa
         const subscription = await getMPSubscription(subscriptionId);
-        console.log("✅ MP Subscription Details:", subscription.id, "Status:", subscription.status);
 
         if (subscription.status === "authorized") {
-          // Obtener el ID de usuario desde external_reference
+          // Si MP_PLAN_MAP no está definido, esto no lanzará un error y asumirá 'pro_mensual'.
+          // Este block fallaría si fuera un preference, pero preferences caen en payment.
           const userId = subscription.external_reference;
-          
-          if (!userId) {
-             console.error("❌ MP Webhook: No external_reference found in subscription data");
-             return NextResponse.json({ success: true });
-          }
+          if (!userId) return NextResponse.json({ success: true });
 
-          // Identificar el plan basado en the preapproval_plan_id
           const { MP_PLAN_MAP } = await import("@/lib/mercadopago/client");
-          let internalPlanId = "pro_mensual"; // Default fallback
+          let internalPlanId = "pro_mensual"; 
           
           for (const [key, value] of Object.entries(MP_PLAN_MAP)) {
              if (value === subscription.preapproval_plan_id) {
@@ -41,8 +38,6 @@ export async function POST(req: NextRequest) {
           
           const adminDb = createAdminClient();
           const basePlanId = internalPlanId.split('_')[0];
-
-          // Determinar fecha de expiración
           const expiresAt = new Date(subscription.next_payment_date);
 
           await adminDb.from("profiles").update({
@@ -51,8 +46,7 @@ export async function POST(req: NextRequest) {
             subscription_start_at: subscription.date_created,
             subscription_expires_at: expiresAt.toISOString(),
           }).eq("id", userId);
-          
-          console.log(`✅ MP Webhook: Updated user ${userId} to plan ${basePlanId}`);
+          console.log(`✅ MP Webhook: Updated user ${userId} to plan ${basePlanId} (Subscription)`);
         } else if (subscription.status === "cancelled" || subscription.status === "paused") {
           const userId = subscription.external_reference;
           if (userId) {
@@ -65,6 +59,39 @@ export async function POST(req: NextRequest) {
             console.log(`❌ MP Webhook: Cancelled subscription for user ${userId}`);
           }
         }
+      }
+    }
+
+    // 2. Manejo de Pagos Únicos (Preferences API)
+    if (body.type === "payment" || body.action?.includes("payment")) {
+      const paymentId = body.data?.id;
+      if (paymentId) {
+         const payment = await getMPPayment(paymentId);
+         
+         if (payment.status === "approved") {
+           const planId = payment.metadata?.plan_id; // Added this in Preference
+           const userId = payment.external_reference;
+
+           if (planId && userId) {
+             const basePlanId = planId.split("_")[0];
+             let months = 1;
+             if (planId.endsWith("_semestral")) months = 6;
+             if (planId.endsWith("_anual")) months = 12;
+
+             const expiresAt = new Date();
+             expiresAt.setMonth(expiresAt.getMonth() + months);
+
+             const adminDb = createAdminClient();
+             await adminDb.from("profiles").update({
+               subscription_plan: basePlanId,
+               mp_subscription_id: payment.id.toString(), // Using payment ID as fallback token
+               subscription_start_at: payment.date_created,
+               subscription_expires_at: expiresAt.toISOString(),
+             }).eq("id", userId);
+
+             console.log(`✅ MP Webhook: Updated user ${userId} to plan ${basePlanId} (One-Time Payment, ${months} months)`);
+           }
+         }
       }
     }
 
