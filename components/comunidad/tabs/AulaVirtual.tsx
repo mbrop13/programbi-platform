@@ -148,6 +148,9 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
   const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
   const progress = totalLessons > 0 ? Math.round((completedLessons.size / totalLessons) * 100) : 0;
   const videoId = selectedLesson ? extractYouTubeId(selectedLesson.video_url) : null;
+  
+  const selectedLessonGlobalIndex = selectedLesson ? modules.flatMap(m => m.lessons).findIndex(l => l.id === selectedLesson.id) : -1;
+  const isSelectedLessonLocked = accessType === "trial" && selectedLessonGlobalIndex >= 2;
 
   if (loading) {
     return (
@@ -218,22 +221,24 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                     <h4 className="text-xs font-bold text-gray-700 mt-0.5">{mod.name}</h4>
                   </div>
                   <div className="divide-y divide-gray-50/80">
-                    {mod.lessons.map((lesson) => {
+                    {mod.lessons.map((lesson, lessonIndexInMod) => {
                       const isSelected = selectedLesson?.id === lesson.id;
                       const isCompleted = completedLessons.has(lesson.id);
-                      const isLocked = accessType === "trial" && !lesson.is_free_preview;
+                      
+                      // Para calcular el índice global, podríamos sumar las lecciones anteriores.
+                      // Pero el requisito era "las dos primeras clases de cada curso".
+                      // O sea clase 1 y clase 2 globales.
+                      const globalIndex = modules.flatMap(m => m.lessons).findIndex(l => l.id === lesson.id);
+                      const isLocked = accessType === "trial" && globalIndex >= 2;
                       const hasSuperClase = !!lesson.superclass_language;
 
                       return (
                         <button
                           key={lesson.id}
-                          onClick={() => !isLocked && setSelectedLesson(lesson)}
-                          disabled={isLocked}
+                          onClick={() => setSelectedLesson(lesson)}
                           className={`w-full text-left px-5 py-3 flex items-start gap-3 transition-all group ${
                             isSelected
                               ? "bg-blue-50/70 border-l-[3px] border-brand-blue"
-                              : isLocked
-                              ? "opacity-40 cursor-not-allowed"
                               : "hover:bg-gray-50 border-l-[3px] border-transparent"
                           }`}
                         >
@@ -437,7 +442,22 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             <div className="flex flex-col h-full">
               {/* Video Player */}
               <div className="relative w-full bg-black" style={{ paddingBottom: "50%" }}>
-                {videoId ? (
+                {isSelectedLessonLocked ? (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 border-2 border-brand-blue/30 overflow-hidden">
+                    <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
+                    <Lock className="w-16 h-16 text-white mb-4 relative z-10" />
+                    <h2 className="text-2xl font-black text-white relative z-10 mb-2">Clase Bloqueada (Modo Prueba)</h2>
+                    <p className="text-gray-300 text-sm max-w-md text-center relative z-10 mb-6 font-medium">
+                      Estás disfrutando de tus 7 días de prueba. Para desbloquear el resto de las clases y todas las herramientas Premium, puedes saltarte el periodo de prueba y acceder al 100% de la plataforma ahora.
+                    </p>
+                    <button
+                      onClick={() => window.location.href = `/api/mercadopago/upgrade-trial?returnTo=/cursos/`} // We will create this
+                      className="relative z-10 px-6 py-3 bg-gradient-to-r from-brand-blue to-blue-600 hover:from-blue-500 hover:to-brand-blue text-white font-bold rounded-xl shadow-xl shadow-blue-500/20 flex items-center gap-2 transform transition-all hover:scale-105"
+                    >
+                      <Sparkles className="w-4 h-4" /> Desbloquear Curso Completo
+                    </button>
+                  </div>
+                ) : videoId ? (
                   <iframe
                     className="absolute inset-0 w-full h-full"
                     src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}

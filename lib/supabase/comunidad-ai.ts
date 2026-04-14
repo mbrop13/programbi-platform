@@ -497,6 +497,9 @@ export async function getCourseLessons(courseId: string) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { lessons: [], access: null };
 
+  const { data: profile } = await supabase.from("profiles").select("is_on_trial, subscription_plan").eq("id", user.id).single();
+  const isOnTrial = profile?.is_on_trial === true;
+
   // Check enrollment - need to get slug from courseId first
   const { data: courseData } = await supabase.from("courses").select("slug").eq("id", courseId).single();
   const { data: enrollment } = await supabase
@@ -514,9 +517,14 @@ export async function getCourseLessons(courseId: string) {
     .order("module_order", { ascending: true })
     .order("lesson_order", { ascending: true });
 
+  let finalAccess = enrollment?.access_type || null;
+  if (!finalAccess && profile?.subscription_plan) finalAccess = "full"; // Subscriptions grant full access
+  if (isOnTrial) finalAccess = "trial";
+
   return {
     lessons: lessons || [],
-    access: enrollment?.access_type || null,
+    access: finalAccess,
+    isOnTrial,
   };
 }
 

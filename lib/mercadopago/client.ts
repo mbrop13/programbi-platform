@@ -117,6 +117,10 @@ export async function createMPSubscription(data: {
         frequency_type: "months",
         transaction_amount: data.transactionAmount,
         currency_id: "CLP",
+        free_trial: {
+          frequency: 7,
+          frequency_type: "days"
+        }
       },
       payer_email: data.payerEmail,
       external_reference: data.externalReference,

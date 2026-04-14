@@ -4,13 +4,13 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence, useMotionValueEvent, useScroll } from "framer-motion";
-import { Menu, X, ChevronDown, LogIn, UserPlus, ArrowRight, Clock, Users, Sparkles, BookOpen, LogOut, LayoutDashboard, UserCircle, Settings } from "lucide-react";
+import { Menu, X, ChevronDown, LogIn, UserPlus, ArrowRight, Clock, Users, Sparkles, BookOpen, LogOut, LayoutDashboard, UserCircle, Settings, LifeBuoy } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import React from "react";
 import { courses } from "@/lib/data/courses";
 import { createClient } from "@/lib/supabase/client";
-
 import AuthModal from "./AuthModal";
+import SupportModal from "./SupportModal";
 
 const LOGO_URL = "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974";
 
@@ -37,6 +37,7 @@ export default function Navbar() {
   const [isMegaOpen, setIsMegaOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [authModal, setAuthModal] = useState<{ isOpen: boolean, tab: "login" | "register" }>({ isOpen: false, tab: "login" });
+  const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   
   // Auth state
   const [user, setUser] = useState<any>(null);
@@ -129,6 +130,7 @@ export default function Navbar() {
   return (
     <>
       <AuthModal isOpen={authModal.isOpen} onClose={() => setAuthModal(prev => ({ ...prev, isOpen: false }))} defaultTab={authModal.tab} />
+      <SupportModal isOpen={isSupportModalOpen} onClose={() => setIsSupportModalOpen(false)} userEmail={user?.email || ""} />
       
       <motion.nav
         animate={{ y: isHidden ? "-100%" : "0%" }}
@@ -318,6 +320,12 @@ export default function Navbar() {
                       <Link href="/comunidad/perfil" className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-slate-600 hover:bg-slate-50 hover:text-[#1890FF] no-underline transition-colors">
                         <Settings size={16} /> Configuración
                       </Link>
+                      <button 
+                        onClick={() => { setIsUserMenuOpen(false); setIsSupportModalOpen(true); }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-[14px] text-slate-600 hover:bg-slate-50 hover:text-[#1890FF] transition-all border-none cursor-pointer text-left"
+                      >
+                        <LifeBuoy size={16} /> Soporte
+                      </button>
                       
                       <div className="mt-1 pt-1 border-t border-gray-50 px-2">
                         <button 

@@ -7,10 +7,45 @@ import { Calendar } from "lucide-react";
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState("overview");
+  const [unreadSupport, setUnreadSupport] = useState(false);
+  const [unreadMembers, setUnreadMembers] = useState(false);
+
+  useEffect(() => {
+    async function checkUnreads() {
+      try {
+        const { createClient } = await import("@/lib/supabase/client");
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: views } = await supabase.from("admin_views").select("*").eq("admin_id", user.id).single();
+        const supportLast = views?.support_last_viewed_at || '1970-01-01T00:00:00.000Z';
+        const membersLast = views?.members_last_viewed_at || '1970-01-01T00:00:00.000Z';
+
+        // Check if there are tickets newer than supportLast
+        const { count: supportCount } = await supabase.from("support_tickets").select("*", { count: 'exact', head: true }).gt("created_at", supportLast);
+        if (supportCount && supportCount > 0) setUnreadSupport(true);
+        else setUnreadSupport(false);
+
+        // Check if there are profiles newer than membersLast
+        const { count: membersCount } = await supabase.from("profiles").select("*", { count: 'exact', head: true }).gt("created_at", membersLast);
+        if (membersCount && membersCount > 0) setUnreadMembers(true);
+        else setUnreadMembers(false);
+
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    checkUnreads();
+    window.addEventListener("adminViewsUpdated", checkUnreads);
+    return () => window.removeEventListener("adminViewsUpdated", checkUnreads);
+  }, []);
 
   const sidebarItems = [
     { id: "overview", label: "Estadísticas", icon: BarChart3 },
-    { id: "members", label: "Miembros", icon: Users },
+    { id: "support", label: "Soporte", icon: MessageSquare, hasUnread: unreadSupport },
+    { id: "members", label: "Miembros", icon: Users, hasUnread: unreadMembers },
     { id: "leads", label: "Contactos", icon: Mail },
     { id: "courses", label: "Cursos", icon: GraduationCap },
     { id: "schedules", label: "Horarios", icon: Calendar },
@@ -41,13 +76,16 @@ export default function AdminPanel() {
                <button 
                  key={item.id}
                  onClick={() => setActiveTab(item.id)}
-                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all
+                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all relative
                    ${activeTab === item.id 
                      ? "bg-brand-blue text-white shadow-md shadow-brand-blue/20" 
                      : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100 hover:border-gray-200"}
                  `}
                >
                   <Icon className="w-4 h-4" /> {item.label}
+                  {item.hasUnread && (
+                    <span className="absolute top-3 right-3 w-2 h-2 rounded-full bg-red-500 shadow-sm animate-pulse" />
+                  )}
                </button>
              )
            })}
@@ -69,8 +107,119 @@ export default function AdminPanel() {
               { activeTab === "import" && <AdminImport /> }
               { activeTab === "plans" && <AdminPlans /> }
               { activeTab === "settings" && <AdminSettings /> }
+              { activeTab === "support" && <AdminSupport /> }
             </motion.div>
         </div>
+    </div>
+  );
+}
+
+// ─── SOPORTE ───
+function AdminSupport() {
+  const [tickets, setTickets] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // We fetch tickets using a local supabase client, since admin checks its own view
+  useEffect(() => {
+    async function load() {
+      try {
+        const { createClient } = await import("@/lib/supabase/client");
+        const supabase = createClient();
+        
+        // Mark as viewed
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+           await supabase.from("admin_views").upsert({
+             admin_id: user.id,
+             support_last_viewed_at: new Date().toISOString()
+           });
+           
+           // Evitar recargar la página pero decirle a la UI que ya se vio (el badge)
+           window.dispatchEvent(new Event("adminViewsUpdated"));
+        }
+
+        const { data } = await supabase
+          .from("support_tickets")
+          .select("*, profile:profiles(full_name, email)")
+          .order("created_at", { ascending: false });
+        
+        setTickets(data || []);
+      } catch (err) { console.error(err); }
+      finally { setLoading(false); }
+    }
+    load();
+  }, []);
+
+  const markAsResolved = async (id: string, currentStatus: string) => {
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+      const newStatus = currentStatus === "resolved" ? "pending" : "resolved";
+      
+      await supabase.from("support_tickets").update({
+        status: newStatus,
+        resolved_at: newStatus === "resolved" ? new Date().toISOString() : null
+      }).eq("id", id);
+      
+      setTickets(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
+    } catch (err) { console.error(err); }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-6 sm:p-8 flex flex-col items-center justify-center py-20">
+        <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
+        <span className="text-sm text-gray-400 mt-3">Cargando tickets...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 sm:p-8">
+       <div className="flex items-center justify-between mb-8">
+         <div>
+           <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Soporte</h2>
+           <p className="text-sm text-gray-400">Tickets de ayuda de la comunidad</p>
+         </div>
+       </div>
+
+       {tickets.length === 0 ? (
+         <div className="text-center py-12 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50">
+           <MessageSquare className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+           <h3 className="text-gray-900 font-bold mb-1">Todo en orden</h3>
+           <p className="text-gray-400 text-sm">No hay tickets de soporte creados.</p>
+         </div>
+       ) : (
+         <div className="space-y-4">
+           {tickets.map(ticket => (
+             <div key={ticket.id} className={`p-5 rounded-2xl border ${ticket.status === 'resolved' ? 'bg-gray-50 border-gray-100' : 'bg-white border-blue-100 shadow-sm'}`}>
+               <div className="flex items-start gap-4">
+                 <div className="flex-1">
+                   <div className="flex items-center gap-3 mb-1">
+                     <span className={`px-2 py-0.5 rounded text-[10px] uppercase font-bold tracking-wider ${ticket.status === 'resolved' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-600'}`}>
+                       {ticket.status === 'resolved' ? 'Resuelto' : 'Pendiente'}
+                     </span>
+                     <h4 className="font-bold text-gray-900 text-sm">{ticket.subject}</h4>
+                   </div>
+                   <p className="text-[11px] text-gray-400 font-medium mb-3">
+                     De: {ticket.profile?.full_name || 'Desconocido'} ({ticket.profile?.email || 'Sin email'}) • {new Date(ticket.created_at).toLocaleString('es-CL')}
+                   </p>
+                   <div className="text-sm text-gray-700 bg-gray-50 rounded-xl p-4 border border-gray-100 whitespace-pre-wrap">
+                     {ticket.message}
+                   </div>
+                 </div>
+                 <button
+                   onClick={() => markAsResolved(ticket.id, ticket.status)}
+                   className={`p-2 rounded-xl transition-colors shrink-0 ${ticket.status === 'resolved' ? 'hover:bg-gray-200 text-gray-400' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}
+                   title={ticket.status === 'resolved' ? 'Marcar Pendiente' : 'Marcar Resuelto'}
+                 >
+                   <CheckCircle className="w-5 h-5" />
+                 </button>
+               </div>
+             </div>
+           ))}
+         </div>
+       )}
     </div>
   );
 }
@@ -320,6 +469,18 @@ function AdminMembers() {
         const [userData, courseData] = await Promise.all([adminGetAllUsers(), adminGetCourses()]);
         setUsers(userData);
         setCourses(courseData);
+        
+        // Mark as viewed using a local client
+        const { createClient } = await import("@/lib/supabase/client");
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+           await supabase.from("admin_views").upsert({
+             admin_id: user.id,
+             members_last_viewed_at: new Date().toISOString()
+           });
+           window.dispatchEvent(new Event("adminViewsUpdated"));
+        }
       } catch (err) { console.error(err); }
       finally { setLoading(false); }
     }

@@ -40,13 +40,23 @@ export async function POST(req: NextRequest) {
           const basePlanId = internalPlanId.split('_')[0];
           const expiresAt = new Date(subscription.next_payment_date);
 
-          await adminDb.from("profiles").update({
+          const isNew = body.action === "created";
+          const updateData: any = {
             subscription_plan: basePlanId,
             mp_subscription_id: subscription.id,
             subscription_start_at: subscription.date_created,
             subscription_expires_at: expiresAt.toISOString(),
-          }).eq("id", userId);
-          console.log(`✅ MP Webhook: Updated user ${userId} to plan ${basePlanId} (Subscription)`);
+          };
+
+          if (isNew && internalPlanId.endsWith("_mensual")) {
+            const trialExp = new Date();
+            trialExp.setDate(trialExp.getDate() + 7);
+            updateData.is_on_trial = true;
+            updateData.trial_expires_at = trialExp.toISOString();
+          }
+
+          await adminDb.from("profiles").update(updateData).eq("id", userId);
+          console.log(`✅ MP Webhook: Updated user ${userId} to plan ${basePlanId} (Subscription, trial: ${updateData.is_on_trial})`);
         } else if (subscription.status === "cancelled" || subscription.status === "paused") {
           const userId = subscription.external_reference;
           if (userId) {
@@ -55,6 +65,8 @@ export async function POST(req: NextRequest) {
               subscription_plan: null,
               mp_subscription_id: null,
               subscription_expires_at: null,
+              is_on_trial: false,
+              trial_expires_at: null,
             }).eq("id", userId);
             console.log(`❌ MP Webhook: Cancelled subscription for user ${userId}`);
           }
@@ -62,14 +74,14 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 2. Manejo de Pagos Únicos (Preferences API)
+    // 2. Manejo de Pagos Únicos (Preferences API o cobro de suscripción recurrente tras trial)
     if (body.type === "payment" || body.action?.includes("payment")) {
       const paymentId = body.data?.id;
       if (paymentId) {
          const payment = await getMPPayment(paymentId);
          
          if (payment.status === "approved") {
-           const planId = payment.metadata?.plan_id; // Added this in Preference
+           const planId = payment.metadata?.plan_id; // Solo existe en Preferences (Pago Único)
            const userId = payment.external_reference;
 
            if (planId && userId) {
@@ -87,9 +99,17 @@ export async function POST(req: NextRequest) {
                mp_subscription_id: payment.id.toString(), // Using payment ID as fallback token
                subscription_start_at: payment.date_created,
                subscription_expires_at: expiresAt.toISOString(),
+               is_on_trial: false,
              }).eq("id", userId);
 
              console.log(`✅ MP Webhook: Updated user ${userId} to plan ${basePlanId} (One-Time Payment, ${months} months)`);
+           } else if (userId) {
+             // Es un pago de una suscripción recurrente (probablemente terminó el trial y se le cobró)
+             const adminDb = createAdminClient();
+             await adminDb.from("profiles").update({
+               is_on_trial: false,
+             }).eq("id", userId);
+             console.log(`✅ MP Webhook: Cleared trial status for user ${userId} after recurring payment`);
            }
          }
       }
