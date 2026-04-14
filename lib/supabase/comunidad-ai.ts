@@ -678,3 +678,102 @@ export async function adminToggleScheduleActive(scheduleId: string) {
   const { error } = await adminDb.from("course_schedules").update({ is_active: !current.is_active }).eq("id", scheduleId);
   if (error) throw new Error(error.message);
 }
+
+// ─── PROMO POPUPS ───
+
+export async function getActivePopups() {
+  const adminDb = createAdminClient();
+  const now = new Date().toISOString();
+
+  const { data, error } = await adminDb
+    .from("promo_popups")
+    .select("*")
+    .eq("is_active", true)
+    .or(`starts_at.is.null,starts_at.lte.${now}`)
+    .or(`ends_at.is.null,ends_at.gte.${now}`)
+    .order("created_at", { ascending: false });
+
+  if (error) { console.error("Error fetching popups:", error); return []; }
+  return data || [];
+}
+
+export async function adminGetPopups() {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await adminDb
+    .from("promo_popups")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) { console.error("Error:", error); return []; }
+  return data || [];
+}
+
+export async function adminCreatePopup(popup: {
+  title: string;
+  description?: string;
+  cta_text?: string;
+  cta_url?: string;
+  badge_text?: string | null;
+  popup_type?: string;
+  accent_color?: string;
+  image_url?: string | null;
+  starts_at?: string | null;
+  ends_at?: string | null;
+  show_to?: string;
+  display_delay_seconds?: number;
+  dismissible?: boolean;
+  show_once_per_session?: boolean;
+}) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await adminDb
+    .from("promo_popups")
+    .insert(popup)
+    .select("id")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function adminUpdatePopup(popupId: string, updates: Record<string, any>) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await adminDb
+    .from("promo_popups")
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq("id", popupId);
+
+  if (error) throw new Error(error.message);
+}
+
+export async function adminTogglePopup(popupId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data: current } = await adminDb.from("promo_popups").select("is_active").eq("id", popupId).single();
+  if (!current) throw new Error("Popup no encontrado");
+
+  const { error } = await adminDb.from("promo_popups").update({
+    is_active: !current.is_active,
+    updated_at: new Date().toISOString()
+  }).eq("id", popupId);
+  if (error) throw new Error(error.message);
+}
+
+export async function adminDeletePopup(popupId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await adminDb.from("promo_popups").delete().eq("id", popupId);
+  if (error) throw new Error(error.message);
+}

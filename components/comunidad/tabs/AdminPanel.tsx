@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video } from "lucide-react";
+import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminTogglePopup, adminDeletePopup } from "@/lib/supabase/comunidad-ai";
 import { Calendar } from "lucide-react";
 
 export default function AdminPanel() {
@@ -52,6 +52,7 @@ export default function AdminPanel() {
     { id: "export_csv", label: "Exportar Datos", icon: Download },
     { id: "import", label: "Importar CSV", icon: Upload },
     { id: "plans", label: "Planes", icon: CreditCard },
+    { id: "popups", label: "Pop-ups", icon: Megaphone },
     { id: "settings", label: "Configuración", icon: Settings },
   ];
 
@@ -108,6 +109,7 @@ export default function AdminPanel() {
               { activeTab === "plans" && <AdminPlans /> }
               { activeTab === "settings" && <AdminSettings /> }
               { activeTab === "support" && <AdminSupport /> }
+              { activeTab === "popups" && <AdminPopups /> }
             </motion.div>
         </div>
     </div>
@@ -1426,4 +1428,397 @@ function AdminSettings() {
        </div>
     </div>
   )
+}
+
+// ─── PROMO POPUPS ───
+const POPUP_TYPES = [
+  { value: "promo", label: "Promoción", icon: Sparkles, color: "#1890FF" },
+  { value: "course", label: "Curso Nuevo", icon: GraduationCap, color: "#10B981" },
+  { value: "discount", label: "Descuento", icon: Percent, color: "#F59E0B" },
+  { value: "announcement", label: "Anuncio", icon: Megaphone, color: "#7C3AED" },
+];
+
+const TARGETS = [
+  { value: "all", label: "Todos" },
+  { value: "guests", label: "Solo Visitantes" },
+  { value: "members", label: "Solo Miembros" },
+];
+
+function AdminPopups() {
+  const [popups, setPopups] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showCreate, setShowCreate] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    cta_text: "Ver más",
+    cta_url: "/",
+    badge_text: "",
+    popup_type: "promo",
+    accent_color: "#1890FF",
+    image_url: "",
+    starts_at: "",
+    ends_at: "",
+    show_to: "all",
+    display_delay_seconds: 3,
+    dismissible: true,
+    show_once_per_session: true,
+  });
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await adminGetPopups();
+        setPopups(data);
+      } catch (err) { console.error(err); }
+      finally { setLoading(false); }
+    }
+    load();
+  }, []);
+
+  const resetForm = () => setForm({
+    title: "", description: "", cta_text: "Ver más", cta_url: "/", badge_text: "",
+    popup_type: "promo", accent_color: "#1890FF", image_url: "",
+    starts_at: "", ends_at: "", show_to: "all",
+    display_delay_seconds: 3, dismissible: true, show_once_per_session: true,
+  });
+
+  const handleCreate = async () => {
+    if (!form.title.trim()) return;
+    setSaving(true);
+    try {
+      await adminCreatePopup({
+        ...form,
+        starts_at: form.starts_at || null,
+        ends_at: form.ends_at || null,
+        badge_text: form.badge_text || null,
+        image_url: form.image_url || null,
+      });
+      const data = await adminGetPopups();
+      setPopups(data);
+      resetForm();
+      setShowCreate(false);
+    } catch (err) { console.error(err); }
+    finally { setSaving(false); }
+  };
+
+  const handleToggle = async (id: string) => {
+    try {
+      await adminTogglePopup(id);
+      setPopups(prev => prev.map(p => p.id === id ? { ...p, is_active: !p.is_active } : p));
+    } catch (err) { console.error(err); }
+  };
+
+  const handleDelete = async (id: string) => {
+    try {
+      await adminDeletePopup(id);
+      setPopups(prev => prev.filter(p => p.id !== id));
+    } catch (err) { console.error(err); }
+  };
+
+  const selectedType = POPUP_TYPES.find(t => t.value === form.popup_type) || POPUP_TYPES[0];
+
+  if (loading) {
+    return (
+      <div className="p-6 sm:p-8 flex flex-col items-center justify-center py-20">
+        <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
+        <span className="text-sm text-gray-400 mt-3">Cargando pop-ups...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 sm:p-8">
+       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+         <div>
+           <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Pop-ups Promocionales</h2>
+           <p className="text-sm text-gray-400">Configura pop-ups que aparecen en la esquina inferior de tu sitio web</p>
+         </div>
+         <button 
+           onClick={() => setShowCreate(!showCreate)}
+           className="flex items-center gap-2 px-5 py-2.5 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors shadow-sm cursor-pointer"
+         >
+           <Plus className="w-4 h-4" /> Crear Pop-up
+         </button>
+       </div>
+
+       {/* Create Form */}
+       <AnimatePresence>
+         {showCreate && (
+           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mb-8">
+             <div className="bg-slate-50/70 rounded-2xl border border-gray-100 p-6 sm:p-8">
+               <h3 className="font-bold text-gray-900 mb-6 flex items-center gap-2">
+                 <Megaphone className="w-4 h-4 text-brand-blue" /> Nuevo Pop-up
+               </h3>
+
+               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                 {/* Left: Form Fields */}
+                 <div className="space-y-5">
+                   {/* Type Selector */}
+                   <div>
+                     <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Tipo</label>
+                     <div className="grid grid-cols-2 gap-2">
+                       {POPUP_TYPES.map(type => {
+                         const Icon = type.icon;
+                         return (
+                           <button
+                             key={type.value}
+                             onClick={() => setForm(f => ({ ...f, popup_type: type.value, accent_color: type.color }))}
+                             className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer ${
+                               form.popup_type === type.value
+                                 ? "border-brand-blue bg-blue-50 text-brand-blue shadow-sm"
+                                 : "border-gray-200 bg-white text-gray-600 hover:border-gray-300"
+                             }`}
+                           >
+                             <Icon className="w-3.5 h-3.5" /> {type.label}
+                           </button>
+                         );
+                       })}
+                     </div>
+                   </div>
+
+                   {/* Title & Description */}
+                   <div>
+                     <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Título *</label>
+                     <input type="text" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+                       placeholder="Ej: ¡50% de descuento en Power BI!"
+                       className="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 text-sm font-semibold focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                   </div>
+                   <div>
+                     <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Descripción</label>
+                     <textarea value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                       placeholder="Un breve texto motivador..."
+                       rows={2}
+                       className="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 text-sm font-medium focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 outline-none resize-none" />
+                   </div>
+
+                   {/* Badge */}
+                   <div>
+                     <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Etiqueta / Badge</label>
+                     <input type="text" value={form.badge_text} onChange={e => setForm(f => ({ ...f, badge_text: e.target.value }))}
+                       placeholder="Ej: 🔥 OFERTA LIMITADA"
+                       className="w-full px-4 py-2.5 bg-white rounded-xl border border-gray-200 text-sm font-medium focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                   </div>
+
+                   {/* CTA */}
+                   <div className="grid grid-cols-2 gap-3">
+                     <div>
+                       <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Texto del Botón</label>
+                       <input type="text" value={form.cta_text} onChange={e => setForm(f => ({ ...f, cta_text: e.target.value }))}
+                         className="w-full px-4 py-2.5 bg-white rounded-xl border border-gray-200 text-sm font-medium focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                     </div>
+                     <div>
+                       <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">URL Destino</label>
+                       <input type="text" value={form.cta_url} onChange={e => setForm(f => ({ ...f, cta_url: e.target.value }))}
+                         placeholder="/cursos/power-bi"
+                         className="w-full px-4 py-2.5 bg-white rounded-xl border border-gray-200 text-sm font-medium focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                     </div>
+                   </div>
+
+                   {/* Image URL */}
+                   <div>
+                     <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">URL de Imagen (Opcional)</label>
+                     <input type="text" value={form.image_url} onChange={e => setForm(f => ({ ...f, image_url: e.target.value }))}
+                       placeholder="https://..."
+                       className="w-full px-4 py-2.5 bg-white rounded-xl border border-gray-200 text-sm font-medium focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                   </div>
+
+                   {/* Color */}
+                   <div>
+                     <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Color de Acento</label>
+                     <div className="flex items-center gap-3">
+                       <input type="color" value={form.accent_color} onChange={e => setForm(f => ({ ...f, accent_color: e.target.value }))}
+                         className="w-10 h-10 rounded-xl border border-gray-200 cursor-pointer p-0.5" />
+                       <span className="text-xs font-mono text-gray-500 bg-gray-100 px-2 py-1 rounded">{form.accent_color}</span>
+                     </div>
+                   </div>
+
+                   {/* Scheduling */}
+                   <div className="grid grid-cols-2 gap-3">
+                     <div>
+                       <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Inicio (Opcional)</label>
+                       <input type="datetime-local" value={form.starts_at} onChange={e => setForm(f => ({ ...f, starts_at: e.target.value }))}
+                         className="w-full px-3 py-2.5 bg-white rounded-xl border border-gray-200 text-xs font-medium focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                     </div>
+                     <div>
+                       <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Fin (Opcional)</label>
+                       <input type="datetime-local" value={form.ends_at} onChange={e => setForm(f => ({ ...f, ends_at: e.target.value }))}
+                         className="w-full px-3 py-2.5 bg-white rounded-xl border border-gray-200 text-xs font-medium focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                     </div>
+                   </div>
+
+                   {/* Target & Delay */}
+                   <div className="grid grid-cols-2 gap-3">
+                     <div>
+                       <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Mostrar A</label>
+                       <select value={form.show_to} onChange={e => setForm(f => ({ ...f, show_to: e.target.value }))}
+                         className="w-full px-3 py-2.5 bg-white rounded-xl border border-gray-200 text-sm font-medium focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 outline-none">
+                         {TARGETS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                       </select>
+                     </div>
+                     <div>
+                       <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Delay (seg)</label>
+                       <input type="number" min={0} value={form.display_delay_seconds} onChange={e => setForm(f => ({ ...f, display_delay_seconds: parseInt(e.target.value) || 0 }))}
+                         className="w-full px-3 py-2.5 bg-white rounded-xl border border-gray-200 text-sm font-medium text-center focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                     </div>
+                   </div>
+
+                   {/* Toggles */}
+                   <div className="flex items-center gap-6 pt-2">
+                     <label className="flex items-center gap-2 cursor-pointer">
+                       <input type="checkbox" checked={form.dismissible} onChange={e => setForm(f => ({ ...f, dismissible: e.target.checked }))}
+                         className="w-4 h-4 rounded border-gray-300 text-brand-blue focus:ring-brand-blue" />
+                       <span className="text-xs font-semibold text-gray-700">Se puede cerrar</span>
+                     </label>
+                     <label className="flex items-center gap-2 cursor-pointer">
+                       <input type="checkbox" checked={form.show_once_per_session} onChange={e => setForm(f => ({ ...f, show_once_per_session: e.target.checked }))}
+                         className="w-4 h-4 rounded border-gray-300 text-brand-blue focus:ring-brand-blue" />
+                       <span className="text-xs font-semibold text-gray-700">Solo 1 vez por sesión</span>
+                     </label>
+                   </div>
+                 </div>
+
+                 {/* Right: Live Preview */}
+                 <div>
+                   <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Vista Previa en Vivo</label>
+                   <div className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-6 flex items-end justify-end min-h-[300px] relative overflow-hidden">
+                     <div className="absolute inset-0 opacity-50 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                     
+                     {/* Mini preview of the popup */}
+                     <div 
+                       className="w-[300px] bg-white rounded-[1.2rem] overflow-hidden shadow-[0_20px_60px_-10px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.04] relative z-10"
+                       style={{ borderLeft: `3px solid ${form.accent_color}` }}
+                     >
+                       <div className="h-[2px] w-full" style={{ background: `linear-gradient(90deg, ${form.accent_color}, ${form.accent_color}AA)` }}></div>
+                       <div className="p-4">
+                         <div className="flex gap-3">
+                           <div 
+                             className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-md -rotate-3"
+                             style={{ background: `linear-gradient(135deg, ${form.accent_color}, ${form.accent_color}CC)` }}
+                           >
+                             <selectedType.icon className="w-5 h-5 text-white" />
+                           </div>
+                           <div className="flex-1 min-w-0">
+                             {form.badge_text && (
+                               <span 
+                                 className="inline-flex items-center gap-1 text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5"
+                                 style={{ backgroundColor: form.accent_color + "15", color: form.accent_color }}
+                               >
+                                 <Bell className="w-2 h-2" /> {form.badge_text}
+                               </span>
+                             )}
+                             <h4 className="text-[13px] font-extrabold text-gray-900 leading-tight mb-1 line-clamp-2">
+                               {form.title || "Título del Pop-up"}
+                             </h4>
+                             {form.description && (
+                               <p className="text-[11px] text-gray-500 font-medium leading-relaxed mb-2.5 line-clamp-2">{form.description}</p>
+                             )}
+                             <span
+                               className="inline-flex items-center gap-1.5 text-[11px] font-bold py-1.5 px-3 rounded-lg"
+                               style={{ backgroundColor: form.accent_color + "10", color: form.accent_color }}
+                             >
+                               {form.cta_text || "Ver más"} <ArrowRight className="w-3 h-3" />
+                             </span>
+                           </div>
+                         </div>
+                         {form.image_url && (
+                           <div className="mt-3 rounded-lg overflow-hidden border border-gray-100 -mx-0.5">
+                             <img src={form.image_url} alt="" className="w-full h-20 object-cover" />
+                           </div>
+                         )}
+                       </div>
+                     </div>
+                   </div>
+                 </div>
+               </div>
+
+               {/* Actions */}
+               <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-200">
+                 <button onClick={() => { resetForm(); setShowCreate(false); }}
+                   className="px-5 py-2 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors cursor-pointer">Cancelar</button>
+                 <button onClick={handleCreate} disabled={saving || !form.title.trim()}
+                   className="px-6 py-2.5 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors disabled:opacity-40 flex items-center gap-2 cursor-pointer shadow-sm">
+                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                   {saving ? "Creando..." : "Crear Pop-up"}
+                 </button>
+               </div>
+             </div>
+           </motion.div>
+         )}
+       </AnimatePresence>
+
+       {/* Popups List */}
+       {popups.length === 0 ? (
+         <div className="text-center py-16 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50/50">
+           <Megaphone className="w-14 h-14 text-gray-300 mx-auto mb-4" />
+           <h3 className="text-gray-900 font-bold mb-2 text-lg">No hay pop-ups configurados</h3>
+           <p className="text-gray-400 text-sm max-w-sm mx-auto">Crea tu primer pop-up promocional para atraer a tus visitantes con ofertas, descuentos o anuncios de nuevos cursos.</p>
+         </div>
+       ) : (
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+           {popups.map((popup, i) => {
+             const pType = POPUP_TYPES.find(t => t.value === popup.popup_type) || POPUP_TYPES[0];
+             const PIcon = pType.icon;
+             return (
+               <motion.div key={popup.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+                 className={`relative rounded-2xl border overflow-hidden group ${popup.is_active ? 'bg-white border-gray-100 shadow-sm' : 'bg-gray-50 border-gray-100 opacity-60'}`}
+               >
+                 {/* Color accent bar at top */}
+                 <div className="h-1 w-full" style={{ background: `linear-gradient(90deg, ${popup.accent_color || '#1890FF'}, ${popup.accent_color || '#1890FF'}88)` }}></div>
+                 
+                 <div className="p-5">
+                   <div className="flex items-start gap-4">
+                     <div 
+                       className="w-11 h-11 rounded-xl flex items-center justify-center shadow-md shrink-0"
+                       style={{ background: `linear-gradient(135deg, ${popup.accent_color || '#1890FF'}, ${popup.accent_color || '#1890FF'}CC)` }}
+                     >
+                       <PIcon className="w-5 h-5 text-white" />
+                     </div>
+                     <div className="flex-1 min-w-0">
+                       <div className="flex items-center gap-2 mb-1">
+                         <h4 className="text-sm font-bold text-gray-900 truncate">{popup.title}</h4>
+                         <span className={`px-2 py-0.5 rounded text-[9px] uppercase font-bold tracking-wider ${popup.is_active ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-200 text-gray-500'}`}>
+                           {popup.is_active ? 'Activo' : 'Inactivo'}
+                         </span>
+                       </div>
+                       {popup.description && (
+                         <p className="text-xs text-gray-500 line-clamp-1 mb-2">{popup.description}</p>
+                       )}
+                       <div className="flex flex-wrap items-center gap-2">
+                         {popup.badge_text && (
+                           <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">{popup.badge_text}</span>
+                         )}
+                         <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-600">
+                           {TARGETS.find(t => t.value === popup.show_to)?.label || 'Todos'}
+                         </span>
+                         <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">
+                           {popup.display_delay_seconds}s delay
+                         </span>
+                       </div>
+                     </div>
+                   </div>
+
+                   {/* Actions */}
+                   <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-50">
+                     <button onClick={() => handleToggle(popup.id)}
+                       className={`flex-1 py-1.5 rounded-xl text-[11px] font-bold transition-colors cursor-pointer ${
+                         popup.is_active ? 'bg-gray-50 text-gray-500 hover:bg-gray-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
+                       }`}>
+                       {popup.is_active ? 'Desactivar' : 'Activar'}
+                     </button>
+                     <button onClick={() => handleDelete(popup.id)}
+                       className="py-1.5 px-3 rounded-xl text-[11px] font-bold bg-red-50 text-red-500 hover:bg-red-100 transition-colors cursor-pointer">
+                       <Trash2 className="w-3.5 h-3.5" />
+                     </button>
+                   </div>
+                 </div>
+               </motion.div>
+             );
+           })}
+         </div>
+       )}
+    </div>
+  );
 }
