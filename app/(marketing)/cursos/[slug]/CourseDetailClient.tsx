@@ -12,7 +12,7 @@ import * as LucideIcons from "lucide-react";
 import React from "react";
 import { type Course, courses } from "@/lib/data/courses";
 import { FadeIn, StaggerChildren, StaggerItem, CountUp } from "@/components/shared/AnimatedComponents";
-import { createBrowserClient } from "@supabase/ssr";
+import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/shared/AuthModal";
 import PythonSyllabus from "./syllabuses/PythonSyllabus";
 import SqlSyllabus from "./syllabuses/SqlSyllabus";
@@ -66,10 +66,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
   // Check auth state + listen for changes
   useEffect(() => {
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
-    );
+    const supabase = createClient();
     supabase.auth.getUser().then(async ({ data }) => {
       setIsLoggedIn(!!data.user);
       if (data.user) {
@@ -224,7 +221,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 <div className="flex flex-col sm:flex-row gap-4">
                   {isLoggedIn ? (
                     <button
-                      onClick={() => document.getElementById('pricing-card')?.scrollIntoView({ behavior: 'smooth' })}
+                      onClick={() => document.getElementById('checkout-form')?.scrollIntoView({ behavior: 'smooth' })}
                       className="group px-8 py-4 rounded-2xl text-white font-bold text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-2 hover:-translate-y-1"
                       style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 12px 35px -8px ${course.accentColor}60` }}
                     >
@@ -232,7 +229,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                     </button>
                   ) : (
                     <button
-                      onClick={() => setShowAuthModal(true)}
+                      onClick={() => document.getElementById('checkout-form')?.scrollIntoView({ behavior: 'smooth' })}
                       className="group px-8 py-4 rounded-2xl text-white font-bold text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-2 hover:-translate-y-1"
                       style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 12px 35px -8px ${course.accentColor}60` }}
                     >
@@ -351,8 +348,14 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       ))}
                     </div>
 
-                    {/* Lead Form */}
-                    <CourseLeadCaptureForm course={course} levelName={activeLevel?.name || "Básico"} />
+                    {/* Call to Action mapping to Checkout form */}
+                    <button
+                      onClick={() => document.getElementById('checkout-form')?.scrollIntoView({ behavior: 'smooth' })}
+                      className="w-full py-4 rounded-xl text-white font-bold text-base flex justify-center items-center gap-2 transition-all cursor-pointer border-none"
+                      style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)` }}
+                    >
+                      Ver Precios y Fechas <ArrowRight className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
               </FadeIn>
@@ -485,6 +488,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       </section>
       )}
 
+      {/* ════ CHECKOUT INLINE FORM ════ */}
+      <CourseCheckoutForm course={course} isLoggedIn={isLoggedIn} />
+
       {/* ════ CONTACT FORM ════ */}
       <CourseContactForm course={course} />
 
@@ -531,112 +537,110 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 }
 
 /* ─── Lead Capture Form (replaces pricing card) ─── */
-function CourseLeadCaptureForm({ course, levelName }: { course: Course; levelName: string }) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+/* ─── Checkout Inline Form (replaces lead capture) ─── */
+function CourseCheckoutForm({ course, isLoggedIn }: { course: Course, isLoggedIn: boolean }) {
   const [formName, setFormName] = useState("");
   const [formEmail, setFormEmail] = useState("");
-  const [formWhatsapp, setFormWhatsapp] = useState("");
+  const [formPassword, setFormPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const supabase = createClient();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formName || !formEmail) return;
+    if (!formEmail || !formPassword || !formName) return;
     setIsSubmitting(true);
-
     try {
-      // Save lead
+      const { data, error } = await supabase.auth.signUp({
+        email: formEmail,
+        password: formPassword,
+        options: { data: { full_name: formName } }
+      });
+      if (error) {
+         if (error.status === 422 || error.message.includes("User already registered") || error.message.includes("already")) {
+            // Log them in if already registered
+            await supabase.auth.signInWithPassword({ email: formEmail, password: formPassword });
+         } else {
+            alert("Error en el registro: " + error.message); 
+            setIsSubmitting(false);
+            return;
+         }
+      }
+      setTimeout(() => {
+          window.location.href = `/pago`;
+      }, 1500);
+    } catch(e) {
+      alert("Error en el registro");
+      setIsSubmitting(false);
+    }
+  }
+
+  const handleLoggedInClick = async () => {
+    setIsSubmitting(true);
+    try {
+      // Registrar carro abandonado
       await fetch("/api/leads/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: formName,
-          email: formEmail,
-          whatsapp: formWhatsapp,
-          selectedCourses: [course.title],
-          sourceCourse: course.slug,
-          leadType: "contact",
-        }),
+           name: "Usuario Logueado",
+           email: "Registrado (Checkout Intent)",
+           selectedCourses: [course.title],
+           sourceCourse: course.slug,
+           leadType: "abandoned_cart"
+        })
       });
-
-      // Redirect to /pago with context
-      const params = new URLSearchParams({
-        curso: course.slug,
-        nivel: levelName,
-        nombre: formName,
-        email: formEmail,
-      });
-      window.location.href = `/pago?${params.toString()}`;
-    } catch (err) {
-      console.error(err);
-      alert("Hubo un problema. Inténtalo de nuevo.");
-      setIsSubmitting(false);
+      setTimeout(() => {
+        window.location.href = `/pago`;
+      }, 500);
+    } catch(e) {
+      window.location.href = `/pago`;
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="text-center mb-2">
-        <h4 className="font-bold text-[#0F172A] text-base mb-1">Solicita tu Cotización</h4>
-        <p className="text-xs text-gray-400">Completa tus datos y accede a fechas, precios y opciones de pago</p>
+    <section className="py-20 lg:py-32 bg-white border-t border-gray-100" id="checkout-form">
+      <div className="max-w-[800px] mx-auto px-5">
+         <div className="bg-white rounded-[2rem] p-8 lg:p-14 border border-blue-50 text-center" style={{ boxShadow: `0 20px 60px -15px ${course.accentColor}20` }}>
+            {isLoggedIn ? (
+               <>
+                  <h2 className="font-display text-3xl sm:text-4xl font-black text-[#0F172A] mb-4">¿Listo para comenzar?</h2>
+                  <p className="text-gray-500 mb-10 text-lg">Consulta las próximas fechas disponibles, ajusta tu cantidad y accede al Checkout de forma segura.</p>
+                  <button 
+                    onClick={handleLoggedInClick} 
+                    disabled={isSubmitting}
+                    className="mx-auto w-full max-w-sm py-4 rounded-xl text-white font-bold text-lg flex justify-center items-center gap-2 transition-all disabled:opacity-60 border-none cursor-pointer"
+                    style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)` }}
+                  >
+                     {isSubmitting ? <span className="animate-pulse">Procesando...</span> : "Ver Fechas y Precios"}
+                  </button>
+               </>
+            ) : (
+               <>
+                  <h2 className="font-display text-3xl sm:text-4xl font-black text-[#0F172A] mb-4">Regístrate para cotizar</h2>
+                  <p className="text-gray-500 mb-10 text-lg max-w-[500px] mx-auto">Crea tu cuenta gratuita para acceder a las fechas, precios de los módulos y opciones de pago.</p>
+                  <form onSubmit={handleRegister} className="max-w-md mx-auto space-y-5 text-left">
+                     <div className="space-y-1.5">
+                       <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre completo *</label>
+                       <input type="text" required value={formName} onChange={e=>setFormName(e.target.value)} className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+                     </div>
+                     <div className="space-y-1.5">
+                       <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email *</label>
+                       <input type="email" required value={formEmail} onChange={e=>setFormEmail(e.target.value)} className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+                     </div>
+                     <div className="space-y-1.5">
+                       <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Contraseña (Mínimo 6) *</label>
+                       <input type="password" required minLength={6} value={formPassword} onChange={e=>setFormPassword(e.target.value)} className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+                     </div>
+                     <button type="submit" disabled={isSubmitting} className="w-full mt-8 py-4 rounded-xl text-white font-bold text-lg flex justify-center border-none cursor-pointer transition-all hover:scale-[1.02]" style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 10px 30px -10px ${course.accentColor}80` }}>
+                       {isSubmitting ? "Registrando..." : "Crear cuenta y continuar"}
+                     </button>
+                  </form>
+               </>
+            )}
+         </div>
       </div>
-
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre completo *</label>
-        <input
-          type="text"
-          required
-          value={formName}
-          onChange={e => setFormName(e.target.value)}
-          placeholder="Ej: Juan Pérez"
-          className="w-full rounded-xl p-3.5 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-2 focus:ring-blue-100 outline-none transition-all"
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email *</label>
-        <input
-          type="email"
-          required
-          value={formEmail}
-          onChange={e => setFormEmail(e.target.value)}
-          placeholder="juan@empresa.com"
-          className="w-full rounded-xl p-3.5 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-2 focus:ring-blue-100 outline-none transition-all"
-        />
-      </div>
-
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">WhatsApp (opcional)</label>
-        <input
-          type="tel"
-          value={formWhatsapp}
-          onChange={e => setFormWhatsapp(e.target.value)}
-          placeholder="+56 9..."
-          className="w-full rounded-xl p-3.5 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-2 focus:ring-blue-100 outline-none transition-all"
-        />
-      </div>
-
-      <motion.button
-        type="submit"
-        disabled={isSubmitting || !formName || !formEmail}
-        className="w-full py-4 rounded-xl text-white font-bold text-base flex justify-center items-center gap-2 transition-all disabled:opacity-60 border-none cursor-pointer"
-        style={{
-          background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`,
-          boxShadow: `0 10px 30px -5px ${course.accentColor}40`,
-        }}
-        whileHover={{ y: -2 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        {isSubmitting ? (
-          <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-        ) : (
-          <>Ver Fechas y Precios <ArrowRight className="w-4 h-4" /></>
-        )}
-      </motion.button>
-
-      <p className="text-[10px] text-gray-400 text-center">
-        Al continuar, aceptas nuestras políticas de privacidad.
-      </p>
-    </form>
-  );
+    </section>
+  )
 }
 
 /* ─── Enterprise Contact Form Component ─── */

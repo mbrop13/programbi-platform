@@ -38,7 +38,7 @@ async function handleReturn(req: NextRequest, token: string | null) {
     // Try to find payment record
     const { data: payment } = await supabase
       .from("payments")
-      .select("id, user_id, course_id, status")
+      .select("id, user_id, course_id, status, metadata")
       .eq("flow_order", flowStatus.commerceOrder)
       .maybeSingle();
 
@@ -52,6 +52,8 @@ async function handleReturn(req: NextRequest, token: string | null) {
     }
 
     let bumpSelections: any[] = [];
+    let cartItems: any[] = [];
+
     // Fallback: extract from Flow optional data
     if (!userId || !courseSlug || !bumpSelections.length) {
       try {
@@ -62,6 +64,11 @@ async function handleReturn(req: NextRequest, token: string | null) {
           bumpSelections = typeof opt.bumpSelections === "string" ? JSON.parse(opt.bumpSelections) : opt.bumpSelections;
         }
       } catch { /* ignore parse errors */ }
+    }
+
+    // Extract cart items from native payment DB metadata since Flow optional has strict length limits
+    if (payment?.metadata?.items && Array.isArray(payment.metadata.items)) {
+         cartItems = payment.metadata.items;
     }
 
     console.log("🎯 Enrollment data:", { userId, courseSlug, bumpSelections });
@@ -78,15 +85,32 @@ async function handleReturn(req: NextRequest, token: string | null) {
     }
 
     // 4. Create enrollments
-    if (userId && courseSlug) {
-      const enrollmentsToCreate = [
-        { user_id: userId, course_slug: courseSlug, status: "active", access_type: "full" }
-      ];
+    if (userId) {
+      const enrollmentsToCreate: any[] = [];
+      const userIdsToEnroll = [userId]; // We would optionally expand this logic if gifting functionality evolves.
+
+      // Prefer new multi-cart architecture extraction:
+      if (cartItems.length > 0) {
+          cartItems.forEach(item => {
+             // We enroll them if they bought it. If quantity > 1, we only enroll them once, and they have extra licenses logic later.
+             if (item.slug) {
+                 enrollmentsToCreate.push({
+                   user_id: userId,
+                   course_slug: item.slug,
+                   status: "active",
+                   access_type: "full"
+                 })
+             }
+          });
+      } else if (courseSlug) {
+          // Fallback legacy mode
+          enrollmentsToCreate.push({ user_id: userId, course_slug: courseSlug, status: "active", access_type: "full" });
+      }
       
       // Add bump selections
       if (Array.isArray(bumpSelections) && bumpSelections.length > 0) {
         bumpSelections.forEach((bump) => {
-          if (bump.slug && bump.slug !== courseSlug) {
+          if (bump.slug && !enrollmentsToCreate.find(e => e.course_slug === bump.slug)) {
             enrollmentsToCreate.push({
               user_id: userId,
               course_slug: bump.slug,
@@ -105,10 +129,10 @@ async function handleReturn(req: NextRequest, token: string | null) {
       if (enrollErr) {
         console.error("❌ Enrollment error:", enrollErr);
       } else {
-        console.log("✅ Enrollments created:", enrollResult);
+        console.log("✅ Enrollments created:", enrollResult.length);
       }
     } else {
-      console.error("❌ Cannot enroll — missing:", { userId, courseSlug });
+      console.error("❌ Cannot enroll — missing userId");
     }
 
     return NextResponse.redirect(new URL("/comunidad/cursos?payment=success", req.url));

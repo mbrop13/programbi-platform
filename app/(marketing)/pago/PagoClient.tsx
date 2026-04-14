@@ -596,7 +596,7 @@ export default function PagoClient() {
                               )}
                             </motion.button>
                             
-                            <a href="https://wa.me/56912345678" target="_blank" rel="noopener noreferrer" className="w-full block py-3.5 rounded-xl border-2 border-emerald-500 text-emerald-600 font-bold text-sm flex justify-center items-center gap-2 hover:bg-emerald-50 transition-colors no-underline">
+                            <a href="https://wa.me/56935409699" target="_blank" rel="noopener noreferrer" className="w-full block py-3.5 rounded-xl border-2 border-emerald-500 text-emerald-600 font-bold text-sm flex justify-center items-center gap-2 hover:bg-emerald-50 transition-colors no-underline">
                                Hablar por WhatsApp
                             </a>
                             {enterpriseToggles.size === 0 && <p className="text-[10px] text-center text-amber-500 font-bold">Selecciona al menos 1 curso del panel izquierdo</p>}

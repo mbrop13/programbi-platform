@@ -104,10 +104,7 @@ export async function POST(req: NextRequest) {
       amount: grandTotalClp,
       email,
       optional: {
-        userId: user.id,
-        // Since Flow optional fields have length limits, we just store multiple items in a JSON string
-        itemsJSON: JSON.stringify(validatedItems),
-        bumpSelections: JSON.stringify(bumpSelections)
+        userId: user.id
       },
     });
 
