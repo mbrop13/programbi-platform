@@ -26,13 +26,13 @@ export async function POST(req: NextRequest) {
           const userId = subscription.external_reference;
           if (!userId) return NextResponse.json({ success: true });
 
-          const { MP_PLAN_MAP } = await import("@/lib/mercadopago/client");
+          // Identificar el plan basado en the reason
+          // Reason format: "ProgramBI Community - PRO MENSUAL"
           let internalPlanId = "pro_mensual"; 
-          
-          for (const [key, value] of Object.entries(MP_PLAN_MAP)) {
-             if (value === subscription.preapproval_plan_id) {
-               internalPlanId = key;
-               break;
+          if (subscription.reason) {
+             const parts = subscription.reason.split(" - ");
+             if (parts.length > 1) {
+                internalPlanId = parts[1].toLowerCase().replace(" ", "_");
              }
           }
           

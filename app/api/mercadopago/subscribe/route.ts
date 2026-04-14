@@ -50,13 +50,15 @@ export async function POST(req: NextRequest) {
     }
 
     // De otra forma es mensual, procesar como suscripción recurrente
-    const mpPlanId = MP_PLAN_MAP[planId];
-    if (!mpPlanId) {
-      return NextResponse.json({ error: "Invalid planId or not found in mapping" }, { status: 400 });
+    const basePlanId = planId.split("_")[0];
+    const planInfo = communityPlans.find(p => p.id === basePlanId);
+    if (!planInfo) {
+      return NextResponse.json({ error: "Plan base not found" }, { status: 400 });
     }
 
     const subscription = await createMPSubscription({
-      preapprovalPlanId: mpPlanId,
+      reason: `ProgramBI Community - ${planId.replace("_", " ").toUpperCase()}`,
+      transactionAmount: Math.round(planInfo.price),
       payerEmail: userEmail,
       externalReference: user.id, // We store our Supabase user ID here
       backUrl: backUrl,

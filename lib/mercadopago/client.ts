@@ -98,11 +98,12 @@ export interface MPSubscription {
 }
 
 /**
- * Creates a subscription for a user using a preapproval_plan.
- * Returns the init_point URL that the user must visit to authorize payment.
+ * Creates a subscription for a user.
+ * By sending auto_recurring instead of preapproval_plan_id, MP generates an init_point for Checkout Pro.
  */
 export async function createMPSubscription(data: {
-  preapprovalPlanId: string;
+  reason: string;
+  transactionAmount: number;
   payerEmail: string;
   externalReference: string; // our userId
   backUrl: string;
@@ -110,7 +111,13 @@ export async function createMPSubscription(data: {
   return mpFetch<MPSubscription>("/preapproval", {
     method: "POST",
     body: JSON.stringify({
-      preapproval_plan_id: data.preapprovalPlanId,
+      reason: data.reason,
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: "months",
+        transaction_amount: data.transactionAmount,
+        currency_id: "CLP",
+      },
       payer_email: data.payerEmail,
       external_reference: data.externalReference,
       back_url: data.backUrl,
