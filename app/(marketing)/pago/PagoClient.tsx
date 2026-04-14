@@ -226,6 +226,24 @@ export default function PagoClient() {
       setIsSubmittingEnterprise(false);
     }
   };
+  const sortedCourses = useMemo(() => {
+    return [...allCourses].sort((a, b) => {
+      const getHasBaseSchedule = (course: Course) => {
+        if (analisisDeDatosSlugs.includes(course.slug) || course.slug === "analisis-de-datos") {
+          const adSchedules = schedules.filter(s => analisisDeDatosSlugs.includes(s.course_slug));
+          return !!getNearestSchedule(adSchedules);
+        }
+        return !!schedules.find(s => s.course_slug === course.slug);
+      };
+
+      const aHas = getHasBaseSchedule(a);
+      const bHas = getHasBaseSchedule(b);
+
+      if (aHas && !bHas) return -1;
+      if (!aHas && bHas) return 1;
+      return 0;
+    });
+  }, [schedules]);
 
   return (
     <section className="relative -mt-20 lg:-mt-24 pt-28 lg:pt-36 pb-20 lg:pb-32 min-h-screen" style={{ background: "linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 60%)" }}>
@@ -269,7 +287,7 @@ export default function PagoClient() {
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Main Course List */}
           <div className="lg:col-span-8 space-y-6">
-            {allCourses.map((course) => {
+            {sortedCourses.map((course) => {
                const activeLevel = selectedLevels[course.slug];
                const currentLevelData = course.levels?.find(l => l.name === activeLevel);
                
