@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, LogIn, UserPlus, Mail, Lock, Sparkles, ArrowRight, CheckCircle, AlertCircle, Loader2, User, Eye, EyeOff, Phone, ChevronDown } from "lucide-react";
 import { useState, useEffect, FormEvent } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 interface AuthModalProps {
@@ -50,6 +51,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
   const [showPassword, setShowPassword] = useState(false);
   const [phonePrefix, setPhonePrefix] = useState("+56");
   const [showPrefixDropdown, setShowPrefixDropdown] = useState(false);
+  const [acceptsPrivacy, setAcceptsPrivacy] = useState(false);
 
   // Reset state when modal opens/closes or tab changes
   useEffect(() => {
@@ -61,6 +63,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
     setWhatsapp("");
     setShowPassword(false);
     setShowPrefixDropdown(false);
+    setAcceptsPrivacy(false);
   }, [isOpen, tab]);
 
   // Update tab when defaultTab changes
@@ -468,6 +471,21 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                           </button>
                         </div>
+                      </div>
+                      {/* Privacy consent checkbox */}
+                      <div className="flex items-start gap-2.5 mt-1">
+                        <input
+                          type="checkbox"
+                          id="privacy-auth"
+                          checked={acceptsPrivacy}
+                          onChange={(e) => setAcceptsPrivacy(e.target.checked)}
+                          required
+                          className="mt-0.5 w-3.5 h-3.5 rounded border-gray-300 accent-[#1890FF] cursor-pointer flex-shrink-0"
+                        />
+                        <label htmlFor="privacy-auth" className="text-[10px] text-slate-400 cursor-pointer leading-relaxed">
+                          Acepto la{" "}
+                          <Link href="/privacidad" className="text-[#1890FF] font-semibold no-underline hover:underline" target="_blank">Política de Privacidad</Link>
+                        </label>
                       </div>
                       <button
                         type="submit"

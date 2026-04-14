@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Send, Lock, ArrowRight } from "lucide-react";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
@@ -16,6 +17,7 @@ export default function ContactSection() {
   const [selectedChips, setSelectedChips] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [acceptsPrivacy, setAcceptsPrivacy] = useState(false);
 
   const toggleChip = (chip: string) => {
     setSelectedChips((prev) =>
@@ -195,10 +197,21 @@ export default function ContactSection() {
                       )}
                     </motion.button>
 
-                    <div className="text-center mt-4">
-                      <p className="text-[10px] text-gray-400 flex items-center justify-center gap-1">
-                        <Lock size={10} /> Tus datos se enviarán de forma segura. Al enviar, aceptas nuestras políticas de privacidad.
-                      </p>
+                    {/* Privacy checkbox */}
+                    <div className="flex items-start gap-3 mt-2">
+                      <input
+                        type="checkbox"
+                        id="privacy-contact"
+                        checked={acceptsPrivacy}
+                        onChange={(e) => setAcceptsPrivacy(e.target.checked)}
+                        required
+                        className="mt-1 w-4 h-4 rounded border-gray-300 text-[#1890FF] focus:ring-blue-500 cursor-pointer accent-[#1890FF] flex-shrink-0"
+                      />
+                      <label htmlFor="privacy-contact" className="text-[11px] text-gray-500 cursor-pointer leading-relaxed">
+                        Acepto la{" "}
+                        <Link href="/privacidad" className="text-[#1890FF] font-semibold no-underline hover:underline" target="_blank">Política de Privacidad</Link>{" "}
+                        y autorizo a ProgramBI a utilizar mis datos para contactarme sobre los cursos seleccionados.
+                      </label>
                     </div>
                   </form>
                 </>

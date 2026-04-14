@@ -160,27 +160,27 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Empresa */}
-          <div>
-            <h3 className="font-display font-extrabold text-[13px] text-[#0F172A] uppercase tracking-[0.15em] mb-5">
-              Empresa
-            </h3>
-            <ul className="space-y-3 list-none p-0 m-0">
-              {[
-                { label: "Consultorías", href: "/consultorias" },
-                { label: "Contacto", href: "/contacto" },
-                { label: "Campus Virtual", href: "/campus" },
-                { label: "Registrarse", href: "/registro" },
-              ].map((item) => (
-                <li key={item.href}>
-                  <Link href={item.href} className="text-gray-500 hover:text-[#1890FF] transition-colors text-sm no-underline flex items-center gap-1.5 group">
-                    <div className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-[#1890FF] transition-colors flex-shrink-0" />
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+            <div>
+              <h3 className="font-display font-extrabold text-[13px] text-[#0F172A] uppercase tracking-[0.15em] mb-5">
+                Empresa
+              </h3>
+              <ul className="space-y-3 list-none p-0 m-0">
+                {[
+                  { label: "Consultorías", href: "/consultorias" },
+                  { label: "Contacto", href: "/contacto" },
+                  { label: "Campus Virtual", href: "/campus" },
+                  { label: "Registrarse", href: "/registro" },
+                  { label: "Política de Privacidad", href: "/privacidad" },
+                ].map((item) => (
+                  <li key={item.href}>
+                    <Link href={item.href} className="text-gray-500 hover:text-[#1890FF] transition-colors text-sm no-underline flex items-center gap-1.5 group">
+                      <div className="w-1.5 h-1.5 rounded-full bg-gray-300 group-hover:bg-[#1890FF] transition-colors flex-shrink-0" />
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
           {/* Contacto */}
           <div>
@@ -203,7 +203,7 @@ export default function Footer() {
               <li>
                 <div className="flex items-start gap-3 text-gray-500 text-sm">
                   <MapPin size={16} className="flex-shrink-0 mt-0.5" />
-                  Santiago, Chile
+                  Alonso de Córdova 5870, Ofc. 724<br />Las Condes, Santiago, Chile
                 </div>
               </li>
             </ul>
@@ -232,10 +232,7 @@ export default function Footer() {
             © {new Date().getFullYear()} ProgramBI. Hecho con <Heart size={12} className="text-red-400 fill-red-400" /> en Chile
           </p>
           <div className="flex gap-6 text-xs text-gray-400">
-            <Link href="#" className="hover:text-[#1890FF] transition-colors no-underline">
-              Términos y Condiciones
-            </Link>
-            <Link href="#" className="hover:text-[#1890FF] transition-colors no-underline">
+            <Link href="/privacidad" className="hover:text-[#1890FF] transition-colors no-underline">
               Política de Privacidad
             </Link>
           </div>

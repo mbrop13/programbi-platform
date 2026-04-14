@@ -7,6 +7,7 @@ import { Mail, Lock, User, Phone, Building, Eye, EyeOff, UserPlus } from "lucide
 
 export default function RegistroPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [acceptsPrivacy, setAcceptsPrivacy] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -124,6 +125,23 @@ export default function RegistroPage() {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+            </div>
+
+            {/* Privacy consent */}
+            <div className="flex items-start gap-2.5">
+              <input
+                type="checkbox"
+                id="privacy-registro"
+                checked={acceptsPrivacy}
+                onChange={(e) => setAcceptsPrivacy(e.target.checked)}
+                required
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-[#1890FF] cursor-pointer flex-shrink-0"
+              />
+              <label htmlFor="privacy-registro" className="text-xs text-gray-500 cursor-pointer leading-relaxed">
+                Acepto la{" "}
+                <Link href="/privacidad" className="text-[#1890FF] font-semibold no-underline hover:underline" target="_blank">Política de Privacidad</Link>{" "}
+                y autorizo el tratamiento de mis datos personales.
+              </label>
             </div>
 
             <button

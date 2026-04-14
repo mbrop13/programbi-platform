@@ -61,6 +61,7 @@ export default function PagoClient() {
   const [entPosition, setEntPosition] = useState("");
   const [entEmployees, setEntEmployees] = useState("");
   const [entMessage, setEntMessage] = useState("");
+  const [entAcceptsPrivacy, setEntAcceptsPrivacy] = useState(false);
 
   useEffect(() => {
     fetch("/api/schedules")
@@ -579,6 +580,22 @@ export default function PagoClient() {
                               <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Mensaje (Opcional)</label>
                               <textarea rows={2} value={entMessage} onChange={e => setEntMessage(e.target.value)}
                                 className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all resize-none" />
+                            </div>
+
+                            <div className="flex items-start gap-3 mt-1">
+                              <input
+                                type="checkbox"
+                                id="privacy-enterprise"
+                                checked={entAcceptsPrivacy}
+                                onChange={(e) => setEntAcceptsPrivacy(e.target.checked)}
+                                required
+                                className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-indigo-600 cursor-pointer flex-shrink-0"
+                              />
+                              <label htmlFor="privacy-enterprise" className="text-[10px] text-gray-500 cursor-pointer leading-relaxed">
+                                Acepto la{" "}
+                                <Link href="/privacidad" className="text-indigo-500 font-semibold no-underline hover:underline" target="_blank">Política de Privacidad</Link>{" "}
+                                y autorizo el uso de mis datos para recibir la cotización solicitada.
+                              </label>
                             </div>
 
                             <motion.button
