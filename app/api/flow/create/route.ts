@@ -4,8 +4,7 @@ import { createAdminClient } from "@/lib/supabase/server";
 
 /**
  * POST /api/flow/create
- * Creates a Flow payment order. Requires authenticated user.
- * Stores courseSlug in the payment for direct enrollment later.
+ * Creates a Flow payment order for one or multiple courses.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -17,137 +16,121 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { courseId, courseSlug, levelName } = body;
+    const { items } = body;
 
-    if (!courseId && !courseSlug) {
-      return NextResponse.json({ error: "courseId o courseSlug requerido" }, { status: 400 });
-    }
-
-    // Get course info — look up by slug first, fallback to id
-    let courseQuery = supabase
-      .from("courses")
-      .select("id, title, slug, price_clp");
-    
-    if (courseSlug) {
-      courseQuery = courseQuery.eq("slug", courseSlug);
-    } else {
-      courseQuery = courseQuery.eq("id", courseId);
-    }
-
-    const { data: course } = await courseQuery.single();
-
-    if (!course) {
-      return NextResponse.json({ error: "Curso no encontrado" }, { status: 404 });
-    }
-
-    // --- PRICE CALCULATION LOGIC ---
-    // We use the local courses data as the source of truth for level-specific pricing
-    const { courses: masterCourses } = await import("@/lib/data/courses");
-    const masterCourse = masterCourses.find(c => c.slug === course.slug);
-    
-    let basePrice = course.price_clp || 0;
-
-    if (masterCourse) {
-      if (levelName) {
-        // Search for the level in the master data
-        const masterLevel = masterCourse.levels?.find(l => 
-          l.name.toLowerCase().includes(levelName.toLowerCase()) || 
-          levelName.toLowerCase().includes(l.name.toLowerCase())
-        );
-        if (masterLevel && masterLevel.price) {
-          basePrice = masterLevel.price;
-        }
-      } else if (masterCourse.levels && masterCourse.levels.length > 0) {
-        // Fallback to the first level's price if no level specified but levels exist
-        basePrice = masterCourse.levels[0].price || basePrice;
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      // Backwards compatibility with old single-course checkout
+      if (body.courseSlug) {
+        items.push({ courseSlug: body.courseSlug, levelName: body.levelName, quantity: 1 });
+      } else {
+         return NextResponse.json({ error: "No se enviaron cursos para comprar" }, { status: 400 });
       }
     }
 
-    if (basePrice <= 0) {
-      return NextResponse.json({ error: "Este curso aún no tiene precio definido" }, { status: 400 });
-    }
-
-    // Determine discount dynamically
-    let discountMultiplier = 1;
+    const { courses: masterCourses } = await import("@/lib/data/courses");
+    
+    // Evaluate discount based on user subscription profile
+    let baseDiscountPercent = 0;
+    let specDiscountPercent = 0;
+    
     const { data: profile } = await supabase.from('profiles').select('subscription_plan').eq('id', user.id).single();
     if (profile?.subscription_plan) {
-      const isSpec = masterCourse && (
-        masterCourse.durationHours > 50 || 
-        masterCourse.slug === "analisis-de-datos" || 
-        masterCourse.slug === "analitica-mineria" || 
-        masterCourse.slug === "analitica-financiera"
-      );
       const userPlan = profile.subscription_plan;
-      let discPercent = 0;
-      if (userPlan === 'pro') discPercent = isSpec ? 10 : 20;
-      else if (userPlan === 'max') discPercent = isSpec ? 12.5 : 25;
-      else if (userPlan === 'ultra') discPercent = isSpec ? 20 : 40;
-      
-      discountMultiplier = 1 - (discPercent / 100);
-    }
-    
-    let finalPriceClp = Math.floor(basePrice * discountMultiplier);
-
-    // Check if already enrolled
-    const { data: existing } = await supabase
-      .from("enrollments")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("course_slug", course.slug)
-      .maybeSingle();
-
-    if (existing) {
-      return NextResponse.json({ error: "Ya estás inscrito en este curso" }, { status: 400 });
+      if (userPlan === 'pro') { baseDiscountPercent = 20; specDiscountPercent = 10; }
+      else if (userPlan === 'max') { baseDiscountPercent = 25; specDiscountPercent = 12.5; }
+      else if (userPlan === 'ultra') { baseDiscountPercent = 40; specDiscountPercent = 20; }
     }
 
-    // Get user email
+    let grandTotalClp = 0;
+    const validatedItems = [];
+
+    for (const item of items) {
+       const masterCourse = masterCourses.find(c => c.slug === item.courseSlug);
+       if (!masterCourse) {
+         return NextResponse.json({ error: `Curso no encontrado: ${item.courseSlug}` }, { status: 404 });
+       }
+       
+       let basePrice = 0;
+       if (item.levelName) {
+         const masterLevel = masterCourse.levels?.find(l => 
+           l.name.toLowerCase().includes(item.levelName.toLowerCase()) || 
+           item.levelName.toLowerCase().includes(l.name.toLowerCase())
+         );
+         if (masterLevel && masterLevel.price) basePrice = masterLevel.price;
+       } else if (masterCourse.levels && masterCourse.levels.length > 0) {
+         basePrice = masterCourse.levels[0].price || basePrice;
+       }
+
+       if (basePrice <= 0) {
+          return NextResponse.json({ error: `El curso ${masterCourse.title} no tiene precio definido` }, { status: 400 });
+       }
+
+       const isSpec = (masterCourse.durationHours > 50 || masterCourse.slug.includes("analisis") || masterCourse.slug.includes("analitica"));
+       const discountMultiplier = 1 - ((isSpec ? specDiscountPercent : baseDiscountPercent) / 100);
+       
+       const finalPriceClp = Math.floor(basePrice * discountMultiplier);
+       const itemTotal = finalPriceClp * (item.quantity || 1);
+       grandTotalClp += itemTotal;
+
+       validatedItems.push({
+          slug: masterCourse.slug,
+          levelName: item.levelName || "Básico",
+          quantity: item.quantity || 1,
+          pricePerUnit: finalPriceClp,
+          title: masterCourse.title
+       });
+    }
+
     const email = user.email || "";
-
-    // Generate unique commerce order ID
     const commerceOrder = `PBI-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
-    const { bumpSelections = [] } = body;
-    let bumpAddTotal = 0;
-    
-    // Security check: Only add if the array is an array
-    if (Array.isArray(bumpSelections)) {
-        bumpAddTotal = bumpSelections.length * 99000;
-    }
-    
-    const grandTotalClp = finalPriceClp + bumpAddTotal;
-
-    // Import Flow client
     const { createFlowPayment } = await import("@/lib/flow/client");
 
-    // Create payment in Flow — pass courseSlug, userId and bumpSelections in optional
+    const subjectStr = validatedItems.length === 1 
+      ? `ProgramBI - ${validatedItems[0].title}`
+      : `ProgramBI - ${validatedItems.length} cursos seleccionados`;
+
+    // Calculate bump add logic correctly for backwards compatibility
+    const { bumpSelections = [] } = body;
+    let bumpAddTotal = 0;
+    if (Array.isArray(bumpSelections)) {
+        bumpAddTotal = bumpSelections.length * 99000;
+        grandTotalClp += bumpAddTotal;
+    }
+
     const flowResult = await createFlowPayment({
       commerceOrder,
-      subject: `ProgramBI - ${course.title}${bumpSelections.length > 0 ? ' + Bundle Especial' : ''}`,
+      subject: subjectStr,
       amount: grandTotalClp,
       email,
       optional: {
         userId: user.id,
-        courseSlug: course.slug,
-        courseId: course.id,
-        levelName, // Store selected level name
-        bumpSelections: JSON.stringify(bumpSelections), // Pass the array as JSON string
+        // Since Flow optional fields have length limits, we just store multiple items in a JSON string
+        itemsJSON: JSON.stringify(validatedItems),
+        bumpSelections: JSON.stringify(bumpSelections)
       },
     });
 
-    // Save payment record with courseSlug for reliable matching
+    // Save payment record
     const adminDb = createAdminClient();
+    
+    // We try to get the id of the first course for relational data backwards compatibility
+    const { data: firstCourseId } = await adminDb.from("courses").select("id").eq("slug", validatedItems[0].slug).maybeSingle();
+
     await adminDb.from("payments").insert({
       user_id: user.id,
-      course_id: course.id,
+      course_id: firstCourseId?.id || null,
       flow_order: commerceOrder,
       flow_token: flowResult.token,
       amount: grandTotalClp,
       currency: "CLP",
       status: "pending",
       payer_email: email,
-    });
+      // Pass items payload as metadata for robust processing logic later
+      metadata: { items: validatedItems }
+    } as any);
 
-    console.log("💰 Payment created:", commerceOrder, "for", course.slug, "user:", user.id);
+    console.log("💰 Multi-cart Payment created:", commerceOrder, "Items:", validatedItems.length, "user:", user.id);
 
     return NextResponse.json({
       url: flowResult.url,

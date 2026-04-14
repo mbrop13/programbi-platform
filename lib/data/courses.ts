@@ -98,39 +98,15 @@ export const courses: Course[] = [
     ],
     levels: [
       {
-        name: "Básico",
-        price: 498000,
-        durationHours: 48,
+        name: "Programa Completo",
+        price: 489000,
+        durationHours: 144,
         whatYouLearn: [
-          "Fundamentos de bases de datos relacionales",
-          "Consultas SELECT, filtros y ordenamiento",
-          "JOINs, subqueries y funciones de agregación",
-          "Procedimientos almacenados y vistas",
-          "Diseño de esquemas y normalización",
-        ],
-      },
-      {
-        name: "Intermedio",
-        price: 498000,
-        durationHours: 48,
-        whatYouLearn: [
-          "Conexión a múltiples fuentes de datos",
-          "Transformación ETL con Power Query",
-          "Modelado dimensional estrella/copo de nieve",
-          "Fórmulas DAX intermedias y avanzadas",
-          "Dashboards interactivos y publicación en web",
-        ],
-      },
-      {
-        name: "Avanzado",
-        price: 498000,
-        durationHours: 48,
-        whatYouLearn: [
-          "Fundamentos de Python y entorno Google Colab",
-          "Pandas: manipulación y limpieza de datos",
-          "Visualización con Matplotlib y Seaborn",
-          "Automatización de reportes y pipelines",
-          "Capstone Project integrador con datos reales",
+          "Fundamentos y bases de datos con SQL Server",
+          "Conexión a fuentes, ETL y modelado con Power Query",
+          "Dashboards avanzados y DAX en Power BI",
+          "Programación en Python y manipulación con Pandas",
+          "Visualización en Python y reportes automatizados",
         ],
       },
     ],
@@ -269,9 +245,7 @@ export const courses: Course[] = [
       },
     ],
     levels: [
-      { name: "Básico", price: 498000, durationHours: 48, whatYouLearn: ["KPIs mineros: tonelaje, disponibilidad, LTIF", "Modelos de costos operativos en Excel", "Consultas SQL de producción por turno", "Tablas dinámicas y Power Query para faena"] },
-      { name: "Intermedio", price: 498000, durationHours: 48, whatYouLearn: ["Dashboard de producción en tiempo real", "KPIs de disponibilidad y utilización", "DAX para métricas mineras especializadas", "Reportes automáticos de turno"] },
-      { name: "Avanzado", price: 498000, durationHours: 48, whatYouLearn: ["Análisis de sensores y presiones", "Modelos predictivos de mantenimiento", "Predicción de fallas con Machine Learning", "Alertas automáticas con Python"] },
+      { name: "Programa Completo", price: 489000, durationHours: 144, whatYouLearn: ["KPIs mineros: tonelaje, disponibilidad, LTIF", "Modelos de costos operativos en Excel", "Consultas SQL de producción por turno", "Tablas dinámicas y Power Query para faena", "Dashboard de producción en tiempo real", "KPIs de disponibilidad y utilización", "DAX para métricas mineras especializadas", "Predicción de fallas con Machine Learning", "Alertas automáticas con Python"] }
     ],
   },
   {
@@ -652,9 +626,7 @@ export const courses: Course[] = [
       },
     ],
     levels: [
-      { name: "Módulo 1 — Excel & SQL Financiero", price: 498000, durationHours: 48, whatYouLearn: ["Modelamiento VAN, TIR y WACC", "Flujos de caja proyectados y escenarios", "Consultas SQL de portafolio", "Series de tiempo y análisis AUM"] },
-      { name: "Módulo 2 — Python Financiero", price: 498000, durationHours: 48, whatYouLearn: ["APIs de datos bursátiles", "VaR histórico y paramétrico", "Modelos de riesgo con Python", "Automatización de análisis financiero"] },
-      { name: "Módulo 3 — Power BI Ejecutivo", price: 498000, durationHours: 48, whatYouLearn: ["Dashboard CFO profesional", "KPIs financieros con DAX", "Reportes AUM y rendimiento", "Alertas y suscripciones automáticas"] },
+      { name: "Programa Completo", price: 489000, durationHours: 144, whatYouLearn: ["Modelamiento VAN, TIR y WACC", "Flujos de caja proyectados", "Consultas SQL de portafolio", "APIs de datos bursátiles", "VaR histórico y paramétrico", "Modelos de riesgo con Python", "Dashboard CFO profesional", "KPIs financieros con DAX"] }
     ],
   },
   {
