@@ -64,6 +64,30 @@ export default function CourseDetailClient({ course }: { course: Course }) {
     });
   };
 
+  const handleCheckoutCTA = async () => {
+     if (!isLoggedIn) {
+        setShowAuthModal(true);
+        return;
+     }
+     
+     // Logged in: register abandoned_cart lead and redirect to pago
+     try {
+       const userEmail = (await createClient().auth.getUser()).data.user?.email || "Registrado";
+       await fetch("/api/leads/create", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({
+            name: "Usuario Logueado",
+            email: userEmail,
+            selectedCourses: [course.title],
+            sourceCourse: course.slug,
+            leadType: "abandoned_cart"
+         })
+       });
+     } catch(e) {}
+     window.location.href = `/pago?curso=${course.slug}`;
+  };
+
   // Check auth state + listen for changes
   useEffect(() => {
     const supabase = createClient();
@@ -221,7 +245,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 <div className="flex flex-col sm:flex-row gap-4">
                   {isLoggedIn ? (
                     <button
-                      onClick={() => document.getElementById('checkout-form')?.scrollIntoView({ behavior: 'smooth' })}
+                      onClick={handleCheckoutCTA}
                       className="group px-8 py-4 rounded-2xl text-white font-bold text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-2 hover:-translate-y-1"
                       style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 12px 35px -8px ${course.accentColor}60` }}
                     >
@@ -229,11 +253,11 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                     </button>
                   ) : (
                     <button
-                      onClick={() => document.getElementById('checkout-form')?.scrollIntoView({ behavior: 'smooth' })}
+                      onClick={handleCheckoutCTA}
                       className="group px-8 py-4 rounded-2xl text-white font-bold text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-2 hover:-translate-y-1"
                       style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 12px 35px -8px ${course.accentColor}60` }}
                     >
-                       Ver Precio y Acceder <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                       Regístrate para Cotizar <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                     </button>
                   )}
                   <Link
@@ -350,11 +374,11 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
                     {/* Call to Action mapping to Checkout form */}
                     <button
-                      onClick={() => document.getElementById('checkout-form')?.scrollIntoView({ behavior: 'smooth' })}
+                      onClick={handleCheckoutCTA}
                       className="w-full py-4 rounded-xl text-white font-bold text-base flex justify-center items-center gap-2 transition-all cursor-pointer border-none"
                       style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)` }}
                     >
-                      Ver Precios y Fechas <ArrowRight className="w-4 h-4" />
+                      {isLoggedIn ? "Ver Precios y Fechas" : "Regístrate para Cotizar"} <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -488,9 +512,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       </section>
       )}
 
-      {/* ════ CHECKOUT INLINE FORM ════ */}
-      <CourseCheckoutForm course={course} isLoggedIn={isLoggedIn} />
-
       {/* ════ CONTACT FORM ════ */}
       <CourseContactForm course={course} />
 
@@ -537,111 +558,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 }
 
 /* ─── Lead Capture Form (replaces pricing card) ─── */
-/* ─── Checkout Inline Form (replaces lead capture) ─── */
-function CourseCheckoutForm({ course, isLoggedIn }: { course: Course, isLoggedIn: boolean }) {
-  const [formName, setFormName] = useState("");
-  const [formEmail, setFormEmail] = useState("");
-  const [formPassword, setFormPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const supabase = createClient();
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formEmail || !formPassword || !formName) return;
-    setIsSubmitting(true);
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        email: formEmail,
-        password: formPassword,
-        options: { data: { full_name: formName } }
-      });
-      if (error) {
-         if (error.status === 422 || error.message.includes("User already registered") || error.message.includes("already")) {
-            // Log them in if already registered
-            await supabase.auth.signInWithPassword({ email: formEmail, password: formPassword });
-         } else {
-            alert("Error en el registro: " + error.message); 
-            setIsSubmitting(false);
-            return;
-         }
-      }
-      setTimeout(() => {
-          window.location.href = `/pago`;
-      }, 1500);
-    } catch(e) {
-      alert("Error en el registro");
-      setIsSubmitting(false);
-    }
-  }
-
-  const handleLoggedInClick = async () => {
-    setIsSubmitting(true);
-    try {
-      // Registrar carro abandonado
-      await fetch("/api/leads/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-           name: "Usuario Logueado",
-           email: "Registrado (Checkout Intent)",
-           selectedCourses: [course.title],
-           sourceCourse: course.slug,
-           leadType: "abandoned_cart"
-        })
-      });
-      setTimeout(() => {
-        window.location.href = `/pago`;
-      }, 500);
-    } catch(e) {
-      window.location.href = `/pago`;
-    }
-  };
-
-  return (
-    <section className="py-20 lg:py-32 bg-white border-t border-gray-100" id="checkout-form">
-      <div className="max-w-[800px] mx-auto px-5">
-         <div className="bg-white rounded-[2rem] p-8 lg:p-14 border border-blue-50 text-center" style={{ boxShadow: `0 20px 60px -15px ${course.accentColor}20` }}>
-            {isLoggedIn ? (
-               <>
-                  <h2 className="font-display text-3xl sm:text-4xl font-black text-[#0F172A] mb-4">¿Listo para comenzar?</h2>
-                  <p className="text-gray-500 mb-10 text-lg">Consulta las próximas fechas disponibles, ajusta tu cantidad y accede al Checkout de forma segura.</p>
-                  <button 
-                    onClick={handleLoggedInClick} 
-                    disabled={isSubmitting}
-                    className="mx-auto w-full max-w-sm py-4 rounded-xl text-white font-bold text-lg flex justify-center items-center gap-2 transition-all disabled:opacity-60 border-none cursor-pointer"
-                    style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)` }}
-                  >
-                     {isSubmitting ? <span className="animate-pulse">Procesando...</span> : "Ver Fechas y Precios"}
-                  </button>
-               </>
-            ) : (
-               <>
-                  <h2 className="font-display text-3xl sm:text-4xl font-black text-[#0F172A] mb-4">Regístrate para cotizar</h2>
-                  <p className="text-gray-500 mb-10 text-lg max-w-[500px] mx-auto">Crea tu cuenta gratuita para acceder a las fechas, precios de los módulos y opciones de pago.</p>
-                  <form onSubmit={handleRegister} className="max-w-md mx-auto space-y-5 text-left">
-                     <div className="space-y-1.5">
-                       <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre completo *</label>
-                       <input type="text" required value={formName} onChange={e=>setFormName(e.target.value)} className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
-                     </div>
-                     <div className="space-y-1.5">
-                       <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email *</label>
-                       <input type="email" required value={formEmail} onChange={e=>setFormEmail(e.target.value)} className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
-                     </div>
-                     <div className="space-y-1.5">
-                       <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Contraseña (Mínimo 6) *</label>
-                       <input type="password" required minLength={6} value={formPassword} onChange={e=>setFormPassword(e.target.value)} className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
-                     </div>
-                     <button type="submit" disabled={isSubmitting} className="w-full mt-8 py-4 rounded-xl text-white font-bold text-lg flex justify-center border-none cursor-pointer transition-all hover:scale-[1.02]" style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 10px 30px -10px ${course.accentColor}80` }}>
-                       {isSubmitting ? "Registrando..." : "Crear cuenta y continuar"}
-                     </button>
-                  </form>
-               </>
-            )}
-         </div>
-      </div>
-    </section>
-  )
-}
 
 /* ─── Enterprise Contact Form Component ─── */
 function CourseContactForm({ course }: { course: Course }) {

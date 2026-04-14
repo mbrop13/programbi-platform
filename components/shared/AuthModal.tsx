@@ -323,7 +323,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                             placeholder="Tu nombre"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
-                            required
                             disabled={loading}
                             autoComplete="name"
                             name="name"
