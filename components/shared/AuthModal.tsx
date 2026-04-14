@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, LogIn, UserPlus, Mail, Lock, Sparkles, ArrowRight, CheckCircle, AlertCircle, Loader2, User } from "lucide-react";
+import { X, LogIn, UserPlus, Mail, Lock, Sparkles, ArrowRight, CheckCircle, AlertCircle, Loader2, User, Eye, EyeOff, Phone, ChevronDown } from "lucide-react";
 import { useState, useEffect, FormEvent } from "react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
@@ -23,6 +23,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  
+  // UI states
+  const [showPassword, setShowPassword] = useState(false);
+  const [phonePrefix, setPhonePrefix] = useState("+56");
 
   // Reset state when modal opens/closes or tab changes
   useEffect(() => {
@@ -32,6 +36,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
     setPassword("");
     setFullName("");
     setWhatsapp("");
+    setShowPassword(false);
   }, [isOpen, tab]);
 
   // Update tab when defaultTab changes
@@ -94,7 +99,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
         options: {
           data: {
             full_name: fullName,
-            whatsapp: whatsapp || null,
+            whatsapp: whatsapp ? `${phonePrefix}${whatsapp}` : null,
           },
         },
       });
@@ -319,6 +324,23 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                   ) : (
                     <motion.form initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="space-y-4" onSubmit={handleRegister}>
                       <div>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nombre Completo *</label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            placeholder="Tu nombre"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            required
+                            disabled={loading}
+                            autoComplete="name"
+                            name="name"
+                            className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
+                          />
+                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                        </div>
+                      </div>
+                      <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Correo Electrónico *</label>
                         <div className="relative">
                           <input
@@ -335,43 +357,43 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                           <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
-                         <div>
-                           <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nombre (Opcional)</label>
-                           <div className="relative">
-                             <input
-                               type="text"
-                               placeholder="Tu nombre"
-                               value={fullName}
-                               onChange={(e) => setFullName(e.target.value)}
-                               disabled={loading}
-                               autoComplete="name"
-                               name="name"
-                               className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
-                             />
-                             <User className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                      <div>
+                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">WhatsApp (Opcional)</label>
+                         <div className="relative flex items-center">
+                           {/* Flag/Prefix Selector */}
+                           <div className="relative flex items-center h-full">
+                              <select 
+                                value={phonePrefix} 
+                                onChange={(e) => setPhonePrefix(e.target.value)}
+                                disabled={loading}
+                                className="h-full pl-3 pr-8 py-3 bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium text-slate-600 appearance-none cursor-pointer transition-colors"
+                              >
+                                <option value="+56">🇨🇱 +56</option>
+                                <option value="+52">🇲🇽 +52</option>
+                                <option value="+54">🇦🇷 +54</option>
+                                <option value="+57">🇨🇴 +57</option>
+                                <option value="+51">🇵🇪 +51</option>
+                                <option value="+34">🇪🇸 +34</option>
+                                <option value="+1">🇺🇸 +1</option>
+                              </select>
+                              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
                            </div>
-                         </div>
-                         <div>
-                           <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">WhatsApp (Opcional)</label>
-                           <div className="relative">
-                             <input
-                               type="tel"
-                               placeholder="+56 9..."
-                               value={whatsapp}
-                               onChange={(e) => setWhatsapp(e.target.value)}
-                               disabled={loading}
-                               name="whatsapp"
-                               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
-                             />
-                           </div>
+                           <input
+                             type="tel"
+                             placeholder="9 1234 5678"
+                             value={whatsapp}
+                             onChange={(e) => setWhatsapp(e.target.value)}
+                             disabled={loading}
+                             name="whatsapp"
+                             className="w-full pl-4 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-r-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
+                           />
                          </div>
                       </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Contraseña</label>
                         <div className="relative">
                           <input
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             placeholder="Mínimo 6 caracteres"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -380,9 +402,17 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                             disabled={loading}
                             autoComplete="new-password"
                             name="new-password"
-                            className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
+                            className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
                           />
                           <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                          <button 
+                             type="button"
+                             onClick={() => setShowPassword(!showPassword)}
+                             tabIndex={-1}
+                             className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 bg-transparent border-none cursor-pointer p-0"
+                          >
+                             {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
                         </div>
                       </div>
                       <button
