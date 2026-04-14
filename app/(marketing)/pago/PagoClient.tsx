@@ -250,7 +250,7 @@ export default function PagoClient() {
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-400/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-400/5 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="max-w-[1240px] mx-auto px-5 lg:px-10 relative z-10">
+      <div className="max-w-[1400px] mx-auto px-5 lg:px-10 relative z-10">
         <Link href="/cursos" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 font-medium mb-6 no-underline transition-colors">
           <ArrowLeft className="w-4 h-4" /> Volver al catálogo
         </Link>
@@ -286,7 +286,7 @@ export default function PagoClient() {
 
         <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
           {/* Main Course List */}
-          <div className="lg:col-span-8 space-y-6">
+          <div className="lg:col-span-7 space-y-6">
             {sortedCourses.map((course) => {
                const activeLevel = selectedLevels[course.slug];
                const currentLevelData = course.levels?.find(l => l.name === activeLevel);
@@ -319,7 +319,7 @@ export default function PagoClient() {
                     <div className={`bg-white rounded-3xl border ${itemQty > 0 || entSelected ? 'border-[#1890FF] ring-1 ring-[#1890FF]/30' : 'border-gray-200'} p-4 lg:p-6 transition-all hover:shadow-lg flex flex-col sm:flex-row gap-6 items-start sm:items-center`}>
                        
                        {/* Left Image */}
-                       <div className="w-full sm:w-36 h-40 sm:h-28 shrink-0 relative rounded-2xl overflow-hidden border border-gray-100 bg-gray-50">
+                       <div className="w-full sm:w-56 h-48 sm:h-40 shrink-0 relative rounded-2xl overflow-hidden border border-gray-100 bg-gray-50">
                           <Image src={course.imageUrl} alt={course.title} fill className="object-cover" unoptimized />
                           {isBundle && (
                              <div className="absolute top-2 left-2 bg-[#1890FF] text-white text-[10px] font-black uppercase px-2 py-1 rounded-md">
@@ -350,7 +350,7 @@ export default function PagoClient() {
                             </div>
                           )}
 
-                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-gray-400 font-medium">
+                          <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-500 font-medium mt-2">
                                {hasScheduleActive && schedule ? (
                                   <span className="flex items-center gap-1 text-emerald-600"><Calendar className="w-3.5 h-3.5" /> Inicio: {schedule.start_date ? formatScheduleDate(schedule.start_date) : ''}</span>
                                ) : (
@@ -426,7 +426,7 @@ export default function PagoClient() {
           </div>
 
           {/* Checkout Widget Column */}
-          <div className="lg:col-span-4">
+          <div className="lg:col-span-5">
              <div className="sticky top-28 w-full">
                 <AnimatePresence mode="wait">
                   {mode === "individual" ? (
@@ -539,7 +539,7 @@ export default function PagoClient() {
                                 className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" />
                             </div>
                             <div className="space-y-1.5">
-                              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email corporativo *</label>
+                              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email *</label>
                               <input type="email" required value={entEmail} onChange={e => setEntEmail(e.target.value)}
                                 className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" />
                             </div>
@@ -560,8 +560,23 @@ export default function PagoClient() {
                                   className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" />
                               </div>
                             </div>
+                            {enterpriseToggles.size > 0 && (
+                              <div className="bg-indigo-50/50 rounded-xl p-3 border border-indigo-100/50">
+                                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-2">Cursos sumados a cotización:</p>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {Array.from(enterpriseToggles).map(toggle => {
+                                    const split = toggle.split("-");
+                                    const level = split.pop();
+                                    const slugPart = split.join("-");
+                                    const objName = allCourses.find(c => c.slug === slugPart)?.title;
+                                    return <span key={toggle} className="text-[11px] font-bold bg-white text-indigo-600 border border-indigo-200 px-2 py-1 rounded-lg shadow-sm">{objName} - {level}</span>
+                                  })}
+                                </div>
+                              </div>
+                            )}
+
                             <div className="space-y-1.5">
-                              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Mensaje</label>
+                              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Mensaje (Opcional)</label>
                               <textarea rows={2} value={entMessage} onChange={e => setEntMessage(e.target.value)}
                                 className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all resize-none" />
                             </div>
