@@ -12,6 +12,28 @@ interface AuthModalProps {
   defaultTab?: "login" | "register";
 }
 
+const COUNTRIES = [
+  { code: "+56", flag: "🇨🇱", name: "Chile" },
+  { code: "+52", flag: "🇲🇽", name: "México" },
+  { code: "+54", flag: "🇦🇷", name: "Argentina" },
+  { code: "+57", flag: "🇨🇴", name: "Colombia" },
+  { code: "+51", flag: "🇵🇪", name: "Perú" },
+  { code: "+593", flag: "🇪🇨", name: "Ecuador" },
+  { code: "+507", flag: "🇵🇦", name: "Panamá" },
+  { code: "+58", flag: "🇻🇪", name: "Venezuela" },
+  { code: "+598", flag: "🇺🇾", name: "Uruguay" },
+  { code: "+595", flag: "🇵🇾", name: "Paraguay" },
+  { code: "+591", flag: "🇧🇴", name: "Bolivia" },
+  { code: "+502", flag: "🇬🇹", name: "Guatemala" },
+  { code: "+506", flag: "🇨🇷", name: "Costa Rica" },
+  { code: "+503", flag: "🇸🇻", name: "El Salvador" },
+  { code: "+504", flag: "🇭🇳", name: "Honduras" },
+  { code: "+505", flag: "🇳🇮", name: "Nicaragua" },
+  { code: "+1", flag: "🇩🇴", name: "Rep. Dominicana" },
+  { code: "+34", flag: "🇪🇸", name: "España" },
+  { code: "+1", flag: "🇺🇸", name: "EE.UU." },
+];
+
 export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalProps) {
   const [tab, setTab] = useState<"login" | "register">(defaultTab);
   const [loading, setLoading] = useState(false);
@@ -27,6 +49,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
   // UI states
   const [showPassword, setShowPassword] = useState(false);
   const [phonePrefix, setPhonePrefix] = useState("+56");
+  const [showPrefixDropdown, setShowPrefixDropdown] = useState(false);
 
   // Reset state when modal opens/closes or tab changes
   useEffect(() => {
@@ -37,6 +60,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
     setFullName("");
     setWhatsapp("");
     setShowPassword(false);
+    setShowPrefixDropdown(false);
   }, [isOpen, tab]);
 
   // Update tab when defaultTab changes
@@ -361,34 +385,52 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">WhatsApp (Opcional)</label>
                          <div className="relative flex items-center">
                            {/* Flag/Prefix Selector */}
+                           {/* Custom Flag/Prefix Selector */}
                            <div className="relative flex items-center h-full">
-                              <select 
-                                value={phonePrefix} 
-                                onChange={(e) => setPhonePrefix(e.target.value)}
+                              <button
+                                type="button"
                                 disabled={loading}
-                                className="h-full pl-3 pr-8 py-3 bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium text-slate-600 appearance-none cursor-pointer transition-colors"
+                                onClick={() => setShowPrefixDropdown(!showPrefixDropdown)}
+                                className="h-full px-3 py-3 bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium text-slate-600 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                               >
-                                <option value="+56">🇨🇱 +56</option>
-                                <option value="+52">🇲🇽 +52</option>
-                                <option value="+54">🇦🇷 +54</option>
-                                <option value="+57">🇨🇴 +57</option>
-                                <option value="+51">🇵🇪 +51</option>
-                                <option value="+593">🇪🇨 +593</option>
-                                <option value="+507">🇵🇦 +507</option>
-                                <option value="+58">🇻🇪 +58</option>
-                                <option value="+598">🇺🇾 +598</option>
-                                <option value="+595">🇵🇾 +595</option>
-                                <option value="+591">🇧🇴 +591</option>
-                                <option value="+502">🇬🇹 +502</option>
-                                <option value="+506">🇨🇷 +506</option>
-                                <option value="+503">🇸🇻 +503</option>
-                                <option value="+504">🇭🇳 +504</option>
-                                <option value="+505">🇳🇮 +505</option>
-                                <option value="+1">🇩🇴 +1</option>
-                                <option value="+34">🇪🇸 +34</option>
-                                <option value="+1">🇺🇸 +1</option>
-                              </select>
-                              <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={14} />
+                                <span>{COUNTRIES.find(c => c.code === phonePrefix)?.flag} {phonePrefix}</span>
+                                <ChevronDown className="text-slate-400 ml-1" size={14} />
+                              </button>
+                              
+                              {/* Dropdown Menu */}
+                              <AnimatePresence>
+                                {showPrefixDropdown && (
+                                  <>
+                                    {/* Invisible backdrop to dismiss dropdown */}
+                                    <div className="fixed inset-0 z-10" onClick={() => setShowPrefixDropdown(false)} />
+                                    
+                                    <motion.div
+                                      initial={{ opacity: 0, y: -5 }}
+                                      animate={{ opacity: 1, y: 0 }}
+                                      exit={{ opacity: 0, y: -5 }}
+                                      className="absolute top-full left-0 mt-1 w-48 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-20"
+                                    >
+                                      <div className="max-h-56 overflow-y-auto py-2 flex flex-col">
+                                        {COUNTRIES.map((country, idx) => (
+                                          <button
+                                            key={idx}
+                                            type="button"
+                                            onClick={() => {
+                                              setPhonePrefix(country.code);
+                                              setShowPrefixDropdown(false);
+                                            }}
+                                            className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 border-none bg-transparent cursor-pointer"
+                                          >
+                                            <span className="text-base">{country.flag}</span>
+                                            <span className="font-medium text-slate-700">{country.name}</span>
+                                            <span className="text-slate-400 text-xs ml-auto">{country.code}</span>
+                                          </button>
+                                        ))}
+                                      </div>
+                                    </motion.div>
+                                  </>
+                                )}
+                              </AnimatePresence>
                            </div>
                            <input
                              type="tel"
