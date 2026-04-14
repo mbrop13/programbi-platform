@@ -386,18 +386,17 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                       </div>
                       <div>
                          <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">WhatsApp (Opcional)</label>
-                         <div className="relative flex items-center">
-                           {/* Flag/Prefix Selector */}
+                         <div className="flex items-stretch">
                            {/* Custom Flag/Prefix Selector */}
-                           <div className="relative flex items-center h-full">
+                           <div className="relative flex items-stretch">
                               <button
                                 type="button"
                                 disabled={loading}
                                 onClick={() => setShowPrefixDropdown(!showPrefixDropdown)}
-                                className="h-full px-3 py-3 bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium text-slate-600 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                className="px-3 py-3 bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium text-slate-600 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                               >
                                 <span>{COUNTRIES.find(c => c.code === phonePrefix)?.flag} {phonePrefix}</span>
-                                <ChevronDown className="text-slate-400 ml-1" size={14} />
+                                <ChevronDown className="text-slate-400 ml-0.5" size={14} />
                               </button>
                               
                               {/* Dropdown Menu */}
