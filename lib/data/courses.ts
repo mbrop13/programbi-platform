@@ -97,6 +97,39 @@ export const courses: Course[] = [
       },
     ],
     levels: [
+      { 
+        name: "Básico", 
+        price: 249000, 
+        durationHours: 48, 
+        whatYouLearn: [
+          "Fundamentos y bases de datos con SQL Server", 
+          "Consultas SELECT, JOINs y subqueries", 
+          "Funciones de agregación y agrupamiento", 
+          "Procedimientos almacenados y diseño"
+        ] 
+      },
+      { 
+        name: "Intermedio", 
+        price: 249000, 
+        durationHours: 48, 
+        whatYouLearn: [
+          "Conexión a fuentes, ETL y modelado con Power Query", 
+          "Modelado dimensional y relaciones", 
+          "Fórmulas DAX intermedias y avanzadas", 
+          "Dashboards interactivos y publicación"
+        ] 
+      },
+      { 
+        name: "Avanzado", 
+        price: 249000, 
+        durationHours: 48, 
+        whatYouLearn: [
+          "Fundamentos de Python y entorno Colab", 
+          "Manipulación y limpieza de datos con Pandas", 
+          "Visualización con Matplotlib y Seaborn", 
+          "Automatización de reportes"
+        ] 
+      },
       {
         name: "Programa Completo",
         price: 489000,
@@ -179,17 +212,17 @@ export const courses: Course[] = [
   },
   {
     slug: "analitica-mineria",
-    title: "Analítica para Minería",
+    title: "Programa Industrial & Minero 2026: Análisis de Datos para la Minería",
     shortDescription:
-      "Optimización de procesos mineros reales. Transforma datos operativos de faena en activos estratégicos.",
+      "Optimización de Procesos y Toma de Decisiones en Entornos Mineros. Un trayecto de 64 horas para transformar datos operativos en activos estratégicos.",
     description:
-      "Programa especializado para profesionales del sector minero. Aprende a analizar datos de operaciones, mantenimiento y seguridad con Excel, Power BI, SQL y Python.",
+      "Dirigido a profesionales y técnicos del sector minero (operaciones, finanzas, planificación, RRHH y mantenimiento) que gestionan volúmenes moderados y grandes de datos. Ideal para automatizar el control de proyectos, seguimiento de metas y paneles de operaciones. Respaldo ProgramBI: Programa diseñado con la experiencia de haber capacitado a empresas líderes como CAP, AngloAmerican y Minera Meridian.",
     category: "especializacion",
     categoryLabel: "ESPECIALIZACIÓN",
     badgeLabel: "ESPECIALIZACIÓN",
     badgeColor: "#B45309",
-    techStack: ["Operaciones", "Excel", "Power BI"],
-    durationHours: 96,
+    techStack: ["Excel", "Power BI", "SQL", "Python"],
+    durationHours: 64,
     modality: "online",
     level: "intermedio",
     imageUrl:
@@ -200,52 +233,61 @@ export const courses: Course[] = [
     sortOrder: 5,
     youtubeVideoId: "LiupEKDc3Ms",
     whatYouLearn: [
-      "KPIs mineros: tonelaje, disponibilidad, LTIF",
-      "Dashboards operativos en Power BI",
-      "Predicción de fallas con Python",
-      "Automatización de reportes de turno",
-      "Optimización de flotas y equipos",
+      "Automatización Extrema: Elimina tareas repetitivas con Macros, Power Query y Python",
+      "Visualización de Impacto: Dashboards interactivos para monitoreo de KPIs en tiempo real",
+      "Integración de Datos: Conecta y limpia datos de SQL, APIs y Excel",
+      "Decisiones Predictivas: Incorpora IA para detectar tendencias en la operación",
+      "Eficiencia Operativa: Reduce procesos de horas en Excel a solo minutos",
     ],
     syllabus: [
       {
-        module: "Excel Avanzado para Minería",
+        module: "Módulo I: Excel - Gestión Administrativa",
         topics: [
-          "Modelos de costos operativos",
-          "Tablas dinámicas y Power Query",
-          "VBA para automatización de reportes",
+          "Entorno y Datos: Configuración de informes, textos y fechas",
+          "Fórmulas de Control: SI, Y, O para validaciones automáticas",
+          "Búsquedas Inteligentes: BUSCARV e INDICE/COINCIDIR en faena",
+          "Power Query Inicial: Importación y consolidación de datos",
+          "Macros y VBA: Reportes diarios rápidos y sin errores",
         ],
-        hours: 24,
+        hours: 16,
       },
       {
-        module: "SQL para Datos Operativos",
+        module: "Módulo II: Power BI - Inteligencia de Negocios",
         topics: [
-          "Consultas de producción por turno",
-          "Joins entre tablas de equipos y operaciones",
-          "Vistas y procedimientos almacenados",
+          "Modelado y Relaciones: Diseño de modelos de datos",
+          "DAX Intermedio: CALCULATE, SWITCH, SELECTEDVALUE",
+          "Inteligencia de Tiempo: YTD, MTD, SAMEPERIODLASTYEAR",
+          "Visualización Avanzada y Seguridad RLS por departamento",
         ],
-        hours: 24,
+        hours: 16,
       },
       {
-        module: "Power BI: Control Operacional",
+        module: "Módulo III: SQL Server - Estructura de Datos",
         topics: [
-          "Dashboard de producción en tiempo real",
-          "KPIs de disponibilidad y utilización",
-          "DAX para métricas mineras",
+          "Consultas Básicas: SELECT, WHERE, MONTH, YEAR",
+          "Cruces y Resúmenes: Joins y GROUP BY para valorización",
+          "Programación T-SQL: Vistas y Procedimientos Almacenados",
+          "Integración de IA: Generación de queries complejas masivas",
         ],
-        hours: 24,
+        hours: 16,
       },
       {
-        module: "Python: Predicción y ML",
+        module: "Módulo IV: Python - Ciencia de Datos",
         topics: [
-          "Análisis de sensores y presiones",
-          "Modelos predictivos de mantenimiento",
-          "Alertas automáticas con Python",
+          "Librería Pandas y Manipulación: DataFrames y Merge",
+          "Visualización Interactiva: Seaborn y Plotly",
+          "Integración con IA: Extracción de datos en servidores",
+          "Proyecto Final: Limpieza y visulización aplicada a la faena",
         ],
-        hours: 24,
+        hours: 16,
       },
     ],
     levels: [
-      { name: "Programa Completo", price: 489000, durationHours: 144, whatYouLearn: ["KPIs mineros: tonelaje, disponibilidad, LTIF", "Modelos de costos operativos en Excel", "Consultas SQL de producción por turno", "Tablas dinámicas y Power Query para faena", "Dashboard de producción en tiempo real", "KPIs de disponibilidad y utilización", "DAX para métricas mineras especializadas", "Predicción de fallas con Machine Learning", "Alertas automáticas con Python"] }
+      { name: "Módulo I: Excel", price: 249000, durationHours: 16, whatYouLearn: ["Configuración de informes y tipos de datos", "Validaciones con funciones lógicas", "BuscarV e Índice en bases mineras", "Power query básico para recolección"] },
+      { name: "Módulo II: Power BI", price: 249000, durationHours: 16, whatYouLearn: ["Relación de tablas dinámicas", "Cálculos con funciones DAX (Calculate)", "Inteligencia de tiempo en producción", "Implementación de seguridad RLS por área"] },
+      { name: "Módulo III: SQL", price: 249000, durationHours: 16, whatYouLearn: ["Consultas de bases masivas mineras", "Uso de Joins para consolidaciones", "Funciones de agregación en reportes", "Automatización total de consultas SQL"] },
+      { name: "Módulo IV: Python", price: 249000, durationHours: 16, whatYouLearn: ["Manipulación avanzada con Pandas", "Merge y transformación de datos", "Uso de Seaborn y Plotly", "Integración de IA predictiva minera"] },
+      { name: "Programa Completo", price: 489000, durationHours: 64, whatYouLearn: ["Elimina labores tediosas con Excel Macros", "Dashboards interactivos en Power BI", "Extracción y consolidación en SQL Server", "Python, ML y herramientas predictivas"] }
     ],
   },
   {
@@ -626,7 +668,10 @@ export const courses: Course[] = [
       },
     ],
     levels: [
-      { name: "Programa Completo", price: 489000, durationHours: 144, whatYouLearn: ["Modelamiento VAN, TIR y WACC", "Flujos de caja proyectados", "Consultas SQL de portafolio", "APIs de datos bursátiles", "VaR histórico y paramétrico", "Modelos de riesgo con Python", "Dashboard CFO profesional", "KPIs financieros con DAX"] }
+      { name: "Básico", price: 249000, durationHours: 32, whatYouLearn: ["Modelamiento VAN, TIR y WACC", "Flujos de caja proyectados", "Consultas de portafolio", "Series de tiempo en SQL"] },
+      { name: "Intermedio", price: 249000, durationHours: 32, whatYouLearn: ["APIs de datos bursátiles", "VaR histórico y paramétrico", "Modelos de riesgo con Python", "Automatización de análisis"] },
+      { name: "Avanzado", price: 249000, durationHours: 32, whatYouLearn: ["Dashboard CFO profesional", "KPIs financieros con DAX", "Reportes AUM y rendimiento", "Alertas y suscripciones automáticas"] },
+      { name: "Programa Completo", price: 489000, durationHours: 96, whatYouLearn: ["Modelamiento VAN, TIR y WACC", "Flujos de caja proyectados", "Consultas SQL de portafolio", "APIs de datos bursátiles", "VaR histórico y paramétrico", "Modelos de riesgo con Python", "Dashboard CFO profesional", "KPIs financieros con DAX"] }
     ],
   },
   {

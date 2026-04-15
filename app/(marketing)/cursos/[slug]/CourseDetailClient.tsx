@@ -564,6 +564,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 function CourseContactForm({ course }: { course: Course }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [contactType, setContactType] = useState<"personal" | "empresa">("personal");
   const [selectedServices, setSelectedServices] = useState<string[]>(["Capacitación In-Company"]);
 
   const enterpriseServices = [
@@ -588,25 +589,27 @@ function CourseContactForm({ course }: { course: Course }) {
       const formData = new FormData(e.target as HTMLFormElement);
       const name = formData.get('name') as string;
       const email = formData.get('email') as string;
-      const company = formData.get('company') as string;
-      const position = formData.get('position') as string;
-      const employeeCount = formData.get('employeeCount') as string;
       const message = formData.get('message') as string;
+      
+      const payload: any = {
+        name,
+        email,
+        message,
+        sourceCourse: course.title,
+        leadType: contactType,
+      };
+
+      if (contactType === "empresa") {
+        payload.company = formData.get('company') as string;
+        payload.position = formData.get('position') as string;
+        payload.employeeCount = formData.get('employeeCount') as string;
+        payload.selectedCourses = selectedServices;
+      }
 
       const res = await fetch('/api/leads/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          company,
-          position,
-          employeeCount,
-          message,
-          selectedCourses: selectedServices,
-          sourceCourse: course.title,
-          leadType: "enterprise",
-        })
+        body: JSON.stringify(payload)
       });
 
       if (!res.ok) throw new Error("Error submitting form");
@@ -619,47 +622,71 @@ function CourseContactForm({ course }: { course: Course }) {
     }
   };
 
+  const isPersonal = contactType === "personal";
+
   return (
     <section className="py-16 lg:py-24 bg-[#F8FAFC]">
       <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
-          {/* Left: Enterprise Info */}
+          {/* Left: Info */}
           <FadeIn>
             <div>
               <span className="inline-flex items-center gap-2 text-indigo-600 font-bold tracking-widest uppercase text-xs bg-indigo-50 px-4 py-1.5 rounded-full mb-6">
-                🏢 Soluciones Empresariales
+                {isPersonal ? "👨‍🎓 Cotización de Curso" : "🏢 Soluciones Empresariales"}
               </span>
               <h2 className="font-display font-black text-3xl sm:text-4xl text-[#0F172A] mb-5 leading-tight">
-                Capacita a tu equipo{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-[#1890FF]">con expertos</span>
+                {isPersonal ? (
+                  <>Cotiza tu programa y recibe <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-[#1890FF]">atención personalizada</span></>
+                ) : (
+                  <>Capacita a tu equipo <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-[#1890FF]">con expertos</span></>
+                )}
               </h2>
               <p className="text-gray-500 text-lg leading-relaxed mb-8">
-                Diseñamos programas de capacitación a medida para empresas. Cursos grupales, dashboards personalizados y automatización.
+                {isPersonal 
+                  ? "Te enviaremos todos los detalles, temarios, precios y opciones de financiamiento para que inicies tu formación con éxito."
+                  : "Diseñamos programas de capacitación a medida para empresas. Cursos grupales, dashboards personalizados y automatización."
+                }
               </p>
 
               <div className="space-y-4">
-                {[
-                  { icon: "🏢", text: "Capacitación grupal in-company o virtual" },
-                  { icon: "📊", text: "Dashboards personalizados para tu empresa" },
-                  { icon: "⚡", text: "Automatización de procesos corporativos" },
-                  { icon: "📋", text: "Certificación para todos los participantes" },
-                  { icon: "💰", text: "Precios corporativos con descuento por volumen" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3 text-gray-600">
-                    <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center text-sm flex-shrink-0">
-                      {item.icon}
+                {isPersonal ? (
+                  [
+                    { icon: "📅", text: "Fechas de inicio y horarios flexibles" },
+                    { icon: "💸", text: "Opciones de pago en cuotas y descuentos" },
+                    { icon: "🎓", text: "Certificación acreditada al finalizar" },
+                    { icon: "👨‍🏫", text: "Asesoría vocacional personalizada" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-3 text-gray-600">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center text-sm flex-shrink-0">
+                        {item.icon}
+                      </div>
+                      <span className="text-sm font-medium">{item.text}</span>
                     </div>
-                    <span className="text-sm font-medium">{item.text}</span>
-                  </div>
-                ))}
+                  ))
+                ) : (
+                  [
+                    { icon: "🏢", text: "Capacitación grupal in-company o virtual" },
+                    { icon: "📊", text: "Dashboards personalizados para tu empresa" },
+                    { icon: "⚡", text: "Automatización de procesos corporativos" },
+                    { icon: "📋", text: "Certificación para todos los participantes" },
+                    { icon: "💰", text: "Precios corporativos con descuento por volumen" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-3 text-gray-600">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-50 flex items-center justify-center text-sm flex-shrink-0">
+                        {item.icon}
+                      </div>
+                      <span className="text-sm font-medium">{item.text}</span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </FadeIn>
 
-          {/* Right: Enterprise Form */}
+          {/* Right: Form */}
           <FadeIn delay={0.2}>
             <div
-              className="bg-white rounded-[2rem] p-8 lg:p-10 border border-gray-200"
+              className="bg-white rounded-[2rem] p-8 lg:p-10 border border-gray-200 relative"
               style={{ boxShadow: "0 20px 50px -15px rgba(0,0,0,0.08)" }}
             >
               {isSuccess ? (
@@ -670,79 +697,104 @@ function CourseContactForm({ course }: { course: Course }) {
                 >
                   <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-5 text-emerald-500 text-3xl">✓</div>
                   <h3 className="text-xl font-black text-gray-900 mb-2">¡Solicitud Enviada!</h3>
-                  <p className="text-gray-500 text-sm">Te contactaremos en menos de 24 horas con una cotización personalizada.</p>
+                  <p className="text-gray-500 text-sm">Te contactaremos muy pronto con toda la información solicitada.</p>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-5">
-                  <h3 className="font-display font-bold text-xl text-[#0F172A] mb-1">Cotización Empresarial</h3>
-                  <p className="text-sm text-gray-400 mb-4">Te enviaremos una propuesta personalizada en menos de 24 horas.</p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre *</label>
-                      <input type="text" name="name" required placeholder="Tu nombre"
-                        className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email corporativo *</label>
-                      <input type="email" name="email" required placeholder="contacto@empresa.com"
-                        className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
-                    </div>
+                <>
+                  <div className="flex bg-gray-100 p-1 rounded-xl mb-8">
+                    <button
+                      onClick={() => setContactType("personal")}
+                      className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${isPersonal ? 'bg-white text-gray-900 shadow' : 'text-gray-500'}`}
+                    >
+                      Cotización
+                    </button>
+                    <button
+                      onClick={() => setContactType("empresa")}
+                      className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${!isPersonal ? 'bg-white text-gray-900 shadow' : 'text-gray-500'}`}
+                    >
+                      Cotización Empresa
+                    </button>
                   </div>
+                
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <h3 className="font-display font-bold text-xl text-[#0F172A] mb-1">
+                      {isPersonal ? "Solicita Información" : "Cotización Empresarial"}
+                    </h3>
+                    <p className="text-sm text-gray-400 mb-4">
+                      {isPersonal ? "Déjanos tus datos y te enviaremos el folleto completo." : "Te enviaremos una propuesta personalizada en menos de 24 horas."}
+                    </p>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Empresa *</label>
-                      <input type="text" name="company" required placeholder="Nombre empresa"
-                        className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre *</label>
+                        <input type="text" name="name" required placeholder="Tu nombre"
+                          className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email *</label>
+                        <input type="email" name="email" required placeholder={isPersonal ? "tu@email.com" : "contacto@empresa.com"}
+                          className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Cargo</label>
-                      <input type="text" name="position" placeholder="Ej: Gerente TI"
-                        className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">N° personas</label>
-                      <input type="number" name="employeeCount" min="1" placeholder="10"
-                        className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
-                    </div>
-                  </div>
 
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Servicios de interés</label>
-                    <div className="flex flex-wrap gap-2">
-                      {enterpriseServices.map(service => {
-                        const isSelected = selectedServices.includes(service);
-                        return (
-                          <button key={service} type="button" onClick={() => toggleService(service)}
-                            className={`px-4 py-2 rounded-full text-xs font-bold transition-all border cursor-pointer ${isSelected ? 'bg-indigo-50 border-indigo-400 text-indigo-600' : 'bg-white border-gray-200 text-gray-500 hover:border-indigo-200 hover:bg-indigo-50/50'}`}>
-                            {service}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+                    {!isPersonal && (
+                      <>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Empresa *</label>
+                            <input type="text" name="company" required placeholder="Nombre empresa"
+                              className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Cargo</label>
+                            <input type="text" name="position" placeholder="Ej: Gerente TI"
+                              className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">N° personas</label>
+                            <input type="number" name="employeeCount" min="1" placeholder="10"
+                              className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                          </div>
+                        </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Detalle de requerimientos</label>
-                    <textarea name="message" rows={3}
-                      placeholder="Cuéntanos tus necesidades: ¿cuántas personas? ¿qué herramientas usan actualmente?"
-                      className="w-full rounded-xl p-4 resize-none text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
-                  </div>
-
-                  <motion.button type="submit" disabled={isSubmitting}
-                    className="w-full py-4 rounded-xl text-white font-bold text-base flex justify-center items-center gap-2 transition-all disabled:opacity-70 border-none cursor-pointer"
-                    style={{ background: "linear-gradient(135deg, #6366F1, #4338CA)", boxShadow: "0 10px 30px -5px rgba(99,102,241,0.3)" }}
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    {isSubmitting ? (
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    ) : (
-                      <>🏢 Solicitar Cotización Empresarial</>
+                        <div className="space-y-3">
+                          <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Servicios de interés</label>
+                          <div className="flex flex-wrap gap-2">
+                            {enterpriseServices.map(service => {
+                              const isSelected = selectedServices.includes(service);
+                              return (
+                                <button key={service} type="button" onClick={() => toggleService(service)}
+                                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all border cursor-pointer ${isSelected ? 'bg-indigo-50 border-indigo-400 text-indigo-600' : 'bg-white border-gray-200 text-gray-500 hover:border-indigo-200 hover:bg-indigo-50/50'}`}>
+                                  {service}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      </>
                     )}
-                  </motion.button>
-                </form>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Detalle o dudas adicionales</label>
+                      <textarea name="message" rows={3}
+                        placeholder={isPersonal ? "¿Tienes alguna consulta específica sobre el temario o proceso?" : "Cuéntanos tus necesidades: ¿cuántas personas? ¿qué herramientas usan actualmente?"}
+                        className="w-full rounded-xl p-4 resize-none text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                    </div>
+
+                    <motion.button type="submit" disabled={isSubmitting}
+                      className="w-full py-4 rounded-xl text-white font-bold text-base flex justify-center items-center gap-2 transition-all disabled:opacity-70 border-none cursor-pointer"
+                      style={{ background: "linear-gradient(135deg, #6366F1, #4338CA)", boxShadow: "0 10px 30px -5px rgba(99,102,241,0.3)" }}
+                      whileHover={{ y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      {isSubmitting ? (
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <>{isPersonal ? "✉️ Solicitar Cotización" : "🏢 Solicitar Cotización Empresarial"}</>
+                      )}
+                    </motion.button>
+                  </form>
+                </>
               )}
             </div>
           </FadeIn>
