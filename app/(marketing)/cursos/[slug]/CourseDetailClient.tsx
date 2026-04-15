@@ -20,6 +20,7 @@ import PowerBiSyllabus from "./syllabuses/PowerBiSyllabus";
 import ExcelSyllabus from "./syllabuses/ExcelSyllabus";
 import FinanceSyllabus from "./syllabuses/FinanceSyllabus";
 import MiningSyllabus from "./syllabuses/MiningSyllabus";
+import DataAnalyticsSyllabus from "./syllabuses/DataAnalyticsSyllabus";
 
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
@@ -390,7 +391,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       )}
 
       {/* ════ SYLLABUS ════ */}
-      {course.slug === 'analitica-financiera' ? (
+      {course.slug === 'analisis-de-datos' ? (
+        <DataAnalyticsSyllabus />
+      ) : course.slug === 'analitica-financiera' ? (
         <FinanceSyllabus />
       ) : course.slug === 'analitica-mineria' ? (
         <MiningSyllabus />
