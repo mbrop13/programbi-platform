@@ -18,6 +18,13 @@ export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [acceptsPrivacy, setAcceptsPrivacy] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // Form fields
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [message, setMessage] = useState("");
 
   const toggleChip = (chip: string) => {
     setSelectedChips((prev) =>
@@ -25,13 +32,36 @@ export default function ContactSection() {
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!name.trim() || !email.trim()) return;
+
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/leads/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          whatsapp: whatsapp.trim() || null,
+          message: message.trim() || null,
+          selectedCourses: selectedChips,
+          leadType: "contact",
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al enviar");
+
       setIsSuccess(true);
-    }, 1500);
+    } catch (err: any) {
+      setErrorMsg(err.message || "Ocurrió un error. Intenta de nuevo.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -120,6 +150,8 @@ export default function ContactSection() {
                       <input
                         type="text"
                         required
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         placeholder="Ej: Juan Pérez"
                         className="w-full rounded-xl p-4 text-base bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
                       />
@@ -131,6 +163,8 @@ export default function ContactSection() {
                         <input
                           type="email"
                           required
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
                           placeholder="juan@empresa.com"
                           className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
                         />
@@ -139,6 +173,8 @@ export default function ContactSection() {
                         <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">WhatsApp</label>
                         <input
                           type="tel"
+                          value={whatsapp}
+                          onChange={(e) => setWhatsapp(e.target.value)}
                           placeholder="+56 9..."
                           className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
                         />
@@ -174,10 +210,18 @@ export default function ContactSection() {
                       </label>
                       <textarea
                         rows={2}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
                         placeholder="¿Dudas sobre el temario?"
                         className="w-full rounded-xl p-4 resize-none text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
                       />
                     </div>
+
+                    {errorMsg && (
+                      <div className="p-3 rounded-xl bg-red-50 text-red-600 text-xs font-semibold border border-red-100">
+                        {errorMsg}
+                      </div>
+                    )}
 
                     <motion.button
                       type="submit"
