@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronDown, Check, Star, Target, Trophy, Play, BarChart, Database, Code, FileSpreadsheet, MessageCircle, Phone } from "lucide-react";
+import { ChevronDown, Check, Star, Target, Trophy, Play, BarChart, Database, Code, Construction, Bot, MessageCircle, Phone, TrendingUp, HandCoins } from "lucide-react";
 
 export default function FinanceSyllabus() {
-  const [activeTab, setActiveTab] = useState("modulo1");
-  const [openItems, setOpenItems] = useState<string[]>([]);
+  const [activeTab, setActiveTab] = useState("nivel1");
+  const [openItems, setOpenItems] = useState<string[]>(["n1-pbi"]);
 
   const toggleItem = (id: string) => {
     setOpenItems((prev) =>
@@ -14,313 +14,252 @@ export default function FinanceSyllabus() {
   };
 
   return (
-    <div className="py-20 bg-white border-y border-gray-100 relative overflow-hidden font-sans">
+    <div className="py-20 bg-blue-50/30 border-y border-blue-100 relative overflow-hidden font-sans">
       {/* Background Decorators */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-50/50 blur-[100px] rounded-full -z-10 pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-100/40 blur-[100px] rounded-full -z-10 pointer-events-none" />
       
       <div className="container mx-auto max-w-5xl px-6 relative z-10">
         
         {/* CABECERA */}
         <div className="text-center mb-16 relative">
-          <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-emerald-50/80 text-emerald-700 font-bold tracking-wide uppercase text-xs mb-6 border border-emerald-100/50 shadow-sm backdrop-blur-sm">
+          <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-blue-50/80 text-blue-700 font-bold tracking-wide uppercase text-xs mb-6 border border-blue-100/50 shadow-sm backdrop-blur-sm">
             Programa Data Analytics 2026
           </span>
-          <h2 className="text-4xl md:text-5xl font-black text-emerald-900 tracking-tight mb-6 font-display leading-tight">
-            Análisis de Datos para el <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-800">Sector Financiero</span>
+          <h2 className="text-4xl md:text-5xl lg:text-7xl font-black text-slate-900 tracking-tight mb-6 font-display leading-tight">
+            Análisis de Datos para el <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-800">Sector Financiero</span>
           </h2>
-          <p className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
-            Un recorrido integral de 64 horas diseñado para dominar las herramientas líderes aplicadas a valoración de activos, riesgos y presupuestos.
+          <p className="text-base md:text-xl text-slate-600 max-w-4xl mx-auto font-light leading-relaxed">
+            Un trayecto formativo de 144 horas divididas en 3 niveles, combinando el poder de <strong>Power BI, SQL Server y Python</strong> para optimizar reportes, pronósticos y controles.
           </p>
         </div>
 
         {/* INFORMACIÓN GENERAL */}
-        <div className="grid md:grid-cols-5 gap-6 mb-14">
-            <div className="md:col-span-2 bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] relative overflow-hidden group hover:border-emerald-100 transition-colors">
-                <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gray-50 rounded-full blur-2xl group-hover:bg-emerald-50/50 transition-colors pointer-events-none" />
-                <h3 className="text-lg font-bold text-emerald-900 mb-3 flex items-center gap-2">
-                    <Target className="w-5 h-5 text-emerald-700" /> Dirigido a:
+        <div className="grid md:grid-cols-2 gap-8 mb-16">
+            <div className="bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden group hover:border-blue-200 transition-colors">
+                <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-slate-50 rounded-full blur-2xl group-hover:bg-blue-50/50 transition-colors pointer-events-none" />
+                <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                    <Target className="w-6 h-6 text-blue-700" /> Dirigido a:
                 </h3>
-                <p className="text-sm text-gray-600 leading-relaxed relative z-10">
-                    Analistas de inversiones, contadores, gerentes y auditores en bancos, fondos de inversión y grandes corporaciones que buscan automatizar procesos y tomar decisiones basadas en datos.
+                <p className="text-base text-slate-600 leading-relaxed relative z-10">
+                    Analistas de inversiones, contadores, gerentes de finanzas, auditores y especialistas que buscan dominar herramientas avanzadas. Perfecto para equipos en bancos, fondos de inversión y departamentos contables empresariales.
                 </p>
+                <div className="mt-8 pt-8 border-t border-slate-100">
+                    <p className="text-xs text-blue-800 flex items-center gap-3 bg-blue-50/50 p-4 rounded-2xl border border-blue-100/50">
+                        <HandCoins className="w-5 h-5" /> <strong>Enfoque Práctico:</strong> Valoración de activos, análisis de riesgos y presupuestos.
+                    </p>
+                </div>
             </div>
 
-            <div className="md:col-span-3 bg-gradient-to-br from-emerald-50/40 to-white p-6 md:p-8 rounded-[2rem] border border-emerald-100/50 shadow-[0_4px_20_px_-4px_rgba(0,0,0,0.02)]">
-                <h3 className="text-lg font-bold text-emerald-800 mb-5 flex items-center gap-2">
-                    <Trophy className="w-5 h-5" /> Beneficios Principales:
+            <div className="bg-white p-8 md:p-10 rounded-[2.5rem] border border-slate-200 shadow-sm">
+                <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
+                    <Trophy className="w-6 h-6 text-blue-700" /> Beneficios del Programa:
                 </h3>
-                <ul className="grid sm:grid-cols-2 gap-4 text-sm text-gray-600">
-                    {["Automatización de reportes complejos.", "Dashboards de ROI y Riesgos.", "Integración de múltiples fuentes.", "Eficiencia avanzada con SQL & Python.", "Alta demanda en el sector bancario.", "Escenarios financieros reales."].map((b, i) => (
+                <ul className="space-y-4 text-sm text-slate-700">
+                    {[
+                        { t: "Automatización Contable", d: "Reduce errores manuales en balances usando SQL." },
+                        { t: "Monitoreo de KPIs", d: "Dashboards en tiempo real para ROI y flujos de caja." },
+                        { t: "Modelado de Riesgos", d: "Python para correlación de activos y predictividad." },
+                        { t: "Autonomía Tecnológica", d: "Extrae datos financieros sin depender de TI." },
+                        { t: "Integración de IA", d: "IA en cada nivel para generar código y insights." },
+                    ].map((b, i) => (
                         <li key={i} className="flex gap-3 items-start">
-                            <div className="mt-0.5 bg-emerald-100/50 p-1 rounded-full text-emerald-700">
+                            <div className="mt-0.5 bg-blue-100 p-1 rounded-lg text-blue-700 shadow-sm">
                                 <Check className="w-3.5 h-3.5" />
                             </div>
-                            <span className="leading-tight pt-0.5">{b}</span>
+                            <span className="leading-tight"><strong className="text-slate-900">{b.t}:</strong> {b.d}</span>
                         </li>
                     ))}
                 </ul>
             </div>
         </div>
 
-        {/* TABS - Segmented Control (4 Módulos) */}
-        <div className="flex justify-center mb-14">
-          <div className="inline-flex flex-wrap lg:flex-nowrap bg-gray-50/80 p-1.5 rounded-3xl border border-gray-200/60 shadow-sm backdrop-blur-md w-full max-w-4xl justify-center gap-1">
+        {/* NAVEGACIÓN DE PESTAÑAS (3 Niveles de 48h) */}
+        <div className="flex justify-center mb-16">
+          <div className="inline-flex flex-wrap lg:flex-nowrap bg-slate-100/80 p-1.5 rounded-[2rem] border border-slate-200 shadow-inner backdrop-blur-md w-full max-w-4xl justify-center gap-2">
             
-            {/* Tab 1: Excel */}
+            {/* Tab 1 */}
             <button
-              onClick={() => setActiveTab("modulo1")}
-              className={`relative px-5 py-3 rounded-2xl text-xs sm:text-sm font-semibold transition-all duration-300 flex-1 min-w-[140px] flex flex-col items-center ${
-                activeTab === "modulo1" ? "bg-white text-emerald-700 shadow-[0_2px_10px_rgba(0,0,0,0.06)]" : "text-gray-500 hover:text-gray-800 hover:bg-gray-100/50"
+              onClick={() => setActiveTab("nivel1")}
+              className={`relative px-8 py-4 rounded-3xl text-sm font-bold transition-all duration-300 flex-1 min-w-[200px] flex flex-col items-center gap-1 ${
+                activeTab === "nivel1" ? "bg-white text-blue-700 shadow-xl scale-[1.02]" : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
               }`}
             >
-              <span className="flex items-center gap-2"><FileSpreadsheet className="w-4 h-4" /> Módulo I</span>
-              <span className="text-[9px] uppercase tracking-wider mt-0.5 opacity-60">Excel Finanzas (16h)</span>
+              <span className="uppercase tracking-tighter text-[10px] opacity-70">48 Horas de Especialización</span>
+              <span className="text-base">Nivel I: Básico</span>
+              <span className="text-[11px] font-medium opacity-60">Fundamentos Contables</span>
             </button>
 
-            {/* Tab 2: Power BI */}
+            {/* Tab 2 */}
             <button
-               onClick={() => setActiveTab("modulo2")}
-               className={`relative px-5 py-3 rounded-2xl text-xs sm:text-sm font-semibold transition-all duration-300 flex-1 min-w-[140px] flex flex-col items-center ${
-                 activeTab === "modulo2" ? "bg-white text-emerald-700 shadow-[0_2px_10px_rgba(0,0,0,0.06)]" : "text-gray-500 hover:text-gray-800 hover:bg-gray-100/50"
+               onClick={() => setActiveTab("nivel2")}
+               className={`relative px-8 py-4 rounded-3xl text-sm font-bold transition-all duration-300 flex-1 min-w-[200px] flex flex-col items-center gap-1 ${
+                 activeTab === "nivel2" ? "bg-white text-blue-700 shadow-xl scale-[1.02]" : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
                }`}
             >
-              <span className="flex items-center gap-2"><BarChart className="w-4 h-4" /> Módulo II</span>
-              <span className="text-[9px] uppercase tracking-wider mt-0.5 opacity-60">Power BI Inversiones (16h)</span>
+              <span className="uppercase tracking-tighter text-[10px] opacity-70">48 Horas de Especialización</span>
+              <span className="text-base">Nivel II: Intermedio</span>
+              <span className="text-[11px] font-medium opacity-60">Modelado e Inversiones</span>
             </button>
 
-            {/* Tab 3: SQL */}
+            {/* Tab 3 */}
             <button
-               onClick={() => setActiveTab("modulo3")}
-               className={`relative px-5 py-3 rounded-2xl text-xs sm:text-sm font-semibold transition-all duration-300 flex-1 min-w-[140px] flex flex-col items-center ${
-                 activeTab === "modulo3" ? "bg-white text-emerald-700 shadow-[0_2px_10px_rgba(0,0,0,0.06)]" : "text-gray-500 hover:text-gray-800 hover:bg-gray-100/50"
+               onClick={() => setActiveTab("nivel3")}
+               className={`relative px-8 py-4 rounded-3xl text-sm font-bold transition-all duration-300 flex-1 min-w-[200px] flex flex-col items-center gap-1 ${
+                 activeTab === "nivel3" ? "bg-white text-blue-700 shadow-xl scale-[1.02]" : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
                }`}
             >
-              <span className="flex items-center gap-2"><Database className="w-4 h-4" /> Módulo III</span>
-              <span className="text-[9px] uppercase tracking-wider mt-0.5 opacity-60">SQL Bases de Datos (16h)</span>
-            </button>
-
-            {/* Tab 4: Python */}
-            <button
-               onClick={() => setActiveTab("modulo4")}
-               className={`relative px-5 py-3 rounded-2xl text-xs sm:text-sm font-semibold transition-all duration-300 flex-1 min-w-[140px] flex flex-col items-center ${
-                 activeTab === "modulo4" ? "bg-white text-emerald-700 shadow-[0_2px_10px_rgba(0,0,0,0.06)]" : "text-gray-500 hover:text-gray-800 hover:bg-gray-100/50"
-               }`}
-            >
-              <span className="flex items-center gap-2"><Code className="w-4 h-4" /> Módulo IV</span>
-              <span className="text-[9px] uppercase tracking-wider mt-0.5 opacity-60">Python DataFrames (16h)</span>
+              <span className="uppercase tracking-tighter text-[10px] opacity-70">48 Horas de Especialización</span>
+              <span className="text-base">Nivel III: Avanzado</span>
+              <span className="text-[11px] font-medium opacity-60">Predictividad de Riesgos</span>
             </button>
           </div>
         </div>
 
-        {/* CONTAINER PANELES */}
-        <div className="relative">
+        {/* CONTENIDO DE PESTAÑAS */}
+        <div className="relative min-h-[500px]">
 
-          {/* ======================= MÓDULO I: EXCEL ======================= */}
-          {activeTab === "modulo1" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="text-center mb-10">
-                <p className="text-base text-gray-500 max-w-3xl mx-auto italic">
-                  Este módulo combina elementos intermedios y avanzados para manejar datos financieros grandes y automatizar cálculos críticos.
-                </p>
-              </div>
-              <div className="space-y-3">
-                {[
-                  { num: 1, color: 'emerald', title: "Fórmulas Avanzadas y Referencias Financieras", items: ["Referencias absolutas, relativas y mixtas para modelado financiero.", "Funciones lógicas: SI, Y, O para validaciones de riesgos.", "Funciones de búsqueda: BUSCARV, BUSCARH para consultas contables."] },
-                  { num: 2, color: 'emerald', title: "Manejo de Datos Grandes y Power Query", items: ["Validación de datos y listas desplegables para controles presupuestarios.", "Consolidación de datos de múltiples hojas (Balances mensuales).", "Introducción a Power Query: Carga de datos, filtrado y limpieza de transacciones."] },
-                  { num: 3, color: 'emerald', title: "Tablas Dinámicas y Análisis Financiero", items: ["Configuración de tablas dinámicas para resúmenes de flujos de caja.", "Agrupamiento, cálculos y campos calculados (Márgenes de utilidad).", "Gráficos dinámicos para visualización de tendencias."] },
-                  { num: 4, color: 'emerald', title: "Funciones Especializadas y Macros Básicas", items: ["Funciones de fecha para pronósticos temporales.", "Funciones de texto para formateo de reportes contables.", "Grabación de macros para tareas repetitivas en auditorías."] },
-                  { num: 5, color: 'emerald', title: "Dashboards y Seguridad Financiera", items: ["Dashboards interactivos con slicers para KPIs financieros.", "Protección avanzada y colaboración en archivos compartidos.", "Proyecto: Automatización de un informe financiero completo."] }
-                ].map((module) => {
-                  const isOpen = openItems.includes(`m1-${module.num}`);
-                  return (
-                    <div key={module.num} className="bg-white rounded-2xl border border-gray-200/60 overflow-hidden hover:border-emerald-300/30 hover:shadow-md transition-all duration-300">
-                      <button onClick={() => toggleItem(`m1-${module.num}`)} className="flex justify-between items-center w-full p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors ${isOpen ? 'bg-emerald-600 text-white' : 'bg-emerald-50/80 text-emerald-700'}`}>
-                            {module.num}
-                          </div>
-                          <span className="text-base font-bold text-emerald-950">{module.title}</span>
-                        </div>
-                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-emerald-600' : ''}`} />
-                      </button>
-                      <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                        <div className="px-16 pb-6 pt-2 border-t border-gray-50">
-                          <ul className="space-y-2.5">
-                            {module.items.map((item, i) => (
-                              <li key={i} className="flex gap-3 items-start text-sm">
-                                <Play className="w-3 h-3 mt-1 flex-shrink-0 text-emerald-300 fill-emerald-300" />
-                                <span className="text-gray-600">{item}</span>
-                              </li>
-                            ))}
-                          </ul>
+          {/* NIVEL I */}
+          {activeTab === "nivel1" && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-4">
+              <p className="text-lg text-slate-500 text-center mb-10 max-w-3xl mx-auto italic font-light">
+                Diseñado para introducir a los profesionales financieros en la automatización inicial, conectando fuentes de datos contables y generando las primeras visualizaciones de control.
+              </p>
+              
+              {[
+                { id: "n1-pbi", icon: <BarChart />, color: "amber", title: "Power BI: Conexión de Fuentes Financieras", h: "16h", items: ["Entorno e Importación: Excel, SQL y APIs financieras (ej. datos de mercado).", "Power Query Contable: Limpiezas básicas de transacciones y cálculos a la medida.", "Dashboards Iniciales: KPIs simples (ej. márgenes diarios) con visuales nativos.", "IA en Power BI: Uso de Q&A para consultas de balances en lenguaje natural."] },
+                { id: "n1-sql", icon: <Database />, color: "blue", title: "SQL Server: Extracción de Registros Financieros", h: "16h", items: ["Consultas Básicas: SELECT y TOP aplicadas a miles de transacciones contables.", "Filtros Temporales: WHERE, MONTH(), YEAR() para cierres y balances de época.", "Cruce Básico (JOIN): Sincronización de tablas de ventas e ingresos vs costos.", "IA en SQL: Creación asistida de vistas y filtros en bases de datos empresariales."] },
+                { id: "n1-py", icon: <Code />, color: "indigo", title: "Python: Fundamentos y Análisis de Portafolios", h: "16h", items: ["Fundamentos de Finanzas: Estructuras de datos para alertas de gastos y flujos.", "Pandas Inicial: Lectura de Excel contable y exploración de DataFrames.", "Manipulación: Filtrado y agrupación (groupby) de flujos de caja operativos.", "IA para Extracción: Scripts automáticos para descargar valores de activos web."] },
+              ].map((m) => (
+                <div key={m.id} className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:border-blue-300 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-500 group">
+                  <button onClick={() => toggleItem(m.id)} className="flex justify-between items-center w-full p-6 md:p-8 cursor-pointer bg-transparent border-0 text-left">
+                    <div className="flex items-center gap-6">
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${openItems.includes(m.id) ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
+                        {m.icon}
+                      </div>
+                      <div>
+                        <span className="text-xl font-bold text-slate-900 block mb-1">{m.title}</span>
+                        <div className="flex items-center gap-3">
+                            <span className="text-xs font-bold uppercase tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{m.h}</span>
+                            <span className="text-xs text-slate-400 font-medium">Contenido técnico nivel base</span>
                         </div>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* ======================= MÓDULO II: POWER BI ======================= */}
-          {activeTab === "modulo2" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="text-center mb-10">
-                <p className="text-base text-gray-500 max-w-3xl mx-auto italic">
-                  Enfoque total en escenarios financieros, desde conexiones de datos hasta dashboards predictivos para inversiones.
-                </p>
-              </div>
-              <div className="space-y-3">
-                {[
-                  { num: 1, title: "Introducción y Conexión de Fuentes Financieras", items: ["Importando datos de Excel, SQL y APIs (ej. datos de mercado).", "Explorando conjuntos de datos para análisis de operaciones.", "Power Query para limpiezas de transacciones contables."] },
-                  { num: 2, title: "Visualizaciones Intermedias para Finanzas", items: ["Gráficas de barras/columnas con saturación para balances.", "Gráficos de líneas/dispersión para tendencias de inversión.", "Introducción a DAX: Cálculos básicos de métricas financieras."] },
-                  { num: 3, title: "DAX Avanzado y Relaciones de Datos", items: ["Funciones acumuladas (YTD, QTD) para reportes anuales.", "Administrando relaciones entre tablas de ventas vs costos.", "Time Intelligence para pronósticos de portafolios."] },
-                  { num: 4, title: "Dashboards, Compartición e IA", items: ["Botones, marcadores y drillthrough para navegación financiera.", "Compartir paneles con seguridad incorporada (RLS).", "Uso de Copilot para generar DAX automáticas en análisis de riesgos."] }
-                ].map((module) => {
-                  const isOpen = openItems.includes(`m2-${module.num}`);
-                  return (
-                    <div key={module.num} className="bg-white rounded-2xl border border-gray-200/60 overflow-hidden hover:border-emerald-300/30 hover:shadow-md transition-all duration-300">
-                      <button onClick={() => toggleItem(`m2-${module.num}`)} className="flex justify-between items-center w-full p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors ${isOpen ? 'bg-emerald-600 text-white' : 'bg-emerald-50/80 text-emerald-700'}`}>
-                            {module.num}
-                          </div>
-                          <span className="text-base font-bold text-emerald-950">{module.title}</span>
-                        </div>
-                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-emerald-600' : ''}`} />
-                      </button>
-                      <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                        <div className="px-16 pb-6 pt-2 border-t border-gray-50">
-                          <ul className="space-y-2.5">
-                            {module.items.map((item, i) => (
-                              <li key={i} className="flex gap-3 items-start text-sm">
-                                <Play className="w-3 h-3 mt-1 flex-shrink-0 text-emerald-300 fill-emerald-300" />
-                                <span className="text-gray-600">{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
+                    <ChevronDown className={`w-6 h-6 text-slate-300 transition-transform duration-500 ${openItems.includes(m.id) ? 'rotate-180 text-blue-600' : ''}`} />
+                  </button>
+                  <div className={`transition-all duration-700 ease-in-out ${openItems.includes(m.id) ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                    <div className="px-8 md:px-28 pb-10 pt-4 border-t border-slate-50">
+                      <ul className="grid gap-4">
+                        {m.items.map((item, i) => (
+                          <li key={i} className="flex gap-4 items-start group/li">
+                            <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 group-hover/li:scale-150 transition-transform" />
+                            <span className="text-slate-600 text-base leading-relaxed">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* ======================= MÓDULO III: SQL ======================= */}
-          {activeTab === "modulo3" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-               <div className="text-center mb-10">
-                <p className="text-base text-gray-500 max-w-3xl mx-auto italic">
-                  Aplicación de SQL a consultas financieras masivas para reportes contables y de cumplimiento.
-                </p>
-              </div>
-              <div className="space-y-3">
-                {[
-                  { num: 1, title: "Introducción y Consultas Básicas", items: ["SELECT, WHERE, TOP para recuperación de transacciones.", "MONTH(), YEAR() para filtros temporales en balances.", "Creación de vistas de inventarios y ventas financieras."] },
-                  { num: 2, title: "Joins y Filtros para Análisis Contable", items: ["Cruces de tablas (Ventas vs Costos) con JOINs.", "GROUP BY y SUM() para reportes agregados por periodo.", "Operadores lógicos para filtros en portafolios bursátiles."] },
-                  { num: 3, title: "Consultas Complejas y Automatización", items: ["CASE WHEN para columnas condicionales en riesgos.", "CREATE PROC para automatización de reportes recurrentes.", "UPDATE y CAST() para saneamiento de datos financieros."] },
-                  { num: 4, title: "Integración de IA en SQL Financiero", items: ["Generación de consultas personalizadas para reportes de riesgos.", "Preprocesamiento de agregaciones para datasets de inversión."] }
-                ].map((module) => {
-                  const isOpen = openItems.includes(`m3-${module.num}`);
-                  return (
-                    <div key={module.num} className="bg-white rounded-2xl border border-gray-200/60 overflow-hidden hover:border-emerald-300/30 hover:shadow-md transition-all duration-300">
-                      <button onClick={() => toggleItem(`m3-${module.num}`)} className="flex justify-between items-center w-full p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors ${isOpen ? 'bg-emerald-600 text-white' : 'bg-emerald-50/80 text-emerald-700'}`}>
-                            {module.num}
-                          </div>
-                          <span className="text-base font-bold text-emerald-950">{module.title}</span>
-                        </div>
-                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-emerald-600' : ''}`} />
-                      </button>
-                      <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                        <div className="px-16 pb-6 pt-2 border-t border-gray-50">
-                          <ul className="space-y-2.5">
-                            {module.items.map((item, i) => (
-                              <li key={i} className="flex gap-3 items-start text-sm">
-                                <Play className="w-3 h-3 mt-1 flex-shrink-0 text-emerald-300 fill-emerald-300" />
-                                <span className="text-gray-600">{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
-
-          {/* ======================= MÓDULO IV: PYTHON ======================= */}
-          {activeTab === "modulo4" && (
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-               <div className="text-center mb-10">
-                <p className="text-base text-gray-500 max-w-3xl mx-auto italic">
-                  Manipulación avanzada de datos, visualización interactiva y automatización de controles de riesgo.
-                </p>
-              </div>
-              <div className="space-y-3">
-                {[
-                  { num: 1, title: "Pandas para Manipulación Financiera", items: ["Lectura de APIs financieras e informes con pd.read_excel().", "df.groupby() y .agg() para medias en portafolios.", "Tratamiento de fechas en transacciones masivas."] },
-                  { num: 2, title: "Visualizaciones e Inversiones", items: ["Matplotlib/Seaborn para gráficos de rendimientos históricos.", "Plotly interactivo para dashboards de riesgos dinámicos.", "Gráficos de dispersión para correlaciones de activos."] },
-                  { num: 3, title: "Modelado y Combinación de Datos", items: ["pd.merge() para unión de datasets (Mercados vs Internos).", "Columnas calculadas para ratios financieros (ROI, ROE).", "Modelado de escenarios con parámetros variables."] },
-                  { num: 4, title: "IA y Proyecto Aplicado", items: ["Scripts de análisis predictivo generados con IA.", "Proyecto Final: Análisis de portafolio automatizado end-to-end."] }
-                ].map((module) => {
-                  const isOpen = openItems.includes(`m4-${module.num}`);
-                  return (
-                    <div key={module.num} className="bg-white rounded-2xl border border-gray-200/60 overflow-hidden hover:border-emerald-300/30 hover:shadow-md transition-all duration-300">
-                      <button onClick={() => toggleItem(`m4-${module.num}`)} className="flex justify-between items-center w-full p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors ${isOpen ? 'bg-emerald-600 text-white' : 'bg-emerald-50/80 text-emerald-700'}`}>
-                            {module.num}
-                          </div>
-                          <span className="text-base font-bold text-emerald-950">{module.title}</span>
-                        </div>
-                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-emerald-600' : ''}`} />
-                      </button>
-                      <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                        <div className="px-16 pb-6 pt-2 border-t border-gray-50">
-                          <ul className="space-y-2.5">
-                            {module.items.map((item, i) => (
-                              <li key={i} className="flex gap-3 items-start text-sm">
-                                <Play className="w-3 h-3 mt-1 flex-shrink-0 text-emerald-300 fill-emerald-300" />
-                                <span className="text-gray-600">{item}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {/* ITEM AI SPECIAL */}
-                <div className="bg-gradient-to-br from-emerald-600/10 to-transparent rounded-2xl border border-emerald-600/20 overflow-hidden hover:shadow-lg hover:shadow-emerald-600/5 transition-all duration-300 relative group mt-6">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-600/10 blur-[80px] -z-10 group-hover:bg-emerald-600/20 transition-colors" />
-                    <div className="flex justify-between items-center w-full p-5 lg:px-6 bg-transparent border-0 text-left">
-                        <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-emerald-600 text-white">
-                                <Star className="w-5 h-5 fill-current" />
-                            </div>
-                            <span className="text-base font-bold text-gray-900 italic">Especialización de Alto Nivel 2026</span>
-                        </div>
-                    </div>
+                  </div>
                 </div>
+              ))}
+            </div>
+          )}
 
-              </div>
+          {/* NIVEL II */}
+          {activeTab === "nivel2" && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-4">
+              <p className="text-lg text-slate-500 text-center mb-10 max-w-3xl mx-auto italic font-light">
+                Enfocado en analistas e inversores. Consolida información entre múltiples áreas contables, domina el lenguaje DAX y visualiza tendencias financieras.
+              </p>
+              
+              {[
+                { id: "n2-pbi", icon: <HandCoins className="w-6 h-6" />, color: "amber", title: "Power BI: Visualizaciones DAX Financieras", h: "16h", items: ["Visualizaciones Intermedias: Gráficas de saturación para balances y dispersión para inversiones.", "Relaciones y Matrices: Tratamiento multifuente (gastos vs ingresos) y modelado estrella.", "DAX Intermedio: SUM, AVERAGE, CALCULATE aplicados a rentabilidad y ROI.", "Compartición: Despliegue seguro de paneles conectados a datos de mercado/bancos."] },
+                { id: "n2-sql", icon: <Target className="w-6 h-6" />, color: "blue", title: "SQL Server: Joins Avanzados y Auditoría", h: "16h", items: ["Joins Técnicos: Uso de FULL y RIGHT JOIN para detectar descuadres contables.", "Agrupaciones Temporales: GROUP BY y SUM() para reportes por trimestre o periodo.", "Requerimientos Complejos: Cruces multiobjeto para cálculos de impuestos y márgenes.", "Preprocesamiento: Preparación asistida por IA de datasets para análisis predictivo."] },
+                { id: "n2-py", icon: <TrendingUp className="w-6 h-6" />, color: "indigo", title: "Python: Visualizaciones e Índices Financieros", h: "16h", items: ["Pandas Intermedio: Summarización de portafolios (.agg) y manejo de series de tiempo.", "Matplotlib: Análisis de rendimientos históricos con personalización técnica de ejes.", "Gráficos con Seaborn: Distribuciones estéticas de riesgo y correlación de activos.", "Automatización IA: Conciliación automática de múltiples fuentes bancarias vía scripts."] },
+              ].map((m) => (
+                <div key={m.id} className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:border-blue-300 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-500 group">
+                  <button onClick={() => toggleItem(m.id)} className="flex justify-between items-center w-full p-6 md:p-8 cursor-pointer bg-transparent border-0 text-left">
+                    <div className="flex items-center gap-6">
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${openItems.includes(m.id) ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
+                        {m.icon}
+                      </div>
+                      <div>
+                        <span className="text-xl font-bold text-slate-900 block mb-1">{m.title}</span>
+                        <div className="flex items-center gap-3">
+                            <span className="text-xs font-bold uppercase tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{m.h}</span>
+                            <span className="text-xs text-slate-400 font-medium">Contenido aplicado a inversiones</span>
+                        </div>
+                      </div>
+                    </div>
+                    <ChevronDown className={`w-6 h-6 text-slate-300 transition-transform duration-500 ${openItems.includes(m.id) ? 'rotate-180 text-blue-600' : ''}`} />
+                  </button>
+                  <div className={`transition-all duration-700 ease-in-out ${openItems.includes(m.id) ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                    <div className="px-8 md:px-28 pb-10 pt-4 border-t border-slate-50">
+                      <ul className="grid gap-4">
+                        {m.items.map((item, i) => (
+                          <li key={i} className="flex gap-4 items-start group/li">
+                            <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 group-hover/li:scale-150 transition-transform" />
+                            <span className="text-slate-600 text-base leading-relaxed">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* NIVEL III */}
+          {activeTab === "nivel3" && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 space-y-4">
+              <p className="text-lg text-slate-500 text-center mb-10 max-w-3xl mx-auto italic font-light">
+                Crea sistemas robustos e inteligentes: automatiza el servidor, evalúa escenarios What-if y construye algoritmos predictivos de inversión.
+              </p>
+              
+              {[
+                { id: "n3-pbi", icon: <Star className="w-6 h-6" />, color: "amber", title: "Power BI: Inteligencia de Tiempo y RLS Seguro", h: "16h", items: ["Inteligencia de Tiempo: Funciones acumuladas (YTD/QTD) para balances consolidados.", "Análisis What-if: Parámetros técnicos para escenarios contables y botones de navegación.", "Seguridad Transaccional: Implementación de RLS (Seguridad a nivel de fila) por área.", "Copilot & Smart Narratives: Explicación automática de anomalías en flujos de efectivo."] },
+                { id: "n3-sql", icon: <Bot className="w-6 h-6" />, color: "blue", title: "SQL Server: Procedimientos y Automatización", h: "16h", items: ["Condicionales CASE WHEN: Categorización técnica de clientes por nivel de riesgo.", "Stored Procedures: Rutinas (CREATE PROC) para poblar automáticamente reportes diarios.", "Modificación Estructural: ALTER TABLE y ajustes de formatos financieros históricos.", "Flujo End-to-End: Integración SQL/Python para proyecciones presupuestarias reales."] },
+                { id: "n3-py", icon: <Bot className="w-6 h-6" />, color: "indigo", title: "Python: Análisis Predictivo y Dashboards Plotly", h: "16h", items: ["Unión de Datos Maestros: Integración con pd.merge() y cálculo de ratios (ROI, EBITDA).", "Dashboards Interactivos: Dominio de Plotly para análisis profundo de riesgos y carteras.", "Calidad Directiva: Uso de Plotnine (ggplot) para gráficos de alta calidad corporativa.", "Algoritmo Predictivo: Construcción de proyecto final analizando escenarios macroeconómicos."] },
+              ].map((m) => (
+                <div key={m.id} className="bg-white rounded-[2rem] border border-slate-200 overflow-hidden hover:border-blue-300 hover:shadow-xl hover:shadow-blue-900/5 transition-all duration-500 group">
+                  <button onClick={() => toggleItem(m.id)} className="flex justify-between items-center w-full p-6 md:p-8 cursor-pointer bg-transparent border-0 text-left">
+                    <div className="flex items-center gap-6">
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${openItems.includes(m.id) ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
+                        {m.icon}
+                      </div>
+                      <div>
+                        <span className="text-xl font-bold text-slate-900 block mb-1">{m.title}</span>
+                        <div className="flex items-center gap-3">
+                            <span className="text-xs font-bold uppercase tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">{m.h}</span>
+                            <span className="text-xs text-slate-400 font-medium">Especialización de alto nivel</span>
+                        </div>
+                      </div>
+                    </div>
+                    <ChevronDown className={`w-6 h-6 text-slate-300 transition-transform duration-500 ${openItems.includes(m.id) ? 'rotate-180 text-blue-600' : ''}`} />
+                  </button>
+                  <div className={`transition-all duration-700 ease-in-out ${openItems.includes(m.id) ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                    <div className="px-8 md:px-28 pb-10 pt-4 border-t border-slate-50">
+                      <ul className="grid gap-4">
+                        {m.items.map((item, i) => (
+                          <li key={i} className="flex gap-4 items-start group/li">
+                            <div className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-400 group-hover/li:scale-150 transition-transform" />
+                            <span className="text-slate-600 text-base leading-relaxed">{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
         </div>
 
         {/* AYUDA / CONTACTO */}
-        <div className="mt-20 bg-white border border-emerald-100 rounded-[2.5rem] p-10 md:p-12 text-center shadow-sm relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-50 rounded-full blur-3xl -z-10 group-hover:bg-emerald-100/50 transition-colors" />
-            <h3 className="text-2xl md:text-3xl font-bold text-emerald-900 mb-4">¿Necesitas ayuda con el plan de estudios?</h3>
-            <p className="text-base md:text-lg text-gray-600 mb-10 max-w-2xl mx-auto font-light">
+        <div className="mt-20 bg-white border border-blue-100 rounded-[2.5rem] p-10 md:p-12 text-center shadow-sm relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-blue-50 rounded-full blur-3xl -z-10 group-hover:bg-blue-100/50 transition-colors" />
+            <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">¿Necesitas ayuda con el plan de estudios?</h3>
+            <p className="text-base md:text-lg text-slate-600 mb-10 max-w-2xl mx-auto font-light">
                 Si tienes dudas sobre las aplicaciones en el sector bancario, la modalidad o facilidades de pago, conversémoslo directamente.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -334,7 +273,7 @@ export default function FinanceSyllabus() {
                 </a>
                 <a 
                     href="tel:+56935409699" 
-                    className="flex items-center gap-3 bg-gray-100 text-gray-700 px-8 py-4 rounded-xl font-bold text-base hover:bg-gray-200 transition-colors no-underline"
+                    className="flex items-center gap-3 bg-slate-100 text-slate-700 px-8 py-4 rounded-xl font-bold text-base hover:bg-slate-200 transition-colors no-underline"
                 >
                     <Phone className="w-6 h-6" /> +56 9 3540 9699
                 </a>
