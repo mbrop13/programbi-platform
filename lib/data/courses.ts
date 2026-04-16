@@ -130,18 +130,6 @@ export const courses: Course[] = [
           "Automatización de reportes"
         ] 
       },
-      {
-        name: "Programa Completo",
-        price: 489000,
-        durationHours: 144,
-        whatYouLearn: [
-          "Fundamentos y bases de datos con SQL Server",
-          "Conexión a fuentes, ETL y modelado con Power Query",
-          "Dashboards avanzados y DAX en Power BI",
-          "Programación en Python y manipulación con Pandas",
-          "Visualización en Python y reportes automatizados",
-        ],
-      },
     ],
   },
   {
@@ -275,7 +263,6 @@ export const courses: Course[] = [
       { name: "Nivel I: Básico", price: 289000, durationHours: 48, whatYouLearn: ["Fundamentos de Power BI, SQL y Python", "Automatización de reportes de turnos", "Consultas a bases de la mina", "IA generativa para scripts básicos"] },
       { name: "Nivel II: Intermedio", price: 289000, durationHours: 48, whatYouLearn: ["Consolidado MINA - PLANTA - RRHH", "DAX avanzado y relaciones de área", "Joins avanzados y vistas de reporte", "Matplotlib y Seaborn industrial"] },
       { name: "Nivel III: Avanzado", price: 289000, durationHours: 48, whatYouLearn: ["Mantenimiento predictivo con Python", "Seguridad RLS por jefe de área", "Stored Procedures para Data Warehouse", "Dashboards interactivos con Plotly"] },
-      { name: "Especialización Completa", price: 549000, durationHours: 144, whatYouLearn: ["Dominio total del ciclo del dato minero", "Automatización integral con SQL y Python", "Modelos predictivos de fallos operativos", "Liderazgo técnico en Business Intelligence"] }
     ],
   },
   {
@@ -659,7 +646,6 @@ export const courses: Course[] = [
       { name: "Básico", price: 249000, durationHours: 32, whatYouLearn: ["Modelamiento VAN, TIR y WACC", "Flujos de caja proyectados", "Consultas de portafolio", "Series de tiempo en SQL"] },
       { name: "Intermedio", price: 249000, durationHours: 32, whatYouLearn: ["APIs de datos bursátiles", "VaR histórico y paramétrico", "Modelos de riesgo con Python", "Automatización de análisis"] },
       { name: "Avanzado", price: 249000, durationHours: 32, whatYouLearn: ["Dashboard CFO profesional", "KPIs financieros con DAX", "Reportes AUM y rendimiento", "Alertas y suscripciones automáticas"] },
-      { name: "Programa Completo", price: 489000, durationHours: 96, whatYouLearn: ["Modelamiento VAN, TIR y WACC", "Flujos de caja proyectados", "Consultas SQL de portafolio", "APIs de datos bursátiles", "VaR histórico y paramétrico", "Modelos de riesgo con Python", "Dashboard CFO profesional", "KPIs financieros con DAX"] }
     ],
   },
   {
