@@ -214,17 +214,17 @@ export const courses: Course[] = [
     slug: "analitica-mineria",
     title: "Programa Industrial & Minero 2026: Análisis de Datos para la Minería",
     shortDescription:
-      "Optimización de Procesos y Toma de Decisiones en Entornos Mineros. Un trayecto de 64 horas para transformar datos operativos en activos estratégicos.",
+      "Optimización de Procesos y Toma de Decisiones en Entornos Mineros. Un trayecto integral de 144 horas para optimizar procesos y predecir fallas.",
     description:
-      "Dirigido a profesionales y técnicos del sector minero (operaciones, finanzas, planificación, RRHH y mantenimiento) que gestionan volúmenes moderados y grandes de datos. Ideal para automatizar el control de proyectos, seguimiento de metas y paneles de operaciones. Respaldo ProgramBI: Programa diseñado con la experiencia de haber capacitado a empresas líderes como CAP, AngloAmerican y Minera Meridian.",
+      "Profesionales y técnicos del sector minero e industrial (operaciones, finanzas, planificación, mantenimiento y RRHH) que buscan dominar el ciclo completo del dato. Ideal para quienes necesitan desde automatizar paneles de control de flota hasta desarrollar modelos predictivos de producción. Respaldo ProgramBI: Programa diseñado con la experiencia de haber capacitado a empresas líderes como CAP, AngloAmerican y Minera Meridian.",
     category: "especializacion",
     categoryLabel: "ESPECIALIZACIÓN",
     badgeLabel: "ESPECIALIZACIÓN",
     badgeColor: "#B45309",
     techStack: ["Excel", "Power BI", "SQL", "Python"],
-    durationHours: 64,
+    durationHours: 144,
     modality: "online",
-    level: "intermedio",
+    level: "básico a avanzado",
     imageUrl:
       "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=2070&auto=format&fit=crop",
     icon: "HardHat",
@@ -233,61 +233,49 @@ export const courses: Course[] = [
     sortOrder: 5,
     youtubeVideoId: "LiupEKDc3Ms",
     whatYouLearn: [
-      "Automatización Extrema: Elimina tareas repetitivas con Macros, Power Query y Python",
-      "Visualización de Impacto: Dashboards interactivos para monitoreo de KPIs en tiempo real",
-      "Integración de Datos: Conecta y limpia datos de SQL, APIs y Excel",
-      "Decisiones Predictivas: Incorpora IA para detectar tendencias en la operación",
-      "Eficiencia Operativa: Reduce procesos de horas en Excel a solo minutos",
+      "Visibilidad Operativa: Dashboards en tiempo real para producción, seguridad y mantenimiento de flotas",
+      "Control de Datos Nativos: Conexión mediante SQL a servidores de la mina (PI System, SCADA)",
+      "Mantenimiento Predictivo: Uso de Python (Pandas, Plotly) para modelar vida útil de activos",
+      "Optimización de Tiempos: Reduce consolidación de reportes de faena de horas a minutos",
+      "Integración de IA: Inteligencia Artificial en cada nivel para generar scripts y resolver cruces complejos",
     ],
     syllabus: [
       {
-        module: "Módulo I: Excel - Gestión Administrativa",
+        module: "Nivel I: Fundamentos Operativos",
         topics: [
-          "Entorno y Datos: Configuración de informes, textos y fechas",
-          "Fórmulas de Control: SI, Y, O para validaciones automáticas",
-          "Búsquedas Inteligentes: BUSCARV e INDICE/COINCIDIR en faena",
-          "Power Query Inicial: Importación y consolidación de datos",
-          "Macros y VBA: Reportes diarios rápidos y sin errores",
+          "Power BI: Reportes de turnos y limpieza de datos (Minería)",
+          "SQL Server: Consultas esenciales a bases de la mina",
+          "Python: Automatización de logs de sensores con Pandas",
+          "Integración IA: Consultas en lenguaje natural de faena"
         ],
-        hours: 16,
+        hours: 48,
       },
       {
-        module: "Módulo II: Power BI - Inteligencia de Negocios",
+        module: "Nivel II: Análisis de Faena",
         topics: [
-          "Modelado y Relaciones: Diseño de modelos de datos",
-          "DAX Intermedio: CALCULATE, SWITCH, SELECTEDVALUE",
-          "Inteligencia de Tiempo: YTD, MTD, SAMEPERIODLASTYEAR",
-          "Visualización Avanzada y Seguridad RLS por departamento",
+          "Power BI: DAX avanzado para eficiencia de equipos (OEE)",
+          "SQL Server: Cruce de flota, combustible y personal",
+          "Python: Análisis de tendencias y visualizaciones industriales",
+          "Integración IA: Medidas DAX complejas asistidas"
         ],
-        hours: 16,
+        hours: 48,
       },
       {
-        module: "Módulo III: SQL Server - Estructura de Datos",
+        module: "Nivel III: Predictividad y Servidores",
         topics: [
-          "Consultas Básicas: SELECT, WHERE, MONTH, YEAR",
-          "Cruces y Resúmenes: Joins y GROUP BY para valorización",
-          "Programación T-SQL: Vistas y Procedimientos Almacenados",
-          "Integración de IA: Generación de queries complejas masivas",
+          "Power BI: Inteligencia de tiempo y RLS dinámico por área",
+          "SQL Server: Procedimientos almacenados para Data Warehouse",
+          "Python: Modelos predictivos de fallos y dashboards interactivos",
+          "Integración IA: Procesos ETL predictivos"
         ],
-        hours: 16,
-      },
-      {
-        module: "Módulo IV: Python - Ciencia de Datos",
-        topics: [
-          "Librería Pandas y Manipulación: DataFrames y Merge",
-          "Visualización Interactiva: Seaborn y Plotly",
-          "Integración con IA: Extracción de datos en servidores",
-          "Proyecto Final: Limpieza y visulización aplicada a la faena",
-        ],
-        hours: 16,
+        hours: 48,
       },
     ],
     levels: [
-      { name: "Módulo I: Excel", price: 249000, durationHours: 16, whatYouLearn: ["Configuración de informes y tipos de datos", "Validaciones con funciones lógicas", "BuscarV e Índice en bases mineras", "Power query básico para recolección"] },
-      { name: "Módulo II: Power BI", price: 249000, durationHours: 16, whatYouLearn: ["Relación de tablas dinámicas", "Cálculos con funciones DAX (Calculate)", "Inteligencia de tiempo en producción", "Implementación de seguridad RLS por área"] },
-      { name: "Módulo III: SQL", price: 249000, durationHours: 16, whatYouLearn: ["Consultas de bases masivas mineras", "Uso de Joins para consolidaciones", "Funciones de agregación en reportes", "Automatización total de consultas SQL"] },
-      { name: "Módulo IV: Python", price: 249000, durationHours: 16, whatYouLearn: ["Manipulación avanzada con Pandas", "Merge y transformación de datos", "Uso de Seaborn y Plotly", "Integración de IA predictiva minera"] },
-      { name: "Programa Completo", price: 489000, durationHours: 64, whatYouLearn: ["Elimina labores tediosas con Excel Macros", "Dashboards interactivos en Power BI", "Extracción y consolidación en SQL Server", "Python, ML y herramientas predictivas"] }
+      { name: "Nivel I: Básico", price: 289000, durationHours: 48, whatYouLearn: ["Fundamentos de Power BI, SQL y Python", "Automatización de reportes de turnos", "Consultas a bases de la mina", "IA generativa para scripts básicos"] },
+      { name: "Nivel II: Intermedio", price: 289000, durationHours: 48, whatYouLearn: ["Consolidado MINA - PLANTA - RRHH", "DAX avanzado y relaciones de área", "Joins avanzados y vistas de reporte", "Matplotlib y Seaborn industrial"] },
+      { name: "Nivel III: Avanzado", price: 289000, durationHours: 48, whatYouLearn: ["Mantenimiento predictivo con Python", "Seguridad RLS por jefe de área", "Stored Procedures para Data Warehouse", "Dashboards interactivos con Plotly"] },
+      { name: "Especialización Completa", price: 549000, durationHours: 144, whatYouLearn: ["Dominio total del ciclo del dato minero", "Automatización integral con SQL y Python", "Modelos predictivos de fallos operativos", "Liderazgo técnico en Business Intelligence"] }
     ],
   },
   {
