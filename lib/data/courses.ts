@@ -2,6 +2,7 @@
 export interface CourseLevel {
   name: string;             // e.g. "Básico", "Intermedio", "Avanzado"
   price?: number;           // price in CLP
+  originalPrice?: number;   // original price before discount
   whatYouLearn: string[];   // per-level learning outcomes
   durationHours?: number;   // optional per-level duration
 }
@@ -28,6 +29,7 @@ export interface Course {
   whatYouLearn: string[];
   syllabus: { module: string; topics: string[]; hours: number }[];
   levels?: CourseLevel[];
+  originalPrice?: number; // Total original price if applicable
 }
 
 export const courses: Course[] = [
@@ -100,6 +102,7 @@ export const courses: Course[] = [
       { 
         name: "Básico", 
         price: 249000, 
+        originalPrice: 380000,
         durationHours: 48, 
         whatYouLearn: [
           "Fundamentos y bases de datos con SQL Server", 
@@ -634,9 +637,9 @@ export const courses: Course[] = [
       },
     ],
     levels: [
-      { name: "Nivel I: Básico", price: 289000, durationHours: 48, whatYouLearn: ["Power Query contable y Dashboards iniciales", "Filtros temporales y cruces JOIN en SQL", "Carga de datos y manipulación con Pandas", "IA para consultas de balances"] },
-      { name: "Nivel II: Intermedio", price: 289000, durationHours: 48, whatYouLearn: ["DAX intermedio para rentabilidad y ROI", "Resúmenes agregados y auditorías con SQL", "Gráficos de rendimientos con Matplotlib/Seaborn", "IA para conciliación bancaria"] },
-      { name: "Nivel III: Avanzado", price: 289000, durationHours: 48, whatYouLearn: ["Inteligencia de tiempo y seguridad RLS", "Stored Procedures para reporteo diario", "Modelos predictivos y dashboards interactivos", "IA para proyecciones presupuestarias"] },
+      { name: "Nivel I: Básico", price: 289000, originalPrice: 420000, durationHours: 48, whatYouLearn: ["Power Query contable y Dashboards iniciales", "Filtros temporales y cruces JOIN en SQL", "Carga de datos y manipulación con Pandas", "IA para consultas de balances"] },
+      { name: "Nivel II: Intermedio", price: 289000, originalPrice: 420000, durationHours: 48, whatYouLearn: ["DAX intermedio para rentabilidad y ROI", "Resúmenes agregados y auditorías con SQL", "Gráficos de rendimientos con Matplotlib/Seaborn", "IA para conciliación bancaria"] },
+      { name: "Nivel III: Avanzado", price: 289000, originalPrice: 420000, durationHours: 48, whatYouLearn: ["Inteligencia de tiempo y seguridad RLS", "Stored Procedures para reporteo diario", "Modelos predictivos y dashboards interactivos", "IA para proyecciones presupuestarias"] },
     ],
   },
   {
