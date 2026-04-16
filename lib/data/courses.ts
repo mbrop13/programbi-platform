@@ -216,7 +216,7 @@ export const courses: Course[] = [
     shortDescription:
       "Optimización de Procesos y Toma de Decisiones en Entornos Mineros. Un trayecto integral de 144 horas para optimizar procesos y predecir fallas.",
     description:
-      "Profesionales y técnicos del sector minero e industrial (operaciones, finanzas, planificación, mantenimiento y RRHH) que buscan dominar el ciclo completo del dato. Ideal para quienes necesitan desde automatizar paneles de control de flota hasta desarrollar modelos predictivos de producción. Respaldo ProgramBI: Programa diseñado con la experiencia de haber capacitado a empresas líderes como CAP, AngloAmerican y Minera Meridian.",
+      "Especialización técnica de 144h para profesionales mineros e industriales. Domina el ciclo completo del dato, desde la automatización de flotas hasta el mantenimiento predictivo, respaldado por nuestra experiencia en CAP y AngloAmerican.",
     category: "especializacion",
     categoryLabel: "ESPECIALIZACIÓN",
     badgeLabel: "ESPECIALIZACIÓN",

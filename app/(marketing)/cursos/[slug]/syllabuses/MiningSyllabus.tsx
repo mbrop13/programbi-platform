@@ -41,7 +41,7 @@ export default function MiningSyllabus() {
                     <Target className="w-6 h-6 text-amber-700" /> Dirigido a:
                 </h3>
                 <p className="text-base text-stone-600 leading-relaxed relative z-10">
-                    Profesionales y técnicos del sector minero e industrial (operaciones, finanzas, planificación, mantenimiento y RRHH) que buscan dominar el ciclo completo del dato. Ideal para automatizar paneles de control de flota y modelos predictivos.
+                    Especialización técnica de 144h para profesionales mineros e industriales. Domina el ciclo completo del dato, desde la automatización de flotas hasta el mantenimiento predictivo.
                 </p>
                 <div className="mt-8 pt-8 border-t border-stone-100">
                     <p className="text-xs text-amber-800 flex items-center gap-3 bg-amber-50/50 p-4 rounded-2xl border border-amber-100/50">
