@@ -633,13 +633,13 @@ function CourseContactForm({ course }: { course: Course }) {
       const formData = new FormData(e.target as HTMLFormElement);
       const name = formData.get('name') as string;
       const email = formData.get('email') as string;
-      const phone = formData.get('phone') as string;
+      const whatsapp = formData.get('whatsapp') as string;
       const message = formData.get('message') as string;
       
       const payload: any = {
         name,
         email,
-        phone,
+        whatsapp,
         message,
         sourceCourse: course.title,
         leadType: contactType,
@@ -784,8 +784,8 @@ function CourseContactForm({ course }: { course: Course }) {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Teléfono (Opcional)</label>
-                      <input type="tel" name="phone" placeholder="+56 9..."
+                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Teléfono / WhatsApp (Opcional)</label>
+                      <input type="tel" name="whatsapp" placeholder="+56 9..."
                         className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
                     </div>
 

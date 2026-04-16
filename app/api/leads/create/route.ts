@@ -4,7 +4,9 @@ import { createAdminClient } from "@/lib/supabase/server";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, whatsapp, message, selectedCourses, sourceCourse, leadType, company, position, employeeCount } = body;
+    const whatsappClean = body.whatsapp || body.phone;
+    const { name, email, message, selectedCourses, sourceCourse, leadType, company, position, employeeCount } = body;
+    const whatsapp = whatsappClean;
 
     if (!name || !email) {
       return NextResponse.json({ error: "Nombre y email requeridos" }, { status: 400 });

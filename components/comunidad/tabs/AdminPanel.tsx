@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent } from "lucide-react";
+import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
 import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminTogglePopup, adminDeletePopup } from "@/lib/supabase/comunidad-ai";
@@ -47,6 +47,7 @@ export default function AdminPanel() {
     { id: "support", label: "Soporte", icon: MessageSquare, hasUnread: unreadSupport },
     { id: "members", label: "Miembros", icon: Users, hasUnread: unreadMembers },
     { id: "leads", label: "Contactos", icon: Mail },
+    { id: "cart", label: "Carritos", icon: ShoppingCart },
     { id: "courses", label: "Cursos", icon: GraduationCap },
     { id: "schedules", label: "Horarios", icon: Calendar },
     { id: "export_csv", label: "Exportar Datos", icon: Download },
@@ -102,6 +103,7 @@ export default function AdminPanel() {
               {activeTab === "overview" && <AdminOverview />}
               {activeTab === "members" && <AdminMembers />}
               { activeTab === "leads" && <AdminLeads /> }
+              { activeTab === "cart" && <AdminAbandonedCarts /> }
               { activeTab === "courses" && <AdminCourses /> }
               { activeTab === "schedules" && <AdminSchedules /> }
               { activeTab === "export_csv" && <AdminExportCsv /> }
@@ -228,14 +230,14 @@ function AdminSupport() {
 
 // ─── LEADS / CONTACTOS ───
 function AdminLeads() {
-  const [leads, setLeads] = useState<any[]>([]);
+  const [allLeads, setAllLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
         const data = await adminGetLeads();
-        setLeads(data);
+        setAllLeads(data);
       } catch (err) {
         console.error(err);
       } finally {
@@ -244,6 +246,8 @@ function AdminLeads() {
     }
     load();
   }, []);
+
+  const leads = allLeads.filter(l => l.lead_type !== "abandoned_cart");
 
   const exportToCSV = () => {
     if (leads.length === 0) return;
@@ -308,7 +312,16 @@ function AdminLeads() {
                    <td className="px-4 py-4">
                      <div className="font-bold text-gray-900 text-sm">{lead.name}</div>
                      <div className="text-xs text-brand-blue">{lead.email}</div>
-                     {lead.whatsapp && <div className="text-xs text-gray-500 mt-0.5 whitespace-nowrap">WA: {lead.whatsapp}</div>}
+                     {lead.whatsapp && (
+                       <a 
+                        href={`https://wa.me/${lead.whatsapp.replace(/\D/g, '')}`} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="flex items-center gap-1 text-xs text-emerald-600 font-bold mt-1 hover:underline whitespace-nowrap"
+                       >
+                         <MessageSquare className="w-3 h-3" /> {lead.whatsapp}
+                       </a>
+                     )}
                    </td>
                    <td className="px-4 py-4">
                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
@@ -329,6 +342,109 @@ function AdminLeads() {
                    </td>
                    <td className="px-4 py-4 hidden md:table-cell max-w-xs">
                      <div className="text-xs text-gray-600 line-clamp-3">{lead.message || <span className="text-gray-300 italic">Sin mensaje</span>}</div>
+                   </td>
+                   <td className="px-4 py-4 whitespace-nowrap">
+                     <div className="text-xs font-medium text-gray-900">{new Date(lead.created_at).toLocaleDateString('es-CL')}</div>
+                     <div className="text-[10px] text-gray-400">{new Date(lead.created_at).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}</div>
+                   </td>
+                 </tr>
+               ))}
+             </tbody>
+           </table>
+         </div>
+       )}
+    </div>
+  );
+}
+
+// ─── CARITOS ABANDONADOS ───
+function AdminAbandonedCarts() {
+  const [allLeads, setAllLeads] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await adminGetLeads();
+        setAllLeads(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  const carts = allLeads.filter(l => l.lead_type === "abandoned_cart");
+
+  if (loading) {
+    return (
+      <div className="p-6 sm:p-8 flex flex-col items-center justify-center py-20">
+        <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
+        <span className="text-sm text-gray-400 mt-3">Cargando carritos...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 sm:p-8">
+       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+          <div>
+            <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Carritos Abandonados</h2>
+            <p className="text-sm text-gray-400">Intenciones de compra de usuarios registrados</p>
+          </div>
+       </div>
+
+       {carts.length === 0 ? (
+         <div className="text-center py-12 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50">
+           <ShoppingCart className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+           <h3 className="text-gray-900 font-bold mb-1">No hay carritos</h3>
+           <p className="text-gray-400 text-sm">Aún no se han registrado intenciones de compra.</p>
+         </div>
+       ) : (
+         <div className="overflow-x-auto rounded-xl border border-gray-200">
+           <table className="w-full text-left border-collapse">
+             <thead>
+               <tr className="bg-[#F8FAFC] border-b border-gray-200">
+                 <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Usuario</th>
+                 <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Curso</th>
+                 <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Contacto Directo</th>
+                 <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Fecha</th>
+               </tr>
+             </thead>
+             <tbody className="divide-y divide-gray-100 bg-white">
+               {carts.map(lead => (
+                 <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors">
+                   <td className="px-4 py-4">
+                     <div className="font-bold text-gray-900 text-sm">{lead.name === "Usuario Logueado" ? "Estudiante Registrado" : lead.name}</div>
+                     <div className="text-xs text-brand-blue font-medium">{lead.email}</div>
+                   </td>
+                   <td className="px-4 py-4">
+                     <div className="flex flex-wrap gap-1">
+                       {(lead.selected_courses || []).map((c: string, i: number) => (
+                         <span key={i} className="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-600 border border-indigo-100">{c}</span>
+                       ))}
+                     </div>
+                   </td>
+                   <td className="px-4 py-4">
+                     {lead.whatsapp ? (
+                       <a 
+                        href={`https://wa.me/${lead.whatsapp.replace(/\D/g, '')}`} 
+                        target="_blank" 
+                        rel="noreferrer" 
+                        className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-emerald-100 float-left transition-colors"
+                       >
+                         <MessageSquare className="w-3 h-3" /> Chatear
+                       </a>
+                     ) : (
+                       <a 
+                        href={`mailto:${lead.email}`} 
+                        className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-blue-100 float-left transition-colors"
+                       >
+                         <Mail className="w-3 h-3" /> Mail
+                       </a>
+                     )}
                    </td>
                    <td className="px-4 py-4 whitespace-nowrap">
                      <div className="text-xs font-medium text-gray-900">{new Date(lead.created_at).toLocaleDateString('es-CL')}</div>
