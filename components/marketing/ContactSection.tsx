@@ -170,7 +170,7 @@ export default function ContactSection() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">WhatsApp</label>
+                        <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">WhatsApp (Opcional)</label>
                         <input
                           type="tel"
                           value={whatsapp}

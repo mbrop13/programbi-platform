@@ -468,31 +468,6 @@ export default function DataAnalyticsSyllabus() {
 
         </div>
 
-        {/* AYUDA / CONTACTO */}
-        <div className="mt-20 bg-white border border-slate-200 rounded-[2.5rem] p-10 md:p-12 text-center shadow-sm relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-slate-50 rounded-full blur-3xl -z-10 group-hover:bg-slate-100 transition-colors" />
-            <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mb-4">¿Necesitas ayuda con el plan de estudios?</h3>
-            <p className="text-base md:text-lg text-slate-600 mb-10 max-w-2xl mx-auto font-light">
-                Si tienes dudas sobre el contenido detallado, la modalidad o facilidades de pago, conversémoslo directamente.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <a 
-                    href="https://wa.me/56935409699" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-3 bg-[#25D366] text-white px-8 py-4 rounded-xl font-bold text-base hover:scale-105 transition-transform no-underline shadow-lg shadow-green-100"
-                >
-                    <MessageCircle className="w-6 h-6" /> Contactar por WhatsApp
-                </a>
-                <a 
-                    href="tel:+56935409699" 
-                    className="flex items-center gap-3 bg-slate-100 text-slate-700 px-8 py-4 rounded-xl font-bold text-base hover:bg-slate-200 transition-colors no-underline"
-                >
-                    <Phone className="w-6 h-6" /> +56 9 3540 9699
-                </a>
-            </div>
-        </div>
-
       </div>
     </div>
   );
