@@ -777,3 +777,99 @@ export async function adminDeletePopup(popupId: string) {
   const { error } = await adminDb.from("promo_popups").delete().eq("id", popupId);
   if (error) throw new Error(error.message);
 }
+
+// ─── PROMOTIONS ───
+
+export async function adminGetPromotions() {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await adminDb
+    .from("promotions")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) { console.error("Error:", error); return []; }
+  return data || [];
+}
+
+export async function adminCreatePromotion(promo: {
+  name: string;
+  target_type: string;
+  target_id?: string;
+  discount_percentage: number;
+  is_active: boolean;
+  valid_until?: string | null;
+}) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  // target_id must be null if empty string
+  const cleanPromo = { ...promo, target_id: promo.target_id || null };
+
+  const { data, error } = await adminDb
+    .from("promotions")
+    .insert(cleanPromo)
+    .select("id")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function adminUpdatePromotion(promoId: string, updates: Record<string, any>) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await adminDb
+    .from("promotions")
+    .update({ ...updates, updated_at: new Date().toISOString() })
+    .eq("id", promoId);
+
+  if (error) throw new Error(error.message);
+}
+
+export async function adminTogglePromotion(promoId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data: current } = await adminDb.from("promotions").select("is_active").eq("id", promoId).single();
+  if (!current) throw new Error("Promoción no encontrada");
+
+  const { error } = await adminDb.from("promotions").update({
+    is_active: !current.is_active,
+    updated_at: new Date().toISOString()
+  }).eq("id", promoId);
+  if (error) throw new Error(error.message);
+}
+
+export async function adminDeletePromotion(promoId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await adminDb.from("promotions").delete().eq("id", promoId);
+  if (error) throw new Error(error.message);
+}
+
+export async function getActivePromotions() {
+  const supabase = await createClient();
+  const now = new Date().toISOString();
+
+  // Fetches promotions that are active
+  const { data, error } = await supabase
+    .from("promotions")
+    .select("*")
+    .eq("is_active", true);
+    
+  if (error) {
+    console.error("Error fetching promotions:", error);
+    return [];
+  }
+  
+  return (data || []).filter((p: any) => !p.valid_until || p.valid_until > now);
+}

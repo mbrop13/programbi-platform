@@ -41,6 +41,14 @@ export async function POST(req: NextRequest) {
       else if (userPlan === 'ultra') { baseDiscountPercent = 40; specDiscountPercent = 20; }
     }
 
+    const { getActivePromotions } = await import("@/lib/supabase/comunidad-ai");
+    const activePromos = await getActivePromotions();
+
+    const getGlobalDiscount = (slug: string) => {
+       const p = activePromos.find((pr: any) => pr.target_type === 'all' || pr.target_type === 'courses' || (pr.target_type === 'specific_course' && pr.target_id === slug));
+       return p ? p.discount_percentage : 0;
+    };
+
     let grandTotalClp = 0;
     const validatedItems = [];
 
@@ -66,7 +74,11 @@ export async function POST(req: NextRequest) {
        }
 
        const isSpec = (masterCourse.durationHours > 50 || masterCourse.slug.includes("analisis") || masterCourse.slug.includes("analitica"));
-       const discountMultiplier = 1 - ((isSpec ? specDiscountPercent : baseDiscountPercent) / 100);
+       const subDiscount = isSpec ? specDiscountPercent : baseDiscountPercent;
+       const promoDiscount = getGlobalDiscount(masterCourse.slug);
+       const maxDiscountPercent = Math.max(subDiscount, promoDiscount);
+
+       const discountMultiplier = 1 - (maxDiscountPercent / 100);
        
        const finalPriceClp = Math.floor(basePrice * discountMultiplier);
        const itemTotal = finalPriceClp * (item.quantity || 1);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Star, Shield, Lock, ArrowRight, Loader2, Sparkles, ChevronRight } from "lucide-react";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -20,6 +20,21 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('mensual');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const [promotions, setPromotions] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/promotions")
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) setPromotions(data);
+      })
+      .catch(console.error);
+  }, []);
+
+  const getPlanDiscount = (planId: string) => {
+    const promo = promotions.find(p => p.target_type === 'all' || p.target_type === 'plans' || (p.target_type === 'specific_plan' && p.target_id === planId));
+    return promo ? promo.discount_percentage : 0;
+  };
 
   const handleAction = async (planId: string) => {
     if (!isLoggedIn) {
@@ -167,6 +182,13 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
             totalBilledPrice = plan.priceAnnual || (plan.price * 12 * 0.7);
           }
 
+          const adminDiscountPercent = getPlanDiscount(plan.id);
+          const originalMonthlyPrice = Math.round(totalBilledPrice / monthsCount);
+          
+          if (adminDiscountPercent > 0) {
+             totalBilledPrice = Math.round(totalBilledPrice * (100 - adminDiscountPercent) / 100);
+          }
+
           const finalMonthlyPrice = Math.round(totalBilledPrice / monthsCount);
 
           return (
@@ -187,12 +209,20 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
               <div className="relative z-10 w-full h-full flex flex-col p-6 lg:p-8 pt-10">
 
                 {/* Highlight Badge */}
-                {plan.highlight && (
+                {plan.highlight && adminDiscountPercent === 0 && (
                   <div 
                     className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest text-white uppercase shadow-lg shadow-blue-500/30 flex items-center gap-1.5 bg-blue-600 whitespace-nowrap"
                   >
                     <Star className="w-3.5 h-3.5 fill-white text-white" />
                     {plan.highlight}
+                  </div>
+                )}
+                {adminDiscountPercent > 0 && (
+                  <div 
+                    className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest text-[#1890FF] uppercase shadow-md shadow-brand-blue/10 flex items-center gap-1.5 bg-blue-50 border border-blue-100 whitespace-nowrap"
+                  >
+                    <Sparkles className="w-3.5 h-3.5 text-brand-blue" />
+                    Oferta -{adminDiscountPercent}%
                   </div>
                 )}
 
@@ -206,6 +236,11 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
 
                 {/* Pricing */}
                 <div className="flex flex-col mb-6 flex-grow-0 pb-6 border-b border-gray-100">
+                  {adminDiscountPercent > 0 && (
+                     <div className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold mb-1 block w-fit">
+                        ${originalMonthlyPrice.toLocaleString("es-CL")} /mes
+                     </div>
+                  )}
                   <div className="flex items-end gap-1">
                     <span className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter">
                       ${(finalMonthlyPrice).toLocaleString("es-CL")}

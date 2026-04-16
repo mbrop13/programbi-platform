@@ -474,3 +474,22 @@ CREATE INDEX idx_chat_messages_chan ON chat_messages(channel_id);
 CREATE INDEX idx_super_class_notes_prof ON super_class_notes(profile_id);
 CREATE INDEX idx_ai_conversations_prof ON ai_conversations(profile_id);
 CREATE INDEX idx_ai_messages_conv ON ai_messages(conversation_id);
+
+-- ============================================
+-- 19. GLOBAL PROMOTIONS
+-- ============================================
+CREATE TABLE public.promotions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  target_type TEXT NOT NULL CHECK (target_type IN ('courses', 'plans', 'all', 'specific_course', 'specific_plan')),
+  target_id TEXT,
+  discount_percentage INTEGER NOT NULL CHECK (discount_percentage > 0 AND discount_percentage <= 100),
+  is_active BOOLEAN DEFAULT false,
+  valid_until TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.promotions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Promotions are publicly readable" ON public.promotions FOR SELECT USING (true);
+-- Write permissions are restricted to admins through API/Server logic.

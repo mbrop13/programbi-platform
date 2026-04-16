@@ -37,7 +37,8 @@ export default function PagoClient() {
 
   const [mode, setMode] = useState<Mode>("individual");
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
-  const [loadingSchedules, setLoadingSchedules] = useState(true);
+  const [promotions, setPromotions] = useState<any[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
 
   // Cart state
   const [cart, setCart] = useState<Record<string, CartItem>>({});
@@ -64,18 +65,31 @@ export default function PagoClient() {
   const [entAcceptsPrivacy, setEntAcceptsPrivacy] = useState(false);
 
   useEffect(() => {
-    fetch("/api/schedules")
-      .then(r => r.json())
-      .then(data => {
-        if (Array.isArray(data)) setSchedules(data);
-      })
-      .catch(console.error)
-      .finally(() => setLoadingSchedules(false));
+    Promise.all([
+      fetch("/api/schedules").then(r => r.json()),
+      fetch("/api/promotions").then(r => r.json())
+    ]).then(([schData, promoData]) => {
+      if (Array.isArray(schData)) setSchedules(schData);
+      if (Array.isArray(promoData)) setPromotions(promoData);
+    })
+    .catch(console.error)
+    .finally(() => setLoadingData(false));
   }, []);
+
+  const getDiscountedPrice = (slug: string, basePrice: number | undefined) => {
+    if (!basePrice) return { finalPrice: 0, originalPrice: 0, hasDiscount: false };
+    const applicablePromo = promotions.find(p => p.target_type === 'all' || p.target_type === 'courses' || (p.target_type === 'specific_course' && p.target_id === slug));
+    if (applicablePromo) {
+       const ratio = (100 - applicablePromo.discount_percentage) / 100;
+       const finalPrice = Math.round(basePrice * ratio);
+       return { finalPrice, originalPrice: basePrice, hasDiscount: true };
+    }
+    return { finalPrice: basePrice, originalPrice: basePrice, hasDiscount: false };
+  };
 
   // Initialize selected levels and cart
   useEffect(() => {
-    if (!loadingSchedules) {
+    if (!loadingData) {
       const initialLevels: Record<string, string> = {};
       allCourses.forEach(c => {
         if (c.slug === initialSlug) {
@@ -92,12 +106,13 @@ export default function PagoClient() {
         const levelName = initialLevel || course?.levels?.[0]?.name || "Básico";
         const level = course?.levels?.find(l => l.name === levelName);
         if (course && level && level.price) {
+          const pricing = getDiscountedPrice(course.slug, level.price);
           setCart({
              [`${course.slug}-${levelName}`]: {
                 slug: course.slug,
                 title: course.title,
                 levelName: level.name,
-                price: level.price,
+                price: pricing.finalPrice,
                 quantity: 1
              }
           });
@@ -105,7 +120,7 @@ export default function PagoClient() {
         }
       }
     }
-  }, [loadingSchedules, initialSlug, initialLevel]);
+  }, [loadingData, initialSlug, initialLevel, promotions]);
 
   const changeLevel = (slug: string, newLevelName: string) => {
     setSelectedLevels(prev => ({ ...prev, [slug]: newLevelName }));
@@ -365,14 +380,28 @@ export default function PagoClient() {
                        <div className="w-full sm:w-auto flex flex-col items-start sm:items-end gap-3 pt-4 sm:pt-0 border-t sm:border-0 border-gray-100">
                            {mode === "individual" && currentLevelData?.price ? (
                               <div className="flex flex-col items-start sm:items-end">
-                                 {isBundle ? (
-                                    <>
-                                       <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">$747.000</span>
-                                       <span className="text-2xl font-black text-[#0F172A]">{formatCLP(currentLevelData.price)}</span>
-                                    </>
-                                 ) : (
-                                    <span className="text-2xl font-black text-[#0F172A]">{formatCLP(currentLevelData.price)}</span>
-                                 )}
+                                 {(() => {
+                                    const pricing = getDiscountedPrice(course.slug, currentLevelData.price);
+                                    if (isBundle) {
+                                      // bundle pricing logic overrides specific promo for base visual, but lets mix them logically
+                                      return (
+                                        <>
+                                           <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">$747.000</span>
+                                           <span className="text-2xl font-black text-[#0F172A]">{formatCLP(pricing.finalPrice)}</span>
+                                        </>
+                                      );
+                                    } else if (pricing.hasDiscount) {
+                                      return (
+                                        <>
+                                           <span className="text-xs text-brand-blue font-bold px-2 py-0.5 rounded-full bg-blue-50 mb-1 tracking-widest uppercase">Promoción</span>
+                                           <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">{formatCLP(pricing.originalPrice)}</span>
+                                           <span className="text-2xl font-black text-[#0F172A]">{formatCLP(pricing.finalPrice)}</span>
+                                        </>
+                                      );
+                                    } else {
+                                      return <span className="text-2xl font-black text-[#0F172A]">{formatCLP(pricing.finalPrice)}</span>;
+                                    }
+                                 })()}
                               </div>
                            ) : mode === "enterprise" ? null : (
                                <div className="flex flex-col items-start sm:items-end">
@@ -384,7 +413,7 @@ export default function PagoClient() {
                               canBuy ? (
                                 <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl overflow-hidden h-10 shadow-sm mt-1">
                                    <button 
-                                     onClick={() => updateCartQuantity(course.slug, course.title, activeLevel, currentLevelData!.price!, true, -1)}
+                                     onClick={() => updateCartQuantity(course.slug, course.title, activeLevel, getDiscountedPrice(course.slug, currentLevelData!.price).finalPrice, true, -1)}
                                      disabled={itemQty === 0}
                                      className="w-10 h-full flex items-center justify-center text-gray-500 hover:bg-gray-200 disabled:opacity-30 tooltip"
                                    >
@@ -394,7 +423,7 @@ export default function PagoClient() {
                                       {itemQty}
                                    </div>
                                    <button 
-                                     onClick={() => updateCartQuantity(course.slug, course.title, activeLevel, currentLevelData!.price!, true, 1)}
+                                     onClick={() => updateCartQuantity(course.slug, course.title, activeLevel, getDiscountedPrice(course.slug, currentLevelData!.price).finalPrice, true, 1)}
                                      className="w-10 h-full flex items-center justify-center text-[#1890FF] hover:bg-blue-50"
                                    >
                                       <Plus className="w-4 h-4" />

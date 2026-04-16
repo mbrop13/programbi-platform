@@ -22,6 +22,13 @@ export async function POST(req: NextRequest) {
     const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
     const backUrl = `${APP_URL}/api/mercadopago/return?planId=${planId}`;
 
+    const { getActivePromotions } = await import("@/lib/supabase/comunidad-ai");
+    const activePromos = await getActivePromotions();
+    const getPlanDiscount = (plId: string) => {
+       const p = activePromos.find((pr: any) => pr.target_type === 'all' || pr.target_type === 'plans' || (pr.target_type === 'specific_plan' && pr.target_id === plId));
+       return p ? p.discount_percentage : 0;
+    };
+
     // Si es anual o semestral, cobrar la cantidad completa por Checkout Pro (Pago Único)
     if (!planId.endsWith("_mensual")) {
       const basePlanId = planId.split("_")[0];
@@ -35,6 +42,11 @@ export async function POST(req: NextRequest) {
         price = planInfo.priceSemiannual || (planInfo.price * 6 * 0.9);
       } else if (planId.endsWith("_anual")) {
         price = planInfo.priceAnnual || (planInfo.price * 12 * 0.7);
+      }
+
+      const adminDiscountPercent = getPlanDiscount(basePlanId);
+      if (adminDiscountPercent > 0) {
+        price = price * ((100 - adminDiscountPercent) / 100);
       }
 
       const preference = await createMPPreference({
@@ -56,9 +68,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Plan base not found" }, { status: 400 });
     }
 
+    const adminDiscountPercent = getPlanDiscount(basePlanId);
+    let finalMonthlyPrice = planInfo.price;
+    if (adminDiscountPercent > 0) {
+       finalMonthlyPrice = finalMonthlyPrice * ((100 - adminDiscountPercent) / 100);
+    }
+
     const subscription = await createMPSubscription({
       reason: `ProgramBI Community - ${planId.replace("_", " ").toUpperCase()}`,
-      transactionAmount: Math.round(planInfo.price),
+      transactionAmount: Math.round(finalMonthlyPrice),
       payerEmail: userEmail,
       externalReference: user.id, // We store our Supabase user ID here
       backUrl: backUrl,

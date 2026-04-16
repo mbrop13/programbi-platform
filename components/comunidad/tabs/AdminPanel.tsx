@@ -2,8 +2,10 @@ import { useState, useEffect, useCallback } from "react";
 import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminTogglePopup, adminDeletePopup } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion } from "@/lib/supabase/comunidad-ai";
 import { Calendar } from "lucide-react";
+import { courses as allCourses } from "@/lib/data/courses";
+import { communityPlans } from "@/lib/data/community_plans";
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -47,6 +49,7 @@ export default function AdminPanel() {
     { id: "support", label: "Soporte", icon: MessageSquare, hasUnread: unreadSupport },
     { id: "members", label: "Miembros", icon: Users, hasUnread: unreadMembers },
     { id: "leads", label: "Contactos", icon: Mail },
+    { id: "prices", label: "Precios y Promos", icon: DollarSign },
     { id: "cart", label: "Carritos", icon: ShoppingCart },
     { id: "courses", label: "Cursos", icon: GraduationCap },
     { id: "schedules", label: "Horarios", icon: Calendar },
@@ -100,8 +103,8 @@ export default function AdminPanel() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2 }}
             >
-              {activeTab === "overview" && <AdminOverview />}
-              {activeTab === "members" && <AdminMembers />}
+              { activeTab === "overview" && <AdminOverview /> }
+              { activeTab === "members" && <AdminMembers /> }
               { activeTab === "leads" && <AdminLeads /> }
               { activeTab === "cart" && <AdminAbandonedCarts /> }
               { activeTab === "courses" && <AdminCourses /> }
@@ -112,6 +115,7 @@ export default function AdminPanel() {
               { activeTab === "settings" && <AdminSettings /> }
               { activeTab === "support" && <AdminSupport /> }
               { activeTab === "popups" && <AdminPopups /> }
+              { activeTab === "prices" && <AdminPrices /> }
             </motion.div>
         </div>
     </div>
@@ -1934,6 +1938,272 @@ function AdminPopups() {
              );
            })}
          </div>
+       )}
+    </div>
+  );
+}
+
+// ─── PRICES & PROMOTIONS ───
+function AdminPrices() {
+  const [promos, setPromos] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAdd, setShowAdd] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorObj, setErrorObj] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<"prices" | "promos">("prices");
+
+  // Form
+  const [name, setName] = useState("");
+  const [targetType, setTargetType] = useState<"courses" | "plans" | "all" | "specific_course" | "specific_plan">("courses");
+  const [targetId, setTargetId] = useState("");
+  const [discountPercent, setDiscountPercent] = useState<number>(20);
+
+  useEffect(() => {
+    loadPromos();
+  }, []);
+
+  async function loadPromos() {
+    try {
+      const data = await adminGetPromotions();
+      setPromos(data);
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setErrorObj(null);
+    try {
+      await adminCreatePromotion({
+        name,
+        target_type: targetType,
+        target_id: targetId,
+        discount_percentage: discountPercent,
+        is_active: true
+      });
+      setShowAdd(false);
+      setName("");
+      setTargetId("");
+      setDiscountPercent(20);
+      setViewMode("promos");
+      loadPromos();
+    } catch (err: any) {
+      setErrorObj(err.message);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleToggle = async (id: string) => {
+    try {
+      await adminTogglePromotion(id);
+      loadPromos();
+    } catch (err) { console.error(err); }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("¿Seguro que deseas eliminar esta promoción?")) return;
+    try {
+      await adminDeletePromotion(id);
+      loadPromos();
+    } catch (err) { console.error(err); }
+  };
+
+  const startPromo = (type: "specific_course" | "specific_plan", id: string) => {
+    setTargetType(type);
+    setTargetId(id);
+    setShowAdd(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  if (loading) return <div className="p-8 flex justify-center"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>;
+
+  return (
+    <div className="p-6 sm:p-8">
+       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+         <div>
+           <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Precios y Promociones</h2>
+           <p className="text-sm text-gray-400">Control maestro de precios y ofertas dinámicas</p>
+         </div>
+         <div className="flex bg-gray-100 p-1 rounded-xl self-start">
+            <button onClick={() => setViewMode("prices")} className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all ${viewMode === "prices" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"} border-none cursor-pointer`}>
+              Precios Base
+            </button>
+            <button onClick={() => setViewMode("promos")} className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all ${viewMode === "promos" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"} border-none cursor-pointer flex items-center gap-2`}>
+              Promos Activas
+              {promos.filter(p => p.is_active).length > 0 && (
+                <span className="bg-brand-blue text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{promos.filter(p => p.is_active).length}</span>
+              )}
+            </button>
+         </div>
+       </div>
+
+       <AnimatePresence>
+         {showAdd && (
+           <motion.form initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+             onSubmit={handleSubmit} className="mb-8 bg-gray-50 border border-gray-200 p-6 rounded-2xl overflow-hidden">
+             
+             {errorObj && <div className="p-3 mb-4 bg-red-50 text-red-600 text-sm rounded-xl font-medium">{errorObj}</div>}
+             
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+               <div>
+                 <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nombre (Ej: Black Friday)</label>
+                 <input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
+               </div>
+               <div>
+                 <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Descuento (%)</label>
+                 <input type="number" min="1" max="100" required value={discountPercent} onChange={e => setDiscountPercent(Number(e.target.value))} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
+               </div>
+               <div>
+                 <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Aplica a</label>
+                 <select value={targetType} onChange={e => setTargetType(e.target.value as any)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none cursor-pointer">
+                   <option value="courses">Todos los Cursos</option>
+                   <option value="plans">Todas las Membresías</option>
+                   <option value="all">Toda la Tienda (Cursos y Planes)</option>
+                   <option value="specific_course">Curso Específico (Slug)</option>
+                   <option value="specific_plan">Plan Específico (ID)</option>
+                 </select>
+               </div>
+               {(targetType === 'specific_course' || targetType === 'specific_plan') && (
+                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                   <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">ID del Objetivo</label>
+                   <input type="text" required value={targetId} onChange={e => setTargetId(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
+                 </motion.div>
+               )}
+             </div>
+
+             <div className="flex justify-end gap-3">
+               <button type="button" onClick={() => setShowAdd(false)} className="px-5 py-2.5 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-200 transition-colors border-none cursor-pointer">Cancelar</button>
+               <button type="submit" disabled={submitting} className="flex items-center gap-2 bg-[#0F172A] text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-800 transition-colors disabled:opacity-50 border-none cursor-pointer">
+                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                 Publicar Promoción
+               </button>
+             </div>
+           </motion.form>
+         )}
+       </AnimatePresence>
+
+       {viewMode === "prices" ? (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+            <div className="flex justify-between items-center bg-blue-50 p-4 rounded-2xl border border-blue-100">
+              <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm text-brand-blue"><Percent className="w-5 h-5"/></div>
+                 <div>
+                   <h3 className="font-bold text-blue-900 text-sm">Descuento Global</h3>
+                   <p className="text-xs text-blue-700">Aplica a todos los cursos y membresías</p>
+                 </div>
+              </div>
+              <button onClick={() => { setTargetType("all"); setShowAdd(true); window.scrollTo(0,0); }} className="text-[11px] font-bold px-3 py-1.5 bg-brand-blue text-white rounded-lg hover:bg-blue-600 transition-all cursor-pointer border-none shadow-sm flex items-center gap-1.5"><Plus className="w-3.5 h-3.5"/> Promoción Global</button>
+            </div>
+
+            {/* Courses Table */}
+            <div>
+              <h3 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2"><GraduationCap className="w-5 h-5 text-gray-400"/> Cursos Regulares</h3>
+              <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+                <table className="w-full text-left text-sm whitespace-nowrap">
+                  <thead className="bg-gray-50 text-gray-500 font-bold text-[11px] uppercase tracking-wider">
+                    <tr><th className="px-6 py-4">Curso</th><th className="px-6 py-4">Precio Lista</th><th className="px-6 py-4 text-right">Acciones</th></tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {allCourses.map(course => (
+                      <tr key={course.slug} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="font-bold text-gray-900">{course.title}</div>
+                          <div className="text-xs text-gray-400">ID: {course.slug}</div>
+                        </td>
+                        <td className="px-6 py-4 font-semibold text-gray-600">${course.levels?.[0]?.price?.toLocaleString('es-CL') || 'N/A'}</td>
+                        <td className="px-6 py-4 text-right">
+                          <button onClick={() => startPromo("specific_course", course.slug)} className="text-[11px] font-bold px-3 py-1.5 bg-white border border-gray-200 text-brand-blue rounded-lg hover:bg-blue-50 transition-all cursor-pointer">Añadir Descuento</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Memberships Table */}
+            <div>
+              <h3 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2"><CreditCard className="w-5 h-5 text-gray-400"/> Membresías</h3>
+              <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+                <table className="w-full text-left text-sm whitespace-nowrap">
+                  <thead className="bg-gray-50 text-gray-500 font-bold text-[11px] uppercase tracking-wider">
+                    <tr><th className="px-6 py-4">Plan (ID)</th><th className="px-6 py-4">Mensual</th><th className="px-6 py-4">Anual</th><th className="px-6 py-4 text-right">Acciones</th></tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {communityPlans.map(plan => (
+                      <tr key={plan.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="font-bold text-gray-900">{plan.name}</div>
+                          <div className="text-xs text-gray-400">ID: {plan.id}</div>
+                        </td>
+                        <td className="px-6 py-4 font-semibold text-gray-600">${plan.price.toLocaleString('es-CL')}</td>
+                        <td className="px-6 py-4 font-semibold text-gray-600">${(plan.priceAnnual || plan.price * 12 * 0.7).toLocaleString('es-CL')}</td>
+                        <td className="px-6 py-4 text-right">
+                          <button onClick={() => startPromo("specific_plan", plan.id)} className="text-[11px] font-bold px-3 py-1.5 bg-white border border-gray-200 text-brand-blue rounded-lg hover:bg-blue-50 transition-all cursor-pointer">Añadir Descuento</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </motion.div>
+       ) : (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            {promos.length === 0 ? (
+               <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50">
+                 <Percent className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                 <h3 className="text-lg font-black text-gray-900 mb-1">Sin Promociones Activas</h3>
+                 <p className="text-gray-500 text-sm max-w-sm mx-auto mb-6">No has configurado ningún descuento dinámico. Para agregar uno, ve a la pestaña "Precios Base" o crea uno manualmente.</p>
+                 <button onClick={() => setShowAdd(true)} className="px-5 py-2.5 bg-[#0F172A] text-white rounded-xl text-sm font-bold shadow-sm hover:bg-gray-800 transition-all cursor-pointer border-none flex items-center gap-2 mx-auto"><Plus className="w-4 h-4"/> Nueva Promoción</button>
+               </div>
+             ) : (
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                 {promos.map(promo => (
+                   <div key={promo.id} className={`relative bg-white rounded-2xl border ${promo.is_active ? 'border-brand-blue ring-1 ring-brand-blue/20 shadow-md' : 'border-gray-200 shadow-sm opacity-70'} overflow-hidden flex flex-col`}>
+                     {promo.is_active && (
+                       <div className="absolute top-0 right-0 py-1 px-3 bg-brand-blue text-white text-[10px] font-bold rounded-bl-xl shadow-sm z-10">Activa</div>
+                     )}
+                     <div className="p-5 flex-1">
+                       <div className="flex items-start gap-3">
+                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${promo.is_active ? 'bg-blue-50 text-brand-blue' : 'bg-gray-100 text-gray-400'}`}>
+                           <Percent className="w-5 h-5" />
+                         </div>
+                         <div>
+                           <h3 className="font-bold text-gray-900 leading-tight">{promo.name}</h3>
+                           <p className="text-xs text-gray-500 mt-1">Regla: {
+                             promo.target_type === 'courses' ? 'Cursos' :
+                             promo.target_type === 'plans' ? 'Membresías' :
+                             promo.target_type === 'all' ? 'Toda la Tienda' :
+                             promo.target_type === 'specific_course' ? `Curso: ${promo.target_id}` :
+                             `Plan: ${promo.target_id}`
+                           }</p>
+                         </div>
+                       </div>
+                       <div className="mt-4 p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between">
+                          <span className="text-xs text-gray-500 font-medium">Rebaja del:</span>
+                          <span className="font-black text-xl text-emerald-600">{promo.discount_percentage}%</span>
+                       </div>
+                     </div>
+                     <div className="flex items-center gap-2 mt-auto p-4 border-t border-gray-50 bg-gray-50/50">
+                       <button onClick={() => handleToggle(promo.id)}
+                         className={`flex-1 py-2 rounded-xl text-[11px] font-bold transition-colors cursor-pointer border-none ${
+                           promo.is_active ? 'bg-gray-200 text-gray-600 hover:bg-gray-300' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
+                         }`}>
+                         {promo.is_active ? 'Pausar' : 'Reactivar'}
+                       </button>
+                       <button onClick={() => handleDelete(promo.id)}
+                         className="py-2 px-3 rounded-xl text-[11px] font-bold bg-red-50 text-red-500 hover:bg-red-100 transition-colors cursor-pointer border-none">
+                         <Trash2 className="w-4 h-4" />
+                       </button>
+                     </div>
+                   </div>
+                 ))}
+               </div>
+             )}
+          </motion.div>
        )}
     </div>
   );
