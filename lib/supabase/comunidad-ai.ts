@@ -873,3 +873,67 @@ export async function getActivePromotions() {
   
   return (data || []).filter((p: any) => !p.valid_until || p.valid_until > now);
 }
+
+// ─── PRICE OVERRIDES ───
+
+export async function adminGetPriceOverrides() {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await adminDb
+    .from("price_overrides")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) { console.error("Error:", error); return []; }
+  return data || [];
+}
+
+export async function adminUpsertPriceOverride(override: {
+  item_type: string;
+  item_id: string;
+  level_name: string;
+  price: number;
+}) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  // Check if exists
+  const { data: existing } = await adminDb
+    .from("price_overrides")
+    .select("id")
+    .eq("item_type", override.item_type)
+    .eq("item_id", override.item_id)
+    .eq("level_name", override.level_name)
+    .maybeSingle();
+
+  if (existing) {
+    const { error } = await adminDb
+      .from("price_overrides")
+      .update({ price: override.price, updated_at: new Date().toISOString() })
+      .eq("id", existing.id);
+    if (error) throw new Error(error.message);
+  } else {
+    const { error } = await adminDb
+      .from("price_overrides")
+      .insert(override);
+    if (error) throw new Error(error.message);
+  }
+}
+
+export async function getPriceOverrides() {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("price_overrides")
+    .select("*");
+
+  if (error) {
+    console.error("Error fetching price overrides:", error);
+    return [];
+  }
+
+  return data || [];
+}

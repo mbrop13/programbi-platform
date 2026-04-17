@@ -38,6 +38,7 @@ export default function PagoClient() {
   const [mode, setMode] = useState<Mode>("individual");
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
   const [promotions, setPromotions] = useState<any[]>([]);
+  const [priceOverrides, setPriceOverrides] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(true);
 
   // Cart state
@@ -67,24 +68,32 @@ export default function PagoClient() {
   useEffect(() => {
     Promise.all([
       fetch("/api/schedules").then(r => r.json()),
-      fetch("/api/promotions").then(r => r.json())
-    ]).then(([schData, promoData]) => {
+      fetch("/api/promotions").then(r => r.json()),
+      fetch("/api/prices").then(r => r.json())
+    ]).then(([schData, promoData, pricesData]) => {
       if (Array.isArray(schData)) setSchedules(schData);
       if (Array.isArray(promoData)) setPromotions(promoData);
+      if (Array.isArray(pricesData)) setPriceOverrides(pricesData);
     })
     .catch(console.error)
     .finally(() => setLoadingData(false));
   }, []);
 
-  const getDiscountedPrice = (slug: string, basePrice: number | undefined) => {
+  const getEffectiveBasePrice = (slug: string, levelName: string, codePrice: number) => {
+    const override = priceOverrides.find((o: any) => o.item_type === 'course' && o.item_id === slug && o.level_name === levelName);
+    return override ? override.price : codePrice;
+  };
+
+  const getDiscountedPrice = (slug: string, basePrice: number | undefined, levelName?: string) => {
     if (!basePrice) return { finalPrice: 0, originalPrice: 0, hasDiscount: false };
+    const effectiveBase = levelName ? getEffectiveBasePrice(slug, levelName, basePrice) : basePrice;
     const applicablePromo = promotions.find(p => p.target_type === 'all' || p.target_type === 'courses' || (p.target_type === 'specific_course' && p.target_id === slug));
     if (applicablePromo) {
        const ratio = (100 - applicablePromo.discount_percentage) / 100;
-       const finalPrice = Math.round(basePrice * ratio);
-       return { finalPrice, originalPrice: basePrice, hasDiscount: true };
+       const finalPrice = Math.round(effectiveBase * ratio);
+       return { finalPrice, originalPrice: effectiveBase, hasDiscount: true };
     }
-    return { finalPrice: basePrice, originalPrice: basePrice, hasDiscount: false };
+    return { finalPrice: effectiveBase, originalPrice: effectiveBase, hasDiscount: false };
   };
 
   // Initialize selected levels and cart
@@ -106,7 +115,7 @@ export default function PagoClient() {
         const levelName = initialLevel || course?.levels?.[0]?.name || "Básico";
         const level = course?.levels?.find(l => l.name === levelName);
         if (course && level && level.price) {
-          const pricing = getDiscountedPrice(course.slug, level.price);
+          const pricing = getDiscountedPrice(course.slug, level.price, levelName);
           setCart({
              [`${course.slug}-${levelName}`]: {
                 slug: course.slug,
@@ -313,16 +322,19 @@ export default function PagoClient() {
                // Logic to check active schedule
                let schedule: CourseSchedule | undefined | null = undefined;
                
+               // Specialty courses can always be purchased
+               const alwaysAvailable = ["analitica-mineria", "analitica-financiera"].includes(course.slug);
+               
                if (course.slug === "analisis-de-datos") {
                   if (activeLevel?.includes("Básico") || activeLevel?.includes("Completo")) {
                       const adSchedules = schedules.filter(s => analisisDeDatosSlugs.includes(s.course_slug));
                       schedule = getNearestSchedule(adSchedules);
                   }
-               } else {
+               } else if (!alwaysAvailable) {
                   schedule = schedules.find(s => s.course_slug === course.slug && s.level_name === activeLevel);
                }
 
-               const hasScheduleActive = !!schedule;
+               const hasScheduleActive = !!schedule || alwaysAvailable;
                // Overwrite hasScheduleActive if fetching schedules is done but it evaluates to false, we assume you cannot purchase and must notify.
                const canBuy = mode === 'individual' && hasScheduleActive && currentLevelData?.price;
 
@@ -381,7 +393,7 @@ export default function PagoClient() {
                            {mode === "individual" && currentLevelData?.price ? (
                               <div className="flex flex-col items-start sm:items-end">
                                  {(() => {
-                                    const pricing = getDiscountedPrice(course.slug, currentLevelData.price);
+                                    const pricing = getDiscountedPrice(course.slug, currentLevelData.price, activeLevel);
                                     if (isBundle) {
                                       // bundle pricing logic overrides specific promo for base visual, but lets mix them logically
                                       return (
@@ -413,7 +425,7 @@ export default function PagoClient() {
                               canBuy ? (
                                 <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl overflow-hidden h-10 shadow-sm mt-1">
                                    <button 
-                                     onClick={() => updateCartQuantity(course.slug, course.title, activeLevel, getDiscountedPrice(course.slug, currentLevelData!.price).finalPrice, true, -1)}
+                                     onClick={() => updateCartQuantity(course.slug, course.title, activeLevel, getDiscountedPrice(course.slug, currentLevelData!.price, activeLevel).finalPrice, true, -1)}
                                      disabled={itemQty === 0}
                                      className="w-10 h-full flex items-center justify-center text-gray-500 hover:bg-gray-200 disabled:opacity-30 tooltip"
                                    >
@@ -423,7 +435,7 @@ export default function PagoClient() {
                                       {itemQty}
                                    </div>
                                    <button 
-                                     onClick={() => updateCartQuantity(course.slug, course.title, activeLevel, getDiscountedPrice(course.slug, currentLevelData!.price).finalPrice, true, 1)}
+                                     onClick={() => updateCartQuantity(course.slug, course.title, activeLevel, getDiscountedPrice(course.slug, currentLevelData!.price, activeLevel).finalPrice, true, 1)}
                                      className="w-10 h-full flex items-center justify-center text-[#1890FF] hover:bg-blue-50"
                                    >
                                       <Plus className="w-4 h-4" />

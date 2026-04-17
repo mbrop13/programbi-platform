@@ -41,12 +41,18 @@ export async function POST(req: NextRequest) {
       else if (userPlan === 'ultra') { baseDiscountPercent = 40; specDiscountPercent = 20; }
     }
 
-    const { getActivePromotions } = await import("@/lib/supabase/comunidad-ai");
+    const { getActivePromotions, getPriceOverrides } = await import("@/lib/supabase/comunidad-ai");
     const activePromos = await getActivePromotions();
+    const priceOverrides = await getPriceOverrides();
 
     const getGlobalDiscount = (slug: string) => {
        const p = activePromos.find((pr: any) => pr.target_type === 'all' || pr.target_type === 'courses' || (pr.target_type === 'specific_course' && pr.target_id === slug));
        return p ? p.discount_percentage : 0;
+    };
+
+    const getOverriddenPrice = (slug: string, levelName: string, codePrice: number) => {
+       const override = priceOverrides.find((o: any) => o.item_type === 'course' && o.item_id === slug && o.level_name === levelName);
+       return override ? override.price : codePrice;
     };
 
     let grandTotalClp = 0;
@@ -72,6 +78,9 @@ export async function POST(req: NextRequest) {
        if (basePrice <= 0) {
           return NextResponse.json({ error: `El curso ${masterCourse.title} no tiene precio definido` }, { status: 400 });
        }
+
+       // Apply price override from admin panel if exists
+       basePrice = getOverriddenPrice(masterCourse.slug, item.levelName || "Básico", basePrice);
 
        const isSpec = (masterCourse.durationHours > 50 || masterCourse.slug.includes("analisis") || masterCourse.slug.includes("analitica"));
        const subDiscount = isSpec ? specDiscountPercent : baseDiscountPercent;

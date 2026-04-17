@@ -493,3 +493,20 @@ CREATE TABLE public.promotions (
 ALTER TABLE public.promotions ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Promotions are publicly readable" ON public.promotions FOR SELECT USING (true);
 -- Write permissions are restricted to admins through API/Server logic.
+
+-- ============================================
+-- 20. PRICE OVERRIDES
+-- ============================================
+CREATE TABLE public.price_overrides (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  item_type TEXT NOT NULL CHECK (item_type IN ('course', 'plan')),
+  item_id TEXT NOT NULL,
+  level_name TEXT,
+  price INTEGER NOT NULL CHECK (price >= 0),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(item_type, item_id, level_name)
+);
+
+ALTER TABLE public.price_overrides ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Price overrides are publicly readable" ON public.price_overrides FOR SELECT USING (true);

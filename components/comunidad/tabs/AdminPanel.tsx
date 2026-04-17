@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride } from "@/lib/supabase/comunidad-ai";
 import { Calendar } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -1946,29 +1946,62 @@ function AdminPopups() {
 // ─── PRICES & PROMOTIONS ───
 function AdminPrices() {
   const [promos, setPromos] = useState<any[]>([]);
+  const [priceOverrides, setPriceOverrides] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorObj, setErrorObj] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"prices" | "promos">("prices");
 
-  // Form
+  // Promo form
   const [name, setName] = useState("");
   const [targetType, setTargetType] = useState<"courses" | "plans" | "all" | "specific_course" | "specific_plan">("courses");
   const [targetId, setTargetId] = useState("");
   const [discountPercent, setDiscountPercent] = useState<number>(20);
 
+  // Price editing
+  const [editingPrice, setEditingPrice] = useState<string | null>(null);
+  const [editPriceValue, setEditPriceValue] = useState<number>(0);
+  const [savingPrice, setSavingPrice] = useState(false);
+
   useEffect(() => {
-    loadPromos();
+    loadData();
   }, []);
 
-  async function loadPromos() {
+  async function loadData() {
     try {
-      const data = await adminGetPromotions();
-      setPromos(data);
+      const [promosData, overridesData] = await Promise.all([
+        adminGetPromotions(),
+        adminGetPriceOverrides()
+      ]);
+      setPromos(promosData);
+      setPriceOverrides(overridesData);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   }
+
+  const getOverriddenPrice = (itemType: string, itemId: string, levelName: string, basePrice: number) => {
+    const override = priceOverrides.find((o: any) => o.item_type === itemType && o.item_id === itemId && o.level_name === levelName);
+    return override ? override.price : basePrice;
+  };
+
+  const handleSavePrice = async (itemType: string, itemId: string, levelName: string) => {
+    setSavingPrice(true);
+    try {
+      await adminUpsertPriceOverride({
+        item_type: itemType,
+        item_id: itemId,
+        level_name: levelName,
+        price: editPriceValue,
+      });
+      setEditingPrice(null);
+      loadData();
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    } finally {
+      setSavingPrice(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1987,7 +2020,7 @@ function AdminPrices() {
       setTargetId("");
       setDiscountPercent(20);
       setViewMode("promos");
-      loadPromos();
+      loadData();
     } catch (err: any) {
       setErrorObj(err.message);
     } finally {
@@ -1998,7 +2031,7 @@ function AdminPrices() {
   const handleToggle = async (id: string) => {
     try {
       await adminTogglePromotion(id);
-      loadPromos();
+      loadData();
     } catch (err) { console.error(err); }
   };
 
@@ -2006,7 +2039,7 @@ function AdminPrices() {
     if (!confirm("¿Seguro que deseas eliminar esta promoción?")) return;
     try {
       await adminDeletePromotion(id);
-      loadPromos();
+      loadData();
     } catch (err) { console.error(err); }
   };
 
@@ -2015,6 +2048,11 @@ function AdminPrices() {
     setTargetId(id);
     setShowAdd(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const startEditPrice = (key: string, currentPrice: number) => {
+    setEditingPrice(key);
+    setEditPriceValue(currentPrice);
   };
 
   if (loading) return <div className="p-8 flex justify-center"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>;
@@ -2099,27 +2137,53 @@ function AdminPrices() {
 
             {/* Courses Table */}
             <div>
-              <h3 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2"><GraduationCap className="w-5 h-5 text-gray-400"/> Cursos Regulares</h3>
+              <h3 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2"><GraduationCap className="w-5 h-5 text-gray-400"/> Cursos</h3>
               <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-                <table className="w-full text-left text-sm whitespace-nowrap">
+                <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
                   <thead className="bg-gray-50 text-gray-500 font-bold text-[11px] uppercase tracking-wider">
-                    <tr><th className="px-6 py-4">Curso</th><th className="px-6 py-4">Precio Lista</th><th className="px-6 py-4 text-right">Acciones</th></tr>
+                    <tr><th className="px-5 py-3">Curso</th><th className="px-5 py-3">Nivel</th><th className="px-5 py-3">Precio Actual</th><th className="px-5 py-3 text-right">Acciones</th></tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {allCourses.map(course => (
-                      <tr key={course.slug} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="font-bold text-gray-900">{course.title}</div>
-                          <div className="text-xs text-gray-400">ID: {course.slug}</div>
-                        </td>
-                        <td className="px-6 py-4 font-semibold text-gray-600">${course.levels?.[0]?.price?.toLocaleString('es-CL') || 'N/A'}</td>
-                        <td className="px-6 py-4 text-right">
-                          <button onClick={() => startPromo("specific_course", course.slug)} className="text-[11px] font-bold px-3 py-1.5 bg-white border border-gray-200 text-brand-blue rounded-lg hover:bg-blue-50 transition-all cursor-pointer">Añadir Descuento</button>
-                        </td>
-                      </tr>
+                      course.levels?.map((lvl, i) => {
+                        const editKey = `course-${course.slug}-${lvl.name}`;
+                        const currentPrice = getOverriddenPrice('course', course.slug, lvl.name, lvl.price || 0);
+                        return (
+                          <tr key={editKey} className="hover:bg-gray-50 transition-colors">
+                            {i === 0 && (
+                              <td className="px-5 py-3 align-top" rowSpan={course.levels!.length}>
+                                <div className="font-bold text-gray-900 text-xs">{course.title}</div>
+                                <div className="text-[10px] text-gray-400">{course.slug}</div>
+                              </td>
+                            )}
+                            <td className="px-5 py-3 text-xs font-medium text-gray-600">{lvl.name}</td>
+                            <td className="px-5 py-3">
+                              {editingPrice === editKey ? (
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xs text-gray-400">$</span>
+                                  <input type="number" value={editPriceValue} onChange={e => setEditPriceValue(Number(e.target.value))} className="w-28 border border-blue-300 rounded-lg px-3 py-1.5 text-sm font-bold focus:ring-2 focus:ring-blue-100 outline-none" autoFocus />
+                                  <button disabled={savingPrice} onClick={() => handleSavePrice('course', course.slug, lvl.name)} className="text-[10px] font-bold px-2 py-1 bg-emerald-50 text-emerald-600 rounded-md hover:bg-emerald-100 cursor-pointer border-none">
+                                    {savingPrice ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle className="w-3 h-3" />}
+                                  </button>
+                                  <button onClick={() => setEditingPrice(null)} className="text-[10px] font-bold px-2 py-1 bg-gray-100 text-gray-500 rounded-md hover:bg-gray-200 cursor-pointer border-none"><X className="w-3 h-3" /></button>
+                                </div>
+                              ) : (
+                                <button onClick={() => startEditPrice(editKey, currentPrice)} className="font-bold text-gray-800 text-sm hover:text-brand-blue transition-colors cursor-pointer bg-transparent border-none p-0">
+                                  ${currentPrice.toLocaleString('es-CL')}
+                                </button>
+                              )}
+                            </td>
+                            <td className="px-5 py-3 text-right">
+                              <button onClick={() => startPromo("specific_course", course.slug)} className="text-[10px] font-bold px-2.5 py-1 bg-white border border-gray-200 text-brand-blue rounded-md hover:bg-blue-50 transition-all cursor-pointer">Descuento</button>
+                            </td>
+                          </tr>
+                        );
+                      })
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
 
@@ -2127,26 +2191,28 @@ function AdminPrices() {
             <div>
               <h3 className="text-lg font-black text-gray-900 mb-4 flex items-center gap-2"><CreditCard className="w-5 h-5 text-gray-400"/> Membresías</h3>
               <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-                <table className="w-full text-left text-sm whitespace-nowrap">
+                <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
                   <thead className="bg-gray-50 text-gray-500 font-bold text-[11px] uppercase tracking-wider">
-                    <tr><th className="px-6 py-4">Plan (ID)</th><th className="px-6 py-4">Mensual</th><th className="px-6 py-4">Anual</th><th className="px-6 py-4 text-right">Acciones</th></tr>
+                    <tr><th className="px-5 py-3">Plan</th><th className="px-5 py-3">Mensual</th><th className="px-5 py-3">Anual</th><th className="px-5 py-3 text-right">Acciones</th></tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
                     {communityPlans.map(plan => (
                       <tr key={plan.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="font-bold text-gray-900">{plan.name}</div>
-                          <div className="text-xs text-gray-400">ID: {plan.id}</div>
+                        <td className="px-5 py-3">
+                          <div className="font-bold text-gray-900 text-xs">{plan.name}</div>
+                          <div className="text-[10px] text-gray-400">ID: {plan.id}</div>
                         </td>
-                        <td className="px-6 py-4 font-semibold text-gray-600">${plan.price.toLocaleString('es-CL')}</td>
-                        <td className="px-6 py-4 font-semibold text-gray-600">${(plan.priceAnnual || plan.price * 12 * 0.7).toLocaleString('es-CL')}</td>
-                        <td className="px-6 py-4 text-right">
-                          <button onClick={() => startPromo("specific_plan", plan.id)} className="text-[11px] font-bold px-3 py-1.5 bg-white border border-gray-200 text-brand-blue rounded-lg hover:bg-blue-50 transition-all cursor-pointer">Añadir Descuento</button>
+                        <td className="px-5 py-3 font-semibold text-gray-600 text-sm">${plan.price.toLocaleString('es-CL')}</td>
+                        <td className="px-5 py-3 font-semibold text-gray-600 text-sm">${(plan.priceAnnual || plan.price * 12 * 0.7).toLocaleString('es-CL')}</td>
+                        <td className="px-5 py-3 text-right">
+                          <button onClick={() => startPromo("specific_plan", plan.id)} className="text-[10px] font-bold px-2.5 py-1 bg-white border border-gray-200 text-brand-blue rounded-md hover:bg-blue-50 transition-all cursor-pointer">Descuento</button>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
           </motion.div>

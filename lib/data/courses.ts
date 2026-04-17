@@ -101,7 +101,7 @@ export const courses: Course[] = [
     levels: [
       { 
         name: "Básico", 
-        price: 249000, 
+        price: 498000, 
         originalPrice: 380000,
         durationHours: 48, 
         whatYouLearn: [
@@ -113,7 +113,7 @@ export const courses: Course[] = [
       },
       { 
         name: "Intermedio", 
-        price: 249000, 
+        price: 498000, 
         durationHours: 48, 
         whatYouLearn: [
           "Conexión a fuentes, ETL y modelado con Power Query", 
@@ -124,7 +124,7 @@ export const courses: Course[] = [
       },
       { 
         name: "Avanzado", 
-        price: 249000, 
+        price: 498000, 
         durationHours: 48, 
         whatYouLearn: [
           "Fundamentos de Python y entorno Colab", 
@@ -203,7 +203,7 @@ export const courses: Course[] = [
   },
   {
     slug: "analitica-mineria",
-    title: "Programa Industrial & Minero 2026: Análisis de Datos para la Minería",
+    title: "Análisis de Datos para la Minería",
     shortDescription:
       "Optimización de Procesos y Toma de Decisiones en Entornos Mineros. Un trayecto integral de 144 horas para optimizar procesos y predecir fallas.",
     description:
@@ -263,9 +263,9 @@ export const courses: Course[] = [
       },
     ],
     levels: [
-      { name: "Nivel I: Básico", price: 289000, durationHours: 48, whatYouLearn: ["Fundamentos de Power BI, SQL y Python", "Automatización de reportes de turnos", "Consultas a bases de la mina", "IA generativa para scripts básicos"] },
-      { name: "Nivel II: Intermedio", price: 289000, durationHours: 48, whatYouLearn: ["Consolidado MINA - PLANTA - RRHH", "DAX avanzado y relaciones de área", "Joins avanzados y vistas de reporte", "Matplotlib y Seaborn industrial"] },
-      { name: "Nivel III: Avanzado", price: 289000, durationHours: 48, whatYouLearn: ["Mantenimiento predictivo con Python", "Seguridad RLS por jefe de área", "Stored Procedures para Data Warehouse", "Dashboards interactivos con Plotly"] },
+      { name: "Básico", price: 498000, durationHours: 48, whatYouLearn: ["Fundamentos de Power BI, SQL y Python", "Automatización de reportes de turnos", "Consultas a bases de la mina", "IA generativa para scripts básicos"] },
+      { name: "Intermedio", price: 498000, durationHours: 48, whatYouLearn: ["Consolidado MINA - PLANTA - RRHH", "DAX avanzado y relaciones de área", "Joins avanzados y vistas de reporte", "Matplotlib y Seaborn industrial"] },
+      { name: "Avanzado", price: 498000, durationHours: 48, whatYouLearn: ["Mantenimiento predictivo con Python", "Seguridad RLS por jefe de área", "Stored Procedures para Data Warehouse", "Dashboards interactivos con Plotly"] },
     ],
   },
   {
@@ -637,9 +637,9 @@ export const courses: Course[] = [
       },
     ],
     levels: [
-      { name: "Nivel I: Básico", price: 289000, originalPrice: 420000, durationHours: 48, whatYouLearn: ["Power Query contable y Dashboards iniciales", "Filtros temporales y cruces JOIN en SQL", "Carga de datos y manipulación con Pandas", "IA para consultas de balances"] },
-      { name: "Nivel II: Intermedio", price: 289000, originalPrice: 420000, durationHours: 48, whatYouLearn: ["DAX intermedio para rentabilidad y ROI", "Resúmenes agregados y auditorías con SQL", "Gráficos de rendimientos con Matplotlib/Seaborn", "IA para conciliación bancaria"] },
-      { name: "Nivel III: Avanzado", price: 289000, originalPrice: 420000, durationHours: 48, whatYouLearn: ["Inteligencia de tiempo y seguridad RLS", "Stored Procedures para reporteo diario", "Modelos predictivos y dashboards interactivos", "IA para proyecciones presupuestarias"] },
+      { name: "Básico", price: 498000, originalPrice: 420000, durationHours: 48, whatYouLearn: ["Power Query contable y Dashboards iniciales", "Filtros temporales y cruces JOIN en SQL", "Carga de datos y manipulación con Pandas", "IA para consultas de balances"] },
+      { name: "Intermedio", price: 498000, originalPrice: 420000, durationHours: 48, whatYouLearn: ["DAX intermedio para rentabilidad y ROI", "Resúmenes agregados y auditorías con SQL", "Gráficos de rendimientos con Matplotlib/Seaborn", "IA para conciliación bancaria"] },
+      { name: "Avanzado", price: 498000, originalPrice: 420000, durationHours: 48, whatYouLearn: ["Inteligencia de tiempo y seguridad RLS", "Stored Procedures para reporteo diario", "Modelos predictivos y dashboards interactivos", "IA para proyecciones presupuestarias"] },
     ],
   },
   {
