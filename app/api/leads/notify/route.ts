@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
+import { sendNotifyMeConfirmation } from "@/lib/email/mailersend";
 
 /**
  * POST /api/leads/notify
@@ -8,7 +9,7 @@ import { createAdminClient } from "@/lib/supabase/server";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { name, email, courseSlug, levelName } = body;
+    const { name, email, courseSlug, levelName, courseName } = body;
 
     if (!email || !courseSlug) {
       return NextResponse.json({ error: "Email y curso requeridos" }, { status: 400 });
@@ -30,6 +31,14 @@ export async function POST(req: NextRequest) {
       console.error("Error inserting notify lead:", error);
       return NextResponse.json({ error: "Error al registrar interés" }, { status: 500 });
     }
+
+    // Enviar email de confirmación al usuario
+    sendNotifyMeConfirmation({
+      name: name || "Estudiante",
+      email,
+      courseName: courseName || courseSlug,
+      levelName,
+    }).catch(err => console.error("MailerSend notify email error:", err));
 
     return NextResponse.json({ success: true });
   } catch (err: any) {

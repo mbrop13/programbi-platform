@@ -1,0 +1,429 @@
+/**
+ * MailerSend Integration — ProgramBI
+ * Módulo central para todos los correos transaccionales de la plataforma.
+ *
+ * Tipos de email soportados:
+ *  1. Cotización individual (confirmación al lead)
+ *  2. Notificación empresa (ventas recibe el lead de empresa)
+ *  3. Notificación nuevo contacto (equipo interno)
+ *  4. Avisar próxima fecha de curso (notify me)
+ *  5. Confirmación de pago / inscripción
+ *  6. Bienvenida a membresía
+ */
+
+import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
+
+// ─── Config ────────────────────────────────────────────────────────────────────
+const API_KEY = process.env.MAILERSEND_API_KEY!;
+const FROM_EMAIL = process.env.MAILERSEND_FROM_EMAIL || "noreply@programbi.cl";
+const FROM_NAME = process.env.MAILERSEND_FROM_NAME || "ProgramBI";
+const ADMIN_EMAIL = process.env.MAILERSEND_ADMIN_EMAIL || "contacto@programbi.cl";
+
+function getMailerSend() {
+  if (!API_KEY) throw new Error("MAILERSEND_API_KEY no está configurada en las variables de entorno.");
+  return new MailerSend({ apiKey: API_KEY });
+}
+
+// ─── Helpers ───────────────────────────────────────────────────────────────────
+function formatCLP(price: number) {
+  return new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(price);
+}
+
+function buildSender() {
+  return new Sender(FROM_EMAIL, FROM_NAME);
+}
+
+// ─── Base HTML template ────────────────────────────────────────────────────────
+function wrapHtml(title: string, content: string) {
+  return /* html */ `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${title}</title>
+</head>
+<body style="margin:0;padding:0;background:#F8FAFC;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);max-width:600px;width:100%;">
+
+        <!-- HEADER -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#1890FF 0%,#4338ca 100%);padding:32px 40px;text-align:center;">
+            <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-0.5px;">ProgramBI</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;letter-spacing:2px;text-transform:uppercase;">Formación en Datos</div>
+          </td>
+        </tr>
+
+        <!-- CONTENT -->
+        <tr>
+          <td style="padding:40px 40px 32px;">
+            ${content}
+          </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+          <td style="padding:24px 40px;border-top:1px solid #F1F5F9;background:#FAFAFA;">
+            <p style="margin:0;font-size:12px;color:#94A3B8;text-align:center;line-height:1.6;">
+              © ${new Date().getFullYear()} ProgramBI — Todos los derechos reservados<br/>
+              <a href="https://programbi.cl" style="color:#1890FF;text-decoration:none;">programbi.cl</a> · 
+              <a href="mailto:${ADMIN_EMAIL}" style="color:#1890FF;text-decoration:none;">${ADMIN_EMAIL}</a>
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+// ─── Email 1: Cotización Individual (al lead) ──────────────────────────────────
+export async function sendQuoteConfirmationToLead(params: {
+  name: string;
+  email: string;
+  courses: string[];
+  message?: string;
+}) {
+  const mailerSend = getMailerSend();
+  const { name, email, courses, message } = params;
+
+  const courseList = courses.length > 0
+    ? `<ul style="margin:12px 0;padding-left:20px;">${courses.map(c => `<li style="margin:4px 0;color:#334155;">${c}</li>`).join("")}</ul>`
+    : "<p style='color:#64748B;'>Consulta general</p>";
+
+  const html = wrapHtml("Tu cotización — ProgramBI", `
+    <h1 style="margin:0 0 8px;font-size:24px;font-weight:900;color:#0F172A;">¡Gracias, ${name}!</h1>
+    <p style="margin:0 0 24px;font-size:15px;color:#475569;line-height:1.6;">
+      Recibimos tu solicitud de cotización. Nuestro equipo te contactará a la brevedad con información detallada y precios a tu medida.
+    </p>
+
+    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+      <div style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;">Cursos de interés</div>
+      ${courseList}
+      ${message ? `<div style="margin-top:12px;padding-top:12px;border-top:1px solid #E2E8F0;font-size:13px;color:#64748B;"><strong>Tu mensaje:</strong> ${message}</div>` : ""}
+    </div>
+
+    <div style="background:linear-gradient(135deg,#EFF6FF,#EEF2FF);border:1px solid #BFDBFE;border-radius:12px;padding:20px 24px;margin-bottom:28px;">
+      <div style="font-size:13px;font-weight:700;color:#1D4ED8;margin-bottom:8px;">📞 ¿Tienes urgencia?</div>
+      <p style="margin:0;font-size:13px;color:#3730A3;line-height:1.5;">
+        Puedes escribirnos directo a <a href="mailto:${ADMIN_EMAIL}" style="color:#1890FF;font-weight:600;">${ADMIN_EMAIL}</a> 
+        o seguirnos en Instagram <strong>@programbi</strong>.
+      </p>
+    </div>
+
+    <a href="https://programbi.cl/cursos" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;letter-spacing:0.3px;">
+      Ver todos los cursos →
+    </a>
+  `);
+
+  const emailParams = new EmailParams()
+    .setFrom(buildSender())
+    .setTo([new Recipient(email, name)])
+    .setSubject("✅ Recibimos tu cotización — ProgramBI")
+    .setHtml(html)
+    .setText(`Hola ${name}, recibimos tu cotización. Te contactaremos pronto. Cursos: ${courses.join(", ")}.`);
+
+  await mailerSend.email.send(emailParams);
+}
+
+// ─── Email 2: Notificación interna — Nueva cotización ─────────────────────────
+export async function sendNewLeadNotificationToAdmin(params: {
+  name: string;
+  email: string;
+  phone?: string;
+  courses: string[];
+  message?: string;
+  leadType?: string;
+  company?: string;
+  position?: string;
+  employeeCount?: string;
+}) {
+  const mailerSend = getMailerSend();
+  const { name, email, phone, courses, message, leadType, company, position, employeeCount } = params;
+
+  const isEnterprise = leadType === "enterprise";
+  const courseList = courses.map(c => `<li>${c}</li>`).join("");
+
+  const html = wrapHtml("Nuevo lead — ProgramBI", `
+    <div style="display:inline-block;background:${isEnterprise ? "#FEF3C7" : "#DCFCE7"};color:${isEnterprise ? "#92400E" : "#166534"};font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">
+      ${isEnterprise ? "🏢 Empresa" : "👤 Individual"}
+    </div>
+    <h1 style="margin:0 0 20px;font-size:22px;font-weight:900;color:#0F172A;">Nuevo lead: ${name}</h1>
+
+    <table style="width:100%;border-collapse:collapse;">
+      <tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;width:140px;">Nombre</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${name}</td></tr>
+      <tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Email</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;"><a href="mailto:${email}" style="color:#1890FF;">${email}</a></td></tr>
+      ${phone ? `<tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Teléfono</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${phone}</td></tr>` : ""}
+      ${isEnterprise && company ? `<tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Empresa</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${company}</td></tr>` : ""}
+      ${isEnterprise && position ? `<tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Cargo</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${position}</td></tr>` : ""}
+      ${isEnterprise && employeeCount ? `<tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Empleados</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${employeeCount}</td></tr>` : ""}
+    </table>
+
+    <div style="background:#F8FAFC;border-radius:12px;padding:16px 20px;margin-top:20px;">
+      <div style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Cursos de interés</div>
+      <ul style="margin:0;padding-left:18px;">${courseList || "<li>No especificado</li>"}</ul>
+    </div>
+
+    ${message ? `<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:16px 20px;margin-top:16px;"><div style="font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Mensaje</div><p style="margin:0;font-size:14px;color:#78350F;">${message}</p></div>` : ""}
+
+    <div style="margin-top:28px;">
+      <a href="mailto:${email}?subject=Cotización ProgramBI — ${encodeURIComponent(name)}" 
+         style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:13px 24px;border-radius:12px;">
+        Responder a ${name} →
+      </a>
+    </div>
+  `);
+
+  const emailParams = new EmailParams()
+    .setFrom(buildSender())
+    .setTo([new Recipient(ADMIN_EMAIL, "Equipo ProgramBI")])
+    .setReplyTo(new Sender(email, name))
+    .setSubject(`🔔 Nuevo lead ${isEnterprise ? "empresarial" : "individual"}: ${name}`)
+    .setHtml(html)
+    .setText(`Nuevo lead: ${name} | ${email} | Cursos: ${courses.join(", ")}`);
+
+  await mailerSend.email.send(emailParams);
+}
+
+// ─── Email 3: Cotización Empresa (al cliente empresa) ──────────────────────────
+export async function sendEnterpriseQuoteToLead(params: {
+  name: string;
+  email: string;
+  company: string;
+  courses: string[];
+  employeeCount?: string;
+}) {
+  const mailerSend = getMailerSend();
+  const { name, email, company, courses, employeeCount } = params;
+
+  const courseList = courses.map(c => `<li style="margin:4px 0;color:#334155;">${c}</li>`).join("");
+
+  const html = wrapHtml("Cotización Empresarial — ProgramBI", `
+    <div style="display:inline-block;background:#FEF3C7;color:#92400E;font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">
+      🏢 Cotización Empresarial
+    </div>
+    <h1 style="margin:0 0 8px;font-size:24px;font-weight:900;color:#0F172A;">¡Hola, ${name}!</h1>
+    <p style="margin:0 0 24px;font-size:15px;color:#475569;line-height:1.6;">
+      Gracias por contactarnos desde <strong>${company}</strong>. Estamos preparando una propuesta personalizada para tu equipo. En breve un ejecutivo de cuenta se pondrá en contacto contigo.
+    </p>
+
+    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+      <div style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;">Resumen de tu solicitud</div>
+      <table style="width:100%;font-size:14px;">
+        <tr><td style="color:#64748B;padding:4px 0;width:140px;">Empresa</td><td style="font-weight:600;color:#0F172A;">${company}</td></tr>
+        ${employeeCount ? `<tr><td style="color:#64748B;padding:4px 0;">Personas a capacitar</td><td style="font-weight:600;color:#0F172A;">${employeeCount}</td></tr>` : ""}
+      </table>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid #E2E8F0;">
+        <div style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Programas de interés</div>
+        <ul style="margin:0;padding-left:18px;">${courseList}</ul>
+      </div>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#EFF6FF,#EEF2FF);border-radius:12px;padding:20px 24px;margin-bottom:28px;">
+      <div style="font-size:13px;font-weight:700;color:#1D4ED8;margin-bottom:8px;">🎯 Lo que incluye tu propuesta</div>
+      <ul style="margin:0;padding-left:18px;font-size:13px;color:#3730A3;line-height:1.8;">
+        <li>Propuesta económica a medida</li>
+        <li>Modalidad de clases (online / presencial / híbrida)</li>
+        <li>Calendario flexible para tu equipo</li>
+        <li>Descuentos por volumen de participantes</li>
+      </ul>
+    </div>
+
+    <a href="mailto:${ADMIN_EMAIL}" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
+      Contactar directamente →
+    </a>
+  `);
+
+  const emailParams = new EmailParams()
+    .setFrom(buildSender())
+    .setTo([new Recipient(email, name)])
+    .setSubject(`✅ Cotización empresarial recibida — ProgramBI`)
+    .setHtml(html)
+    .setText(`Hola ${name}, gracias por contactarnos desde ${company}. Te contactaremos pronto con una propuesta personalizada.`);
+
+  await mailerSend.email.send(emailParams);
+}
+
+// ─── Email 4: Avísame cuando haya fecha disponible ────────────────────────────
+export async function sendNotifyMeConfirmation(params: {
+  name: string;
+  email: string;
+  courseName: string;
+  levelName?: string;
+}) {
+  const mailerSend = getMailerSend();
+  const { name, email, courseName, levelName } = params;
+
+  const html = wrapHtml("Te avisamos cuando haya fecha — ProgramBI", `
+    <div style="text-align:center;padding:20px 0 28px;">
+      <div style="font-size:48px;margin-bottom:12px;">🔔</div>
+      <h1 style="margin:0 0 8px;font-size:24px;font-weight:900;color:#0F172A;">¡Ya estás en lista!</h1>
+      <p style="margin:0;font-size:15px;color:#475569;">Te notificaremos cuando se abra la próxima fecha.</p>
+    </div>
+
+    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px 24px;margin-bottom:28px;text-align:center;">
+      <div style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">Esperando apertura de</div>
+      <div style="font-size:20px;font-weight:900;color:#0F172A;">${courseName}</div>
+      ${levelName ? `<div style="font-size:13px;color:#64748B;margin-top:4px;">Nivel: ${levelName}</div>` : ""}
+    </div>
+
+    <p style="font-size:14px;color:#475569;line-height:1.6;text-align:center;">
+      Mientras tanto, puedes explorar los demás cursos disponibles en nuestra plataforma.
+    </p>
+
+    <div style="text-align:center;margin-top:24px;">
+      <a href="https://programbi.cl/cursos" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
+        Explorar otros cursos →
+      </a>
+    </div>
+  `);
+
+  const emailParams = new EmailParams()
+    .setFrom(buildSender())
+    .setTo([new Recipient(email, name || "Estudiante")])
+    .setSubject(`🔔 Te avisaremos cuando se abra ${courseName} — ProgramBI`)
+    .setHtml(html)
+    .setText(`Hola${name ? ` ${name}` : ""}, ya te registramos para recibir aviso cuando se abra ${courseName}${levelName ? ` (${levelName})` : ""}.`);
+
+  await mailerSend.email.send(emailParams);
+}
+
+// ─── Email 5: Confirmación de pago / inscripción ──────────────────────────────
+export async function sendPaymentConfirmation(params: {
+  name: string;
+  email: string;
+  courses: Array<{ title: string; levelName: string; price: number }>;
+  orderId: string;
+  totalPaid: number;
+  paymentMethod?: string;
+}) {
+  const mailerSend = getMailerSend();
+  const { name, email, courses, orderId, totalPaid, paymentMethod } = params;
+
+  const courseRows = courses.map(c => `
+    <tr>
+      <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:14px;color:#0F172A;">${c.title}</td>
+      <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">${c.levelName}</td>
+      <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;text-align:right;">${formatCLP(c.price)}</td>
+    </tr>
+  `).join("");
+
+  const html = wrapHtml("Pago confirmado — ProgramBI", `
+    <div style="text-align:center;padding:10px 0 28px;">
+      <div style="width:64px;height:64px;background:linear-gradient(135deg,#10B981,#059669);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">
+        <span style="font-size:30px;line-height:1;">✓</span>
+      </div>
+      <h1 style="margin:0 0 8px;font-size:24px;font-weight:900;color:#0F172A;">¡Pago confirmado!</h1>
+      <p style="margin:0;font-size:15px;color:#475569;">Tu inscripción ha sido procesada exitosamente.</p>
+    </div>
+
+    <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:12px;padding:16px 20px;margin-bottom:24px;text-align:center;">
+      <div style="font-size:11px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Orden N°</div>
+      <div style="font-size:18px;font-weight:900;color:#166534;font-family:monospace;">${orderId}</div>
+    </div>
+
+    <table style="width:100%;">
+      <thead>
+        <tr>
+          <th style="text-align:left;font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;padding-bottom:8px;">Curso</th>
+          <th style="text-align:left;font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;padding-bottom:8px;">Nivel</th>
+          <th style="text-align:right;font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;padding-bottom:8px;">Precio</th>
+        </tr>
+      </thead>
+      <tbody>${courseRows}</tbody>
+      <tfoot>
+        <tr>
+          <td colspan="2" style="padding-top:12px;font-size:15px;font-weight:700;color:#0F172A;">Total pagado</td>
+          <td style="padding-top:12px;font-size:18px;font-weight:900;color:#1890FF;text-align:right;">${formatCLP(totalPaid)}</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    ${paymentMethod ? `<p style="font-size:13px;color:#94A3B8;margin-top:8px;text-align:right;">Pagado con ${paymentMethod}</p>` : ""}
+
+    <div style="background:linear-gradient(135deg,#EFF6FF,#EEF2FF);border-radius:12px;padding:20px 24px;margin-top:28px;">
+      <div style="font-size:13px;font-weight:700;color:#1D4ED8;margin-bottom:8px;">📌 Próximos pasos</div>
+      <ol style="margin:0;padding-left:18px;font-size:13px;color:#3730A3;line-height:1.8;">
+        <li>Recibirás un correo con el acceso y la fecha de inicio de clases.</li>
+        <li>Únete a la comunidad ProgramBI para conectar con otros estudiantes.</li>
+        <li>Prepara tu ambiente de trabajo siguiendo nuestra guía de instalación.</li>
+      </ol>
+    </div>
+
+    <div style="text-align:center;margin-top:28px;">
+      <a href="https://programbi.cl/comunidad" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
+        Ir a mi área de estudiante →
+      </a>
+    </div>
+  `);
+
+  const emailParams = new EmailParams()
+    .setFrom(buildSender())
+    .setTo([new Recipient(email, name)])
+    .setSubject(`🎉 ¡Pago confirmado! Tu inscripción en ProgramBI`)
+    .setHtml(html)
+    .setText(`¡Hola ${name}! Tu pago fue confirmado. Total: ${formatCLP(totalPaid)}. Orden: ${orderId}. Cursos: ${courses.map(c => c.title).join(", ")}.`);
+
+  await mailerSend.email.send(emailParams);
+}
+
+// ─── Email 6: Bienvenida membresía ────────────────────────────────────────────
+export async function sendMembershipWelcome(params: {
+  name: string;
+  email: string;
+  planName: string;
+  price: number;
+}) {
+  const mailerSend = getMailerSend();
+  const { name, email, planName, price } = params;
+
+  const html = wrapHtml("¡Bienvenido a la Comunidad! — ProgramBI", `
+    <div style="text-align:center;padding:20px 0 32px;">
+      <div style="font-size:48px;margin-bottom:16px;">🚀</div>
+      <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;color:#0F172A;">¡Bienvenido, ${name}!</h1>
+      <p style="margin:0;font-size:15px;color:#475569;max-width:380px;margin:8px auto 0;">Ahora eres parte de la comunidad ProgramBI. Tu plan <strong>${planName}</strong> está activo.</p>
+    </div>
+
+    <div style="background:linear-gradient(135deg,#1890FF,#4338ca);border-radius:16px;padding:24px;margin-bottom:28px;text-align:center;color:#fff;">
+      <div style="font-size:12px;font-weight:700;opacity:0.8;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">Plan activo</div>
+      <div style="font-size:28px;font-weight:900;">${planName}</div>
+      <div style="font-size:16px;opacity:0.9;margin-top:4px;">${formatCLP(price)} / mes</div>
+    </div>
+
+    <div style="display:grid;gap:12px;">
+      ${[
+        ["💬", "Comunidad privada", "Conecta con cientos de data practitioners en nuestro foro."],
+        ["🤖", "Asistente IA ProgramBI", "Soporte 24/7 con IA especializada en datos."],
+        ["📚", "Biblioteca de recursos", "Acceso a plantillas, datasets y proyectos reales."],
+        ["🎓", "Descuentos en cursos", "Beneficios exclusivos en todos los programas."],
+      ].map(([icon, title, desc]) => `
+        <div style="display:flex;gap:16px;align-items:flex-start;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
+          <span style="font-size:22px;line-height:1;margin-top:2px;">${icon}</span>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#0F172A;">${title}</div>
+            <div style="font-size:13px;color:#64748B;margin-top:2px;">${desc}</div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+
+    <div style="text-align:center;margin-top:32px;">
+      <a href="https://programbi.cl/comunidad" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:15px;font-weight:700;text-decoration:none;padding:16px 32px;border-radius:14px;letter-spacing:0.3px;">
+        Acceder a la Comunidad →
+      </a>
+    </div>
+  `);
+
+  const emailParams = new EmailParams()
+    .setFrom(buildSender())
+    .setTo([new Recipient(email, name)])
+    .setSubject(`🚀 ¡Bienvenido a ProgramBI ${planName}!`)
+    .setHtml(html)
+    .setText(`¡Bienvenido ${name}! Tu membresía ${planName} está activa. Accede a la comunidad en programbi.cl/comunidad`);
+
+  await mailerSend.email.send(emailParams);
+}
