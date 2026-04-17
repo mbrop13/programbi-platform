@@ -374,44 +374,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       ))}
                     </div>
 
-                    {/* Pricing Display */}
-                    {(activeLevel?.price || course.originalPrice) && (
-                      <div className="mb-8 p-6 bg-[#F8FAFC] rounded-2xl border border-gray-100 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-2">
-                           <Tag className="w-12 h-12 text-gray-100 -rotate-12" />
-                        </div>
-                        <div className="relative z-10">
-                          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Inversión del Programa</p>
-                          <div className="flex items-baseline gap-3 flex-wrap">
-                            {currentPrice && (
-                              <span className="text-3xl lg:text-4xl font-black text-[#0F172A] tracking-tighter">
-                                {formatCLP(currentPrice)}
-                              </span>
-                            )}
-                            {(activeLevel?.originalPrice || course.originalPrice) && (
-                              <span className="text-lg text-gray-400 line-through decoration-red-400/50 decoration-2 font-medium">
-                                {formatCLP(activeLevel?.originalPrice || course.originalPrice || 0)}
-                              </span>
-                            )}
-                          </div>
-                          
-                          {/* Discount Badge */}
-                          {(activeLevel?.originalPrice && activeLevel.price) && (
-                            <div className="mt-3 flex items-center gap-2">
-                              <span className="bg-emerald-100 text-emerald-700 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                {Math.round((1 - (activeLevel.price / activeLevel.originalPrice)) * 100)}% DCTO LANZAMIENTO
-                              </span>
-                              {discPercent > 0 && (
-                                <span className="bg-blue-100 text-blue-700 text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wider">
-                                  +{discPercent}% BENEFICIO {userPlan}
-                                </span>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
                     {/* Call to Action mapping to Checkout form */}
                     <button
                       onClick={handleCheckoutCTA}
