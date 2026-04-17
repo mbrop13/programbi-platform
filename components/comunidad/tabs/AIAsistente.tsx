@@ -48,8 +48,10 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isFirstMessage, setIsFirstMessage] = useState(true);
 
-  // Load conversations on mount
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
     loadConversations();
   }, []);
 
@@ -119,6 +121,9 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
     setActiveConversationId(null);
     setUploadedFiles([]);
     setIsFirstMessage(true);
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
   };
 
   const handleDeleteConversation = async (convId: string, e: React.MouseEvent) => {
@@ -251,8 +256,21 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
   const isEmpty = messages.length === 0 && !loadingMessages;
 
   return (
-    <div className="flex flex-1 min-h-0 h-full">
+    <div className="flex flex-1 min-h-0 h-full relative">
       
+      {/* ─── SIDEBAR BACKDROP (Mobile) ─── */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSidebarOpen(false)}
+            className="md:hidden absolute inset-0 z-40 bg-black/20 backdrop-blur-sm"
+          />
+        )}
+      </AnimatePresence>
+
       {/* ─── SIDEBAR ─── */}
       <AnimatePresence initial={false}>
         {sidebarOpen && (
@@ -261,7 +279,7 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
             animate={{ width: 280, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="h-full bg-gray-50 border-r border-gray-200/80 flex flex-col shrink-0 overflow-hidden"
+            className="h-full bg-gray-50 border-r border-gray-200/80 flex flex-col overflow-hidden absolute md:relative z-50 shrink-0"
           >
             <div className="p-3 flex flex-col gap-2 shrink-0">
               <div className="flex items-center justify-between">
@@ -313,7 +331,7 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
                           key={chat.id}
                           role="button"
                           tabIndex={0}
-                          onClick={() => loadConversation(chat.id)}
+                          onClick={() => { loadConversation(chat.id); if (window.innerWidth < 768) setSidebarOpen(false); }}
                           className={`group w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left text-[13px] transition-all relative cursor-pointer
                             ${activeConversationId === chat.id
                               ? "bg-white text-gray-900 shadow-sm border border-gray-200"
