@@ -84,8 +84,8 @@ export default function NewsletterClient() {
         .newsletter-page .serif-body { font-family: 'Source Serif 4', 'Georgia', serif; }
       `}</style>
 
-      {/* ═══ SUBNAV — sticks directly below main navbar ═══ */}
-      <div className="sticky top-16 lg:top-20 z-30 bg-white border-b border-gray-200 -mt-[1px]">
+      {/* ═══ SUBNAV — visual extension of main navbar, scrolls with content ═══ */}
+      <div className="bg-white border-b border-gray-200">
         <div className="max-w-[1200px] mx-auto px-5 flex items-center justify-between">
           <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide -mb-[1px]">
             {displayCategories.map((cat) => (
