@@ -13,21 +13,22 @@ export default function NewsletterClient() {
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
 
-  // Load categories from Supabase
+  // Load categories for label mapping
   useEffect(() => {
-    async function loadCats() {
-      try {
-        const cats = await getNewsletterCategories();
-        setCategories(cats);
-      } catch (err) {
-        console.error(err);
-        // Fallback
-        setCategories([]);
-      }
-    }
-    loadCats();
+    getNewsletterCategories().then(cats => setCategories(cats)).catch(() => {});
   }, []);
 
+  // Listen for category changes from navbar
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const category = (e as CustomEvent).detail;
+      setActiveCategory(category);
+    };
+    window.addEventListener("nl-category", handler);
+    return () => window.removeEventListener("nl-category", handler);
+  }, []);
+
+  // Load articles when category changes
   useEffect(() => {
     async function load() {
       try {
@@ -55,18 +56,6 @@ export default function NewsletterClient() {
     groupedByCategory[cat].push(a);
   });
 
-  // Build display categories from DB
-  const displayCategories = [
-    { slug: "all", name: "TODOS", emoji: "📰" },
-    ...categories.map(c => ({
-      slug: c.slug,
-      name: c.name.toUpperCase(),
-      emoji: c.emoji || "📄",
-      subcategories: c.subcategories || [],
-    })),
-  ];
-
-  // Get category label from slug
   const getCatLabel = (slug: string) => {
     const found = categories.find(c => c.slug === slug);
     return found ? found.name.toUpperCase() : slug.toUpperCase();
@@ -83,37 +72,6 @@ export default function NewsletterClient() {
         .newsletter-page .serif { font-family: 'Playfair Display', 'Georgia', serif; }
         .newsletter-page .serif-body { font-family: 'Source Serif 4', 'Georgia', serif; }
       `}</style>
-
-      {/* ═══ SUBNAV — visual extension of main navbar, scrolls with content ═══ */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-[1200px] mx-auto px-5 flex items-center justify-between">
-          <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide -mb-[1px]">
-            {displayCategories.map((cat) => (
-              <button
-                key={cat.slug}
-                onClick={() => setActiveCategory(cat.slug)}
-                className={`relative px-4 lg:px-5 py-3.5 text-[11px] lg:text-[12px] font-bold tracking-[0.15em] whitespace-nowrap transition-all border-none cursor-pointer bg-transparent ${
-                  activeCategory === cat.slug
-                    ? "text-black"
-                    : "text-gray-400 hover:text-gray-700"
-                }`}
-              >
-                {cat.name}
-                {activeCategory === cat.slug && (
-                  <motion.div
-                    layoutId="newsletter-tab"
-                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-black"
-                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                  />
-                )}
-              </button>
-            ))}
-          </div>
-          <Link href="#subscribe" className="hidden lg:block text-[10px] font-bold tracking-[0.15em] text-gray-400 hover:text-black no-underline transition-colors whitespace-nowrap uppercase">
-            Suscríbete al Newsletter
-          </Link>
-        </div>
-      </div>
 
       {loading ? (
         <div className="flex flex-col items-center justify-center py-32">

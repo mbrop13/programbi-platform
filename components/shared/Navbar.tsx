@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence, useMotionValueEvent, useScroll } from "framer-motion";
 import { Menu, X, ChevronDown, LogIn, UserPlus, ArrowRight, Clock, Users, Sparkles, BookOpen, LogOut, LayoutDashboard, UserCircle, Settings, LifeBuoy } from "lucide-react";
@@ -11,6 +12,7 @@ import { courses } from "@/lib/data/courses";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "./AuthModal";
 import SupportModal from "./SupportModal";
+import { getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
 
 const LOGO_URL = "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974";
 
@@ -47,6 +49,12 @@ export default function Navbar() {
   const userMenuTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastScrollY = useRef(0);
   const supabase = createClient();
+  const pathname = usePathname();
+  const isNewsletter = pathname?.startsWith("/newsletter");
+
+  // Newsletter categories
+  const [nlCategories, setNlCategories] = useState<any[]>([]);
+  const [nlActiveCategory, setNlActiveCategory] = useState("all");
 
   const { scrollY } = useScroll();
 
@@ -86,6 +94,12 @@ export default function Navbar() {
 
     return () => subscription.unsubscribe();
   }, [supabase.auth]);
+
+  // Load newsletter categories when on newsletter page
+  useEffect(() => {
+    if (!isNewsletter) return;
+    getNewsletterCategories().then(cats => setNlCategories(cats)).catch(() => {});
+  }, [isNewsletter]);
 
   useEffect(() => {
     if (isMobileOpen || authModal.isOpen) {
@@ -367,6 +381,34 @@ export default function Navbar() {
             <Menu size={26} />
           </button>
         </div>
+
+        {/* Newsletter subnav — integrated into navbar only on /newsletter */}
+        {isNewsletter && (
+          <div className="border-t border-gray-200/60">
+            <div className="max-w-[1300px] mx-auto px-8 lg:px-12 xl:px-16 flex items-center justify-between">
+              <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide -mb-[1px]">
+                <button
+                  onClick={() => { setNlActiveCategory("all"); window.dispatchEvent(new CustomEvent("nl-category", { detail: "all" })); }}
+                  className={`px-4 lg:px-5 py-2.5 text-[11px] font-bold tracking-[0.12em] whitespace-nowrap transition-all border-none cursor-pointer bg-transparent border-b-2 ${nlActiveCategory === "all" ? "border-b-black text-black" : "border-b-transparent text-gray-400 hover:text-gray-700"}`}
+                >
+                  TODOS
+                </button>
+                {nlCategories.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => { setNlActiveCategory(cat.slug); window.dispatchEvent(new CustomEvent("nl-category", { detail: cat.slug })); }}
+                    className={`px-4 lg:px-5 py-2.5 text-[11px] font-bold tracking-[0.12em] whitespace-nowrap transition-all border-none cursor-pointer bg-transparent border-b-2 ${nlActiveCategory === cat.slug ? "border-b-black text-black" : "border-b-transparent text-gray-400 hover:text-gray-700"}`}
+                  >
+                    {cat.name.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+              <span className="hidden lg:block text-[10px] font-bold tracking-[0.12em] text-gray-400 uppercase whitespace-nowrap">
+                Suscríbete al Newsletter
+              </span>
+            </div>
+          </div>
+        )}
       </motion.nav>
 
       <AnimatePresence>
@@ -446,7 +488,7 @@ export default function Navbar() {
         )}
       </AnimatePresence>
 
-      <div className="h-16 lg:h-20" />
+      <div className={isNewsletter ? "h-[88px] lg:h-[104px]" : "h-16 lg:h-20"} />
     </>
   );
 }
