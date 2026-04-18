@@ -1076,3 +1076,104 @@ export async function adminToggleArticleFeatured(articleId: string) {
   }).eq("id", articleId);
   if (error) throw new Error(error.message);
 }
+
+// ─── NEWSLETTER CATEGORIES ───
+
+export async function getNewsletterCategories() {
+  const adminDb = createAdminClient();
+  const { data, error } = await adminDb
+    .from("newsletter_categories")
+    .select("*")
+    .eq("is_active", true)
+    .is("parent_id", null)
+    .order("sort_order", { ascending: true });
+
+  if (error) { console.error("Error fetching newsletter categories:", error); return []; }
+
+  // Fetch subcategories
+  const parentIds = (data || []).map(c => c.id);
+  if (parentIds.length > 0) {
+    const { data: subs } = await adminDb
+      .from("newsletter_categories")
+      .select("*")
+      .eq("is_active", true)
+      .in("parent_id", parentIds)
+      .order("sort_order", { ascending: true });
+
+    return (data || []).map(cat => ({
+      ...cat,
+      subcategories: (subs || []).filter(s => s.parent_id === cat.id),
+    }));
+  }
+
+  return (data || []).map(cat => ({ ...cat, subcategories: [] }));
+}
+
+export async function adminGetNewsletterCategories() {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await adminDb
+    .from("newsletter_categories")
+    .select("*")
+    .order("sort_order", { ascending: true });
+
+  if (error) { console.error("Error:", error); return []; }
+  return data || [];
+}
+
+export async function adminCreateNewsletterCategory(category: {
+  name: string;
+  slug: string;
+  emoji?: string;
+  sort_order?: number;
+  parent_id?: string | null;
+}) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await adminDb
+    .from("newsletter_categories")
+    .insert(category)
+    .select("id")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function adminUpdateNewsletterCategory(categoryId: string, updates: Record<string, any>) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await adminDb
+    .from("newsletter_categories")
+    .update(updates)
+    .eq("id", categoryId);
+
+  if (error) throw new Error(error.message);
+}
+
+export async function adminDeleteNewsletterCategory(categoryId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await adminDb.from("newsletter_categories").delete().eq("id", categoryId);
+  if (error) throw new Error(error.message);
+}
+
+export async function adminToggleNewsletterCategory(categoryId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data: current } = await adminDb.from("newsletter_categories").select("is_active").eq("id", categoryId).single();
+  if (!current) throw new Error("Categoría no encontrada");
+
+  const { error } = await adminDb.from("newsletter_categories").update({ is_active: !current.is_active }).eq("id", categoryId);
+  if (error) throw new Error(error.message);
+}

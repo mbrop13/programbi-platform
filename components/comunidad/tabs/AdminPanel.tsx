@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory } from "@/lib/supabase/comunidad-ai";
 import { Calendar } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -2278,17 +2278,45 @@ function AdminPrices() {
 }
 
 // ─── NEWSLETTER ───
-const ARTICLE_CATEGORIES = [
-  { id: "power-bi", label: "Power BI" },
-  { id: "sql", label: "SQL" },
-  { id: "python", label: "Python" },
-  { id: "ia", label: "IA" },
-  { id: "industria", label: "Industria" },
-  { id: "general", label: "General" },
-];
 
 function AdminNewsletter() {
+  const [subTab, setSubTab] = useState<"articles" | "categories">("articles");
+
+  return (
+    <div className="p-6 sm:p-8">
+      <div className="flex items-center gap-4 mb-8">
+        <h2 className="font-display font-black text-2xl text-gray-900">Newsletter</h2>
+      </div>
+
+      {/* Sub-tabs */}
+      <div className="flex items-center gap-1 border-b border-gray-200 mb-6">
+        {[
+          { id: "articles" as const, label: "📰 Artículos" },
+          { id: "categories" as const, label: "📂 Categorías / Secciones" },
+        ].map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setSubTab(tab.id)}
+            className={`px-4 py-2.5 text-sm font-bold border-none cursor-pointer transition-all bg-transparent border-b-2 -mb-[1px] ${
+              subTab === tab.id ? "border-b-brand-blue text-brand-blue" : "border-b-transparent text-gray-400 hover:text-gray-600"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {subTab === "articles" && <AdminNewsletterArticles />}
+      {subTab === "categories" && <AdminNewsletterCategories />}
+    </div>
+  );
+}
+
+// ─── NEWSLETTER: ARTICLES TAB ───
+
+function AdminNewsletterArticles() {
   const [articles, setArticles] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingArticle, setEditingArticle] = useState<any>(null);
@@ -2307,10 +2335,12 @@ function AdminNewsletter() {
   const [formFeatured, setFormFeatured] = useState(false);
   const [saving, setSaving] = useState(false);
 
+
   const loadArticles = useCallback(async () => {
     try {
-      const data = await adminGetArticles();
-      setArticles(data);
+      const [arts, cats] = await Promise.all([adminGetArticles(), adminGetNewsletterCategories()]);
+      setArticles(arts);
+      setCategories(cats.filter((c: any) => !c.parent_id));
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   }, []);
@@ -2502,7 +2532,7 @@ function AdminNewsletter() {
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Categoría</label>
                   <select value={formCategory} onChange={(e) => setFormCategory(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none">
-                    {ARTICLE_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+                    {categories.map(c => <option key={c.id} value={c.slug}>{c.name}</option>)}
                   </select>
                 </div>
                 <div>
@@ -2609,7 +2639,7 @@ function AdminNewsletter() {
                     <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700">⭐ Destacado</span>
                   )}
                   <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600">
-                    {ARTICLE_CATEGORIES.find(c => c.id === article.category)?.label || article.category}
+                    {categories.find(c => c.slug === article.category)?.name || article.category}
                   </span>
                 </div>
                 <h4 className="font-bold text-sm text-gray-900 truncate">{article.title}</h4>
@@ -2641,6 +2671,290 @@ function AdminNewsletter() {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── NEWSLETTER: CATEGORIES TAB ───
+
+function AdminNewsletterCategories() {
+  const [categories, setCategories] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingCat, setEditingCat] = useState<any>(null);
+
+  // Form
+  const [catName, setCatName] = useState("");
+  const [catSlug, setCatSlug] = useState("");
+  const [catEmoji, setCatEmoji] = useState("📄");
+  const [catOrder, setCatOrder] = useState(0);
+  const [catParent, setCatParent] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const loadCategories = useCallback(async () => {
+    try {
+      const data = await adminGetNewsletterCategories();
+      setCategories(data);
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { loadCategories(); }, [loadCategories]);
+
+  const generateSlug = (name: string) => {
+    return name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").trim();
+  };
+
+  const resetForm = () => {
+    setCatName(""); setCatSlug(""); setCatEmoji("📄"); setCatOrder(0); setCatParent(null); setEditingCat(null);
+  };
+
+  const openEdit = (cat: any) => {
+    setEditingCat(cat);
+    setCatName(cat.name);
+    setCatSlug(cat.slug);
+    setCatEmoji(cat.emoji || "📄");
+    setCatOrder(cat.sort_order || 0);
+    setCatParent(cat.parent_id || null);
+    setShowForm(true);
+  };
+
+  const handleSave = async () => {
+    if (!catName) return;
+    setSaving(true);
+    try {
+      const slug = catSlug || generateSlug(catName);
+      const payload = {
+        name: catName,
+        slug,
+        emoji: catEmoji,
+        sort_order: catOrder,
+        parent_id: catParent || null,
+      };
+
+      if (editingCat) {
+        await adminUpdateNewsletterCategory(editingCat.id, payload);
+      } else {
+        await adminCreateNewsletterCategory(payload);
+      }
+
+      setShowForm(false);
+      resetForm();
+      await loadCategories();
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    } finally { setSaving(false); }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("¿Eliminar esta categoría?")) return;
+    try {
+      await adminDeleteNewsletterCategory(id);
+      await loadCategories();
+    } catch (err: any) { alert("Error: " + err.message); }
+  };
+
+  const handleToggle = async (id: string) => {
+    try {
+      await adminToggleNewsletterCategory(id);
+      await loadCategories();
+    } catch (err: any) { alert("Error: " + err.message); }
+  };
+
+  // Separate parents and children
+  const parents = categories.filter(c => !c.parent_id);
+  const getChildren = (parentId: string) => categories.filter(c => c.parent_id === parentId);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16">
+        <Loader2 className="w-6 h-6 text-brand-blue animate-spin" />
+        <span className="text-sm text-gray-400 mt-3">Cargando categorías...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <p className="text-sm text-gray-400">{categories.length} categorías · Estas aparecen en la barra de navegación del Newsletter</p>
+        </div>
+        <button
+          onClick={() => { resetForm(); setShowForm(true); }}
+          className="flex items-center gap-2 bg-brand-blue text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-600 transition-colors border-none cursor-pointer shadow-md shadow-blue-500/20"
+        >
+          <Plus className="w-4 h-4" /> Nueva Categoría
+        </button>
+      </div>
+
+      {/* Create/Edit Form */}
+      <AnimatePresence>
+        {showForm && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="mb-6 overflow-hidden">
+            <div className="bg-gray-50 rounded-2xl border border-gray-200 p-5">
+              <div className="flex items-center justify-between mb-5">
+                <h3 className="font-bold text-gray-900 text-sm">{editingCat ? "Editar Categoría" : "Nueva Categoría"}</h3>
+                <button onClick={() => { setShowForm(false); resetForm(); }} className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-400 transition-colors border-none cursor-pointer">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-5">
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Nombre *</label>
+                  <input
+                    type="text" value={catName}
+                    onChange={(e) => { setCatName(e.target.value); if (!editingCat) setCatSlug(generateSlug(e.target.value)); }}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                    placeholder="Power BI"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Slug</label>
+                  <input
+                    type="text" value={catSlug} onChange={(e) => setCatSlug(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                    placeholder="power-bi"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Emoji</label>
+                  <input
+                    type="text" value={catEmoji} onChange={(e) => setCatEmoji(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                    placeholder="📊"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Orden</label>
+                  <input
+                    type="number" value={catOrder} onChange={(e) => setCatOrder(parseInt(e.target.value) || 0)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Padre (subcategoría)</label>
+                  <select value={catParent || ""} onChange={(e) => setCatParent(e.target.value || null)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none">
+                    <option value="">— Ninguno (principal) —</option>
+                    {parents.map(p => <option key={p.id} value={p.id}>{p.emoji} {p.name}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleSave}
+                  disabled={!catName || saving}
+                  className="px-5 py-2.5 bg-brand-blue text-white font-bold rounded-xl text-sm hover:bg-blue-600 transition-colors border-none cursor-pointer disabled:opacity-40 flex items-center gap-2"
+                >
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                  {editingCat ? "Guardar" : "Crear"}
+                </button>
+                <button onClick={() => { setShowForm(false); resetForm(); }} className="px-5 py-2.5 bg-gray-200 text-gray-600 font-bold rounded-xl text-sm hover:bg-gray-300 transition-colors border-none cursor-pointer">
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Categories list */}
+      {categories.length === 0 ? (
+        <div className="text-center py-12 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50">
+          <Newspaper className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+          <h3 className="text-gray-900 font-bold mb-1 text-sm">Sin categorías</h3>
+          <p className="text-gray-400 text-xs">Crea categorías para organizar tu newsletter.</p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {parents.map(cat => (
+            <div key={cat.id}>
+              {/* Parent category */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className={`flex items-center gap-3 p-3 rounded-xl border transition-all hover:shadow-sm ${
+                  cat.is_active ? "bg-white border-gray-100" : "bg-gray-50/50 border-gray-100 opacity-60"
+                }`}
+              >
+                <span className="text-xl">{cat.emoji}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-bold text-sm text-gray-900">{cat.name}</h4>
+                    <span className="text-[10px] text-gray-400 font-mono">/{cat.slug}</span>
+                    {!cat.is_active && (
+                      <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-gray-200 text-gray-500 uppercase">Oculta</span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-gray-400">Orden: {cat.sort_order}</p>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button onClick={() => handleToggle(cat.id)} title={cat.is_active ? "Ocultar" : "Mostrar"}
+                    className={`p-2 rounded-lg transition-colors border-none cursor-pointer ${cat.is_active ? 'bg-emerald-50 text-emerald-500' : 'hover:bg-gray-100 text-gray-400'}`}>
+                    {cat.is_active ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  </button>
+                  <button onClick={() => openEdit(cat)} title="Editar"
+                    className="p-2 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-brand-blue transition-colors border-none cursor-pointer">
+                    <Edit3 className="w-4 h-4" />
+                  </button>
+                  <button onClick={() => handleDelete(cat.id)} title="Eliminar"
+                    className="p-2 rounded-lg hover:bg-red-50 text-gray-300 hover:text-red-500 transition-colors border-none cursor-pointer">
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+
+              {/* Subcategories */}
+              {getChildren(cat.id).length > 0 && (
+                <div className="ml-8 mt-1 space-y-1">
+                  {getChildren(cat.id).map(sub => (
+                    <motion.div
+                      key={sub.id}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className={`flex items-center gap-3 p-2.5 rounded-lg border transition-all hover:shadow-sm ${
+                        sub.is_active ? "bg-white border-gray-50" : "bg-gray-50/50 border-gray-50 opacity-60"
+                      }`}
+                    >
+                      <span className="text-sm">{sub.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-xs text-gray-700">{sub.name}</span>
+                          <span className="text-[9px] text-gray-400 font-mono">/{sub.slug}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button onClick={() => handleToggle(sub.id)} className={`p-1.5 rounded-lg transition-colors border-none cursor-pointer ${sub.is_active ? 'text-emerald-500' : 'text-gray-400'}`}>
+                          {sub.is_active ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                        </button>
+                        <button onClick={() => openEdit(sub)} className="p-1.5 rounded-lg text-gray-400 hover:text-brand-blue transition-colors border-none cursor-pointer">
+                          <Edit3 className="w-3.5 h-3.5" />
+                        </button>
+                        <button onClick={() => handleDelete(sub.id)} className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 transition-colors border-none cursor-pointer">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Info box */}
+      <div className="mt-6 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
+        <p className="text-xs text-blue-700 font-medium leading-relaxed">
+          💡 <strong>Tip:</strong> Las categorías principales aparecen en la barra de navegación del Newsletter. 
+          Las subcategorías sirven para organizar el contenido dentro de una categoría principal.
+          Cambia el <strong>orden</strong> para controlar su posición en la barra. Usa el botón del ojo para <strong>ocultar/mostrar</strong> categorías sin eliminarlas.
+        </p>
+      </div>
     </div>
   );
 }

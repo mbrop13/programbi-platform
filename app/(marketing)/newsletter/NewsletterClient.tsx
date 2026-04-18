@@ -4,33 +4,29 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Clock, ArrowRight, Newspaper } from "lucide-react";
-import { getPublishedArticles } from "@/lib/supabase/comunidad-ai";
-
-const CATEGORIES = [
-  { id: "all", label: "TODOS" },
-  { id: "power-bi", label: "POWER BI" },
-  { id: "sql", label: "SQL" },
-  { id: "python", label: "PYTHON" },
-  { id: "ia", label: "IA" },
-  { id: "industria", label: "INDUSTRIA" },
-  { id: "general", label: "GENERAL" },
-];
-
-const categoryLabels: Record<string, string> = {
-  "power-bi": "POWER BI",
-  sql: "SQL",
-  python: "PYTHON",
-  ia: "INTELIGENCIA ARTIFICIAL",
-  industria: "INDUSTRIA",
-  general: "GENERAL",
-  all: "TODOS",
-};
+import { Newspaper } from "lucide-react";
+import { getPublishedArticles, getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
 
 export default function NewsletterClient() {
   const [articles, setArticles] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
+
+  // Load categories from Supabase
+  useEffect(() => {
+    async function loadCats() {
+      try {
+        const cats = await getNewsletterCategories();
+        setCategories(cats);
+      } catch (err) {
+        console.error(err);
+        // Fallback
+        setCategories([]);
+      }
+    }
+    loadCats();
+  }, []);
 
   useEffect(() => {
     async function load() {
@@ -51,7 +47,7 @@ export default function NewsletterClient() {
   const secondary = articles.filter((a) => a.id !== featured?.id).slice(0, 3);
   const rest = articles.filter((a) => a.id !== featured?.id && !secondary.find((s: any) => s.id === a.id));
 
-  // Group remaining articles by category for editorial sections
+  // Group remaining by category
   const groupedByCategory: Record<string, any[]> = {};
   rest.forEach((a) => {
     const cat = a.category || "general";
@@ -59,37 +55,61 @@ export default function NewsletterClient() {
     groupedByCategory[cat].push(a);
   });
 
+  // Build display categories from DB
+  const displayCategories = [
+    { slug: "all", name: "TODOS", emoji: "📰" },
+    ...categories.map(c => ({
+      slug: c.slug,
+      name: c.name.toUpperCase(),
+      emoji: c.emoji || "📄",
+      subcategories: c.subcategories || [],
+    })),
+  ];
+
+  // Get category label from slug
+  const getCatLabel = (slug: string) => {
+    const found = categories.find(c => c.slug === slug);
+    return found ? found.name.toUpperCase() : slug.toUpperCase();
+  };
+
   const formatDate = (d: string) =>
     new Date(d).toLocaleDateString("es-CL", { day: "numeric", month: "long", year: "numeric" });
 
   return (
-    <div className="-mt-20 lg:-mt-24 pt-20 lg:pt-24 bg-white min-h-screen newsletter-page">
-      {/* Google Fonts — editorial serif */}
+    <div className="newsletter-page bg-white min-h-screen">
+      {/* Editorial serif font */}
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap');
         .newsletter-page .serif { font-family: 'Playfair Display', 'Georgia', serif; }
         .newsletter-page .serif-body { font-family: 'Source Serif 4', 'Georgia', serif; }
       `}</style>
 
-      {/* ═══ CATEGORY NAV BAR ═══ */}
-      <div className="border-b border-gray-200 bg-white sticky top-16 lg:top-20 z-30">
+      {/* ═══ SUBNAV — sticks directly below main navbar ═══ */}
+      <div className="sticky top-16 lg:top-20 z-30 bg-white border-b border-gray-200 -mt-[1px]">
         <div className="max-w-[1200px] mx-auto px-5 flex items-center justify-between">
-          <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide">
-            {CATEGORIES.map((cat) => (
+          <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide -mb-[1px]">
+            {displayCategories.map((cat) => (
               <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                className={`px-5 py-4 text-[12px] font-bold tracking-[0.15em] whitespace-nowrap transition-all border-none cursor-pointer bg-transparent border-b-2 ${
-                  activeCategory === cat.id
-                    ? "border-b-black text-black"
-                    : "border-b-transparent text-gray-400 hover:text-gray-700"
+                key={cat.slug}
+                onClick={() => setActiveCategory(cat.slug)}
+                className={`relative px-4 lg:px-5 py-3.5 text-[11px] lg:text-[12px] font-bold tracking-[0.15em] whitespace-nowrap transition-all border-none cursor-pointer bg-transparent ${
+                  activeCategory === cat.slug
+                    ? "text-black"
+                    : "text-gray-400 hover:text-gray-700"
                 }`}
               >
-                {cat.label}
+                {cat.name}
+                {activeCategory === cat.slug && (
+                  <motion.div
+                    layoutId="newsletter-tab"
+                    className="absolute bottom-0 left-0 right-0 h-[2px] bg-black"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
               </button>
             ))}
           </div>
-          <Link href="#subscribe" className="hidden lg:block text-[11px] font-bold tracking-[0.15em] text-gray-500 hover:text-black no-underline transition-colors whitespace-nowrap uppercase">
+          <Link href="#subscribe" className="hidden lg:block text-[10px] font-bold tracking-[0.15em] text-gray-400 hover:text-black no-underline transition-colors whitespace-nowrap uppercase">
             Suscríbete al Newsletter
           </Link>
         </div>
@@ -104,7 +124,7 @@ export default function NewsletterClient() {
         <div className="text-center py-32 max-w-lg mx-auto px-5">
           <Newspaper className="w-12 h-12 text-gray-200 mx-auto mb-6" />
           <h2 className="serif text-3xl font-bold text-gray-900 mb-3">No hay artículos aún</h2>
-          <p className="text-gray-400 text-sm leading-relaxed">
+          <p className="text-gray-400 text-sm leading-relaxed serif-body">
             Pronto publicaremos contenido increíble sobre análisis de datos, IA y tecnología. ¡Vuelve pronto!
           </p>
         </div>
@@ -114,7 +134,7 @@ export default function NewsletterClient() {
           {/* ═══ HERO ARTICLE — Full width image with overlay ═══ */}
           {featured && (
             <Link href={`/newsletter/${featured.slug}`} className="block no-underline group">
-              <div className="relative w-full h-[420px] sm:h-[500px] lg:h-[560px] overflow-hidden mt-0">
+              <div className="relative w-full h-[420px] sm:h-[500px] lg:h-[560px] overflow-hidden">
                 {featured.cover_image ? (
                   <Image
                     src={featured.cover_image}
@@ -127,31 +147,19 @@ export default function NewsletterClient() {
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300" />
                 )}
-
-                {/* Dark overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
-                {/* Content overlay */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-6">
-                  {/* Category */}
                   <span className="text-[11px] font-bold tracking-[0.25em] uppercase mb-4 text-amber-300">
-                    {categoryLabels[featured.category] || featured.category}
+                    {getCatLabel(featured.category)}
                   </span>
-
-                  {/* Title */}
                   <h1 className="serif text-3xl sm:text-4xl lg:text-5xl font-black leading-[1.15] max-w-2xl mb-4">
                     {featured.title}
                   </h1>
-
-                  {/* Divider */}
                   <div className="w-12 h-[2px] bg-white/40 mb-4" />
-
-                  {/* Author */}
                   <p className="text-sm text-white/70 italic serif-body">
                     por <span className="text-white/90">{featured.author_name || "ProgramBI"}</span>
                   </p>
-
-                  {/* CTA */}
                   <div className="mt-6">
                     <span className="inline-block px-6 py-2 border border-white/50 rounded-full text-xs font-bold tracking-[0.2em] uppercase hover:bg-white hover:text-black transition-all">
                       LEER
@@ -172,7 +180,6 @@ export default function NewsletterClient() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
                   >
-                    {/* Image */}
                     <div className="relative w-full h-48 sm:h-52 overflow-hidden rounded-sm mb-4">
                       {article.cover_image ? (
                         <Image
@@ -188,18 +195,12 @@ export default function NewsletterClient() {
                         </div>
                       )}
                     </div>
-
-                    {/* Category */}
                     <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-gray-400 mb-2 block">
-                      {categoryLabels[article.category] || article.category}
+                      {getCatLabel(article.category)}
                     </span>
-
-                    {/* Title */}
                     <h3 className="serif text-lg lg:text-xl font-bold text-gray-900 leading-tight group-hover:text-[#1890FF] transition-colors mb-2">
                       {article.title}
                     </h3>
-
-                    {/* Author */}
                     <p className="text-[13px] text-gray-400 serif-body">
                       por <span className="text-gray-600 font-medium">{article.author_name || "ProgramBI"}</span>
                     </p>
@@ -215,7 +216,7 @@ export default function NewsletterClient() {
               Noticias de verdad al estilo <span className="italic">ProgramBI</span>
             </h2>
             <p className="text-gray-400 text-sm max-w-md mx-auto mb-6 serif-body">
-              Suscríbete a nuestro newsletter y recibe artículos sobre datos, IA y tecnología cada semana, directo en tu correo.
+              Suscríbete y recibe artículos sobre datos, IA y tecnología cada semana, directo en tu correo.
             </p>
             <form
               onSubmit={(e) => {
@@ -249,16 +250,14 @@ export default function NewsletterClient() {
             <section key={category} className="py-10 border-b border-gray-200 last:border-b-0">
               <div className="flex items-center justify-between mb-8">
                 <h2 className="text-[12px] font-black tracking-[0.2em] uppercase text-gray-900">
-                  {categoryLabels[category] || category.toUpperCase()}
+                  {getCatLabel(category)}
                 </h2>
                 <span className="text-[11px] font-bold tracking-[0.15em] text-gray-300 uppercase">
                   Lo Último
                 </span>
               </div>
 
-              {/* First article large, rest in list */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                {/* Main article of section */}
                 {catArticles[0] && (
                   <Link href={`/newsletter/${catArticles[0].slug}`} className="lg:col-span-7 group block no-underline">
                     <div className="relative w-full h-64 lg:h-80 overflow-hidden rounded-sm mb-4">
@@ -292,12 +291,10 @@ export default function NewsletterClient() {
                   </Link>
                 )}
 
-                {/* Side list */}
                 {catArticles.length > 1 && (
                   <div className="lg:col-span-5 space-y-5">
                     {catArticles.slice(1, 5).map((article) => (
                       <Link key={article.id} href={`/newsletter/${article.slug}`} className="group flex gap-4 no-underline">
-                        {/* Thumbnail */}
                         <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden rounded-sm">
                           {article.cover_image ? (
                             <Image
@@ -313,8 +310,6 @@ export default function NewsletterClient() {
                             </div>
                           )}
                         </div>
-
-                        {/* Text */}
                         <div className="flex-1 min-w-0">
                           <h4 className="serif text-[15px] lg:text-base font-bold text-gray-900 leading-snug group-hover:text-[#1890FF] transition-colors line-clamp-2 mb-1">
                             {article.title}
@@ -331,7 +326,6 @@ export default function NewsletterClient() {
             </section>
           ))}
 
-          {/* Bottom padding */}
           <div className="h-16" />
         </div>
       )}
