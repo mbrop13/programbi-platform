@@ -1177,3 +1177,77 @@ export async function adminToggleNewsletterCategory(categoryId: string) {
   const { error } = await adminDb.from("newsletter_categories").update({ is_active: !current.is_active }).eq("id", categoryId);
   if (error) throw new Error(error.message);
 }
+
+// ─── NEWSLETTER SUBSCRIPTIONS ───
+
+export async function getNewsletterSubscription() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const adminDb = createAdminClient();
+  const { data } = await adminDb
+    .from("newsletter_subscriptions")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
+
+  return data;
+}
+
+export async function subscribeToNewsletter(params: {
+  categories: string[];
+  frequency: string;
+}) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Debes iniciar sesión");
+
+  const adminDb = createAdminClient();
+
+  // Check if already subscribed
+  const { data: existing } = await adminDb
+    .from("newsletter_subscriptions")
+    .select("id")
+    .eq("user_id", user.id)
+    .single();
+
+  if (existing) {
+    // Update
+    const { error } = await adminDb
+      .from("newsletter_subscriptions")
+      .update({
+        categories: params.categories,
+        frequency: params.frequency,
+        is_active: true,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("user_id", user.id);
+    if (error) throw new Error(error.message);
+  } else {
+    // Insert
+    const { error } = await adminDb
+      .from("newsletter_subscriptions")
+      .insert({
+        user_id: user.id,
+        email: user.email,
+        name: user.user_metadata?.full_name || user.email?.split("@")[0] || "",
+        categories: params.categories,
+        frequency: params.frequency,
+      });
+    if (error) throw new Error(error.message);
+  }
+}
+
+export async function unsubscribeFromNewsletter() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Debes iniciar sesión");
+
+  const adminDb = createAdminClient();
+  const { error } = await adminDb
+    .from("newsletter_subscriptions")
+    .update({ is_active: false, updated_at: new Date().toISOString() })
+    .eq("user_id", user.id);
+  if (error) throw new Error(error.message);
+}

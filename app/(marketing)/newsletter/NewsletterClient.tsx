@@ -4,14 +4,24 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Newspaper } from "lucide-react";
+import { Newspaper, Bell } from "lucide-react";
 import { getPublishedArticles, getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
+import { createClient } from "@/lib/supabase/client";
 
 export default function NewsletterClient() {
   const [articles, setArticles] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeCategory, setActiveCategory] = useState("all");
+  const [user, setUser] = useState<any>(null);
+
+  // Check auth
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setUser(session?.user ?? null));
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Load categories for label mapping
   useEffect(() => {
@@ -176,31 +186,19 @@ export default function NewsletterClient() {
             <p className="text-gray-400 text-sm max-w-md mx-auto mb-6 serif-body">
               Suscríbete y recibe artículos sobre datos, IA y tecnología cada semana, directo en tu correo.
             </p>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const email = (e.target as any).email.value;
-                if (email) {
-                  alert("¡Gracias por suscribirte! Te mantendremos informado.");
-                  (e.target as any).reset();
+            <button
+              onClick={() => {
+                if (user) {
+                  window.dispatchEvent(new CustomEvent("open-nl-subscribe"));
+                } else {
+                  window.dispatchEvent(new CustomEvent("open-nl-subscribe-auth"));
                 }
               }}
-              className="flex items-center gap-2 max-w-md mx-auto"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-gray-900 hover:bg-black text-white font-bold text-xs tracking-[0.15em] uppercase rounded-sm transition-colors border-none cursor-pointer"
             >
-              <input
-                type="email"
-                name="email"
-                required
-                placeholder="tu@email.com"
-                className="flex-1 px-4 py-3 border border-gray-300 rounded-sm text-sm focus:outline-none focus:border-gray-800 transition-colors"
-              />
-              <button
-                type="submit"
-                className="px-6 py-3 bg-gray-900 hover:bg-black text-white font-bold text-xs tracking-[0.15em] uppercase rounded-sm transition-colors border-none cursor-pointer"
-              >
-                Suscribirme
-              </button>
-            </form>
+              <Bell className="w-4 h-4" />
+              Suscribirme al Newsletter
+            </button>
           </div>
 
           {/* ═══ CATEGORY SECTIONS — editorial flow ═══ */}

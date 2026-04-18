@@ -12,6 +12,7 @@ import { courses } from "@/lib/data/courses";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "./AuthModal";
 import SupportModal from "./SupportModal";
+import NewsletterSubscribeModal from "./NewsletterSubscribeModal";
 import { getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
 
 const LOGO_URL = "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974";
@@ -40,6 +41,8 @@ export default function Navbar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [authModal, setAuthModal] = useState<{ isOpen: boolean, tab: "login" | "register" }>({ isOpen: false, tab: "login" });
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
+  const [isNlSubModalOpen, setIsNlSubModalOpen] = useState(false);
+  const [pendingNlSub, setPendingNlSub] = useState(false);
   
   // Auth state
   const [user, setUser] = useState<any>(null);
@@ -95,11 +98,34 @@ export default function Navbar() {
     return () => subscription.unsubscribe();
   }, [supabase.auth]);
 
+  // If user just logged in after pressing "subscribe", open the subscribe modal
+  useEffect(() => {
+    if (user && pendingNlSub) {
+      setPendingNlSub(false);
+      setTimeout(() => setIsNlSubModalOpen(true), 500);
+    }
+  }, [user, pendingNlSub]);
+
   // Load newsletter categories when on newsletter page
   useEffect(() => {
     if (!isNewsletter) return;
     getNewsletterCategories().then(cats => setNlCategories(cats)).catch(() => {});
   }, [isNewsletter]);
+
+  // Listen for open-subscribe events from newsletter page
+  useEffect(() => {
+    const handleOpen = () => setIsNlSubModalOpen(true);
+    const handleOpenAuth = () => {
+      setPendingNlSub(true);
+      setAuthModal({ isOpen: true, tab: "register" });
+    };
+    window.addEventListener("open-nl-subscribe", handleOpen);
+    window.addEventListener("open-nl-subscribe-auth", handleOpenAuth);
+    return () => {
+      window.removeEventListener("open-nl-subscribe", handleOpen);
+      window.removeEventListener("open-nl-subscribe-auth", handleOpenAuth);
+    };
+  }, []);
 
   useEffect(() => {
     if (isMobileOpen || authModal.isOpen) {
@@ -145,6 +171,7 @@ export default function Navbar() {
     <>
       <AuthModal isOpen={authModal.isOpen} onClose={() => setAuthModal(prev => ({ ...prev, isOpen: false }))} defaultTab={authModal.tab} />
       <SupportModal isOpen={isSupportModalOpen} onClose={() => setIsSupportModalOpen(false)} userEmail={user?.email || ""} />
+      <NewsletterSubscribeModal isOpen={isNlSubModalOpen} onClose={() => setIsNlSubModalOpen(false)} />
       
       <motion.nav
         animate={{ y: isHidden ? "-100%" : "0%" }}
@@ -403,9 +430,19 @@ export default function Navbar() {
                   </button>
                 ))}
               </div>
-              <span className="hidden lg:block text-[10px] font-bold tracking-[0.12em] text-gray-400 uppercase whitespace-nowrap">
+              <button
+                onClick={() => {
+                  if (user) {
+                    setIsNlSubModalOpen(true);
+                  } else {
+                    setPendingNlSub(true);
+                    setAuthModal({ isOpen: true, tab: "register" });
+                  }
+                }}
+                className="hidden lg:block text-[10px] font-bold tracking-[0.12em] text-gray-400 hover:text-black uppercase whitespace-nowrap bg-transparent border-none cursor-pointer transition-colors"
+              >
                 Suscríbete al Newsletter
-              </span>
+              </button>
             </div>
           </div>
         )}
