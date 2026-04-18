@@ -167,7 +167,7 @@ export default function Footer() {
               <ul className="space-y-3 list-none p-0 m-0">
                 {[
                   { label: "Consultorías", href: "/consultorias" },
-                  { label: "Contacto", href: "/contacto" },
+                  { label: "Newsletter", href: "/newsletter" },
                   { label: "Campus Virtual", href: "/campus" },
                   { label: "Registrarse", href: "/registro" },
                   { label: "Política de Privacidad", href: "/privacidad" },

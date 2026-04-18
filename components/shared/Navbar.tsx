@@ -18,7 +18,7 @@ const navLinks = [
   { href: "/", label: "Inicio" },
   { href: "/cursos", label: "Cursos", hasMega: true },
   { href: "/consultorias", label: "Consultorías" },
-  { href: "/contacto", label: "Contacto" },
+  { href: "/newsletter", label: "Newsletter" },
   { href: "/comunidad", label: "Comunidad" },
 ];
 

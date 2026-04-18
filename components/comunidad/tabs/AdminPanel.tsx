@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart } from "lucide-react";
+import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured } from "@/lib/supabase/comunidad-ai";
 import { Calendar } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -57,6 +57,7 @@ export default function AdminPanel() {
     { id: "import", label: "Importar CSV", icon: Upload },
     { id: "plans", label: "Planes", icon: CreditCard },
     { id: "popups", label: "Pop-ups", icon: Megaphone },
+    { id: "newsletter", label: "Newsletter", icon: Newspaper },
     { id: "settings", label: "Configuración", icon: Settings },
   ];
 
@@ -116,6 +117,7 @@ export default function AdminPanel() {
               { activeTab === "support" && <AdminSupport /> }
               { activeTab === "popups" && <AdminPopups /> }
               { activeTab === "prices" && <AdminPrices /> }
+              { activeTab === "newsletter" && <AdminNewsletter /> }
             </motion.div>
         </div>
     </div>
@@ -2271,6 +2273,374 @@ function AdminPrices() {
              )}
           </motion.div>
        )}
+    </div>
+  );
+}
+
+// ─── NEWSLETTER ───
+const ARTICLE_CATEGORIES = [
+  { id: "power-bi", label: "Power BI" },
+  { id: "sql", label: "SQL" },
+  { id: "python", label: "Python" },
+  { id: "ia", label: "IA" },
+  { id: "industria", label: "Industria" },
+  { id: "general", label: "General" },
+];
+
+function AdminNewsletter() {
+  const [articles, setArticles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingArticle, setEditingArticle] = useState<any>(null);
+
+  // Form fields
+  const [formTitle, setFormTitle] = useState("");
+  const [formSlug, setFormSlug] = useState("");
+  const [formExcerpt, setFormExcerpt] = useState("");
+  const [formContent, setFormContent] = useState("");
+  const [formCoverImage, setFormCoverImage] = useState("");
+  const [formCategory, setFormCategory] = useState("general");
+  const [formTags, setFormTags] = useState("");
+  const [formAuthor, setFormAuthor] = useState("ProgramBI");
+  const [formReadingTime, setFormReadingTime] = useState(5);
+  const [formStatus, setFormStatus] = useState("draft");
+  const [formFeatured, setFormFeatured] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const loadArticles = useCallback(async () => {
+    try {
+      const data = await adminGetArticles();
+      setArticles(data);
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { loadArticles(); }, [loadArticles]);
+
+  const generateSlug = (title: string) => {
+    return title
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
+      .trim();
+  };
+
+  const resetForm = () => {
+    setFormTitle(""); setFormSlug(""); setFormExcerpt(""); setFormContent("");
+    setFormCoverImage(""); setFormCategory("general"); setFormTags("");
+    setFormAuthor("ProgramBI"); setFormReadingTime(5); setFormStatus("draft");
+    setFormFeatured(false); setEditingArticle(null);
+  };
+
+  const openCreateForm = () => {
+    resetForm();
+    setShowForm(true);
+  };
+
+  const openEditForm = (article: any) => {
+    setEditingArticle(article);
+    setFormTitle(article.title);
+    setFormSlug(article.slug);
+    setFormExcerpt(article.excerpt || "");
+    setFormContent(article.content || "");
+    setFormCoverImage(article.cover_image || "");
+    setFormCategory(article.category || "general");
+    setFormTags((article.tags || []).join(", "));
+    setFormAuthor(article.author_name || "ProgramBI");
+    setFormReadingTime(article.reading_time_min || 5);
+    setFormStatus(article.status);
+    setFormFeatured(article.is_featured || false);
+    setShowForm(true);
+  };
+
+  const handleSave = async () => {
+    if (!formTitle || !formContent) return;
+    setSaving(true);
+    try {
+      const slug = formSlug || generateSlug(formTitle);
+      const tags = formTags.split(",").map(t => t.trim()).filter(Boolean);
+
+      const payload = {
+        title: formTitle,
+        slug,
+        excerpt: formExcerpt,
+        content: formContent,
+        cover_image: formCoverImage || undefined,
+        category: formCategory,
+        tags,
+        author_name: formAuthor,
+        reading_time_min: formReadingTime,
+        status: formStatus,
+        is_featured: formFeatured,
+      };
+
+      if (editingArticle) {
+        await adminUpdateArticle(editingArticle.id, payload);
+      } else {
+        await adminCreateArticle(payload);
+      }
+
+      setShowForm(false);
+      resetForm();
+      await loadArticles();
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    } finally { setSaving(false); }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("¿Eliminar este artículo?")) return;
+    try {
+      await adminDeleteArticle(id);
+      await loadArticles();
+    } catch (err: any) { alert("Error: " + err.message); }
+  };
+
+  const handleTogglePublish = async (id: string) => {
+    try {
+      await adminToggleArticlePublish(id);
+      await loadArticles();
+    } catch (err: any) { alert("Error: " + err.message); }
+  };
+
+  const handleToggleFeatured = async (id: string) => {
+    try {
+      await adminToggleArticleFeatured(id);
+      await loadArticles();
+    } catch (err: any) { alert("Error: " + err.message); }
+  };
+
+  if (loading) {
+    return (
+      <div className="p-6 sm:p-8 flex flex-col items-center justify-center py-20">
+        <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
+        <span className="text-sm text-gray-400 mt-3">Cargando artículos...</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-6 sm:p-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+        <div>
+          <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Newsletter</h2>
+          <p className="text-sm text-gray-400">{articles.length} artículos · Gestiona tu blog</p>
+        </div>
+        <button
+          onClick={openCreateForm}
+          className="flex items-center gap-2 bg-brand-blue text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:bg-blue-600 transition-colors border-none cursor-pointer shadow-md shadow-blue-500/20"
+        >
+          <Plus className="w-4 h-4" /> Nuevo Artículo
+        </button>
+      </div>
+
+      {/* Create/Edit Form */}
+      <AnimatePresence>
+        {showForm && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="mb-8 overflow-hidden">
+            <div className="bg-gray-50 rounded-2xl border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="font-bold text-gray-900">{editingArticle ? "Editar Artículo" : "Nuevo Artículo"}</h3>
+                <button onClick={() => { setShowForm(false); resetForm(); }} className="p-1.5 rounded-lg hover:bg-gray-200 text-gray-400 transition-colors border-none cursor-pointer">
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Título *</label>
+                  <input
+                    type="text" value={formTitle}
+                    onChange={(e) => { setFormTitle(e.target.value); if (!editingArticle) setFormSlug(generateSlug(e.target.value)); }}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                    placeholder="Título del artículo"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Slug (URL)</label>
+                  <input
+                    type="text" value={formSlug}
+                    onChange={(e) => setFormSlug(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                    placeholder="titulo-del-articulo"
+                  />
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Extracto</label>
+                <textarea
+                  value={formExcerpt} onChange={(e) => setFormExcerpt(e.target.value)}
+                  rows={2}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40 resize-none"
+                  placeholder="Breve resumen del artículo..."
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Contenido (HTML) *</label>
+                <textarea
+                  value={formContent} onChange={(e) => setFormContent(e.target.value)}
+                  rows={12}
+                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-mono focus:outline-none focus:border-brand-blue/40 resize-y"
+                  placeholder="<h2>Título de Sección</h2>\n<p>Contenido del artículo...</p>"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Imagen de Portada (URL)</label>
+                  <input
+                    type="text" value={formCoverImage} onChange={(e) => setFormCoverImage(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                    placeholder="https://..."
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Categoría</label>
+                  <select value={formCategory} onChange={(e) => setFormCategory(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none">
+                    {ARTICLE_CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Autor</label>
+                  <input
+                    type="text" value={formAuthor} onChange={(e) => setFormAuthor(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Lectura (min)</label>
+                  <input
+                    type="number" value={formReadingTime} onChange={(e) => setFormReadingTime(parseInt(e.target.value) || 5)}
+                    min={1}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Tags (separados por coma)</label>
+                  <input
+                    type="text" value={formTags} onChange={(e) => setFormTags(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                    placeholder="power-bi, dashboard, tips"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Estado</label>
+                  <select value={formStatus} onChange={(e) => setFormStatus(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none">
+                    <option value="draft">Borrador</option>
+                    <option value="published">Publicado</option>
+                    <option value="archived">Archivado</option>
+                  </select>
+                </div>
+                <div className="flex items-end">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" checked={formFeatured} onChange={(e) => setFormFeatured(e.target.checked)} className="w-4 h-4 rounded" />
+                    <span className="text-sm font-bold text-gray-700">⭐ Artículo Destacado</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={handleSave}
+                  disabled={!formTitle || !formContent || saving}
+                  className="px-6 py-2.5 bg-brand-blue text-white font-bold rounded-xl text-sm hover:bg-blue-600 transition-colors border-none cursor-pointer disabled:opacity-40 flex items-center gap-2"
+                >
+                  {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                  {editingArticle ? "Guardar Cambios" : "Crear Artículo"}
+                </button>
+                <button onClick={() => { setShowForm(false); resetForm(); }} className="px-6 py-2.5 bg-gray-200 text-gray-600 font-bold rounded-xl text-sm hover:bg-gray-300 transition-colors border-none cursor-pointer">
+                  Cancelar
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Articles Table */}
+      {articles.length === 0 ? (
+        <div className="text-center py-12 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50">
+          <Newspaper className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <h3 className="text-gray-900 font-bold mb-1">Sin artículos</h3>
+          <p className="text-gray-400 text-sm">Crea tu primer artículo para el newsletter.</p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {articles.map(article => (
+            <motion.div
+              key={article.id}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className={`flex items-center gap-4 p-4 rounded-2xl border transition-all hover:shadow-sm ${
+                article.status === "published" ? "bg-white border-gray-100" : "bg-gray-50/50 border-gray-100"
+              }`}
+            >
+              {/* Cover thumb */}
+              {article.cover_image ? (
+                <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 relative">
+                  <img src={article.cover_image} alt="" className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                  <FileText className="w-6 h-6 text-gray-300" />
+                </div>
+              )}
+
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
+                    article.status === "published" ? "bg-emerald-100 text-emerald-700" :
+                    article.status === "archived" ? "bg-gray-200 text-gray-500" :
+                    "bg-amber-100 text-amber-700"
+                  }`}>
+                    {article.status === "published" ? "Publicado" : article.status === "archived" ? "Archivado" : "Borrador"}
+                  </span>
+                  {article.is_featured && (
+                    <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700">⭐ Destacado</span>
+                  )}
+                  <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600">
+                    {ARTICLE_CATEGORIES.find(c => c.id === article.category)?.label || article.category}
+                  </span>
+                </div>
+                <h4 className="font-bold text-sm text-gray-900 truncate">{article.title}</h4>
+                <p className="text-[11px] text-gray-400 truncate">
+                  {article.author_name} · {article.reading_time_min} min · {new Date(article.created_at).toLocaleDateString('es-CL')}
+                </p>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-1 flex-shrink-0">
+                <button onClick={() => handleToggleFeatured(article.id)} title="Destacar" className={`p-2 rounded-lg transition-colors border-none cursor-pointer ${article.is_featured ? 'bg-amber-100 text-amber-600' : 'hover:bg-gray-100 text-gray-300'}`}>
+                  <Star className="w-4 h-4" />
+                </button>
+                <button onClick={() => handleTogglePublish(article.id)} title={article.status === 'published' ? 'Despublicar' : 'Publicar'}
+                  className={`p-2 rounded-lg transition-colors border-none cursor-pointer ${article.status === 'published' ? 'bg-emerald-50 text-emerald-500 hover:bg-emerald-100' : 'hover:bg-gray-100 text-gray-400'}`}>
+                  {article.status === 'published' ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                </button>
+                <a href={`/newsletter/${article.slug}`} target="_blank" rel="noreferrer" title="Ver" className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+                <button onClick={() => openEditForm(article)} title="Editar" className="p-2 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-brand-blue transition-colors border-none cursor-pointer">
+                  <Edit3 className="w-4 h-4" />
+                </button>
+                <button onClick={() => handleDelete(article.id)} title="Eliminar" className="p-2 rounded-lg hover:bg-red-50 text-gray-300 hover:text-red-500 transition-colors border-none cursor-pointer">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

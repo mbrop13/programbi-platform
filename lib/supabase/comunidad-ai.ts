@@ -937,3 +937,142 @@ export async function getPriceOverrides() {
 
   return data || [];
 }
+
+// ─── NEWSLETTER ARTICLES ───
+
+export async function getPublishedArticles(category?: string) {
+  const adminDb = createAdminClient();
+
+  let query = adminDb
+    .from("newsletter_articles")
+    .select("id, title, slug, excerpt, cover_image, category, tags, author_name, author_avatar, is_featured, reading_time_min, published_at, created_at")
+    .eq("status", "published")
+    .order("published_at", { ascending: false });
+
+  if (category && category !== "all") {
+    query = query.eq("category", category);
+  }
+
+  const { data, error } = await query;
+  if (error) { console.error("Error fetching articles:", error); return []; }
+  return data || [];
+}
+
+export async function getArticleBySlug(slug: string) {
+  const adminDb = createAdminClient();
+
+  const { data, error } = await adminDb
+    .from("newsletter_articles")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .single();
+
+  if (error) { console.error("Error fetching article:", error); return null; }
+  return data;
+}
+
+export async function adminGetArticles() {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await adminDb
+    .from("newsletter_articles")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) { console.error("Error:", error); return []; }
+  return data || [];
+}
+
+export async function adminCreateArticle(article: {
+  title: string;
+  slug: string;
+  excerpt?: string;
+  content: string;
+  cover_image?: string;
+  category?: string;
+  tags?: string[];
+  author_name?: string;
+  author_avatar?: string;
+  reading_time_min?: number;
+  status?: string;
+  is_featured?: boolean;
+}) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const insertData: any = { ...article };
+  if (article.status === "published") {
+    insertData.published_at = new Date().toISOString();
+  }
+
+  const { data, error } = await adminDb
+    .from("newsletter_articles")
+    .insert(insertData)
+    .select("id")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function adminUpdateArticle(articleId: string, updates: Record<string, any>) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const updateData: any = { ...updates, updated_at: new Date().toISOString() };
+  if (updates.status === "published" && !updates.published_at) {
+    updateData.published_at = new Date().toISOString();
+  }
+
+  const { error } = await adminDb
+    .from("newsletter_articles")
+    .update(updateData)
+    .eq("id", articleId);
+
+  if (error) throw new Error(error.message);
+}
+
+export async function adminDeleteArticle(articleId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await adminDb.from("newsletter_articles").delete().eq("id", articleId);
+  if (error) throw new Error(error.message);
+}
+
+export async function adminToggleArticlePublish(articleId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data: current } = await adminDb.from("newsletter_articles").select("status").eq("id", articleId).single();
+  if (!current) throw new Error("Artículo no encontrado");
+
+  const newStatus = current.status === "published" ? "draft" : "published";
+  const updates: any = { status: newStatus, updated_at: new Date().toISOString() };
+  if (newStatus === "published") updates.published_at = new Date().toISOString();
+
+  const { error } = await adminDb.from("newsletter_articles").update(updates).eq("id", articleId);
+  if (error) throw new Error(error.message);
+}
+
+export async function adminToggleArticleFeatured(articleId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data: current } = await adminDb.from("newsletter_articles").select("is_featured").eq("id", articleId).single();
+  if (!current) throw new Error("Artículo no encontrado");
+
+  const { error } = await adminDb.from("newsletter_articles").update({
+    is_featured: !current.is_featured,
+    updated_at: new Date().toISOString(),
+  }).eq("id", articleId);
+  if (error) throw new Error(error.message);
+}
