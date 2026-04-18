@@ -1,6 +1,7 @@
 /**
- * MailerSend Integration — ProgramBI
+ * Amazon SES Integration — ProgramBI
  * Módulo central para todos los correos transaccionales de la plataforma.
+ * Usa SMTP vía nodemailer conectado a Amazon SES.
  *
  * Tipos de email soportados:
  *  1. Cotización individual (confirmación al lead)
@@ -11,17 +12,27 @@
  *  6. Bienvenida a membresía
  */
 
-import { MailerSend, EmailParams, Sender, Recipient } from "mailersend";
+import nodemailer from "nodemailer";
 
 // ─── Config ────────────────────────────────────────────────────────────────────
-const API_KEY = process.env.MAILERSEND_API_KEY!;
-const FROM_EMAIL = process.env.MAILERSEND_FROM_EMAIL || "noreply@programbi.cl";
-const FROM_NAME = process.env.MAILERSEND_FROM_NAME || "ProgramBI";
-const ADMIN_EMAIL = process.env.MAILERSEND_ADMIN_EMAIL || "contacto@programbi.cl";
+const SMTP_HOST = process.env.SES_SMTP_HOST || "email-smtp.us-east-1.amazonaws.com";
+const SMTP_PORT = parseInt(process.env.SES_SMTP_PORT || "465", 10);
+const SMTP_USER = process.env.SES_SMTP_USER!;
+const SMTP_PASS = process.env.SES_SMTP_PASS!;
+const FROM_EMAIL = process.env.SES_FROM_EMAIL || "noreply@programbi.cl";
+const FROM_NAME = process.env.SES_FROM_NAME || "ProgramBI";
+const ADMIN_EMAIL = process.env.SES_ADMIN_EMAIL || "contacto@programbi.cl";
 
-function getMailerSend() {
-  if (!API_KEY) throw new Error("MAILERSEND_API_KEY no está configurada en las variables de entorno.");
-  return new MailerSend({ apiKey: API_KEY });
+function getTransporter() {
+  if (!SMTP_USER || !SMTP_PASS) {
+    throw new Error("SES_SMTP_USER y SES_SMTP_PASS deben estar configuradas en las variables de entorno.");
+  }
+  return nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: SMTP_PORT,
+    secure: SMTP_PORT === 465,
+    auth: { user: SMTP_USER, pass: SMTP_PASS },
+  });
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
@@ -29,8 +40,27 @@ function formatCLP(price: number) {
   return new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(price);
 }
 
-function buildSender() {
-  return new Sender(FROM_EMAIL, FROM_NAME);
+function fromAddress() {
+  return `"${FROM_NAME}" <${FROM_EMAIL}>`;
+}
+
+async function sendEmail(params: {
+  to: string;
+  toName?: string;
+  subject: string;
+  html: string;
+  text: string;
+  replyTo?: string;
+}) {
+  const transporter = getTransporter();
+  await transporter.sendMail({
+    from: fromAddress(),
+    to: params.toName ? `"${params.toName}" <${params.to}>` : params.to,
+    subject: params.subject,
+    html: params.html,
+    text: params.text,
+    replyTo: params.replyTo,
+  });
 }
 
 // ─── Base HTML template ────────────────────────────────────────────────────────
@@ -88,7 +118,6 @@ export async function sendQuoteConfirmationToLead(params: {
   courses: string[];
   message?: string;
 }) {
-  const mailerSend = getMailerSend();
   const { name, email, courses, message } = params;
 
   const courseList = courses.length > 0
@@ -120,14 +149,13 @@ export async function sendQuoteConfirmationToLead(params: {
     </a>
   `);
 
-  const emailParams = new EmailParams()
-    .setFrom(buildSender())
-    .setTo([new Recipient(email, name)])
-    .setSubject("✅ Recibimos tu cotización — ProgramBI")
-    .setHtml(html)
-    .setText(`Hola ${name}, recibimos tu cotización. Te contactaremos pronto. Cursos: ${courses.join(", ")}.`);
-
-  await mailerSend.email.send(emailParams);
+  await sendEmail({
+    to: email,
+    toName: name,
+    subject: "✅ Recibimos tu cotización — ProgramBI",
+    html,
+    text: `Hola ${name}, recibimos tu cotización. Te contactaremos pronto. Cursos: ${courses.join(", ")}.`,
+  });
 }
 
 // ─── Email 2: Notificación interna — Nueva cotización ─────────────────────────
@@ -142,7 +170,6 @@ export async function sendNewLeadNotificationToAdmin(params: {
   position?: string;
   employeeCount?: string;
 }) {
-  const mailerSend = getMailerSend();
   const { name, email, phone, courses, message, leadType, company, position, employeeCount } = params;
 
   const isEnterprise = leadType === "enterprise";
@@ -178,15 +205,14 @@ export async function sendNewLeadNotificationToAdmin(params: {
     </div>
   `);
 
-  const emailParams = new EmailParams()
-    .setFrom(buildSender())
-    .setTo([new Recipient(ADMIN_EMAIL, "Equipo ProgramBI")])
-    .setReplyTo(new Sender(email, name))
-    .setSubject(`🔔 Nuevo lead ${isEnterprise ? "empresarial" : "individual"}: ${name}`)
-    .setHtml(html)
-    .setText(`Nuevo lead: ${name} | ${email} | Cursos: ${courses.join(", ")}`);
-
-  await mailerSend.email.send(emailParams);
+  await sendEmail({
+    to: ADMIN_EMAIL,
+    toName: "Equipo ProgramBI",
+    subject: `🔔 Nuevo lead ${isEnterprise ? "empresarial" : "individual"}: ${name}`,
+    html,
+    text: `Nuevo lead: ${name} | ${email} | Cursos: ${courses.join(", ")}`,
+    replyTo: email,
+  });
 }
 
 // ─── Email 3: Cotización Empresa (al cliente empresa) ──────────────────────────
@@ -197,7 +223,6 @@ export async function sendEnterpriseQuoteToLead(params: {
   courses: string[];
   employeeCount?: string;
 }) {
-  const mailerSend = getMailerSend();
   const { name, email, company, courses, employeeCount } = params;
 
   const courseList = courses.map(c => `<li style="margin:4px 0;color:#334155;">${c}</li>`).join("");
@@ -238,14 +263,13 @@ export async function sendEnterpriseQuoteToLead(params: {
     </a>
   `);
 
-  const emailParams = new EmailParams()
-    .setFrom(buildSender())
-    .setTo([new Recipient(email, name)])
-    .setSubject(`✅ Cotización empresarial recibida — ProgramBI`)
-    .setHtml(html)
-    .setText(`Hola ${name}, gracias por contactarnos desde ${company}. Te contactaremos pronto con una propuesta personalizada.`);
-
-  await mailerSend.email.send(emailParams);
+  await sendEmail({
+    to: email,
+    toName: name,
+    subject: "✅ Cotización empresarial recibida — ProgramBI",
+    html,
+    text: `Hola ${name}, gracias por contactarnos desde ${company}. Te contactaremos pronto con una propuesta personalizada.`,
+  });
 }
 
 // ─── Email 4: Avísame cuando haya fecha disponible ────────────────────────────
@@ -255,7 +279,6 @@ export async function sendNotifyMeConfirmation(params: {
   courseName: string;
   levelName?: string;
 }) {
-  const mailerSend = getMailerSend();
   const { name, email, courseName, levelName } = params;
 
   const html = wrapHtml("Te avisamos cuando haya fecha — ProgramBI", `
@@ -282,14 +305,13 @@ export async function sendNotifyMeConfirmation(params: {
     </div>
   `);
 
-  const emailParams = new EmailParams()
-    .setFrom(buildSender())
-    .setTo([new Recipient(email, name || "Estudiante")])
-    .setSubject(`🔔 Te avisaremos cuando se abra ${courseName} — ProgramBI`)
-    .setHtml(html)
-    .setText(`Hola${name ? ` ${name}` : ""}, ya te registramos para recibir aviso cuando se abra ${courseName}${levelName ? ` (${levelName})` : ""}.`);
-
-  await mailerSend.email.send(emailParams);
+  await sendEmail({
+    to: email,
+    toName: name || "Estudiante",
+    subject: `🔔 Te avisaremos cuando se abra ${courseName} — ProgramBI`,
+    html,
+    text: `Hola${name ? ` ${name}` : ""}, ya te registramos para recibir aviso cuando se abra ${courseName}${levelName ? ` (${levelName})` : ""}.`,
+  });
 }
 
 // ─── Email 5: Confirmación de pago / inscripción ──────────────────────────────
@@ -301,7 +323,6 @@ export async function sendPaymentConfirmation(params: {
   totalPaid: number;
   paymentMethod?: string;
 }) {
-  const mailerSend = getMailerSend();
   const { name, email, courses, orderId, totalPaid, paymentMethod } = params;
 
   const courseRows = courses.map(c => `
@@ -361,14 +382,13 @@ export async function sendPaymentConfirmation(params: {
     </div>
   `);
 
-  const emailParams = new EmailParams()
-    .setFrom(buildSender())
-    .setTo([new Recipient(email, name)])
-    .setSubject(`🎉 ¡Pago confirmado! Tu inscripción en ProgramBI`)
-    .setHtml(html)
-    .setText(`¡Hola ${name}! Tu pago fue confirmado. Total: ${formatCLP(totalPaid)}. Orden: ${orderId}. Cursos: ${courses.map(c => c.title).join(", ")}.`);
-
-  await mailerSend.email.send(emailParams);
+  await sendEmail({
+    to: email,
+    toName: name,
+    subject: "🎉 ¡Pago confirmado! Tu inscripción en ProgramBI",
+    html,
+    text: `¡Hola ${name}! Tu pago fue confirmado. Total: ${formatCLP(totalPaid)}. Orden: ${orderId}. Cursos: ${courses.map(c => c.title).join(", ")}.`,
+  });
 }
 
 // ─── Email 6: Bienvenida membresía ────────────────────────────────────────────
@@ -378,7 +398,6 @@ export async function sendMembershipWelcome(params: {
   planName: string;
   price: number;
 }) {
-  const mailerSend = getMailerSend();
   const { name, email, planName, price } = params;
 
   const html = wrapHtml("¡Bienvenido a la Comunidad! — ProgramBI", `
@@ -418,12 +437,11 @@ export async function sendMembershipWelcome(params: {
     </div>
   `);
 
-  const emailParams = new EmailParams()
-    .setFrom(buildSender())
-    .setTo([new Recipient(email, name)])
-    .setSubject(`🚀 ¡Bienvenido a ProgramBI ${planName}!`)
-    .setHtml(html)
-    .setText(`¡Bienvenido ${name}! Tu membresía ${planName} está activa. Accede a la comunidad en programbi.cl/comunidad`);
-
-  await mailerSend.email.send(emailParams);
+  await sendEmail({
+    to: email,
+    toName: name,
+    subject: `🚀 ¡Bienvenido a ProgramBI ${planName}!`,
+    html,
+    text: `¡Bienvenido ${name}! Tu membresía ${planName} está activa. Accede a la comunidad en programbi.cl/comunidad`,
+  });
 }
