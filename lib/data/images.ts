@@ -46,22 +46,7 @@ export const companyLogos = [
     name: "Chilevisión",
     url: "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/1200px-Chilevision__2018.png?v=1750694554",
   },
-  {
-    name: "Bridgestone",
-    url: "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/gempages_519842279402243040-c52ed2d1-c45b-43be-b9a3-2baa0aca8e6f.png?v=1720130279",
-  },
-  {
-    name: "Tresmontes Lucchetti",
-    url: "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/gempages_519842279402243040-87b3acf3-f9db-4cfb-80f2-7e29b5f60e90.png?v=1720130234",
-  },
-  {
-    name: "ChileCompra",
-    url: "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/gempages_519842279402243040-42a24c2d-267b-4be2-aa48-dab7aecade1b.png?v=1720130159",
-  },
-  {
-    name: "Banchile",
-    url: "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/gempages_519842279402243040-dce29371-e414-4cc2-97ca-20f26b2c12e1.png?v=1720128462",
-  },
+
 ];
 
 export const galleryImages = [
