@@ -6,6 +6,7 @@ import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, a
 import { Calendar } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
+import ArticleBlockEditor from "@/components/shared/ArticleBlockEditor";
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -2326,6 +2327,7 @@ function AdminNewsletterArticles() {
   const [formSlug, setFormSlug] = useState("");
   const [formExcerpt, setFormExcerpt] = useState("");
   const [formContent, setFormContent] = useState("");
+  const [formBlocks, setFormBlocks] = useState<any[]>([]);
   const [formCoverImage, setFormCoverImage] = useState("");
   const [formCategory, setFormCategory] = useState("general");
   const [formTags, setFormTags] = useState("");
@@ -2359,6 +2361,7 @@ function AdminNewsletterArticles() {
 
   const resetForm = () => {
     setFormTitle(""); setFormSlug(""); setFormExcerpt(""); setFormContent("");
+    setFormBlocks([]);
     setFormCoverImage(""); setFormCategory("general"); setFormTags("");
     setFormAuthor("ProgramBI"); setFormReadingTime(5); setFormStatus("draft");
     setFormFeatured(false); setEditingArticle(null);
@@ -2375,6 +2378,14 @@ function AdminNewsletterArticles() {
     setFormSlug(article.slug);
     setFormExcerpt(article.excerpt || "");
     setFormContent(article.content || "");
+    // Try to parse blocks from content
+    try {
+      const parsed = JSON.parse(article.content || "[]");
+      if (Array.isArray(parsed)) setFormBlocks(parsed);
+      else setFormBlocks([{ type: "paragraph", text: article.content || "" }]);
+    } catch {
+      setFormBlocks([{ type: "paragraph", text: article.content || "" }]);
+    }
     setFormCoverImage(article.cover_image || "");
     setFormCategory(article.category || "general");
     setFormTags((article.tags || []).join(", "));
@@ -2386,7 +2397,7 @@ function AdminNewsletterArticles() {
   };
 
   const handleSave = async () => {
-    if (!formTitle || !formContent) return;
+    if (!formTitle || formBlocks.length === 0) return;
     setSaving(true);
     try {
       const slug = formSlug || generateSlug(formTitle);
@@ -2396,7 +2407,7 @@ function AdminNewsletterArticles() {
         title: formTitle,
         slug,
         excerpt: formExcerpt,
-        content: formContent,
+        content: JSON.stringify(formBlocks),
         cover_image: formCoverImage || undefined,
         category: formCategory,
         tags,
@@ -2509,15 +2520,10 @@ function AdminNewsletterArticles() {
                 />
               </div>
 
-              <div className="mb-4">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Contenido (HTML) *</label>
-                <textarea
-                  value={formContent} onChange={(e) => setFormContent(e.target.value)}
-                  rows={12}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-mono focus:outline-none focus:border-brand-blue/40 resize-y"
-                  placeholder="<h2>Título de Sección</h2>\n<p>Contenido del artículo...</p>"
-                />
-              </div>
+              <ArticleBlockEditor
+                blocks={formBlocks}
+                onChange={(blocks) => setFormBlocks(blocks)}
+              />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                 <div>
@@ -2581,7 +2587,7 @@ function AdminNewsletterArticles() {
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleSave}
-                  disabled={!formTitle || !formContent || saving}
+                  disabled={!formTitle || formBlocks.length === 0 || saving}
                   className="px-6 py-2.5 bg-brand-blue text-white font-bold rounded-xl text-sm hover:bg-blue-600 transition-colors border-none cursor-pointer disabled:opacity-40 flex items-center gap-2"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}

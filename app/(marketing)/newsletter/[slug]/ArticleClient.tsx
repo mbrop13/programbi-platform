@@ -7,6 +7,7 @@ import { ArrowLeft, Clock, Calendar, Tag, Share2, ChevronRight, Newspaper, Spark
 import { motion } from "framer-motion";
 import { getArticleBySlug, getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
+import ArticleBlockRenderer from "@/components/shared/ArticleBlockRenderer";
 
 const categoryColors: Record<string, string> = {
   "power-bi": "#F2C811",
@@ -160,19 +161,7 @@ export default function ArticleClient({ slug }: { slug: string }) {
             )}
 
             {/* Article Body */}
-            <article
-              className="prose prose-lg max-w-none
-                prose-headings:font-display prose-headings:font-black prose-headings:tracking-tight prose-headings:text-[#0F172A]
-                prose-p:text-gray-600 prose-p:leading-relaxed
-                prose-a:text-[#1890FF] prose-a:font-semibold prose-a:no-underline hover:prose-a:underline
-                prose-strong:text-gray-900
-                prose-img:rounded-2xl prose-img:shadow-md
-                prose-blockquote:border-l-[#1890FF] prose-blockquote:bg-blue-50/50 prose-blockquote:rounded-r-xl prose-blockquote:py-1
-                prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded-md prose-code:text-sm prose-code:font-mono
-                prose-pre:bg-[#0F172A] prose-pre:rounded-2xl
-                mb-12"
-              dangerouslySetInnerHTML={{ __html: article.content }}
-            />
+            <ArticleBlockRenderer content={article.content} />
 
             {/* Tags */}
             {article.tags && article.tags.length > 0 && (
