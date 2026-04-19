@@ -726,6 +726,7 @@ export async function adminCreatePopup(popup: {
   display_delay_seconds?: number;
   dismissible?: boolean;
   show_once_per_session?: boolean;
+  custom_html?: string | null;
 }) {
   const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
