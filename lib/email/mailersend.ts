@@ -19,9 +19,9 @@ const SMTP_HOST = process.env.SES_SMTP_HOST || "email-smtp.us-east-1.amazonaws.c
 const SMTP_PORT = parseInt(process.env.SES_SMTP_PORT || "465", 10);
 const SMTP_USER = process.env.SES_SMTP_USER!;
 const SMTP_PASS = process.env.SES_SMTP_PASS!;
-const FROM_EMAIL = process.env.SES_FROM_EMAIL || "noreply@programbi.cl";
+const FROM_EMAIL = process.env.SES_FROM_EMAIL || "noreply@programbi.com";
 const FROM_NAME = process.env.SES_FROM_NAME || "ProgramBI";
-const ADMIN_EMAIL = process.env.SES_ADMIN_EMAIL || "contacto@programbi.cl";
+const ADMIN_EMAIL = process.env.SES_ADMIN_EMAIL || "contacto@programbi.com";
 
 function getTransporter() {
   if (!SMTP_USER || !SMTP_PASS) {
@@ -98,7 +98,7 @@ function wrapHtml(title: string, content: string) {
           <td style="padding:24px 40px;border-top:1px solid #F1F5F9;background:#FAFAFA;">
             <p style="margin:0;font-size:12px;color:#94A3B8;text-align:center;line-height:1.6;">
               © ${new Date().getFullYear()} ProgramBI — Todos los derechos reservados<br/>
-              <a href="https://programbi.cl" style="color:#1890FF;text-decoration:none;">programbi.cl</a> · 
+              <a href="https://programbi.com" style="color:#1890FF;text-decoration:none;">programbi.com</a> · 
               <a href="mailto:${ADMIN_EMAIL}" style="color:#1890FF;text-decoration:none;">${ADMIN_EMAIL}</a>
             </p>
           </td>
@@ -144,7 +144,7 @@ export async function sendQuoteConfirmationToLead(params: {
       </p>
     </div>
 
-    <a href="https://programbi.cl/cursos" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;letter-spacing:0.3px;">
+    <a href="https://programbi.com/cursos" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;letter-spacing:0.3px;">
       Ver todos los cursos →
     </a>
   `);
@@ -299,7 +299,7 @@ export async function sendNotifyMeConfirmation(params: {
     </p>
 
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.cl/cursos" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
+      <a href="https://programbi.com/cursos" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
         Explorar otros cursos →
       </a>
     </div>
@@ -376,7 +376,7 @@ export async function sendPaymentConfirmation(params: {
     </div>
 
     <div style="text-align:center;margin-top:28px;">
-      <a href="https://programbi.cl/comunidad" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
+      <a href="https://programbi.com/comunidad" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
         Ir a mi área de estudiante →
       </a>
     </div>
@@ -431,7 +431,7 @@ export async function sendMembershipWelcome(params: {
     </div>
 
     <div style="text-align:center;margin-top:32px;">
-      <a href="https://programbi.cl/comunidad" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:15px;font-weight:700;text-decoration:none;padding:16px 32px;border-radius:14px;letter-spacing:0.3px;">
+      <a href="https://programbi.com/comunidad" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:15px;font-weight:700;text-decoration:none;padding:16px 32px;border-radius:14px;letter-spacing:0.3px;">
         Acceder a la Comunidad →
       </a>
     </div>
@@ -442,6 +442,6 @@ export async function sendMembershipWelcome(params: {
     toName: name,
     subject: `🚀 ¡Bienvenido a ProgramBI ${planName}!`,
     html,
-    text: `¡Bienvenido ${name}! Tu membresía ${planName} está activa. Accede a la comunidad en programbi.cl/comunidad`,
+    text: `¡Bienvenido ${name}! Tu membresía ${planName} está activa. Accede a la comunidad en programbi.com/comunidad`,
   });
 }
