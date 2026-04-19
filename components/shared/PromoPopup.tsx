@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowRight, Zap, Clock, Shield, Users, Star, TrendingUp } from "lucide-react";
 import { getActivePopups } from "@/lib/supabase/comunidad-ai";
@@ -21,6 +21,35 @@ interface PromoPopupData {
   show_once_per_session: boolean;
   show_to: "all" | "guests" | "members";
   custom_html: string | null;
+}
+
+/* ─── Custom HTML Renderer (Ejecuta Scripts Inyectados) ────────── */
+function CustomHtmlRenderer({ html, onDismiss }: { html: string, onDismiss: () => void }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const scripts = Array.from(containerRef.current.querySelectorAll('script'));
+    scripts.forEach(oldScript => {
+      const newScript = document.createElement('script');
+      Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+      newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+      oldScript.parentNode?.replaceChild(newScript, oldScript);
+    });
+  }, [html]);
+
+  return (
+    <div
+      ref={containerRef}
+      dangerouslySetInnerHTML={{ __html: html }}
+      onClick={(e) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName === 'A' || target.closest('a')) {
+          onDismiss();
+        }
+      }}
+    />
+  );
 }
 
 /* ─── Floating orbs background ─────────────────────────────────── */
@@ -269,15 +298,7 @@ export default function PromoPopup() {
                     <X className="w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
                   </motion.button>
                 )}
-                <div
-                  dangerouslySetInnerHTML={{ __html: visiblePopup.custom_html }}
-                  onClick={(e) => {
-                    const target = e.target as HTMLElement;
-                    if (target.tagName === 'A') {
-                      handleDismiss();
-                    }
-                  }}
-                />
+                <CustomHtmlRenderer html={visiblePopup.custom_html} onDismiss={handleDismiss} />
               </div>
             ) : (
             <>
