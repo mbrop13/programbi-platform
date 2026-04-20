@@ -26,7 +26,11 @@ export default function AdminPanel() {
         const supportLast = views?.support_last_viewed_at || '1970-01-01T00:00:00.000Z';
         const membersLast = views?.members_last_viewed_at || '1970-01-01T00:00:00.000Z';
 
-        const leadsLast = views?.leads_last_viewed_at || '1970-01-01T00:00:00.000Z';
+        const leadsLastStr = localStorage.getItem('admin_leads_last_viewed') || '1970-01-01T00:00:00.000Z';
+        // Always try to use DB view first (if present), fallback to local storage
+        const leadsLast = views?.leads_last_viewed_at && views.leads_last_viewed_at !== '1970-01-01T00:00:00.000Z' 
+           ? views.leads_last_viewed_at 
+           : leadsLastStr;
 
         const [
           { count: supportCount },
@@ -254,6 +258,22 @@ function AdminLeads() {
       try {
         const data = await adminGetLeads();
         setAllLeads(data);
+        
+        // Mark as viewed
+        const { createClient } = await import("@/lib/supabase/client");
+        const supabase = createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+           const nowStr = new Date().toISOString();
+           localStorage.setItem('admin_leads_last_viewed', nowStr);
+           // Try to upsert to DB in case they ran the SQL artifact
+           await supabase.from("admin_views").upsert({
+             admin_id: user.id,
+             leads_last_viewed_at: nowStr
+           });
+           
+           window.dispatchEvent(new Event("adminViewsUpdated"));
+        }
       } catch (err) {
         console.error(err);
       } finally {
