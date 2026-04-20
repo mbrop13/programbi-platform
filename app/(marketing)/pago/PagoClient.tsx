@@ -278,7 +278,8 @@ export default function PagoClient() {
   }, [schedules, initialSlug]);
 
   return (
-    <section className="relative -mt-20 lg:-mt-24 pt-28 lg:pt-36 pb-32 min-h-screen" style={{ background: "linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 60%)" }}>
+    <>
+    <section className="relative -mt-20 lg:-mt-24 pt-28 lg:pt-36 pb-32 min-h-screen overflow-x-hidden" style={{ background: "linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 60%)" }}>
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-400/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-400/5 rounded-full blur-[100px] pointer-events-none" />
 
@@ -677,111 +678,155 @@ export default function PagoClient() {
 
       </div>
 
-      {/* Mobile Sticky Checkout Bar / Bottom Sheet */}
-      <AnimatePresence>
-        {mode === "individual" && cartItems.length > 0 && (
-          <>
-            {/* Overlay background when open */}
-            {isMobileCartOpen && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setIsMobileCartOpen(false)}
-                className="lg:hidden fixed inset-0 bg-[#0F172A]/40 z-40 backdrop-blur-[2px]"
-              />
-            )}
-            
-            <motion.div
-              initial={{ y: "100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 300 }}
-              className={`lg:hidden fixed bottom-0 left-0 right-0 w-full bg-white border-t border-gray-200 z-50 shadow-[0_-15px_40px_rgba(0,0,0,0.1)] flex flex-col rounded-t-[1.5rem] overflow-hidden`}
-            >
-              {/* Expandable Cart Details */}
-              <AnimatePresence>
-                {isMobileCartOpen && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden bg-gray-50/50 relative"
-                  >
-                    <div className="p-5 max-h-[50vh] overflow-y-auto custom-scrollbar">
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="font-bold text-[#0F172A] flex items-center gap-2">
-                           <ShoppingCart className="w-4 h-4 text-[#1890FF]" /> Tu Carrito
-                        </h4>
-                        <button onClick={() => setIsMobileCartOpen(false)} className="p-1.5 rounded-full bg-gray-200/50 text-gray-500 hover:bg-gray-200 transition-colors cursor-pointer border-none">
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                      
-                      <div className="space-y-3">
-                         {cartItems.map(item => (
-                            <div key={`${item.slug}-${item.levelName}`} className="flex justify-between items-start gap-4 p-3.5 bg-white border border-gray-100 rounded-2xl shadow-sm">
-                               <div className="flex-1 min-w-0">
-                                  <span className="font-semibold text-sm text-[#0F172A] leading-tight line-clamp-2">{item.quantity}x {item.title}</span>
-                                  <span className="text-[11px] text-gray-500 mt-1 block font-medium">{item.levelName}</span>
-                               </div>
-                               <div className="flex flex-col items-end shrink-0">
-                                  <span className="font-black text-[#0F172A] text-[15px]">{formatCLP(item.price * item.quantity)}</span>
-                                  <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} className="text-[10px] text-red-500 hover:text-red-600 mt-1.5 uppercase font-bold tracking-widest bg-red-50 hover:bg-red-100 transition-colors px-2 py-0.5 rounded border-none cursor-pointer">Eliminar</button>
-                               </div>
-                            </div>
-                         ))}
-                      </div>
-                      {hasExtraLicenses && (
-                         <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 mt-4 flex gap-3">
-                            <Users className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                            <div>
-                              <p className="text-[11px] font-bold text-amber-700">Licencias Adicionales</p>
-                              <p className="text-[10px] text-amber-600/80 leading-snug mt-1">Recibirás las instrucciones por correo al completar el pago.</p>
-                            </div>
-                         </div>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Sticky Bar (Always visible) */}
-              <div 
-                className="px-5 py-4 bg-white flex items-center justify-between cursor-pointer active:bg-gray-50 transition-colors border-t border-gray-100 pb-8 sm:pb-4"
-                onClick={() => setIsMobileCartOpen(!isMobileCartOpen)}
-              >
-                <div className="flex items-center gap-3 select-none">
-                  <div className="relative shrink-0">
-                    <div className="w-11 h-11 bg-blue-50 text-[#1890FF] rounded-full flex items-center justify-center">
-                       <ShoppingCart className="w-5 h-5" />
-                    </div>
-                    <span className="absolute -top-1 -right-1 bg-[#22C55E] text-white text-[10px] font-black w-4.5 h-4.5 flex items-center justify-center rounded-full z-10 shadow-sm border-2 border-white leading-none">
-                      {cartItemCount}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] text-gray-400 font-bold tracking-widest uppercase flex items-center gap-1">
-                      Ver Detalles {isMobileCartOpen ? <ChevronDown className="w-3.5 h-3.5 ml-0.5" /> : <ChevronUp className="w-3.5 h-3.5 ml-0.5" />}
-                    </span>
-                    <span className="text-xl font-black text-[#0F172A] leading-none block mt-0.5">{formatCLP(totalPrice)}</span>
-                  </div>
-                </div>
-                
-                <button
-                  onClick={(e) => { e.stopPropagation(); handleCheckout(); }}
-                  disabled={isCheckingOut}
-                  className="py-3 px-6 rounded-xl text-white font-bold text-[13px] flex justify-center items-center gap-2 transition-all disabled:opacity-60 border-none cursor-pointer shadow-lg shadow-blue-500/20 shrink-0 uppercase tracking-wide"
-                  style={{ background: "linear-gradient(135deg, #1890FF, #0050b3)" }}
-                >
-                  {isCheckingOut ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Pagar Ahora'}
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
     </section>
+
+    {/* Mobile Sticky Checkout Bar / Bottom Sheet — OUTSIDE section to avoid overflow/transform issues */}
+    <AnimatePresence>
+      {mode === "individual" && cartItems.length > 0 && (
+        <>
+          {/* Overlay background when open */}
+          {isMobileCartOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMobileCartOpen(false)}
+              className="lg:hidden fixed inset-0 bg-[#0F172A]/40 backdrop-blur-[2px]"
+              style={{ zIndex: 9990 }}
+            />
+          )}
+          
+          <motion.div
+            initial={{ y: 120 }}
+            animate={{ y: 0 }}
+            exit={{ y: 120 }}
+            transition={{ type: "spring", damping: 28, stiffness: 350 }}
+            className="lg:hidden"
+            style={{
+              position: "fixed",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              zIndex: 9999,
+              borderTopLeftRadius: 20,
+              borderTopRightRadius: 20,
+              backgroundColor: "#fff",
+              borderTop: "1px solid #e5e7eb",
+              boxShadow: "0 -8px 30px rgba(0,0,0,0.12)",
+              display: "flex",
+              flexDirection: "column" as const,
+              overflow: "hidden",
+              boxSizing: "border-box" as const,
+              maxWidth: "100vw",
+            }}
+          >
+            {/* Drag handle */}
+            <div style={{ display: "flex", justifyContent: "center", paddingTop: 8, paddingBottom: 4 }}>
+              <div style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: "#D1D5DB" }} />
+            </div>
+
+            {/* Expandable Cart Details */}
+            <AnimatePresence>
+              {isMobileCartOpen && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  style={{ overflow: "hidden", backgroundColor: "#f9fafb" }}
+                >
+                  <div style={{ padding: 20, maxHeight: "50vh", overflowY: "auto" }}>
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                      <h4 style={{ fontWeight: 700, color: "#0F172A", display: "flex", alignItems: "center", gap: 8, margin: 0, fontSize: 15 }}>
+                        <ShoppingCart style={{ width: 16, height: 16, color: "#1890FF" }} /> Tu Carrito
+                      </h4>
+                      <button onClick={() => setIsMobileCartOpen(false)} style={{ padding: 6, borderRadius: "50%", background: "#e5e7eb", color: "#6b7280", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}>
+                        <X style={{ width: 14, height: 14 }} />
+                      </button>
+                    </div>
+                    
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      {cartItems.map(item => (
+                        <div key={`mob-${item.slug}-${item.levelName}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, padding: 14, background: "#fff", border: "1px solid #f3f4f6", borderRadius: 14, boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <span style={{ fontWeight: 600, fontSize: 14, color: "#0F172A", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.quantity}x {item.title}</span>
+                            <span style={{ fontSize: 11, color: "#6b7280", display: "block", marginTop: 4, fontWeight: 500 }}>{item.levelName}</span>
+                          </div>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0 }}>
+                            <span style={{ fontWeight: 900, color: "#0F172A", fontSize: 15 }}>{formatCLP(item.price * item.quantity)}</span>
+                            <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} style={{ fontSize: 10, color: "#ef4444", marginTop: 6, textTransform: "uppercase", fontWeight: 700, letterSpacing: 1, background: "#fef2f2", padding: "2px 8px", borderRadius: 4, border: "none", cursor: "pointer" }}>Eliminar</button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Sticky Bar (Always visible) */}
+            <div 
+              onClick={() => setIsMobileCartOpen(!isMobileCartOpen)}
+              style={{
+                padding: "14px 20px",
+                paddingBottom: "env(safe-area-inset-bottom, 14px)",
+                background: "#fff",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                borderTop: "1px solid #f3f4f6",
+                cursor: "pointer",
+                gap: 12,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 12, userSelect: "none" }}>
+                <div style={{ position: "relative", flexShrink: 0 }}>
+                  <div style={{ width: 44, height: 44, backgroundColor: "#eff6ff", color: "#1890FF", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <ShoppingCart style={{ width: 20, height: 20 }} />
+                  </div>
+                  <span style={{ position: "absolute", top: -4, right: -4, backgroundColor: "#22C55E", color: "#fff", fontSize: 10, fontWeight: 900, width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", border: "2px solid #fff", lineHeight: 1 }}>
+                    {cartItemCount}
+                  </span>
+                </div>
+                <div>
+                  <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 4 }}>
+                    Ver Detalles {isMobileCartOpen ? <ChevronDown style={{ width: 14, height: 14 }} /> : <ChevronUp style={{ width: 14, height: 14 }} />}
+                  </span>
+                  <span style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", lineHeight: 1, display: "block", marginTop: 4 }}>{formatCLP(totalPrice)}</span>
+                </div>
+              </div>
+              
+              <button
+                onClick={(e) => { e.stopPropagation(); handleCheckout(); }}
+                disabled={isCheckingOut}
+                style={{
+                  padding: "12px 20px",
+                  borderRadius: 12,
+                  color: "#fff",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 8,
+                  border: "none",
+                  cursor: "pointer",
+                  background: "linear-gradient(135deg, #1890FF, #0050b3)",
+                  boxShadow: "0 8px 20px rgba(24,144,255,0.3)",
+                  textTransform: "uppercase",
+                  letterSpacing: 1,
+                  flexShrink: 0,
+                  opacity: isCheckingOut ? 0.6 : 1,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {isCheckingOut ? <Loader2 style={{ width: 16, height: 16 }} className="animate-spin" /> : 'Pagar'}
+              </button>
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+    </>
   );
 }
