@@ -253,6 +253,12 @@ export default function PagoClient() {
   };
   const sortedCourses = useMemo(() => {
     return [...allCourses].sort((a, b) => {
+      // Priorizar el curso seleccionado en la URL
+      if (initialSlug) {
+        if (a.slug === initialSlug && b.slug !== initialSlug) return -1;
+        if (b.slug === initialSlug && a.slug !== initialSlug) return 1;
+      }
+
       const getHasBaseSchedule = (course: Course) => {
         if (analisisDeDatosSlugs.includes(course.slug) || course.slug === "analisis-de-datos") {
           const adSchedules = schedules.filter(s => analisisDeDatosSlugs.includes(s.course_slug));
@@ -268,10 +274,10 @@ export default function PagoClient() {
       if (!aHas && bHas) return 1;
       return 0;
     });
-  }, [schedules]);
+  }, [schedules, initialSlug]);
 
   return (
-    <section className="relative -mt-20 lg:-mt-24 pt-28 lg:pt-36 pb-20 lg:pb-32 min-h-screen" style={{ background: "linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 60%)" }}>
+    <section className="relative -mt-20 lg:-mt-24 pt-28 lg:pt-36 pb-32 min-h-screen" style={{ background: "linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 60%)" }}>
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-400/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-400/5 rounded-full blur-[100px] pointer-events-none" />
 
@@ -669,6 +675,32 @@ export default function PagoClient() {
         </div>
 
       </div>
+
+      {/* Mobile Sticky Checkout Bar */}
+      <AnimatePresence>
+        {mode === "individual" && cartItems.length > 0 && (
+          <motion.div
+            initial={{ y: 100 }}
+            animate={{ y: 0 }}
+            exit={{ y: 100 }}
+            className="lg:hidden fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 px-5 py-4 z-50 flex items-center justify-between shadow-[0_-10px_20px_rgba(0,0,0,0.05)] pb-6"
+          >
+            <div>
+              <span className="text-[10px] text-gray-400 font-bold tracking-widest uppercase block mb-1">Total ({cartItemCount} items)</span>
+              <span className="text-2xl font-black text-[#1890FF] leading-none">{formatCLP(totalPrice)}</span>
+            </div>
+            <button
+              onClick={handleCheckout}
+              disabled={isCheckingOut}
+              className="py-3.5 px-6 rounded-xl text-white font-bold text-sm flex justify-center items-center gap-2 transition-all disabled:opacity-60 border-none cursor-pointer shadow-lg shadow-blue-500/20"
+              style={{ background: "linear-gradient(135deg, #1890FF, #0050b3)" }}
+            >
+              {isCheckingOut ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Pagar Ahora'}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
     </section>
   );
 }
