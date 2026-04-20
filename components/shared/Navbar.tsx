@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence, useMotionValueEvent, useScroll } from "framer-motion";
-import { Menu, X, ChevronDown, LogIn, UserPlus, ArrowRight, Clock, Users, Sparkles, BookOpen, LogOut, LayoutDashboard, UserCircle, Settings, LifeBuoy } from "lucide-react";
+import { Menu, X, ChevronDown, LogIn, UserPlus, ArrowRight, Clock, Users, Sparkles, BookOpen, LogOut, LayoutDashboard, UserCircle, Settings, LifeBuoy, ShieldAlert } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import React from "react";
 import { courses } from "@/lib/data/courses";
@@ -14,6 +14,7 @@ import AuthModal from "./AuthModal";
 import SupportModal from "./SupportModal";
 import NewsletterSubscribeModal from "./NewsletterSubscribeModal";
 import { getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
+import { isCurrentUserAdmin } from "@/lib/supabase/comunidad";
 
 const LOGO_URL = "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974";
 
@@ -46,6 +47,7 @@ export default function Navbar() {
   
   // Auth state
   const [user, setUser] = useState<any>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   
   const megaTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -81,10 +83,14 @@ export default function Navbar() {
   });
 
   useEffect(() => {
-    // Get initial session
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
+      if (session?.user) {
+        isCurrentUserAdmin().then(admin => setIsAdmin(admin)).catch(() => {});
+      } else {
+        setIsAdmin(false);
+      }
       setLoading(false);
     };
     
@@ -93,6 +99,11 @@ export default function Navbar() {
     // Listen for changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (session?.user) {
+        isCurrentUserAdmin().then(admin => setIsAdmin(admin)).catch(() => {});
+      } else {
+        setIsAdmin(false);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -361,6 +372,11 @@ export default function Navbar() {
                       <Link href="/comunidad/perfil" className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-slate-600 hover:bg-slate-50 hover:text-[#1890FF] no-underline transition-colors">
                         <Settings size={16} /> Configuración
                       </Link>
+                      {isAdmin && (
+                        <Link href="/comunidad/admin" className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-amber-600 hover:bg-amber-50 no-underline transition-colors font-semibold">
+                          <ShieldAlert size={16} /> Panel Admin
+                        </Link>
+                      )}
                       <button 
                         onClick={() => { setIsUserMenuOpen(false); setIsSupportModalOpen(true); }}
                         className="w-full flex items-center gap-3 px-4 py-2.5 text-[14px] text-slate-600 hover:bg-slate-50 hover:text-[#1890FF] transition-all border-none cursor-pointer text-left"
@@ -481,6 +497,12 @@ export default function Navbar() {
                             <UserCircle size={20} />
                             <span className="text-[10px] font-bold uppercase">Perfil</span>
                          </Link>
+                         {isAdmin && (
+                           <Link href="/comunidad/admin" onClick={() => setIsMobileOpen(false)} className="flex flex-col items-center gap-2 p-3 rounded-2xl bg-amber-50 border border-amber-100 text-amber-600 no-underline col-span-2">
+                              <ShieldAlert size={20} />
+                              <span className="text-[10px] font-bold uppercase">Panel Admin</span>
+                           </Link>
+                         )}
                       </div>
                    </div>
                 )}

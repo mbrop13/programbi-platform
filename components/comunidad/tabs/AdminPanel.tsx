@@ -10,8 +10,9 @@ import ArticleBlockEditor from "@/components/shared/ArticleBlockEditor";
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState("overview");
-  const [unreadSupport, setUnreadSupport] = useState(false);
-  const [unreadMembers, setUnreadMembers] = useState(false);
+  const [unreadSupportCount, setUnreadSupportCount] = useState(0);
+  const [unreadMembersCount, setUnreadMembersCount] = useState(0);
+  const [unreadLeadsCount, setUnreadLeadsCount] = useState(0);
 
   useEffect(() => {
     async function checkUnreads() {
@@ -25,15 +26,21 @@ export default function AdminPanel() {
         const supportLast = views?.support_last_viewed_at || '1970-01-01T00:00:00.000Z';
         const membersLast = views?.members_last_viewed_at || '1970-01-01T00:00:00.000Z';
 
-        // Check if there are tickets newer than supportLast
-        const { count: supportCount } = await supabase.from("support_tickets").select("*", { count: 'exact', head: true }).gt("created_at", supportLast);
-        if (supportCount && supportCount > 0) setUnreadSupport(true);
-        else setUnreadSupport(false);
+        const leadsLast = views?.leads_last_viewed_at || '1970-01-01T00:00:00.000Z';
 
-        // Check if there are profiles newer than membersLast
-        const { count: membersCount } = await supabase.from("profiles").select("*", { count: 'exact', head: true }).gt("created_at", membersLast);
-        if (membersCount && membersCount > 0) setUnreadMembers(true);
-        else setUnreadMembers(false);
+        const [
+          { count: supportCount },
+          { count: membersCount },
+          { count: leadsCount }
+        ] = await Promise.all([
+          supabase.from("support_tickets").select("*", { count: 'exact', head: true }).gt("created_at", supportLast),
+          supabase.from("profiles").select("*", { count: 'exact', head: true }).gt("created_at", membersLast),
+          supabase.from("course_leads").select("*", { count: 'exact', head: true }).gt("created_at", leadsLast)
+        ]);
+
+        setUnreadSupportCount(supportCount || 0);
+        setUnreadMembersCount(membersCount || 0);
+        setUnreadLeadsCount(leadsCount || 0);
 
       } catch (e) {
         console.error(e);
@@ -47,9 +54,9 @@ export default function AdminPanel() {
 
   const sidebarItems = [
     { id: "overview", label: "Estadísticas", icon: BarChart3 },
-    { id: "support", label: "Soporte", icon: MessageSquare, hasUnread: unreadSupport },
-    { id: "members", label: "Miembros", icon: Users, hasUnread: unreadMembers },
-    { id: "leads", label: "Contactos", icon: Mail },
+    { id: "support", label: "Soporte", icon: MessageSquare, badgeCount: unreadSupportCount },
+    { id: "members", label: "Miembros", icon: Users, badgeCount: unreadMembersCount },
+    { id: "leads", label: "Contactos", icon: Mail, badgeCount: unreadLeadsCount },
     { id: "prices", label: "Precios y Promos", icon: DollarSign },
     { id: "cart", label: "Carritos", icon: ShoppingCart },
     { id: "courses", label: "Cursos", icon: GraduationCap },
@@ -90,9 +97,11 @@ export default function AdminPanel() {
                  `}
                >
                   <Icon className="w-4 h-4" /> {item.label}
-                  {item.hasUnread && (
-                    <span className="absolute top-3 right-3 w-2 h-2 rounded-full bg-red-500 shadow-sm animate-pulse" />
-                  )}
+                  {item.badgeCount && item.badgeCount > 0 ? (
+                    <span className="absolute top-1/2 -translate-y-1/2 right-3 min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-black shadow-sm" style={{ paddingBottom: '0.5px' }}>
+                      {item.badgeCount > 99 ? '99+' : item.badgeCount}
+                    </span>
+                  ) : null}
                </button>
              )
            })}
