@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory } from "@/lib/supabase/comunidad-ai";
 import { Calendar } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -1576,6 +1576,7 @@ function AdminPopups() {
   const [showCreate, setShowCreate] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editorMode, setEditorMode] = useState<"visual" | "code">("visual");
+  const [editingPopupId, setEditingPopupId] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     title: "",
@@ -1615,26 +1616,58 @@ function AdminPopups() {
       custom_html: "",
     });
     setEditorMode("visual");
+    setEditingPopupId(null);
   };
 
-  const handleCreate = async () => {
+  const handleSave = async () => {
     if (!form.title.trim()) return;
     setSaving(true);
     try {
-      await adminCreatePopup({
+      const payload = {
         ...form,
         starts_at: form.starts_at || null,
         ends_at: form.ends_at || null,
         badge_text: form.badge_text || null,
         image_url: form.image_url || null,
         custom_html: form.custom_html || null,
-      });
+      };
+      
+      if (editingPopupId) {
+        await adminUpdatePopup(editingPopupId, payload);
+      } else {
+        await adminCreatePopup(payload);
+      }
+      
       const data = await adminGetPopups();
       setPopups(data);
       resetForm();
       setShowCreate(false);
     } catch (err) { console.error(err); }
     finally { setSaving(false); }
+  };
+
+  const handleEdit = (popup: any) => {
+    setForm({
+      title: popup.title || "",
+      description: popup.description || "",
+      cta_text: popup.cta_text || "Ver más",
+      cta_url: popup.cta_url || "/",
+      badge_text: popup.badge_text || "",
+      popup_type: popup.popup_type || "promo",
+      accent_color: popup.accent_color || "#1890FF",
+      image_url: popup.image_url || "",
+      starts_at: popup.starts_at ? new Date(popup.starts_at).toISOString().slice(0, 16) : "",
+      ends_at: popup.ends_at ? new Date(popup.ends_at).toISOString().slice(0, 16) : "",
+      show_to: popup.show_to || "all",
+      display_delay_seconds: popup.display_delay_seconds || 0,
+      dismissible: popup.dismissible ?? true,
+      show_once_per_session: popup.show_once_per_session ?? true,
+      custom_html: popup.custom_html || "",
+    });
+    setEditingPopupId(popup.id);
+    setEditorMode(popup.custom_html ? "code" : "visual");
+    setShowCreate(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleToggle = async (id: string) => {
@@ -1685,7 +1718,7 @@ function AdminPopups() {
 
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                    <Megaphone className="w-4 h-4 text-brand-blue" /> Nuevo Pop-up
+                    <Megaphone className="w-4 h-4 text-brand-blue" /> {editingPopupId ? 'Editar Pop-up' : 'Nuevo Pop-up'}
                   </h3>
                   <div className="flex items-center bg-gray-100 rounded-xl p-1">
                     <button
@@ -1961,10 +1994,10 @@ function AdminPopups() {
                <div className="flex justify-end gap-3 mt-6 pt-5 border-t border-gray-200">
                  <button onClick={() => { resetForm(); setShowCreate(false); }}
                    className="px-5 py-2 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors cursor-pointer">Cancelar</button>
-                 <button onClick={handleCreate} disabled={saving || !form.title.trim()}
+                 <button onClick={handleSave} disabled={saving || !form.title.trim()}
                    className="px-6 py-2.5 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors disabled:opacity-40 flex items-center gap-2 cursor-pointer shadow-sm">
                    {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                   {saving ? "Creando..." : "Crear Pop-up"}
+                   {saving ? "Guardando..." : (editingPopupId ? "Guardar Cambios" : "Crear Pop-up")}
                  </button>
                </div>
              </div>
@@ -2031,8 +2064,12 @@ function AdminPopups() {
                        }`}>
                        {popup.is_active ? 'Desactivar' : 'Activar'}
                      </button>
+                     <button onClick={() => handleEdit(popup)}
+                       className="py-1.5 px-3 rounded-xl text-[11px] font-bold bg-blue-50 text-blue-500 hover:bg-blue-100 transition-colors cursor-pointer" title="Editar">
+                       <Edit3 className="w-3.5 h-3.5" />
+                     </button>
                      <button onClick={() => handleDelete(popup.id)}
-                       className="py-1.5 px-3 rounded-xl text-[11px] font-bold bg-red-50 text-red-500 hover:bg-red-100 transition-colors cursor-pointer">
+                       className="py-1.5 px-3 rounded-xl text-[11px] font-bold bg-red-50 text-red-500 hover:bg-red-100 transition-colors cursor-pointer" title="Eliminar">
                        <Trash2 className="w-3.5 h-3.5" />
                      </button>
                    </div>
