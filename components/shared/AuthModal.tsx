@@ -385,7 +385,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
                         </div>
                       </div>
                       <div>
-                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">WhatsApp (Opcional)</label>
+                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">WhatsApp (Recomendado)</label>
                          <div className="flex items-stretch">
                            {/* Custom Flag/Prefix Selector */}
                            <div className="relative flex items-stretch">

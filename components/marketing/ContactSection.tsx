@@ -34,7 +34,7 @@ export default function ContactSection() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim()) return;
+    if (!name.trim() || !email.trim() || !whatsapp.trim()) return;
 
     setIsSubmitting(true);
     setErrorMsg("");
@@ -46,7 +46,7 @@ export default function ContactSection() {
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
-          whatsapp: whatsapp.trim() || null,
+          whatsapp: whatsapp.trim(),
           message: message.trim() || null,
           selectedCourses: selectedChips,
           leadType: "contact",
@@ -170,9 +170,10 @@ export default function ContactSection() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">WhatsApp (Opcional)</label>
+                        <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">WhatsApp *</label>
                         <input
                           type="tel"
+                          required
                           value={whatsapp}
                           onChange={(e) => setWhatsapp(e.target.value)}
                           placeholder="+56 9..."

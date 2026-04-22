@@ -746,8 +746,8 @@ function CourseContactForm({ course }: { course: Course }) {
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Teléfono / WhatsApp (Opcional)</label>
-                      <input type="tel" name="whatsapp" placeholder="+56 9..."
+                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Teléfono / WhatsApp *</label>
+                      <input type="tel" name="whatsapp" required placeholder="+56 9..."
                         className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
                     </div>
 

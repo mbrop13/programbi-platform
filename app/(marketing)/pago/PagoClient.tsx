@@ -13,6 +13,7 @@ import {
 import { courses as allCourses, Course } from "@/lib/data/courses";
 import { type CourseSchedule, analisisDeDatosSlugs, formatScheduleDate, getNearestSchedule } from "@/lib/data/course-schedules";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
+import { useGeoPricing } from "@/hooks/useGeoPricing";
 
 function formatCLP(price: number) {
   return new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(price);
@@ -34,6 +35,8 @@ export default function PagoClient() {
   const initialLevel = searchParams.get("nivel") || "";
   const initialName = searchParams.get("nombre") || "";
   const initialEmail = searchParams.get("email") || "";
+
+  const { isInternational, formatGeoPrice } = useGeoPricing();
 
   const [mode, setMode] = useState<Mode>("individual");
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
@@ -406,20 +409,20 @@ export default function PagoClient() {
                                       // bundle pricing logic overrides specific promo for base visual, but lets mix them logically
                                       return (
                                         <>
-                                           <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">$747.000</span>
-                                           <span className="text-2xl font-black text-[#0F172A]">{formatCLP(pricing.finalPrice)}</span>
+                                           <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">{formatGeoPrice(747000)}</span>
+                                           <span className="text-2xl font-black text-[#0F172A]">{formatGeoPrice(pricing.finalPrice)}</span>
                                         </>
                                       );
                                     } else if (pricing.hasDiscount) {
                                       return (
                                         <>
                                            <span className="text-xs text-brand-blue font-bold px-2 py-0.5 rounded-full bg-blue-50 mb-1 tracking-widest uppercase">Promoción</span>
-                                           <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">{formatCLP(pricing.originalPrice)}</span>
-                                           <span className="text-2xl font-black text-[#0F172A]">{formatCLP(pricing.finalPrice)}</span>
+                                           <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">{formatGeoPrice(pricing.originalPrice)}</span>
+                                           <span className="text-2xl font-black text-[#0F172A]">{formatGeoPrice(pricing.finalPrice)}</span>
                                         </>
                                       );
                                     } else {
-                                      return <span className="text-2xl font-black text-[#0F172A]">{formatCLP(pricing.finalPrice)}</span>;
+                                      return <span className="text-2xl font-black text-[#0F172A]">{formatGeoPrice(pricing.finalPrice)}</span>;
                                     }
                                  })()}
                               </div>
@@ -514,7 +517,7 @@ export default function PagoClient() {
                                           <span className="text-[11px] text-gray-500 mt-0.5 block">{item.levelName}</span>
                                        </div>
                                        <div className="flex flex-col items-end shrink-0">
-                                          <span className="font-black text-[#0F172A] text-sm">{formatCLP(item.price * item.quantity)}</span>
+                                          <span className="font-black text-[#0F172A] text-sm">{formatGeoPrice(item.price * item.quantity)}</span>
                                           <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} className="text-[10px] text-red-400 hover:text-red-600 mt-1 uppercase font-bold tracking-widest bg-transparent border-none cursor-pointer">Eliminar</button>
                                        </div>
                                     </div>
@@ -533,8 +536,16 @@ export default function PagoClient() {
 
                               <div className="border-t-2 border-dashed border-gray-100 pt-4 mb-6 flex justify-between items-center">
                                  <span className="font-bold text-gray-500">Total a pagar</span>
-                                 <span className="font-black text-2xl text-[#1890FF]">{formatCLP(totalPrice)}</span>
+                                 <span className="font-black text-2xl text-[#1890FF]">{formatGeoPrice(totalPrice)}</span>
                               </div>
+
+                              {isInternational && (
+                                <div className="text-center mb-4 px-2">
+                                  <span className="text-[10px] text-gray-400 font-medium">
+                                    * El cobro se procesará en pesos chilenos ({formatCLP(totalPrice)}). Tu banco aplicará la conversión a tu moneda local. (Tasa ref: $1 USD = $1000 CLP)
+                                  </span>
+                                </div>
+                              )}
 
                               <motion.button
                                 onClick={handleCheckout}
@@ -752,8 +763,8 @@ export default function PagoClient() {
                             <span style={{ fontWeight: 600, fontSize: 14, color: "#0F172A", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.quantity}x {item.title}</span>
                             <span style={{ fontSize: 11, color: "#6b7280", display: "block", marginTop: 4, fontWeight: 500 }}>{item.levelName}</span>
                           </div>
-                          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", flexShrink: 0 }}>
-                            <span style={{ fontWeight: 900, color: "#0F172A", fontSize: 15 }}>{formatCLP(item.price * item.quantity)}</span>
+                          <div className="flex flex-col items-end flex-shrink-0">
+                            <span style={{ fontWeight: 900, color: "#0F172A", fontSize: 15 }}>{formatGeoPrice(item.price * item.quantity)}</span>
                             <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} style={{ fontSize: 10, color: "#ef4444", marginTop: 6, textTransform: "uppercase", fontWeight: 700, letterSpacing: 1, background: "#fef2f2", padding: "2px 8px", borderRadius: 4, border: "none", cursor: "pointer" }}>Eliminar</button>
                           </div>
                         </div>
@@ -792,7 +803,7 @@ export default function PagoClient() {
                   <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 4 }}>
                     Ver Detalles {isMobileCartOpen ? <ChevronDown style={{ width: 14, height: 14 }} /> : <ChevronUp style={{ width: 14, height: 14 }} />}
                   </span>
-                  <span style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", lineHeight: 1, display: "block", marginTop: 4 }}>{formatCLP(totalPrice)}</span>
+                  <span style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", lineHeight: 1, display: "block", marginTop: 4 }}>{formatGeoPrice(totalPrice)}</span>
                 </div>
               </div>
               

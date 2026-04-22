@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Check, Star, Shield, Lock, ArrowRight, Loader2, Sparkles, ChevronRight } from "lucide-react";
 import { communityPlans } from "@/lib/data/community_plans";
 import AuthModal from "@/components/shared/AuthModal";
+import { useGeoPricing } from "@/hooks/useGeoPricing";
 
 interface SubscriptionGateProps {
   onSubscribe?: (planId: string) => void;
@@ -21,6 +22,8 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
   const [promotions, setPromotions] = useState<any[]>([]);
+
+  const { isInternational, formatGeoPrice } = useGeoPricing();
 
   useEffect(() => {
     fetch("/api/promotions")
@@ -238,18 +241,18 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
                 <div className="flex flex-col mb-6 flex-grow-0 pb-6 border-b border-gray-100">
                   {adminDiscountPercent > 0 && (
                      <div className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold mb-1 block w-fit">
-                        ${originalMonthlyPrice.toLocaleString("es-CL")} /mes
+                        {formatGeoPrice(originalMonthlyPrice)} /mes
                      </div>
                   )}
                   <div className="flex items-end gap-1">
                     <span className="text-4xl lg:text-5xl font-black text-slate-900 tracking-tighter">
-                      ${(finalMonthlyPrice).toLocaleString("es-CL")}
+                      {formatGeoPrice(finalMonthlyPrice)}
                     </span>
                     <span className="text-slate-400 font-bold mb-1.5 text-sm">/mes</span>
                   </div>
                   {billingPeriod !== 'mensual' && (
                     <div className="mt-2 text-[11px] font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-lg inline-block self-start">
-                      Facturado ${(totalBilledPrice).toLocaleString('es-CL')} cada {periodName}
+                      Facturado {formatGeoPrice(totalBilledPrice)} cada {periodName}
                     </div>
                   )}
                   {billingPeriod === 'mensual' && (
@@ -327,6 +330,13 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
         <div className="hidden sm:block h-4 w-px bg-slate-300" />
         <span className="text-sm font-medium text-slate-500">Cancela cuando quieras, sin amarras institucionales.</span>
       </div>
+      {isInternational && (
+        <div className="text-center opacity-60 pb-10">
+          <span className="text-[10px] text-slate-500 font-medium">
+            * Los cobros se procesarán en pesos chilenos (CLP). Tu banco aplicará la conversión a tu moneda local. (Tasa ref: $1 USD = $1000 CLP)
+          </span>
+        </div>
+      )}
     </div>
   );
 }
