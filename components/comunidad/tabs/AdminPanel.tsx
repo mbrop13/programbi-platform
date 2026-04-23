@@ -3229,7 +3229,7 @@ function AdminDiplomas() {
 
           {/* Logo ProgramBI */}
           <div className="mb-6 flex flex-col items-center">
-            <img src="/logo.png" alt="ProgramBI" className="h-16 object-contain drop-shadow-md" crossOrigin="anonymous" />
+            <img src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974" alt="ProgramBI" className="h-16 lg:h-20 object-contain drop-shadow-sm" crossOrigin="anonymous" />
           </div>
 
           {/* Título */}
