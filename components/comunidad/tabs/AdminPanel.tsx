@@ -3132,10 +3132,11 @@ function AdminNewsletterCategories() {
     </div>
   );
 }
-// --- DIPLOMAS ---
+
+// ─── DIPLOMAS ───
 function AdminDiplomas() {
-  const [studentName, setStudentName] = useState("Juan P�rez");
-  const [courseName, setCourseName] = useState("An�lisis de Datos con Excel y Power BI");
+  const [studentName, setStudentName] = useState("Juan Pérez");
+  const [courseName, setCourseName] = useState("Análisis de Datos con Excel y Power BI");
   const [issueDate, setIssueDate] = useState(new Date().toLocaleDateString("es-CL"));
   const [instructorName, setInstructorName] = useState("Manuel Brop");
 
@@ -3177,7 +3178,7 @@ function AdminDiplomas() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Fecha de Emisi�n</label>
+              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Fecha de Emisión</label>
               <input type="text" value={issueDate} onChange={e => setIssueDate(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
             </div>
 
@@ -3190,67 +3191,93 @@ function AdminDiplomas() {
           <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
             <h4 className="text-xs font-bold text-amber-800 mb-1 flex items-center gap-1.5"><AlertCircle className="w-3.5 h-3.5" /> Instrucciones</h4>
             <p className="text-[11px] text-amber-700/80 leading-relaxed">
-              Al exportar, configura el dise�o en <strong>Horizontal (Landscape)</strong>, quita los m�rgenes/encabezados, y habilita <strong>Gr�ficos de fondo</strong>.
+              Al exportar, configura el diseño en <strong>Horizontal (Landscape)</strong>, quita los márgenes/encabezados, y habilita <strong>Gráficos de fondo</strong>.
             </p>
           </div>
         </div>
 
         {/* Preview Panel & Print Area */}
         <div className="flex-1 overflow-x-auto pb-6">
-          <div className="min-w-[800px] w-full max-w-[1000px] mx-auto bg-white shadow-xl ring-1 ring-gray-200 relative print-diploma" 
+          <div className="min-w-[800px] w-full max-w-[1000px] mx-auto bg-[#fafafa] shadow-2xl ring-1 ring-gray-200 relative print-diploma" 
                style={{ aspectRatio: '1.414/1', maxHeight: '80vh', position: 'relative' }}>
-             <div className="absolute inset-0 m-8 lg:m-12 border-[12px] border-double border-slate-200 flex flex-col items-center justify-center text-center p-8 lg:p-16 bg-white z-10 before:content-[''] before:absolute before:inset-2 before:border before:border-slate-100 overflow-hidden">
-                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-[100px] -z-10" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-50 rounded-full blur-[100px] -z-10" />
+               
+             {/* Marco Exterior Dorado / Azul */}
+             <div className="absolute inset-4 lg:inset-6 border-[3px] border-[#c5a059] z-10 pointer-events-none" />
+             <div className="absolute inset-[22px] lg:inset-[30px] border-[1px] border-[#c5a059] z-10 pointer-events-none opacity-50" />
+             
+             {/* Fondo de patrón o textura sutil */}
+             <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-30 mix-blend-multiply" />
 
-                <div className="mb-6 lg:mb-10 flex flex-col items-center">
-                  <div className="flex items-center gap-3 text-3xl lg:text-4xl font-display font-light text-brand-blue tracking-tight mb-2">
-                    <div className="w-10 h-10 lg:w-14 lg:h-14 bg-gradient-to-br from-brand-blue to-indigo-600 rounded-2xl flex items-center justify-center text-white font-black shadow-md">
-                      P
-                    </div>
-                    <span style={{ fontFamily: 'var(--font-display)' }}>ProgramBI</span>
-                  </div>
-                  <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent mt-4" />
+             {/* Contenido Central */}
+             <div className="absolute inset-[32px] lg:inset-[42px] bg-white flex flex-col items-center justify-center text-center p-8 lg:p-12 z-20 shadow-inner overflow-hidden">
+                
+                {/* Luces sutiles en las esquinas del contenido */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-50 rounded-full blur-[100px] -z-10 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-50 rounded-full blur-[100px] -z-10 pointer-events-none" />
+
+                {/* Logo ProgramBI */}
+                <div className="mb-6 flex flex-col items-center">
+                  <img src="/logo.png" alt="ProgramBI" className="h-14 lg:h-16 object-contain drop-shadow-md" />
                 </div>
 
-                <h1 className="text-3xl lg:text-5xl font-black text-slate-800 tracking-widest uppercase mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-                  Certificado de Finalizaci�n
+                {/* Título */}
+                <h1 className="text-3xl lg:text-[42px] font-black text-[#0f2c59] tracking-[0.15em] uppercase mb-6" style={{ fontFamily: 'var(--font-display)', textShadow: '1px 1px 0px rgba(0,0,0,0.05)' }}>
+                  Certificado de Finalización
                 </h1>
                 
-                <p className="text-gray-500 uppercase tracking-[0.2em] text-[10px] lg:text-xs mb-6 lg:mb-8 font-bold">
-                  El presente diploma se otorga con honores a:
+                {/* Otorgado a */}
+                <p className="text-[#c5a059] uppercase tracking-[0.25em] text-[10px] lg:text-xs mb-4 lg:mb-6 font-bold">
+                  Este diploma es conferido con honores a:
                 </p>
 
-                <div className="w-full max-w-2xl border-b border-gray-300 mb-6 lg:mb-8 flex justify-center pb-2 relative">
-                   <span className="font-dancing text-6xl lg:text-7xl text-brand-blue font-bold px-8 leading-none absolute -bottom-2 lg:-bottom-3 whitespace-nowrap" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.05)' }}>
+                {/* Nombre (Dancing Script) */}
+                <div className="w-full max-w-3xl mb-8 flex justify-center relative">
+                   <span className="font-dancing text-[70px] lg:text-[90px] text-[#0f2c59] font-bold px-12 leading-none whitespace-nowrap" style={{ textShadow: '2px 3px 6px rgba(0,0,0,0.08)' }}>
                      {studentName || "Nombre del Alumno"}
                    </span>
+                   {/* Línea decorativa */}
+                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-gradient-to-r from-transparent via-[#c5a059] to-transparent opacity-70" />
                 </div>
 
-                <p className="text-gray-500 uppercase tracking-[0.2em] text-[9px] lg:text-[10px] mb-4 font-bold mt-12 lg:mt-16">
-                  Por haber completado con �xito y demostrado dominio en:
+                {/* Descripción de éxito */}
+                <p className="text-gray-500 uppercase tracking-[0.15em] text-[9px] lg:text-[11px] mb-3 lg:mb-4 font-semibold max-w-2xl leading-relaxed mt-4">
+                  Por haber completado exitosamente y demostrado un dominio absoluto en los contenidos de:
                 </p>
 
-                <h2 className="text-2xl lg:text-3xl font-black text-slate-700 max-w-3xl leading-snug mb-12 lg:mb-16">
+                {/* Nombre del curso */}
+                <h2 className="text-[22px] lg:text-[28px] font-black text-slate-800 max-w-4xl leading-tight mb-10 lg:mb-14 px-8" style={{ fontFamily: 'var(--font-display)' }}>
                   {courseName || "Nombre del Curso"}
                 </h2>
 
-                <div className="w-full flex justify-between items-end px-4 lg:px-12 mt-auto relative z-20">
+                {/* Pie de página: Firmas y Sello */}
+                <div className="w-full flex justify-between items-end px-8 lg:px-16 mt-auto">
+                   
+                   {/* Fecha */}
                    <div className="flex flex-col items-center">
-                      <span className="text-sm lg:text-base font-bold text-gray-800 mb-2 border-b border-gray-300 w-40 pb-2">{issueDate}</span>
-                      <span className="text-[10px] lg:text-xs font-bold text-gray-400 uppercase tracking-widest">Fecha de Emisi�n</span>
+                      <span className="text-sm lg:text-base font-bold text-gray-800 mb-2 border-b border-gray-400 w-40 pb-2">{issueDate}</span>
+                      <span className="text-[9px] lg:text-[10px] font-bold text-gray-400 uppercase tracking-widest">Fecha de Emisión</span>
                    </div>
 
-                   <div className="w-16 h-16 lg:w-24 lg:h-24 bg-amber-50 rounded-full flex items-center justify-center relative shadow-sm">
-                      <div className="absolute inset-1 border border-amber-200 rounded-full border-dashed" />
-                      <Award className="w-8 h-8 lg:w-10 lg:h-10 text-amber-500" />
+                   {/* Sello o Medalla */}
+                   <div className="w-20 h-20 lg:w-28 lg:h-28 relative flex items-center justify-center group">
+                      {/* Sello dentado / Estrella decorativa (simulada con CSS) */}
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#dfc27d] to-[#b38836] rotate-45 rounded-xl shadow-lg" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#dfc27d] to-[#b38836] rotate-[15deg] rounded-xl shadow-lg" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#dfc27d] to-[#b38836] rotate-[75deg] rounded-xl shadow-lg" />
+                      {/* Círculo interno */}
+                      <div className="absolute inset-1.5 lg:inset-2 bg-[#fcf8f2] rounded-full border border-[#c5a059] flex items-center justify-center flex-col shadow-inner z-10">
+                        <Award className="w-6 h-6 lg:w-8 lg:h-8 text-[#b38836] mb-0.5" />
+                        <span className="text-[6px] lg:text-[8px] font-bold text-[#b38836] uppercase tracking-wider">Acreditado</span>
+                      </div>
                    </div>
 
+                   {/* Firma */}
                    <div className="flex flex-col items-center">
-                      <span className="font-dancing text-3xl lg:text-4xl text-gray-700 mb-2 border-b border-gray-300 w-48 pb-1">{instructorName}</span>
-                      <span className="text-[10px] lg:text-xs font-bold text-gray-400 uppercase tracking-widest">Instructor Senior</span>
+                      <span className="font-dancing text-4xl lg:text-5xl text-gray-800 mb-2 border-b border-gray-400 w-48 pb-1 pt-4">{instructorName}</span>
+                      <span className="text-[9px] lg:text-[10px] font-bold text-gray-400 uppercase tracking-widest">Instructor Senior</span>
                    </div>
                 </div>
+
              </div>
           </div>
         </div>
