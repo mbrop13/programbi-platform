@@ -63,6 +63,7 @@ export default function PagoClient() {
   // Enterprise form fields
   const [entName, setEntName] = useState(initialName);
   const [entEmail, setEntEmail] = useState(initialEmail);
+  const [entPhone, setEntPhone] = useState("");
   const [entCompany, setEntCompany] = useState("");
   const [entPosition, setEntPosition] = useState("");
   const [entEmployees, setEntEmployees] = useState("");
@@ -231,7 +232,7 @@ export default function PagoClient() {
 
   const handleEnterpriseSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!entName || !entEmail || !entCompany) return;
+    if (!entName || !entEmail || !entCompany || !entPhone) return;
     setIsSubmittingEnterprise(true);
     try {
       await fetch("/api/leads/create", {
@@ -240,6 +241,7 @@ export default function PagoClient() {
         body: JSON.stringify({
           name: entName,
           email: entEmail,
+          whatsapp: entPhone,
           company: entCompany,
           position: entPosition,
           employeeCount: entEmployees,
@@ -602,6 +604,11 @@ export default function PagoClient() {
                             <div className="space-y-1.5">
                               <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email *</label>
                               <input type="email" required value={entEmail} onChange={e => setEntEmail(e.target.value)}
+                                className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" />
+                            </div>
+                            <div className="space-y-1.5">
+                              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Teléfono / WhatsApp *</label>
+                              <input type="tel" required value={entPhone} onChange={e => setEntPhone(e.target.value)} placeholder="+56 9..."
                                 className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" />
                             </div>
                             <div className="space-y-1.5">
