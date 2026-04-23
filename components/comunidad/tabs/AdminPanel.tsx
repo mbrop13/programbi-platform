@@ -3137,9 +3137,9 @@ function AdminNewsletterCategories() {
 // ─── DIPLOMAS ───
 function AdminDiplomas() {
   const [studentName, setStudentName] = useState("Juan Pérez");
-  const [courseName, setCourseName] = useState("Análisis de Datos con Excel y Power BI");
+  const [courseName, setCourseName] = useState("Power BI - Basico");
   const [issueDate, setIssueDate] = useState(new Date().toLocaleDateString("es-CL"));
-  const [instructorName, setInstructorName] = useState("Manuel Brop");
+  const [instructorName, setInstructorName] = useState("Manuel Oliva");
   
   const [showPreview, setShowPreview] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
