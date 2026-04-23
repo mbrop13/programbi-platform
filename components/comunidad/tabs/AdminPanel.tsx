@@ -3133,29 +3133,179 @@ function AdminNewsletterCategories() {
   );
 }
 
+
 // ─── DIPLOMAS ───
 function AdminDiplomas() {
   const [studentName, setStudentName] = useState("Juan Pérez");
   const [courseName, setCourseName] = useState("Análisis de Datos con Excel y Power BI");
   const [issueDate, setIssueDate] = useState(new Date().toLocaleDateString("es-CL"));
   const [instructorName, setInstructorName] = useState("Manuel Brop");
+  
+  const [showPreview, setShowPreview] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  
+  const containerRef = require('react').useRef(null);
+  const diplomaRef = require('react').useRef(null);
+  const modalDiplomaRef = require('react').useRef(null);
+  const [scale, setScale] = useState(1);
 
-  const handlePrint = () => {
-    window.print();
+  require('react').useEffect(() => {
+    const updateScale = () => {
+      if (containerRef.current) {
+        const width = containerRef.current.offsetWidth;
+        // The diploma fixed width is 1123px (A4 size at 96dpi approx)
+        setScale(Math.min(1, width / 1123));
+      }
+    };
+    updateScale();
+    window.addEventListener('resize', updateScale);
+    return () => window.removeEventListener('resize', updateScale);
+  }, []);
+
+  const generatePDF = async () => {
+    if (!modalDiplomaRef.current) return;
+    setIsExporting(true);
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const { jsPDF } = await import('jspdf');
+
+      // Ensure transform is completely removed for capture
+      const originalTransform = modalDiplomaRef.current.style.transform;
+      modalDiplomaRef.current.style.transform = 'none';
+
+      const canvas = await html2canvas(modalDiplomaRef.current, {
+        scale: 2, // High resolution
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+      
+      modalDiplomaRef.current.style.transform = originalTransform;
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`Diploma_${studentName.replace(/\s+/g, '_')}.pdf`);
+    } catch (error) {
+      console.error(error);
+      alert("Error al generar el PDF.");
+    } finally {
+      setIsExporting(false);
+      setShowPreview(false);
+    }
   };
 
+  const DiplomaContent = ({ dRef, dynamicScale = 1 }: { dRef: any, dynamicScale?: number }) => (
+    <div 
+      ref={dRef}
+      className="bg-[#fafafa] shadow-2xl relative shrink-0 overflow-hidden" 
+      style={{ 
+        width: '1123px', 
+        height: '794px', 
+        transform: `scale(${dynamicScale})`, 
+        transformOrigin: 'top left' 
+      }}
+    >
+       {/* Marco Exterior Dorado / Azul */}
+       <div className="absolute inset-6 border-[3px] border-[#c5a059] z-10 pointer-events-none" />
+       <div className="absolute inset-[30px] border-[1px] border-[#c5a059] z-10 pointer-events-none opacity-50" />
+       
+       {/* Fondo de patrón o textura sutil */}
+       <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-30 mix-blend-multiply" />
+
+       {/* Contenido Central */}
+       <div className="absolute inset-[42px] bg-white flex flex-col items-center justify-center text-center p-12 z-20 shadow-inner overflow-hidden">
+          
+          {/* Luces sutiles en las esquinas del contenido */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-50 rounded-full blur-[100px] -z-10 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-50 rounded-full blur-[100px] -z-10 pointer-events-none" />
+
+          {/* Logo ProgramBI */}
+          <div className="mb-6 flex flex-col items-center">
+            <img src="/logo.png" alt="ProgramBI" className="h-16 object-contain drop-shadow-md" crossOrigin="anonymous" />
+          </div>
+
+          {/* Título */}
+          <h1 className="text-[42px] font-black text-[#0f2c59] tracking-[0.15em] uppercase mb-6" style={{ fontFamily: 'var(--font-display)', textShadow: '1px 1px 0px rgba(0,0,0,0.05)' }}>
+            Certificado de Finalización
+          </h1>
+          
+          {/* Otorgado a */}
+          <p className="text-[#c5a059] uppercase tracking-[0.25em] text-xs mb-6 font-bold">
+            Este diploma es conferido con honores a:
+          </p>
+
+          {/* Nombre (Dancing Script) */}
+          <div className="w-full max-w-3xl mb-8 flex justify-center relative">
+             <span className="font-dancing text-[90px] text-[#0f2c59] font-bold px-12 leading-none whitespace-nowrap" style={{ textShadow: '2px 3px 6px rgba(0,0,0,0.08)' }}>
+               {studentName || "Nombre del Alumno"}
+             </span>
+             {/* Línea decorativa */}
+             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-gradient-to-r from-transparent via-[#c5a059] to-transparent opacity-70" />
+          </div>
+
+          {/* Descripción de éxito */}
+          <p className="text-gray-500 uppercase tracking-[0.15em] text-[11px] mb-4 font-semibold max-w-2xl leading-relaxed mt-4">
+            Por haber completado exitosamente y demostrado un dominio absoluto en los contenidos de:
+          </p>
+
+          {/* Nombre del curso */}
+          <h2 className="text-[28px] font-black text-slate-800 max-w-4xl leading-tight mb-14 px-8" style={{ fontFamily: 'var(--font-display)' }}>
+            {courseName || "Nombre del Curso"}
+          </h2>
+
+          {/* Pie de página: Firmas y Sello */}
+          <div className="w-full flex justify-between items-end px-16 mt-auto">
+             
+             {/* Fecha */}
+             <div className="flex flex-col items-center">
+                <span className="text-base font-bold text-gray-800 mb-2 border-b border-gray-400 w-40 pb-2">{issueDate}</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Fecha de Emisión</span>
+             </div>
+
+             {/* Sello o Medalla */}
+             <div className="w-28 h-28 relative flex items-center justify-center group">
+                {/* Sello dentado / Estrella decorativa (simulada con CSS) */}
+                <div className="absolute inset-0 bg-gradient-to-br from-[#dfc27d] to-[#b38836] rotate-45 rounded-xl shadow-lg" />
+                <div className="absolute inset-0 bg-gradient-to-br from-[#dfc27d] to-[#b38836] rotate-[15deg] rounded-xl shadow-lg" />
+                <div className="absolute inset-0 bg-gradient-to-br from-[#dfc27d] to-[#b38836] rotate-[75deg] rounded-xl shadow-lg" />
+                {/* Círculo interno */}
+                <div className="absolute inset-2 bg-[#fcf8f2] rounded-full border border-[#c5a059] flex items-center justify-center flex-col shadow-inner z-10">
+                  <Award className="w-8 h-8 text-[#b38836] mb-0.5" />
+                  <span className="text-[8px] font-bold text-[#b38836] uppercase tracking-wider">Acreditado</span>
+                </div>
+             </div>
+
+             {/* Firma */}
+             <div className="flex flex-col items-center">
+                <span className="font-dancing text-5xl text-gray-800 mb-2 border-b border-gray-400 w-48 pb-1 pt-4">{instructorName}</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Instructor Senior</span>
+             </div>
+          </div>
+
+       </div>
+    </div>
+  );
+
   return (
-    <div className="flex flex-col h-full bg-gray-50/50">
+    <div className="flex flex-col h-full bg-gray-50/50 relative">
       <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
         <div>
-          <h2 className="text-xl font-black text-gray-900">Generador de Diplomas</h2>
-          <p className="text-sm text-gray-500">Crea certificados personalizados listos para imprimir o guardar como PDF.</p>
+          <h2 className="text-xl font-black text-gray-900">Generador de Diplomas PDF</h2>
+          <p className="text-sm text-gray-500">Crea certificados en PDF perfectos, de exactamente 1 página.</p>
         </div>
         <button 
-          onClick={handlePrint}
+          onClick={() => setShowPreview(true)}
           className="bg-brand-blue hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors shadow-sm"
         >
-          <Download className="w-4 h-4" /> Exportar PDF / Imprimir
+          <Eye className="w-4 h-4" /> Previsualizar PDF
         </button>
       </div>
 
@@ -3187,101 +3337,53 @@ function AdminDiplomas() {
               <input type="text" value={instructorName} onChange={e => setInstructorName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
             </div>
           </div>
-          
-          <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
-            <h4 className="text-xs font-bold text-amber-800 mb-1 flex items-center gap-1.5"><AlertCircle className="w-3.5 h-3.5" /> Instrucciones</h4>
-            <p className="text-[11px] text-amber-700/80 leading-relaxed">
-              Al exportar, configura el diseño en <strong>Horizontal (Landscape)</strong>, quita los márgenes/encabezados, y habilita <strong>Gráficos de fondo</strong>.
-            </p>
-          </div>
         </div>
 
-        {/* Preview Panel & Print Area */}
-        <div className="flex-1 overflow-x-auto pb-6">
-          <div className="min-w-[800px] w-full max-w-[1000px] mx-auto bg-[#fafafa] shadow-2xl ring-1 ring-gray-200 relative print-diploma" 
-               style={{ aspectRatio: '1.414/1', maxHeight: '80vh', position: 'relative' }}>
-               
-             {/* Marco Exterior Dorado / Azul */}
-             <div className="absolute inset-4 lg:inset-6 border-[3px] border-[#c5a059] z-10 pointer-events-none" />
-             <div className="absolute inset-[22px] lg:inset-[30px] border-[1px] border-[#c5a059] z-10 pointer-events-none opacity-50" />
-             
-             {/* Fondo de patrón o textura sutil */}
-             <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-30 mix-blend-multiply" />
-
-             {/* Contenido Central */}
-             <div className="absolute inset-[32px] lg:inset-[42px] bg-white flex flex-col items-center justify-center text-center p-8 lg:p-12 z-20 shadow-inner overflow-hidden">
-                
-                {/* Luces sutiles en las esquinas del contenido */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-amber-50 rounded-full blur-[100px] -z-10 pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-50 rounded-full blur-[100px] -z-10 pointer-events-none" />
-
-                {/* Logo ProgramBI */}
-                <div className="mb-6 flex flex-col items-center">
-                  <img src="/logo.png" alt="ProgramBI" className="h-14 lg:h-16 object-contain drop-shadow-md" />
-                </div>
-
-                {/* Título */}
-                <h1 className="text-3xl lg:text-[42px] font-black text-[#0f2c59] tracking-[0.15em] uppercase mb-6" style={{ fontFamily: 'var(--font-display)', textShadow: '1px 1px 0px rgba(0,0,0,0.05)' }}>
-                  Certificado de Finalización
-                </h1>
-                
-                {/* Otorgado a */}
-                <p className="text-[#c5a059] uppercase tracking-[0.25em] text-[10px] lg:text-xs mb-4 lg:mb-6 font-bold">
-                  Este diploma es conferido con honores a:
-                </p>
-
-                {/* Nombre (Dancing Script) */}
-                <div className="w-full max-w-3xl mb-8 flex justify-center relative">
-                   <span className="font-dancing text-[70px] lg:text-[90px] text-[#0f2c59] font-bold px-12 leading-none whitespace-nowrap" style={{ textShadow: '2px 3px 6px rgba(0,0,0,0.08)' }}>
-                     {studentName || "Nombre del Alumno"}
-                   </span>
-                   {/* Línea decorativa */}
-                   <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-gradient-to-r from-transparent via-[#c5a059] to-transparent opacity-70" />
-                </div>
-
-                {/* Descripción de éxito */}
-                <p className="text-gray-500 uppercase tracking-[0.15em] text-[9px] lg:text-[11px] mb-3 lg:mb-4 font-semibold max-w-2xl leading-relaxed mt-4">
-                  Por haber completado exitosamente y demostrado un dominio absoluto en los contenidos de:
-                </p>
-
-                {/* Nombre del curso */}
-                <h2 className="text-[22px] lg:text-[28px] font-black text-slate-800 max-w-4xl leading-tight mb-10 lg:mb-14 px-8" style={{ fontFamily: 'var(--font-display)' }}>
-                  {courseName || "Nombre del Curso"}
-                </h2>
-
-                {/* Pie de página: Firmas y Sello */}
-                <div className="w-full flex justify-between items-end px-8 lg:px-16 mt-auto">
-                   
-                   {/* Fecha */}
-                   <div className="flex flex-col items-center">
-                      <span className="text-sm lg:text-base font-bold text-gray-800 mb-2 border-b border-gray-400 w-40 pb-2">{issueDate}</span>
-                      <span className="text-[9px] lg:text-[10px] font-bold text-gray-400 uppercase tracking-widest">Fecha de Emisión</span>
-                   </div>
-
-                   {/* Sello o Medalla */}
-                   <div className="w-20 h-20 lg:w-28 lg:h-28 relative flex items-center justify-center group">
-                      {/* Sello dentado / Estrella decorativa (simulada con CSS) */}
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#dfc27d] to-[#b38836] rotate-45 rounded-xl shadow-lg" />
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#dfc27d] to-[#b38836] rotate-[15deg] rounded-xl shadow-lg" />
-                      <div className="absolute inset-0 bg-gradient-to-br from-[#dfc27d] to-[#b38836] rotate-[75deg] rounded-xl shadow-lg" />
-                      {/* Círculo interno */}
-                      <div className="absolute inset-1.5 lg:inset-2 bg-[#fcf8f2] rounded-full border border-[#c5a059] flex items-center justify-center flex-col shadow-inner z-10">
-                        <Award className="w-6 h-6 lg:w-8 lg:h-8 text-[#b38836] mb-0.5" />
-                        <span className="text-[6px] lg:text-[8px] font-bold text-[#b38836] uppercase tracking-wider">Acreditado</span>
-                      </div>
-                   </div>
-
-                   {/* Firma */}
-                   <div className="flex flex-col items-center">
-                      <span className="font-dancing text-4xl lg:text-5xl text-gray-800 mb-2 border-b border-gray-400 w-48 pb-1 pt-4">{instructorName}</span>
-                      <span className="text-[9px] lg:text-[10px] font-bold text-gray-400 uppercase tracking-widest">Instructor Senior</span>
-                   </div>
-                </div>
-
-             </div>
+        {/* Scaled Preview Panel */}
+        <div className="flex-1 overflow-hidden" ref={containerRef}>
+          {/* We wrap the diploma in a container that has the exact scaled height to avoid extra empty space */}
+          <div style={{ height: `${794 * scale}px`, width: `${1123 * scale}px` }} className="mx-auto transition-all">
+             <DiplomaContent dRef={diplomaRef} dynamicScale={scale} />
           </div>
         </div>
       </div>
+
+      {/* Fullscreen Preview & Download Modal */}
+      <AnimatePresence>
+        {showPreview && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-gray-900/95 backdrop-blur-sm flex flex-col"
+          >
+            <div className="p-4 flex items-center justify-between bg-gray-900 shadow-xl shrink-0 border-b border-gray-800">
+               <h2 className="text-white font-bold text-lg flex items-center gap-2">
+                 <FileText className="w-5 h-5 text-brand-blue" /> Vista Previa del PDF
+               </h2>
+               <div className="flex items-center gap-3">
+                 <button onClick={() => setShowPreview(false)} className="text-gray-400 hover:text-white px-3 py-2 transition-colors text-sm font-bold">
+                   Cancelar
+                 </button>
+                 <button 
+                   onClick={generatePDF}
+                   disabled={isExporting}
+                   className="bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors shadow-sm"
+                 >
+                   {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} 
+                   {isExporting ? "Generando Alta Calidad..." : "Descargar PDF (1 Hoja Exacta)"}
+                 </button>
+               </div>
+            </div>
+
+            <div className="flex-1 overflow-auto p-4 lg:p-8 flex items-center justify-center">
+               <div className="ring-4 ring-white/10 shadow-2xl rounded-sm">
+                 <DiplomaContent dRef={modalDiplomaRef} dynamicScale={1} />
+               </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
