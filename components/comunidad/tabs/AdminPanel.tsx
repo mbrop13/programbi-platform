@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code } from "lucide-react";
+import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
 import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory } from "@/lib/supabase/comunidad-ai";
@@ -70,6 +70,7 @@ export default function AdminPanel() {
     { id: "plans", label: "Planes", icon: CreditCard },
     { id: "popups", label: "Pop-ups", icon: Megaphone },
     { id: "newsletter", label: "Newsletter", icon: Newspaper },
+    { id: "diplomas", label: "Diplomas", icon: Award },
     { id: "settings", label: "Configuraci√≥n", icon: Settings },
   ];
 
@@ -132,6 +133,7 @@ export default function AdminPanel() {
               { activeTab === "popups" && <AdminPopups /> }
               { activeTab === "prices" && <AdminPrices /> }
               { activeTab === "newsletter" && <AdminNewsletter /> }
+              { activeTab === "diplomas" && <AdminDiplomas /> }
             </motion.div>
         </div>
     </div>
@@ -3126,6 +3128,132 @@ function AdminNewsletterCategories() {
           Las subcategor√≠as sirven para organizar el contenido dentro de una categor√≠a principal.
           Cambia el <strong>orden</strong> para controlar su posici√≥n en la barra. Usa el bot√≥n del ojo para <strong>ocultar/mostrar</strong> categor√≠as sin eliminarlas.
         </p>
+      </div>
+    </div>
+  );
+}
+// --- DIPLOMAS ---
+function AdminDiplomas() {
+  const [studentName, setStudentName] = useState("Juan PÈrez");
+  const [courseName, setCourseName] = useState("An·lisis de Datos con Excel y Power BI");
+  const [issueDate, setIssueDate] = useState(new Date().toLocaleDateString("es-CL"));
+  const [instructorName, setInstructorName] = useState("Manuel Brop");
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  return (
+    <div className="flex flex-col h-full bg-gray-50/50">
+      <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
+        <div>
+          <h2 className="text-xl font-black text-gray-900">Generador de Diplomas</h2>
+          <p className="text-sm text-gray-500">Crea certificados personalizados listos para imprimir o guardar como PDF.</p>
+        </div>
+        <button 
+          onClick={handlePrint}
+          className="bg-brand-blue hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors shadow-sm"
+        >
+          <Download className="w-4 h-4" /> Exportar PDF / Imprimir
+        </button>
+      </div>
+
+      <div className="flex-1 p-6 flex flex-col lg:flex-row gap-8 overflow-y-auto">
+        {/* Form Panel */}
+        <div className="w-full lg:w-80 shrink-0 space-y-4">
+          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+            <h3 className="font-bold text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-3 mb-4">
+              <Edit3 className="w-4 h-4 text-brand-blue" /> Datos del Diploma
+            </h3>
+            
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre del Alumno</label>
+              <input type="text" value={studentName} onChange={e => setStudentName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre del Curso</label>
+              <input type="text" value={courseName} onChange={e => setCourseName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Fecha de EmisiÛn</label>
+              <input type="text" value={issueDate} onChange={e => setIssueDate(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Firma Instructor</label>
+              <input type="text" value={instructorName} onChange={e => setInstructorName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+            </div>
+          </div>
+          
+          <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
+            <h4 className="text-xs font-bold text-amber-800 mb-1 flex items-center gap-1.5"><AlertCircle className="w-3.5 h-3.5" /> Instrucciones</h4>
+            <p className="text-[11px] text-amber-700/80 leading-relaxed">
+              Al exportar, configura el diseÒo en <strong>Horizontal (Landscape)</strong>, quita los m·rgenes/encabezados, y habilita <strong>Gr·ficos de fondo</strong>.
+            </p>
+          </div>
+        </div>
+
+        {/* Preview Panel & Print Area */}
+        <div className="flex-1 overflow-x-auto pb-6">
+          <div className="min-w-[800px] w-full max-w-[1000px] mx-auto bg-white shadow-xl ring-1 ring-gray-200 relative print-diploma" 
+               style={{ aspectRatio: '1.414/1', maxHeight: '80vh', position: 'relative' }}>
+             <div className="absolute inset-0 m-8 lg:m-12 border-[12px] border-double border-slate-200 flex flex-col items-center justify-center text-center p-8 lg:p-16 bg-white z-10 before:content-[''] before:absolute before:inset-2 before:border before:border-slate-100 overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-[100px] -z-10" />
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-amber-50 rounded-full blur-[100px] -z-10" />
+
+                <div className="mb-6 lg:mb-10 flex flex-col items-center">
+                  <div className="flex items-center gap-3 text-3xl lg:text-4xl font-display font-light text-brand-blue tracking-tight mb-2">
+                    <div className="w-10 h-10 lg:w-14 lg:h-14 bg-gradient-to-br from-brand-blue to-indigo-600 rounded-2xl flex items-center justify-center text-white font-black shadow-md">
+                      P
+                    </div>
+                    <span style={{ fontFamily: 'var(--font-display)' }}>ProgramBI</span>
+                  </div>
+                  <div className="w-16 h-0.5 bg-gradient-to-r from-transparent via-gray-300 to-transparent mt-4" />
+                </div>
+
+                <h1 className="text-3xl lg:text-5xl font-black text-slate-800 tracking-widest uppercase mb-4" style={{ fontFamily: 'var(--font-display)' }}>
+                  Certificado de FinalizaciÛn
+                </h1>
+                
+                <p className="text-gray-500 uppercase tracking-[0.2em] text-[10px] lg:text-xs mb-6 lg:mb-8 font-bold">
+                  El presente diploma se otorga con honores a:
+                </p>
+
+                <div className="w-full max-w-2xl border-b border-gray-300 mb-6 lg:mb-8 flex justify-center pb-2 relative">
+                   <span className="font-dancing text-6xl lg:text-7xl text-brand-blue font-bold px-8 leading-none absolute -bottom-2 lg:-bottom-3 whitespace-nowrap" style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.05)' }}>
+                     {studentName || "Nombre del Alumno"}
+                   </span>
+                </div>
+
+                <p className="text-gray-500 uppercase tracking-[0.2em] text-[9px] lg:text-[10px] mb-4 font-bold mt-12 lg:mt-16">
+                  Por haber completado con Èxito y demostrado dominio en:
+                </p>
+
+                <h2 className="text-2xl lg:text-3xl font-black text-slate-700 max-w-3xl leading-snug mb-12 lg:mb-16">
+                  {courseName || "Nombre del Curso"}
+                </h2>
+
+                <div className="w-full flex justify-between items-end px-4 lg:px-12 mt-auto relative z-20">
+                   <div className="flex flex-col items-center">
+                      <span className="text-sm lg:text-base font-bold text-gray-800 mb-2 border-b border-gray-300 w-40 pb-2">{issueDate}</span>
+                      <span className="text-[10px] lg:text-xs font-bold text-gray-400 uppercase tracking-widest">Fecha de EmisiÛn</span>
+                   </div>
+
+                   <div className="w-16 h-16 lg:w-24 lg:h-24 bg-amber-50 rounded-full flex items-center justify-center relative shadow-sm">
+                      <div className="absolute inset-1 border border-amber-200 rounded-full border-dashed" />
+                      <Award className="w-8 h-8 lg:w-10 lg:h-10 text-amber-500" />
+                   </div>
+
+                   <div className="flex flex-col items-center">
+                      <span className="font-dancing text-3xl lg:text-4xl text-gray-700 mb-2 border-b border-gray-300 w-48 pb-1">{instructorName}</span>
+                      <span className="text-[10px] lg:text-xs font-bold text-gray-400 uppercase tracking-widest">Instructor Senior</span>
+                   </div>
+                </div>
+             </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,5 +1,32 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap');
 
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-diploma, .print-diploma * {
+    visibility: visible;
+  }
+  .print-diploma {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    z-index: 9999;
+  }
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+}
+
+.font-dancing {
+  font-family: 'Dancing Script', cursive;
+}
 /* ============================================ */
 /* ProgramBI Design System                       */
 /* ============================================ */
