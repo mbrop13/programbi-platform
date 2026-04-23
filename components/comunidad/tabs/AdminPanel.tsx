@@ -3134,8 +3134,8 @@ function AdminNewsletterCategories() {
 }
 // --- DIPLOMAS ---
 function AdminDiplomas() {
-  const [studentName, setStudentName] = useState("Juan Pérez");
-  const [courseName, setCourseName] = useState("Análisis de Datos con Excel y Power BI");
+  const [studentName, setStudentName] = useState("Juan Pï¿½rez");
+  const [courseName, setCourseName] = useState("Anï¿½lisis de Datos con Excel y Power BI");
   const [issueDate, setIssueDate] = useState(new Date().toLocaleDateString("es-CL"));
   const [instructorName, setInstructorName] = useState("Manuel Brop");
 
@@ -3177,7 +3177,7 @@ function AdminDiplomas() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Fecha de Emisión</label>
+              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Fecha de Emisiï¿½n</label>
               <input type="text" value={issueDate} onChange={e => setIssueDate(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
             </div>
 
@@ -3190,7 +3190,7 @@ function AdminDiplomas() {
           <div className="bg-amber-50 p-4 rounded-xl border border-amber-100">
             <h4 className="text-xs font-bold text-amber-800 mb-1 flex items-center gap-1.5"><AlertCircle className="w-3.5 h-3.5" /> Instrucciones</h4>
             <p className="text-[11px] text-amber-700/80 leading-relaxed">
-              Al exportar, configura el diseño en <strong>Horizontal (Landscape)</strong>, quita los márgenes/encabezados, y habilita <strong>Gráficos de fondo</strong>.
+              Al exportar, configura el diseï¿½o en <strong>Horizontal (Landscape)</strong>, quita los mï¿½rgenes/encabezados, y habilita <strong>Grï¿½ficos de fondo</strong>.
             </p>
           </div>
         </div>
@@ -3214,7 +3214,7 @@ function AdminDiplomas() {
                 </div>
 
                 <h1 className="text-3xl lg:text-5xl font-black text-slate-800 tracking-widest uppercase mb-4" style={{ fontFamily: 'var(--font-display)' }}>
-                  Certificado de Finalización
+                  Certificado de Finalizaciï¿½n
                 </h1>
                 
                 <p className="text-gray-500 uppercase tracking-[0.2em] text-[10px] lg:text-xs mb-6 lg:mb-8 font-bold">
@@ -3228,7 +3228,7 @@ function AdminDiplomas() {
                 </div>
 
                 <p className="text-gray-500 uppercase tracking-[0.2em] text-[9px] lg:text-[10px] mb-4 font-bold mt-12 lg:mt-16">
-                  Por haber completado con éxito y demostrado dominio en:
+                  Por haber completado con ï¿½xito y demostrado dominio en:
                 </p>
 
                 <h2 className="text-2xl lg:text-3xl font-black text-slate-700 max-w-3xl leading-snug mb-12 lg:mb-16">
@@ -3238,7 +3238,7 @@ function AdminDiplomas() {
                 <div className="w-full flex justify-between items-end px-4 lg:px-12 mt-auto relative z-20">
                    <div className="flex flex-col items-center">
                       <span className="text-sm lg:text-base font-bold text-gray-800 mb-2 border-b border-gray-300 w-40 pb-2">{issueDate}</span>
-                      <span className="text-[10px] lg:text-xs font-bold text-gray-400 uppercase tracking-widest">Fecha de Emisión</span>
+                      <span className="text-[10px] lg:text-xs font-bold text-gray-400 uppercase tracking-widest">Fecha de Emisiï¿½n</span>
                    </div>
 
                    <div className="w-16 h-16 lg:w-24 lg:h-24 bg-amber-50 rounded-full flex items-center justify-center relative shadow-sm">
