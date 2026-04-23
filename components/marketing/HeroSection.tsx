@@ -250,7 +250,7 @@ export default function HeroSection() {
             <FadeIn delay={0.45}>
               <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
                 <Link
-                  href="#contacto"
+                  href="/cursos/analisis-de-datos"
                   className="group px-8 py-5 sm:px-10 sm:py-6 rounded-2xl text-white font-bold text-xl sm:text-2xl flex items-center justify-center gap-4 no-underline transition-all duration-300 hover:-translate-y-1"
                   style={{
                     background: "linear-gradient(135deg, #1890FF 0%, #0050b3 100%)",
