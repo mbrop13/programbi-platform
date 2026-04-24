@@ -3166,41 +3166,34 @@ function AdminDiplomas() {
     if (!target) { alert('Error: No se encontró el diploma. Intenta de nuevo.'); return; }
     setIsExporting(true);
     try {
-      const html2canvas = (await import('html2canvas')).default;
+      const { default: html2canvas } = await import('html2canvas-pro');
       const { jsPDF } = await import('jspdf');
 
       const origTransform = target.style.transform;
       target.style.transform = 'none';
 
-      // Wait for images to fully load
-      const images = target.querySelectorAll('img');
-      await Promise.all(Array.from(images).map(img => {
-        if (img.complete) return Promise.resolve();
-        return new Promise<void>((resolve) => {
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-        });
-      }));
+      // Wait a tick for the DOM to settle
+      await new Promise(r => setTimeout(r, 300));
 
       const canvas = await html2canvas(target, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
-        logging: false,
       });
       
       target.style.transform = origTransform;
 
-      const imgData = canvas.toDataURL('image/png');
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
       pdf.save(`Diploma_${studentName.replace(/\s+/g, '_')}.pdf`);
-    } catch (error) {
+    } catch (error: any) {
       console.error('PDF generation error:', error);
-      alert('Error al generar el PDF: ' + (error instanceof Error ? error.message : 'Error desconocido'));
+      const msg = error?.message || error?.toString?.() || JSON.stringify(error);
+      alert('Error al generar el PDF:\n' + msg);
     } finally {
       setIsExporting(false);
       setShowPreview(false);
