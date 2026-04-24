@@ -3163,27 +3163,176 @@ function AdminDiplomas() {
   }, []);
 
   const generatePDF = async () => {
-    const target = hiddenDiplomaRef.current;
-    if (!target) { alert('Error: No se encontró el diploma.'); return; }
     setIsExporting(true);
     try {
-      const { default: html2canvas } = await import('html2canvas-pro');
       const { jsPDF } = await import('jspdf');
 
-      await new Promise(r => setTimeout(r, 500));
+      // Canvas dimensions (A4 landscape at 2x for high res)
+      const W = 2246, H = 1588;
+      const canvas = document.createElement('canvas');
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext('2d')!;
 
-      const canvas = await html2canvas(target, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-      });
+      // --- Background ---
+      ctx.fillStyle = '#fafafa';
+      ctx.fillRect(0, 0, W, H);
 
+      // Dot pattern
+      ctx.fillStyle = 'rgba(229,231,235,0.3)';
+      for (let x = 0; x < W; x += 32) {
+        for (let y = 0; y < H; y += 32) {
+          ctx.beginPath();
+          ctx.arc(x, y, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      // --- Gold Border ---
+      ctx.strokeStyle = '#c5a059';
+      ctx.lineWidth = 6;
+      ctx.strokeRect(48, 48, W - 96, H - 96);
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 0.5;
+      ctx.strokeRect(60, 60, W - 120, H - 120);
+      ctx.globalAlpha = 1;
+
+      // --- White content area ---
+      const cx = 84, cy = 84, cw = W - 168, ch = H - 168;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(cx, cy, cw, ch);
+
+      // --- Logo ---
+      try {
+        const logo = new Image();
+        logo.crossOrigin = 'anonymous';
+        await new Promise<void>((resolve, reject) => {
+          logo.onload = () => resolve();
+          logo.onerror = () => reject();
+          logo.src = '/logo.png';
+        });
+        const logoH = 100;
+        const logoW = (logo.naturalWidth / logo.naturalHeight) * logoH;
+        ctx.drawImage(logo, (W - logoW) / 2, cy + 80, logoW, logoH);
+      } catch { /* logo failed, continue without it */ }
+
+      // --- Title ---
+      ctx.fillStyle = '#0f2c59';
+      ctx.font = '900 72px "Poppins", system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.letterSpacing = '12px';
+      ctx.fillText('CERTIFICADO DE FINALIZACIÓN', W / 2, cy + 260);
+      ctx.letterSpacing = '0px';
+
+      // --- Subtitle ---
+      ctx.fillStyle = '#c5a059';
+      ctx.font = '700 20px system-ui, sans-serif';
+      ctx.letterSpacing = '6px';
+      ctx.fillText('ESTE DIPLOMA ES CONFERIDO CON HONORES A:', W / 2, cy + 330);
+      ctx.letterSpacing = '0px';
+
+      // --- Student Name ---
+      ctx.fillStyle = '#0f2c59';
+      ctx.font = '700 140px "Dancing Script", cursive';
+      ctx.fillText(studentName || 'Nombre del Alumno', W / 2, cy + 530);
+
+      // --- Gold decorative line under name ---
+      const lineGrad = ctx.createLinearGradient(W * 0.2, 0, W * 0.8, 0);
+      lineGrad.addColorStop(0, 'transparent');
+      lineGrad.addColorStop(0.5, '#c5a059');
+      lineGrad.addColorStop(1, 'transparent');
+      ctx.strokeStyle = lineGrad;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(W * 0.2, cy + 560);
+      ctx.lineTo(W * 0.8, cy + 560);
+      ctx.stroke();
+
+      // --- Description ---
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '600 18px system-ui, sans-serif';
+      ctx.letterSpacing = '4px';
+      ctx.fillText('POR HABER COMPLETADO EXITOSAMENTE Y DEMOSTRADO UN DOMINIO ABSOLUTO EN:', W / 2, cy + 640);
+      ctx.letterSpacing = '0px';
+
+      // --- Course Name ---
+      ctx.fillStyle = '#1e293b';
+      ctx.font = '900 48px "Poppins", system-ui, sans-serif';
+      ctx.fillText(courseName || 'Nombre del Curso', W / 2, cy + 720);
+
+      // --- Footer: Date ---
+      const footerY = H - 220;
+      ctx.fillStyle = '#1f2937';
+      ctx.font = '700 28px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(issueDate, cx + 260, footerY);
+      ctx.strokeStyle = '#9ca3af';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(cx + 130, footerY + 15);
+      ctx.lineTo(cx + 390, footerY + 15);
+      ctx.stroke();
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '700 14px system-ui, sans-serif';
+      ctx.letterSpacing = '3px';
+      ctx.fillText('FECHA DE EMISIÓN', cx + 260, footerY + 45);
+      ctx.letterSpacing = '0px';
+
+      // --- Footer: Seal ---
+      const sealX = W / 2, sealY = footerY - 20;
+      // Draw rotated squares for seal
+      for (const angle of [45, 15, 75]) {
+        ctx.save();
+        ctx.translate(sealX, sealY);
+        ctx.rotate((angle * Math.PI) / 180);
+        const grad = ctx.createLinearGradient(-55, -55, 55, 55);
+        grad.addColorStop(0, '#dfc27d');
+        grad.addColorStop(1, '#b38836');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.roundRect(-55, -55, 110, 110, 16);
+        ctx.fill();
+        ctx.restore();
+      }
+      // Inner circle
+      ctx.beginPath();
+      ctx.arc(sealX, sealY, 48, 0, Math.PI * 2);
+      ctx.fillStyle = '#fcf8f2';
+      ctx.fill();
+      ctx.strokeStyle = '#c5a059';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      // Seal text
+      ctx.fillStyle = '#b38836';
+      ctx.font = '900 28px system-ui, sans-serif';
+      ctx.fillText('★', sealX, sealY - 4);
+      ctx.font = '700 11px system-ui, sans-serif';
+      ctx.letterSpacing = '2px';
+      ctx.fillText('ACREDITADO', sealX, sealY + 22);
+      ctx.letterSpacing = '0px';
+
+      // --- Footer: Instructor ---
+      ctx.fillStyle = '#1f2937';
+      ctx.font = '700 56px "Dancing Script", cursive';
+      ctx.fillText(instructorName, W - cx - 260, footerY);
+      ctx.strokeStyle = '#9ca3af';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(W - cx - 390, footerY + 15);
+      ctx.lineTo(W - cx - 130, footerY + 15);
+      ctx.stroke();
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '700 14px system-ui, sans-serif';
+      ctx.letterSpacing = '3px';
+      ctx.fillText('INSTRUCTOR SENIOR', W - cx - 260, footerY + 45);
+      ctx.letterSpacing = '0px';
+
+      // --- Generate PDF ---
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+      const pdfW = pdf.internal.pageSize.getWidth();
+      const pdfH = pdf.internal.pageSize.getHeight();
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH);
       pdf.save(`Diploma_${studentName.replace(/\s+/g, '_')}.pdf`);
     } catch (error: any) {
       console.error('PDF generation error:', error);
