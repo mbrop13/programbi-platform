@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
@@ -3144,16 +3144,15 @@ function AdminDiplomas() {
   const [showPreview, setShowPreview] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   
-  const containerRef = require('react').useRef(null);
-  const diplomaRef = require('react').useRef(null);
-  const modalDiplomaRef = require('react').useRef(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const diplomaRef = useRef<HTMLDivElement>(null);
+  const modalDiplomaRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
-  require('react').useEffect(() => {
+  useEffect(() => {
     const updateScale = () => {
       if (containerRef.current) {
         const width = containerRef.current.offsetWidth;
-        // The diploma fixed width is 1123px (A4 size at 96dpi approx)
         setScale(Math.min(1, width / 1123));
       }
     };
@@ -3163,39 +3162,45 @@ function AdminDiplomas() {
   }, []);
 
   const generatePDF = async () => {
-    if (!modalDiplomaRef.current) return;
+    const target = modalDiplomaRef.current;
+    if (!target) { alert('Error: No se encontró el diploma. Intenta de nuevo.'); return; }
     setIsExporting(true);
     try {
       const html2canvas = (await import('html2canvas')).default;
       const { jsPDF } = await import('jspdf');
 
-      // Ensure transform is completely removed for capture
-      const originalTransform = modalDiplomaRef.current.style.transform;
-      modalDiplomaRef.current.style.transform = 'none';
+      const origTransform = target.style.transform;
+      target.style.transform = 'none';
 
-      const canvas = await html2canvas(modalDiplomaRef.current, {
-        scale: 2, // High resolution
+      // Wait for images to fully load
+      const images = target.querySelectorAll('img');
+      await Promise.all(Array.from(images).map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise<void>((resolve) => {
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+        });
+      }));
+
+      const canvas = await html2canvas(target, {
+        scale: 2,
         useCORS: true,
+        allowTaint: true,
         backgroundColor: '#ffffff',
+        logging: false,
       });
       
-      modalDiplomaRef.current.style.transform = originalTransform;
+      target.style.transform = origTransform;
 
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'mm',
-        format: 'a4'
-      });
-
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-
       pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
       pdf.save(`Diploma_${studentName.replace(/\s+/g, '_')}.pdf`);
     } catch (error) {
-      console.error(error);
-      alert("Error al generar el PDF.");
+      console.error('PDF generation error:', error);
+      alert('Error al generar el PDF: ' + (error instanceof Error ? error.message : 'Error desconocido'));
     } finally {
       setIsExporting(false);
       setShowPreview(false);
