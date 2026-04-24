@@ -3211,30 +3211,30 @@ function AdminDiplomas() {
           logo.onerror = () => reject();
           logo.src = '/logo.png';
         });
-        const logoH = 100;
+        const logoH = 120;
         const logoW = (logo.naturalWidth / logo.naturalHeight) * logoH;
-        ctx.drawImage(logo, (W - logoW) / 2, cy + 80, logoW, logoH);
+        ctx.drawImage(logo, (W - logoW) / 2, cy + 50, logoW, logoH);
       } catch { /* logo failed, continue without it */ }
 
       // --- Title ---
       ctx.fillStyle = '#0f2c59';
-      ctx.font = '900 72px "Poppins", system-ui, sans-serif';
+      ctx.font = '900 84px "Poppins", system-ui, sans-serif';
       ctx.textAlign = 'center';
-      ctx.letterSpacing = '12px';
-      ctx.fillText('CERTIFICADO DE FINALIZACIÓN', W / 2, cy + 260);
+      ctx.letterSpacing = '14px';
+      ctx.fillText('CERTIFICADO DE FINALIZACIÓN', W / 2, cy + 280);
       ctx.letterSpacing = '0px';
 
       // --- Subtitle ---
       ctx.fillStyle = '#c5a059';
-      ctx.font = '700 20px system-ui, sans-serif';
-      ctx.letterSpacing = '6px';
-      ctx.fillText('ESTE DIPLOMA ES CONFERIDO CON HONORES A:', W / 2, cy + 330);
+      ctx.font = '700 24px system-ui, sans-serif';
+      ctx.letterSpacing = '8px';
+      ctx.fillText('ESTE DIPLOMA ES CONFERIDO CON HONORES A:', W / 2, cy + 370);
       ctx.letterSpacing = '0px';
 
       // --- Student Name ---
       ctx.fillStyle = '#0f2c59';
-      ctx.font = '700 140px "Dancing Script", cursive';
-      ctx.fillText(studentName || 'Nombre del Alumno', W / 2, cy + 530);
+      ctx.font = '700 150px "Dancing Script", cursive';
+      ctx.fillText(studentName || 'Nombre del Alumno', W / 2, cy + 570);
 
       // --- Gold decorative line under name ---
       const lineGrad = ctx.createLinearGradient(W * 0.2, 0, W * 0.8, 0);
@@ -3244,21 +3244,21 @@ function AdminDiplomas() {
       ctx.strokeStyle = lineGrad;
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(W * 0.2, cy + 560);
-      ctx.lineTo(W * 0.8, cy + 560);
+      ctx.moveTo(W * 0.2, cy + 600);
+      ctx.lineTo(W * 0.8, cy + 600);
       ctx.stroke();
 
       // --- Description ---
       ctx.fillStyle = '#6b7280';
-      ctx.font = '600 18px system-ui, sans-serif';
-      ctx.letterSpacing = '4px';
-      ctx.fillText('POR HABER COMPLETADO EXITOSAMENTE Y DEMOSTRADO UN DOMINIO ABSOLUTO EN:', W / 2, cy + 640);
+      ctx.font = '600 22px system-ui, sans-serif';
+      ctx.letterSpacing = '5px';
+      ctx.fillText('POR HABER COMPLETADO EXITOSAMENTE Y DEMOSTRADO UN DOMINIO ABSOLUTO EN:', W / 2, cy + 680);
       ctx.letterSpacing = '0px';
 
       // --- Course Name ---
       ctx.fillStyle = '#1e293b';
-      ctx.font = '900 56px "Poppins", system-ui, sans-serif';
-      ctx.fillText(courseName || 'Nombre del Curso', W / 2, cy + 740);
+      ctx.font = '900 60px "Poppins", system-ui, sans-serif';
+      ctx.fillText(courseName || 'Nombre del Curso', W / 2, cy + 770);
 
       // --- Footer: Date (left) ---
       const footerY = H - 300;
