@@ -3257,74 +3257,75 @@ function AdminDiplomas() {
 
       // --- Course Name ---
       ctx.fillStyle = '#1e293b';
-      ctx.font = '900 48px "Poppins", system-ui, sans-serif';
-      ctx.fillText(courseName || 'Nombre del Curso', W / 2, cy + 720);
+      ctx.font = '900 56px "Poppins", system-ui, sans-serif';
+      ctx.fillText(courseName || 'Nombre del Curso', W / 2, cy + 740);
 
-      // --- Footer: Date ---
-      const footerY = H - 220;
+      // --- Footer: Date (left) ---
+      const footerY = H - 300;
+      const leftCol = cx + 300;
+      const rightCol = W - cx - 300;
+
       ctx.fillStyle = '#1f2937';
-      ctx.font = '700 28px system-ui, sans-serif';
+      ctx.font = '700 36px system-ui, sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText(issueDate, cx + 260, footerY);
+      ctx.fillText(issueDate, leftCol, footerY + 10);
       ctx.strokeStyle = '#9ca3af';
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(cx + 130, footerY + 15);
-      ctx.lineTo(cx + 390, footerY + 15);
+      ctx.moveTo(leftCol - 160, footerY + 30);
+      ctx.lineTo(leftCol + 160, footerY + 30);
       ctx.stroke();
       ctx.fillStyle = '#9ca3af';
-      ctx.font = '700 14px system-ui, sans-serif';
-      ctx.letterSpacing = '3px';
-      ctx.fillText('FECHA DE EMISIÓN', cx + 260, footerY + 45);
+      ctx.font = '700 18px system-ui, sans-serif';
+      ctx.letterSpacing = '4px';
+      ctx.fillText('FECHA DE EMISIÓN', leftCol, footerY + 65);
       ctx.letterSpacing = '0px';
 
-      // --- Footer: Seal ---
-      const sealX = W / 2, sealY = footerY - 20;
-      // Draw rotated squares for seal
+      // --- Footer: Seal (center) ---
+      const sealX = W / 2, sealY = footerY - 10;
+      const sealSize = 80;
       for (const angle of [45, 15, 75]) {
         ctx.save();
         ctx.translate(sealX, sealY);
         ctx.rotate((angle * Math.PI) / 180);
-        const grad = ctx.createLinearGradient(-55, -55, 55, 55);
+        const grad = ctx.createLinearGradient(-sealSize, -sealSize, sealSize, sealSize);
         grad.addColorStop(0, '#dfc27d');
         grad.addColorStop(1, '#b38836');
         ctx.fillStyle = grad;
         ctx.beginPath();
-        ctx.roundRect(-55, -55, 110, 110, 16);
+        ctx.roundRect(-sealSize, -sealSize, sealSize * 2, sealSize * 2, 20);
         ctx.fill();
         ctx.restore();
       }
-      // Inner circle
       ctx.beginPath();
-      ctx.arc(sealX, sealY, 48, 0, Math.PI * 2);
+      ctx.arc(sealX, sealY, 68, 0, Math.PI * 2);
       ctx.fillStyle = '#fcf8f2';
       ctx.fill();
       ctx.strokeStyle = '#c5a059';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.stroke();
-      // Seal text
       ctx.fillStyle = '#b38836';
-      ctx.font = '900 28px system-ui, sans-serif';
-      ctx.fillText('★', sealX, sealY - 4);
-      ctx.font = '700 11px system-ui, sans-serif';
-      ctx.letterSpacing = '2px';
-      ctx.fillText('ACREDITADO', sealX, sealY + 22);
+      ctx.font = '900 40px system-ui, sans-serif';
+      ctx.fillText('★', sealX, sealY - 6);
+      ctx.font = '700 15px system-ui, sans-serif';
+      ctx.letterSpacing = '3px';
+      ctx.fillText('ACREDITADO', sealX, sealY + 30);
       ctx.letterSpacing = '0px';
 
-      // --- Footer: Instructor ---
+      // --- Footer: Instructor (right) ---
       ctx.fillStyle = '#1f2937';
-      ctx.font = '700 56px "Dancing Script", cursive';
-      ctx.fillText(instructorName, W - cx - 260, footerY);
+      ctx.font = '700 72px "Dancing Script", cursive';
+      ctx.fillText(instructorName, rightCol, footerY + 10);
       ctx.strokeStyle = '#9ca3af';
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 1.5;
       ctx.beginPath();
-      ctx.moveTo(W - cx - 390, footerY + 15);
-      ctx.lineTo(W - cx - 130, footerY + 15);
+      ctx.moveTo(rightCol - 160, footerY + 30);
+      ctx.lineTo(rightCol + 160, footerY + 30);
       ctx.stroke();
       ctx.fillStyle = '#9ca3af';
-      ctx.font = '700 14px system-ui, sans-serif';
-      ctx.letterSpacing = '3px';
-      ctx.fillText('INSTRUCTOR SENIOR', W - cx - 260, footerY + 45);
+      ctx.font = '700 18px system-ui, sans-serif';
+      ctx.letterSpacing = '4px';
+      ctx.fillText('INSTRUCTOR SENIOR', rightCol, footerY + 65);
       ctx.letterSpacing = '0px';
 
       // --- Generate PDF ---
