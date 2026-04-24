@@ -3147,6 +3147,7 @@ function AdminDiplomas() {
   const containerRef = useRef<HTMLDivElement>(null);
   const diplomaRef = useRef<HTMLDivElement>(null);
   const modalDiplomaRef = useRef<HTMLDivElement>(null);
+  const hiddenDiplomaRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
   useEffect(() => {
@@ -3162,18 +3163,14 @@ function AdminDiplomas() {
   }, []);
 
   const generatePDF = async () => {
-    const target = modalDiplomaRef.current;
-    if (!target) { alert('Error: No se encontró el diploma. Intenta de nuevo.'); return; }
+    const target = hiddenDiplomaRef.current;
+    if (!target) { alert('Error: No se encontró el diploma.'); return; }
     setIsExporting(true);
     try {
       const { default: html2canvas } = await import('html2canvas-pro');
       const { jsPDF } = await import('jspdf');
 
-      const origTransform = target.style.transform;
-      target.style.transform = 'none';
-
-      // Wait a tick for the DOM to settle
-      await new Promise(r => setTimeout(r, 300));
+      await new Promise(r => setTimeout(r, 500));
 
       const canvas = await html2canvas(target, {
         scale: 2,
@@ -3181,8 +3178,6 @@ function AdminDiplomas() {
         allowTaint: true,
         backgroundColor: '#ffffff',
       });
-      
-      target.style.transform = origTransform;
 
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
       const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
@@ -3192,8 +3187,7 @@ function AdminDiplomas() {
       pdf.save(`Diploma_${studentName.replace(/\s+/g, '_')}.pdf`);
     } catch (error: any) {
       console.error('PDF generation error:', error);
-      const msg = error?.message || error?.toString?.() || JSON.stringify(error);
-      alert('Error al generar el PDF:\n' + msg);
+      alert('Error al generar el PDF:\n' + (error?.message || String(error)));
     } finally {
       setIsExporting(false);
       setShowPreview(false);
@@ -3215,23 +3209,23 @@ function AdminDiplomas() {
        <div className="absolute inset-6 border-[3px] border-[#c5a059] z-10 pointer-events-none" />
        <div className="absolute inset-[30px] border-[1px] border-[#c5a059] z-10 pointer-events-none opacity-50" />
        
-       {/* Fondo de patrón o textura sutil */}
-       <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-30 mix-blend-multiply" />
+       {/* Fondo de patrón sutil */}
+       <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'radial-gradient(#e5e7eb 1px, transparent 1px)', backgroundSize: '16px 16px' }} />
 
        {/* Contenido Central */}
        <div className="absolute inset-[42px] bg-white flex flex-col items-center justify-center text-center p-12 z-20 shadow-inner overflow-hidden">
           
-          {/* Luces sutiles en las esquinas del contenido */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-50 rounded-full blur-[100px] -z-10 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-50 rounded-full blur-[100px] -z-10 pointer-events-none" />
+          {/* Luces sutiles */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-50 rounded-full blur-[100px] pointer-events-none" style={{ zIndex: -1 }} />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-50 rounded-full blur-[100px] pointer-events-none" style={{ zIndex: -1 }} />
 
           {/* Logo ProgramBI */}
           <div className="mb-6 flex flex-col items-center">
-            <img src="/logo.png" alt="ProgramBI" className="h-16 lg:h-20 object-contain drop-shadow-sm" />
+            <img src="/logo.png" alt="ProgramBI" className="h-16 object-contain" style={{ height: '64px' }} />
           </div>
 
           {/* Título */}
-          <h1 className="text-[42px] font-black text-[#0f2c59] tracking-[0.15em] uppercase mb-6" style={{ fontFamily: 'var(--font-display)', textShadow: '1px 1px 0px rgba(0,0,0,0.05)' }}>
+          <h1 className="text-[42px] font-black text-[#0f2c59] tracking-[0.15em] uppercase mb-6" style={{ fontFamily: 'var(--font-display)' }}>
             Certificado de Finalización
           </h1>
           
@@ -3242,52 +3236,44 @@ function AdminDiplomas() {
 
           {/* Nombre (Dancing Script) */}
           <div className="w-full max-w-3xl mb-8 flex justify-center relative">
-             <span className="font-dancing text-[90px] text-[#0f2c59] font-bold px-12 leading-none whitespace-nowrap" style={{ textShadow: '2px 3px 6px rgba(0,0,0,0.08)' }}>
+             <span className="font-dancing text-[90px] text-[#0f2c59] font-bold px-12 leading-none whitespace-nowrap">
                {studentName || "Nombre del Alumno"}
              </span>
-             {/* Línea decorativa */}
-             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 w-3/4 h-[2px] bg-gradient-to-r from-transparent via-[#c5a059] to-transparent opacity-70" />
+             <div className="absolute bottom-3 left-1/2 w-3/4 h-[2px]" style={{ transform: 'translateX(-50%)', background: 'linear-gradient(to right, transparent, #c5a059, transparent)', opacity: 0.7 }} />
           </div>
 
-          {/* Descripción de éxito */}
+          {/* Descripción */}
           <p className="text-gray-500 uppercase tracking-[0.15em] text-[11px] mb-4 font-semibold max-w-2xl leading-relaxed mt-4">
             Por haber completado exitosamente y demostrado un dominio absoluto en los contenidos de:
           </p>
 
-          {/* Nombre del curso */}
+          {/* Curso */}
           <h2 className="text-[28px] font-black text-slate-800 max-w-4xl leading-tight mb-14 px-8" style={{ fontFamily: 'var(--font-display)' }}>
             {courseName || "Nombre del Curso"}
           </h2>
 
-          {/* Pie de página: Firmas y Sello */}
+          {/* Pie: Firmas y Sello */}
           <div className="w-full flex justify-between items-end px-16 mt-auto">
-             
-             {/* Fecha */}
              <div className="flex flex-col items-center">
                 <span className="text-base font-bold text-gray-800 mb-2 border-b border-gray-400 w-40 pb-2">{issueDate}</span>
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Fecha de Emisión</span>
              </div>
 
-             {/* Sello o Medalla */}
-             <div className="w-28 h-28 relative flex items-center justify-center group">
-                {/* Sello dentado / Estrella decorativa (simulada con CSS) */}
-                <div className="absolute inset-0 bg-gradient-to-br from-[#dfc27d] to-[#b38836] rotate-45 rounded-xl shadow-lg" />
-                <div className="absolute inset-0 bg-gradient-to-br from-[#dfc27d] to-[#b38836] rotate-[15deg] rounded-xl shadow-lg" />
-                <div className="absolute inset-0 bg-gradient-to-br from-[#dfc27d] to-[#b38836] rotate-[75deg] rounded-xl shadow-lg" />
-                {/* Círculo interno */}
+             <div className="w-28 h-28 relative flex items-center justify-center">
+                <div className="absolute inset-0 rounded-xl shadow-lg" style={{ background: 'linear-gradient(to bottom right, #dfc27d, #b38836)', transform: 'rotate(45deg)' }} />
+                <div className="absolute inset-0 rounded-xl shadow-lg" style={{ background: 'linear-gradient(to bottom right, #dfc27d, #b38836)', transform: 'rotate(15deg)' }} />
+                <div className="absolute inset-0 rounded-xl shadow-lg" style={{ background: 'linear-gradient(to bottom right, #dfc27d, #b38836)', transform: 'rotate(75deg)' }} />
                 <div className="absolute inset-2 bg-[#fcf8f2] rounded-full border border-[#c5a059] flex items-center justify-center flex-col shadow-inner z-10">
                   <Award className="w-8 h-8 text-[#b38836] mb-0.5" />
                   <span className="text-[8px] font-bold text-[#b38836] uppercase tracking-wider">Acreditado</span>
                 </div>
              </div>
 
-             {/* Firma */}
              <div className="flex flex-col items-center">
                 <span className="font-dancing text-5xl text-gray-800 mb-2 border-b border-gray-400 w-48 pb-1 pt-4">{instructorName}</span>
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Instructor Senior</span>
              </div>
           </div>
-
        </div>
     </div>
   );
@@ -3339,11 +3325,15 @@ function AdminDiplomas() {
 
         {/* Scaled Preview Panel */}
         <div className="flex-1 overflow-hidden" ref={containerRef}>
-          {/* We wrap the diploma in a container that has the exact scaled height to avoid extra empty space */}
           <div style={{ height: `${794 * scale}px`, width: `${1123 * scale}px` }} className="mx-auto transition-all">
              <DiplomaContent dRef={diplomaRef} dynamicScale={scale} />
           </div>
         </div>
+      </div>
+
+      {/* Hidden off-screen diploma for PDF capture (always in DOM, never inside a modal) */}
+      <div style={{ position: 'fixed', left: '-9999px', top: '-9999px', zIndex: -1, pointerEvents: 'none' }}>
+        <DiplomaContent dRef={hiddenDiplomaRef} dynamicScale={1} />
       </div>
 
       {/* Fullscreen Preview & Download Modal */}
