@@ -62,7 +62,7 @@ export async function POST(req: NextRequest) {
 
     // 2. Confirmación al lead (diferente para empresa vs. individual)
     try {
-      if (leadType === "enterprise" && company) {
+      if ((leadType === "empresa" || leadType === "enterprise") && company) {
         await sendEnterpriseQuoteToLead({ name, email, company, courses, employeeCount });
       } else {
         await sendQuoteConfirmationToLead({ name, email, courses, message });
