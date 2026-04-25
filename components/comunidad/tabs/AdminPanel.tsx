@@ -711,6 +711,9 @@ function AdminMembers() {
                    <div>
                      <h3 className="font-bold text-gray-900">{selectedUser.full_name || "Sin nombre"}</h3>
                      <p className="text-sm text-gray-400">{selectedUser.email}</p>
+                     {selectedUser.whatsapp && (
+                       <p className="text-xs text-brand-blue font-medium mt-0.5">{selectedUser.whatsapp}</p>
+                     )}
                    </div>
                  </div>
                  <div className="flex items-center gap-2">
@@ -792,7 +795,7 @@ function AdminMembers() {
               <thead>
                  <tr className="bg-gray-50/80 text-gray-400 font-semibold text-xs uppercase tracking-wider">
                     <th className="px-5 py-3.5">Usuario</th>
-                    <th className="px-5 py-3.5">Email</th>
+                    <th className="px-5 py-3.5">Contacto</th>
                     <th className="px-5 py-3.5">Rol</th>
                     <th className="px-5 py-3.5 hidden sm:table-cell">Registrado</th>
                     <th className="px-5 py-3.5 text-right">Acciones</th>

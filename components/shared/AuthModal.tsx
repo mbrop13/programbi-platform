@@ -394,7 +394,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                         </div>
                       </div>
                       <div>
-                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">WhatsApp (Recomendado)</label>
+                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">WhatsApp *</label>
                          <div className="flex items-stretch">
                            {/* Custom Flag/Prefix Selector */}
                            <div className="relative flex items-stretch">
@@ -449,6 +449,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                              value={whatsapp}
                              onChange={(e) => setWhatsapp(e.target.value)}
                              disabled={loading}
+                             required
                              name="whatsapp"
                              className="w-full pl-4 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-r-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
                            />
