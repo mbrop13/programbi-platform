@@ -3137,6 +3137,7 @@ function AdminNewsletterCategories() {
 // ─── DIPLOMAS ───
 function AdminDiplomas() {
   const [studentName, setStudentName] = useState("Juan Pérez");
+  const [studentRut, setStudentRut] = useState("12.345.678-9");
   const [courseName, setCourseName] = useState("Power BI - Basico");
   const [issueDate, setIssueDate] = useState(new Date().toLocaleDateString("es-CL"));
   const [instructorName, setInstructorName] = useState("Manuel Oliva");
@@ -3234,7 +3235,14 @@ function AdminDiplomas() {
       // --- Student Name ---
       ctx.fillStyle = '#0f2c59';
       ctx.font = '700 150px "Dancing Script", cursive';
-      ctx.fillText(studentName || 'Nombre del Alumno', W / 2, cy + 570);
+      ctx.fillText(studentName || 'Nombre del Alumno', W / 2, cy + 540);
+
+      // --- Student RUT ---
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '600 28px system-ui, sans-serif';
+      ctx.letterSpacing = '5px';
+      ctx.fillText(`RUT: ${studentRut || '12.345.678-9'}`, W / 2, cy + 600);
+      ctx.letterSpacing = '0px';
 
       // --- Gold decorative line under name ---
       const lineGrad = ctx.createLinearGradient(W * 0.2, 0, W * 0.8, 0);
@@ -3244,8 +3252,8 @@ function AdminDiplomas() {
       ctx.strokeStyle = lineGrad;
       ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(W * 0.2, cy + 600);
-      ctx.lineTo(W * 0.8, cy + 600);
+      ctx.moveTo(W * 0.2, cy + 630);
+      ctx.lineTo(W * 0.8, cy + 630);
       ctx.stroke();
 
       // --- Description ---
@@ -3385,11 +3393,14 @@ function AdminDiplomas() {
           </p>
 
           {/* Nombre (Dancing Script) */}
-          <div className="w-full max-w-3xl mb-8 flex justify-center relative">
+          <div className="w-full max-w-3xl mb-1 flex flex-col items-center justify-center relative">
              <span className="font-dancing text-[90px] text-[#0f2c59] font-bold px-12 leading-none whitespace-nowrap">
                {studentName || "Nombre del Alumno"}
              </span>
-             <div className="absolute bottom-3 left-1/2 w-3/4 h-[2px]" style={{ transform: 'translateX(-50%)', background: 'linear-gradient(to right, transparent, #c5a059, transparent)', opacity: 0.7 }} />
+             <span className="text-gray-500 uppercase tracking-widest text-[12px] font-semibold mt-4">
+               RUT: {studentRut || "12.345.678-9"}
+             </span>
+             <div className="absolute -bottom-4 left-1/2 w-3/4 h-[2px]" style={{ transform: 'translateX(-50%)', background: 'linear-gradient(to right, transparent, #c5a059, transparent)', opacity: 0.7 }} />
           </div>
 
           {/* Descripción */}
@@ -3456,6 +3467,11 @@ function AdminDiplomas() {
             <div className="space-y-1.5">
               <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre del Alumno</label>
               <input type="text" value={studentName} onChange={e => setStudentName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">RUT</label>
+              <input type="text" value={studentRut} onChange={e => setStudentRut(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
             </div>
 
             <div className="space-y-1.5">
