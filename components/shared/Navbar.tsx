@@ -512,16 +512,6 @@ export default function Navbar() {
                     <Link href={link.href} onClick={() => setIsMobileOpen(false)} className="block py-4 px-4 text-lg font-bold text-gray-800 hover:text-[#1890FF] hover:bg-blue-50 rounded-xl transition-all no-underline">
                       {link.label}
                     </Link>
-                    {link.hasMega && (
-                      <div className="pl-6 space-y-0.5 mb-2 mt-2">
-                        {courses.slice(0, 6).map((c) => (
-                          <Link key={c.slug} href={`/cursos/${c.slug}`} onClick={() => setIsMobileOpen(false)} className="flex items-center gap-3 py-3 px-3 rounded-lg text-sm font-semibold text-gray-500 hover:text-slate-900 hover:bg-slate-50 no-underline transition-colors">
-                            <CourseIcon name={c.icon} className="w-4 h-4 text-slate-400" />
-                            {c.title}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
                   </motion.div>
                 ))}
               </div>

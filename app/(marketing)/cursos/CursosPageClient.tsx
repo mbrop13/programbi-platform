@@ -70,7 +70,7 @@ export default function CursosPageClient() {
           </FadeIn>
           <FadeIn delay={0.15}>
             <h1 className="font-display font-black text-4xl sm:text-5xl lg:text-7xl text-[#0F172A] mb-5 leading-tight tracking-tight flex flex-col items-center justify-center gap-2">
-              <span className="font-handwritten text-4xl sm:text-5xl lg:text-6xl text-black font-semibold lowercase tracking-wide" style={{ transform: 'rotate(-2deg)' }}>
+              <span className="font-handwritten text-3xl sm:text-5xl lg:text-6xl text-black font-semibold lowercase tracking-wide px-2" style={{ transform: 'rotate(-2deg)' }}>
                 ¿Qué habilidad te llevará al...
               </span>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600 block mt-2">
@@ -114,12 +114,12 @@ export default function CursosPageClient() {
         <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
           {/* Category pills */}
           <FadeIn>
-            <div className="flex flex-wrap gap-2.5 mb-10 justify-center">
+            <div className="flex overflow-x-auto pb-4 pt-2 gap-2.5 mb-6 lg:mb-10 lg:flex-wrap lg:justify-center scrollbar-hide px-5 lg:px-0 -mx-5 lg:mx-0 snap-x">
               {categories.map((cat) => (
                 <motion.button
                   key={cat.value}
                   onClick={() => setActiveCategory(cat.value)}
-                  className={`px-6 py-2.5 rounded-full text-[13px] font-bold border cursor-pointer transition-all ${
+                  className={`px-5 lg:px-6 py-2 lg:py-2.5 rounded-full text-[13px] font-bold border cursor-pointer transition-all whitespace-nowrap snap-center ${
                     activeCategory === cat.value
                       ? "bg-[#1890FF] text-white border-[#1890FF] shadow-lg shadow-blue-500/20"
                       : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 hover:shadow-sm"
@@ -168,7 +168,7 @@ export default function CursosPageClient() {
                           <DynamicIcon name={course.icon} className="w-5 h-5" />
                         </div>
                       </div>
-                      <div className="p-6 flex flex-col flex-grow">
+                      <div className="p-5 lg:p-6 flex flex-col flex-grow">
                         <h3 className="font-display font-bold text-lg text-[#0F172A] mb-2 group-hover:text-[#1890FF] transition-colors">{course.title}</h3>
                         <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-2">{course.shortDescription}</p>
                         <div className="flex flex-wrap gap-2 mb-4">
