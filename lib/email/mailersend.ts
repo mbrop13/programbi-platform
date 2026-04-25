@@ -14,6 +14,7 @@
 
 import nodemailer from "nodemailer";
 import { buildQuoteEmailHtml } from "./quote-template";
+import { buildEnterpriseEmailHtml } from "./enterprise-template";
 
 // ─── Config ────────────────────────────────────────────────────────────────────
 const SMTP_HOST = process.env.SES_SMTP_HOST || "email-smtp.us-east-1.amazonaws.com";
@@ -201,52 +202,18 @@ export async function sendEnterpriseQuoteToLead(params: {
   courses: string[];
   employeeCount?: string;
 }) {
-  const { name, email, company, courses, employeeCount } = params;
+  const { name, email, company } = params;
+  const firstName = name.split(" ")[0] || name;
 
-  const courseList = courses.map(c => `<li style="margin:4px 0;color:#334155;">${c}</li>`).join("");
-
-  const html = wrapHtml("Cotización Empresarial — ProgramBI", `
-    <div style="display:inline-block;background:#FEF3C7;color:#92400E;font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">
-      🏢 Cotización Empresarial
-    </div>
-    <h1 style="margin:0 0 8px;font-size:24px;font-weight:900;color:#0F172A;">¡Hola, ${name}!</h1>
-    <p style="margin:0 0 24px;font-size:15px;color:#475569;line-height:1.6;">
-      Gracias por contactarnos desde <strong>${company}</strong>. Estamos preparando una propuesta personalizada para tu equipo. En breve un ejecutivo de cuenta se pondrá en contacto contigo.
-    </p>
-
-    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px 24px;margin-bottom:24px;">
-      <div style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;">Resumen de tu solicitud</div>
-      <table style="width:100%;font-size:14px;">
-        <tr><td style="color:#64748B;padding:4px 0;width:140px;">Empresa</td><td style="font-weight:600;color:#0F172A;">${company}</td></tr>
-        ${employeeCount ? `<tr><td style="color:#64748B;padding:4px 0;">Personas a capacitar</td><td style="font-weight:600;color:#0F172A;">${employeeCount}</td></tr>` : ""}
-      </table>
-      <div style="margin-top:12px;padding-top:12px;border-top:1px solid #E2E8F0;">
-        <div style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Programas de interés</div>
-        <ul style="margin:0;padding-left:18px;">${courseList}</ul>
-      </div>
-    </div>
-
-    <div style="background:linear-gradient(135deg,#EFF6FF,#EEF2FF);border-radius:12px;padding:20px 24px;margin-bottom:28px;">
-      <div style="font-size:13px;font-weight:700;color:#1D4ED8;margin-bottom:8px;">🎯 Lo que incluye tu propuesta</div>
-      <ul style="margin:0;padding-left:18px;font-size:13px;color:#3730A3;line-height:1.8;">
-        <li>Propuesta económica a medida</li>
-        <li>Modalidad de clases (online / presencial / híbrida)</li>
-        <li>Calendario flexible para tu equipo</li>
-        <li>Descuentos por volumen de participantes</li>
-      </ul>
-    </div>
-
-    <a href="mailto:${ADMIN_EMAIL}" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
-      Contactar directamente →
-    </a>
-  `);
+  const html = buildEnterpriseEmailHtml(firstName, company);
 
   await sendEmail({
     to: email,
     toName: name,
-    subject: "✅ Cotización empresarial recibida — ProgramBI",
+    subject: `Capacitación Corporativa — ProgramBI`,
     html,
-    text: `Hola ${name}, gracias por contactarnos desde ${company}. Te contactaremos pronto con una propuesta personalizada.`,
+    text: `Hola ${firstName}, hemos recibido tu solicitud de capacitación corporativa desde ${company}. Te contactaremos a la brevedad con una propuesta a medida.`,
+    replyTo: ADMIN_EMAIL,
   });
 }
 

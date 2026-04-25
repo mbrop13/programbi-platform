@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   sendQuoteConfirmationToLead,
   sendNewLeadNotificationToAdmin,
+  sendEnterpriseQuoteToLead,
   sendNotifyMeConfirmation,
   sendPaymentConfirmation,
   sendMembershipWelcome,
@@ -50,11 +51,12 @@ export async function GET(req: NextRequest) {
         break;
 
       case "enterprise":
-        await sendQuoteConfirmationToLead({
+        await sendEnterpriseQuoteToLead({
           name: "María González",
           email,
-          courses: ["Análisis de Datos para la Minería", "Power BI"],
-          message: "Capacitación para 30 personas.",
+          company: "Minera Los Pelambres",
+          courses: ["Power BI", "SQL Server", "Python"],
+          employeeCount: "30",
         });
         break;
 
