@@ -47,9 +47,9 @@ h1,h2,h3,p{margin:0;padding:0}
 <table width="600" cellpadding="0" cellspacing="0" border="0" class="card" style="max-width:600px;width:100%;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
 
 <!-- HEADER -->
-<tr><td style="background:#0f172a;padding:32px 40px;text-align:center" class="mp">
+<tr><td style="background:#ffffff;padding:36px 40px 20px;text-align:center;border-bottom:1px solid #f1f5f9" class="mp">
 <a href="https://www.programbi.com" target="_blank" style="text-decoration:none">
-<img src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974" width="140" alt="ProgramBI" style="display:inline-block;width:140px;max-width:100%"/>
+<img src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974" width="150" alt="ProgramBI" style="display:inline-block;width:150px;max-width:100%"/>
 </a>
 </td></tr>
 
@@ -133,7 +133,7 @@ ${profCard("R", "#0ea5e9", "Rodrigo Vega", "Docente Python & BI", "Ing. Comercia
 
 <!-- FIRMA -->
 <tr><td style="padding:32px 40px" class="mp">
-<p style="font-size:14px;color:#475569;line-height:1.6;margin-bottom:24px">Cualquier duda sobre temarios, postulación o medios de pago, puedes responder directamente a este correo.</p>
+<p style="font-size:14px;color:#475569;line-height:1.6;margin-bottom:24px">Si tienes dudas sobre temarios, postulación o medios de pago, puedes escribirnos a <a href="mailto:contacto@programbi.com" style="color:#1890FF;font-weight:600;text-decoration:none">contacto@programbi.com</a></p>
 <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
 <td width="48" valign="top" style="padding-right:14px">
 <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#1890FF,#4338ca);text-align:center;line-height:44px;color:#fff;font-weight:800;font-size:18px">M</div>
