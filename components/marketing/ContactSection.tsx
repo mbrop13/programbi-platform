@@ -130,8 +130,8 @@ export default function ContactSection() {
                   <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500 text-4xl">
                     ✓
                   </div>
-                  <h3 className="text-2xl font-black text-gray-900 mb-3">¡Mensaje Enviado!</h3>
-                  <p className="text-gray-500">Te contactaremos en menos de 24 horas.</p>
+                  <h3 className="text-2xl font-black text-gray-900 mb-3">¡Cotización Enviada!</h3>
+                  <p className="text-gray-500">Revisa tu bandeja de entrada, te enviamos un correo con toda la información.</p>
                 </motion.div>
               ) : (
                 <>
