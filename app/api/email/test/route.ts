@@ -14,9 +14,10 @@ export const dynamic = "force-dynamic";
  * Solo para desarrollo. Testea los distintos tipos de email.
  */
 export async function GET(req: NextRequest) {
-  if (process.env.NODE_ENV === "production") {
-    return NextResponse.json({ error: "Not available in production" }, { status: 403 });
-  }
+  // Temporarily allow in production for debugging
+  // if (process.env.NODE_ENV === "production") {
+  //   return NextResponse.json({ error: "Not available in production" }, { status: 403 });
+  // }
 
   const { searchParams } = new URL(req.url);
   const type = searchParams.get("type") || "quote";
