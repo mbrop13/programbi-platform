@@ -705,8 +705,8 @@ function CourseContactForm({ course }: { course: Course }) {
                   className="text-center py-10"
                 >
                   <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-5 text-emerald-500 text-3xl">✓</div>
-                  <h3 className="text-xl font-black text-gray-900 mb-2">¡Solicitud Enviada!</h3>
-                  <p className="text-gray-500 text-sm">Te contactaremos muy pronto con toda la información solicitada.</p>
+                  <h3 className="text-xl font-black text-gray-900 mb-2">¡Cotización Enviada!</h3>
+                  <p className="text-gray-500 text-sm">Revisa tu bandeja de entrada, te enviamos un correo con toda la información.</p>
                 </motion.div>
               ) : (
                 <>
