@@ -558,6 +558,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         defaultTab="register"
+        redirectUrl={`/pago?curso=${course.slug}`}
       />
     </>
   );

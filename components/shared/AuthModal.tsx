@@ -11,6 +11,7 @@ interface AuthModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultTab?: "login" | "register";
+  redirectUrl?: string;
 }
 
 const COUNTRIES = [
@@ -35,7 +36,7 @@ const COUNTRIES = [
   { code: "+1", flag: "🇺🇸", name: "EE.UU." },
 ];
 
-export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: AuthModalProps) {
+export default function AuthModal({ isOpen, onClose, defaultTab = "login", redirectUrl }: AuthModalProps) {
   const [tab, setTab] = useState<"login" | "register">(defaultTab);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -97,7 +98,11 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
         setSuccess("¡Bienvenido de vuelta! Redirigiendo...");
         setTimeout(() => {
           onClose();
-          window.location.reload();
+          if (redirectUrl) {
+            window.location.href = redirectUrl;
+          } else {
+            window.location.reload();
+          }
         }, 1200);
       }
     } catch {
@@ -150,7 +155,11 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
           setSuccess("¡Bienvenido a ProgramBI! 🎉");
           setTimeout(() => {
             onClose();
-            window.location.reload();
+            if (redirectUrl) {
+              window.location.href = redirectUrl;
+            } else {
+              window.location.reload();
+            }
           }, 1200);
         }
       }
@@ -169,7 +178,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login" }: Aut
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: redirectUrl ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectUrl)}` : `${window.location.origin}/auth/callback`,
         },
       });
       if (error) setError(error.message);
