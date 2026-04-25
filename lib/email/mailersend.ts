@@ -111,51 +111,229 @@ function wrapHtml(title: string, content: string) {
 </html>`;
 }
 
-// ─── Email 1: Cotización Individual (al lead) ──────────────────────────────────
+// ─── Email 1: Cotización Individual (al lead) — Template Premium ────────────
 export async function sendQuoteConfirmationToLead(params: {
   name: string;
   email: string;
   courses: string[];
   message?: string;
 }) {
-  const { name, email, courses, message } = params;
+  const { name, email, courses } = params;
+  const firstName = name.split(" ")[0] || name;
 
-  const courseList = courses.length > 0
-    ? `<ul style="margin:12px 0;padding-left:20px;">${courses.map(c => `<li style="margin:4px 0;color:#334155;">${c}</li>`).join("")}</ul>`
-    : "<p style='color:#64748B;'>Consulta general</p>";
-
-  const html = wrapHtml("Tu cotización — ProgramBI", `
-    <h1 style="margin:0 0 8px;font-size:24px;font-weight:900;color:#0F172A;">¡Gracias, ${name}!</h1>
-    <p style="margin:0 0 24px;font-size:15px;color:#475569;line-height:1.6;">
-      Recibimos tu solicitud de cotización. Nuestro equipo te contactará a la brevedad con información detallada y precios a tu medida.
-    </p>
-
-    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px 24px;margin-bottom:24px;">
-      <div style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;">Cursos de interés</div>
-      ${courseList}
-      ${message ? `<div style="margin-top:12px;padding-top:12px;border-top:1px solid #E2E8F0;font-size:13px;color:#64748B;"><strong>Tu mensaje:</strong> ${message}</div>` : ""}
-    </div>
-
-    <div style="background:linear-gradient(135deg,#EFF6FF,#EEF2FF);border:1px solid #BFDBFE;border-radius:12px;padding:20px 24px;margin-bottom:28px;">
-      <div style="font-size:13px;font-weight:700;color:#1D4ED8;margin-bottom:8px;">📞 ¿Tienes urgencia?</div>
-      <p style="margin:0;font-size:13px;color:#3730A3;line-height:1.5;">
-        Puedes escribirnos directo a <a href="mailto:${ADMIN_EMAIL}" style="color:#1890FF;font-weight:600;">${ADMIN_EMAIL}</a> 
-        o seguirnos en Instagram <strong>@programbi</strong>.
-      </p>
-    </div>
-
-    <a href="https://programbi.com/cursos" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;letter-spacing:0.3px;">
-      Ver todos los cursos →
-    </a>
-  `);
+  const html = buildQuoteEmailHtml(firstName);
 
   await sendEmail({
     to: email,
     toName: name,
-    subject: "✅ Recibimos tu cotización — ProgramBI",
+    subject: "Tu Cotización en ProgramBI — Cursos de Datos 100% Aplicados",
     html,
-    text: `Hola ${name}, recibimos tu cotización. Te contactaremos pronto. Cursos: ${courses.join(", ")}.`,
+    text: `Hola ${firstName}, gracias por tu interés en ProgramBI. Diseñamos cursos de programación y análisis de datos 100% aplicados al mercado laboral actual. Revisa tu cotización completa en tu correo. Cursos: ${courses.join(", ")}.`,
+    replyTo: ADMIN_EMAIL,
   });
+}
+
+function buildQuoteEmailHtml(nombre: string) {
+  return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Tu Cotización en ProgramBI</title>
+    <style type="text/css">
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        body { margin: 0; padding: 0; width: 100% !important; height: 100% !important; background-color: #f3f4f6; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+        h1, h2, h3, p { margin: 0; padding: 0; }
+        .wrapper { width: 100%; table-layout: fixed; background-color: #f3f4f6; padding-top: 30px; padding-bottom: 40px; }
+        .main-container { width: 100%; max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02); }
+        @media screen and (max-width: 600px) {
+            .wrapper { padding-top: 0; padding-bottom: 0; }
+            .main-container { border-radius: 0; border: none; width: 100% !important; }
+            .pad-mobile { padding-left: 20px !important; padding-right: 20px !important; }
+            .title-h1 { font-size: 24px !important; }
+            .stack-table { width: 100% !important; display: block !important; }
+            .course-price-box { text-align: left !important; padding-top: 10px !important; }
+        }
+    </style>
+</head>
+<body>
+    <div style="display: none; font-size: 1px; color: #f3f4f6; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+        Descubre nuestros programas 100% aplicados al mercado laboral. Cotización y fechas disponibles para ti.
+    </div>
+    <div class="wrapper">
+        <center>
+            <table class="main-container" width="600" cellpadding="0" cellspacing="0" border="0" align="center" style="background-color: #ffffff;">
+                <tr>
+                    <td align="center" style="padding: 40px 40px 20px 40px;" class="pad-mobile">
+                        <a href="https://www.programbi.com" target="_blank">
+                            <img src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974" width="160" alt="ProgramBI" style="display: block; width: 160px; max-width: 100%; border: 0;" />
+                        </a>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" style="padding: 10px 40px 30px 40px;" class="pad-mobile">
+                        <h1 class="title-h1" style="font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 15px; color: #0f172a;">
+                            Hola ${nombre},
+                        </h1>
+                        <p style="font-size: 16px; line-height: 1.6; color: #475569; margin-bottom: 20px;">
+                            Gracias por tu interés en <strong>ProgramBI</strong>. Diseñamos cursos de programación y análisis de datos <strong>100% aplicados al mercado laboral actual</strong>.
+                        </p>
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 4px;">
+                            <tr>
+                                <td style="padding: 15px 20px; font-size: 14px; line-height: 1.5; color: #334155;">
+                                    <strong>Perfil de nuestros alumnos:</strong> Ingenieros, industriales, comerciales, administrativos, contadores, control de gestión, finanzas, operaciones y proyectos.
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" style="padding: 0 40px 40px 40px;" class="pad-mobile">
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #0f172a; background-image: linear-gradient(to bottom right, #0f172a, #1e293b); border-radius: 16px;">
+                            <tr>
+                                <td align="center" style="padding: 40px 30px;">
+                                    <span style="background-color: #fbbf24; color: #78350f; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; padding: 5px 12px; border-radius: 100px; display: inline-block; margin-bottom: 20px;">⭐ Recomendación para comenzar</span>
+                                    <h2 style="font-size: 24px; color: #ffffff; font-weight: 900; margin-bottom: 10px; letter-spacing: -0.5px;">Pack Análisis de Datos (Nivel Básico)</h2>
+                                    <p style="font-size: 15px; color: #94a3b8; margin-bottom: 25px; line-height: 1.5;">Python + Power BI + SQL Server<br><span style="font-size: 13px;">48 Horas • 3 Meses • Inicias con uno y continúas el resto.</span></p>
+                                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 25px;">
+                                        <tr><td align="center">
+                                            <p style="font-size: 14px; color: #64748b; text-decoration: line-through; margin-bottom: 5px;">Valor Normal: $747.000</p>
+                                            <p style="font-size: 36px; color: #38bdf8; font-weight: 900; line-height: 1; margin: 0;">$448.200 <span style="display:inline-block; font-size: 12px; background-color: #10b981; color: #ffffff; padding: 4px 8px; border-radius: 4px; vertical-align: middle; margin-left: 10px; font-weight: 800; letter-spacing: 0.5px;">-40% OFF</span></p>
+                                        </td></tr>
+                                    </table>
+                                    <table align="center" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" bgcolor="#2563eb" style="border-radius: 8px;">
+                                        <a href="https://www.programbi.com/cursos/analisis-de-datos" target="_blank" style="font-size: 15px; font-weight: 800; color: #ffffff; text-decoration: none; padding: 16px 32px; display: inline-block; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px;">Ver Fechas del Pack</a>
+                                    </td></tr></table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                <tr><td align="center" style="padding: 0 40px;"><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td height="1" style="background-color: #e2e8f0; font-size: 1px; line-height: 1px;">&nbsp;</td></tr></table></td></tr>
+                <tr>
+                    <td align="left" style="padding: 30px 40px 20px 40px;" class="pad-mobile">
+                        <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 5px;">Nivel Básico (16 Hrs c/u)</h2>
+                        <p style="font-size: 14px; color: #64748b; margin-bottom: 25px;">Detalle si decides tomarlos de forma individual:</p>
+                        ${buildCourseRow("Power BI Básico", "📅 Inicia: 19 de Mayo<br>⏰ Mar y Jue | 19:30 a 21:30", "$249.000", "Oferta: $199.200", "#eab308")}
+                        ${buildCourseRow("SQL Server Básico", "📅 Inicia: 22 de Junio<br>⏰ Lun y Mié | 19:30 a 21:30", "$249.000", "Oferta: $199.200", "#ef4444")}
+                        ${buildCourseRow("Python Básico", "📅 Inicia: 25 de Mayo<br>⏰ Lun y Mié | 19:30 a 21:30", "$249.000", "Oferta: $199.200", "#3b82f6")}
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" style="padding: 10px 40px 30px 40px;" class="pad-mobile">
+                        <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 25px;">Nivel Intermedio (16 Hrs c/u)</h2>
+                        ${buildIntermediateRow("Power BI Intermedio", "📅 Inicia: 25 de Mayo | Lun y Mié")}
+                        ${buildIntermediateRow("SQL Server Intermedio", "📅 Inicia: 22 de Junio | Lun y Mié")}
+                        ${buildIntermediateRow("Python Intermedio", "📅 Inicia: 27 de Julio | Lun y Mié")}
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" style="background-color: #f8fafc; padding: 40px; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;" class="pad-mobile">
+                        <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 25px;">Metodología ProgramBI</h2>
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            ${buildBenefitRow("Clases en vivo (Zoom):", "Acceso a las grabaciones en el campus virtual 24/7.")}
+                            ${buildBenefitRow("Pagos Flexibles:", "Transferencia, Tarjeta de Crédito en cuotas o USD para extranjeros.")}
+                            ${buildBenefitRow("Certificación:", "Aprobación mediante un proyecto 100% aplicable a tu trabajo real.")}
+                            ${buildBenefitRow("Foco de valor:", "Automatizarás tus reportes diarios conectando SAP, SQL, Excel, APIs y Web.", true)}
+                        </table>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" style="padding: 40px;" class="pad-mobile">
+                        <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 5px;">Tu Equipo Docente</h2>
+                        <p style="font-size: 14px; color: #64748b; margin-bottom: 25px;">Aprende directamente de líderes activos en la industria:</p>
+                        ${buildDocenteRow("MO", "#eff6ff", "#2563eb", "Manuel Oliva", "Magíster Data Science UAI, docente universitario. Consultor Minero y Financiero.", "https://www.linkedin.com/in/manuelolivab/")}
+                        ${buildDocenteRow("EB", "#f1f5f9", "#475569", "Emanuel Berrocal", "Ingeniero Civil Matemático U. de Chile. Portfolio Manager de Renta Fija en Banco Itaú.", "https://www.linkedin.com/in/emanuelberrocal/")}
+                        ${buildDocenteRow("RV", "#f1f5f9", "#475569", "Rodrigo Vega", "Ingeniero Comercial U. de Chile. Analista de Business Intelligence en Infracommerce.", "https://www.linkedin.com/in/rodrigovega/", true)}
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" style="background-color: #1e293b; padding: 40px;" class="pad-mobile">
+                        <h2 style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 15px;">Formación Corporativa (B2B)</h2>
+                        <p style="font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 20px; text-align: center;">Más de <strong>5.000 alumnos capacitados</strong> en 6 años. Cursos cerrados a empresas con malla adaptada y horarios a medida (Online o Presencial).</p>
+                        <p style="font-size: 12px; color: #cbd5e1; line-height: 1.6; text-align: center; border-top: 1px solid #334155; padding-top: 20px;"><strong>Confían en nosotros:</strong> AngloAmerican, Copec, Deloitte, Banco de Chile, CMPC, AFP Cuprum, CENCOSUD, SQM, Superintendencia de Pensiones, Grupo CAP, entre otros.</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" style="padding: 40px;" class="pad-mobile">
+                        <p style="font-size: 15px; color: #475569; line-height: 1.6; margin-bottom: 30px;">Cualquier duda respecto a temarios, postulación o medios de pago, estaré atento para ayudarte. Puedes responder directamente a este correo.</p>
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #e2e8f0; padding-top: 30px;">
+                            <tr>
+                                <td width="70" valign="middle"><img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" width="55" alt="Manuel Oliva" style="border-radius: 50%; display: block;" /></td>
+                                <td valign="middle">
+                                    <p style="margin: 0 0 2px 0; font-size: 16px; font-weight: 800; color: #0f172a;">Manuel Oliva <a href="https://www.linkedin.com/in/manuelolivab/" style="font-size: 12px; font-weight: normal; margin-left: 5px; color: #2563eb; text-decoration: none;">[LinkedIn]</a></p>
+                                    <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 600; color: #2563eb;">Director ProgramBI Capacitaciones</p>
+                                    <p style="margin: 0 0 6px 0; font-size: 12px; color: #64748b; line-height: 1.4;">Magíster Data Science U. Adolfo Ibañez.<br>Docente Universitario de Postgrado.</p>
+                                    <p style="margin: 0; font-size: 12px; font-weight: 600; color: #0f172a;"><a href="tel:+56935409699" style="color: #0f172a; text-decoration: none;">📞 +569 3540 9699</a> &nbsp;|&nbsp; <a href="https://www.programbi.com" style="color: #2563eb; text-decoration: none;">🌐 programbi.com</a></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <table width="600" cellpadding="0" cellspacing="0" border="0" align="center">
+                <tr><td align="center" style="padding: 20px 40px; font-size: 11px; color: #94a3b8; line-height: 1.5;">© ${new Date().getFullYear()} ProgramBI Capacitaciones. Todos los derechos reservados.<br>Has recibido este correo porque solicitaste información en nuestro sitio web.</td></tr>
+            </table>
+        </center>
+    </div>
+</body>
+</html>`;
+}
+
+function buildCourseRow(title: string, schedule: string, originalPrice: string, offerPrice: string, color: string) {
+  return `<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 15px;"><tr>
+    <td width="3" style="background-color: ${color}; border-radius: 3px 0 0 3px;"></td>
+    <td style="background-color: #fafaf9; border: 1px solid #f5f5f4; border-left: none; padding: 15px 20px; border-radius: 0 8px 8px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td class="stack-table" width="60%" valign="top">
+          <h3 style="font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 4px;">${title}</h3>
+          <p style="font-size: 13px; color: #475569;">${schedule}</p>
+        </td>
+        <td class="stack-table course-price-box" width="40%" valign="top" align="right">
+          <p style="font-size: 12px; color: #94a3b8; text-decoration: line-through; margin-bottom: 2px;">${originalPrice}</p>
+          <p style="font-size: 16px; font-weight: 800; color: #10b981;">${offerPrice}</p>
+        </td>
+      </tr></table>
+    </td>
+  </tr></table>`;
+}
+
+function buildIntermediateRow(title: string, schedule: string) {
+  return `<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 15px;"><tr>
+    <td width="3" style="background-color: #cbd5e1; border-radius: 3px 0 0 3px;"></td>
+    <td style="background-color: #ffffff; border: 1px solid #e2e8f0; border-left: none; padding: 15px 20px; border-radius: 0 8px 8px 0;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td class="stack-table" width="60%" valign="top">
+          <h3 style="font-size: 15px; font-weight: 800; color: #334155; margin-bottom: 4px;">${title}</h3>
+          <p style="font-size: 13px; color: #64748b;">${schedule}</p>
+        </td>
+        <td class="stack-table course-price-box" width="40%" valign="top" align="right">
+          <p style="font-size: 15px; font-weight: 800; color: #2563eb;">Oferta: $199.200</p>
+        </td>
+      </tr></table>
+    </td>
+  </tr></table>`;
+}
+
+function buildBenefitRow(title: string, desc: string, isLast = false) {
+  return `<tr>
+    <td width="30" valign="top" ${!isLast ? 'style="padding-bottom: 15px;"' : ''}><img src="https://cdn-icons-png.flaticon.com/512/5610/5610944.png" width="20" style="display:block; opacity: 0.8;" alt="Check" /></td>
+    <td ${!isLast ? 'style="padding-bottom: 15px; font-size: 14px; color: #475569; line-height: 1.5;"' : 'style="font-size: 14px; color: #475569; line-height: 1.5;"'}><strong>${title}</strong> ${desc}</td>
+  </tr>`;
+}
+
+function buildDocenteRow(initials: string, bgColor: string, textColor: string, name: string, desc: string, linkedin: string, isLast = false) {
+  return `<table width="100%" cellpadding="0" cellspacing="0" border="0" ${!isLast ? 'style="margin-bottom: 20px;"' : ''}>
+    <tr>
+      <td width="40" valign="top"><div style="background-color: ${bgColor}; color: ${textColor}; width: 32px; height: 32px; border-radius: 50%; text-align: center; line-height: 32px; font-weight: 800; font-size: 14px;">${initials}</div></td>
+      <td valign="top">
+        <p style="margin: 0 0 2px 0; font-size: 15px; font-weight: 800; color: #0f172a;">${name} <a href="${linkedin}" style="font-size: 12px; font-weight: 600; color: #2563eb; margin-left: 5px; text-decoration: none;">[LinkedIn]</a></p>
+        <p style="margin: 0; font-size: 13px; color: #475569; line-height: 1.5;">${desc}</p>
+      </td>
+    </tr>
+  </table>`;
 }
 
 // ─── Email 2: Notificación interna — Nueva cotización ─────────────────────────
