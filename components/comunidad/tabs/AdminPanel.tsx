@@ -3436,10 +3436,12 @@ function AdminDiplomas() {
           <p className="text-sm text-gray-500">Crea certificados en PDF perfectos, de exactamente 1 página.</p>
         </div>
         <button 
-          onClick={() => setShowPreview(true)}
-          className="bg-brand-blue hover:bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors shadow-sm"
+          onClick={generatePDF}
+          disabled={isExporting}
+          className="bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors shadow-sm"
         >
-          <Eye className="w-4 h-4" /> Previsualizar PDF
+          {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+          {isExporting ? "Generando..." : "Descargar PDF"}
         </button>
       </div>
 
@@ -3480,48 +3482,6 @@ function AdminDiplomas() {
           </div>
         </div>
       </div>
-
-      {/* Hidden off-screen diploma for PDF capture (always in DOM, never inside a modal) */}
-      <div style={{ position: 'fixed', left: '-9999px', top: '-9999px', zIndex: -1, pointerEvents: 'none' }}>
-        <DiplomaContent dRef={hiddenDiplomaRef} dynamicScale={1} />
-      </div>
-
-      {/* Fullscreen Preview & Download Modal */}
-      <AnimatePresence>
-        {showPreview && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] bg-gray-900/95 backdrop-blur-sm flex flex-col"
-          >
-            <div className="p-4 flex items-center justify-between bg-gray-900 shadow-xl shrink-0 border-b border-gray-800">
-               <h2 className="text-white font-bold text-lg flex items-center gap-2">
-                 <FileText className="w-5 h-5 text-brand-blue" /> Vista Previa del PDF
-               </h2>
-               <div className="flex items-center gap-3">
-                 <button onClick={() => setShowPreview(false)} className="text-gray-400 hover:text-white px-3 py-2 transition-colors text-sm font-bold">
-                   Cancelar
-                 </button>
-                 <button 
-                   onClick={generatePDF}
-                   disabled={isExporting}
-                   className="bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white px-6 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors shadow-sm"
-                 >
-                   {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} 
-                   {isExporting ? "Generando Alta Calidad..." : "Descargar PDF (1 Hoja Exacta)"}
-                 </button>
-               </div>
-            </div>
-
-            <div className="flex-1 overflow-auto p-4 lg:p-8 flex items-center justify-center">
-               <div className="ring-4 ring-white/10 shadow-2xl rounded-sm">
-                 <DiplomaContent dRef={modalDiplomaRef} dynamicScale={1} />
-               </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
