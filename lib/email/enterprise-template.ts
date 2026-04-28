@@ -116,7 +116,7 @@ ${techCard("🐍", "Python + IA", "Automatización y análisis predictivo.", "#3
 
 <!-- FIRMA -->
 <tr><td style="padding:32px 40px" class="mp">
-<p style="font-size:14px;color:#475569;line-height:1.6;margin-bottom:24px">Si deseas enviarnos detalles sobre la cantidad de alumnos o los objetivos de tu empresa, escríbenos a <a href="mailto:contacto@programbi.com" style="color:#1890FF;font-weight:600;text-decoration:none">contacto@programbi.com</a></p>
+<p style="font-size:14px;color:#475569;line-height:1.6;margin-bottom:24px">Si deseas enviarnos detalles sobre la cantidad de alumnos o los objetivos de tu empresa, escríbenos a <a href="mailto:contacto@programbi.cl" style="color:#1890FF;font-weight:600;text-decoration:none">contacto@programbi.cl</a></p>
 <table width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
 <td width="48" valign="top" style="padding-right:14px">
 <div style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#1890FF,#4338ca);text-align:center;line-height:44px;color:#fff;font-weight:800;font-size:18px">M</div>

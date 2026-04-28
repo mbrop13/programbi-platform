@@ -23,7 +23,7 @@ const SMTP_USER = process.env.SES_SMTP_USER!;
 const SMTP_PASS = process.env.SES_SMTP_PASS!;
 const FROM_EMAIL = process.env.SES_FROM_EMAIL || "noreply@programbi.com";
 const FROM_NAME = process.env.SES_FROM_NAME || "ProgramBI";
-const ADMIN_EMAIL = process.env.SES_ADMIN_EMAIL || "contacto@programbi.com";
+const ADMIN_EMAIL = process.env.SES_ADMIN_EMAIL || "contacto@programbi.cl";
 
 function getTransporter() {
   if (!SMTP_USER || !SMTP_PASS) {
