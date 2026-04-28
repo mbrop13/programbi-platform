@@ -125,7 +125,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
