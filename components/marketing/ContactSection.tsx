@@ -56,7 +56,21 @@ export default function ContactSection() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Error al enviar");
 
-      setIsSuccess(true);
+      const courseSlugMap: Record<string, string> = {
+        "Análisis de Datos": "analisis-de-datos",
+        "Power BI": "power-bi",
+        "Python": "python",
+        "SQL Server": "sql-server",
+        "Excel": "excel-empresarial",
+        "Minería": "analitica-mineria",
+        "Finanzas": "analitica-financiera"
+      };
+
+      if (selectedChips.length === 1 && courseSlugMap[selectedChips[0]]) {
+        window.location.href = `/pago?curso=${courseSlugMap[selectedChips[0]]}`;
+      } else {
+        setIsSuccess(true);
+      }
     } catch (err: any) {
       setErrorMsg(err.message || "Ocurrió un error. Intenta de nuevo.");
     } finally {

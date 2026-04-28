@@ -622,7 +622,11 @@ function CourseContactForm({ course }: { course: Course }) {
       });
 
       if (!res.ok) throw new Error("Error submitting form");
-      setIsSuccess(true);
+      if (contactType === "personal") {
+        window.location.href = `/pago?curso=${course.slug}`;
+      } else {
+        setIsSuccess(true);
+      }
     } catch (err) {
       console.error(err);
       alert("Hubo un problema al enviar tu solicitud. Inténtalo de nuevo.");
