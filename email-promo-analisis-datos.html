@@ -9,45 +9,49 @@
         body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
         table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-collapse: collapse; }
         img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
-        body { margin: 0; padding: 0; width: 100% !important; height: 100% !important; background-color: #F8FAFC; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+        body { margin: 0; padding: 0; width: 100% !important; height: 100% !important; background-color: #F1F5F9; font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
         
         /* TYPOGRAPHY & LAYOUT */
-        .wrapper { width: 100%; table-layout: fixed; background-color: #F8FAFC; padding-bottom: 60px; }
-        .main { background-color: #ffffff; margin: 0 auto; width: 100%; max-width: 600px; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px -15px rgba(0,0,0,0.05); }
-        .header { background: linear-gradient(135deg, #0F172A 0%, #1E293B 100%); padding: 40px 30px; text-align: center; }
-        .hero { background: linear-gradient(to bottom, #1E293B, #0F172A); color: white; padding: 40px 30px; text-align: center; position: relative; }
+        .wrapper { width: 100%; table-layout: fixed; background-color: #F1F5F9; padding-bottom: 60px; }
+        .main { background-color: #ffffff; margin: 0 auto; width: 100%; max-width: 600px; border-radius: 24px; overflow: hidden; box-shadow: 0 20px 40px -15px rgba(0,0,0,0.05); border: 1px solid #E2E8F0; }
+        .header { background-color: #ffffff; padding: 40px 30px 20px; text-align: center; border-bottom: 1px solid #F1F5F9; }
+        .hero { background: linear-gradient(180deg, #ffffff 0%, #F8FAFC 100%); color: #0F172A; padding: 40px 30px; text-align: center; }
         .content { padding: 40px 30px; background-color: #ffffff; }
         
         h1, h2, h3, h4 { margin: 0; padding: 0; }
         p { margin: 0 0 15px 0; line-height: 1.6; color: #475569; }
         
         /* UTILS */
-        .text-center { text-align: center; }
-        .brand-blue { color: #1890FF; }
-        .bg-blue { background-color: #1890FF; }
         .badge { display: inline-block; padding: 6px 16px; background-color: rgba(24, 144, 255, 0.1); border: 1px solid rgba(24, 144, 255, 0.2); color: #1890FF; border-radius: 50px; font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
         
         /* BUTTON */
-        .btn { display: inline-block; padding: 16px 36px; background: linear-gradient(135deg, #1890FF, #0050b3); color: #ffffff !important; text-decoration: none; font-weight: 800; border-radius: 12px; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 10px 25px -5px rgba(24, 144, 255, 0.4); margin-top: 20px; margin-bottom: 20px; }
+        .btn { display: inline-block; padding: 18px 40px; background: linear-gradient(135deg, #1890FF, #0050b3); color: #ffffff !important; text-decoration: none; font-weight: 900; border-radius: 14px; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 10px 25px -5px rgba(24, 144, 255, 0.4); margin-top: 10px; margin-bottom: 10px; border: 2px solid #ffffff; }
+        .btn-outline { display: inline-block; padding: 12px 30px; background: transparent; color: #1890FF; text-decoration: none; font-weight: 800; border-radius: 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border: 2px solid #1890FF; margin-bottom: 10px; }
+        .btn-outline-dark { display: inline-block; padding: 12px 30px; background: transparent; color: #ffffff; text-decoration: none; font-weight: 800; border-radius: 12px; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border: 2px solid rgba(255,255,255,0.3); margin-top: 10px; }
         
         /* PRICE TAG */
-        .price-box { background: #F8FAFC; border: 2px dashed #E2E8F0; border-radius: 20px; padding: 25px; text-align: center; margin: 30px 0; }
+        .price-box { background: #ffffff; border: 2px solid #E2E8F0; border-radius: 20px; padding: 30px 20px; text-align: center; margin: 20px 0; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); position: relative; }
+        .price-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, #1890FF, #4338ca); border-radius: 20px 20px 0 0; }
         .price-original { text-decoration: line-through; color: #94A3B8; font-size: 18px; font-weight: 700; margin-bottom: 5px; }
-        .price-new { color: #0F172A; font-size: 42px; font-weight: 900; line-height: 1; margin-bottom: 10px; }
-        .price-save { color: #10B981; font-weight: 800; font-size: 14px; background: #D1FAE5; padding: 4px 12px; border-radius: 20px; display: inline-block; }
+        .price-new { color: #0F172A; font-size: 46px; font-weight: 900; line-height: 1; margin-bottom: 12px; letter-spacing: -1px; }
+        .price-save { color: #059669; font-weight: 800; font-size: 14px; background: #D1FAE5; padding: 6px 14px; border-radius: 20px; display: inline-block; border: 1px solid #A7F3D0; }
 
         /* MODULES */
-        .module { background-color: #F8FAFC; border-left: 4px solid #1890FF; padding: 20px; border-radius: 0 12px 12px 0; margin-bottom: 15px; }
-        .module h4 { color: #0F172A; font-size: 18px; margin-bottom: 5px; }
+        .module { background-color: #F8FAFC; border-left: 4px solid #1890FF; padding: 20px; border-radius: 0 12px 12px 0; margin-bottom: 15px; text-align: left; }
+        .module h4 { color: #0F172A; font-size: 16px; font-weight: 800; margin-bottom: 5px; }
         .module p { margin-bottom: 0; font-size: 14px; color: #64748B; }
+
+        /* BENEFITS */
+        .benefit { background: #ffffff; border: 1px solid #E2E8F0; padding: 15px; border-radius: 12px; margin-bottom: 10px; text-align: left; display: flex; align-items: center; }
 
         /* FOOTER */
         .footer { padding: 30px; text-align: center; color: #94A3B8; font-size: 12px; }
         .footer a { color: #94A3B8; text-decoration: underline; }
 
         @media screen and (max-width: 600px) {
-            .main { border-radius: 0; width: 100% !important; max-width: 100% !important; }
+            .main { border-radius: 0; width: 100% !important; max-width: 100% !important; border: none; }
             .header, .content, .hero { padding: 30px 20px; }
+            .price-new { font-size: 38px; }
         }
     </style>
 </head>
@@ -62,69 +66,87 @@
                         <!-- HEADER -->
                         <tr>
                             <td class="header">
-                                <img src="https://www.programbi.com/Logotipo-blanco.png" alt="ProgramBI Logo" width="180" style="display: block; margin: 0 auto;" />
+                                <img src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974" alt="ProgramBI Logo" width="200" style="display: block; margin: 0 auto;" />
                             </td>
                         </tr>
 
                         <!-- HERO SECTION -->
                         <tr>
                             <td class="hero">
-                                <span class="badge">OFERTA EXCLUSIVA</span>
-                                <h1 style="font-size: 32px; font-weight: 900; margin-bottom: 15px; line-height: 1.2;">Domina el Análisis de Datos de Cero a Experto</h1>
-                                <p style="color: #94A3B8; font-size: 16px; margin-bottom: 25px;">Impulsa tu carrera con el programa integral de 144 horas. Conviértete en el perfil más buscado por las empresas.</p>
-                                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop" alt="Data Analytics" width="100%" style="border-radius: 16px; display: block; border: 1px solid rgba(255,255,255,0.1);" />
+                                <span class="badge">Especialización Completa</span>
+                                <h1 style="font-size: 30px; font-weight: 900; margin-bottom: 15px; line-height: 1.2; letter-spacing: -0.5px;">Domina el Análisis de Datos de Cero a Experto</h1>
+                                <p style="color: #64748B; font-size: 16px; margin-bottom: 25px;">Impulsa tu carrera con el programa integral de 144 horas. Conviértete en el perfil más buscado por las empresas dominando las 3 herramientas clave.</p>
+                                
+                                <!-- PRICE BOX (MOVED UP AND REPLACING IMAGE) -->
+                                <div class="price-box">
+                                    <h3 style="color: #1890FF; font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Promoción 3x2 Limitada</h3>
+                                    <div class="price-original">Precio Normal: $747.000 CLP</div>
+                                    <div class="price-new">$299.000 <span style="font-size: 20px; color: #94A3B8; font-weight: 700;">CLP</span></div>
+                                    <div class="price-save">Ahorras un 60% ($448.000 CLP)</div>
+                                    <br/>
+                                    <a href="https://www.programbi.com/pago?curso=analisis-de-datos" class="btn">INSCRIBIRME AHORA</a><br/>
+                                    <a href="https://www.programbi.com/cursos/analisis-de-datos" class="btn-outline">VER PÁGINA DEL CURSO</a>
+                                    <p style="font-size: 12px; color: #94A3B8; margin-top: 10px; margin-bottom: 0;">* Incluye acceso de por vida, soporte y certificado.</p>
+                                </div>
                             </td>
                         </tr>
 
                         <!-- CONTENT SECTION -->
                         <tr>
                             <td class="content">
-                                <h2 style="font-size: 24px; font-weight: 800; color: #0F172A; margin-bottom: 20px;">¿Qué incluye este Programa? 🚀</h2>
-                                <p>Este no es un curso básico. Es una formación completa de 3 niveles diseñada para llevarte desde los fundamentos hasta la automatización e inteligencia artificial.</p>
+                                <h2 style="font-size: 22px; font-weight: 800; color: #0F172A; margin-bottom: 20px; text-align: center;">¿Qué aprenderás en este Programa? 🚀</h2>
+                                <p style="text-align: center; margin-bottom: 30px;">Una formación de 3 niveles diseñada para llevarte desde los fundamentos hasta la automatización con Python.</p>
                                 
                                 <!-- COURSE HIGHLIGHTS -->
-                                <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-top: 25px;">
+                                <table width="100%" border="0" cellpadding="0" cellspacing="0">
                                     <tr>
                                         <td>
                                             <div class="module">
-                                                <h4>📊 Nivel 1: Bases de Datos y SQL Server</h4>
-                                                <p>Extrae y administra datos reales a nivel corporativo. Aprende consultas, JOINs, subqueries y procedimientos almacenados.</p>
+                                                <h4>📊 Nivel 1: SQL Server</h4>
+                                                <p>Aprende consultas complejas, JOINs, subqueries y procedimientos almacenados para administrar bases de datos reales.</p>
                                             </div>
                                             <div class="module">
-                                                <h4>📈 Nivel 2: Business Intelligence con Power BI</h4>
-                                                <p>Conecta múltiples fuentes, modela con DAX y crea Dashboards interactivos y profesionales de alto impacto visual.</p>
+                                                <h4>📈 Nivel 2: Power BI</h4>
+                                                <p>Conecta múltiples fuentes, modela con DAX y crea Dashboards interactivos corporativos de alto impacto.</p>
                                             </div>
                                             <div class="module">
-                                                <h4>🐍 Nivel 3: Análisis Predictivo con Python</h4>
-                                                <p>Usa Pandas, Matplotlib y Seaborn para limpiar datos, realizar análisis exploratorios y automatizar reportes financieros.</p>
+                                                <h4>🐍 Nivel 3: Python</h4>
+                                                <p>Usa Pandas y Seaborn para limpiar datos, realizar análisis exploratorios y automatizar procesos.</p>
                                             </div>
                                         </td>
                                     </tr>
                                 </table>
 
-                                <!-- PRICE BOX -->
-                                <div class="price-box">
-                                    <h3 style="color: #64748B; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Promoción 3x2 por Tiempo Limitado</h3>
-                                    <div class="price-original">Precio Normal: $747.000 CLP</div>
-                                    <div class="price-new">$299.000 <span style="font-size: 20px; color: #64748B;">CLP</span></div>
-                                    <div class="price-save">Ahorras un 60% ($448.000 CLP)</div>
-                                    <br/>
-                                    <a href="https://www.programbi.com/pago?curso=analisis-de-datos" class="btn">INSCRIBIRME AHORA</a>
-                                    <p style="font-size: 12px; color: #94A3B8; margin-top: 10px; margin-bottom: 0;">* Incluye acceso de por vida a las clases grabadas, soporte de mentores y certificado al finalizar.</p>
-                                </div>
-
                                 <!-- BENEFITS -->
                                 <table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-top: 30px;">
                                     <tr>
                                         <td align="center">
-                                            <h3 style="color: #0F172A; font-size: 18px; margin-bottom: 15px;">¿Por qué elegir ProgramBI?</h3>
+                                            <h3 style="color: #0F172A; font-size: 18px; margin-bottom: 20px;">Incluido con tu inscripción</h3>
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td style="padding-top: 10px;">
-                                            <p>✅ <strong>144 Horas de Práctica:</strong> Enfoque 100% práctico con proyectos de la vida real (Capstone Project).</p>
-                                            <p>✅ <strong>Comunidad Privada:</strong> Acceso a foro de soporte, bolsa de trabajo y networking con otros profesionales.</p>
-                                            <p>✅ <strong>Garantía de Satisfacción:</strong> Actualizaciones gratuitas y profesores expertos de la industria corporativa.</p>
+                                        <td>
+                                            <div class="benefit">
+                                                <div style="font-size: 20px; margin-right: 15px;">💻</div>
+                                                <div>
+                                                    <strong style="color: #0F172A;">144 Horas de Práctica</strong><br/>
+                                                    <span style="font-size: 13px; color: #64748B;">Enfoque 100% práctico con un Capstone Project.</span>
+                                                </div>
+                                            </div>
+                                            <div class="benefit">
+                                                <div style="font-size: 20px; margin-right: 15px;">🤝</div>
+                                                <div>
+                                                    <strong style="color: #0F172A;">Comunidad Privada</strong><br/>
+                                                    <span style="font-size: 13px; color: #64748B;">Acceso a foro de soporte y networking con profesionales.</span>
+                                                </div>
+                                            </div>
+                                            <div class="benefit">
+                                                <div style="font-size: 20px; margin-right: 15px;">⭐</div>
+                                                <div>
+                                                    <strong style="color: #0F172A;">Acceso de por Vida</strong><br/>
+                                                    <span style="font-size: 13px; color: #64748B;">Actualizaciones gratuitas y clases grabadas disponibles siempre.</span>
+                                                </div>
+                                            </div>
                                         </td>
                                     </tr>
                                 </table>
@@ -132,12 +154,13 @@
                             </td>
                         </tr>
 
-                        <!-- FOOTER -->
+                        <!-- FOOTER CTA -->
                         <tr>
-                            <td class="header" style="background: #0F172A; padding: 30px;">
-                                <p style="color: #ffffff; font-weight: bold; margin-bottom: 5px; font-size: 16px;">¡No dejes pasar esta oportunidad!</p>
-                                <p style="color: #94A3B8; font-size: 14px; margin-bottom: 20px;">Las empresas están buscando analistas ahora mismo.</p>
-                                <a href="https://www.programbi.com/pago?curso=analisis-de-datos" style="color: #1890FF; text-decoration: none; font-weight: bold;">Ver temario completo en la web &rarr;</a>
+                            <td class="header" style="background: #0F172A; padding: 40px 30px; text-align: center;">
+                                <h3 style="color: #ffffff; font-weight: 900; margin-bottom: 10px; font-size: 22px;">El momento es ahora</h3>
+                                <p style="color: #94A3B8; font-size: 15px; margin-bottom: 25px;">Las empresas están buscando perfiles analíticos. No te quedes atrás.</p>
+                                <a href="https://www.programbi.com/pago?curso=analisis-de-datos" style="display: inline-block; padding: 14px 30px; background: #ffffff; color: #0F172A; text-decoration: none; font-weight: 800; border-radius: 12px; font-size: 14px; text-transform: uppercase;">Aprovechar 60% Dcto</a><br/>
+                                <a href="https://www.programbi.com/cursos/analisis-de-datos" class="btn-outline-dark">Ver Página del Curso</a>
                             </td>
                         </tr>
                     </table>

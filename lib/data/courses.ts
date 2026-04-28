@@ -101,8 +101,8 @@ export const courses: Course[] = [
     levels: [
       { 
         name: "Básico", 
-        price: 498000, 
-        originalPrice: 380000,
+        price: 299000, 
+        originalPrice: 747000,
         durationHours: 48, 
         whatYouLearn: [
           "Fundamentos y bases de datos con SQL Server", 
@@ -113,7 +113,8 @@ export const courses: Course[] = [
       },
       { 
         name: "Intermedio", 
-        price: 498000, 
+        price: 299000, 
+        originalPrice: 747000,
         durationHours: 48, 
         whatYouLearn: [
           "Conexión a fuentes, ETL y modelado con Power Query", 
@@ -124,7 +125,8 @@ export const courses: Course[] = [
       },
       { 
         name: "Avanzado", 
-        price: 498000, 
+        price: 299000, 
+        originalPrice: 747000,
         durationHours: 48, 
         whatYouLearn: [
           "Fundamentos de Python y entorno Colab", 
