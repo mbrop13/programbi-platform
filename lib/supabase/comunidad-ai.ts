@@ -215,7 +215,7 @@ export async function adminGetAllUsers() {
 
   const { data: profiles, error } = await adminDb
     .from("profiles")
-    .select("id, full_name, email, role, avatar_url, created_at, whatsapp")
+    .select("id, full_name, email, role, avatar_url, created_at, phone")
     .order("created_at", { ascending: false });
 
   if (error) { console.error("Error:", error); return []; }

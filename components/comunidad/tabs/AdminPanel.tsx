@@ -711,8 +711,8 @@ function AdminMembers() {
                    <div>
                      <h3 className="font-bold text-gray-900">{selectedUser.full_name || "Sin nombre"}</h3>
                      <p className="text-sm text-gray-400">{selectedUser.email}</p>
-                     {selectedUser.whatsapp && (
-                       <p className="text-xs text-brand-blue font-medium mt-0.5">{selectedUser.whatsapp}</p>
+                     {selectedUser.phone && (
+                       <p className="text-xs text-brand-blue font-medium mt-0.5">{selectedUser.phone}</p>
                      )}
                    </div>
                  </div>
@@ -817,6 +817,7 @@ function AdminMembers() {
                        </td>
                        <td className="px-5 py-4">
                           <div className="text-sm text-gray-600">{u.email}</div>
+                          {u.phone && <div className="text-[11px] text-gray-400 font-medium mt-0.5">{u.phone}</div>}
                        </td>
                        <td className="px-5 py-4">
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold

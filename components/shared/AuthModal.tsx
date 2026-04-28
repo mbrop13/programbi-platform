@@ -149,6 +149,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           password,
         });
 
+        if (data?.user?.id && whatsapp) {
+           await supabase.from("profiles").update({ phone: `${phonePrefix}${whatsapp}` }).eq("id", data.user.id);
+        }
+
         if (loginError) {
           setSuccess("¡Cuenta creada exitosamente! Revisa tu correo para verificar tu cuenta.");
         } else {
