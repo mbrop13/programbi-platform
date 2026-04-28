@@ -113,8 +113,7 @@ export const courses: Course[] = [
       },
       { 
         name: "Intermedio", 
-        price: 299000, 
-        originalPrice: 747000,
+        price: 498000, 
         durationHours: 48, 
         whatYouLearn: [
           "Conexión a fuentes, ETL y modelado con Power Query", 
@@ -125,8 +124,7 @@ export const courses: Course[] = [
       },
       { 
         name: "Avanzado", 
-        price: 299000, 
-        originalPrice: 747000,
+        price: 498000, 
         durationHours: 48, 
         whatYouLearn: [
           "Fundamentos de Python y entorno Colab", 
