@@ -6,15 +6,67 @@ import {
   sendNewLeadNotificationToAdmin,
 } from "@/lib/email/mailersend";
 
+// ─── Anti-Bot Helpers ───
+
+/** Honeypot: if a hidden field is filled, it's a bot */
+function isHoneypotFilled(body: any): boolean {
+  return !!(body._website || body._company_url || body._fax);
+}
+
+/** Timestamp: reject submissions faster than MIN_SECONDS */
+function isTooFast(body: any, minSeconds = 3): boolean {
+  if (!body._t) return false; // no timestamp sent — skip check (backwards compat)
+  const elapsed = (Date.now() - Number(body._t)) / 1000;
+  return elapsed < minSeconds;
+}
+
+/** Heuristic: detect gibberish names/emails */
+function looksLikeSpam(name: string, email: string, message?: string): boolean {
+  // 1. Excessive non-latin / non-space characters in name (allow accented chars)
+  const nonLatinRatio = (name.replace(/[\p{L}\p{M}\s.'-]/gu, "").length) / Math.max(name.length, 1);
+  if (nonLatinRatio > 0.3) return true;
+
+  // 2. Name is too short or too long
+  if (name.length < 2 || name.length > 120) return true;
+
+  // 3. Email domain has no dot (e.g. user@localhost)
+  const domain = email.split("@")[1] || "";
+  if (!domain.includes(".")) return true;
+
+  // 4. Excessive URLs in message (spam)
+  if (message) {
+    const urlCount = (message.match(/https?:\/\//gi) || []).length;
+    if (urlCount >= 3) return true;
+  }
+
+  return false;
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+
+    // ─── Anti-Bot Checks (silent reject → 200 to avoid bot retries) ───
+    if (isHoneypotFilled(body)) {
+      console.log("🤖 Bot blocked (honeypot):", body.email);
+      return NextResponse.json({ success: true }); // fake success
+    }
+    if (isTooFast(body)) {
+      console.log("🤖 Bot blocked (too fast):", body.email);
+      return NextResponse.json({ success: true });
+    }
+
     const whatsappClean = body.whatsapp || body.phone;
     const { name, email, message, selectedCourses, sourceCourse, leadType, company, position, employeeCount } = body;
     const whatsapp = whatsappClean;
 
     if (!name || !email) {
       return NextResponse.json({ error: "Nombre y email requeridos" }, { status: 400 });
+    }
+
+    if (looksLikeSpam(name, email, message)) {
+      console.log("🤖 Bot blocked (spam heuristic):", name, email);
+      return NextResponse.json({ success: true });
     }
 
     const adminDb = createAdminClient();

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,6 +21,7 @@ import ExcelSyllabus from "./syllabuses/ExcelSyllabus";
 import FinanceSyllabus from "./syllabuses/FinanceSyllabus";
 import MiningSyllabus from "./syllabuses/MiningSyllabus";
 import DataAnalyticsSyllabus from "./syllabuses/DataAnalyticsSyllabus";
+import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
@@ -573,6 +574,8 @@ function CourseContactForm({ course }: { course: Course }) {
   const [isSuccess, setIsSuccess] = useState(false);
   const [contactType, setContactType] = useState<"personal" | "empresa">("personal");
   const [selectedServices, setSelectedServices] = useState<string[]>(["Capacitación In-Company"]);
+  const [honeypot, setHoneypot] = useState("");
+  const formLoadedAt = useRef(Date.now());
 
   const enterpriseServices = [
     "Capacitación In-Company",
@@ -618,7 +621,7 @@ function CourseContactForm({ course }: { course: Course }) {
       const res = await fetch('/api/leads/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({ ...payload, ...getAntiBotFields(formLoadedAt.current, honeypot) })
       });
 
       if (!res.ok) throw new Error("Error submitting form");
@@ -798,6 +801,11 @@ function CourseContactForm({ course }: { course: Course }) {
                       <textarea name="message" rows={3}
                         placeholder={isPersonal ? "¿Tienes alguna consulta específica sobre el temario o proceso?" : "Cuéntanos tus necesidades: ¿cuántas personas? ¿qué herramientas usan actualmente?"}
                         className="w-full rounded-xl p-4 resize-none text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                    </div>
+
+                    {/* Honeypot — invisible to humans */}
+                    <div style={honeypotStyle} aria-hidden="true">
+                      <input type="text" name="_website" autoComplete="off" tabIndex={-1} value={honeypot} onChange={e => setHoneypot(e.target.value)} />
                     </div>
 
                     <motion.button type="submit" disabled={isSubmitting}

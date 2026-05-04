@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Send, Lock, ArrowRight } from "lucide-react";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { contactGallery } from "@/lib/data/images";
+import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 
 const interestChips = [
   "Análisis de Datos", "Power BI", "Python", "SQL Server", "Excel",
@@ -19,6 +20,8 @@ export default function ContactSection() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [acceptsPrivacy, setAcceptsPrivacy] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [honeypot, setHoneypot] = useState("");
+  const formLoadedAt = useRef(Date.now());
 
   // Form fields
   const [name, setName] = useState("");
@@ -50,6 +53,7 @@ export default function ContactSection() {
           message: message.trim() || null,
           selectedCourses: selectedChips,
           leadType: "contact",
+          ...getAntiBotFields(formLoadedAt.current, honeypot),
         }),
       });
 
@@ -230,6 +234,12 @@ export default function ContactSection() {
                         placeholder="¿Dudas sobre el temario?"
                         className="w-full rounded-xl p-4 resize-none text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all"
                       />
+                    </div>
+
+                    {/* Honeypot — invisible to humans */}
+                    <div style={honeypotStyle} aria-hidden="true">
+                      <label>No llenar este campo</label>
+                      <input type="text" name="_website" autoComplete="off" tabIndex={-1} value={honeypot} onChange={e => setHoneypot(e.target.value)} />
                     </div>
 
                     {errorMsg && (
