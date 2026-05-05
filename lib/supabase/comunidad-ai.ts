@@ -220,23 +220,37 @@ export async function adminGetAllUsers() {
 
   if (error) { console.error("Error:", error); return []; }
 
-  // Auto-backfill missing emails from auth.users (common after Firebase -> Supabase migration)
-  const profilesMissingEmail = (profiles || []).filter(p => !p.email);
-  if (profilesMissingEmail.length > 0) {
+  // Auto-backfill missing emails or phones from auth.users
+  const profilesMissingData = (profiles || []).filter(p => !p.email || !p.phone);
+  if (profilesMissingData.length > 0) {
     try {
       const { data: authData } = await adminDb.auth.admin.listUsers({ perPage: 1000 });
       if (authData && authData.users) {
-        const authMap = Object.fromEntries(authData.users.map(u => [u.id, u.email]));
+        const authMap = Object.fromEntries(authData.users.map(u => [u.id, u]));
         for (const p of (profiles || [])) {
-          if (!p.email && authMap[p.id]) {
-             p.email = authMap[p.id]; // Set locally for immediate display
-             // Backfill in the database silently
-             adminDb.from("profiles").update({ email: authMap[p.id] }).eq("id", p.id).then();
+          const authUser = authMap[p.id];
+          if (authUser) {
+            let updated = false;
+            let updates: any = {};
+            if (!p.email && authUser.email) {
+               p.email = authUser.email;
+               updates.email = authUser.email;
+               updated = true;
+            }
+            const phone = authUser.phone || authUser.user_metadata?.whatsapp || authUser.user_metadata?.phone;
+            if (!p.phone && phone) {
+               p.phone = phone;
+               updates.phone = phone;
+               updated = true;
+            }
+            if (updated) {
+               adminDb.from("profiles").update(updates).eq("id", p.id).then();
+            }
           }
         }
       }
     } catch (err) {
-      console.error("Failed to backfill missing emails:", err);
+      console.error("Failed to backfill missing data:", err);
     }
   }
 
