@@ -817,7 +817,13 @@ function AdminMembers() {
                        </td>
                        <td className="px-5 py-4">
                           <div className="text-sm text-gray-600">{u.email}</div>
-                          {u.phone && <div className="text-[11px] text-gray-400 font-medium mt-0.5">{u.phone}</div>}
+                          {u.phone && (
+                            <div className="mt-1.5 flex items-center">
+                              <a href={`https://wa.me/${u.phone.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 text-[11px] text-emerald-700 font-bold hover:underline bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full transition-colors">
+                                <MessageSquare className="w-3 h-3" /> {u.phone}
+                              </a>
+                            </div>
+                          )}
                        </td>
                        <td className="px-5 py-4">
                           <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold
