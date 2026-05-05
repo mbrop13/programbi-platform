@@ -47,7 +47,7 @@ export default function Footer() {
   return (
     <footer className="relative bg-white border-t border-gray-100">
       {/* ═══ CTA BANNER ═══ */}
-      <div className="max-w-[1200px] mx-auto px-5 lg:px-10 -mt-20">
+      <div className="max-w-[1200px] mx-auto px-5 lg:px-10 pt-12 pb-4">
         <FadeIn>
           <div
             className="rounded-[2rem] p-10 lg:p-14 text-center relative overflow-hidden"
@@ -72,7 +72,7 @@ export default function Footer() {
                 ¿Listo para transformar tu carrera?
               </h2>
               <p className="text-white/80 text-lg max-w-[500px] mx-auto mb-8">
-                Únete a más de 1.500 profesionales que ya dominan los datos.
+                Únete a más de +5000 profesionales que ya dominan los datos.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link
