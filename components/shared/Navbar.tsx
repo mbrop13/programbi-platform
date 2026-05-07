@@ -22,7 +22,7 @@ const navLinks = [
   { href: "/", label: "Inicio" },
   { href: "/cursos", label: "Cursos", hasMega: true },
   { href: "/consultorias", label: "Consultorías" },
-  { href: "/newsletter", label: "Newsletter" },
+  { href: "/webinar", label: "Webinar" },
   { href: "/comunidad", label: "Comunidad" },
 ];
 
