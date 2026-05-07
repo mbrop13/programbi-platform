@@ -301,8 +301,9 @@ export async function sendPaymentConfirmation(params: {
     return `
       <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F1F5F9; padding-bottom: 14px; margin-bottom: 16px;">
-          <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #0F172A; text-align: left;">${c.title}</h3>
-          <span style="background: #EFF6FF; color: #1890FF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #DBEAFE;">${c.levelName}</span>
+          <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #0F172A; text-align: left;">
+            ${c.title} - <span style="color: #1890FF; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${c.levelName}</span>
+          </h3>
         </div>
         
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 12px;">
@@ -321,11 +322,14 @@ export async function sendPaymentConfirmation(params: {
         </table>
         
         <div style="background: #F8FAFC; border-left: 4px solid #1890FF; border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #475569; line-height: 1.5; text-align: left;">
-          <strong>💡 Información Importante:</strong> El curso se dicta en vivo vía Zoom. Las clases quedan grabadas y tendrás acceso ilimitado a ellas y a los materiales en nuestra plataforma. El enlace de conexión se habilitará en tu aula virtual y te llegará también por correo 24 horas antes del inicio de clases.
+          <strong>💡 Información Importante:</strong> El curso se dicta en vivo vía Zoom. Las clases quedan grabadas y tendrás acceso ilimitado a ellas para repasarlas en cualquier momento. Te enviaremos las instrucciones y enlace de conexión antes del inicio de clases.
         </div>
       </div>
     `;
   }).join("");
+
+  // Limpiar método de pago: eliminar paréntesis como (webpay - tarjeta de crédito)
+  const cleanPaymentMethod = paymentMethod ? paymentMethod.replace(/\s*\(.*\)/gi, "").trim() : "Flow";
 
   // Detalle financiero / Recibo
   const courseRows = courses.map(c => `
@@ -348,12 +352,13 @@ export async function sendPaymentConfirmation(params: {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background:#FFFFFF;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.04);max-width:600px;width:100%;">
 
-        <!-- HEADER BANNER -->
+        <!-- HEADER BANNER - CLEAR BACKGROUND WITH LOGO -->
         <tr>
-          <td style="background:linear-gradient(135deg,#0F172A 0%,#1E293B 100%);padding:48px 40px;text-align:center;position:relative;">
-            <div style="font-size:26px;font-weight:900;color:#fff;letter-spacing:-0.5px;margin-bottom:6px;">ProgramBI</div>
-            <div style="font-size:11px;color:#1890FF;letter-spacing:3px;text-transform:uppercase;font-weight:800;margin-bottom:24px;">Transforma tu carrera con datos</div>
-            <div style="background: #10B981; color: #FFFFFF; font-size: 11px; font-weight: 800; padding: 6px 14px; border-radius: 99px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">
+          <td style="background:#FFFFFF;padding:40px 40px 20px;text-align:center;border-bottom:1px solid #F1F5F9;">
+            <div style="margin-bottom: 20px;">
+              <img src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974" width="150" alt="ProgramBI" style="display:inline-block;width:150px;max-width:100%"/>
+            </div>
+            <div style="background: #E6F4EA; color: #137333; font-size: 11px; font-weight: 800; padding: 6px 14px; border-radius: 99px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">
               🎉 ¡INSCRIPCIÓN CONFIRMADA!
             </div>
           </td>
@@ -389,12 +394,12 @@ export async function sendPaymentConfirmation(params: {
                   </tr>
                 </tfoot>
               </table>
-              ${paymentMethod ? `<p style="margin:12px 0 0;font-size:12px;color:#94A3B8;text-align:right;font-style:italic;">Método de Pago: ${paymentMethod}</p>` : ""}
+              ${cleanPaymentMethod ? `<p style="margin:12px 0 0;font-size:12px;color:#94A3B8;text-align:right;font-style:italic;">Método de Pago: ${cleanPaymentMethod}</p>` : ""}
             </div>
 
             <!-- ONBOARDING PASOS -->
             <div style="border-top:1px solid #F1F5F9;padding-top:32px;margin-bottom:36px;">
-              <h2 style="font-size:14px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;text-align:left;">🚀 Siguientes Pasos de tu Onboarding</h2>
+              <h2 style="font-size:14px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;text-align:left;">🚀 Siguientes Pasos</h2>
               
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
                 <tr>
@@ -402,8 +407,8 @@ export async function sendPaymentConfirmation(params: {
                     <div style="width:24px;height:24px;background:#EFF6FF;border-radius:50%;color:#1890FF;text-align:center;line-height:24px;font-size:12px;font-weight:800;">1</div>
                   </td>
                   <td style="padding-bottom:16px;text-align:left;">
-                    <h4 style="margin:0 0 4px;font-size:14px;font-weight:800;color:#0F172A;">Ingresa a tu Aula Virtual</h4>
-                    <p style="margin:0;font-size:13px;color:#64748B;line-height:1.5;">Haz clic en el botón de abajo para entrar a tu perfil de estudiante con el mismo correo con el que te registraste.</p>
+                    <h4 style="margin:0 0 4px;font-size:14px;font-weight:800;color:#0F172A;">Espera la fecha de inicio del curso</h4>
+                    <p style="margin:0;font-size:13px;color:#64748B;line-height:1.5;">Te enviaremos los detalles finales y las instrucciones de conexión por correo electrónico y WhatsApp antes de comenzar.</p>
                   </td>
                 </tr>
                 <tr>
@@ -411,8 +416,8 @@ export async function sendPaymentConfirmation(params: {
                     <div style="width:24px;height:24px;background:#EFF6FF;border-radius:50%;color:#1890FF;text-align:center;line-height:24px;font-size:12px;font-weight:800;">2</div>
                   </td>
                   <td style="padding-bottom:16px;text-align:left;">
-                    <h4 style="margin:0 0 4px;font-size:14px;font-weight:800;color:#0F172A;">Explora la Comunidad AI</h4>
-                    <p style="margin:0;font-size:13px;color:#64748B;line-height:1.5;">Únete al foro de comunidad, resuelve tus dudas 24/7 con nuestro tutor inteligente de Inteligencia Artificial y conecta con otros estudiantes de datos.</p>
+                    <h4 style="margin:0 0 4px;font-size:14px;font-weight:800;color:#0F172A;">Participa en las clases en vivo</h4>
+                    <p style="margin:0;font-size:13px;color:#64748B;line-height:1.5;">Conéctate y participa activamente en las sesiones en vivo vía Zoom. Es la mejor oportunidad para interactuar con el docente y resolver tus dudas en el acto.</p>
                   </td>
                 </tr>
                 <tr>
@@ -420,18 +425,18 @@ export async function sendPaymentConfirmation(params: {
                     <div style="width:24px;height:24px;background:#EFF6FF;border-radius:50%;color:#1890FF;text-align:center;line-height:24px;font-size:12px;font-weight:800;">3</div>
                   </td>
                   <td style="padding-bottom:0;text-align:left;">
-                    <h4 style="margin:0 0 4px;font-size:14px;font-weight:800;color:#0F172A;">Prepara tu Computador</h4>
-                    <p style="margin:0;font-size:13px;color:#64748B;line-height:1.5;">En la sección de recursos del aula virtual tendrás acceso a guías detalladas para instalar las herramientas que utilizaremos en tus clases.</p>
+                    <h4 style="margin:0 0 4px;font-size:14px;font-weight:800;color:#0F172A;">Acceso ilimitado a grabaciones</h4>
+                    <p style="margin:0;font-size:13px;color:#64748B;line-height:1.5;">Si no puedes asistir en vivo un día, ¡no te preocupes! Todas las sesiones quedan grabadas y tendrás acceso completo para repasarlas cuando quieras.</p>
                   </td>
                 </tr>
               </table>
             </div>
 
-            <!-- BOTON CTA -->
+            <!-- BOTON CTA - WHATSAPP DIRECTO -->
             <div style="text-align:center;margin-top:36px;margin-bottom:20px;">
-              <a href="https://programbi.com/comunidad" 
-                 style="display:inline-block;background:linear-gradient(135deg,#1890FF 0%,#4338ca 100%);color:#fff;font-size:15px;font-weight:800;text-decoration:none;padding:16px 36px;border-radius:14px;box-shadow:0 8px 16px rgba(24,144,255,0.25);letter-spacing:0.3px;">
-                Entrar a Mi Aula Virtual →
+              <a href="https://wa.me/56935409699" 
+                 style="display:inline-block;background:linear-gradient(135deg,#25D366 0%,#128C7E 100%);color:#fff;font-size:15px;font-weight:800;text-decoration:none;padding:16px 36px;border-radius:14px;box-shadow:0 8px 16px rgba(37,211,102,0.25);letter-spacing:0.3px;">
+                💬 ¿Tienes dudas? Escríbenos por WhatsApp →
               </a>
             </div>
 
@@ -442,8 +447,8 @@ export async function sendPaymentConfirmation(params: {
         <tr>
           <td style="padding:32px 40px;border-top:1px solid #F1F5F9;background:#FAFAFA;">
             <p style="margin:0 0 12px;font-size:13px;color:#64748B;text-align:center;line-height:1.6;">
-              ¿Tienes dudas o necesitas ayuda técnica para el inicio de clases?<br/>
-              No dudes en escribirnos respondiendo a este correo o vía WhatsApp a nuestro canal de soporte.
+              ¿Tienes dudas o necesitas ayuda técnica?<br/>
+              Escríbenos directamente respondiendo a este correo o vía WhatsApp a nuestro soporte.
             </p>
             <p style="margin:0;font-size:12px;color:#94A3B8;text-align:center;line-height:1.6;">
               © ${new Date().getFullYear()} ProgramBI — Todos los derechos reservados<br/>
@@ -464,7 +469,7 @@ export async function sendPaymentConfirmation(params: {
     toName: name,
     subject: "🎉 ¡Inscripción exitosa! Tu lugar en ProgramBI está confirmado",
     html,
-    text: `¡Hola ${name}! Tu pago fue confirmado con éxito. ID Orden: ${orderId}. Cursos inscritos: ${courses.map(c => `${c.title} (${c.levelName})`).join(", ")}. Ingresa a tu aula virtual en: https://programbi.com/comunidad`,
+    text: `¡Hola ${name}! Tu pago fue confirmado con éxito. ID Orden: ${orderId}. Cursos inscritos: ${courses.map(c => `${c.title} (${c.levelName})`).join(", ")}. Si tienes dudas escríbenos por WhatsApp al +56935409699`,
   });
 }
 
