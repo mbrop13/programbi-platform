@@ -15,6 +15,8 @@
 import nodemailer from "nodemailer";
 import { buildQuoteEmailHtml } from "./quote-template";
 import { buildEnterpriseEmailHtml } from "./enterprise-template";
+import { staticSchedules, formatScheduleDate } from "../data/course-schedules";
+import { createAdminClient } from "../supabase/server";
 
 // ─── Config ────────────────────────────────────────────────────────────────────
 const SMTP_HOST = process.env.SES_SMTP_HOST || "email-smtp.us-east-1.amazonaws.com";
@@ -263,76 +265,206 @@ export async function sendNotifyMeConfirmation(params: {
 export async function sendPaymentConfirmation(params: {
   name: string;
   email: string;
-  courses: Array<{ title: string; levelName: string; price: number }>;
+  courses: Array<{ slug?: string; title: string; levelName: string; price: number }>;
   orderId: string;
   totalPaid: number;
   paymentMethod?: string;
 }) {
   const { name, email, courses, orderId, totalPaid, paymentMethod } = params;
 
+  // Intentar obtener las fechas reales desde Supabase
+  let activeSchedules: any[] = [];
+  try {
+    const supabase = createAdminClient();
+    const { data } = await supabase
+      .from("course_schedules")
+      .select("*")
+      .eq("is_active", true);
+    if (data) activeSchedules = data;
+  } catch (err) {
+    console.warn("No se pudieron cargar los horarios dinámicos para el email de confirmación, usando fallbacks.", err);
+  }
+
+  // Generar tarjetas para cada curso comprado con información detallada de fechas e inicio
+  const courseDetailCards = courses.map(c => {
+    // Buscar horario
+    let sched = activeSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName);
+    if (!sched && c.slug) {
+      sched = staticSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName);
+    }
+
+    const hasSchedule = !!sched;
+    const startDateFormatted = hasSchedule && sched.start_date ? formatScheduleDate(sched.start_date) : "Por confirmar";
+    const days = hasSchedule ? sched.schedule_days : "Por confirmar";
+    const time = hasSchedule ? sched.schedule_time : "Por confirmar";
+
+    return `
+      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F1F5F9; padding-bottom: 14px; margin-bottom: 16px;">
+          <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #0F172A; text-align: left;">${c.title}</h3>
+          <span style="background: #EFF6FF; color: #1890FF; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.5px; border: 1px solid #DBEAFE;">${c.levelName}</span>
+        </div>
+        
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 12px;">
+          <tr>
+            <td style="padding: 6px 0; font-size: 14px; color: #64748B; width: 140px; text-align: left;"><strong>📅 Fecha de Inicio:</strong></td>
+            <td style="padding: 6px 0; font-size: 14px; font-weight: 700; color: #0F172A; text-align: left;">${startDateFormatted}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; font-size: 14px; color: #64748B; text-align: left;"><strong>🗓️ Días de Clases:</strong></td>
+            <td style="padding: 6px 0; font-size: 14px; font-weight: 700; color: #0F172A; text-align: left;">${days}</td>
+          </tr>
+          <tr>
+            <td style="padding: 6px 0; font-size: 14px; color: #64748B; text-align: left;"><strong>⏰ Horario:</strong></td>
+            <td style="padding: 6px 0; font-size: 14px; font-weight: 700; color: #0F172A; text-align: left;">${time} (Vía Zoom en Vivo)</td>
+          </tr>
+        </table>
+        
+        <div style="background: #F8FAFC; border-left: 4px solid #1890FF; border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #475569; line-height: 1.5; text-align: left;">
+          <strong>💡 Información Importante:</strong> El curso se dicta en vivo vía Zoom. Las clases quedan grabadas y tendrás acceso ilimitado a ellas y a los materiales en nuestra plataforma. El enlace de conexión se habilitará en tu aula virtual y te llegará también por correo 24 horas antes del inicio de clases.
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  // Detalle financiero / Recibo
   const courseRows = courses.map(c => `
     <tr>
-      <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:14px;color:#0F172A;">${c.title}</td>
-      <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">${c.levelName}</td>
+      <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:14px;color:#0F172A;text-align:left;">${c.title} (${c.levelName})</td>
       <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;text-align:right;">${formatCLP(c.price)}</td>
     </tr>
   `).join("");
 
-  const html = wrapHtml("Pago confirmado — ProgramBI", `
-    <div style="text-align:center;padding:10px 0 28px;">
-      <div style="width:64px;height:64px;background:linear-gradient(135deg,#10B981,#059669);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">
-        <span style="font-size:30px;line-height:1;">✓</span>
-      </div>
-      <h1 style="margin:0 0 8px;font-size:24px;font-weight:900;color:#0F172A;">¡Pago confirmado!</h1>
-      <p style="margin:0;font-size:15px;color:#475569;">Tu inscripción ha sido procesada exitosamente.</p>
-    </div>
+  const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¡Felicidades por tu inscripción! — ProgramBI</title>
+</head>
+<body style="margin:0;padding:0;background:#F8FAFC;font-family:'Segoe UI',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#FFFFFF;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.04);max-width:600px;width:100%;">
 
-    <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:12px;padding:16px 20px;margin-bottom:24px;text-align:center;">
-      <div style="font-size:11px;font-weight:700;color:#166534;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Orden N°</div>
-      <div style="font-size:18px;font-weight:900;color:#166534;font-family:monospace;">${orderId}</div>
-    </div>
-
-    <table style="width:100%;">
-      <thead>
+        <!-- HEADER BANNER -->
         <tr>
-          <th style="text-align:left;font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;padding-bottom:8px;">Curso</th>
-          <th style="text-align:left;font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;padding-bottom:8px;">Nivel</th>
-          <th style="text-align:right;font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;padding-bottom:8px;">Precio</th>
+          <td style="background:linear-gradient(135deg,#0F172A 0%,#1E293B 100%);padding:48px 40px;text-align:center;position:relative;">
+            <div style="font-size:26px;font-weight:900;color:#fff;letter-spacing:-0.5px;margin-bottom:6px;">ProgramBI</div>
+            <div style="font-size:11px;color:#1890FF;letter-spacing:3px;text-transform:uppercase;font-weight:800;margin-bottom:24px;">Transforma tu carrera con datos</div>
+            <div style="background: #10B981; color: #FFFFFF; font-size: 11px; font-weight: 800; padding: 6px 14px; border-radius: 99px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">
+              🎉 ¡INSCRIPCIÓN CONFIRMADA!
+            </div>
+          </td>
         </tr>
-      </thead>
-      <tbody>${courseRows}</tbody>
-      <tfoot>
+
+        <!-- MAIN BODY -->
         <tr>
-          <td colspan="2" style="padding-top:12px;font-size:15px;font-weight:700;color:#0F172A;">Total pagado</td>
-          <td style="padding-top:12px;font-size:18px;font-weight:900;color:#1890FF;text-align:right;">${formatCLP(totalPaid)}</td>
+          <td style="padding:40px 40px 32px;">
+            <h1 style="margin:0 0 16px;font-size:24px;font-weight:900;color:#0F172A;text-align:left;letter-spacing:-0.5px;">¡Felicidades por dar el siguiente paso, ${name.split(" ")[0]}!</h1>
+            <p style="margin:0 0 28px;font-size:15px;color:#475569;line-height:1.6;text-align:left;">
+              Hemos recibido y procesado tu pago de forma exitosa. Oficialmente ya eres parte de ProgramBI y tienes asegurado tu cupo para comenzar tu formación. A continuación encontrarás todos los detalles clave de tus clases e inicio del curso:
+            </p>
+
+            <!-- CURSOS DETALLE -->
+            <div style="margin-bottom: 32px;">
+              <h2 style="font-size:14px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;text-align:left;">📅 Horarios e Información de Clases</h2>
+              ${courseDetailCards}
+            </div>
+
+            <!-- RESUMEN DE PAGO (BOLETA / DETALLE) -->
+            <div style="background:#F8FAFC;border: 1px solid #E2E8F0;border-radius:16px;padding:24px;margin-bottom:32px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E2E8F0;padding-bottom:12px;margin-bottom:14px;">
+                <span style="font-size:12px;font-weight:800;color:#64748B;text-transform:uppercase;letter-spacing:1px;text-align:left;">Comprobante de Pago</span>
+                <span style="font-size:12px;font-weight:800;color:#1890FF;font-family:monospace;">ID Orden: ${orderId}</span>
+              </div>
+              
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tbody>${courseRows}</tbody>
+                <tfoot>
+                  <tr>
+                    <td style="padding-top:14px;font-size:15px;font-weight:800;color:#0F172A;text-align:left;">Total Pagado</td>
+                    <td style="padding-top:14px;font-size:18px;font-weight:900;color:#10B981;text-align:right;">${formatCLP(totalPaid)}</td>
+                  </tr>
+                </tfoot>
+              </table>
+              ${paymentMethod ? `<p style="margin:12px 0 0;font-size:12px;color:#94A3B8;text-align:right;font-style:italic;">Método de Pago: ${paymentMethod}</p>` : ""}
+            </div>
+
+            <!-- ONBOARDING PASOS -->
+            <div style="border-top:1px solid #F1F5F9;padding-top:32px;margin-bottom:36px;">
+              <h2 style="font-size:14px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;text-align:left;">🚀 Siguientes Pasos de tu Onboarding</h2>
+              
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+                <tr>
+                  <td valign="top" style="width:32px;padding-right:12px;">
+                    <div style="width:24px;height:24px;background:#EFF6FF;border-radius:50%;color:#1890FF;text-align:center;line-height:24px;font-size:12px;font-weight:800;">1</div>
+                  </td>
+                  <td style="padding-bottom:16px;text-align:left;">
+                    <h4 style="margin:0 0 4px;font-size:14px;font-weight:800;color:#0F172A;">Ingresa a tu Aula Virtual</h4>
+                    <p style="margin:0;font-size:13px;color:#64748B;line-height:1.5;">Haz clic en el botón de abajo para entrar a tu perfil de estudiante con el mismo correo con el que te registraste.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td valign="top" style="width:32px;padding-right:12px;">
+                    <div style="width:24px;height:24px;background:#EFF6FF;border-radius:50%;color:#1890FF;text-align:center;line-height:24px;font-size:12px;font-weight:800;">2</div>
+                  </td>
+                  <td style="padding-bottom:16px;text-align:left;">
+                    <h4 style="margin:0 0 4px;font-size:14px;font-weight:800;color:#0F172A;">Explora la Comunidad AI</h4>
+                    <p style="margin:0;font-size:13px;color:#64748B;line-height:1.5;">Únete al foro de comunidad, resuelve tus dudas 24/7 con nuestro tutor inteligente de Inteligencia Artificial y conecta con otros estudiantes de datos.</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td valign="top" style="width:32px;padding-right:12px;">
+                    <div style="width:24px;height:24px;background:#EFF6FF;border-radius:50%;color:#1890FF;text-align:center;line-height:24px;font-size:12px;font-weight:800;">3</div>
+                  </td>
+                  <td style="padding-bottom:0;text-align:left;">
+                    <h4 style="margin:0 0 4px;font-size:14px;font-weight:800;color:#0F172A;">Prepara tu Computador</h4>
+                    <p style="margin:0;font-size:13px;color:#64748B;line-height:1.5;">En la sección de recursos del aula virtual tendrás acceso a guías detalladas para instalar las herramientas que utilizaremos en tus clases.</p>
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- BOTON CTA -->
+            <div style="text-align:center;margin-top:36px;margin-bottom:20px;">
+              <a href="https://programbi.com/comunidad" 
+                 style="display:inline-block;background:linear-gradient(135deg,#1890FF 0%,#4338ca 100%);color:#fff;font-size:15px;font-weight:800;text-decoration:none;padding:16px 36px;border-radius:14px;box-shadow:0 8px 16px rgba(24,144,255,0.25);letter-spacing:0.3px;">
+                Entrar a Mi Aula Virtual →
+              </a>
+            </div>
+
+          </td>
         </tr>
-      </tfoot>
-    </table>
 
-    ${paymentMethod ? `<p style="font-size:13px;color:#94A3B8;margin-top:8px;text-align:right;">Pagado con ${paymentMethod}</p>` : ""}
+        <!-- FOOTER -->
+        <tr>
+          <td style="padding:32px 40px;border-top:1px solid #F1F5F9;background:#FAFAFA;">
+            <p style="margin:0 0 12px;font-size:13px;color:#64748B;text-align:center;line-height:1.6;">
+              ¿Tienes dudas o necesitas ayuda técnica para el inicio de clases?<br/>
+              No dudes en escribirnos respondiendo a este correo o vía WhatsApp a nuestro canal de soporte.
+            </p>
+            <p style="margin:0;font-size:12px;color:#94A3B8;text-align:center;line-height:1.6;">
+              © ${new Date().getFullYear()} ProgramBI — Todos los derechos reservados<br/>
+              <a href="https://programbi.com" style="color:#1890FF;text-decoration:none;font-weight:600;">programbi.com</a> · 
+              <a href="mailto:${ADMIN_EMAIL}" style="color:#1890FF;text-decoration:none;font-weight:600;">${ADMIN_EMAIL}</a>
+            </p>
+          </td>
+        </tr>
 
-    <div style="background:linear-gradient(135deg,#EFF6FF,#EEF2FF);border-radius:12px;padding:20px 24px;margin-top:28px;">
-      <div style="font-size:13px;font-weight:700;color:#1D4ED8;margin-bottom:8px;">📌 Próximos pasos</div>
-      <ol style="margin:0;padding-left:18px;font-size:13px;color:#3730A3;line-height:1.8;">
-        <li>Recibirás un correo con el acceso y la fecha de inicio de clases.</li>
-        <li>Únete a la comunidad ProgramBI para conectar con otros estudiantes.</li>
-        <li>Prepara tu ambiente de trabajo siguiendo nuestra guía de instalación.</li>
-      </ol>
-    </div>
-
-    <div style="text-align:center;margin-top:28px;">
-      <a href="https://programbi.com/comunidad" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
-        Ir a mi área de estudiante →
-      </a>
-    </div>
-  `);
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 
   await sendEmail({
     to: email,
     toName: name,
-    subject: "🎉 ¡Pago confirmado! Tu inscripción en ProgramBI",
+    subject: "🎉 ¡Inscripción exitosa! Tu lugar en ProgramBI está confirmado",
     html,
-    text: `¡Hola ${name}! Tu pago fue confirmado. Total: ${formatCLP(totalPaid)}. Orden: ${orderId}. Cursos: ${courses.map(c => c.title).join(", ")}.`,
+    text: `¡Hola ${name}! Tu pago fue confirmado con éxito. ID Orden: ${orderId}. Cursos inscritos: ${courses.map(c => `${c.title} (${c.levelName})`).join(", ")}. Ingresa a tu aula virtual en: https://programbi.com/comunidad`,
   });
 }
 

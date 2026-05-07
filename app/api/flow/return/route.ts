@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFlowPaymentStatus, FLOW_STATUS } from "@/lib/flow/client";
 import { createAdminClient } from "@/lib/supabase/server";
+import { sendPaymentConfirmation } from "@/lib/email/mailersend";
 
 /**
  * Flow redirects user here after payment.
@@ -38,7 +39,7 @@ async function handleReturn(req: NextRequest, token: string | null) {
     // Try to find payment record
     const { data: payment } = await supabase
       .from("payments")
-      .select("id, user_id, course_id, status, metadata")
+      .select("id, user_id, course_id, status, metadata, payer_email, amount, flow_order")
       .eq("flow_order", flowStatus.commerceOrder)
       .maybeSingle();
 
@@ -74,6 +75,7 @@ async function handleReturn(req: NextRequest, token: string | null) {
     console.log("🎯 Enrollment data:", { userId, courseSlug, bumpSelections });
 
     // 3. Update payment record
+    let wasUpdatedToPaid = false;
     if (payment && payment.status !== "paid") {
       await supabase.from("payments").update({
         status: "paid",
@@ -82,6 +84,58 @@ async function handleReturn(req: NextRequest, token: string | null) {
         payer_email: flowStatus.payer || null,
         paid_at: new Date().toISOString(),
       }).eq("id", payment.id);
+      wasUpdatedToPaid = true;
+    }
+
+    // Send confirmation email if we just marked it as paid
+    if (wasUpdatedToPaid && userId) {
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("full_name, email")
+          .eq("id", userId)
+          .single();
+
+        const name = profile?.full_name || "Estudiante";
+        const email = profile?.email || flowStatus.payer || payment?.payer_email || "";
+
+        const coursesToSend = cartItems.map((item: any) => ({
+          slug: item.slug,
+          title: item.title,
+          levelName: item.levelName,
+          price: item.pricePerUnit * item.quantity,
+        }));
+
+        let fallbackCourses = [];
+        if (coursesToSend.length === 0 && courseSlug) {
+          const { data: c } = await supabase.from("courses").select("slug, title").eq("slug", courseSlug).single();
+          if (c) {
+            fallbackCourses.push({
+              slug: c.slug,
+              title: c.title,
+              levelName: "Básico",
+              price: payment?.amount || 0,
+            });
+          }
+        }
+        const finalCourses = coursesToSend.length > 0 ? coursesToSend : fallbackCourses;
+
+        if (email) {
+          await sendPaymentConfirmation({
+            name,
+            email,
+            courses: finalCourses,
+            orderId: flowStatus.commerceOrder || payment?.flow_order,
+            totalPaid: payment?.amount || flowStatus.amount,
+            paymentMethod: flowStatus.paymentData?.media || "Flow",
+          });
+          console.log(`📧 Purchase confirmation email sent successfully to ${email} via return redirect`);
+        } else {
+          console.warn(`⚠️ Could not send confirmation email in return redirect: Missing email for user ${userId}`);
+        }
+      } catch (emailErr) {
+        console.error("❌ Error sending confirmation email in return redirect:", emailErr);
+      }
     }
 
     // 4. Create enrollments
