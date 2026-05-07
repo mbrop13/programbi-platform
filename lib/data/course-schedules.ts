@@ -17,7 +17,7 @@ export const staticSchedules: Omit<CourseSchedule, 'id'>[] = [
   {
     course_slug: "power-bi",
     level_name: "Básico",
-    start_date: "2026-05-05",
+    start_date: "2026-06-09",
     schedule_days: "Martes y Jueves",
     schedule_time: "19:30 a 21:30",
     duration_hours: 16,
@@ -26,7 +26,7 @@ export const staticSchedules: Omit<CourseSchedule, 'id'>[] = [
   {
     course_slug: "sql-server",
     level_name: "Básico",
-    start_date: "2026-04-20",
+    start_date: "2026-06-22",
     schedule_days: "Lunes y Miércoles",
     schedule_time: "19:30 a 21:30",
     duration_hours: 16,
@@ -35,7 +35,7 @@ export const staticSchedules: Omit<CourseSchedule, 'id'>[] = [
   {
     course_slug: "python",
     level_name: "Básico",
-    start_date: "2026-05-18",
+    start_date: "2026-05-25",
     schedule_days: "Lunes y Miércoles",
     schedule_time: "19:30 a 21:30",
     duration_hours: 16,
