@@ -112,16 +112,18 @@ export async function POST(req: NextRequest) {
       console.error("❌ Admin email error:", err?.message, err?.stack);
     }
 
-    // 2. Confirmación al lead (diferente para empresa vs. individual)
-    try {
-      if ((leadType === "empresa" || leadType === "enterprise") && company) {
-        await sendEnterpriseQuoteToLead({ name, email, company, courses, employeeCount });
-      } else {
-        await sendQuoteConfirmationToLead({ name, email, courses, message });
+    // 2. Confirmación al lead (diferente para empresa vs. individual, se omite para webinar)
+    if (leadType !== "webinar") {
+      try {
+        if ((leadType === "empresa" || leadType === "enterprise") && company) {
+          await sendEnterpriseQuoteToLead({ name, email, company, courses, employeeCount });
+        } else {
+          await sendQuoteConfirmationToLead({ name, email, courses, message });
+        }
+        console.log("✅ Quote email sent to:", email);
+      } catch (err: any) {
+        console.error("❌ Quote email error:", err?.message, err?.stack);
       }
-      console.log("✅ Quote email sent to:", email);
-    } catch (err: any) {
-      console.error("❌ Quote email error:", err?.message, err?.stack);
     }
 
     return NextResponse.json({ success: true });
