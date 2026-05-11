@@ -23,7 +23,7 @@ const navLinks = [
   { href: "/cursos", label: "Cursos", hasMega: true },
   { href: "/consultorias", label: "Consultorías" },
   { href: "/webinar", label: "Webinar" },
-  { href: "/comunidad", label: "Comunidad" },
+  // { href: "/comunidad", label: "Comunidad" },
 ];
 
 const featuredSlugs = ["analisis-de-datos", "power-bi", "sql-server"];

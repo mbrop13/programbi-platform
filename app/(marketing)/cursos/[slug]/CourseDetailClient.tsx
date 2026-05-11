@@ -230,17 +230,27 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
               <FadeIn delay={0.4}>
                 <div className="flex flex-wrap gap-6 text-sm text-gray-500 mb-8">
-                  {[
-                    { icon: <Clock className="w-4 h-4" style={{ color: course.accentColor }} />, label: `${course.durationHours} horas` },
-                    { icon: <Monitor className="w-4 h-4" style={{ color: course.accentColor }} />, label: course.modality },
-                    { icon: <Users className="w-4 h-4" style={{ color: course.accentColor }} />, label: course.level },
-                    { icon: <Award className="w-4 h-4" style={{ color: course.accentColor }} />, label: "Certificado incluido" },
-                  ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      {item.icon}
-                      <span className="font-semibold capitalize">{item.label}</span>
-                    </div>
-                  ))}
+                  {(() => {
+                    let durationLabel = `${course.durationHours} horas`;
+                    if (course.slug === 'power-bi') durationLabel = "16 horas, 4 semanas";
+                    if (course.slug === 'analisis-de-datos') durationLabel = "48 horas, 12 semanas";
+
+                    let scheduleLabel = "Clases en vivo";
+                    if (course.slug === 'power-bi') scheduleLabel = "Martes y jueves";
+                    else if (course.slug === 'sql-server' || course.slug === 'python' || course.slug === 'analisis-de-datos') scheduleLabel = "Lunes y miércoles";
+
+                    return [
+                      { icon: <Clock className="w-4 h-4" style={{ color: course.accentColor }} />, label: durationLabel },
+                      { icon: <Monitor className="w-4 h-4" style={{ color: course.accentColor }} />, label: scheduleLabel },
+                      { icon: <Users className="w-4 h-4" style={{ color: course.accentColor }} />, label: course.level },
+                      { icon: <Award className="w-4 h-4" style={{ color: course.accentColor }} />, label: "Certificado por completarlo" },
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        {item.icon}
+                        <span className="font-semibold capitalize">{item.label}</span>
+                      </div>
+                    ));
+                  })()}
                 </div>
               </FadeIn>
 
@@ -518,6 +528,33 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         </div>
       </section>
       )}
+
+      {/* ════ INSTRUCTOR ════ */}
+      <section className="py-16 lg:py-20 bg-white border-t border-gray-100">
+        <div className="max-w-[1000px] mx-auto px-5 lg:px-10">
+          <FadeIn>
+            <div className="flex flex-col md:flex-row gap-8 items-center md:items-start bg-[#F8FAFC] rounded-[2rem] p-8 lg:p-12 border border-gray-100 shadow-sm">
+              <div className="w-32 h-32 md:w-40 md:h-40 shrink-0 relative rounded-full overflow-hidden border-4 border-white shadow-lg bg-blue-100 flex items-center justify-center">
+                <span className="text-4xl md:text-5xl font-black text-blue-400">MO</span>
+              </div>
+              <div>
+                <h2 className="font-display font-black text-2xl sm:text-3xl text-[#0F172A] mb-2">Conoce a tu Profesor</h2>
+                <h3 className="text-xl font-bold text-[#1890FF] mb-4">Manuel Oliva</h3>
+                <p className="text-gray-600 leading-relaxed mb-4">
+                  Profesional experto en Datos, Automatización e Inteligencia Artificial, con destacada experiencia liderando proyectos estratégicos y tecnológicos en empresas como AngloAmerican, CAP, Deloitte y SQM.
+                  <br /><br />
+                  Magíster en Data Science por la UAI, especializado en optimizar la toma de decisiones empresariales mediante ecosistemas escalables en SQL Server, Power BI, Python y automatización con IA. Apasionado por la docencia, ha formado a más de 5.000 alumnos para transformar su carrera tecnológica.
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  <span className="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full border border-blue-100">Magíster Data Science UAI</span>
+                  <span className="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full border border-blue-100">+5.000 Estudiantes</span>
+                  <span className="bg-blue-50 text-blue-700 text-xs font-bold px-3 py-1 rounded-full border border-blue-100">Consultor de Datos</span>
+                </div>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
 
       {/* ════ CONTACT FORM ════ */}
       <CourseContactForm course={course} />

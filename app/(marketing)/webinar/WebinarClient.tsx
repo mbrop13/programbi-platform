@@ -112,10 +112,10 @@ export default function WebinarClient() {
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gradient-to-br from-brand-blue to-indigo-600 rounded-2xl flex flex-col items-center justify-center shrink-0">
                     <span className="text-[10px] font-bold text-white/70 uppercase tracking-wider">MAY</span>
-                    <span className="text-2xl font-black text-white leading-none">09</span>
+                    <span className="text-2xl font-black text-white leading-none">17</span>
                   </div>
                   <div>
-                    <p className="text-white font-bold text-lg">Sábado 9 de Mayo · 11:00 AM</p>
+                    <p className="text-white font-bold text-lg">Sábado 17 de Mayo · 11:00 AM</p>
                     <p className="text-slate-400 text-sm">Vía Zoom · Cupos Limitados</p>
                   </div>
                 </div>
