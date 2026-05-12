@@ -814,6 +814,7 @@ export async function adminCreatePromotion(promo: {
   target_type: string;
   target_id?: string;
   discount_percentage: number;
+  promo_price?: number;
   is_active: boolean;
   valid_until?: string | null;
 }) {

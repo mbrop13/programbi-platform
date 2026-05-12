@@ -34,9 +34,9 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
       .catch(console.error);
   }, []);
 
-  const getPlanDiscount = (planId: string) => {
+  const getPlanPromo = (planId: string) => {
     const promo = promotions.find(p => p.target_type === 'all' || p.target_type === 'plans' || (p.target_type === 'specific_plan' && p.target_id === planId));
-    return promo ? promo.discount_percentage : 0;
+    return promo;
   };
 
   const handleAction = async (planId: string) => {
@@ -185,11 +185,19 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
             totalBilledPrice = plan.priceAnnual || (plan.price * 12 * 0.7);
           }
 
-          const adminDiscountPercent = getPlanDiscount(plan.id);
+          const promo = getPlanPromo(plan.id);
           const originalMonthlyPrice = Math.round(totalBilledPrice / monthsCount);
           
-          if (adminDiscountPercent > 0) {
-             totalBilledPrice = Math.round(totalBilledPrice * (100 - adminDiscountPercent) / 100);
+          let adminDiscountPercent = 0;
+          if (promo) {
+             if (promo.promo_price) {
+                totalBilledPrice = promo.promo_price;
+                // Reverse-calculate a percentage for the UI badge if promo_price is used
+                adminDiscountPercent = promo.discount_percentage || Math.round((1 - (promo.promo_price / (plan.price * monthsCount))) * 100);
+             } else if (promo.discount_percentage > 0) {
+                adminDiscountPercent = promo.discount_percentage;
+                totalBilledPrice = Math.round(totalBilledPrice * (100 - adminDiscountPercent) / 100);
+             }
           }
 
           const finalMonthlyPrice = Math.round(totalBilledPrice / monthsCount);

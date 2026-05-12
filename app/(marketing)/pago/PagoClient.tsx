@@ -93,7 +93,11 @@ export default function PagoClient() {
     if (!basePrice) return { finalPrice: 0, originalPrice: 0, hasDiscount: false };
     const effectiveBase = levelName ? getEffectiveBasePrice(slug, levelName, basePrice) : basePrice;
     const applicablePromo = promotions.find(p => p.target_type === 'all' || p.target_type === 'courses' || (p.target_type === 'specific_course' && p.target_id === slug));
+    
     if (applicablePromo) {
+       if (applicablePromo.promo_price) {
+         return { finalPrice: applicablePromo.promo_price, originalPrice: effectiveBase, hasDiscount: true };
+       }
        const ratio = (100 - applicablePromo.discount_percentage) / 100;
        const finalPrice = Math.round(effectiveBase * ratio);
        return { finalPrice, originalPrice: effectiveBase, hasDiscount: true };

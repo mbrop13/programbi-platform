@@ -45,10 +45,6 @@ export async function POST(req: NextRequest) {
     const activePromos = await getActivePromotions();
     const priceOverrides = await getPriceOverrides();
 
-    const getGlobalDiscount = (slug: string) => {
-       const p = activePromos.find((pr: any) => pr.target_type === 'all' || pr.target_type === 'courses' || (pr.target_type === 'specific_course' && pr.target_id === slug));
-       return p ? p.discount_percentage : 0;
-    };
 
     const getOverriddenPrice = (slug: string, levelName: string, codePrice: number) => {
        const override = priceOverrides.find((o: any) => o.item_type === 'course' && o.item_id === slug && o.level_name === levelName);
@@ -84,12 +80,21 @@ export async function POST(req: NextRequest) {
 
        const isSpec = (masterCourse.durationHours > 50 || masterCourse.slug.includes("analisis") || masterCourse.slug.includes("analitica"));
        const subDiscount = isSpec ? specDiscountPercent : baseDiscountPercent;
-       const promoDiscount = getGlobalDiscount(masterCourse.slug);
-       const maxDiscountPercent = Math.max(subDiscount, promoDiscount);
-
-       const discountMultiplier = 1 - (maxDiscountPercent / 100);
        
-       const finalPriceClp = Math.floor(basePrice * discountMultiplier);
+       const promo = activePromos.find((pr: any) => pr.target_type === 'all' || pr.target_type === 'courses' || (pr.target_type === 'specific_course' && pr.target_id === masterCourse.slug));
+       
+       let finalPriceClp = basePrice;
+       
+       if (promo && promo.promo_price) {
+         // If a fixed promo price is set, that overrides percentages
+         finalPriceClp = promo.promo_price;
+       } else {
+         const promoDiscount = promo ? promo.discount_percentage : 0;
+         const maxDiscountPercent = Math.max(subDiscount, promoDiscount);
+         const discountMultiplier = 1 - (maxDiscountPercent / 100);
+         finalPriceClp = Math.floor(basePrice * discountMultiplier);
+       }
+       
        const itemTotal = finalPriceClp * (item.quantity || 1);
        grandTotalClp += itemTotal;
 

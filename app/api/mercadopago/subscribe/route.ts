@@ -24,9 +24,9 @@ export async function POST(req: NextRequest) {
 
     const { getActivePromotions } = await import("@/lib/supabase/comunidad-ai");
     const activePromos = await getActivePromotions();
-    const getPlanDiscount = (plId: string) => {
+    const getPlanPromo = (plId: string) => {
        const p = activePromos.find((pr: any) => pr.target_type === 'all' || pr.target_type === 'plans' || (pr.target_type === 'specific_plan' && pr.target_id === plId));
-       return p ? p.discount_percentage : 0;
+       return p;
     };
 
     // Si es anual o semestral, cobrar la cantidad completa por Checkout Pro (Pago Único)
@@ -44,9 +44,13 @@ export async function POST(req: NextRequest) {
         price = planInfo.priceAnnual || (planInfo.price * 12 * 0.7);
       }
 
-      const adminDiscountPercent = getPlanDiscount(basePlanId);
-      if (adminDiscountPercent > 0) {
-        price = price * ((100 - adminDiscountPercent) / 100);
+      const promo = getPlanPromo(basePlanId);
+      if (promo) {
+        if (promo.promo_price) {
+          price = promo.promo_price;
+        } else if (promo.discount_percentage > 0) {
+          price = price * ((100 - promo.discount_percentage) / 100);
+        }
       }
 
       const preference = await createMPPreference({
@@ -68,10 +72,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Plan base not found" }, { status: 400 });
     }
 
-    const adminDiscountPercent = getPlanDiscount(basePlanId);
+    const promo = getPlanPromo(basePlanId);
     let finalMonthlyPrice = planInfo.price;
-    if (adminDiscountPercent > 0) {
-       finalMonthlyPrice = finalMonthlyPrice * ((100 - adminDiscountPercent) / 100);
+    if (promo) {
+      if (promo.promo_price) {
+        finalMonthlyPrice = promo.promo_price;
+      } else if (promo.discount_percentage > 0) {
+        finalMonthlyPrice = finalMonthlyPrice * ((100 - promo.discount_percentage) / 100);
+      }
     }
 
     const subscription = await createMPSubscription({

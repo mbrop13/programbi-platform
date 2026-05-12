@@ -2139,6 +2139,7 @@ function AdminPrices() {
   const [targetType, setTargetType] = useState<"courses" | "plans" | "all" | "specific_course" | "specific_plan">("courses");
   const [targetId, setTargetId] = useState("");
   const [discountPercent, setDiscountPercent] = useState<number>(20);
+  const [promoPrice, setPromoPrice] = useState<number | "">("");
 
   // Price editing
   const [editingPrice, setEditingPrice] = useState<string | null>(null);
@@ -2192,14 +2193,16 @@ function AdminPrices() {
       await adminCreatePromotion({
         name,
         target_type: targetType,
-        target_id: targetId,
+        target_id: targetType === 'specific_course' || targetType === 'specific_plan' ? targetId : undefined,
         discount_percentage: discountPercent,
+        promo_price: promoPrice === "" ? undefined : promoPrice,
         is_active: true
       });
       setShowAdd(false);
       setName("");
       setTargetId("");
       setDiscountPercent(20);
+      setPromoPrice("");
       setViewMode("promos");
       loadData();
     } catch (err: any) {
@@ -2271,8 +2274,12 @@ function AdminPrices() {
                  <input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
                </div>
                <div>
-                 <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Descuento (%)</label>
+                 <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Descuento Referencial (%)</label>
                  <input type="number" min="1" max="100" required value={discountPercent} onChange={e => setDiscountPercent(Number(e.target.value))} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
+               </div>
+               <div>
+                 <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Precio Fijo Promocional ($ Opcional)</label>
+                 <input type="number" min="0" placeholder="Ej: 129000" value={promoPrice} onChange={e => setPromoPrice(e.target.value === "" ? "" : Number(e.target.value))} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
                </div>
                <div>
                  <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Aplica a</label>
@@ -2430,7 +2437,12 @@ function AdminPrices() {
                          </div>
                        </div>
                        <div className="mt-4 p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between">
-                          <span className="text-xs text-gray-500 font-medium">Rebaja del:</span>
+                          <div className="flex flex-col">
+                            <span className="text-xs text-gray-500 font-medium">Rebaja del:</span>
+                            {promo.promo_price ? (
+                              <span className="text-[10px] text-gray-400">Precio Fijo: ${promo.promo_price.toLocaleString('es-CL')}</span>
+                            ) : null}
+                          </div>
                           <span className="font-black text-xl text-emerald-600">{promo.discount_percentage}%</span>
                        </div>
                      </div>
