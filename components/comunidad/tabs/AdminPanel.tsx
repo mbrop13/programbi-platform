@@ -64,6 +64,7 @@ export default function AdminPanel() {
     { id: "prices", label: "Precios y Promos", icon: DollarSign },
     { id: "cart", label: "Carritos", icon: ShoppingCart },
     { id: "courses", label: "Cursos", icon: GraduationCap },
+    { id: "asesorias", label: "Asesorías", icon: Video },
     { id: "schedules", label: "Horarios", icon: Calendar },
     { id: "export_csv", label: "Exportar Datos", icon: Download },
     { id: "import", label: "Importar CSV", icon: Upload },
@@ -124,6 +125,7 @@ export default function AdminPanel() {
               { activeTab === "leads" && <AdminLeads /> }
               { activeTab === "cart" && <AdminAbandonedCarts /> }
               { activeTab === "courses" && <AdminCourses /> }
+              { activeTab === "asesorias" && <AdminAsesorias /> }
               { activeTab === "schedules" && <AdminSchedules /> }
               { activeTab === "export_csv" && <AdminExportCsv /> }
               { activeTab === "import" && <AdminImport /> }
@@ -136,6 +138,80 @@ export default function AdminPanel() {
               { activeTab === "diplomas" && <AdminDiplomas /> }
             </motion.div>
         </div>
+    </div>
+  );
+}
+
+// ─── ASESORIAS 1 A 1 ───
+function AdminAsesorias() {
+  const [leads, setLeads] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const { createClient } = await import("@/lib/supabase/client");
+        const supabase = createClient();
+        const { data } = await supabase
+          .from("course_leads")
+          .select("*")
+          .in("lead_type", ["asesoria_schedule", "asesoria_b2b", "asesoria_b2c"])
+          .order("created_at", { ascending: false });
+        
+        setLeads(data || []);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    load();
+  }, []);
+
+  return (
+    <div className="p-6 sm:p-8">
+      <div className="mb-8 flex justify-between items-end">
+        <div>
+          <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Asesorías Solicitadas</h2>
+          <p className="text-sm text-gray-400">Agendamientos y solicitudes de contacto para consultorías.</p>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="py-20 flex justify-center"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>
+      ) : leads.length === 0 ? (
+        <div className="text-center py-20 text-gray-400">No hay solicitudes de asesorías aún.</div>
+      ) : (
+        <div className="space-y-4">
+          {leads.map(lead => (
+            <div key={lead.id} className="bg-white border border-gray-100 p-5 rounded-2xl flex flex-col md:flex-row gap-4 justify-between items-start md:items-center hover:shadow-md transition-shadow">
+              <div className="flex-1 w-full">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${
+                    lead.lead_type === 'asesoria_schedule' ? 'bg-purple-100 text-purple-700' :
+                    lead.lead_type === 'asesoria_b2b' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'
+                  }`}>
+                    {lead.lead_type === 'asesoria_schedule' ? 'Horario Solicitado' : lead.lead_type === 'asesoria_b2b' ? 'B2B Empresa' : 'B2C Particular'}
+                  </span>
+                  <span className="text-xs text-gray-400 font-medium">
+                    {new Date(lead.created_at).toLocaleString("es-CL")}
+                  </span>
+                </div>
+                <h4 className="font-bold text-gray-900">{lead.name}</h4>
+                <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+                  <span className="flex items-center gap-1.5"><Mail className="w-4 h-4" /> {lead.email}</span>
+                  {lead.whatsapp && lead.whatsapp !== 'N/A' && <span className="flex items-center gap-1.5">WhatsApp: {lead.whatsapp}</span>}
+                </div>
+                {lead.message && (
+                  <div className="mt-3 bg-gray-50 p-4 rounded-xl border border-gray-100 text-sm text-gray-700 font-medium break-words">
+                    {lead.message}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

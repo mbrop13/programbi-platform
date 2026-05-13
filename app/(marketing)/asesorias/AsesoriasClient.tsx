@@ -12,6 +12,7 @@ import { FadeIn, StaggerChildren, StaggerItem, GlowCard, CountUp } from "@/compo
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/shared/AuthModal";
 import AsesoriasForm from "@/components/marketing/AsesoriasForm";
+import SchedulingModal from "@/components/marketing/SchedulingModal";
 
 // --- Data ---
 const bentoFeatures = [
@@ -85,17 +86,47 @@ export default function AsesoriasClient() {
     };
   }, []);
 
-  const handleBuyHours = () => {
+  const [showScheduling, setShowScheduling] = useState(false);
+  const [isSubmittingSchedule, setIsSubmittingSchedule] = useState(false);
+
+  const handleOpenScheduling = () => {
     if (!user) {
       setShowAuthModal(true);
     } else {
-      router.push("/pago?servicio=asesoria");
+      setShowScheduling(true);
+    }
+  };
+
+  const handleConfirmSchedule = async (qty: number, details: any) => {
+    setIsSubmittingSchedule(true);
+    try {
+      await fetch("/api/leads/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: user?.user_metadata?.full_name || "Usuario Asesoría",
+          email: user?.email || "",
+          whatsapp: "N/A",
+          leadType: "asesoria_schedule",
+          message: `Horarios solicitados: Principal (${details.primary}) | Secundario (${details.secondary}). Cantidad: ${qty} horas.`
+        }),
+      });
+      router.push(`/pago?servicio=asesoria&qty=${qty}`);
+    } catch (e) {
+      console.error(e);
+      router.push(`/pago?servicio=asesoria&qty=${qty}`);
     }
   };
 
   return (
     <div className="bg-[#FAFAFA] min-h-screen">
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+      <SchedulingModal 
+        isOpen={showScheduling} 
+        onClose={() => setShowScheduling(false)} 
+        onConfirm={handleConfirmSchedule}
+        isSubmitting={isSubmittingSchedule}
+      />
 
       {/* ════ HERO SALES MACHINE ════ */}
       <section className="relative -mt-20 lg:-mt-24 pt-32 lg:pt-48 pb-24 overflow-hidden bg-white">
@@ -281,8 +312,21 @@ export default function AsesoriasClient() {
                 </div>
 
                 {/* ════ B2B CONTACT FORM ════ */}
-                <div className="mt-16 max-w-3xl mx-auto pb-10">
-                   <AsesoriasForm type="empresas" />
+                <div className="mt-24 max-w-[1200px] mx-auto pb-10">
+                  <div className="grid lg:grid-cols-2 gap-16 items-center">
+                    <div>
+                      <span className="text-blue-600 font-black text-xs uppercase tracking-widest mb-4 block">Diagnóstico Corporativo</span>
+                      <h3 className="font-display font-black text-4xl lg:text-5xl text-[#0F172A] mb-6">
+                        Conversemos sobre tu <span className="text-blue-600">arquitectura</span>
+                      </h3>
+                      <p className="text-gray-500 text-lg leading-relaxed mb-8">
+                        Déjanos tus datos de contacto corporativo. Nuestro equipo evaluará tu caso y agendaremos una breve llamada exploratoria para entender tus desafíos de datos y proponerte un plan de acción concreto.
+                      </p>
+                    </div>
+                    <div>
+                      <AsesoriasForm type="empresas" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </section>
@@ -385,11 +429,11 @@ export default function AsesoriasClient() {
                 {/* Info Particulares */}
                 <div className="lg:col-span-7">
                   <FadeIn>
-                    <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-600 font-bold text-xs tracking-widest uppercase px-4 py-2 rounded-lg mb-6">
+                    <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 font-bold text-xs tracking-widest uppercase px-4 py-2 rounded-lg mb-6">
                       <Rocket size={14} /> Acelera tu Carrera
                     </div>
                     <h2 className="font-display font-black text-4xl lg:text-5xl text-[#0F172A] mb-6 leading-tight">
-                      Desbloquea ese problema que te lleva frenando días.
+                      <span className="text-blue-600">Desbloquea</span> ese problema que te lleva frenando días.
                     </h2>
                     <p className="text-gray-500 text-xl mb-10 leading-relaxed font-medium">
                       Sesiones de 1 hora de alta intensidad conmigo (Manuel Oliva). Revisaremos tu pantalla, corregiremos DAX, estructuraremos tu SQL o mejoraremos tu portafolio en vivo.
@@ -403,8 +447,8 @@ export default function AsesoriasClient() {
                         "Consultoría para Tesis"
                       ].map((item, i) => (
                         <div key={i} className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm transition-transform hover:-translate-y-1">
-                          <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                            <Check className="w-5 h-5 text-indigo-600" />
+                          <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                            <Check className="w-5 h-5 text-blue-600" />
                           </div>
                           <span className="text-gray-800 font-bold text-sm leading-tight">{item}</span>
                         </div>
@@ -417,7 +461,7 @@ export default function AsesoriasClient() {
                 <div className="lg:col-span-5 relative">
                   <FadeIn delay={0.2}>
                     {/* Decorative background glow behind the card */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-[3rem] blur-2xl opacity-20 transform scale-95 translate-y-4"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-blue-600 rounded-[3rem] blur-2xl opacity-20 transform scale-95 translate-y-4"></div>
                     
                     <div className="bg-white border-2 border-blue-400 rounded-[2.5rem] p-8 sm:p-10 relative overflow-hidden shadow-[0_0_40px_rgba(59,130,246,0.3)] mt-6">
                       {/* PROMO BADGE */}
@@ -432,7 +476,7 @@ export default function AsesoriasClient() {
                           <h3 className="font-display font-black text-2xl text-[#0F172A]">Asesoría Privada</h3>
                           <p className="text-gray-500 font-medium mt-1">Videollamada 1 a 1</p>
                         </div>
-                        <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shrink-0">
+                        <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
                           <Target className="w-7 h-7" />
                         </div>
                       </div>
@@ -479,18 +523,18 @@ export default function AsesoriasClient() {
                       </ul>
 
                       <button
-                        onClick={handleBuyHours}
+                        onClick={handleOpenScheduling}
                         disabled={loading}
                         className="w-full py-5 rounded-2xl font-black text-white text-lg transition-all hover:-translate-y-1 flex items-center justify-center gap-3 group relative overflow-hidden disabled:opacity-50"
                         style={
                           user 
-                          ? { background: "linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)", boxShadow: "0 15px 30px -10px rgba(79,70,229,0.5)" }
+                          ? { background: "linear-gradient(135deg, #2563EB 0%, #4F46E5 100%)", boxShadow: "0 15px 30px -10px rgba(37,99,235,0.5)" }
                           : { background: "#0F172A", boxShadow: "0 15px 30px -10px rgba(15,23,42,0.4)" }
                         }
                       >
                         <span className="relative z-10 flex items-center gap-2">
                           {user ? (
-                            <>Comprar Horas <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></>
+                            <>Asignar horario y pagar <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></>
                           ) : (
                             <>Iniciar Sesión <Unlock className="w-5 h-5" /></>
                           )}
@@ -507,8 +551,21 @@ export default function AsesoriasClient() {
               </div>
 
               {/* ════ B2C CONTACT FORM ════ */}
-              <div className="mt-20 max-w-3xl mx-auto">
-                 <AsesoriasForm type="particulares" />
+              <div className="mt-32 max-w-[1200px] mx-auto px-5 lg:px-10">
+                <div className="grid lg:grid-cols-2 gap-16 items-center">
+                  <div>
+                    <span className="text-blue-600 font-black text-xs uppercase tracking-widest mb-4 block">Contacto Rápido</span>
+                    <h3 className="font-display font-black text-4xl lg:text-5xl text-[#0F172A] mb-6">
+                      ¿Tienes un desafío <span className="text-blue-600">puntual</span>?
+                    </h3>
+                    <p className="text-gray-500 text-lg leading-relaxed mb-8">
+                      Si no estás seguro de cuántas horas necesitas o quieres saber si podemos ayudarte con tu problema específico (DAX, Power BI, SQL), déjanos tus datos y te asesoramos sin compromiso.
+                    </p>
+                  </div>
+                  <div>
+                    <AsesoriasForm type="particulares" />
+                  </div>
+                </div>
               </div>
             </div>
           </motion.div>
