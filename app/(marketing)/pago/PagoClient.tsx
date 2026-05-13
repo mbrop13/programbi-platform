@@ -35,6 +35,7 @@ export default function PagoClient() {
   const initialLevel = searchParams.get("nivel") || "";
   const initialName = searchParams.get("nombre") || "";
   const initialEmail = searchParams.get("email") || "";
+  const initialServicio = searchParams.get("servicio") || "";
 
   const { isInternational, formatGeoPrice } = useGeoPricing();
 
@@ -136,9 +137,19 @@ export default function PagoClient() {
           });
           setEnterpriseToggles(new Set([`${course.slug}-${levelName}`]));
         }
+      } else if (initialServicio === "asesoria") {
+        setCart({
+           "asesoria-Hora": {
+              slug: "asesoria",
+              title: "Mentoría y Asesoría 1 a 1",
+              levelName: "Hora",
+              price: 100000,
+              quantity: 1
+           }
+        });
       }
     }
-  }, [loadingData, initialSlug, initialLevel, promotions]);
+  }, [loadingData, initialSlug, initialLevel, initialServicio, promotions]);
 
   const changeLevel = (slug: string, newLevelName: string) => {
     setSelectedLevels(prev => ({ ...prev, [slug]: newLevelName }));
@@ -524,7 +535,19 @@ export default function PagoClient() {
                                        </div>
                                        <div className="flex flex-col items-end shrink-0">
                                           <span className="font-black text-[#0F172A] text-sm">{formatGeoPrice(item.price * item.quantity)}</span>
-                                          <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} className="text-[10px] text-red-400 hover:text-red-600 mt-1 uppercase font-bold tracking-widest bg-transparent border-none cursor-pointer">Eliminar</button>
+                                          {item.slug === "asesoria" ? (
+                                            <div className="flex items-center gap-2 mt-1 bg-gray-50 rounded-lg border border-gray-200">
+                                              <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -1)} className="p-1 text-gray-500 hover:text-blue-500 transition-colors">
+                                                <Minus className="w-3 h-3" />
+                                              </button>
+                                              <span className="text-[10px] font-bold min-w-[12px] text-center">{item.quantity}</span>
+                                              <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, 1)} className="p-1 text-gray-500 hover:text-blue-500 transition-colors">
+                                                <Plus className="w-3 h-3" />
+                                              </button>
+                                            </div>
+                                          ) : (
+                                            <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} className="text-[10px] text-red-400 hover:text-red-600 mt-1 uppercase font-bold tracking-widest bg-transparent border-none cursor-pointer">Eliminar</button>
+                                          )}
                                        </div>
                                     </div>
                                  ))}

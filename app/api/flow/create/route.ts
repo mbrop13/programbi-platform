@@ -55,6 +55,20 @@ export async function POST(req: NextRequest) {
     const validatedItems = [];
 
     for (const item of items) {
+       if (item.courseSlug === "asesoria") {
+          const finalPriceClp = 100000;
+          const itemTotal = finalPriceClp * (item.quantity || 1);
+          grandTotalClp += itemTotal;
+          validatedItems.push({
+            slug: "asesoria",
+            levelName: "Hora",
+            quantity: item.quantity || 1,
+            pricePerUnit: finalPriceClp,
+            title: "Mentoría y Asesoría 1 a 1"
+          });
+          continue;
+       }
+
        const masterCourse = masterCourses.find(c => c.slug === item.courseSlug);
        if (!masterCourse) {
          return NextResponse.json({ error: `Curso no encontrado: ${item.courseSlug}` }, { status: 404 });
