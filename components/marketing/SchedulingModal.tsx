@@ -351,9 +351,9 @@ export default function SchedulingModal({ isOpen, onClose, onConfirm, isSubmitti
             )}
 
             {/* Action Row */}
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-center sm:justify-end gap-3">
               {/* Qty selector */}
-              <div className="flex items-center gap-2 bg-blue-50 border-2 border-blue-100 rounded-2xl px-3 py-2 shrink-0">
+              <div className="flex items-center gap-2 bg-blue-50 border-2 border-blue-100 rounded-2xl px-3 py-2 w-full sm:w-auto shrink-0 justify-center">
                 <span className="text-xs font-bold text-blue-600 hidden sm:block">Horas:</span>
                 <button
                   onClick={() => setQty(Math.max(1, qty - 1))}
@@ -373,7 +373,7 @@ export default function SchedulingModal({ isOpen, onClose, onConfirm, isSubmitti
               <button
                 onClick={handleConfirm}
                 disabled={selectedSlots.length < qty || isSubmitting}
-                className="flex-1 sm:flex-none sm:ml-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-2xl font-black transition-all shadow-lg shadow-blue-500/25 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-2xl font-black transition-all shadow-lg shadow-blue-500/25 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isSubmitting ? "Procesando..." : "Confirmar y Pagar"}
                 {!isSubmitting && <ArrowRight className="w-5 h-5" />}
