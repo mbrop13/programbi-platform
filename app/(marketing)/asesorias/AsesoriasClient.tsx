@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, BarChart3, Cpu, LineChart,
-  CheckCircle2, Building2, Users, Zap, Shield, User, Clock, Check, Target, Rocket, Lock, Unlock, TrendingUp, Lightbulb, Search
+  CheckCircle2, Building2, Users, Zap, Shield, User, Clock, Check, Target, Rocket, Lock, Unlock, TrendingUp, Lightbulb, Search, Database
 } from "lucide-react";
 import { FadeIn, StaggerChildren, StaggerItem, GlowCard, CountUp } from "@/components/shared/AnimatedComponents";
 import { createClient } from "@/lib/supabase/client";
@@ -209,8 +209,8 @@ export default function AsesoriasClient() {
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
                   <div>
                     <span className="text-blue-600 font-black text-xs uppercase tracking-widest mb-4 block">Nuestro Impacto</span>
-                    <h2 className="font-display font-black text-4xl lg:text-6xl text-[#0F172A] mb-8 leading-tight">
-                      Empoderamos a tu empresa con la <span className="text-blue-600">verdad</span> de los datos.
+                    <h2 className="font-display font-medium text-4xl lg:text-6xl text-[#0F172A] mb-8 leading-tight">
+                      Empoderamos a tu empresa con la <span className="text-blue-600 font-serif italic">verdad</span> de los datos.
                     </h2>
                     <p className="text-gray-500 text-xl leading-relaxed mb-10 font-medium">
                       No solo creamos dashboards; construimos la infraestructura que permite a los gerentes tomar decisiones en segundos, no en días.
@@ -235,20 +235,46 @@ export default function AsesoriasClient() {
                     </div>
                   </div>
                   <div className="relative">
-                    <div className="bg-gray-100 rounded-[3rem] p-4 lg:p-8 border border-gray-200 relative overflow-hidden aspect-[4/5] lg:aspect-square flex items-center justify-center">
-                       {/* Placeholder for professional illustration/mockup */}
-                       <div className="text-center p-8">
-                         <BarChart3 className="w-32 h-32 text-blue-200 mx-auto mb-6" />
-                         <div className="space-y-3">
-                           <div className="h-4 w-48 bg-blue-100 rounded-full mx-auto"></div>
-                           <div className="h-4 w-32 bg-blue-100 rounded-full mx-auto opacity-50"></div>
-                         </div>
-                       </div>
-                       <motion.div 
-                        animate={{ rotate: 360 }} 
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }} 
-                        className="absolute -bottom-20 -right-20 w-64 h-64 border-[32px] border-blue-500/10 rounded-full"
-                       />
+                    <div className="bg-gradient-to-br from-[#0F172A] to-[#1E293B] rounded-[3rem] p-8 border border-gray-800 relative overflow-hidden aspect-[4/5] lg:aspect-square flex items-center justify-center shadow-2xl">
+                      <div className="absolute inset-0 bg-[url('/noise.png')] opacity-10 mix-blend-overlay"></div>
+                      <svg className="absolute inset-0 w-full h-full opacity-20" viewBox="0 0 400 400" fill="none">
+                        <defs>
+                          <pattern id="grid-small" width="20" height="20" patternUnits="userSpaceOnUse">
+                            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#1890FF" strokeWidth="0.5" />
+                          </pattern>
+                        </defs>
+                        <rect width="100%" height="100%" fill="url(#grid-small)" />
+                      </svg>
+                      
+                      <div className="relative z-10 w-full h-full flex items-center justify-center">
+                        {/* Central Core */}
+                        <motion.div 
+                          animate={{ scale: [1, 1.05, 1], boxShadow: ["0 0 0px #1890FF", "0 0 60px #1890FF", "0 0 0px #1890FF"] }}
+                          transition={{ duration: 4, repeat: Infinity }}
+                          className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center relative z-20 border-4 border-blue-400 shadow-[0_0_30px_#1890FF]"
+                        >
+                          <Database className="w-10 h-10 text-white" />
+                        </motion.div>
+
+                        {/* Orbiting Elements */}
+                        <motion.div 
+                          animate={{ rotate: 360 }} 
+                          transition={{ duration: 20, repeat: Infinity, ease: "linear" }} 
+                          className="absolute w-64 h-64 border border-blue-500/30 rounded-full flex items-center justify-center"
+                        >
+                          <div className="absolute -top-3 w-6 h-6 rounded-full bg-emerald-400 shadow-[0_0_15px_#34d399]" />
+                          <div className="absolute -bottom-3 w-6 h-6 rounded-full bg-purple-400 shadow-[0_0_15px_#c084fc]" />
+                        </motion.div>
+                        
+                        <motion.div 
+                          animate={{ rotate: -360 }} 
+                          transition={{ duration: 25, repeat: Infinity, ease: "linear" }} 
+                          className="absolute w-80 h-80 border border-indigo-500/20 rounded-full flex items-center justify-center"
+                        >
+                          <div className="absolute -left-3 w-6 h-6 rounded-full bg-blue-400 shadow-[0_0_15px_#60a5fa]" />
+                          <div className="absolute -right-3 w-6 h-6 rounded-full bg-amber-400 shadow-[0_0_15px_#fbbf24]" />
+                        </motion.div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -387,10 +413,10 @@ export default function AsesoriasClient() {
                     {/* Decorative background glow behind the card */}
                     <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-[3rem] blur-2xl opacity-20 transform scale-95 translate-y-4"></div>
                     
-                    <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 sm:p-10 relative overflow-hidden shadow-2xl">
+                    <div className="bg-white border-2 border-blue-400 rounded-[2.5rem] p-8 sm:p-10 relative overflow-hidden shadow-[0_0_40px_rgba(59,130,246,0.3)] mt-6">
                       {/* PROMO BADGE */}
-                      <div className="absolute top-6 right-6 z-20">
-                        <span className="bg-emerald-500 text-white text-[10px] font-black uppercase tracking-tighter px-3 py-1 rounded-full shadow-lg shadow-emerald-500/20">
+                      <div className="absolute top-0 inset-x-0 flex justify-center z-20">
+                        <span className="bg-blue-500 text-white text-[10px] sm:text-xs font-black uppercase tracking-widest px-6 py-1.5 rounded-b-xl shadow-lg shadow-blue-500/30">
                           40% OFF - Primera compra
                         </span>
                       </div>
@@ -412,11 +438,11 @@ export default function AsesoriasClient() {
                         ) : user ? (
                           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col">
                             <div className="flex items-end gap-2">
-                              <span className="text-5xl font-black text-[#0F172A] tracking-tight">$100.000</span>
+                              <span className="text-5xl font-black text-[#0F172A] tracking-tight">$60.000</span>
                               <span className="text-gray-500 font-bold mb-1.5 uppercase text-sm">CLP / hr</span>
                             </div>
                             <span className="text-gray-400 font-bold text-xs mt-1 uppercase tracking-widest">
-                               ~ $111 USD (Ref $900/USD)
+                               ~ $66 USD (Ref $900/USD)
                             </span>
                           </motion.div>
                         ) : (

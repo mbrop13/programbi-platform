@@ -143,7 +143,7 @@ export default function PagoClient() {
               slug: "asesoria",
               title: "Mentoría y Asesoría 1 a 1",
               levelName: "Hora",
-              price: 100000,
+              price: 60000,
               quantity: 1
            }
         });

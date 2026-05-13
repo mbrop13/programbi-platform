@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
 
     for (const item of items) {
        if (item.courseSlug === "asesoria") {
-          const finalPriceClp = 100000;
+          const finalPriceClp = 60000;
           const itemTotal = finalPriceClp * (item.quantity || 1);
           grandTotalClp += itemTotal;
           validatedItems.push({
