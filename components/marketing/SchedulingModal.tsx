@@ -165,31 +165,12 @@ export default function SchedulingModal({ isOpen, onClose, onConfirm, isSubmitti
                 </div>
               </div>
 
-              {/* Quantity selector — blue accent */}
-              <div className="flex items-center gap-3 shrink-0">
-                <span className="text-xs font-bold text-gray-500 hidden sm:block">Horas:</span>
-                <div className="flex items-center gap-2 bg-blue-50 border-2 border-blue-100 rounded-2xl px-3 py-2">
-                  <button
-                    onClick={() => setQty(Math.max(1, qty - 1))}
-                    className="w-7 h-7 rounded-xl bg-white border border-blue-200 hover:bg-blue-100 flex items-center justify-center text-blue-600 transition-colors shadow-sm"
-                  >
-                    <Minus className="w-3.5 h-3.5" />
-                  </button>
-                  <span className="w-7 text-center font-black text-xl text-blue-700">{qty}</span>
-                  <button
-                    onClick={() => setQty(qty + 1)}
-                    className="w-7 h-7 rounded-xl bg-blue-600 hover:bg-blue-700 flex items-center justify-center text-white transition-colors shadow-sm"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-                <button
-                  onClick={onClose}
-                  className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors text-gray-500 ml-1"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded-xl transition-colors text-gray-500 shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
           </div>
 
@@ -370,13 +351,31 @@ export default function SchedulingModal({ isOpen, onClose, onConfirm, isSubmitti
             )}
 
             {/* Action Row */}
-            <div className="flex flex-col sm:flex-row items-center gap-3">
+            <div className="flex items-center gap-3">
+              {/* Qty selector */}
+              <div className="flex items-center gap-2 bg-blue-50 border-2 border-blue-100 rounded-2xl px-3 py-2 shrink-0">
+                <span className="text-xs font-bold text-blue-600 hidden sm:block">Horas:</span>
+                <button
+                  onClick={() => setQty(Math.max(1, qty - 1))}
+                  className="w-7 h-7 rounded-xl bg-white border border-blue-200 hover:bg-blue-100 flex items-center justify-center text-blue-600 transition-colors shadow-sm"
+                >
+                  <Minus className="w-3.5 h-3.5" />
+                </button>
+                <span className="w-6 text-center font-black text-lg text-blue-700">{qty}</span>
+                <button
+                  onClick={() => setQty(qty + 1)}
+                  className="w-7 h-7 rounded-xl bg-blue-600 hover:bg-blue-700 flex items-center justify-center text-white transition-colors shadow-sm"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
               <button
                 onClick={handleConfirm}
                 disabled={selectedSlots.length < qty || isSubmitting}
-                className="w-full sm:w-auto sm:ml-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-2xl font-black transition-all shadow-lg shadow-blue-500/25 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 sm:flex-none sm:ml-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-2xl font-black transition-all shadow-lg shadow-blue-500/25 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {isSubmitting ? "Procesando..." : `Confirmar y Pagar`}
+                {isSubmitting ? "Procesando..." : "Confirmar y Pagar"}
                 {!isSubmitting && <ArrowRight className="w-5 h-5" />}
               </button>
             </div>
