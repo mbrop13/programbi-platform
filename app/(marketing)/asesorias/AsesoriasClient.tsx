@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, BarChart3, Cpu, LineChart,
-  CheckCircle2, Building2, Users, Zap, Shield, User, Clock, Check, Target, Rocket, Lock, Unlock
+  CheckCircle2, Building2, Users, Zap, Shield, User, Clock, Check, Target, Rocket, Lock, Unlock, TrendingUp, Lightbulb, Search
 } from "lucide-react";
-import { FadeIn, StaggerChildren, StaggerItem, GlowCard } from "@/components/shared/AnimatedComponents";
+import { FadeIn, StaggerChildren, StaggerItem, GlowCard, CountUp } from "@/components/shared/AnimatedComponents";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/shared/AuthModal";
 
@@ -17,32 +17,32 @@ const bentoFeatures = [
   {
     colSpan: "lg:col-span-2",
     icon: BarChart3,
-    title: "Dashboards Interactivos",
-    description: "Transformamos datos en bruto en Power BI, adaptados a tus KPIs críticos. Conectamos ERPs, CRMs y bases de datos para visualización en tiempo real.",
+    title: "Dashboards de Clase Mundial",
+    description: "Transformamos datos complejos en dashboards de Power BI intuitivos que cuentan una historia. Conectamos ERPs, CRMs y bases de datos para una visualización unificada.",
     color: "#1890FF",
     bg: "bg-blue-50"
   },
   {
     colSpan: "lg:col-span-1",
     icon: Cpu,
-    title: "Automatización",
-    description: "Flujos en Power Automate y Python para eliminar el 80% de tus tareas manuales.",
+    title: "Automatización IA",
+    description: "Implementamos agentes de IA y flujos con Power Automate para eliminar tareas repetitivas y errores humanos.",
     color: "#7C3AED",
     bg: "bg-purple-50"
   },
   {
     colSpan: "lg:col-span-1",
     icon: LineChart,
-    title: "Modelos Predictivos",
-    description: "Anticipa la demanda y optimiza inventarios con Machine Learning avanzado.",
+    title: "Ciencia de Datos",
+    description: "Modelos predictivos que anticipan tendencias y optimizan la toma de decisiones estratégicas.",
     color: "#10B981",
     bg: "bg-emerald-50"
   },
   {
     colSpan: "lg:col-span-2",
     icon: Shield,
-    title: "Gobernanza de Datos",
-    description: "Aseguramos que tu información sea precisa, segura y accesible solo para quienes la necesitan, implementando las mejores prácticas empresariales.",
+    title: "Cultura Data-Driven",
+    description: "No solo entregamos software; capacitamos a tu equipo y establecemos gobernanza para que la empresa respire datos de forma segura y eficiente.",
     color: "#F59E0B",
     bg: "bg-amber-50"
   }
@@ -54,8 +54,15 @@ const videos = [
   { id: "csPtN5bI_cw", title: "Análisis con Python" },
 ];
 
+const stats = [
+  { icon: Building2, value: 50, suffix: "+", label: "Empresas", color: "text-blue-500" },
+  { icon: Users, value: 5000, suffix: "+", label: "Alumnos", color: "text-indigo-500" },
+  { icon: Zap, value: 200, suffix: "+", label: "Proyectos", color: "text-purple-500" },
+  { icon: Shield, value: 98, suffix: "%", label: "Éxito", color: "text-emerald-500" },
+];
+
 export default function AsesoriasClient() {
-  const [activeTab, setActiveTab] = useState<"empresas" | "particulares">("empresas");
+  const [activeTab, setActiveTab] = useState<"empresas" | "particulares">("particulares");
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -91,7 +98,6 @@ export default function AsesoriasClient() {
 
       {/* ════ HERO SALES MACHINE ════ */}
       <section className="relative -mt-20 lg:-mt-24 pt-32 lg:pt-48 pb-24 overflow-hidden bg-white">
-        {/* Dynamic Background */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <svg className="absolute inset-0 w-full h-full opacity-[0.03]" viewBox="0 0 800 600" fill="none">
             <defs>
@@ -120,35 +126,26 @@ export default function AsesoriasClient() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"></span>
               </span>
-              Eleva tu Nivel de Análisis
+              Soluciones de Alto Impacto
             </div>
           </FadeIn>
           <FadeIn delay={0.15}>
             <h1 className="font-display font-black text-5xl sm:text-6xl lg:text-7xl text-[#0F172A] mb-8 leading-[1.1] tracking-tight">
-              Convierte los datos en tu{" "}
+              Domina tus datos,{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-[#6366F1]">
-                ventaja injusta
+                impulsa tu éxito
               </span>
             </h1>
           </FadeIn>
           <FadeIn delay={0.3}>
             <p className="text-gray-500 text-xl leading-relaxed mb-12 max-w-[700px] mx-auto font-medium">
-              Acelera el crecimiento de tu empresa con soluciones BI a medida, o impulsa tu carrera con mentorías técnicas exclusivas 1 a 1.
+              Ya seas una empresa buscando eficiencia o un profesional buscando mentoría, estamos aquí para convertir tu información en resultados extraordinarios.
             </p>
           </FadeIn>
 
           <FadeIn delay={0.4}>
-            {/* Ultra Premium Tabs Toggle */}
+            {/* Tabs Toggle - REORDERED: Particulares Left, Empresas Right */}
             <div className="bg-white/90 backdrop-blur-md p-2 rounded-2xl inline-flex mb-12 border border-gray-200 shadow-xl shadow-blue-900/5 flex-col sm:flex-row gap-2">
-              <button
-                onClick={() => setActiveTab("empresas")}
-                className={`px-8 py-4 rounded-xl font-black text-sm lg:text-base transition-all flex justify-center items-center gap-2.5 relative w-full sm:w-auto ${
-                  activeTab === "empresas" ? "text-white shadow-lg" : "text-gray-500 hover:text-gray-900"
-                }`}
-                style={activeTab === "empresas" ? { background: "linear-gradient(135deg, #1890FF, #4F46E5)" } : {}}
-              >
-                <Building2 size={18} /> Soluciones B2B
-              </button>
               <button
                 onClick={() => setActiveTab("particulares")}
                 className={`px-8 py-4 rounded-xl font-black text-sm lg:text-base transition-all flex justify-center items-center gap-2.5 relative w-full sm:w-auto ${
@@ -158,20 +155,42 @@ export default function AsesoriasClient() {
               >
                 <User size={18} /> Mentoría 1 a 1
               </button>
+              <button
+                onClick={() => setActiveTab("empresas")}
+                className={`px-8 py-4 rounded-xl font-black text-sm lg:text-base transition-all flex justify-center items-center gap-2.5 relative w-full sm:w-auto ${
+                  activeTab === "empresas" ? "text-white shadow-lg" : "text-gray-500 hover:text-gray-900"
+                }`}
+                style={activeTab === "empresas" ? { background: "linear-gradient(135deg, #1890FF, #4F46E5)" } : {}}
+              >
+                <Building2 size={18} /> Soluciones B2B
+              </button>
             </div>
           </FadeIn>
         </div>
       </section>
 
-      {/* ════ SOCIAL PROOF STRIP ════ */}
-      <div className="border-y border-gray-200 bg-white py-6 shadow-sm">
-        <div className="max-w-[1200px] mx-auto px-5 lg:px-10 flex flex-wrap justify-center items-center gap-8 lg:gap-16 text-gray-400 font-bold text-sm lg:text-base tracking-widest uppercase">
-          <span className="flex items-center gap-2"><Building2 size={18}/> +50 Empresas</span>
-          <span className="flex items-center gap-2"><Users size={18}/> +1500 Alumnos</span>
-          <span className="flex items-center gap-2"><Zap size={18}/> +200 Proyectos</span>
-          <span className="flex items-center gap-2 text-emerald-500"><Shield size={18}/> 98% Satisfacción</span>
+      {/* ════ PREMIUM STATS GRID ════ */}
+      <section className="py-12 -mt-12 relative z-20">
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+            {stats.map((stat, i) => (
+              <FadeIn key={i} delay={i * 0.1}>
+                <div className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-3xl p-6 md:p-8 text-center shadow-xl shadow-gray-200/50 group hover:bg-white transition-all hover:-translate-y-1">
+                  <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform ${stat.color}`}>
+                    <stat.icon className="w-6 h-6 md:w-8 md:h-8" />
+                  </div>
+                  <div className="text-3xl md:text-5xl font-black text-[#0F172A] tracking-tighter mb-1">
+                    <CountUp target={stat.value} duration={2.5} suffix={stat.suffix} />
+                  </div>
+                  <p className="text-gray-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.2em]">
+                    {stat.label}
+                  </p>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
         </div>
-      </div>
+      </section>
 
       <AnimatePresence mode="wait">
         {activeTab === "empresas" ? (
@@ -181,14 +200,67 @@ export default function AsesoriasClient() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="pb-24"
+            className="pb-24 pt-12"
           >
+            {/* ════ WHY PROGRAMBI / HOW WE HELP ════ */}
+            <section className="py-20 bg-white rounded-[4rem] mx-4 lg:mx-10 border border-gray-100 shadow-sm overflow-hidden relative">
+              <div className="absolute top-0 right-0 w-1/3 h-full bg-blue-50/50 skew-x-12 transform origin-right"></div>
+              <div className="max-w-[1200px] mx-auto px-5 lg:px-10 relative z-10">
+                <div className="grid lg:grid-cols-2 gap-16 items-center">
+                  <div>
+                    <span className="text-blue-600 font-black text-xs uppercase tracking-widest mb-4 block">Nuestro Impacto</span>
+                    <h2 className="font-display font-black text-4xl lg:text-6xl text-[#0F172A] mb-8 leading-tight">
+                      Empoderamos a tu empresa con la <span className="text-blue-600">verdad</span> de los datos.
+                    </h2>
+                    <p className="text-gray-500 text-xl leading-relaxed mb-10 font-medium">
+                      No solo creamos dashboards; construimos la infraestructura que permite a los gerentes tomar decisiones en segundos, no en días.
+                    </p>
+                    
+                    <div className="space-y-6">
+                      {[
+                        { icon: TrendingUp, t: "Reducción de Costos", d: "Optimizamos procesos operativos eliminando redundancias y tareas manuales ineficientes." },
+                        { icon: Lightbulb, t: "Celeridad Estratégica", d: "Información disponible 24/7 para que la estrategia se base en realidades, no en intuiciones." },
+                        { icon: Search, t: "Transparencia Total", d: "Métricas estandarizadas para que todos en la organización hablen el mismo idioma." }
+                      ].map((item, i) => (
+                        <div key={i} className="flex gap-5">
+                          <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 text-blue-600">
+                            <item.icon size={24} />
+                          </div>
+                          <div>
+                            <h4 className="font-black text-[#0F172A] text-lg mb-1">{item.t}</h4>
+                            <p className="text-gray-500 text-sm leading-relaxed">{item.d}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="relative">
+                    <div className="bg-gray-100 rounded-[3rem] p-4 lg:p-8 border border-gray-200 relative overflow-hidden aspect-[4/5] lg:aspect-square flex items-center justify-center">
+                       {/* Placeholder for professional illustration/mockup */}
+                       <div className="text-center p-8">
+                         <BarChart3 className="w-32 h-32 text-blue-200 mx-auto mb-6" />
+                         <div className="space-y-3">
+                           <div className="h-4 w-48 bg-blue-100 rounded-full mx-auto"></div>
+                           <div className="h-4 w-32 bg-blue-100 rounded-full mx-auto opacity-50"></div>
+                         </div>
+                       </div>
+                       <motion.div 
+                        animate={{ rotate: 360 }} 
+                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }} 
+                        className="absolute -bottom-20 -right-20 w-64 h-64 border-[32px] border-blue-500/10 rounded-full"
+                       />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
             {/* ════ BENTO GRID SERVICES ════ */}
             <section className="py-24">
               <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
                 <div className="text-center max-w-3xl mx-auto mb-16">
-                  <h2 className="font-display font-black text-3xl sm:text-4xl text-[#0F172A] mb-4">¿Tomando decisiones a ciegas?</h2>
-                  <p className="text-gray-500 text-lg">Centralizamos tu información y automatizamos tus flujos para que te enfoques en la estrategia, no en la operativa.</p>
+                  <h2 className="font-display font-black text-3xl sm:text-4xl text-[#0F172A] mb-4">Soluciones End-to-End</h2>
+                  <p className="text-gray-500 text-lg font-medium">Desde la ingesta de datos hasta la capacitación del último usuario de la compañía.</p>
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -215,8 +287,8 @@ export default function AsesoriasClient() {
                 <FadeIn>
                   <div className="text-center mb-16">
                     <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-[#0F172A] mb-4">Resultados Tangibles</h2>
-                    <p className="text-gray-500 text-lg max-w-[600px] mx-auto">
-                      Conoce cómo hemos transformado la operación de nuestros clientes.
+                    <p className="text-gray-500 text-lg max-w-[600px] mx-auto font-medium">
+                      Casos de éxito reales que demuestran nuestra capacidad técnica.
                     </p>
                   </div>
                 </FadeIn>
@@ -272,7 +344,7 @@ export default function AsesoriasClient() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="pb-24"
+            className="pb-24 pt-12"
           >
             {/* ════ B2C VALUE PROP ════ */}
             <div className="max-w-[1200px] mx-auto px-5 lg:px-10 mt-16">
@@ -315,9 +387,14 @@ export default function AsesoriasClient() {
                     {/* Decorative background glow behind the card */}
                     <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-[3rem] blur-2xl opacity-20 transform scale-95 translate-y-4"></div>
                     
-                    <div className="bg-white border-2 border-indigo-50 rounded-[2.5rem] p-8 sm:p-10 relative overflow-hidden shadow-2xl">
-                      <div className="absolute top-0 inset-x-0 h-2 bg-gradient-to-r from-indigo-500 to-purple-500" />
-                      
+                    <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 sm:p-10 relative overflow-hidden shadow-2xl">
+                      {/* PROMO BADGE */}
+                      <div className="absolute top-6 right-6 z-20">
+                        <span className="bg-emerald-500 text-white text-[10px] font-black uppercase tracking-tighter px-3 py-1 rounded-full shadow-lg shadow-emerald-500/20">
+                          40% OFF - Primera compra
+                        </span>
+                      </div>
+
                       <div className="flex justify-between items-start mb-8">
                         <div>
                           <h3 className="font-display font-black text-2xl text-[#0F172A]">Asesoría Privada</h3>
@@ -333,9 +410,14 @@ export default function AsesoriasClient() {
                         {loading ? (
                           <div className="h-16 animate-pulse bg-gray-200 rounded-lg"></div>
                         ) : user ? (
-                          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-end gap-2">
-                            <span className="text-5xl font-black text-[#0F172A] tracking-tight">$100.000</span>
-                            <span className="text-gray-500 font-bold mb-1.5 uppercase text-sm">CLP / hr</span>
+                          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col">
+                            <div className="flex items-end gap-2">
+                              <span className="text-5xl font-black text-[#0F172A] tracking-tight">$100.000</span>
+                              <span className="text-gray-500 font-bold mb-1.5 uppercase text-sm">CLP / hr</span>
+                            </div>
+                            <span className="text-gray-400 font-bold text-xs mt-1 uppercase tracking-widest">
+                               ~ $111 USD (Ref $900/USD)
+                            </span>
                           </motion.div>
                         ) : (
                           <div className="relative z-10 flex flex-col items-center justify-center text-center py-3">
