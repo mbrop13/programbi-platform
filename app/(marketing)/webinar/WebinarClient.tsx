@@ -112,10 +112,10 @@ export default function WebinarClient() {
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 bg-gradient-to-br from-brand-blue to-indigo-600 rounded-2xl flex flex-col items-center justify-center shrink-0">
                     <span className="text-[10px] font-bold text-white/70 uppercase tracking-wider">MAY</span>
-                    <span className="text-2xl font-black text-white leading-none">17</span>
+                    <span className="text-2xl font-black text-white leading-none">23</span>
                   </div>
                   <div>
-                    <p className="text-white font-bold text-lg">Sábado 17 de Mayo · 11:00 AM</p>
+                    <p className="text-white font-bold text-lg">Sábado 23 de Mayo · 11:00 AM</p>
                     <p className="text-slate-400 text-sm">Vía Zoom · Cupos Limitados</p>
                   </div>
                 </div>
@@ -289,7 +289,7 @@ export default function WebinarClient() {
           <p className="text-slate-400 max-w-lg mx-auto mb-4 leading-relaxed">
             Descuento especial en nuestros programas + recursos descargables exclusivos que compartiremos solo en vivo.
           </p>
-          <p className="text-white font-bold text-lg mb-8">Sábado 9 de Mayo · 11:00 AM · Vía Zoom</p>
+          <p className="text-white font-bold text-lg mb-8">Sábado 23 de Mayo · 11:00 AM · Vía Zoom</p>
           <a href="#top" className="inline-flex items-center gap-2 btn-gradient text-white font-bold py-4 px-10 rounded-xl text-sm uppercase tracking-wider transition-all">
             <ArrowRight className="w-4 h-4" /> Inscribirme ahora
           </a>
