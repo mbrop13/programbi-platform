@@ -221,29 +221,6 @@ export default function AsesoriasClient() {
         </div>
       </section>
 
-      {/* ════ PREMIUM STATS GRID ════ */}
-      <section className="py-12 -mt-12 relative z-20">
-        <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-            {stats.map((stat, i) => (
-              <FadeIn key={i} delay={i * 0.1}>
-                <div className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-3xl p-6 md:p-8 text-center shadow-xl shadow-gray-200/50 group hover:bg-white transition-all hover:-translate-y-1">
-                  <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform ${stat.color}`}>
-                    <stat.icon className="w-6 h-6 md:w-8 md:h-8" />
-                  </div>
-                  <div className="text-3xl md:text-5xl font-black text-[#0F172A] tracking-tighter mb-1">
-                    <CountUp target={stat.value} duration={2.5} suffix={stat.suffix} />
-                  </div>
-                  <p className="text-gray-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.2em]">
-                    {stat.label}
-                  </p>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <AnimatePresence mode="wait">
         {activeTab === "empresas" ? (
           <motion.div
@@ -591,6 +568,29 @@ export default function AsesoriasClient() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ════ PREMIUM STATS GRID ════ */}
+      <section className="py-24 relative z-20">
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+            {stats.map((stat, i) => (
+              <FadeIn key={i} delay={i * 0.1}>
+                <div className="bg-white/60 backdrop-blur-xl border border-white/40 rounded-3xl p-6 md:p-8 text-center shadow-xl shadow-gray-200/50 group hover:bg-white transition-all hover:-translate-y-1">
+                  <div className={`w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center mx-auto mb-4 md:mb-6 group-hover:scale-110 transition-transform ${stat.color}`}>
+                    <stat.icon className="w-6 h-6 md:w-8 md:h-8" />
+                  </div>
+                  <div className="text-3xl md:text-5xl font-black text-[#0F172A] tracking-tighter mb-1">
+                    <CountUp target={stat.value} duration={2.5} suffix={stat.suffix} />
+                  </div>
+                  <p className="text-gray-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.2em]">
+                    {stat.label}
+                  </p>
+                </div>
+              </FadeIn>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

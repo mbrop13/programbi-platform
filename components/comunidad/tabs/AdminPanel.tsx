@@ -13,6 +13,23 @@ export default function AdminPanel() {
   const [unreadSupportCount, setUnreadSupportCount] = useState(0);
   const [unreadMembersCount, setUnreadMembersCount] = useState(0);
   const [unreadLeadsCount, setUnreadLeadsCount] = useState(0);
+  const [unreadAsesoriasCount, setUnreadAsesoriasCount] = useState(0);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlTab = new URLSearchParams(window.location.search).get("tab");
+      if (urlTab) setActiveTab(urlTab);
+    }
+  }, []);
+
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId);
+    if (typeof window !== "undefined") {
+      const url = new URL(window.location.href);
+      url.searchParams.set("tab", tabId);
+      window.history.replaceState(null, '', url.toString());
+    }
+  };
 
   useEffect(() => {
     async function checkUnreads() {
@@ -32,19 +49,24 @@ export default function AdminPanel() {
            ? views.leads_last_viewed_at 
            : leadsLastStr;
 
+        const asesoriaLastStr = localStorage.getItem('admin_asesoria_last_viewed') || '1970-01-01T00:00:00.000Z';
+        
         const [
           { count: supportCount },
           { count: membersCount },
-          { count: leadsCount }
+          { count: leadsCount },
+          { count: asesoriasCount }
         ] = await Promise.all([
           supabase.from("support_tickets").select("*", { count: 'exact', head: true }).gt("created_at", supportLast),
           supabase.from("profiles").select("*", { count: 'exact', head: true }).gt("created_at", membersLast),
-          supabase.from("course_leads").select("*", { count: 'exact', head: true }).gt("created_at", leadsLast)
+          supabase.from("course_leads").select("*", { count: 'exact', head: true }).not("lead_type", "in", '("asesoria_schedule", "asesoria_b2b", "asesoria_b2c")').gt("created_at", leadsLast),
+          supabase.from("course_leads").select("*", { count: 'exact', head: true }).in("lead_type", ["asesoria_schedule", "asesoria_b2b", "asesoria_b2c"]).gt("created_at", asesoriaLastStr)
         ]);
 
         setUnreadSupportCount(supportCount || 0);
         setUnreadMembersCount(membersCount || 0);
         setUnreadLeadsCount(leadsCount || 0);
+        setUnreadAsesoriasCount(asesoriasCount || 0);
 
       } catch (e) {
         console.error(e);
@@ -64,7 +86,7 @@ export default function AdminPanel() {
     { id: "prices", label: "Precios y Promos", icon: DollarSign },
     { id: "cart", label: "Carritos", icon: ShoppingCart },
     { id: "courses", label: "Cursos", icon: GraduationCap },
-    { id: "asesorias", label: "Asesorías", icon: Video },
+    { id: "asesorias", label: "Asesorías", icon: Video, badgeCount: unreadAsesoriasCount },
     { id: "schedules", label: "Horarios", icon: Calendar },
     { id: "export_csv", label: "Exportar Datos", icon: Download },
     { id: "import", label: "Importar CSV", icon: Upload },
@@ -95,7 +117,7 @@ export default function AdminPanel() {
              return (
                <button 
                  key={item.id}
-                 onClick={() => setActiveTab(item.id)}
+                 onClick={() => handleTabChange(item.id)}
                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all relative
                    ${activeTab === item.id 
                      ? "bg-brand-blue text-white shadow-md shadow-brand-blue/20" 
@@ -195,8 +217,15 @@ function AdminAsesorias() {
     finally { setLoadingLeads(false); }
   };
 
-  useEffect(() => { fetchSlots(); }, [currentDate]);
-  useEffect(() => { fetchLeads(); }, []);
+  useEffect(() => {
+    fetchSlots();
+  }, [currentDate]);
+
+  useEffect(() => {
+    fetchLeads();
+    localStorage.setItem('admin_asesoria_last_viewed', new Date().toISOString());
+    window.dispatchEvent(new Event("adminViewsUpdated"));
+  }, []);
 
   const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
   const getFirstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
@@ -253,6 +282,36 @@ function AdminAsesorias() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "release", slot_date: dateStr, slot_time: time })
       });
+      await fetchSlots();
+    } catch (err) { console.error(err); }
+    finally { setActionLoading(null); }
+  };
+
+  const handleBlockDay = async (date: Date) => {
+    const dateStr = formatDateYYYYMMDD(date);
+    setActionLoading(`block-day-${dateStr}`);
+    try {
+      const times = getAvailableTimesForAdmin(date);
+      await fetch("/api/asesorias/slots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "block_day", slot_date: dateStr, times })
+      });
+      await fetchSlots();
+    } catch (err) { console.error(err); }
+    finally { setActionLoading(null); }
+  };
+
+  const handleRejectLead = async (email: string, leadId: string) => {
+    if (!confirm("¿Seguro que deseas rechazar este lead y liberar sus horas?")) return;
+    setActionLoading(`reject-${leadId}`);
+    try {
+      await fetch("/api/asesorias/slots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "reject_lead", user_email: email, lead_id: leadId })
+      });
+      await fetchLeads();
       await fetchSlots();
     } catch (err) { console.error(err); }
     finally { setActionLoading(null); }
@@ -339,13 +398,24 @@ function AdminAsesorias() {
 
           {/* Time Slots Panel */}
           <div className="lg:col-span-5 bg-white rounded-2xl border border-gray-100 flex flex-col overflow-hidden">
-            <div className="p-5 border-b border-gray-100">
-              <h4 className="font-bold text-gray-900">
-                {selectedDate
-                  ? `${DAY_NAMES_ADMIN[selectedDate.getDay()]} ${selectedDate.getDate()} de ${MONTH_NAMES_ADMIN[selectedDate.getMonth()]}`
-                  : "Selecciona un día"}
-              </h4>
-              <p className="text-xs text-gray-400 mt-0.5">Haz clic en un horario para bloquearlo o liberarlo.</p>
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h4 className="font-bold text-gray-900">
+                  {selectedDate
+                    ? `${DAY_NAMES_ADMIN[selectedDate.getDay()]} ${selectedDate.getDate()} de ${MONTH_NAMES_ADMIN[selectedDate.getMonth()]}`
+                    : "Selecciona un día"}
+                </h4>
+                <p className="text-xs text-gray-400 mt-0.5">Haz clic en un horario para bloquearlo o liberarlo.</p>
+              </div>
+              {selectedDate && (
+                <button
+                  onClick={() => handleBlockDay(selectedDate)}
+                  disabled={actionLoading === `block-day-${formatDateYYYYMMDD(selectedDate)}`}
+                  className="px-3 py-1.5 rounded-lg text-xs font-bold bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
+                >
+                  {actionLoading === `block-day-${formatDateYYYYMMDD(selectedDate)}` ? "..." : "Bloquear Día"}
+                </button>
+              )}
             </div>
             <div className="flex-1 overflow-y-auto p-5 max-h-[420px]">
               {!selectedDate ? (
@@ -399,14 +469,26 @@ function AdminAsesorias() {
             <div className="text-center py-20 text-gray-400">No hay solicitudes de asesorías aún.</div>
           ) : leads.map(lead => (
             <div key={lead.id} className="bg-white border border-gray-100 p-5 rounded-2xl hover:shadow-md transition-shadow">
-              <div className="flex items-center gap-3 mb-2">
-                <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${
-                  lead.lead_type === "asesoria_schedule" ? "bg-purple-100 text-purple-700" :
-                  lead.lead_type === "asesoria_b2b" ? "bg-blue-100 text-blue-700" : "bg-emerald-100 text-emerald-700"
-                }`}>
-                  {lead.lead_type === "asesoria_schedule" ? "Horario Solicitado" : lead.lead_type === "asesoria_b2b" ? "B2B Empresa" : "B2C Particular"}
-                </span>
-                <span className="text-xs text-gray-400">{new Date(lead.created_at).toLocaleString("es-CL")}</span>
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${
+                    lead.lead_type === "asesoria_schedule" ? "bg-purple-100 text-purple-700" :
+                    lead.lead_type === "asesoria_b2b" ? "bg-blue-100 text-blue-700" : "bg-emerald-100 text-emerald-700"
+                  }`}>
+                    {lead.lead_type === "asesoria_schedule" ? "Horario Solicitado" : lead.lead_type === "asesoria_b2b" ? "B2B Empresa" : "B2C Particular"}
+                  </span>
+                  <span className="text-xs text-gray-400">{new Date(lead.created_at).toLocaleString("es-CL")}</span>
+                </div>
+                {lead.lead_type === "asesoria_schedule" && (
+                  <button
+                    onClick={() => handleRejectLead(lead.email, lead.id)}
+                    disabled={actionLoading === `reject-${lead.id}`}
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
+                  >
+                    <Ban className="w-3.5 h-3.5" />
+                    {actionLoading === `reject-${lead.id}` ? "..." : "Rechazar"}
+                  </button>
+                )}
               </div>
               <h4 className="font-bold text-gray-900">{lead.name}</h4>
               <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
@@ -414,7 +496,7 @@ function AdminAsesorias() {
                 {lead.whatsapp && lead.whatsapp !== "N/A" && <span>WhatsApp: {lead.whatsapp}</span>}
               </div>
               {lead.message && (
-                <div className="mt-3 bg-gray-50 p-4 rounded-xl border border-gray-100 text-sm text-gray-700 break-words">{lead.message}</div>
+                <div className="mt-3 bg-gray-50 p-4 rounded-xl border border-gray-100 text-sm text-gray-700 break-words whitespace-pre-wrap">{lead.message}</div>
               )}
             </div>
           ))}
@@ -663,7 +745,7 @@ function AdminLeads() {
                      {lead.source_course && <div className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-semibold">Origen: {lead.source_course}</div>}
                    </td>
                    <td className="px-4 py-4 hidden md:table-cell max-w-xs">
-                     <div className="text-xs text-gray-600 line-clamp-3">{lead.message || <span className="text-gray-300 italic">Sin mensaje</span>}</div>
+                     <div className="text-xs text-gray-600 whitespace-pre-wrap break-words">{lead.message || <span className="text-gray-300 italic">Sin mensaje</span>}</div>
                    </td>
                    <td className="px-4 py-4 whitespace-nowrap">
                      <div className="text-xs font-medium text-gray-900">{new Date(lead.created_at).toLocaleDateString('es-CL')}</div>

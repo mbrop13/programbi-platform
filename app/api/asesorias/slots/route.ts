@@ -58,6 +58,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
+    if (action === "block_day") {
+      const { times } = body; // Array of times to block
+      if (times && Array.isArray(times)) {
+        const inserts = times.map((t: string) => ({ slot_date, slot_time: t, status: "blocked" }));
+        const { error } = await adminDb.from("asesoria_slots").insert(inserts);
+        if (error) throw error;
+      }
+      return NextResponse.json({ success: true });
+    }
+
+    if (action === "reject_lead") {
+      const { user_email, lead_id } = body;
+      if (user_email) {
+        await adminDb.from("asesoria_slots").delete().match({ user_email });
+      }
+      if (lead_id) {
+        await adminDb.from("course_leads").delete().match({ id: lead_id });
+      }
+      return NextResponse.json({ success: true });
+    }
+
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (err: any) {
     console.error("POST /api/asesorias/slots error:", err);
