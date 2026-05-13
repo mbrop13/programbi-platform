@@ -258,19 +258,7 @@ export default function SchedulingModal({ isOpen, onClose, onConfirm, isSubmitti
                 })}
               </div>
 
-              {/* Progress indicator below calendar */}
-              <div className="mt-5 bg-blue-50 rounded-2xl p-4 border border-blue-100">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-blue-700 uppercase tracking-widest">Progreso</span>
-                  <span className="text-xs font-black text-blue-600">{selectedSlots.length} / {qty} horas</span>
-                </div>
-                <div className="w-full bg-blue-100 rounded-full h-1.5">
-                  <div
-                    className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
-                    style={{ width: `${(selectedSlots.length / qty) * 100}%` }}
-                  />
-                </div>
-              </div>
+
             </div>
 
             {/* ── Time Slots (right) ── */}
@@ -289,8 +277,8 @@ export default function SchedulingModal({ isOpen, onClose, onConfirm, isSubmitti
                 </p>
               </div>
 
-              {/* Scrollable times list — contained scroll, not page scroll */}
-              <div className="flex-1 overflow-y-auto p-4" style={{ maxHeight: "320px" }}>
+              {/* Scrollable times — fills all remaining space to footer */}
+              <div className="flex-1 overflow-y-auto p-4">
                 {!selectedDate ? (
                   <div className="h-32 flex flex-col items-center justify-center text-gray-400 gap-2">
                     <CalendarIcon className="w-8 h-8 opacity-20" />
@@ -339,10 +327,21 @@ export default function SchedulingModal({ isOpen, onClose, onConfirm, isSubmitti
 
           {/* ── FOOTER ── */}
           <div className="bg-white border-t border-gray-100 p-5 sm:p-6 shrink-0">
+
+            {/* Progress bar */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex-1 bg-gray-100 rounded-full h-1.5">
+                <div
+                  className="bg-blue-600 h-1.5 rounded-full transition-all duration-300"
+                  style={{ width: `${qty > 0 ? (selectedSlots.length / qty) * 100 : 0}%` }}
+                />
+              </div>
+              <span className="text-xs font-black text-blue-600 tabular-nums shrink-0">{selectedSlots.length} / {qty} horas</span>
+            </div>
+
             {/* Summary of selected slots */}
             {selectedSlots.length > 0 ? (
-              <div className="mb-4 space-y-1.5">
-                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Horarios seleccionados</p>
+              <div className="mb-4">
                 <div className="flex flex-wrap gap-2">
                   {selectedSlots.map((slot, i) => (
                     <div key={i} className="flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold px-3 py-1.5 rounded-full">
@@ -381,12 +380,6 @@ export default function SchedulingModal({ isOpen, onClose, onConfirm, isSubmitti
                 {!isSubmitting && <ArrowRight className="w-5 h-5" />}
               </button>
             </div>
-
-            {/* Disclaimer below button */}
-            <p className="flex items-center gap-1.5 text-xs text-gray-400 font-medium mt-3">
-              <Info className="w-3.5 h-3.5 shrink-0" />
-              Las horas seleccionadas se reservarán al iniciar el pago. Nuestro equipo confirmará el enlace de sesión.
-            </p>
           </div>
         </motion.div>
       </div>
