@@ -11,6 +11,7 @@ import {
 import { FadeIn, StaggerChildren, StaggerItem, GlowCard, CountUp } from "@/components/shared/AnimatedComponents";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/shared/AuthModal";
+import AsesoriasForm from "@/components/marketing/AsesoriasForm";
 
 // --- Data ---
 const bentoFeatures = [
@@ -278,6 +279,11 @@ export default function AsesoriasClient() {
                     </div>
                   </div>
                 </div>
+
+                {/* ════ B2B CONTACT FORM ════ */}
+                <div className="mt-16 max-w-3xl mx-auto pb-10">
+                   <AsesoriasForm type="empresas" />
+                </div>
               </div>
             </section>
 
@@ -498,6 +504,11 @@ export default function AsesoriasClient() {
                   </FadeIn>
                 </div>
 
+              </div>
+
+              {/* ════ B2C CONTACT FORM ════ */}
+              <div className="mt-20 max-w-3xl mx-auto">
+                 <AsesoriasForm type="particulares" />
               </div>
             </div>
           </motion.div>
