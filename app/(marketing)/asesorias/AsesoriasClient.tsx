@@ -210,7 +210,7 @@ export default function AsesoriasClient() {
                   <div>
                     <span className="text-blue-600 font-black text-xs uppercase tracking-widest mb-4 block">Nuestro Impacto</span>
                     <h2 className="font-display font-medium text-4xl lg:text-6xl text-[#0F172A] mb-8 leading-tight">
-                      Empoderamos a tu empresa con la <span className="text-blue-600 font-serif italic">verdad</span> de los datos.
+                      <span className="text-[#1890FF]">Empoderamos a tu empresa con la</span> <span className="font-serif italic text-[#0F172A]">verdad de los datos.</span>
                     </h2>
                     <p className="text-gray-500 text-xl leading-relaxed mb-10 font-medium">
                       No solo creamos dashboards; construimos la infraestructura que permite a los gerentes tomar decisiones en segundos, no en días.
@@ -437,6 +437,10 @@ export default function AsesoriasClient() {
                           <div className="h-16 animate-pulse bg-gray-200 rounded-lg"></div>
                         ) : user ? (
                           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col">
+                            <div className="flex items-center gap-3 mb-1">
+                              <span className="text-gray-400 line-through font-bold text-xl">$100.000</span>
+                              <span className="bg-emerald-100 text-emerald-600 text-[10px] font-black px-2 py-0.5 rounded-full">40% DTO</span>
+                            </div>
                             <div className="flex items-end gap-2">
                               <span className="text-5xl font-black text-[#0F172A] tracking-tight">$60.000</span>
                               <span className="text-gray-500 font-bold mb-1.5 uppercase text-sm">CLP / hr</span>
