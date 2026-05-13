@@ -149,7 +149,7 @@ export default function AsesoriasClient() {
       />
 
       {/* ════ HERO SALES MACHINE ════ */}
-      <section className="relative -mt-20 lg:-mt-24 pt-32 lg:pt-48 pb-24 overflow-hidden bg-white">
+      <section className="relative -mt-20 lg:-mt-24 pt-32 lg:pt-48 pb-12 overflow-hidden bg-white">
         <div className="absolute inset-0 z-0 pointer-events-none">
           <svg className="absolute inset-0 w-full h-full opacity-[0.03]" viewBox="0 0 800 600" fill="none">
             <defs>
@@ -203,7 +203,7 @@ export default function AsesoriasClient() {
                 className={`px-8 py-4 rounded-xl font-black text-sm lg:text-base transition-all flex justify-center items-center gap-2.5 relative w-full sm:w-auto ${
                   activeTab === "particulares" ? "text-white shadow-lg" : "text-gray-500 hover:text-gray-900"
                 }`}
-                style={activeTab === "particulares" ? { background: "linear-gradient(135deg, #4F46E5, #7C3AED)" } : {}}
+                style={activeTab === "particulares" ? { background: "linear-gradient(135deg, #3B82F6, #1D4ED8)" } : {}}
               >
                 <User size={18} /> Mentoría 1 a 1
               </button>
@@ -229,7 +229,7 @@ export default function AsesoriasClient() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="pb-24 pt-12"
+            className="pb-24 pt-6"
           >
             {/* ════ WHY PROGRAMBI / HOW WE HELP ════ */}
             <section className="py-20 bg-white rounded-[4rem] mx-4 lg:mx-10 border border-gray-100 shadow-sm overflow-hidden relative">
@@ -417,10 +417,10 @@ export default function AsesoriasClient() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="pb-24 pt-12"
+            className="pb-24 pt-6"
           >
             {/* ════ B2C VALUE PROP ════ */}
-            <div className="max-w-[1200px] mx-auto px-5 lg:px-10 mt-16">
+            <div className="max-w-[1200px] mx-auto px-5 lg:px-10 mt-8">
               <div className="grid lg:grid-cols-12 gap-12 lg:gap-20 items-center">
                 
                 {/* Info Particulares */}
