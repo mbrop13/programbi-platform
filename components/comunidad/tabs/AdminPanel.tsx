@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
+import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
 import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory } from "@/lib/supabase/comunidad-ai";
@@ -142,72 +142,280 @@ export default function AdminPanel() {
   );
 }
 
-// ─── ASESORIAS 1 A 1 ───
-function AdminAsesorias() {
-  const [leads, setLeads] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+// ─── ASESORIAS 1 A 1 (CALENDAR ADMIN) ───
+const MONTH_NAMES_ADMIN = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+const DAY_NAMES_ADMIN = ["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const { createClient } = await import("@/lib/supabase/client");
-        const supabase = createClient();
-        const { data } = await supabase
-          .from("course_leads")
-          .select("*")
-          .in("lead_type", ["asesoria_schedule", "asesoria_b2b", "asesoria_b2c"])
-          .order("created_at", { ascending: false });
-        
-        setLeads(data || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+function AdminAsesorias() {
+  const [activeView, setActiveView] = useState<"calendar" | "leads">("calendar");
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [slots, setSlots] = useState<any[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [leads, setLeads] = useState<any[]>([]);
+  const [loadingLeads, setLoadingLeads] = useState(true);
+
+  const formatDateYYYYMMDD = (d: Date) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const fetchSlots = async () => {
+    setLoadingSlots(true);
+    try {
+      const year = currentDate.getFullYear();
+      const month = currentDate.getMonth();
+      const start = `${year}-${String(month + 1).padStart(2, '0')}-01`;
+      const lastDay = new Date(year, month + 1, 0).getDate();
+      const end = `${year}-${String(month + 1).padStart(2, '0')}-${String(lastDay).padStart(2, '0')}`;
+      const res = await fetch(`/api/asesorias/slots?start=${start}&end=${end}`);
+      if (res.ok) {
+        const data = await res.json();
+        setSlots(data.slots || []);
       }
+    } catch (err) { console.error(err); }
+    finally { setLoadingSlots(false); }
+  };
+
+  const fetchLeads = async () => {
+    setLoadingLeads(true);
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+      const { data } = await supabase
+        .from("course_leads")
+        .select("*")
+        .in("lead_type", ["asesoria_schedule", "asesoria_b2b", "asesoria_b2c"])
+        .order("created_at", { ascending: false });
+      setLeads(data || []);
+    } catch (err) { console.error(err); }
+    finally { setLoadingLeads(false); }
+  };
+
+  useEffect(() => { fetchSlots(); }, [currentDate]);
+  useEffect(() => { fetchLeads(); }, []);
+
+  const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
+  const getFirstDayOfMonth = (year: number, month: number) => new Date(year, month, 1).getDay();
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const calendarDays = (() => {
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const daysInMonth = getDaysInMonth(year, month);
+    const firstDay = getFirstDayOfMonth(year, month);
+    const days: (Date | null)[] = [];
+    for (let i = 0; i < firstDay; i++) days.push(null);
+    for (let i = 1; i <= daysInMonth; i++) days.push(new Date(year, month, i));
+    return days;
+  })();
+
+  const getSlotsForDate = (dateStr: string) => slots.filter(s => s.slot_date === dateStr);
+  const getAvailableTimesForAdmin = (date: Date) => {
+    const times = [];
+    const dayOfWeek = date.getDay();
+    const isMonToThu = dayOfWeek >= 1 && dayOfWeek <= 4;
+    for (let h = 8; h <= 22; h++) {
+      if (isMonToThu && h >= 19 && h <= 22) continue;
+      times.push(`${String(h).padStart(2, "0")}:00`);
+      times.push(`${String(h).padStart(2, "0")}:30`);
     }
-    load();
-  }, []);
+    return times;
+  };
+
+  const handleBlockSlot = async (date: Date, time: string) => {
+    const dateStr = formatDateYYYYMMDD(date);
+    const key = `${dateStr}-${time}`;
+    setActionLoading(key);
+    try {
+      await fetch("/api/asesorias/slots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "block", slot_date: dateStr, slot_time: time })
+      });
+      await fetchSlots();
+    } catch (err) { console.error(err); }
+    finally { setActionLoading(null); }
+  };
+
+  const handleReleaseSlot = async (date: Date, time: string) => {
+    const dateStr = formatDateYYYYMMDD(date);
+    const key = `${dateStr}-${time}`;
+    setActionLoading(key);
+    try {
+      await fetch("/api/asesorias/slots", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "release", slot_date: dateStr, slot_time: time })
+      });
+      await fetchSlots();
+    } catch (err) { console.error(err); }
+    finally { setActionLoading(null); }
+  };
 
   return (
     <div className="p-6 sm:p-8">
-      <div className="mb-8 flex justify-between items-end">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
         <div>
-          <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Asesorías Solicitadas</h2>
-          <p className="text-sm text-gray-400">Agendamientos y solicitudes de contacto para consultorías.</p>
+          <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Asesorías 1 a 1</h2>
+          <p className="text-sm text-gray-400">Gestiona disponibilidad y visualiza solicitudes.</p>
+        </div>
+        <div className="flex items-center gap-2 bg-gray-100 p-1 rounded-xl">
+          <button onClick={() => setActiveView("calendar")} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeView === "calendar" ? "bg-white text-brand-blue shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+            Calendario
+          </button>
+          <button onClick={() => setActiveView("leads")} className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${activeView === "leads" ? "bg-white text-brand-blue shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+            Solicitudes
+          </button>
         </div>
       </div>
 
-      {loading ? (
-        <div className="py-20 flex justify-center"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>
-      ) : leads.length === 0 ? (
-        <div className="text-center py-20 text-gray-400">No hay solicitudes de asesorías aún.</div>
-      ) : (
-        <div className="space-y-4">
-          {leads.map(lead => (
-            <div key={lead.id} className="bg-white border border-gray-100 p-5 rounded-2xl flex flex-col md:flex-row gap-4 justify-between items-start md:items-center hover:shadow-md transition-shadow">
-              <div className="flex-1 w-full">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${
-                    lead.lead_type === 'asesoria_schedule' ? 'bg-purple-100 text-purple-700' :
-                    lead.lead_type === 'asesoria_b2b' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'
-                  }`}>
-                    {lead.lead_type === 'asesoria_schedule' ? 'Horario Solicitado' : lead.lead_type === 'asesoria_b2b' ? 'B2B Empresa' : 'B2C Particular'}
-                  </span>
-                  <span className="text-xs text-gray-400 font-medium">
-                    {new Date(lead.created_at).toLocaleString("es-CL")}
-                  </span>
-                </div>
-                <h4 className="font-bold text-gray-900">{lead.name}</h4>
-                <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
-                  <span className="flex items-center gap-1.5"><Mail className="w-4 h-4" /> {lead.email}</span>
-                  {lead.whatsapp && lead.whatsapp !== 'N/A' && <span className="flex items-center gap-1.5">WhatsApp: {lead.whatsapp}</span>}
-                </div>
-                {lead.message && (
-                  <div className="mt-3 bg-gray-50 p-4 rounded-xl border border-gray-100 text-sm text-gray-700 font-medium break-words">
-                    {lead.message}
-                  </div>
-                )}
+      {activeView === "calendar" ? (
+        <div className="grid lg:grid-cols-12 gap-6">
+          {/* Calendar */}
+          <div className="lg:col-span-7 bg-gray-50 rounded-2xl p-5 border border-gray-100">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="font-bold text-gray-900 text-lg capitalize">
+                {MONTH_NAMES_ADMIN[currentDate.getMonth()]} {currentDate.getFullYear()}
+              </h3>
+              <div className="flex items-center gap-2">
+                <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1))} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-colors">
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))} className="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 transition-colors">
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
+            </div>
+            <div className="grid grid-cols-7 mb-2">
+              {DAY_NAMES_ADMIN.map(d => <div key={d} className="text-center text-[10px] font-bold text-gray-400 uppercase tracking-widest py-1">{d}</div>)}
+            </div>
+            <div className="grid grid-cols-7 gap-1.5">
+              {calendarDays.map((date, i) => {
+                if (!date) return <div key={`e-${i}`} />;
+                const dateStr = formatDateYYYYMMDD(date);
+                const daySlots = getSlotsForDate(dateStr);
+                const hasBlocked = daySlots.some(s => s.status === "blocked");
+                const hasBooked = daySlots.some(s => s.status === "booked");
+                const hasPending = daySlots.some(s => s.status === "pending_payment");
+                const isSelected = selectedDate && date.getTime() === selectedDate.getTime();
+                const isPast = date < today;
+
+                return (
+                  <button
+                    key={dateStr}
+                    onClick={() => !isPast && setSelectedDate(date)}
+                    className={`
+                      relative aspect-square flex flex-col items-center justify-center rounded-xl text-sm font-bold transition-all border-2
+                      ${isPast ? "opacity-25 cursor-default border-transparent bg-transparent" : "cursor-pointer"}
+                      ${isSelected && !isPast ? "bg-brand-blue text-white border-brand-blue shadow-md" : "bg-white text-gray-700 border-transparent hover:border-blue-200"}
+                    `}
+                  >
+                    {date.getDate()}
+                    {(hasBlocked || hasBooked || hasPending) && (
+                      <div className="absolute bottom-1 flex gap-0.5">
+                        {hasBooked && <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />}
+                        {hasPending && <div className="w-1.5 h-1.5 rounded-full bg-amber-400" />}
+                        {hasBlocked && <div className="w-1.5 h-1.5 rounded-full bg-red-400" />}
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            {/* Legend */}
+            <div className="mt-4 flex items-center gap-4 text-xs text-gray-500 font-medium">
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" /> Reservado</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block" /> Pendiente pago</span>
+              <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-red-400 inline-block" /> Bloqueado</span>
+            </div>
+          </div>
+
+          {/* Time Slots Panel */}
+          <div className="lg:col-span-5 bg-white rounded-2xl border border-gray-100 flex flex-col overflow-hidden">
+            <div className="p-5 border-b border-gray-100">
+              <h4 className="font-bold text-gray-900">
+                {selectedDate
+                  ? `${DAY_NAMES_ADMIN[selectedDate.getDay()]} ${selectedDate.getDate()} de ${MONTH_NAMES_ADMIN[selectedDate.getMonth()]}`
+                  : "Selecciona un día"}
+              </h4>
+              <p className="text-xs text-gray-400 mt-0.5">Haz clic en un horario para bloquearlo o liberarlo.</p>
+            </div>
+            <div className="flex-1 overflow-y-auto p-5 max-h-[420px]">
+              {!selectedDate ? (
+                <div className="h-full flex items-center justify-center text-gray-400 text-sm">Elige un día en el calendario</div>
+              ) : loadingSlots ? (
+                <div className="h-full flex items-center justify-center"><Loader2 className="w-6 h-6 text-brand-blue animate-spin" /></div>
+              ) : (
+                <div className="space-y-2">
+                  {getAvailableTimesForAdmin(selectedDate).map(time => {
+                    const dateStr = formatDateYYYYMMDD(selectedDate);
+                    const slot = slots.find(s => s.slot_date === dateStr && s.slot_time === time);
+                    const key = `${dateStr}-${time}`;
+                    const isLoading = actionLoading === key;
+
+                    const statusConfig = slot?.status === "booked"
+                      ? { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-700", label: "Reservado", btn: "Liberar", btnClass: "bg-red-50 text-red-600 hover:bg-red-100" }
+                      : slot?.status === "pending_payment"
+                      ? { bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-700", label: "Pago Pendiente", btn: "Liberar", btnClass: "bg-red-50 text-red-600 hover:bg-red-100" }
+                      : slot?.status === "blocked"
+                      ? { bg: "bg-red-50", border: "border-red-200", text: "text-red-700", label: "Bloqueado", btn: "Liberar", btnClass: "bg-emerald-50 text-emerald-600 hover:bg-emerald-100" }
+                      : { bg: "bg-gray-50", border: "border-gray-100", text: "text-gray-500", label: "Disponible", btn: "Bloquear", btnClass: "bg-red-50 text-red-500 hover:bg-red-100" };
+
+                    return (
+                      <div key={time} className={`flex items-center justify-between p-3 rounded-xl border-2 ${statusConfig.bg} ${statusConfig.border}`}>
+                        <div>
+                          <span className={`font-bold text-sm ${statusConfig.text}`}>{time}</span>
+                          <span className={`ml-3 text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-white/70 ${statusConfig.text}`}>{statusConfig.label}</span>
+                          {slot?.user_email && <div className="text-xs text-gray-500 mt-0.5">{slot.user_email}</div>}
+                        </div>
+                        <button
+                          disabled={isLoading}
+                          onClick={() => slot ? handleReleaseSlot(selectedDate, time) : handleBlockSlot(selectedDate, time)}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${statusConfig.btnClass} disabled:opacity-50`}
+                        >
+                          {isLoading ? "..." : statusConfig.btn}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        // Leads view
+        <div className="space-y-4">
+          {loadingLeads ? (
+            <div className="py-20 flex justify-center"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>
+          ) : leads.length === 0 ? (
+            <div className="text-center py-20 text-gray-400">No hay solicitudes de asesorías aún.</div>
+          ) : leads.map(lead => (
+            <div key={lead.id} className="bg-white border border-gray-100 p-5 rounded-2xl hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-3 mb-2">
+                <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${
+                  lead.lead_type === "asesoria_schedule" ? "bg-purple-100 text-purple-700" :
+                  lead.lead_type === "asesoria_b2b" ? "bg-blue-100 text-blue-700" : "bg-emerald-100 text-emerald-700"
+                }`}>
+                  {lead.lead_type === "asesoria_schedule" ? "Horario Solicitado" : lead.lead_type === "asesoria_b2b" ? "B2B Empresa" : "B2C Particular"}
+                </span>
+                <span className="text-xs text-gray-400">{new Date(lead.created_at).toLocaleString("es-CL")}</span>
+              </div>
+              <h4 className="font-bold text-gray-900">{lead.name}</h4>
+              <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+                <span className="flex items-center gap-1.5"><Mail className="w-4 h-4" /> {lead.email}</span>
+                {lead.whatsapp && lead.whatsapp !== "N/A" && <span>WhatsApp: {lead.whatsapp}</span>}
+              </div>
+              {lead.message && (
+                <div className="mt-3 bg-gray-50 p-4 rounded-xl border border-gray-100 text-sm text-gray-700 break-words">{lead.message}</div>
+              )}
             </div>
           ))}
         </div>

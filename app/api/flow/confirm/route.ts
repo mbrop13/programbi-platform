@@ -145,6 +145,13 @@ export async function POST(req: NextRequest) {
           }
         }
       }
+      // 4. Confirm scheduling slots if any
+      const schedulingSlots = metadata.scheduling_slots || [];
+      if (schedulingSlots.length > 0) {
+        await supabase.from("asesoria_slots")
+          .update({ status: "booked" })
+          .eq("flow_order", flowStatus.commerceOrder);
+      }
     }
 
     return NextResponse.json({ message: "OK", status: newStatus });

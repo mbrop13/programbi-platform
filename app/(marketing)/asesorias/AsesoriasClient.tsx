@@ -97,9 +97,10 @@ export default function AsesoriasClient() {
     }
   };
 
-  const handleConfirmSchedule = async (qty: number, details: any) => {
+  const handleConfirmSchedule = async (qty: number, details: any, scheduling_slots: { date: string, time: string }[]) => {
     setIsSubmittingSchedule(true);
     try {
+      // 1. Save lead record with slot details
       await fetch("/api/leads/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -111,7 +112,26 @@ export default function AsesoriasClient() {
           message: `Horarios solicitados: Principal (${details.primary}) | Secundario (${details.secondary}). Cantidad: ${qty} horas.`
         }),
       });
-      router.push(`/pago?servicio=asesoria&qty=${qty}`);
+
+      // 2. Create Flow payment order and hold the slots in asesoria_slots
+      const res = await fetch("/api/flow/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: [{ courseSlug: "asesoria", quantity: qty }],
+          scheduling_slots,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Error al crear el pago");
+
+      // 3. Redirect to Flow payment page
+      if (data.url) {
+        window.location.href = data.url + "&token=" + data.token;
+      } else {
+        router.push(`/pago?servicio=asesoria&qty=${qty}`);
+      }
     } catch (e) {
       console.error(e);
       router.push(`/pago?servicio=asesoria&qty=${qty}`);

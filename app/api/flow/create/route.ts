@@ -164,8 +164,28 @@ export async function POST(req: NextRequest) {
       status: "pending",
       payer_email: email,
       // Pass items payload as metadata for robust processing logic later
-      metadata: { items: validatedItems }
+      metadata: { items: validatedItems, scheduling_slots: body.scheduling_slots || [] }
     } as any);
+
+    // Save scheduling_slots as pending_payment
+    const { scheduling_slots = [] } = body;
+    if (Array.isArray(scheduling_slots) && scheduling_slots.length > 0) {
+      const slotsToInsert = scheduling_slots.map(slot => ({
+        slot_date: slot.date,
+        slot_time: slot.time,
+        status: "pending_payment",
+        user_email: email,
+        flow_order: commerceOrder
+      }));
+      // Delete any conflicting pending slots first (cleanup just in case)
+      for (const s of slotsToInsert) {
+         await adminDb.from("asesoria_slots").delete().match({ slot_date: s.slot_date, slot_time: s.slot_time, status: "pending_payment" });
+      }
+      const { error: slotsErr } = await adminDb.from("asesoria_slots").insert(slotsToInsert);
+      if (slotsErr) {
+        console.error("Warning: could not hold asesoria slots:", slotsErr);
+      }
+    }
 
     console.log("💰 Multi-cart Payment created:", commerceOrder, "Items:", validatedItems.length, "user:", user.id);
 
