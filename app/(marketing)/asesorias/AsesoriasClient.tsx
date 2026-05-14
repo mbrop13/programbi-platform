@@ -439,9 +439,9 @@ export default function AsesoriasClient() {
                     <div className="grid sm:grid-cols-2 gap-6 mb-10">
                       {[
                         "Auditoría de DAX y Modelado",
-                        "Revisión de Portafolio y CV",
+                        "Optimización de Consultas SQL",
                         "Arquitectura de Datos",
-                        "Consultoría para Tesis"
+                        "Desarrollo de Scripts Python"
                       ].map((item, i) => (
                         <div key={i} className="flex items-center gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm transition-transform hover:-translate-y-1">
                           <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
