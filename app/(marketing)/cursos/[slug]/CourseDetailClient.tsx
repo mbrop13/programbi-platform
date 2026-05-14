@@ -534,8 +534,11 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         <div className="max-w-[1000px] mx-auto px-5 lg:px-10">
           <FadeIn>
             <div className="flex flex-col md:flex-row gap-8 items-center md:items-start bg-[#F8FAFC] rounded-[2rem] p-8 lg:p-12 border border-gray-100 shadow-sm">
-              <div className="w-32 h-32 md:w-40 md:h-40 shrink-0 relative rounded-full overflow-hidden border-4 border-white shadow-lg bg-blue-100 flex items-center justify-center">
-                <Image src={founderImage} alt="Manuel Oliva" fill className="object-cover" unoptimized />
+              <div className="w-40 h-40 md:w-48 md:h-48 shrink-0 relative group">
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-blue-50 rounded-3xl -rotate-6 group-hover:-rotate-3 transition-transform duration-300 z-0" style={{ backgroundColor: `${course.accentColor}20` }} />
+                <div className="relative w-full h-full rounded-3xl overflow-hidden border-4 border-white shadow-xl z-10 bg-white transition-transform duration-300 group-hover:scale-[1.02]">
+                  <Image src={founderImage} alt="Manuel Oliva" fill className="object-cover" unoptimized />
+                </div>
               </div>
               <div>
                 <h2 className="font-display font-black text-2xl sm:text-3xl text-[#0F172A] mb-2">Conoce a tu Profesor</h2>
