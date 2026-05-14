@@ -11,6 +11,7 @@ import {
 import * as LucideIcons from "lucide-react";
 import React from "react";
 import { type Course, courses } from "@/lib/data/courses";
+import { founderImage } from "@/lib/data/images";
 import { FadeIn, StaggerChildren, StaggerItem, CountUp } from "@/components/shared/AnimatedComponents";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/shared/AuthModal";
@@ -534,7 +535,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
           <FadeIn>
             <div className="flex flex-col md:flex-row gap-8 items-center md:items-start bg-[#F8FAFC] rounded-[2rem] p-8 lg:p-12 border border-gray-100 shadow-sm">
               <div className="w-32 h-32 md:w-40 md:h-40 shrink-0 relative rounded-full overflow-hidden border-4 border-white shadow-lg bg-blue-100 flex items-center justify-center">
-                <span className="text-4xl md:text-5xl font-black text-blue-400">MO</span>
+                <Image src={founderImage} alt="Manuel Oliva" fill className="object-cover" unoptimized />
               </div>
               <div>
                 <h2 className="font-display font-black text-2xl sm:text-3xl text-[#0F172A] mb-2">Conoce a tu Profesor</h2>
