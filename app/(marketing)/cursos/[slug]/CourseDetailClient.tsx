@@ -231,13 +231,12 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               <FadeIn delay={0.4}>
                 <div className="flex flex-wrap gap-6 text-sm text-gray-500 mb-8">
                   {(() => {
-                    let durationLabel = `${course.durationHours} horas`;
-                    if (course.slug === 'power-bi') durationLabel = "16 horas, 4 semanas";
-                    if (course.slug === 'analisis-de-datos') durationLabel = "48 horas, 12 semanas";
+                    let durationLabel = "48 horas 3 niveles en total";
+                    if (course.slug === 'analisis-de-datos' || course.slug === 'analitica-mineria' || course.slug === 'analitica-financiera') {
+                      durationLabel = "144 horas 3 niveles";
+                    }
 
-                    let scheduleLabel = "Clases en vivo";
-                    if (course.slug === 'power-bi') scheduleLabel = "Martes y jueves";
-                    else if (course.slug === 'sql-server' || course.slug === 'python' || course.slug === 'analisis-de-datos') scheduleLabel = "Lunes y miércoles";
+                    let scheduleLabel = "Clases en vivo por zoom";
 
                     return [
                       { icon: <Clock className="w-4 h-4" style={{ color: course.accentColor }} />, label: durationLabel },
