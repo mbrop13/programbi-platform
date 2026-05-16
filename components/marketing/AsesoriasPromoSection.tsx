@@ -2,8 +2,10 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, Code, Database, BarChart, Clock } from "lucide-react";
 import { FadeIn, StaggerChildren, StaggerItem } from "@/components/shared/AnimatedComponents";
+import { founderImage } from "@/lib/data/images";
 
 export default function AsesoriasPromoSection() {
   return (
@@ -72,33 +74,76 @@ export default function AsesoriasPromoSection() {
 
           {/* Right Visual Element */}
           <div className="relative lg:h-[600px] flex items-center justify-center">
-            <FadeIn delay={0.3} className="w-full">
-              <div className="relative w-full aspect-square max-w-[500px] mx-auto">
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-indigo-600 rounded-full blur-[100px] opacity-40 animate-pulse" />
-                <div className="relative w-full h-full bg-[#111827] border border-gray-800 rounded-3xl shadow-2xl overflow-hidden p-8 flex flex-col items-center justify-center text-center">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500" />
-                  
-                  <div className="w-24 h-24 rounded-full bg-blue-500/20 flex items-center justify-center mb-8 border border-blue-500/30">
-                    <Code className="w-10 h-10 text-blue-400" />
-                  </div>
-                  
-                  <h3 className="text-2xl font-black text-white mb-4">No pierdas más tiempo buscando en foros.</h3>
-                  <p className="text-gray-400 text-sm mb-8 leading-relaxed">
-                    Nuestros expertos revisarán tu pantalla, entenderán tu negocio y escribirán el código exacto que necesitas para seguir avanzando.
-                  </p>
-                  
-                  <div className="flex items-center gap-3">
-                    <div className="flex -space-x-3">
-                      {[1, 2, 3].map((i) => (
-                        <div key={i} className="w-10 h-10 rounded-full bg-gray-800 border-2 border-[#111827] flex items-center justify-center">
-                          <span className="text-xs">👨‍💻</span>
-                        </div>
-                      ))}
-                    </div>
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider bg-gray-800/50 px-3 py-1.5 rounded-lg border border-gray-700">Expertos Senior</span>
+            <FadeIn delay={0.3} className="w-full relative">
+              {/* Background Glow */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#1890FF] to-indigo-500 rounded-full blur-[100px] opacity-30 animate-pulse" />
+              
+              {/* Main IDE Window */}
+              <motion.div 
+                initial={{ y: 20, opacity: 0 }}
+                whileInView={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8, ease: "easeOut" }}
+                className="relative w-full max-w-[500px] mx-auto bg-[#0D1117] border border-gray-800 rounded-2xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden"
+              >
+                {/* IDE Header */}
+                <div className="flex items-center gap-2 px-4 py-3 bg-[#161B22] border-b border-gray-800">
+                  <div className="w-3 h-3 rounded-full bg-red-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-green-500/80" />
+                  <span className="ml-2 text-xs font-mono text-gray-500">optimizacion_avanzada.py</span>
+                </div>
+                {/* IDE Body */}
+                <div className="p-5 font-mono text-xs sm:text-sm leading-relaxed text-gray-300">
+                  <div className="text-gray-500 mb-3"># Corrigiendo cuello de botella en ETL</div>
+                  <div className="flex gap-4"><span className="text-gray-600">1</span><div><span className="text-pink-400">def</span> <span className="text-blue-400">procesar_millones_filas</span>(df):</div></div>
+                  <div className="flex gap-4"><span className="text-gray-600">2</span><div className="ml-4"><span className="text-purple-400">yield from</span> (chunk <span className="text-pink-400">for</span> chunk <span className="text-pink-400">in</span> np.array_split(df, 10000))</div></div>
+                  <div className="flex gap-4"><span className="text-gray-600">3</span></div>
+                  <div className="flex gap-4"><span className="text-gray-600">4</span><div><span className="text-gray-500"># Ejecutando script optimizado...</span></div></div>
+                  <div className="flex gap-4"><span className="text-gray-600">5</span><div><span className="text-emerald-400">print</span>(<span className="text-green-300">"✅ Rendimiento mejorado +300%"</span>)</div></div>
+                  <div className="mt-4 pt-4 border-t border-gray-800 flex items-center gap-2">
+                    <span className="w-2 h-4 bg-blue-400 animate-pulse inline-block" />
+                    <span className="text-gray-500 text-xs">Esperando input del experto...</span>
                   </div>
                 </div>
-              </div>
+              </motion.div>
+
+              {/* Floating Element 1: Power BI DAX */}
+              <motion.div 
+                initial={{ x: 50, opacity: 0 }}
+                whileInView={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="absolute -right-2 sm:-right-8 top-1/4 bg-white/5 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-xl max-w-[200px]"
+              >
+                <div className="flex items-center gap-3 mb-2">
+                  <BarChart className="w-5 h-5 text-yellow-400" />
+                  <span className="font-bold text-white text-xs">DAX Fix</span>
+                </div>
+                <div className="font-mono text-[10px] text-gray-300 leading-tight">
+                  <span className="text-blue-300">CALCULATE</span>(
+                  <br />&nbsp;&nbsp;[Total Sales],
+                  <br />&nbsp;&nbsp;<span className="text-blue-300">USERELATIONSHIP</span>(...)
+                  <br />)
+                </div>
+              </motion.div>
+
+              {/* Floating Element 2: Mentor Video Call Mockup */}
+              <motion.div 
+                initial={{ x: -50, y: 50, opacity: 0 }}
+                whileInView={{ x: 0, y: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.7 }}
+                className="absolute -left-2 sm:-left-8 -bottom-6 bg-[#1E293B] border border-gray-700 p-2 rounded-2xl shadow-2xl flex items-center gap-3 w-52"
+              >
+                <div className="w-12 h-12 rounded-xl bg-blue-500 overflow-hidden relative shrink-0">
+                  <Image src={founderImage} alt="Mentor" fill className="object-cover" unoptimized />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-[10px] font-bold text-white uppercase tracking-wider">En Vivo</span>
+                  </div>
+                  <span className="text-xs text-gray-400 leading-tight block truncate">Compartiendo pantalla</span>
+                </div>
+              </motion.div>
             </FadeIn>
           </div>
 
