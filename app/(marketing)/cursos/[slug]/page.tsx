@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { courses, getCourseBySlug } from "@/lib/data/courses";
+import { getMarketingDescription } from "@/lib/supabase/comunidad-ai";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
+
+export const revalidate = 60;
 
 type Params = Promise<{ slug: string }>;
 
@@ -15,7 +18,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!course) return { title: "Curso no encontrado" };
 
   const title = `${course.title} — Curso Online`;
-  const description = course.description;
+  const dbDescription = await getMarketingDescription(slug);
+  const description = dbDescription || course.description;
 
   return {
     title,
@@ -108,6 +112,11 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
   const { slug } = await params;
   const course = getCourseBySlug(slug);
   if (!course) notFound();
+
+  const dbDescription = await getMarketingDescription(slug);
+  if (dbDescription) {
+    course.description = dbDescription;
+  }
 
   const jsonLd = getCourseJsonLd(course);
 

@@ -1,6 +1,7 @@
 import HeroSection from "@/components/marketing/HeroSection";
 import LogoSlider from "@/components/marketing/LogoSlider";
 import CoursesSection from "@/components/marketing/CoursesSection";
+import AsesoriasPromoSection from "@/components/marketing/AsesoriasPromoSection";
 import GallerySection from "@/components/marketing/GallerySection";
 import DiagnosticSection from "@/components/marketing/DiagnosticSection";
 import MentorsSection from "@/components/marketing/MentorsSection";
@@ -59,6 +60,7 @@ export default function HomePage() {
       <HeroSection />
       <LogoSlider />
       <CoursesSection />
+      <AsesoriasPromoSection />
       <GallerySection />
       <DiagnosticSection />
       <MentorsSection />

@@ -206,6 +206,21 @@ export async function adminToggleFreePreview(lessonId: string) {
   revalidatePath("/(comunidad)", "layout");
 }
 
+export async function adminUpdateCourseDescription(courseId: string, description: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+  
+  await adminDb.from("courses").update({ description }).eq("id", courseId);
+  revalidatePath("/(comunidad)", "layout");
+}
+
+export async function getMarketingDescription(slug: string) {
+  const supabase = await createClient();
+  const { data } = await supabase.from("courses").select("description").eq("slug", slug).single();
+  return data?.description || null;
+}
+
 // ─── ADMIN: ENROLLMENT MANAGEMENT ───
 
 export async function adminGetAllUsers() {

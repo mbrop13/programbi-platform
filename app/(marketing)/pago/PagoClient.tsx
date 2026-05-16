@@ -563,15 +563,18 @@ export default function PagoClient() {
                                  </div>
                               )}
 
-                              <div className="border-t-2 border-dashed border-gray-100 pt-4 mb-6 flex justify-between items-center">
+                              <div className="border-t-2 border-dashed border-gray-100 pt-4 mb-6 flex justify-between items-end">
                                  <span className="font-bold text-gray-500">Total a pagar</span>
-                                 <span className="font-black text-2xl text-[#1890FF]">{formatGeoPrice(totalPrice)}</span>
+                                 <div className="text-right">
+                                   <span className="font-black text-2xl text-[#1890FF] block">{formatGeoPrice(totalPrice)}</span>
+                                   <span className="text-xs font-bold text-gray-400">≈ ${Math.round(totalPrice / 900)} USD</span>
+                                 </div>
                               </div>
 
                               {isInternational && (
                                 <div className="text-center mb-4 px-2">
                                   <span className="text-[10px] text-gray-400 font-medium">
-                                    * El cobro se procesará en pesos chilenos ({formatCLP(totalPrice)}). Tu banco aplicará la conversión a tu moneda local. (Tasa ref: $1 USD = $1000 CLP)
+                                    * El cobro se procesará en pesos chilenos ({formatCLP(totalPrice)}). Tu banco aplicará la conversión a tu moneda local. (Tasa ref: $1 USD = $900 CLP)
                                   </span>
                                 </div>
                               )}
@@ -837,7 +840,9 @@ export default function PagoClient() {
                   <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 4 }}>
                     Ver Detalles {isMobileCartOpen ? <ChevronDown style={{ width: 14, height: 14 }} /> : <ChevronUp style={{ width: 14, height: 14 }} />}
                   </span>
-                  <span style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", lineHeight: 1, display: "block", marginTop: 4 }}>{formatGeoPrice(totalPrice)}</span>
+                  <span style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", lineHeight: 1, display: "block", marginTop: 4 }}>
+                    {formatGeoPrice(totalPrice)} <span style={{ fontSize: 11, color: "#6b7280", fontWeight: 700 }}>≈ ${Math.round(totalPrice / 900)} USD</span>
+                  </span>
                 </div>
               </div>
               

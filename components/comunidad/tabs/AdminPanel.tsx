@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminUpdateCourseDescription, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory } from "@/lib/supabase/comunidad-ai";
 import { Calendar } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -1228,6 +1228,9 @@ function AdminCourses() {
   const [showAddLesson, setShowAddLesson] = useState(false);
   const [newLesson, setNewLesson] = useState({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false });
 
+  const [editDescription, setEditDescription] = useState("");
+  const [savingDescription, setSavingDescription] = useState(false);
+
   useEffect(() => {
     async function load() {
       try { const data = await adminGetCourses(); setCourses(data); }
@@ -1239,6 +1242,7 @@ function AdminCourses() {
 
   const selectCourse = async (course: any) => {
     setSelectedCourse(course);
+    setEditDescription(course.description || "");
     setLoadingLessons(true);
     try {
       const data = await adminGetLessons(course.id);
@@ -1286,6 +1290,21 @@ function AdminCourses() {
     } catch (err) { console.error(err); }
   };
 
+  const handleSaveDescription = async () => {
+    if (!selectedCourse) return;
+    setSavingDescription(true);
+    try {
+      await adminUpdateCourseDescription(selectedCourse.id, editDescription);
+      setCourses(prev => prev.map(c => c.id === selectedCourse.id ? { ...c, description: editDescription } : c));
+      alert("Descripción actualizada. Se reflejará en la página del curso.");
+    } catch (err) {
+      console.error(err);
+      alert("Error al actualizar la descripción.");
+    } finally {
+      setSavingDescription(false);
+    }
+  };
+
   if (selectedCourse) {
     // Grouped lessons by module
     const modules: Record<string, any[]> = {};
@@ -1307,6 +1326,29 @@ function AdminCourses() {
           <button onClick={() => setShowAddLesson(!showAddLesson)}
             className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
             <Plus className="w-4 h-4" /> Agregar Lección
+          </button>
+        </div>
+
+        {/* Marketing Description Editor */}
+        <div className="mb-8 bg-white border border-gray-200 rounded-2xl p-6">
+          <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+            <Edit3 className="w-4 h-4 text-gray-500" />
+            Descripción de Marketing (Sección Hero)
+          </h3>
+          <p className="text-xs text-gray-500 mb-4">Si dejas este campo vacío o usas el texto por defecto, se usará la descripción estándar del curso. Puedes escribir texto diferente para resaltarlo en la página de ventas.</p>
+          <textarea
+            value={editDescription}
+            onChange={(e) => setEditDescription(e.target.value)}
+            rows={4}
+            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-blue/20 outline-none mb-3"
+            placeholder="Escribe la descripción promocional del curso..."
+          />
+          <button
+            onClick={handleSaveDescription}
+            disabled={savingDescription}
+            className="px-4 py-2 bg-gray-900 hover:bg-black text-white rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
+          >
+            {savingDescription ? "Guardando..." : "Guardar Descripción"}
           </button>
         </div>
 
