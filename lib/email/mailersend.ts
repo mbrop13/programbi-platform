@@ -187,9 +187,9 @@ export async function sendNewLeadNotificationToAdmin(params: {
   `);
 
   await sendEmail({
-    to: ADMIN_EMAIL,
+    to: `${ADMIN_EMAIL}, molivaromero@gmail.com`,
     toName: "Equipo ProgramBI",
-    subject: `🔔 Nuevo lead ${isEnterprise ? "empresarial" : "individual"}: ${name}`,
+    subject: `🚨 [NUEVO CONTACTO] Lead ${isEnterprise ? "empresarial" : "individual"}: ${name}`,
     html,
     text: `Nuevo lead: ${name} | ${email} | Cursos: ${courses.join(", ")}`,
     replyTo: email,
