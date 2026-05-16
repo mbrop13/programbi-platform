@@ -1,42 +1,42 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
-import { ArrowRight, Code, Database, BarChart, Clock, Loader2, AlertTriangle, TableProperties } from "lucide-react";
+import { ArrowRight, Code, Database, BarChart, Clock, Loader2, TableProperties, CheckCircle2, AlertTriangle } from "lucide-react";
 import { FadeIn, StaggerChildren, StaggerItem } from "@/components/shared/AnimatedComponents";
-import { founderImage } from "@/lib/data/images";
 
 export default function AsesoriasPromoSection() {
-  return (
-    <section className="py-24 bg-[#0A0F1C] relative overflow-hidden">
-      {/* Decorative Background Elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-[#1890FF]/20 blur-[120px] rounded-full mix-blend-screen" />
-        <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-indigo-600/20 blur-[150px] rounded-full mix-blend-screen" />
-        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay" />
-      </div>
+  const [phase, setPhase] = useState<"working" | "loading" | "popup" | "discount">("working");
 
+  useEffect(() => {
+    const timer1 = setTimeout(() => setPhase("loading"), 2500);
+    const timer2 = setTimeout(() => setPhase("popup"), 6500);
+    return () => { clearTimeout(timer1); clearTimeout(timer2); };
+  }, []);
+
+  return (
+    <section className="py-24 bg-gray-50 relative overflow-hidden border-y border-gray-200">
       <div className="max-w-[1200px] mx-auto px-6 relative z-10">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           
           {/* Left Content */}
           <div>
             <FadeIn>
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-sm font-bold tracking-wide uppercase mb-8">
-                <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 border border-blue-100 text-blue-600 text-sm font-bold tracking-wide uppercase mb-8 shadow-sm">
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                 Mentoría 1 a 1 en vivo
               </span>
             </FadeIn>
             
             <FadeIn delay={0.1}>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-6 leading-[1.1] font-display">
-                Desbloquea ese problema que te lleva <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">frenando días</span>.
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 mb-6 leading-[1.1] font-display">
+                Desbloquea ese problema que te lleva <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">frenando días</span>.
               </h2>
             </FadeIn>
             
             <FadeIn delay={0.2}>
-              <p className="text-lg text-gray-400 leading-relaxed mb-10 max-w-xl">
+              <p className="text-lg text-gray-600 leading-relaxed mb-10 max-w-xl">
                 ¿Atascado con un modelo DAX complejo, una consulta SQL pesada o un script de Python que no corre? Agenda una sesión privada por hora y resolvamos tu problema técnico juntos en tiempo real.
               </p>
             </FadeIn>
@@ -44,46 +44,31 @@ export default function AsesoriasPromoSection() {
             <FadeIn delay={0.3}>
               <StaggerChildren className="grid sm:grid-cols-2 gap-4 mb-10">
                 {[
-                  { icon: <Database className="w-5 h-5 text-emerald-400" />, text: "Optimización SQL" },
-                  { icon: <BarChart className="w-5 h-5 text-blue-400" />, text: "Modelado Power BI & DAX" },
-                  { icon: <Code className="w-5 h-5 text-yellow-400" />, text: "Scripts de Python & ETL" },
-                  { icon: <Clock className="w-5 h-5 text-purple-400" />, text: "Sesiones de 1 o más horas" },
+                  { icon: <Database className="w-5 h-5 text-emerald-500" />, text: "Optimización SQL" },
+                  { icon: <BarChart className="w-5 h-5 text-blue-500" />, text: "Modelado Power BI & DAX" },
+                  { icon: <Code className="w-5 h-5 text-amber-500" />, text: "Scripts de Python & ETL" },
+                  { icon: <Clock className="w-5 h-5 text-purple-500" />, text: "Sesiones de 1 o más horas" },
                 ].map((item, i) => (
                   <StaggerItem key={i}>
-                    <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl p-4 transition-colors hover:bg-white/10 hover:border-white/20">
-                      <div className="p-2 rounded-lg bg-white/5 shrink-0">
+                    <div className="flex items-center gap-3 bg-white border border-gray-100 rounded-xl p-4 shadow-sm transition-shadow hover:shadow-md">
+                      <div className="p-2 rounded-lg bg-gray-50 shrink-0">
                         {item.icon}
                       </div>
-                      <span className="text-gray-300 font-medium text-sm">{item.text}</span>
+                      <span className="text-gray-700 font-bold text-sm">{item.text}</span>
                     </div>
                   </StaggerItem>
                 ))}
               </StaggerChildren>
             </FadeIn>
-
-            <FadeIn delay={0.4}>
-              <Link
-                href="/asesorias"
-                className="group inline-flex items-center gap-4 px-8 py-4 bg-white text-gray-900 rounded-2xl font-bold text-lg transition-all hover:scale-105 hover:shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)]"
-              >
-                Agendar Mentoría Ahora
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </FadeIn>
           </div>
 
-          {/* Right Visual Element */}
+          {/* Right Visual Element (Excel Mockup) */}
           <div className="relative lg:h-[600px] flex items-center justify-center">
             <FadeIn delay={0.3} className="w-full relative">
-              {/* Background Glow */}
-              <div className="absolute inset-0 bg-gradient-to-tr from-red-500/30 to-amber-500/20 rounded-full blur-[100px] opacity-40 animate-pulse" />
               
               {/* Main Excel Mockup Window */}
               <motion.div 
-                initial={{ y: 20, opacity: 0 }}
-                whileInView={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="relative w-full max-w-[500px] mx-auto bg-white border border-gray-200 rounded-xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] overflow-hidden"
+                className="relative w-full max-w-2xl mx-auto bg-white border border-gray-300 rounded-xl shadow-2xl overflow-hidden"
               >
                 {/* Excel Header */}
                 <div className="bg-[#107C41] text-white px-4 py-2.5 flex items-center justify-between">
@@ -110,13 +95,13 @@ export default function AsesoriasPromoSection() {
                 {/* Formula Bar */}
                 <div className="bg-white border-b border-gray-300 px-3 py-1.5 flex gap-2 items-center text-[11px] text-gray-600">
                   <span className="font-bold text-gray-400 italic shrink-0">fx</span>
-                  <div className="flex-1 border border-gray-200 rounded px-2 py-1 bg-red-50 text-red-600 font-mono truncate">
-                     =BUSCARV(A2, 'C:\Users\Admin\[BD_Gigante.xlsx]Hoja1'!$A$1:$Z$1048576, 25, FALSO) * COINCIDIR(#REF!)
+                  <div className={`flex-1 border border-gray-200 rounded px-2 py-1 font-mono truncate ${phase === "working" ? "bg-gray-50 text-gray-700" : "bg-red-50 text-red-600"}`}>
+                     {phase === "working" ? "=BUSCARV(A2, Ventas_Mes, 3, FALSO)" : "=BUSCARV(A2, 'C:\\Users\\Admin\\[BD_Gigante.xlsx]Hoja1'!$A$1:$Z$1048576, 25, FALSO) * COINCIDIR(#REF!)"}
                   </div>
                 </div>
 
                 {/* Excel Grid */}
-                <div className="overflow-hidden bg-white text-[11px] sm:text-xs font-mono select-none">
+                <div className="bg-white text-[11px] sm:text-xs font-mono select-none h-[280px]">
                   <table className="w-full text-center border-collapse">
                     <thead>
                        <tr className="bg-gray-100 border-b border-gray-300">
@@ -142,10 +127,12 @@ export default function AsesoriasPromoSection() {
                            <td className="bg-gray-100 border-r border-gray-300 text-gray-500 py-1.5">{rIdx + 1}</td>
                            {row.map((cell, cIdx) => (
                              <td key={cIdx} className={`border-r border-gray-200 p-1 truncate max-w-[80px] ${
-                               cell.startsWith('#') ? 'text-red-600 font-bold bg-red-50/50' : 
+                               (phase !== "working" && cell.startsWith('#')) ? 'text-red-600 font-bold bg-red-50/50' : 
                                rIdx === 0 ? 'font-bold bg-gray-50 text-gray-800' : 'text-gray-600'
                              }`}>
-                               {cell}
+                               {phase === "working" && rIdx > 0 && (cIdx === 1 || cIdx === 2 || cIdx === 3) 
+                                 ? <span className="text-gray-300 italic animate-pulse">Cargando...</span> 
+                                 : cell}
                              </td>
                            ))}
                          </tr>
@@ -154,46 +141,85 @@ export default function AsesoriasPromoSection() {
                   </table>
                 </div>
 
-                {/* Loading / Stuck Overlay */}
-                <div className="absolute inset-0 bg-white/50 backdrop-blur-[2px] flex items-center justify-center z-10">
-                  <div className="bg-white border border-gray-200 shadow-2xl rounded-xl p-6 flex flex-col items-center text-center max-w-[260px] animate-pulse">
-                    <Loader2 className="w-10 h-10 text-[#107C41] animate-spin mb-4" />
-                    <p className="text-[#107C41] font-bold text-sm mb-1">Calculando subprocesos...</p>
-                    <p className="text-gray-500 text-xs mb-4">Excel (No responde)</p>
-                    <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden shadow-inner">
-                       <div className="bg-[#107C41] h-full w-[45%]" />
-                    </div>
-                    <p className="text-gray-400 text-[10px] mt-3 font-mono">12.045.192 celdas evaluadas (45%)</p>
-                  </div>
-                </div>
+                {/* Overlays */}
+                <AnimatePresence>
+                  {/* Loading State Overlay */}
+                  {(phase === "loading" || phase === "popup" || phase === "discount") && (
+                    <motion.div 
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="absolute inset-0 bg-white/40 backdrop-blur-[1px] flex items-center justify-center z-10"
+                    >
+                      {phase === "loading" && (
+                        <div className="bg-white border border-gray-200 shadow-2xl rounded-xl p-6 flex flex-col items-center text-center max-w-[260px]">
+                          <Loader2 className="w-10 h-10 text-[#107C41] animate-spin mb-4" />
+                          <p className="text-[#107C41] font-bold text-sm mb-1">Calculando subprocesos...</p>
+                          <p className="text-gray-500 text-xs mb-4">Excel (No responde)</p>
+                          <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden shadow-inner">
+                            <div className="bg-[#107C41] h-full w-[45%]" />
+                          </div>
+                          <p className="text-gray-400 text-[10px] mt-3 font-mono">12.045.192 celdas evaluadas (45%)</p>
+                        </div>
+                      )}
+
+                      {/* Popup 1 */}
+                      {phase === "popup" && (
+                        <motion.div 
+                          initial={{ scale: 0.9, opacity: 0, y: 10 }}
+                          animate={{ scale: 1, opacity: 1, y: 0 }}
+                          className="bg-white border border-gray-300 shadow-2xl rounded-sm w-[340px] overflow-hidden flex flex-col"
+                        >
+                          <div className="bg-gray-100 border-b border-gray-300 px-3 py-2 flex justify-between items-center text-xs text-gray-700">
+                            <span>Microsoft Excel</span>
+                            <div className="w-3 h-3 border border-gray-400 bg-red-500 flex items-center justify-center text-[8px] text-white cursor-pointer font-bold hover:bg-red-600">x</div>
+                          </div>
+                          <div className="p-6 flex flex-col items-center text-center">
+                            <AlertTriangle className="w-10 h-10 text-amber-500 mb-4" />
+                            <p className="text-gray-800 font-medium text-sm leading-relaxed mb-6">
+                              ¿Cansado de quedarte hasta tarde actualizando Excel para la reunión de mañana?
+                            </p>
+                            <button 
+                              onClick={() => setPhase("discount")}
+                              className="px-6 py-1.5 bg-gray-200 hover:bg-gray-300 border border-gray-300 rounded-sm text-sm text-gray-800 transition-colors shadow-sm font-semibold"
+                            >
+                              Sí
+                            </button>
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {/* Discount Popup */}
+                      {phase === "discount" && (
+                        <motion.div 
+                          initial={{ scale: 0.9, opacity: 0, y: 10 }}
+                          animate={{ scale: 1, opacity: 1, y: 0 }}
+                          className="bg-white border border-blue-200 shadow-2xl rounded-2xl w-[340px] overflow-hidden flex flex-col relative"
+                        >
+                          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-indigo-500" />
+                          <div className="p-6 flex flex-col items-center text-center">
+                            <div className="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center mb-4">
+                              <CheckCircle2 className="w-6 h-6 text-emerald-500" />
+                            </div>
+                            <h4 className="text-gray-900 font-black text-lg mb-2">¡Solo por eso!</h4>
+                            <p className="text-blue-600 font-bold text-xl mb-2">40% de descuento</p>
+                            <p className="text-gray-500 text-sm mb-6">
+                              En asesorías para tu primera compra. ¡Agenda hoy mismo!
+                            </p>
+                            <Link 
+                              href="/asesorias"
+                              className="w-full px-6 py-3 bg-[#1890FF] hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2"
+                            >
+                              Agendar Mentoría
+                              <ArrowRight className="w-4 h-4" />
+                            </Link>
+                          </div>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </motion.div>
 
-              {/* Floating Warning 1 */}
-              <motion.div 
-                initial={{ x: -50, y: 50, opacity: 0, rotate: -15 }}
-                whileInView={{ x: 0, y: 0, opacity: 1, rotate: -5 }}
-                transition={{ duration: 0.8, delay: 0.5, type: "spring" }}
-                className="absolute -left-4 lg:-left-12 top-1/4 bg-red-500 text-white px-4 py-3 rounded-2xl shadow-xl z-20 flex items-center gap-2"
-              >
-                <AlertTriangle className="w-5 h-5" />
-                <span className="font-bold text-xs sm:text-sm">¡Basta de Excel colgado!</span>
-              </motion.div>
-
-              {/* Floating Warning 2 */}
-              <motion.div 
-                initial={{ x: 50, y: -50, opacity: 0, rotate: 15 }}
-                whileInView={{ x: 0, y: 0, opacity: 1, rotate: 4 }}
-                transition={{ duration: 0.8, delay: 0.7, type: "spring" }}
-                className="absolute -right-2 lg:-right-8 bottom-1/4 bg-[#1E293B] border border-gray-700 p-3 rounded-2xl shadow-2xl z-20 flex items-center gap-3"
-              >
-                <div className="w-10 h-10 rounded-full bg-blue-500/20 border border-blue-500/30 flex items-center justify-center shrink-0">
-                  <Database className="w-5 h-5 text-blue-400" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-bold text-white text-xs sm:text-sm">Migra a Base de Datos</span>
-                  <span className="text-gray-400 text-[10px] leading-tight">Nosotros te guiamos paso a paso</span>
-                </div>
-              </motion.div>
             </FadeIn>
           </div>
 
