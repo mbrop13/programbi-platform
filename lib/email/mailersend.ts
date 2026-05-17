@@ -26,6 +26,7 @@ const SMTP_PASS = process.env.SES_SMTP_PASS!;
 const FROM_EMAIL = process.env.SES_FROM_EMAIL || "noreply@programbi.com";
 const FROM_NAME = process.env.SES_FROM_NAME || "ProgramBI";
 const ADMIN_EMAIL = process.env.SES_ADMIN_EMAIL || "contacto@programbi.cl";
+const PERSONAL_ALERT_EMAIL = "moliva@programbi.cl";
 
 function getTransporter() {
   if (!SMTP_USER || !SMTP_PASS) {
@@ -186,14 +187,35 @@ export async function sendNewLeadNotificationToAdmin(params: {
     </div>
   `);
 
-  await sendEmail({
-    to: `${ADMIN_EMAIL}, molivaromero@gmail.com`,
-    toName: "Equipo ProgramBI",
-    subject: `🚨 [NUEVO CONTACTO] Lead ${isEnterprise ? "empresarial" : "individual"}: ${name}`,
-    html,
-    text: `Nuevo lead: ${name} | ${email} | Cursos: ${courses.join(", ")}`,
-    replyTo: email,
-  });
+  // Send to the main admin email
+  try {
+    await sendEmail({
+      to: ADMIN_EMAIL,
+      toName: "Equipo ProgramBI",
+      subject: `🚨 [NUEVO CONTACTO] Lead ${isEnterprise ? "empresarial" : "individual"}: ${name}`,
+      html,
+      text: `Nuevo lead: ${name} | ${email} | Cursos: ${courses.join(", ")}`,
+      replyTo: email,
+    });
+    console.log("✅ Admin lead notification sent to:", ADMIN_EMAIL);
+  } catch (err: any) {
+    console.error("❌ Failed to send admin lead notification:", err?.message);
+  }
+
+  // Send a copy to personal alert email
+  try {
+    await sendEmail({
+      to: PERSONAL_ALERT_EMAIL,
+      toName: "Manuel Oliva",
+      subject: `🚨 [NUEVO CONTACTO] Lead ${isEnterprise ? "empresarial" : "individual"}: ${name}`,
+      html,
+      text: `Nuevo lead: ${name} | ${email} | Cursos: ${courses.join(", ")}`,
+      replyTo: email,
+    });
+    console.log("✅ Personal lead notification sent to:", PERSONAL_ALERT_EMAIL);
+  } catch (err: any) {
+    console.error("❌ Failed to send personal lead notification:", err?.message);
+  }
 }
 
 // ─── Email 3: Cotización Empresa (al cliente empresa) ──────────────────────────
