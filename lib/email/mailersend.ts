@@ -26,7 +26,6 @@ const SMTP_PASS = process.env.SES_SMTP_PASS!;
 const FROM_EMAIL = process.env.SES_FROM_EMAIL || "noreply@programbi.com";
 const FROM_NAME = process.env.SES_FROM_NAME || "ProgramBI";
 const ADMIN_EMAIL = process.env.SES_ADMIN_EMAIL || "contacto@programbi.cl";
-const PERSONAL_ALERT_EMAIL = "moliva@programbi.cl";
 
 function getTransporter() {
   if (!SMTP_USER || !SMTP_PASS) {
@@ -187,35 +186,14 @@ export async function sendNewLeadNotificationToAdmin(params: {
     </div>
   `);
 
-  // Send to the main admin email
-  try {
-    await sendEmail({
-      to: ADMIN_EMAIL,
-      toName: "Equipo ProgramBI",
-      subject: `🚨 [NUEVO CONTACTO] Lead ${isEnterprise ? "empresarial" : "individual"}: ${name}`,
-      html,
-      text: `Nuevo lead: ${name} | ${email} | Cursos: ${courses.join(", ")}`,
-      replyTo: email,
-    });
-    console.log("✅ Admin lead notification sent to:", ADMIN_EMAIL);
-  } catch (err: any) {
-    console.error("❌ Failed to send admin lead notification:", err?.message);
-  }
-
-  // Send a copy to personal alert email
-  try {
-    await sendEmail({
-      to: PERSONAL_ALERT_EMAIL,
-      toName: "Manuel Oliva",
-      subject: `🚨 [NUEVO CONTACTO] Lead ${isEnterprise ? "empresarial" : "individual"}: ${name}`,
-      html,
-      text: `Nuevo lead: ${name} | ${email} | Cursos: ${courses.join(", ")}`,
-      replyTo: email,
-    });
-    console.log("✅ Personal lead notification sent to:", PERSONAL_ALERT_EMAIL);
-  } catch (err: any) {
-    console.error("❌ Failed to send personal lead notification:", err?.message);
-  }
+  await sendEmail({
+    to: ADMIN_EMAIL,
+    toName: "Equipo ProgramBI",
+    subject: `🔔 Nuevo lead ${isEnterprise ? "empresarial" : "individual"}: ${name}`,
+    html,
+    text: `Nuevo lead: ${name} | ${email} | Cursos: ${courses.join(", ")}`,
+    replyTo: email,
+  });
 }
 
 // ─── Email 3: Cotización Empresa (al cliente empresa) ──────────────────────────
@@ -519,11 +497,11 @@ export async function sendMembershipWelcome(params: {
 
     <div style="display:grid;gap:12px;">
       ${[
-        ["💬", "Comunidad privada", "Conecta con cientos de data practitioners en nuestro foro."],
-        ["🤖", "Asistente IA ProgramBI", "Soporte 24/7 con IA especializada en datos."],
-        ["📚", "Biblioteca de recursos", "Acceso a plantillas, datasets y proyectos reales."],
-        ["🎓", "Descuentos en cursos", "Beneficios exclusivos en todos los programas."],
-      ].map(([icon, title, desc]) => `
+      ["💬", "Comunidad privada", "Conecta con cientos de data practitioners en nuestro foro."],
+      ["🤖", "Asistente IA ProgramBI", "Soporte 24/7 con IA especializada en datos."],
+      ["📚", "Biblioteca de recursos", "Acceso a plantillas, datasets y proyectos reales."],
+      ["🎓", "Descuentos en cursos", "Beneficios exclusivos en todos los programas."],
+    ].map(([icon, title, desc]) => `
         <div style="display:flex;gap:16px;align-items:flex-start;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
           <span style="font-size:22px;line-height:1;margin-top:2px;">${icon}</span>
           <div>

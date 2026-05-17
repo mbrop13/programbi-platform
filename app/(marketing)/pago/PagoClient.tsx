@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, ArrowLeft, Clock, Calendar, Building2, User, Users,
   CheckCircle2, Bell, Loader2, ShoppingCart, Check, Plus, Minus,
-  X, BadgeCheck, ChevronUp, ChevronDown
+  X, BadgeCheck, ChevronUp, ChevronDown, FileText, ExternalLink
 } from "lucide-react";
 import { courses as allCourses, Course } from "@/lib/data/courses";
 import { type CourseSchedule, analisisDeDatosSlugs, formatScheduleDate, getNearestSchedule } from "@/lib/data/course-schedules";
@@ -597,6 +597,29 @@ export default function PagoClient() {
                               <div className="flex items-center justify-center gap-2 mt-4 text-[10px] text-gray-400 font-medium">
                                 <BadgeCheck className="w-3.5 h-3.5 text-emerald-500" />
                                 <span>Pago cifrado y seguro vía Flow</span>
+                              </div>
+
+                              {/* Documentos Descargables */}
+                              <div className="flex flex-col gap-2 mt-6 pt-6 border-t border-gray-100">
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Documentos de interés</span>
+                                <a href="https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100 transition-colors no-underline group">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-red-100 text-red-500 flex items-center justify-center shrink-0">
+                                      <FileText className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-xs font-bold text-gray-700 group-hover:text-gray-900">PDF de Temarios</span>
+                                  </div>
+                                  <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
+                                </a>
+                                <a href="https://drive.google.com/file/d/1524q4Zz5TiVaGS-IBAqRc10au9yXP1WK/view?usp=drive_link" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100 transition-colors no-underline group">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-blue-100 text-[#1890FF] flex items-center justify-center shrink-0">
+                                      <FileText className="w-4 h-4" />
+                                    </div>
+                                    <span className="text-xs font-bold text-gray-700 group-hover:text-gray-900">Presentación ProgramBI</span>
+                                  </div>
+                                  <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
+                                </a>
                               </div>
                            </>
                         )}
