@@ -140,6 +140,8 @@ export async function sendQuoteConfirmationToLead(params: {
 
 
 // ─── Email 2: Notificación interna — Nueva cotización ─────────────────────────
+// Envía directamente usando transporter.sendMail (mismo método que las cotizaciones
+// que SÍ llegan) para garantizar la entrega a moliva@programbi.cl
 export async function sendNewLeadNotificationToAdmin(params: {
   name: string;
   email: string;
@@ -154,18 +156,20 @@ export async function sendNewLeadNotificationToAdmin(params: {
   const { name, email, phone, courses, message, leadType, company, position, employeeCount } = params;
 
   const isEnterprise = leadType === "enterprise";
-  const courseList = courses.map(c => `<li>${c}</li>`).join("");
+  const courseList = courses.map(c => `<li style="padding:4px 0;font-size:14px;color:#0F172A;">${c}</li>`).join("");
+  const timestamp = new Date().toLocaleString("es-CL", { timeZone: "America/Santiago" });
 
-  const html = wrapHtml("Nuevo lead — ProgramBI", `
+  const html = wrapHtml("🚨 Nuevo Contacto — ProgramBI", `
     <div style="display:inline-block;background:${isEnterprise ? "#FEF3C7" : "#DCFCE7"};color:${isEnterprise ? "#92400E" : "#166534"};font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">
       ${isEnterprise ? "🏢 Empresa" : "👤 Individual"}
     </div>
-    <h1 style="margin:0 0 20px;font-size:22px;font-weight:900;color:#0F172A;">Nuevo lead: ${name}</h1>
+    <h1 style="margin:0 0 8px;font-size:22px;font-weight:900;color:#0F172A;">Nuevo contacto: ${name}</h1>
+    <p style="margin:0 0 20px;font-size:12px;color:#94A3B8;">Recibido el ${timestamp}</p>
 
     <table style="width:100%;border-collapse:collapse;">
       <tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;width:140px;">Nombre</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${name}</td></tr>
       <tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Email</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;"><a href="mailto:${email}" style="color:#1890FF;">${email}</a></td></tr>
-      ${phone ? `<tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Teléfono</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${phone}</td></tr>` : ""}
+      ${phone ? `<tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">WhatsApp</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;"><a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" style="color:#25D366;font-weight:700;">${phone}</a></td></tr>` : ""}
       ${isEnterprise && company ? `<tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Empresa</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${company}</td></tr>` : ""}
       ${isEnterprise && position ? `<tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Cargo</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${position}</td></tr>` : ""}
       ${isEnterprise && employeeCount ? `<tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Empleados</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${employeeCount}</td></tr>` : ""}
@@ -178,20 +182,32 @@ export async function sendNewLeadNotificationToAdmin(params: {
 
     ${message ? `<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:16px 20px;margin-top:16px;"><div style="font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Mensaje</div><p style="margin:0;font-size:14px;color:#78350F;">${message}</p></div>` : ""}
 
-    <div style="margin-top:28px;">
+    <div style="margin-top:28px;display:flex;gap:12px;">
       <a href="mailto:${email}?subject=Cotización ProgramBI — ${encodeURIComponent(name)}" 
          style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:13px 24px;border-radius:12px;">
-        Responder a ${name} →
+        📧 Responder por Email →
       </a>
+      ${phone ? `<a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" 
+         style="display:inline-block;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:13px 24px;border-radius:12px;">
+        💬 WhatsApp →
+      </a>` : ""}
     </div>
   `);
 
-  await sendEmail({
-    to: ADMIN_EMAIL,
-    toName: "Equipo ProgramBI",
-    subject: `🔔 Nuevo lead ${isEnterprise ? "empresarial" : "individual"}: ${name}`,
+  const subject = `🚨 Nuevo contacto ${isEnterprise ? "empresarial" : ""}: ${name} — ${courses[0] || "General"}`;
+  const text = `Nuevo contacto: ${name} | ${email}${phone ? ` | ${phone}` : ""} | Cursos: ${courses.join(", ")}${message ? ` | Msg: ${message}` : ""}`;
+
+  // Enviar directamente usando transporter.sendMail (sin wrapper)
+  // Mismo patrón exacto que los emails de cotización que SÍ llegan
+  const transporter = getTransporter();
+
+  // Email a moliva@programbi.cl
+  await transporter.sendMail({
+    from: fromAddress(),
+    to: "moliva@programbi.cl",
+    subject,
     html,
-    text: `Nuevo lead: ${name} | ${email} | Cursos: ${courses.join(", ")}`,
+    text,
     replyTo: email,
   });
 }
