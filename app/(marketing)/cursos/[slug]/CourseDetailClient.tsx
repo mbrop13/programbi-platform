@@ -283,6 +283,28 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                     <BookOpen className="w-5 h-5" /> Ver Temario
                   </Link>
                 </div>
+                
+                {/* Documentos Descargables Hero */}
+                <div className="flex flex-col sm:flex-row gap-3 mt-5">
+                  <a href="https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-between p-3 rounded-xl bg-white border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all no-underline group shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center shrink-0">
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <span className="text-[11px] font-bold text-gray-700 leading-tight">Descargar PDF de Temarios</span>
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
+                  </a>
+                  <a href="https://drive.google.com/file/d/1524q4Zz5TiVaGS-IBAqRc10au9yXP1WK/view?usp=drive_link" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-between p-3 rounded-xl bg-white border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all no-underline group shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1890FF] flex items-center justify-center shrink-0">
+                        <FileText className="w-4 h-4" />
+                      </div>
+                      <span className="text-[11px] font-bold text-gray-700 leading-tight">Ver Presentación Institucional</span>
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
+                  </a>
+                </div>
                 <p className="text-xs text-gray-400 mt-3 ml-1">Inicia sesión o regístrate gratis para ver precios y acceder al curso.</p>
               </FadeIn>
             </div>
