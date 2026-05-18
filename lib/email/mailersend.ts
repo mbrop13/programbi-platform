@@ -212,7 +212,65 @@ export async function sendNewLeadNotificationToAdmin(params: {
   });
 }
 
-// ─── Email 3: Cotización Empresa (al cliente empresa) ──────────────────────────
+// ─── Email 2b: Notificación — Nuevo miembro registrado ────────────────────────
+// Mismo patrón directo que funciona para los leads
+export async function sendNewMemberNotification(params: {
+  name: string;
+  email: string;
+  phone?: string;
+}) {
+  const { name, email, phone } = params;
+  const timestamp = new Date().toLocaleString("es-CL", { timeZone: "America/Santiago" });
+
+  const html = wrapHtml("🎉 Nuevo Miembro — ProgramBI", `
+    <div style="text-align:center;padding:16px 0 24px;">
+      <div style="font-size:48px;margin-bottom:12px;">🎉</div>
+      <div style="display:inline-block;background:#DCFCE7;color:#166534;font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">
+        Nuevo Registro
+      </div>
+      <h1 style="margin:8px 0 4px;font-size:24px;font-weight:900;color:#0F172A;">¡Se registró ${name}!</h1>
+      <p style="margin:0;font-size:13px;color:#94A3B8;">${timestamp}</p>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;margin-top:16px;">
+      <tr>
+        <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;width:120px;">Nombre</td>
+        <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:15px;font-weight:700;color:#0F172A;">${name}</td>
+      </tr>
+      <tr>
+        <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Email</td>
+        <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:15px;font-weight:700;">
+          <a href="mailto:${email}" style="color:#1890FF;text-decoration:none;">${email}</a>
+        </td>
+      </tr>
+      ${phone ? `<tr>
+        <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">WhatsApp</td>
+        <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:15px;font-weight:700;">
+          <a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" style="color:#25D366;text-decoration:none;font-weight:700;">${phone}</a>
+        </td>
+      </tr>` : ""}
+    </table>
+
+    <div style="margin-top:28px;text-align:center;">
+      <a href="mailto:${email}?subject=Bienvenido a ProgramBI — ${encodeURIComponent(name)}" 
+         style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:13px 28px;border-radius:12px;">
+        📧 Enviar bienvenida personalizada →
+      </a>
+    </div>
+  `);
+
+  const transporter = getTransporter();
+
+  await transporter.sendMail({
+    from: fromAddress(),
+    to: "moliva@programbi.cl",
+    subject: `🎉 Nuevo miembro registrado: ${name}`,
+    html,
+    text: `Nuevo miembro: ${name} | ${email}${phone ? ` | ${phone}` : ""}`,
+    replyTo: email,
+  });
+}
+
 export async function sendEnterpriseQuoteToLead(params: {
   name: string;
   email: string;

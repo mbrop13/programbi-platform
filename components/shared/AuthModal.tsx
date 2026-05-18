@@ -157,6 +157,18 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           setSuccess("¡Cuenta creada exitosamente! Revisa tu correo para verificar tu cuenta.");
         } else {
           setSuccess("¡Bienvenido a ProgramBI! 🎉");
+
+          // Notificar al admin del nuevo registro (fire-and-forget)
+          fetch("/api/auth/new-member", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: fullName,
+              email,
+              phone: whatsapp ? `${phonePrefix}${whatsapp}` : undefined,
+            }),
+          }).catch(() => {}); // silencioso, no bloquea al usuario
+
           setTimeout(() => {
             onClose();
             if (redirectUrl) {
