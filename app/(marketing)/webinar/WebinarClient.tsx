@@ -114,11 +114,10 @@ export default function WebinarClient() {
       <section className="relative overflow-hidden bg-slate-50 min-h-[90vh] flex items-center">
         <div className="absolute inset-0">
           <div className="absolute inset-0 bg-[url('https://programbi.com/grid.svg')] bg-center opacity-[0.03]" />
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
           <div className="absolute top-20 right-10 w-96 h-96 bg-blue-500/15 rounded-full blur-[120px] animate-pulse" />
           <div className="absolute bottom-20 left-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: "2s" }} />
         </div>
-        <div className="relative z-10 max-w-[1200px] mx-auto px-6 py-20 lg:py-28">
+        <div className="relative z-10 max-w-[1200px] mx-auto px-6 py-10 lg:py-16">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
               <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-2 mb-6">
