@@ -1,6 +1,6 @@
 "use client";
 import { useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { CheckCircle, Loader2, ArrowRight, Zap, BarChart3, Code, Brain, TrendingUp, Sparkles, ChevronDown, GraduationCap, Clock, Users, Shield } from "lucide-react";
 import { companyLogos } from "@/lib/data/images";
@@ -52,12 +52,36 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
+const COUNTRIES = [
+  { code: "+56", iso: "cl", name: "Chile" },
+  { code: "+52", iso: "mx", name: "México" },
+  { code: "+54", iso: "ar", name: "Argentina" },
+  { code: "+57", iso: "co", name: "Colombia" },
+  { code: "+51", iso: "pe", name: "Perú" },
+  { code: "+593", iso: "ec", name: "Ecuador" },
+  { code: "+507", iso: "pa", name: "Panamá" },
+  { code: "+58", iso: "ve", name: "Venezuela" },
+  { code: "+598", iso: "uy", name: "Uruguay" },
+  { code: "+595", iso: "py", name: "Paraguay" },
+  { code: "+591", iso: "bo", name: "Bolivia" },
+  { code: "+502", iso: "gt", name: "Guatemala" },
+  { code: "+506", iso: "cr", name: "Costa Rica" },
+  { code: "+503", iso: "sv", name: "El Salvador" },
+  { code: "+504", iso: "hn", name: "Honduras" },
+  { code: "+505", iso: "ni", name: "Nicaragua" },
+  { code: "+1", iso: "do", name: "Rep. Dominicana" },
+  { code: "+34", iso: "es", name: "España" },
+  { code: "+1", iso: "us", name: "EE.UU." },
+];
+
 export default function WebinarClient() {
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [honeypot, setHoneypot] = useState("");
+  const [phonePrefix, setPhonePrefix] = useState("+56");
+  const [showPrefixDropdown, setShowPrefixDropdown] = useState(false);
   const formLoadedAt = useRef(Date.now());
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,7 +94,7 @@ export default function WebinarClient() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: form.name, email: form.email, whatsapp: form.phone || null,
+          name: form.name, email: form.email, whatsapp: form.phone ? `${phonePrefix}${form.phone}` : null,
           message: "Inscripción Webinar — De Excel a Analista de Alto Impacto",
           selectedCourses: ["Webinar Mayo 2026"], sourceCourse: "webinar", leadType: "webinar",
           ...getAntiBotFields(formLoadedAt.current, honeypot),
@@ -87,49 +111,48 @@ export default function WebinarClient() {
   return (
     <div className="bg-white" id="top">
       {/* ═══════ HERO ═══════ */}
-      <section className="relative overflow-hidden bg-brand-dark min-h-[90vh] flex items-center">
+      <section className="relative overflow-hidden bg-[#0F172A] min-h-[90vh] flex items-center">
         <div className="absolute inset-0">
-          <div className="absolute inset-0 data-grid-pattern opacity-30" />
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
-          <div className="absolute top-20 right-10 w-72 h-72 bg-brand-blue/10 rounded-full blur-3xl animate-pulse-slow" />
-          <div className="absolute bottom-20 left-10 w-96 h-96 bg-purple-500/8 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: "2s" }} />
+          <div className="absolute inset-0 bg-[url('https://programbi.com/grid.svg')] bg-center opacity-10" />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
+          <div className="absolute top-20 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 left-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
         </div>
-        <div className="relative z-10 container-narrow w-full px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+        <div className="relative z-10 max-w-[1200px] mx-auto px-6 py-20 lg:py-28">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-              <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-1.5 mb-6">
-                <Zap className="w-3.5 h-3.5 text-yellow-400" />
-                <span className="text-xs font-bold text-yellow-400 uppercase tracking-widest">Evento en Vivo · Gratuito</span>
+              <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-4 py-2 mb-6">
+                <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
+                <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">Evento en Vivo · Gratuito</span>
               </div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tight mb-6">
-                De Excel a{" "}<span className="text-gradient-brand">Analista de Alto Impacto</span>
+              <h1 className="text-5xl lg:text-6xl font-black text-white leading-[1.1] mb-6 font-display">
+                De Excel a <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Analista de Alto Impacto</span>
               </h1>
-              <p className="text-lg text-slate-400 leading-relaxed mb-8 max-w-lg">
-                Descubre el roadmap que usan los analistas mejor pagados del mercado y cómo puedes replicarlo con{" "}
-                <strong className="text-white">SQL, Power BI, Python e IA</strong>.
+              <p className="text-lg text-slate-300 leading-relaxed mb-8 max-w-lg">
+                Descubre el roadmap que usan los analistas mejor pagados del mercado y cómo puedes replicarlo dominando <strong className="text-white">SQL, Power BI, Python e IA</strong>.
               </p>
-              <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-5 max-w-sm mb-8">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-gradient-to-br from-brand-blue to-indigo-600 rounded-2xl flex flex-col items-center justify-center shrink-0">
-                    <span className="text-[10px] font-bold text-white/70 uppercase tracking-wider">MAY</span>
-                    <span className="text-2xl font-black text-white leading-none">23</span>
-                  </div>
-                  <div>
-                    <p className="text-white font-bold text-lg">Sábado 23 de Mayo · 11:00 AM</p>
-                    <p className="text-slate-400 text-sm">Vía Zoom · Cupos Limitados</p>
-                  </div>
+              
+              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 mb-8 flex items-center gap-5 max-w-sm">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex flex-col items-center justify-center shrink-0 shadow-lg">
+                  <span className="text-[10px] font-bold text-white/80 uppercase tracking-widest">MAY</span>
+                  <span className="text-2xl font-black text-white leading-none mt-0.5">23</span>
+                </div>
+                <div>
+                  <p className="text-white font-bold text-lg">Sábado 23 de Mayo</p>
+                  <p className="text-blue-300 text-sm font-medium">11:00 AM · Vía Zoom</p>
                 </div>
               </div>
+
               <div className="flex flex-wrap gap-2">
                 {["🗄️ SQL", "📊 Power BI", "🐍 Python", "🤖 IA"].map((t) => (
-                  <span key={t} className="bg-white/5 border border-white/10 text-slate-300 text-xs font-bold px-3 py-1.5 rounded-lg">{t}</span>
+                  <span key={t} className="bg-slate-800/50 border border-slate-700/50 text-slate-300 text-xs font-bold px-4 py-2 rounded-lg">{t}</span>
                 ))}
               </div>
             </motion.div>
 
             {/* Form */}
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}>
-              <div className="bg-white rounded-3xl p-8 sm:p-10 shadow-2xl shadow-black/20 max-w-md mx-auto lg:mx-0 lg:ml-auto">
+              <div className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.3)] max-w-md mx-auto lg:mx-0 lg:ml-auto relative overflow-hidden">
                 {success ? (
                   <div className="text-center py-8">
                     <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5">
@@ -158,10 +181,40 @@ export default function WebinarClient() {
                         <input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="maria@empresa.com"
                           className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-300 focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 focus:bg-white outline-none transition-all" />
                       </div>
-                      <div>
-                        <label className="block text-xs font-bold text-gray-600 mb-1.5 uppercase tracking-wider">WhatsApp <span className="text-gray-300">(opcional)</span></label>
-                        <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="+56 9 1234 5678"
-                          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-900 placeholder:text-gray-300 focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 focus:bg-white outline-none transition-all" />
+                      <div className="space-y-2 relative">
+                        <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">WhatsApp <span className="text-gray-300 normal-case">(opcional)</span></label>
+                        <div className="flex items-stretch">
+                          <div className="relative">
+                            <button type="button" onClick={() => setShowPrefixDropdown(!showPrefixDropdown)}
+                              className="h-full px-3 py-3.5 bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl text-sm font-medium text-slate-600 flex items-center gap-1.5 cursor-pointer hover:bg-slate-100 transition-colors">
+                              <img src={`https://flagcdn.com/w20/${COUNTRIES.find(c => c.code === phonePrefix)?.iso}.png`} alt="" className="w-4 h-auto rounded-[2px]" />
+                              <span>{phonePrefix}</span>
+                              <ChevronDown className="text-slate-400" size={14} />
+                            </button>
+                            <AnimatePresence>
+                              {showPrefixDropdown && (
+                                <>
+                                  <div className="fixed inset-0 z-10" onClick={() => setShowPrefixDropdown(false)} />
+                                  <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                                    className="absolute top-full left-0 mt-1 w-52 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-20">
+                                    <div className="max-h-56 overflow-y-auto py-1">
+                                      {COUNTRIES.map((country, idx) => (
+                                        <button key={idx} type="button" onClick={() => { setPhonePrefix(country.code); setShowPrefixDropdown(false); }}
+                                          className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 border-none bg-transparent cursor-pointer">
+                                          <span className="flex-shrink-0 mr-1"><img src={`https://flagcdn.com/w20/${country.iso}.png`} alt="" className="w-4 h-auto rounded-[2px]" /></span>
+                                          <span className="font-medium text-slate-700">{country.name}</span>
+                                          <span className="text-slate-400 text-xs ml-auto">{country.code}</span>
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </motion.div>
+                                </>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                          <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="9 1234 5678"
+                            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-r-xl text-sm text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                        </div>
                       </div>
                       {error && <p className="text-red-500 text-xs font-bold">{error}</p>}
                       {/* Honeypot — invisible to humans */}
@@ -169,8 +222,10 @@ export default function WebinarClient() {
                         <input type="text" name="_website" autoComplete="off" tabIndex={-1} value={honeypot} onChange={e => setHoneypot(e.target.value)} />
                       </div>
                       <button type="submit" disabled={loading}
-                        className="w-full btn-gradient text-white font-bold py-4 rounded-xl text-sm uppercase tracking-wider flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer border-none">
-                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <><ArrowRight className="w-4 h-4" /> Inscribirme al Webinar</>}
+                        className="w-full py-4 rounded-xl text-white font-bold text-base flex justify-center items-center gap-2.5 transition-all disabled:opacity-70 border-none cursor-pointer shadow-lg hover:shadow-xl"
+                        style={{ background: "linear-gradient(135deg, #1890FF, #0050b3)", boxShadow: "0 12px 35px -8px rgba(24,144,255,0.4)" }}
+                      >
+                        {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Inscribirme al Webinar <ArrowRight className="w-5 h-5" /></>}
                       </button>
                     </form>
                     <p className="text-center text-[11px] text-gray-300 mt-4">Recibirás el link de Zoom en tu correo al inscribirte.</p>
