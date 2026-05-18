@@ -424,6 +424,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       )}
 
       {/* ════ SYLLABUS ════ */}
+      <div id="temario" className="-mt-16 pt-16">
       {course.slug === 'analisis-de-datos' ? (
         <DataAnalyticsSyllabus />
       ) : course.slug === 'analitica-financiera' ? (
@@ -439,7 +440,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       ) : course.slug === 'sql-server' ? (
         <SqlSyllabus />
       ) : (
-        <section id="temario" className="py-10 lg:py-14 bg-[#F8FAFC]">
+        <section className="py-10 lg:py-14 bg-[#F8FAFC]">
           <div className="max-w-3xl mx-auto px-5">
           <FadeIn>
             <div className="text-center mb-16">
@@ -550,6 +551,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         </div>
       </section>
       )}
+      </div>
 
       {/* ════ INSTRUCTOR ════ */}
       <section className="py-16 lg:py-20 bg-white border-t border-gray-100">
