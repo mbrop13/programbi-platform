@@ -637,7 +637,31 @@ function CourseContactForm({ course }: { course: Course }) {
   const [contactType, setContactType] = useState<"personal" | "empresa">("personal");
   const [selectedServices, setSelectedServices] = useState<string[]>(["Capacitación In-Company"]);
   const [honeypot, setHoneypot] = useState("");
+  const [phonePrefix, setPhonePrefix] = useState("+56");
+  const [showPrefixDropdown, setShowPrefixDropdown] = useState(false);
   const formLoadedAt = useRef(Date.now());
+
+  const COUNTRIES = [
+    { code: "+56", flag: "🇨🇱", name: "Chile" },
+    { code: "+52", flag: "🇲🇽", name: "México" },
+    { code: "+54", flag: "🇦🇷", name: "Argentina" },
+    { code: "+57", flag: "🇨🇴", name: "Colombia" },
+    { code: "+51", flag: "🇵🇪", name: "Perú" },
+    { code: "+593", flag: "🇪🇨", name: "Ecuador" },
+    { code: "+507", flag: "🇵🇦", name: "Panamá" },
+    { code: "+58", flag: "🇻🇪", name: "Venezuela" },
+    { code: "+598", flag: "🇺🇾", name: "Uruguay" },
+    { code: "+595", flag: "🇵🇾", name: "Paraguay" },
+    { code: "+591", flag: "🇧🇴", name: "Bolivia" },
+    { code: "+502", flag: "🇬🇹", name: "Guatemala" },
+    { code: "+506", flag: "🇨🇷", name: "Costa Rica" },
+    { code: "+503", flag: "🇸🇻", name: "El Salvador" },
+    { code: "+504", flag: "🇭🇳", name: "Honduras" },
+    { code: "+505", flag: "🇳🇮", name: "Nicaragua" },
+    { code: "+1", flag: "🇩🇴", name: "Rep. Dominicana" },
+    { code: "+34", flag: "🇪🇸", name: "España" },
+    { code: "+1", flag: "🇺🇸", name: "EE.UU." },
+  ];
 
   const enterpriseServices = [
     "Capacitación In-Company",
@@ -667,7 +691,7 @@ function CourseContactForm({ course }: { course: Course }) {
       const payload: any = {
         name,
         email,
-        whatsapp,
+        whatsapp: `${phonePrefix}${whatsapp}`,
         message,
         sourceCourse: course.title,
         leadType: contactType,
@@ -764,9 +788,12 @@ function CourseContactForm({ course }: { course: Course }) {
           {/* Right: Form */}
           <FadeIn delay={0.2}>
             <div
-              className="bg-white rounded-[2rem] p-8 lg:p-10 border border-gray-200 relative"
-              style={{ boxShadow: "0 20px 50px -15px rgba(0,0,0,0.08)" }}
+              className="bg-white rounded-[2rem] p-8 lg:p-10 border border-gray-100 relative overflow-hidden"
+              style={{ boxShadow: "0 25px 60px -15px rgba(0,0,0,0.1)" }}
             >
+              {/* Top accent bar */}
+              <div className="absolute top-0 left-0 right-0 h-1" style={{ background: `linear-gradient(90deg, ${course.accentColor}, ${course.accentColor}88)` }} />
+
               {isSuccess ? (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
@@ -779,18 +806,18 @@ function CourseContactForm({ course }: { course: Course }) {
                 </motion.div>
               ) : (
                 <>
-                  <div className="flex bg-gray-100 p-1 rounded-xl mb-8">
+                  <div className="flex bg-slate-100 p-1 rounded-xl mb-8">
                     <button
                       onClick={() => setContactType("personal")}
-                      className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${isPersonal ? 'bg-white text-gray-900 shadow' : 'text-gray-500'}`}
+                      className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all border-none cursor-pointer ${isPersonal ? 'bg-white text-gray-900 shadow-sm' : 'bg-transparent text-gray-500 hover:text-gray-700'}`}
                     >
-                      Cotización
+                      👨‍🎓 Cotización
                     </button>
                     <button
                       onClick={() => setContactType("empresa")}
-                      className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${!isPersonal ? 'bg-white text-gray-900 shadow' : 'text-gray-500'}`}
+                      className={`flex-1 py-2.5 text-sm font-bold rounded-lg transition-all border-none cursor-pointer ${!isPersonal ? 'bg-white text-gray-900 shadow-sm' : 'bg-transparent text-gray-500 hover:text-gray-700'}`}
                     >
-                      Cotización Empresa
+                      🏢 Empresas
                     </button>
                   </div>
                 
@@ -815,10 +842,39 @@ function CourseContactForm({ course }: { course: Course }) {
                       </div>
                     </div>
 
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Teléfono / WhatsApp *</label>
-                      <input type="tel" name="whatsapp" required placeholder="+56 9..."
-                        className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                    <div className="space-y-2 relative">
+                      <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">WhatsApp *</label>
+                      <div className="flex items-stretch">
+                        <div className="relative">
+                          <button type="button" onClick={() => setShowPrefixDropdown(!showPrefixDropdown)}
+                            className="h-full px-3 py-3.5 bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl text-sm font-medium text-slate-600 flex items-center gap-1.5 cursor-pointer hover:bg-slate-100 transition-colors">
+                            <span>{COUNTRIES.find(c => c.code === phonePrefix)?.flag} {phonePrefix}</span>
+                            <ChevronDown className="text-slate-400" size={14} />
+                          </button>
+                          <AnimatePresence>
+                            {showPrefixDropdown && (
+                              <>
+                                <div className="fixed inset-0 z-10" onClick={() => setShowPrefixDropdown(false)} />
+                                <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                                  className="absolute top-full left-0 mt-1 w-52 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-20">
+                                  <div className="max-h-56 overflow-y-auto py-1">
+                                    {COUNTRIES.map((country, idx) => (
+                                      <button key={idx} type="button" onClick={() => { setPhonePrefix(country.code); setShowPrefixDropdown(false); }}
+                                        className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 border-none bg-transparent cursor-pointer">
+                                        <span>{country.flag}</span>
+                                        <span className="font-medium text-slate-700">{country.name}</span>
+                                        <span className="text-slate-400 text-xs ml-auto">{country.code}</span>
+                                      </button>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              </>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                        <input type="tel" name="whatsapp" required placeholder="9 1234 5678"
+                          className="w-full pl-4 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-r-xl text-sm font-medium text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                      </div>
                     </div>
 
                     {!isPersonal && (
@@ -871,15 +927,15 @@ function CourseContactForm({ course }: { course: Course }) {
                     </div>
 
                     <motion.button type="submit" disabled={isSubmitting}
-                      className="w-full py-4 rounded-xl text-white font-bold text-base flex justify-center items-center gap-2 transition-all disabled:opacity-70 border-none cursor-pointer"
-                      style={{ background: "linear-gradient(135deg, #6366F1, #4338CA)", boxShadow: "0 10px 30px -5px rgba(99,102,241,0.3)" }}
+                      className="w-full py-4 rounded-2xl text-white font-bold text-base flex justify-center items-center gap-2.5 transition-all disabled:opacity-70 border-none cursor-pointer shadow-lg hover:shadow-xl"
+                      style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 12px 35px -8px ${course.accentColor}50` }}
                       whileHover={{ y: -2 }}
                       whileTap={{ scale: 0.98 }}
                     >
                       {isSubmitting ? (
                         <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                       ) : (
-                        <>{isPersonal ? "✉️ Solicitar Cotización" : "🏢 Solicitar Cotización Empresarial"}</>
+                        <>{isPersonal ? "Solicitar Cotización →" : "Solicitar Cotización Empresarial →"}</>
                       )}
                     </motion.button>
                   </form>
