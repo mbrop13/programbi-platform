@@ -63,7 +63,7 @@ export default function AsesoriasPromoSection() {
           </div>
 
           {/* Right Visual Element (Excel Mockup) */}
-          <div className="relative lg:h-[600px] flex items-center justify-center">
+          <div className="relative mt-12 lg:mt-0 lg:h-[600px] flex items-center justify-center w-full overflow-hidden">
             <FadeIn delay={0.3} className="w-full relative">
               
               {/* Main Excel Mockup Window */}
@@ -101,8 +101,8 @@ export default function AsesoriasPromoSection() {
                 </div>
 
                 {/* Excel Grid */}
-                <div className="bg-white text-[11px] sm:text-xs font-mono select-none h-[280px]">
-                  <table className="w-full text-center border-collapse">
+                <div className="bg-white text-[11px] sm:text-xs font-mono select-none h-[280px] overflow-x-auto">
+                  <table className="w-full text-center border-collapse min-w-[450px] sm:min-w-full">
                     <thead>
                        <tr className="bg-gray-100 border-b border-gray-300">
                          <th className="w-8 border-r border-gray-300 font-normal text-gray-500 bg-gray-200 py-1"></th>
