@@ -360,7 +360,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                       <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3.5 mt-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 shadow-lg shadow-slate-900/20 group border-none cursor-pointer disabled:opacity-50 disabled:hover:translate-y-0"
+                        className="w-full py-3.5 mt-2 bg-gradient-to-r from-[#1890FF] to-[#0050b3] hover:from-blue-600 hover:to-blue-800 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-500/25 group border-none cursor-pointer disabled:opacity-50 disabled:hover:translate-y-0"
                       >
                         {loading ? (
                           <Loader2 size={18} className="animate-spin" />
@@ -375,7 +375,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                   ) : (
                     <motion.form initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="space-y-4" onSubmit={handleRegister}>
                       <div>
-                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nombre Completo *</label>
+                        <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nombre *</label>
                         <div className="relative">
                           <input
                             type="text"
