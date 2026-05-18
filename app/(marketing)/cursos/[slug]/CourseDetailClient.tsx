@@ -169,15 +169,15 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   return (
     <>
       {/* ════ HERO ════ */}
-      <section className="relative -mt-20 lg:-mt-24 pt-28 lg:pt-36 pb-16 lg:pb-24 overflow-hidden bg-white">
+      <section className="relative -mt-20 lg:-mt-24 pt-28 lg:pt-36 pb-16 lg:pb-24 overflow-hidden bg-slate-50">
         {/* Clean grid bg */}
-        <div className="absolute inset-0 z-0 opacity-40 pointer-events-none" style={{
+        <div className="absolute inset-0 z-0 opacity-20 pointer-events-none" style={{
           backgroundSize: "40px 40px",
-          backgroundImage: `linear-gradient(to right, ${course.accentColor}06 1px, transparent 1px), linear-gradient(to bottom, ${course.accentColor}06 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(to right, ${course.accentColor}15 1px, transparent 1px), linear-gradient(to bottom, ${course.accentColor}15 1px, transparent 1px)`,
         }} />
         {/* Accent glow */}
         <div
-          className="absolute -top-[10%] right-[5%] w-[500px] h-[500px] rounded-full blur-[120px] opacity-20 pointer-events-none z-0"
+          className="absolute top-0 right-0 lg:-top-[10%] lg:right-[5%] w-[300px] h-[300px] lg:w-[500px] lg:h-[500px] rounded-full blur-[100px] lg:blur-[120px] opacity-[0.15] pointer-events-none z-0"
           style={{ background: course.accentColor }}
         />
 
@@ -230,7 +230,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               </FadeIn>
 
               <FadeIn delay={0.4}>
-                <div className="flex flex-wrap gap-6 text-sm text-gray-500 mb-8">
+                <div className="flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm text-slate-500 mb-8">
                   {(() => {
                     let durationLabel = "48 horas 3 niveles en total";
                     if (course.slug === 'analisis-de-datos' || course.slug === 'analitica-mineria' || course.slug === 'analitica-financiera') {
@@ -245,7 +245,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       { icon: <Users className="w-4 h-4" style={{ color: course.accentColor }} />, label: course.level },
                       { icon: <Award className="w-4 h-4" style={{ color: course.accentColor }} />, label: "Certificado por completarlo" },
                     ].map((item, i) => (
-                      <div key={i} className="flex items-center gap-2">
+                      <div key={i} className="flex items-center gap-1.5 sm:gap-2">
                         {item.icon}
                         <span className="font-semibold capitalize">{item.label}</span>
                       </div>
@@ -255,11 +255,11 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               </FadeIn>
 
               <FadeIn delay={0.5}>
-                <div className="flex flex-col sm:flex-row gap-4">
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                   {isLoggedIn ? (
                     <button
                       onClick={handleCheckoutCTA}
-                      className="group px-8 py-4 rounded-2xl text-white font-bold text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-2 hover:-translate-y-1"
+                      className="group px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl text-white font-bold text-base sm:text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-2 hover:-translate-y-1"
                       style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 12px 35px -8px ${course.accentColor}60` }}
                     >
                       Ver Precio y Acceder <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -267,7 +267,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                   ) : (
                     <button
                       onClick={handleCheckoutCTA}
-                      className="group px-8 py-4 rounded-2xl text-white font-bold text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-2 hover:-translate-y-1"
+                      className="group px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl text-white font-bold text-base sm:text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-2 hover:-translate-y-1"
                       style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 12px 35px -8px ${course.accentColor}60` }}
                     >
                        Regístrate para Cotizar <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -275,10 +275,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                   )}
                   <Link
                     href="#temario"
-                    className="bg-white text-[#0F172A] border-2 border-gray-200 px-8 py-4 rounded-2xl font-bold text-lg no-underline transition-all flex items-center justify-center gap-2 shadow-sm"
-                    style={{ borderColor: 'var(--course-border)', '--course-border': '#e5e7eb' } as any}
-                    onMouseEnter={(e) => e.currentTarget.style.borderColor = course.accentColor}
-                    onMouseLeave={(e) => e.currentTarget.style.borderColor = '#e5e7eb'}
+                    className="bg-white text-slate-700 border border-slate-200 px-6 py-3.5 sm:px-8 sm:py-4 rounded-xl font-bold text-base sm:text-lg no-underline transition-all flex items-center justify-center gap-2 shadow-sm hover:shadow-md hover:bg-slate-50"
                   >
                     <BookOpen className="w-5 h-5" /> Ver Temario
                   </Link>
@@ -286,32 +283,34 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 
                 {/* Documentos Descargables Hero */}
                 <div className="flex flex-col sm:flex-row gap-3 mt-5">
-                  <a href="https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-between p-3 rounded-xl bg-white border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all no-underline group shadow-sm">
+                  <a href="https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-between p-3.5 sm:p-3 rounded-xl bg-white border border-slate-200 hover:border-slate-300 transition-all no-underline group shadow-sm">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center shrink-0">
                         <FileText className="w-4 h-4" />
                       </div>
-                      <span className="text-[11px] font-bold text-gray-700 leading-tight">Descargar PDF de Temarios</span>
+                      <span className="text-xs font-bold text-slate-700 leading-tight">PDF Temarios</span>
                     </div>
-                    <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600" />
                   </a>
-                  <a href="https://drive.google.com/file/d/1524q4Zz5TiVaGS-IBAqRc10au9yXP1WK/view?usp=drive_link" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-between p-3 rounded-xl bg-white border border-gray-100 hover:border-gray-200 hover:bg-gray-50 transition-all no-underline group shadow-sm">
+                  <a href="https://drive.google.com/file/d/1524q4Zz5TiVaGS-IBAqRc10au9yXP1WK/view?usp=drive_link" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-between p-3.5 sm:p-3 rounded-xl bg-white border border-slate-200 hover:border-slate-300 transition-all no-underline group shadow-sm">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1890FF] flex items-center justify-center shrink-0">
                         <FileText className="w-4 h-4" />
                       </div>
-                      <span className="text-[11px] font-bold text-gray-700 leading-tight">Ver Presentación Institucional</span>
+                      <span className="text-xs font-bold text-slate-700 leading-tight">Presentación Institucional</span>
                     </div>
-                    <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600" />
                   </a>
                 </div>
-                <p className="text-xs text-gray-400 mt-3 ml-1">Inicia sesión o regístrate gratis para ver precios y acceder al curso.</p>
+                <p className="text-xs text-slate-400 mt-3 ml-1">Inicia sesión o regístrate gratis para ver precios y acceder al curso.</p>
               </FadeIn>
             </div>
 
             {/* Right — IDE Simulator */}
-            <FadeIn delay={0.3} direction="left">
-              <CourseIDE course={course} />
+            <FadeIn delay={0.3} direction="left" className="mt-8 lg:mt-0 w-full relative">
+              <div className="w-full h-[320px] sm:h-[400px] lg:h-[520px] rounded-2xl lg:rounded-[2rem] overflow-hidden border border-slate-200 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] relative">
+                <CourseIDE course={course} />
+              </div>
             </FadeIn>
           </div>
         </div>

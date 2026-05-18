@@ -111,48 +111,48 @@ export default function WebinarClient() {
   return (
     <div className="bg-white" id="top">
       {/* ═══════ HERO ═══════ */}
-      <section className="relative overflow-hidden bg-[#0F172A] min-h-[90vh] flex items-center">
+      <section className="relative overflow-hidden bg-slate-50 min-h-[90vh] flex items-center">
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-[url('https://programbi.com/grid.svg')] bg-center opacity-10" />
+          <div className="absolute inset-0 bg-[url('https://programbi.com/grid.svg')] bg-center opacity-[0.03]" />
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
-          <div className="absolute top-20 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 left-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "2s" }} />
+          <div className="absolute top-20 right-10 w-96 h-96 bg-blue-500/15 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute bottom-20 left-10 w-96 h-96 bg-indigo-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: "2s" }} />
         </div>
         <div className="relative z-10 max-w-[1200px] mx-auto px-6 py-20 lg:py-28">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-              <div className="inline-flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 rounded-full px-4 py-2 mb-6">
-                <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse" />
-                <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">Evento en Vivo · Gratuito</span>
+              <div className="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-2 mb-6">
+                <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                <span className="text-xs font-bold text-blue-600 uppercase tracking-widest">Evento en Vivo · Gratuito</span>
               </div>
-              <h1 className="text-5xl lg:text-6xl font-black text-white leading-[1.1] mb-6 font-display">
-                De Excel a <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Analista de Alto Impacto</span>
+              <h1 className="text-5xl lg:text-6xl font-black text-slate-900 leading-[1.1] mb-6 font-display">
+                De Excel a <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Analista de Alto Impacto</span>
               </h1>
-              <p className="text-lg text-slate-300 leading-relaxed mb-8 max-w-lg">
-                Descubre el roadmap que usan los analistas mejor pagados del mercado y cómo puedes replicarlo dominando <strong className="text-white">SQL, Power BI, Python e IA</strong>.
+              <p className="text-lg text-slate-600 leading-relaxed mb-8 max-w-lg">
+                Descubre el roadmap que usan los analistas mejor pagados del mercado y cómo puedes replicarlo dominando <strong className="text-slate-900">SQL, Power BI, Python e IA</strong>.
               </p>
               
-              <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-5 mb-8 flex items-center gap-5 max-w-sm">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex flex-col items-center justify-center shrink-0 shadow-lg">
-                  <span className="text-[10px] font-bold text-white/80 uppercase tracking-widest">MAY</span>
-                  <span className="text-2xl font-black text-white leading-none mt-0.5">23</span>
+              <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-8 flex items-center gap-5 max-w-sm shadow-sm">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-xl flex flex-col items-center justify-center shrink-0">
+                  <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">MAY</span>
+                  <span className="text-2xl font-black text-slate-900 leading-none mt-0.5">23</span>
                 </div>
                 <div>
-                  <p className="text-white font-bold text-lg">Sábado 23 de Mayo</p>
-                  <p className="text-blue-300 text-sm font-medium">11:00 AM · Vía Zoom</p>
+                  <p className="text-slate-900 font-bold text-lg">Sábado 23 de Mayo</p>
+                  <p className="text-slate-500 text-sm font-medium">11:00 AM · Vía Zoom</p>
                 </div>
               </div>
 
               <div className="flex flex-wrap gap-2">
                 {["🗄️ SQL", "📊 Power BI", "🐍 Python", "🤖 IA"].map((t) => (
-                  <span key={t} className="bg-slate-800/50 border border-slate-700/50 text-slate-300 text-xs font-bold px-4 py-2 rounded-lg">{t}</span>
+                  <span key={t} className="bg-white border border-slate-200 text-slate-600 text-xs font-bold px-4 py-2 rounded-lg shadow-sm">{t}</span>
                 ))}
               </div>
             </motion.div>
 
             {/* Form */}
             <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}>
-              <div className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-[0_20px_50px_-15px_rgba(0,0,0,0.3)] max-w-md mx-auto lg:mx-0 lg:ml-auto relative overflow-hidden">
+              <div className="bg-white rounded-[2rem] p-8 sm:p-10 shadow-2xl shadow-blue-900/5 border border-slate-100 max-w-md mx-auto lg:mx-0 lg:ml-auto relative overflow-hidden">
                 {success ? (
                   <div className="text-center py-8">
                     <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5">
