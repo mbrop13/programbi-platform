@@ -223,16 +223,15 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[100001] w-full max-w-[900px] overflow-hidden mx-4"
+            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[100001] w-[calc(100%-2rem)] max-w-[900px] overflow-hidden"
           >
             <div className="bg-white rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden border border-gray-100 min-h-[500px]">
               {/* Left Side: Art/Info */}
               <div 
-                className="hidden md:flex flex-col justify-between w-5/12 p-10 relative overflow-hidden text-white"
-                style={{ background: "linear-gradient(135deg, #0F172A 0%, #1E293B 100%)" }}
+                className="hidden md:flex flex-col justify-between w-5/12 p-10 relative overflow-hidden bg-slate-50 text-slate-900"
               >
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#1890FF] rounded-full blur-[100px] opacity-20 -mr-20 -mt-20"></div>
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#6366F1] rounded-full blur-[100px] opacity-20 -ml-20 -mb-20"></div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#1890FF] rounded-full blur-[100px] opacity-10 -mr-20 -mt-20"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#6366F1] rounded-full blur-[100px] opacity-10 -ml-20 -mb-20"></div>
 
                 <div className="relative z-10">
                   <Image
@@ -240,27 +239,27 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                     alt="ProgramBI"
                     width={160}
                     height={40}
-                    className="h-8 w-auto brightness-0 invert opacity-90 mb-8"
+                    className="h-8 w-auto mb-8"
                     unoptimized
                   />
-                  <h3 className="text-3xl font-bold mb-4 leading-tight">
+                  <h3 className="text-3xl font-bold mb-4 leading-tight text-slate-900">
                     El futuro del <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-[#6366F1]">Análisis de Datos</span>
                   </h3>
-                  <p className="text-slate-300 text-sm leading-relaxed mb-6">
+                  <p className="text-slate-500 text-sm leading-relaxed mb-6">
                     Únete a más de 5,000 profesionales que están transformando sus carreras con ProgramBI. Domina SQL, Power BI, Python y AI.
                   </p>
-                  <div className="flex items-center gap-3 text-sm font-medium text-slate-300">
+                  <div className="flex items-center gap-3 text-sm font-medium text-slate-600">
                     <div className="flex -space-x-2">
-                       <img src="https://i.pravatar.cc/100?img=1" className="w-8 h-8 rounded-full border-2 border-slate-900" alt="" />
-                       <img src="https://i.pravatar.cc/100?img=2" className="w-8 h-8 rounded-full border-2 border-slate-900" alt="" />
-                       <img src="https://i.pravatar.cc/100?img=3" className="w-8 h-8 rounded-full border-2 border-slate-900" alt="" />
+                       <img src="https://i.pravatar.cc/100?img=1" className="w-8 h-8 rounded-full border-2 border-slate-50" alt="" />
+                       <img src="https://i.pravatar.cc/100?img=2" className="w-8 h-8 rounded-full border-2 border-slate-50" alt="" />
+                       <img src="https://i.pravatar.cc/100?img=3" className="w-8 h-8 rounded-full border-2 border-slate-50" alt="" />
                     </div>
                     +5000 estudiantes
                   </div>
                 </div>
                 
-                <div className="relative z-10 mt-10 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                  <p className="text-xs text-slate-300 italic">
+                <div className="relative z-10 mt-10 p-5 rounded-2xl bg-white border border-slate-200 shadow-sm backdrop-blur-sm">
+                  <p className="text-xs text-slate-600 italic leading-relaxed">
                     &quot;La plataforma que realmente me enseñó a aplicar datos en escenarios reales corporativos.&quot;
                   </p>
                 </div>
