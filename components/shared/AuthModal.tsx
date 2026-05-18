@@ -15,25 +15,25 @@ interface AuthModalProps {
 }
 
 const COUNTRIES = [
-  { code: "+56", flag: "🇨🇱", name: "Chile" },
-  { code: "+52", flag: "🇲🇽", name: "México" },
-  { code: "+54", flag: "🇦🇷", name: "Argentina" },
-  { code: "+57", flag: "🇨🇴", name: "Colombia" },
-  { code: "+51", flag: "🇵🇪", name: "Perú" },
-  { code: "+593", flag: "🇪🇨", name: "Ecuador" },
-  { code: "+507", flag: "🇵🇦", name: "Panamá" },
-  { code: "+58", flag: "🇻🇪", name: "Venezuela" },
-  { code: "+598", flag: "🇺🇾", name: "Uruguay" },
-  { code: "+595", flag: "🇵🇾", name: "Paraguay" },
-  { code: "+591", flag: "🇧🇴", name: "Bolivia" },
-  { code: "+502", flag: "🇬🇹", name: "Guatemala" },
-  { code: "+506", flag: "🇨🇷", name: "Costa Rica" },
-  { code: "+503", flag: "🇸🇻", name: "El Salvador" },
-  { code: "+504", flag: "🇭🇳", name: "Honduras" },
-  { code: "+505", flag: "🇳🇮", name: "Nicaragua" },
-  { code: "+1", flag: "🇩🇴", name: "Rep. Dominicana" },
-  { code: "+34", flag: "🇪🇸", name: "España" },
-  { code: "+1", flag: "🇺🇸", name: "EE.UU." },
+  { code: "+56", iso: "cl", name: "Chile" },
+  { code: "+52", iso: "mx", name: "México" },
+  { code: "+54", iso: "ar", name: "Argentina" },
+  { code: "+57", iso: "co", name: "Colombia" },
+  { code: "+51", iso: "pe", name: "Perú" },
+  { code: "+593", iso: "ec", name: "Ecuador" },
+  { code: "+507", iso: "pa", name: "Panamá" },
+  { code: "+58", iso: "ve", name: "Venezuela" },
+  { code: "+598", iso: "uy", name: "Uruguay" },
+  { code: "+595", iso: "py", name: "Paraguay" },
+  { code: "+591", iso: "bo", name: "Bolivia" },
+  { code: "+502", iso: "gt", name: "Guatemala" },
+  { code: "+506", iso: "cr", name: "Costa Rica" },
+  { code: "+503", iso: "sv", name: "El Salvador" },
+  { code: "+504", iso: "hn", name: "Honduras" },
+  { code: "+505", iso: "ni", name: "Nicaragua" },
+  { code: "+1", iso: "do", name: "Rep. Dominicana" },
+  { code: "+34", iso: "es", name: "España" },
+  { code: "+1", iso: "us", name: "EE.UU." },
 ];
 
 export default function AuthModal({ isOpen, onClose, defaultTab = "login", redirectUrl }: AuthModalProps) {
@@ -420,7 +420,8 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                                 onClick={() => setShowPrefixDropdown(!showPrefixDropdown)}
                                 className="px-3 py-3 bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium text-slate-600 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                               >
-                                <span>{COUNTRIES.find(c => c.code === phonePrefix)?.flag} {phonePrefix}</span>
+                                <img src={`https://flagcdn.com/w20/${COUNTRIES.find(c => c.code === phonePrefix)?.iso}.png`} alt="" className="w-4 h-auto rounded-[2px]" />
+                                <span>{phonePrefix}</span>
                                 <ChevronDown className="text-slate-400 ml-0.5" size={14} />
                               </button>
                               
@@ -448,7 +449,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                                             }}
                                             className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 border-none bg-transparent cursor-pointer"
                                           >
-                                            <span className="text-base">{country.flag}</span>
+                                            <span className="flex-shrink-0 mr-1"><img src={`https://flagcdn.com/w20/${country.iso}.png`} alt="" className="w-4 h-auto rounded-[2px]" /></span>
                                             <span className="font-medium text-slate-700">{country.name}</span>
                                             <span className="text-slate-400 text-xs ml-auto">{country.code}</span>
                                           </button>

@@ -644,25 +644,25 @@ function CourseContactForm({ course }: { course: Course }) {
   const formLoadedAt = useRef(Date.now());
 
   const COUNTRIES = [
-    { code: "+56", flag: "🇨🇱", name: "Chile" },
-    { code: "+52", flag: "🇲🇽", name: "México" },
-    { code: "+54", flag: "🇦🇷", name: "Argentina" },
-    { code: "+57", flag: "🇨🇴", name: "Colombia" },
-    { code: "+51", flag: "🇵🇪", name: "Perú" },
-    { code: "+593", flag: "🇪🇨", name: "Ecuador" },
-    { code: "+507", flag: "🇵🇦", name: "Panamá" },
-    { code: "+58", flag: "🇻🇪", name: "Venezuela" },
-    { code: "+598", flag: "🇺🇾", name: "Uruguay" },
-    { code: "+595", flag: "🇵🇾", name: "Paraguay" },
-    { code: "+591", flag: "🇧🇴", name: "Bolivia" },
-    { code: "+502", flag: "🇬🇹", name: "Guatemala" },
-    { code: "+506", flag: "🇨🇷", name: "Costa Rica" },
-    { code: "+503", flag: "🇸🇻", name: "El Salvador" },
-    { code: "+504", flag: "🇭🇳", name: "Honduras" },
-    { code: "+505", flag: "🇳🇮", name: "Nicaragua" },
-    { code: "+1", flag: "🇩🇴", name: "Rep. Dominicana" },
-    { code: "+34", flag: "🇪🇸", name: "España" },
-    { code: "+1", flag: "🇺🇸", name: "EE.UU." },
+    { code: "+56", iso: "cl", name: "Chile" },
+    { code: "+52", iso: "mx", name: "México" },
+    { code: "+54", iso: "ar", name: "Argentina" },
+    { code: "+57", iso: "co", name: "Colombia" },
+    { code: "+51", iso: "pe", name: "Perú" },
+    { code: "+593", iso: "ec", name: "Ecuador" },
+    { code: "+507", iso: "pa", name: "Panamá" },
+    { code: "+58", iso: "ve", name: "Venezuela" },
+    { code: "+598", iso: "uy", name: "Uruguay" },
+    { code: "+595", iso: "py", name: "Paraguay" },
+    { code: "+591", iso: "bo", name: "Bolivia" },
+    { code: "+502", iso: "gt", name: "Guatemala" },
+    { code: "+506", iso: "cr", name: "Costa Rica" },
+    { code: "+503", iso: "sv", name: "El Salvador" },
+    { code: "+504", iso: "hn", name: "Honduras" },
+    { code: "+505", iso: "ni", name: "Nicaragua" },
+    { code: "+1", iso: "do", name: "Rep. Dominicana" },
+    { code: "+34", iso: "es", name: "España" },
+    { code: "+1", iso: "us", name: "EE.UU." },
   ];
 
   const enterpriseServices = [
@@ -793,8 +793,6 @@ function CourseContactForm({ course }: { course: Course }) {
               className="bg-white rounded-[2rem] p-8 lg:p-10 border border-gray-100 relative overflow-hidden"
               style={{ boxShadow: "0 25px 60px -15px rgba(0,0,0,0.1)" }}
             >
-              {/* Top accent bar */}
-              <div className="absolute top-0 left-0 right-0 h-1" style={{ background: `linear-gradient(90deg, ${course.accentColor}, ${course.accentColor}88)` }} />
 
               {isSuccess ? (
                 <motion.div
@@ -850,7 +848,8 @@ function CourseContactForm({ course }: { course: Course }) {
                         <div className="relative">
                           <button type="button" onClick={() => setShowPrefixDropdown(!showPrefixDropdown)}
                             className="h-full px-3 py-3.5 bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl text-sm font-medium text-slate-600 flex items-center gap-1.5 cursor-pointer hover:bg-slate-100 transition-colors">
-                            <span>{COUNTRIES.find(c => c.code === phonePrefix)?.flag} {phonePrefix}</span>
+                            <img src={`https://flagcdn.com/w20/${COUNTRIES.find(c => c.code === phonePrefix)?.iso}.png`} alt="" className="w-4 h-auto rounded-[2px]" />
+                            <span>{phonePrefix}</span>
                             <ChevronDown className="text-slate-400" size={14} />
                           </button>
                           <AnimatePresence>
@@ -863,7 +862,7 @@ function CourseContactForm({ course }: { course: Course }) {
                                     {COUNTRIES.map((country, idx) => (
                                       <button key={idx} type="button" onClick={() => { setPhonePrefix(country.code); setShowPrefixDropdown(false); }}
                                         className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 border-none bg-transparent cursor-pointer">
-                                        <span>{country.flag}</span>
+                                        <span className="flex-shrink-0 mr-1"><img src={`https://flagcdn.com/w20/${country.iso}.png`} alt="" className="w-4 h-auto rounded-[2px]" /></span>
                                         <span className="font-medium text-slate-700">{country.name}</span>
                                         <span className="text-slate-400 text-xs ml-auto">{country.code}</span>
                                       </button>
@@ -930,7 +929,7 @@ function CourseContactForm({ course }: { course: Course }) {
 
                     <motion.button type="submit" disabled={isSubmitting}
                       className="w-full py-4 rounded-2xl text-white font-bold text-base flex justify-center items-center gap-2.5 transition-all disabled:opacity-70 border-none cursor-pointer shadow-lg hover:shadow-xl"
-                      style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 12px 35px -8px ${course.accentColor}50` }}
+                      style={{ background: "linear-gradient(135deg, #1890FF, #0050b3)", boxShadow: "0 12px 35px -8px rgba(24,144,255,0.4)" }}
                       whileHover={{ y: -2 }}
                       whileTap={{ scale: 0.98 }}
                     >
