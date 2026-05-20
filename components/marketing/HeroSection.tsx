@@ -9,17 +9,7 @@ import { FadeIn, CountUp } from "@/components/shared/AnimatedComponents";
 /* ─── Modern Data Visual (Glassmorphism Campus Mockup) ─── */
 function ModernDataVisual() {
   const [activeTab, setActiveTab] = useState<"bi" | "python" | "sql">("bi");
-  const [isRunningPython, setIsRunningPython] = useState(false);
-  const [pythonOutput, setPythonOutput] = useState<string[]>([]);
   const [sqlQueryIndex, setSqlQueryIndex] = useState(0);
-
-  const pythonCode = [
-    "import pandas as pd",
-    "import scikit_learn as sklearn",
-    "df = pd.read_csv('ventas.csv')",
-    "model = train_model(df)",
-    "print('Precisión:', model.score())"
-  ];
 
   const sqlQueries = [
     { query: "SELECT region, SUM(ventas) FROM transacciones GROUP BY region;", results: [
@@ -33,41 +23,6 @@ function ModernDataVisual() {
       { curso: "SQL & Big Data", alumnos: "620" }
     ]}
   ];
-
-  useEffect(() => {
-    if (activeTab === "python") {
-      setIsRunningPython(true);
-    } else {
-      setIsRunningPython(false);
-      setPythonOutput([]);
-    }
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (!isRunningPython) return;
-
-    setPythonOutput([]);
-    let currentLine = 0;
-    let timeoutId: NodeJS.Timeout;
-
-    const intervalId = setInterval(() => {
-      if (currentLine < pythonCode.length) {
-        setPythonOutput(prev => [...prev, pythonCode[currentLine]]);
-        currentLine++;
-      } else {
-        clearInterval(intervalId);
-        timeoutId = setTimeout(() => {
-          setPythonOutput(prev => [...prev, ">>> [✓] Entrenamiento exitoso: Accuracy 99.2%"]);
-          setIsRunningPython(false);
-        }, 600);
-      }
-    }, 450);
-
-    return () => {
-      clearInterval(intervalId);
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [isRunningPython]);
 
   return (
     <div className="relative w-full aspect-square lg:aspect-[4/3] flex items-center justify-center mt-12 lg:mt-0 select-none">
@@ -187,40 +142,77 @@ function ModernDataVisual() {
               </motion.div>
             )}
 
-            {/* PYTHON TAB */}
+            {/* PYTHON TAB (Jupyter Notebook / Data Science mockup) */}
             {activeTab === "python" && (
               <motion.div
                 key="python"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="h-full flex flex-col justify-between font-mono"
+                className="h-full flex flex-col justify-between text-xs"
               >
-                {/* Console window */}
-                <div className="flex-1 bg-gray-950/90 text-gray-200 p-3 rounded-xl text-[10px] leading-relaxed overflow-y-auto space-y-1 shadow-inner max-h-[160px] md:max-h-[200px]">
-                  <div className="flex justify-between items-center border-b border-gray-800 pb-1.5 mb-2">
-                    <span className="text-gray-500 text-[8px] tracking-wider uppercase font-sans">python3 compiler</span>
-                    <button type="button"
-                      onClick={() => setIsRunningPython(true)}
-                      disabled={isRunningPython}
-                      className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded text-[8px] font-sans font-bold flex items-center gap-1 transition-colors"
-                    >
-                      <Play className="w-2.5 h-2.5 fill-current" /> {isRunningPython ? "Corriendo..." : "Ejecutar"}
-                    </button>
+                {/* Jupyter Cell Input */}
+                <div className="bg-gray-50 border border-gray-150 rounded-xl p-2.5 font-mono text-[9px] text-gray-750 shadow-sm shrink-0 mb-2">
+                  <div className="flex justify-between items-center text-[8px] text-gray-400 font-sans mb-1.5">
+                    <span className="font-bold text-[#1890FF]">Jupyter Notebook — In [1]</span>
+                    <span className="bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-bold">python 3.8</span>
                   </div>
-                  {pythonOutput.map((line, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, x: -5 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      className={line.startsWith(">>>") ? "text-emerald-400 font-bold" : "text-gray-300"}
-                    >
-                      {line}
-                    </motion.div>
-                  ))}
-                  {pythonOutput.length === 0 && (
-                    <div className="text-gray-500 italic">Haz clic en 'Ejecutar' para correr el modelo...</div>
-                  )}
+                  <div className="space-y-0.5 leading-normal">
+                    <p><span className="text-purple-600 font-bold">import</span> pandas <span className="text-purple-600 font-bold">as</span> pd</p>
+                    <p><span className="text-purple-600 font-bold">import</span> matplotlib.pyplot <span className="text-purple-600 font-bold">as</span> plt</p>
+                    <p>df = pd.read_csv(<span className="text-emerald-600">'ventas.csv'</span>)</p>
+                    <p>df.plot(x=<span className="text-emerald-600">'mes'</span>, y=<span className="text-emerald-600">'crecimiento'</span>, color=<span className="text-indigo-600">'indigo'</span>)</p>
+                  </div>
+                </div>
+
+                {/* Notebook Output (Visual Line Chart) */}
+                <div className="flex-1 bg-white border border-gray-100 rounded-xl p-2.5 flex flex-col justify-between shadow-sm relative overflow-hidden">
+                  <div className="flex justify-between items-center text-[8px] text-gray-400 font-bold uppercase tracking-wider mb-1">
+                    <span>Salida [1] — Gráfico de Crecimiento</span>
+                    <span className="text-indigo-600 font-black">Pandas + Matplotlib</span>
+                  </div>
+
+                  {/* High fidelity SVG line chart */}
+                  <div className="relative flex-1 min-h-[70px] md:min-h-[85px]">
+                    <svg className="w-full h-full" viewBox="0 0 200 80">
+                      {/* Grid Lines */}
+                      <line x1="10" y1="10" x2="190" y2="10" stroke="#f1f5f9" strokeWidth="1" />
+                      <line x1="10" y1="35" x2="190" y2="35" stroke="#f1f5f9" strokeWidth="1" />
+                      <line x1="10" y1="60" x2="190" y2="60" stroke="#f1f5f9" strokeWidth="1" />
+                      <line x1="10" y1="75" x2="190" y2="75" stroke="#e2e8f0" strokeWidth="1" />
+
+                      {/* Smooth Path (Line Chart) */}
+                      <motion.path
+                        d="M 10 70 Q 40 60 70 45 T 130 30 T 190 15"
+                        fill="none"
+                        stroke="url(#lineGradient)"
+                        strokeWidth="3.5"
+                        strokeLinecap="round"
+                        initial={{ pathLength: 0 }}
+                        animate={{ pathLength: 1 }}
+                        transition={{ duration: 1.5, ease: "easeInOut" }}
+                      />
+
+                      {/* Gradient definition */}
+                      <defs>
+                        <linearGradient id="lineGradient" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#818cf8" />
+                          <stop offset="100%" stopColor="#4f46e5" />
+                        </linearGradient>
+                      </defs>
+
+                      {/* Pulsing end point */}
+                      <motion.circle
+                        cx="190"
+                        cy="15"
+                        r="3.5"
+                        fill="#4f46e5"
+                        initial={{ opacity: 0, scale: 0 }}
+                        animate={{ opacity: 1, scale: [1, 1.5, 1] }}
+                        transition={{ delay: 1.3, duration: 1, repeat: Infinity }}
+                      />
+                    </svg>
+                  </div>
                 </div>
               </motion.div>
             )}
