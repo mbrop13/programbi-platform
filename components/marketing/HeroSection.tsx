@@ -1,191 +1,118 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence, useInView } from "framer-motion";
-import { ArrowRight, Play, Briefcase } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, Briefcase, Database } from "lucide-react";
 import { FadeIn, CountUp } from "@/components/shared/AnimatedComponents";
-import { heroVideos } from "@/lib/data/images";
 
-/* ─── Typing code animation ─── */
-const codeLines = [
-  { text: "import pandas as pd", cls: "text-[#c586c0]" },
-  { text: "import matplotlib.pyplot as plt", cls: "text-[#c586c0]" },
-  { text: "", cls: "" },
-  { text: "# Conectar a base de datos empresarial", cls: "text-[#6a9955]" },
-  { text: 'df = pd.read_sql("SELECT * FROM ventas", conn)', cls: "text-[#9cdcfe]" },
-  { text: "", cls: "" },
-  { text: "# Análisis exploratorio", cls: "text-[#6a9955]" },
-  { text: "resumen = df.groupby('region')['monto'].sum()", cls: "text-[#9cdcfe]" },
-  { text: "", cls: "" },
-  { text: "resumen.plot(kind='bar', color='#1890FF')", cls: "text-[#9cdcfe]" },
-  { text: "plt.title('Ventas por Región 2026')", cls: "text-[#ce9178]" },
-  { text: "", cls: "" },
-  { text: "✓ Dashboard generado exitosamente", cls: "text-[#4ec9b0]" },
-];
-
-function TypingCode() {
-  const [visibleLines, setVisibleLines] = useState(0);
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true });
-
-  useEffect(() => {
-    if (!isInView) return;
-    const interval = setInterval(() => {
-      setVisibleLines((prev) => {
-        if (prev >= codeLines.length) {
-          clearInterval(interval);
-          return prev;
-        }
-        return prev + 1;
-      });
-    }, 250);
-    return () => clearInterval(interval);
-  }, [isInView]);
-
+/* ─── Modern Data Visual (Glassmorphism) ─── */
+function ModernDataVisual() {
   return (
-    <div ref={ref} className="code-editor">
-      {/* Editor Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-[#1e1e1e] border-b border-[#333] rounded-t-2xl">
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
-          <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
-          <div className="w-3 h-3 rounded-full bg-[#28c840]" />
+    <div className="relative w-full aspect-square lg:aspect-[4/3] flex items-center justify-center mt-10 lg:mt-0">
+      {/* Background glowing orbs */}
+      <motion.div
+        animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }}
+        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+        className="absolute left-10 lg:left-0 top-0 z-0 w-40 h-40 bg-gradient-to-tr from-blue-400/20 to-indigo-400/20 rounded-full blur-2xl"
+      />
+      <motion.div
+        animate={{ scale: [1, 1.1, 1], rotate: [0, -5, 0] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+        className="absolute right-10 bottom-0 z-0 w-48 h-48 bg-gradient-to-tr from-cyan-400/20 to-blue-400/20 rounded-full blur-2xl"
+      />
+
+      {/* Central Glass Card: Dashboard Abstraction */}
+      <motion.div 
+        animate={{ y: [0, -12, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        className="relative z-10 w-full max-w-[420px] bg-white/70 backdrop-blur-2xl border border-white/80 shadow-2xl rounded-3xl p-6 lg:p-8"
+        style={{ boxShadow: "0 20px 40px -10px rgba(24,144,255,0.15)" }}
+      >
+        <div className="flex justify-between items-center mb-8">
+          <div className="space-y-1">
+            <h3 className="font-black text-gray-900 text-base">Rendimiento Global</h3>
+            <p className="text-xs text-gray-500 font-semibold">Últimos 30 días</p>
+          </div>
+          <div className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-full text-xs font-bold border border-emerald-100 flex items-center gap-2 shadow-sm">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
+            +24.5%
+          </div>
         </div>
-        <span className="text-[#858585] text-xs font-mono">analisis_datos.py</span>
-        <div className="w-16" />
-      </div>
-      {/* Code Content */}
-      <div className="bg-[#1e1e1e] p-5 rounded-b-2xl font-mono text-sm leading-relaxed overflow-hidden min-h-[280px] lg:min-h-[340px]">
-        {codeLines.slice(0, visibleLines).map((line, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
-            className={`${line.cls} ${!line.text ? "h-5" : ""}`}
-          >
-            {line.text}
-          </motion.div>
-        ))}
-        {visibleLines < codeLines.length && (
-          <motion.span
-            animate={{ opacity: [1, 0] }}
-            transition={{ repeat: Infinity, duration: 0.8 }}
-            className="inline-block w-2.5 h-5 bg-[#569cd6] ml-0.5"
-          />
-        )}
-      </div>
-    </div>
-  );
-}
 
-/* ─── Floating Tech Tags ─── */
-const techTags = [
-  { label: "Power BI", icon: "📊", x: "right-0 top-4", delay: 0.8 },
-  { label: "Python", icon: "🐍", x: "right-4 top-1/2", delay: 1.2 },
-  { label: "SQL Server", icon: "🗄️", x: "left-0 bottom-8", delay: 1.5 },
-];
+        {/* Abstract Bar Chart */}
+        <div className="flex items-end justify-between h-36 gap-2 mb-6">
+          {[40, 65, 45, 80, 55, 90, 100].map((height, i) => (
+            <motion.div
+              key={i}
+              initial={{ height: 0 }}
+              animate={{ height: `${height}%` }}
+              transition={{ delay: i * 0.1 + 0.5, type: "spring", stiffness: 60, damping: 15 }}
+              className={`w-full rounded-t-lg relative group ${
+                i === 6 
+                  ? 'bg-gradient-to-t from-[#1890FF] to-indigo-500 shadow-lg shadow-blue-500/30' 
+                  : 'bg-blue-100 hover:bg-blue-200 transition-colors'
+              }`}
+            >
+              {i === 6 && (
+                 <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#1890FF] text-white text-[10px] font-bold py-1 px-2 rounded-md whitespace-nowrap shadow-md">
+                   Peak
+                 </div>
+              )}
+            </motion.div>
+          ))}
+        </div>
 
-/* ─── Video Carousel ─── */
-function VideoCarousel() {
-  const [active, setActive] = useState(0);
+        <div className="h-px w-full bg-gray-100 mb-4" />
+        <div className="flex items-center justify-between text-xs font-bold text-gray-400">
+          <span>Lun</span>
+          <span>Mar</span>
+          <span>Mie</span>
+          <span>Jue</span>
+          <span>Vie</span>
+          <span>Sab</span>
+          <span className="text-[#1890FF]">Dom</span>
+        </div>
+      </motion.div>
 
-  useEffect(() => {
-    const timer = setInterval(() => setActive((p) => (p + 1) % heroVideos.length), 8000);
-    return () => clearInterval(timer);
-  }, []);
+      {/* Floating Widget 1: Technology */}
+      <motion.div
+        animate={{ y: [0, 15, 0], x: [0, 5, 0] }}
+        transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        className="absolute -right-2 lg:-right-8 top-12 lg:top-16 z-20 bg-white/90 backdrop-blur-md p-3.5 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-3"
+      >
+        <div className="w-11 h-11 rounded-xl bg-[#F2C811]/15 flex items-center justify-center text-2xl">
+          📊
+        </div>
+        <div className="pr-2">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Power BI</p>
+          <p className="text-sm font-black text-gray-800">Master Level</p>
+        </div>
+      </motion.div>
 
-  return (
-    <div className="relative">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={active}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.95 }}
-          transition={{ duration: 0.5 }}
-          className="aspect-video rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/10"
-        >
-          <iframe
-            src={`https://www.youtube.com/embed/${heroVideos[active].id}?rel=0&modestbranding=1`}
-            title={heroVideos[active].title}
-            allow="fullscreen"
-            loading="lazy"
-            className="w-full h-full"
-          />
-        </motion.div>
-      </AnimatePresence>
-      <p className="text-center text-lg font-bold text-gray-900 mt-4">
-        {heroVideos[active].title}
-      </p>
-      <div className="flex justify-center gap-3 mt-4">
-        {heroVideos.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => setActive(i)}
-            className={`h-2 rounded-full transition-all duration-300 ${
-              i === active ? "w-8 bg-[#1890FF]" : "w-2 bg-gray-300 hover:bg-gray-400"
-            }`}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ─── TABS: Code / Video ─── */
-function HeroVisual() {
-  const [tab, setTab] = useState<"code" | "video">("code");
-
-  return (
-    <div>
-      <div className="flex gap-2 mb-4">
-        <button
-          onClick={() => setTab("code")}
-          className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-            tab === "code"
-              ? "bg-[#1890FF] text-white shadow-lg shadow-blue-500/20"
-              : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-          }`}
-        >
-          &lt;/&gt; Código
-        </button>
-        <button
-          onClick={() => setTab("video")}
-          className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2 ${
-            tab === "video"
-              ? "bg-[#1890FF] text-white shadow-lg shadow-blue-500/20"
-              : "bg-gray-100 text-gray-500 hover:bg-gray-200"
-          }`}
-        >
-          <Play size={14} /> Video
-        </button>
-      </div>
-      <AnimatePresence mode="wait">
-        {tab === "code" ? (
-          <motion.div key="code" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <div className="relative">
-              <TypingCode />
-              {techTags.map((tag, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: tag.delay, type: "spring" }}
-                  className={`absolute ${tag.x} hidden lg:flex items-center gap-2 bg-white rounded-xl px-4 py-2 shadow-lg border border-gray-100 text-sm font-bold text-gray-700`}
-                >
-                  <span>{tag.icon}</span> {tag.label}
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        ) : (
-          <motion.div key="video" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <VideoCarousel />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Floating Widget 2: Data Science */}
+      <motion.div
+        animate={{ y: [0, -15, 0], x: [0, -5, 0] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        className="absolute -left-2 lg:-left-12 bottom-16 lg:bottom-24 z-20 bg-white/90 backdrop-blur-md p-3.5 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-3"
+      >
+        <div className="w-11 h-11 rounded-xl bg-[#3776AB]/15 flex items-center justify-center text-2xl">
+          🐍
+        </div>
+        <div className="pr-2">
+          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Python</p>
+          <p className="text-sm font-black text-gray-800">Data Science</p>
+        </div>
+      </motion.div>
+      
+      {/* Floating Widget 3: SQL Database */}
+      <motion.div
+        animate={{ y: [0, 10, 0], x: [0, 5, 0] }}
+        transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 3.5 }}
+        className="absolute left-1/2 -translate-x-1/2 -top-6 lg:-top-10 z-20 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-gray-100 flex items-center gap-2"
+      >
+        <Database className="w-4 h-4 text-indigo-500" />
+        <p className="text-xs font-bold text-gray-700">SQL Server & Cloud</p>
+      </motion.div>
     </div>
   );
 }
@@ -298,7 +225,7 @@ export default function HeroSection() {
           {/* ── Right Column ── */}
           <div className="lg:col-span-5 relative w-full">
             <FadeIn delay={0.4} direction="left">
-              <HeroVisual />
+              <ModernDataVisual />
             </FadeIn>
           </div>
         </div>
