@@ -34,30 +34,40 @@ function ModernDataVisual() {
     ]}
   ];
 
-  const runPython = () => {
-    if (isRunningPython) return;
-    setIsRunningPython(true);
+  useEffect(() => {
+    if (activeTab === "python") {
+      setIsRunningPython(true);
+    } else {
+      setIsRunningPython(false);
+      setPythonOutput([]);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (!isRunningPython) return;
+
     setPythonOutput([]);
     let currentLine = 0;
-    const interval = setInterval(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    const intervalId = setInterval(() => {
       if (currentLine < pythonCode.length) {
         setPythonOutput(prev => [...prev, pythonCode[currentLine]]);
         currentLine++;
       } else {
-        clearInterval(interval);
-        setTimeout(() => {
+        clearInterval(intervalId);
+        timeoutId = setTimeout(() => {
           setPythonOutput(prev => [...prev, ">>> [✓] Entrenamiento exitoso: Accuracy 99.2%"]);
           setIsRunningPython(false);
         }, 600);
       }
     }, 450);
-  };
 
-  useEffect(() => {
-    if (activeTab === "python") {
-      runPython();
-    }
-  }, [activeTab]);
+    return () => {
+      clearInterval(intervalId);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [isRunningPython]);
 
   return (
     <div className="relative w-full aspect-square lg:aspect-[4/3] flex items-center justify-center mt-12 lg:mt-0 select-none">
@@ -191,7 +201,7 @@ function ModernDataVisual() {
                   <div className="flex justify-between items-center border-b border-gray-800 pb-1.5 mb-2">
                     <span className="text-gray-500 text-[8px] tracking-wider uppercase font-sans">python3 compiler</span>
                     <button type="button"
-                      onClick={runPython}
+                      onClick={() => setIsRunningPython(true)}
                       disabled={isRunningPython}
                       className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded text-[8px] font-sans font-bold flex items-center gap-1 transition-colors"
                     >
