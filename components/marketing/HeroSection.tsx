@@ -100,7 +100,7 @@ function ModernDataVisual() {
 
         {/* Tab Selector inside mock app */}
         <div className="flex border-b border-gray-100 bg-white/40 shrink-0">
-          <button
+          <button type="button"
             onClick={() => setActiveTab("bi")}
             className={`flex-1 py-2 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
               activeTab === "bi"
@@ -110,7 +110,7 @@ function ModernDataVisual() {
           >
             <BarChart2 className="w-3.5 h-3.5" /> Power BI
           </button>
-          <button
+          <button type="button"
             onClick={() => setActiveTab("python")}
             className={`flex-1 py-2 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
               activeTab === "python"
@@ -120,7 +120,7 @@ function ModernDataVisual() {
           >
             <Code className="w-3.5 h-3.5" /> Python
           </button>
-          <button
+          <button type="button"
             onClick={() => setActiveTab("sql")}
             className={`flex-1 py-2 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
               activeTab === "sql"
@@ -190,7 +190,7 @@ function ModernDataVisual() {
                 <div className="flex-1 bg-gray-950/90 text-gray-200 p-3 rounded-xl text-[10px] leading-relaxed overflow-y-auto space-y-1 shadow-inner max-h-[160px] md:max-h-[200px]">
                   <div className="flex justify-between items-center border-b border-gray-800 pb-1.5 mb-2">
                     <span className="text-gray-500 text-[8px] tracking-wider uppercase font-sans">python3 compiler</span>
-                    <button 
+                    <button type="button"
                       onClick={runPython}
                       disabled={isRunningPython}
                       className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded text-[8px] font-sans font-bold flex items-center gap-1 transition-colors"
@@ -227,7 +227,7 @@ function ModernDataVisual() {
                 {/* Query selector bar */}
                 <div className="flex gap-2 mb-3">
                   {sqlQueries.map((q, idx) => (
-                    <button
+                    <button type="button"
                       key={idx}
                       onClick={() => setSqlQueryIndex(idx)}
                       className={`text-[9px] px-2.5 py-1 rounded-lg border font-bold transition-all ${
