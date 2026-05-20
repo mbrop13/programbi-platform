@@ -8,7 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, ArrowLeft, Clock, Calendar, Building2, User, Users,
   CheckCircle2, Bell, Loader2, ShoppingCart, Check, Plus, Minus,
-  X, BadgeCheck, ChevronUp, ChevronDown, FileText, ExternalLink
+  X, BadgeCheck, ChevronUp, ChevronDown, FileText, ExternalLink,
+  Info, Globe
 } from "lucide-react";
 import { courses as allCourses, Course } from "@/lib/data/courses";
 import { type CourseSchedule, analisisDeDatosSlugs, formatScheduleDate, getNearestSchedule } from "@/lib/data/course-schedules";
@@ -29,6 +30,16 @@ interface CartItem {
   title: string;
 }
 
+const CURRENCIES = [
+  { code: "CLP", symbol: "$", name: "Peso Chileno", flag: "🇨🇱", rate: 1, format: (val: number) => new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(val) },
+  { code: "USD", symbol: "$", name: "Dólar", flag: "🇺🇸", rate: 1 / 900, format: (val: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(val) },
+  { code: "MXN", symbol: "$", name: "Peso Mexicano", flag: "🇲🇽", rate: 18.5 / 900, format: (val: number) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(val) },
+  { code: "COP", symbol: "$", name: "Peso Colombiano", flag: "🇨🇴", rate: 4100 / 900, format: (val: number) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(val) },
+  { code: "PEN", symbol: "S/.", name: "Sol Peruano", flag: "🇵🇪", rate: 3.75 / 900, format: (val: number) => new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN", maximumFractionDigits: 2 }).format(val) },
+  { code: "EUR", symbol: "€", name: "Euro", flag: "🇪🇺", rate: 0.92 / 900, format: (val: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 2 }).format(val) },
+  { code: "ARS", symbol: "$", name: "Peso Argentino", flag: "🇦🇷", rate: 980 / 900, format: (val: number) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(val) },
+];
+
 export default function PagoClient() {
   const searchParams = useSearchParams();
   const initialSlug = searchParams.get("curso") || "";
@@ -43,7 +54,12 @@ export default function PagoClient() {
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
   const [promotions, setPromotions] = useState<any[]>([]);
   const [priceOverrides, setPriceOverrides] = useState<any[]>([]);
+  const [courseDescriptions, setCourseDescriptions] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(true);
+
+  // Currency state
+  const [selectedCurrency, setSelectedCurrency] = useState(CURRENCIES[0]);
+  const [isCurrencyDropdownOpen, setIsCurrencyDropdownOpen] = useState(false);
 
   // Cart state
   const [cart, setCart] = useState<Record<string, CartItem>>({});
@@ -71,15 +87,27 @@ export default function PagoClient() {
   const [entMessage, setEntMessage] = useState("");
   const [entAcceptsPrivacy, setEntAcceptsPrivacy] = useState(false);
 
+  const convertAndFormat = (clpAmount: number, currency = selectedCurrency) => {
+    const converted = clpAmount * currency.rate;
+    return currency.format(converted);
+  };
+
+  const getCourseDescription = (course: Course) => {
+    const descObj = courseDescriptions.find(d => d.slug === course.slug);
+    return descObj?.short_description || descObj?.description || course.shortDescription;
+  };
+
   useEffect(() => {
     Promise.all([
       fetch("/api/schedules").then(r => r.json()),
       fetch("/api/promotions").then(r => r.json()),
-      fetch("/api/prices").then(r => r.json())
-    ]).then(([schData, promoData, pricesData]) => {
+      fetch("/api/prices").then(r => r.json()),
+      fetch("/api/courses/descriptions").then(r => r.json())
+    ]).then(([schData, promoData, pricesData, descData]) => {
       if (Array.isArray(schData)) setSchedules(schData);
       if (Array.isArray(promoData)) setPromotions(promoData);
       if (Array.isArray(pricesData)) setPriceOverrides(pricesData);
+      if (Array.isArray(descData)) setCourseDescriptions(descData);
     })
     .catch(console.error)
     .finally(() => setLoadingData(false));
@@ -388,7 +416,7 @@ export default function PagoClient() {
                        <div className="flex-1 min-w-0 flex flex-col items-start gap-3 w-full">
                           <div>
                             <h3 className="font-bold text-[#0F172A] text-lg lg:text-xl line-clamp-1">{course.title}</h3>
-                            <p className="text-xs text-gray-500 line-clamp-2 mt-1">{course.shortDescription}</p>
+                            <p className="text-xs text-gray-500 line-clamp-2 mt-1">{getCourseDescription(course)}</p>
                           </div>
 
                           {/* Level Selector */}
@@ -423,23 +451,39 @@ export default function PagoClient() {
                                  {(() => {
                                     const pricing = getDiscountedPrice(course.slug, currentLevelData.price, activeLevel);
                                     if (isBundle) {
-                                      // bundle pricing logic overrides specific promo for base visual, but lets mix them logically
                                       return (
                                         <>
-                                           <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">{formatGeoPrice(747000)}</span>
-                                           <span className="text-2xl font-black text-[#0F172A]">{formatGeoPrice(pricing.finalPrice)}</span>
+                                           <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">{convertAndFormat(747000)}</span>
+                                           <div className="flex flex-col items-start sm:items-end">
+                                              <span className="text-2xl font-black text-[#0F172A]">{convertAndFormat(pricing.finalPrice)}</span>
+                                              {selectedCurrency.code !== "USD" && (
+                                                <span className="text-xs font-semibold text-gray-400">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
+                                              )}
+                                           </div>
                                         </>
                                       );
                                     } else if (pricing.hasDiscount) {
                                       return (
                                         <>
                                            <span className="text-xs text-brand-blue font-bold px-2 py-0.5 rounded-full bg-blue-50 mb-1 tracking-widest uppercase">Promoción</span>
-                                           <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">{formatGeoPrice(pricing.originalPrice)}</span>
-                                           <span className="text-2xl font-black text-[#0F172A]">{formatGeoPrice(pricing.finalPrice)}</span>
+                                           <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">{convertAndFormat(pricing.originalPrice)}</span>
+                                           <div className="flex flex-col items-start sm:items-end">
+                                              <span className="text-2xl font-black text-[#0F172A]">{convertAndFormat(pricing.finalPrice)}</span>
+                                              {selectedCurrency.code !== "USD" && (
+                                                <span className="text-xs font-semibold text-gray-400">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
+                                              )}
+                                           </div>
                                         </>
                                       );
                                     } else {
-                                      return <span className="text-2xl font-black text-[#0F172A]">{formatGeoPrice(pricing.finalPrice)}</span>;
+                                      return (
+                                        <div className="flex flex-col items-start sm:items-end">
+                                           <span className="text-2xl font-black text-[#0F172A]">{convertAndFormat(pricing.finalPrice)}</span>
+                                           {selectedCurrency.code !== "USD" && (
+                                             <span className="text-xs font-semibold text-gray-400">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
+                                           )}
+                                        </div>
+                                      );
                                     }
                                  })()}
                               </div>
@@ -524,6 +568,70 @@ export default function PagoClient() {
                            </div>
                         ) : (
                            <>
+                              {/* Currency Selector Dropdown */}
+                              <div className="relative mb-6 flex justify-between items-center bg-gray-50 p-3 rounded-2xl border border-gray-100">
+                                <span className="text-xs font-bold text-gray-500 flex items-center gap-1.5">
+                                  <Globe className="w-3.5 h-3.5 text-gray-400" /> Moneda de pago:
+                                </span>
+                                <div className="relative">
+                                  <button
+                                    type="button"
+                                    onClick={() => setIsCurrencyDropdownOpen(!isCurrencyDropdownOpen)}
+                                    className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-gray-200 hover:border-blue-400 transition-all font-bold text-sm text-[#0F172A] shadow-sm outline-none cursor-pointer"
+                                  >
+                                    <span className="text-base">{selectedCurrency.flag}</span>
+                                    <span>{selectedCurrency.code}</span>
+                                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isCurrencyDropdownOpen ? 'rotate-180' : ''}`} />
+                                  </button>
+
+                                  <AnimatePresence>
+                                    {isCurrencyDropdownOpen && (
+                                      <>
+                                        <div 
+                                          className="fixed inset-0 z-40" 
+                                          onClick={() => setIsCurrencyDropdownOpen(false)}
+                                        />
+                                        <motion.div
+                                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                          transition={{ duration: 0.15 }}
+                                          className="absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-2xl shadow-xl p-1.5 z-50 overflow-hidden"
+                                        >
+                                          <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2.5 py-1.5 border-b border-gray-50">
+                                            Seleccionar Moneda
+                                          </div>
+                                          <div className="max-h-[240px] overflow-y-auto custom-scrollbar">
+                                            {CURRENCIES.map((currency) => (
+                                              <button
+                                                type="button"
+                                                key={currency.code}
+                                                onClick={() => {
+                                                  setSelectedCurrency(currency);
+                                                  setIsCurrencyDropdownOpen(false);
+                                                }}
+                                                className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-bold transition-all border-none outline-none text-left cursor-pointer ${
+                                                  selectedCurrency.code === currency.code
+                                                    ? 'bg-blue-50 text-[#1890FF]'
+                                                    : 'bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                                }`}
+                                              >
+                                                <div className="flex items-center gap-2">
+                                                  <span className="text-base">{currency.flag}</span>
+                                                  <span>{currency.code}</span>
+                                                  <span className="text-[10px] text-gray-400 font-medium">({currency.name})</span>
+                                                </div>
+                                                {selectedCurrency.code === currency.code && <Check className="w-3.5 h-3.5 text-[#1890FF]" />}
+                                              </button>
+                                            ))}
+                                          </div>
+                                        </motion.div>
+                                      </>
+                                    )}
+                                  </AnimatePresence>
+                                </div>
+                              </div>
+
                               <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                                  {cartItems.map(item => (
                                     <div key={`${item.slug}-${item.levelName}`} className="flex justify-between items-start gap-4">
@@ -534,19 +642,24 @@ export default function PagoClient() {
                                           <span className="text-[11px] text-gray-500 mt-0.5 block">{item.levelName}</span>
                                        </div>
                                        <div className="flex flex-col items-end shrink-0">
-                                          <span className="font-black text-[#0F172A] text-sm">{formatGeoPrice(item.price * item.quantity)}</span>
+                                          <span className="font-black text-[#0F172A] text-sm">{convertAndFormat(item.price * item.quantity)}</span>
+                                          {selectedCurrency.code !== "USD" && (
+                                            <span className="text-[10px] font-semibold text-gray-400 mt-0.5">
+                                              ≈ ${Math.round((item.price * item.quantity) / 900)} USD
+                                            </span>
+                                          )}
                                           {item.slug === "asesoria" ? (
-                                            <div className="flex items-center gap-2 mt-1 bg-gray-50 rounded-lg border border-gray-200">
-                                              <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -1)} className="p-1 text-gray-500 hover:text-blue-500 transition-colors">
+                                            <div className="flex items-center gap-2 mt-1.5 bg-gray-50 rounded-lg border border-gray-200">
+                                              <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -1)} className="p-1 text-gray-500 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer">
                                                 <Minus className="w-3 h-3" />
                                               </button>
                                               <span className="text-[10px] font-bold min-w-[12px] text-center">{item.quantity}</span>
-                                              <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, 1)} className="p-1 text-gray-500 hover:text-blue-500 transition-colors">
+                                              <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, 1)} className="p-1 text-gray-500 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer">
                                                 <Plus className="w-3 h-3" />
                                               </button>
                                             </div>
                                           ) : (
-                                            <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} className="text-[10px] text-red-400 hover:text-red-600 mt-1 uppercase font-bold tracking-widest bg-transparent border-none cursor-pointer">Eliminar</button>
+                                            <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} className="text-[10px] text-red-400 hover:text-red-600 mt-1.5 uppercase font-bold tracking-widest bg-transparent border-none cursor-pointer">Eliminar</button>
                                           )}
                                        </div>
                                     </div>
@@ -566,16 +679,33 @@ export default function PagoClient() {
                               <div className="border-t-2 border-dashed border-gray-100 pt-4 mb-6 flex justify-between items-end">
                                  <span className="font-bold text-gray-500">Total a pagar</span>
                                  <div className="text-right">
-                                   <span className="font-black text-2xl text-[#1890FF] block">{formatGeoPrice(totalPrice)}</span>
-                                   <span className="text-xs font-bold text-gray-400">≈ ${Math.round(totalPrice / 900)} USD</span>
+                                   <span className="font-black text-2xl text-[#1890FF] block">{convertAndFormat(totalPrice)}</span>
+                                   {selectedCurrency.code !== "USD" && (
+                                     <span className="text-xs font-bold text-gray-400">≈ ${Math.round(totalPrice / 900)} USD</span>
+                                   )}
                                  </div>
                               </div>
 
-                              {isInternational && (
-                                <div className="text-center mb-4 px-2">
-                                  <span className="text-[10px] text-gray-400 font-medium">
-                                    * El cobro se procesará en pesos chilenos ({formatCLP(totalPrice)}). Tu banco aplicará la conversión a tu moneda local. (Tasa ref: $1 USD = $900 CLP)
-                                  </span>
+                              {/* Exchange Rate Reference Card */}
+                              {selectedCurrency.code !== "CLP" && (
+                                <div className="bg-blue-50/40 border border-blue-100 rounded-2xl p-4 mb-6 text-left">
+                                  <div className="flex gap-2.5 items-start">
+                                    <Info className="w-4 h-4 text-[#1890FF] shrink-0 mt-0.5" />
+                                    <div>
+                                      <h4 className="text-[11px] font-black text-blue-950 uppercase tracking-wider mb-1">
+                                        Información de Conversión
+                                      </h4>
+                                      <p className="text-[11px] text-blue-800 leading-relaxed font-medium">
+                                        El procesador de pagos Flow opera estrictamente en **Pesos Chilenos (CLP)**. Tu tarjeta será facturada por el equivalente de <span className="font-bold">{formatCLP(totalPrice)}</span>.
+                                      </p>
+                                      <div className="mt-2.5 pt-2 border-t border-blue-100/60 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-blue-600/80 font-bold">
+                                        <span>Tasa USD Ref: $1 USD = $900 CLP</span>
+                                        {selectedCurrency.code !== "USD" && (
+                                          <span>Tasa de Cambio: $1 USD ≈ {(selectedCurrency.rate * 900).toFixed(2)} {selectedCurrency.code}</span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
                               )}
 
@@ -824,7 +954,12 @@ export default function PagoClient() {
                             <span style={{ fontSize: 11, color: "#6b7280", display: "block", marginTop: 4, fontWeight: 500 }}>{item.levelName}</span>
                           </div>
                           <div className="flex flex-col items-end flex-shrink-0">
-                            <span style={{ fontWeight: 900, color: "#0F172A", fontSize: 15 }}>{formatGeoPrice(item.price * item.quantity)}</span>
+                            <span style={{ fontWeight: 900, color: "#0F172A", fontSize: 15 }}>{convertAndFormat(item.price * item.quantity)}</span>
+                            {selectedCurrency.code !== "USD" && (
+                              <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 700, marginTop: 2 }}>
+                                ≈ ${Math.round((item.price * item.quantity) / 900)} USD
+                              </span>
+                            )}
                             <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} style={{ fontSize: 10, color: "#ef4444", marginTop: 6, textTransform: "uppercase", fontWeight: 700, letterSpacing: 1, background: "#fef2f2", padding: "2px 8px", borderRadius: 4, border: "none", cursor: "pointer" }}>Eliminar</button>
                           </div>
                         </div>
@@ -864,7 +999,7 @@ export default function PagoClient() {
                     Ver Detalles {isMobileCartOpen ? <ChevronDown style={{ width: 14, height: 14 }} /> : <ChevronUp style={{ width: 14, height: 14 }} />}
                   </span>
                   <span style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", lineHeight: 1, display: "block", marginTop: 4 }}>
-                    {formatGeoPrice(totalPrice)} <span style={{ fontSize: 11, color: "#6b7280", fontWeight: 700 }}>≈ ${Math.round(totalPrice / 900)} USD</span>
+                    {convertAndFormat(totalPrice)} {selectedCurrency.code !== "USD" && <span style={{ fontSize: 11, color: "#6b7280", fontWeight: 700 }}>≈ ${Math.round(totalPrice / 900)} USD</span>}
                   </span>
                 </div>
               </div>

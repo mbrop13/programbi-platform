@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminUpdateCourseDescription, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory } from "@/lib/supabase/comunidad-ai";
 import { Calendar } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -1230,6 +1230,8 @@ function AdminCourses() {
 
   const [editDescription, setEditDescription] = useState("");
   const [savingDescription, setSavingDescription] = useState(false);
+  const [editShortDescription, setEditShortDescription] = useState("");
+  const [savingShortDescription, setSavingShortDescription] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -1243,12 +1245,13 @@ function AdminCourses() {
   const selectCourse = async (course: any) => {
     setSelectedCourse(course);
     setEditDescription(course.description || "");
+    setEditShortDescription(course.short_description || "");
     setLoadingLessons(true);
     try {
       const data = await adminGetLessons(course.id);
       setLessons(data);
     } catch (err) { console.error(err); }
-    finally { setLoadingLessons(false); }
+    finally { setLoading(false); setLoadingLessons(false); }
   };
 
   const handleAddLesson = async () => {
@@ -1296,12 +1299,29 @@ function AdminCourses() {
     try {
       await adminUpdateCourseDescription(selectedCourse.id, editDescription);
       setCourses(prev => prev.map(c => c.id === selectedCourse.id ? { ...c, description: editDescription } : c));
-      alert("Descripción actualizada. Se reflejará en la página del curso.");
+      setSelectedCourse((prev: any) => prev ? { ...prev, description: editDescription } : null);
+      alert("Descripción general actualizada. Se reflejará en la sección Hero de la página del curso.");
     } catch (err) {
       console.error(err);
-      alert("Error al actualizar la descripción.");
+      alert("Error al actualizar la descripción general.");
     } finally {
       setSavingDescription(false);
+    }
+  };
+
+  const handleSaveShortDescription = async () => {
+    if (!selectedCourse) return;
+    setSavingShortDescription(true);
+    try {
+      await adminUpdateCourseShortDescription(selectedCourse.id, editShortDescription);
+      setCourses(prev => prev.map(c => c.id === selectedCourse.id ? { ...c, short_description: editShortDescription } : c));
+      setSelectedCourse((prev: any) => prev ? { ...prev, short_description: editShortDescription } : null);
+      alert("Descripción corta actualizada. Se reflejará en las tarjetas de la pantalla de pago.");
+    } catch (err) {
+      console.error(err);
+      alert("Error al actualizar la descripción corta.");
+    } finally {
+      setSavingShortDescription(false);
     }
   };
 
@@ -1321,7 +1341,7 @@ function AdminCourses() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="font-display font-black text-2xl text-gray-900 mb-1">{selectedCourse.title}</h2>
-            <p className="text-sm text-gray-400">{lessons.length} lecciones · {selectedCourse.duration_hours}h</p>
+            <p className="text-sm text-gray-400">{lessons.length} lecciones · {selectedCourse.duration_hours || selectedCourse.duration_hours === 0 ? selectedCourse.duration_hours : 0}h</p>
           </div>
           <button onClick={() => setShowAddLesson(!showAddLesson)}
             className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
@@ -1329,27 +1349,87 @@ function AdminCourses() {
           </button>
         </div>
 
-        {/* Marketing Description Editor */}
-        <div className="mb-8 bg-white border border-gray-200 rounded-2xl p-6">
-          <h3 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
-            <Edit3 className="w-4 h-4 text-gray-500" />
-            Descripción de Marketing (Sección Hero)
-          </h3>
-          <p className="text-xs text-gray-500 mb-4">Si dejas este campo vacío o usas el texto por defecto, se usará la descripción estándar del curso. Puedes escribir texto diferente para resaltarlo en la página de ventas.</p>
-          <textarea
-            value={editDescription}
-            onChange={(e) => setEditDescription(e.target.value)}
-            rows={4}
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-brand-blue/20 outline-none mb-3"
-            placeholder="Escribe la descripción promocional del curso..."
-          />
-          <button
-            onClick={handleSaveDescription}
-            disabled={savingDescription}
-            className="px-4 py-2 bg-gray-900 hover:bg-black text-white rounded-lg text-sm font-bold transition-colors disabled:opacity-50"
-          >
-            {savingDescription ? "Guardando..." : "Guardar Descripción"}
-          </button>
+        {/* Marketing Description Editors */}
+        <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* General Description Card */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between shadow-sm">
+            <div>
+              <h3 className="font-bold text-gray-950 text-base mb-1.5 flex items-center gap-2">
+                <FileText className="w-4.5 h-4.5 text-blue-500" />
+                Descripción General (Sección Hero)
+              </h3>
+              <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+                Esta descripción detallada se muestra en la sección Hero de la página de detalles de este curso. Utiliza un estilo persuasivo y enfocado a ventas.
+              </p>
+              <div className="relative">
+                <textarea
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  rows={5}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all resize-none"
+                  placeholder="Escribe la descripción general del curso..."
+                />
+                <span className="absolute bottom-3 right-3 text-[10px] font-bold text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">
+                  {editDescription.length} caracteres
+                </span>
+              </div>
+            </div>
+            <div className="mt-4 pt-3 border-t border-gray-50 flex justify-end">
+              <button
+                onClick={handleSaveDescription}
+                disabled={savingDescription}
+                className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-2 border-none cursor-pointer shadow-sm"
+              >
+                {savingDescription ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" /> Guardando...
+                  </>
+                ) : (
+                  "Guardar Descripción General"
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Short Description Card */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between shadow-sm">
+            <div>
+              <h3 className="font-bold text-gray-950 text-base mb-1.5 flex items-center gap-2">
+                <Edit3 className="w-4.5 h-4.5 text-indigo-500" />
+                Descripción Corta (Checkout / Tarjetas)
+              </h3>
+              <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+                Esta descripción breve aparece en las tarjetas de selección y el carrito de la pantalla de pago. Recomendado menor a 150 caracteres para un diseño limpio.
+              </p>
+              <div className="relative">
+                <textarea
+                  value={editShortDescription}
+                  onChange={(e) => setEditShortDescription(e.target.value)}
+                  rows={5}
+                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition-all resize-none"
+                  placeholder="Escribe una descripción corta e impactante..."
+                />
+                <span className={`absolute bottom-3 right-3 text-[10px] font-bold px-1.5 py-0.5 rounded border ${editShortDescription.length > 150 ? 'text-amber-600 bg-amber-50 border-amber-100' : 'text-gray-400 bg-gray-50 border-gray-100'}`}>
+                  {editShortDescription.length} caracteres
+                </span>
+              </div>
+            </div>
+            <div className="mt-4 pt-3 border-t border-gray-50 flex justify-end">
+              <button
+                onClick={handleSaveShortDescription}
+                disabled={savingShortDescription}
+                className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-2 border-none cursor-pointer shadow-sm"
+              >
+                {savingShortDescription ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" /> Guardando...
+                  </>
+                ) : (
+                  "Guardar Descripción Corta"
+                )}
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Add Lesson Form */}

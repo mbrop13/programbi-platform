@@ -94,7 +94,7 @@ export async function adminGetCourses() {
 
   const { data, error } = await supabase
     .from("courses")
-    .select("id, slug, title, category, level, is_published, is_featured, image_url, accent_color, badge_label, duration_hours, tech_stack, created_at, lessons(id)")
+    .select("id, slug, title, description, short_description, category, level, is_published, is_featured, image_url, accent_color, badge_label, duration_hours, tech_stack, created_at, lessons(id)")
     .order("sort_order", { ascending: true });
 
   if (error) { console.error("Error:", error); return []; }
@@ -215,10 +215,31 @@ export async function adminUpdateCourseDescription(courseId: string, description
   revalidatePath("/(comunidad)", "layout");
 }
 
+export async function adminUpdateCourseShortDescription(courseId: string, shortDescription: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+  
+  await adminDb.from("courses").update({ short_description: shortDescription }).eq("id", courseId);
+  revalidatePath("/(comunidad)", "layout");
+}
+
 export async function getMarketingDescription(slug: string) {
   const supabase = await createClient();
   const { data } = await supabase.from("courses").select("description").eq("slug", slug).single();
   return data?.description || null;
+}
+
+export async function getCourseDescriptions() {
+  const adminDb = createAdminClient();
+  const { data, error } = await adminDb
+    .from("courses")
+    .select("slug, description, short_description");
+  if (error) {
+    console.error("Error fetching course descriptions:", error);
+    return [];
+  }
+  return data || [];
 }
 
 // ─── ADMIN: ENROLLMENT MANAGEMENT ───
