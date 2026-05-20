@@ -1,117 +1,337 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowRight, Briefcase, Database } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Briefcase, Database, Play, Code, CheckCircle, BarChart2 } from "lucide-react";
 import { FadeIn, CountUp } from "@/components/shared/AnimatedComponents";
 
-/* ─── Modern Data Visual (Glassmorphism) ─── */
+/* ─── Modern Data Visual (Glassmorphism Campus Mockup) ─── */
 function ModernDataVisual() {
+  const [activeTab, setActiveTab] = useState<"bi" | "python" | "sql">("bi");
+  const [isRunningPython, setIsRunningPython] = useState(false);
+  const [pythonOutput, setPythonOutput] = useState<string[]>([]);
+  const [sqlQueryIndex, setSqlQueryIndex] = useState(0);
+
+  const pythonCode = [
+    "import pandas as pd",
+    "import scikit_learn as sklearn",
+    "df = pd.read_csv('ventas.csv')",
+    "model = train_model(df)",
+    "print('Precisión:', model.score())"
+  ];
+
+  const sqlQueries = [
+    { query: "SELECT region, SUM(ventas) FROM transacciones GROUP BY region;", results: [
+      { region: "Metropolitana", ventas: "$45.2M" },
+      { region: "Valparaíso", ventas: "$18.7M" },
+      { region: "Biobío", ventas: "$15.4M" }
+    ]},
+    { query: "SELECT curso, COUNT(*) FROM inscripciones WHERE estado = 'activo';", results: [
+      { curso: "Power BI Pro", alumnos: "1,240" },
+      { curso: "Python Data Science", alumnos: "850" },
+      { curso: "SQL & Big Data", alumnos: "620" }
+    ]}
+  ];
+
+  const runPython = () => {
+    if (isRunningPython) return;
+    setIsRunningPython(true);
+    setPythonOutput([]);
+    let currentLine = 0;
+    const interval = setInterval(() => {
+      if (currentLine < pythonCode.length) {
+        setPythonOutput(prev => [...prev, pythonCode[currentLine]]);
+        currentLine++;
+      } else {
+        clearInterval(interval);
+        setTimeout(() => {
+          setPythonOutput(prev => [...prev, ">>> [✓] Entrenamiento exitoso: Accuracy 99.2%"]);
+          setIsRunningPython(false);
+        }, 600);
+      }
+    }, 450);
+  };
+
+  useEffect(() => {
+    if (activeTab === "python") {
+      runPython();
+    }
+  }, [activeTab]);
+
   return (
-    <div className="relative w-full aspect-square lg:aspect-[4/3] flex items-center justify-center mt-10 lg:mt-0">
-      {/* Background glowing orbs */}
+    <div className="relative w-full aspect-square lg:aspect-[4/3] flex items-center justify-center mt-12 lg:mt-0 select-none">
+      {/* Ambient background glowing blobs */}
       <motion.div
-        animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
-        className="absolute left-10 lg:left-0 top-0 z-0 w-40 h-40 bg-gradient-to-tr from-blue-400/20 to-indigo-400/20 rounded-full blur-2xl"
+        animate={{ scale: [1, 1.15, 1], x: [0, 10, 0], y: [0, -10, 0] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute left-10 lg:left-0 top-0 z-0 w-44 h-44 bg-gradient-to-tr from-blue-300/30 to-indigo-300/30 rounded-full blur-3xl"
       />
       <motion.div
-        animate={{ scale: [1, 1.1, 1], rotate: [0, -5, 0] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-        className="absolute right-10 bottom-0 z-0 w-48 h-48 bg-gradient-to-tr from-cyan-400/20 to-blue-400/20 rounded-full blur-2xl"
+        animate={{ scale: [1, 1.2, 1], x: [0, -15, 0], y: [0, 15, 0] }}
+        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+        className="absolute right-10 bottom-0 z-0 w-52 h-52 bg-gradient-to-tr from-cyan-300/25 to-blue-300/25 rounded-full blur-3xl"
       />
 
-      {/* Central Glass Card: Dashboard Abstraction */}
-      <motion.div 
+      {/* Main floating browser mockup */}
+      <motion.div
         animate={{ y: [0, -12, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        className="relative z-10 w-full max-w-[420px] bg-white/70 backdrop-blur-2xl border border-white/80 shadow-2xl rounded-3xl p-6 lg:p-8"
-        style={{ boxShadow: "0 20px 40px -10px rgba(24,144,255,0.15)" }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        className="relative z-10 w-full max-w-[460px] bg-white/70 backdrop-blur-2xl border border-white/80 rounded-3xl overflow-hidden shadow-[0_30px_70px_rgba(24,144,255,0.15)] flex flex-col h-[340px] md:h-[380px]"
       >
-        <div className="flex justify-between items-center mb-8">
-          <div className="space-y-1">
-            <h3 className="font-black text-gray-900 text-base">Rendimiento Global</h3>
-            <p className="text-xs text-gray-500 font-semibold">Últimos 30 días</p>
+        {/* Browser Header */}
+        <div className="flex items-center justify-between px-4 py-3 bg-white/80 border-b border-gray-100 shrink-0">
+          {/* Windows/Mac buttons */}
+          <div className="flex items-center gap-1.5">
+            <div className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+            <div className="w-3 h-3 rounded-full bg-[#febc2e]" />
+            <div className="w-3 h-3 rounded-full bg-[#28c840]" />
           </div>
-          <div className="px-3 py-1.5 bg-emerald-50 text-emerald-600 rounded-full text-xs font-bold border border-emerald-100 flex items-center gap-2 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping" />
-            +24.5%
+          {/* Address Bar */}
+          <div className="bg-gray-50 border border-gray-100/50 rounded-lg px-6 py-0.5 text-[10px] text-gray-400 font-mono flex items-center gap-1">
+            <span className="text-gray-300">https://</span>
+            <span className="text-gray-600 font-medium">campus.programbi.com</span>
+          </div>
+          {/* User profile representation */}
+          <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center text-[9px] font-bold text-[#1890FF]">
+            JD
           </div>
         </div>
 
-        {/* Abstract Bar Chart */}
-        <div className="flex items-end justify-between h-36 gap-2 mb-6">
-          {[40, 65, 45, 80, 55, 90, 100].map((height, i) => (
-            <motion.div
-              key={i}
-              initial={{ height: 0 }}
-              animate={{ height: `${height}%` }}
-              transition={{ delay: i * 0.1 + 0.5, type: "spring", stiffness: 60, damping: 15 }}
-              className={`w-full rounded-t-lg relative group ${
-                i === 6 
-                  ? 'bg-gradient-to-t from-[#1890FF] to-indigo-500 shadow-lg shadow-blue-500/30' 
-                  : 'bg-blue-100 hover:bg-blue-200 transition-colors'
-              }`}
-            >
-              {i === 6 && (
-                 <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-[#1890FF] text-white text-[10px] font-bold py-1 px-2 rounded-md whitespace-nowrap shadow-md">
-                   Peak
-                 </div>
-              )}
-            </motion.div>
-          ))}
+        {/* Tab Selector inside mock app */}
+        <div className="flex border-b border-gray-100 bg-white/40 shrink-0">
+          <button
+            onClick={() => setActiveTab("bi")}
+            className={`flex-1 py-2 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+              activeTab === "bi"
+                ? "bg-white text-[#1890FF] border-b-2 border-[#1890FF]"
+                : "text-gray-500 hover:text-gray-800"
+            }`}
+          >
+            <BarChart2 className="w-3.5 h-3.5" /> Power BI
+          </button>
+          <button
+            onClick={() => setActiveTab("python")}
+            className={`flex-1 py-2 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+              activeTab === "python"
+                ? "bg-white text-indigo-600 border-b-2 border-indigo-600"
+                : "text-gray-500 hover:text-gray-800"
+            }`}
+          >
+            <Code className="w-3.5 h-3.5" /> Python
+          </button>
+          <button
+            onClick={() => setActiveTab("sql")}
+            className={`flex-1 py-2 text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+              activeTab === "sql"
+                ? "bg-white text-emerald-600 border-b-2 border-emerald-600"
+                : "text-gray-500 hover:text-gray-800"
+            }`}
+          >
+            <Database className="w-3.5 h-3.5" /> SQL Query
+          </button>
         </div>
 
-        <div className="h-px w-full bg-gray-100 mb-4" />
-        <div className="flex items-center justify-between text-xs font-bold text-gray-400">
-          <span>Lun</span>
-          <span>Mar</span>
-          <span>Mie</span>
-          <span>Jue</span>
-          <span>Vie</span>
-          <span>Sab</span>
-          <span className="text-[#1890FF]">Dom</span>
+        {/* Tab Contents */}
+        <div className="flex-1 p-5 overflow-hidden bg-white/20 relative">
+          <AnimatePresence mode="wait">
+            
+            {/* POWER BI DASHBOARD TAB */}
+            {activeTab === "bi" && (
+              <motion.div
+                key="bi"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="h-full flex flex-col justify-between"
+              >
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="text-xs font-black text-gray-800">Ventas por Sucursal</h4>
+                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Reporte Dinámico</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-sm font-black text-gray-900">$124,500 USD</span>
+                    <p className="text-[8px] font-bold text-emerald-500">+12% este mes</p>
+                  </div>
+                </div>
+
+                {/* Simulated Chart Bars */}
+                <div className="flex items-end justify-between h-24 gap-3">
+                  {[30, 50, 75, 40, 95, 60, 85].map((h, idx) => (
+                    <div key={idx} className="w-full h-full flex flex-col justify-end group relative cursor-pointer">
+                      <motion.div
+                        initial={{ height: 0 }}
+                        animate={{ height: `${h}%` }}
+                        transition={{ type: "spring", stiffness: 80 }}
+                        className={`w-full rounded-t-sm transition-all ${
+                          idx === 4 
+                            ? "bg-gradient-to-t from-[#1890FF] to-blue-400"
+                            : "bg-[#1890FF]/15 hover:bg-[#1890FF]/35"
+                        }`}
+                      />
+                      <span className="text-[8px] font-black text-gray-400 text-center mt-1">S{idx+1}</span>
+                    </div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+
+            {/* PYTHON TAB */}
+            {activeTab === "python" && (
+              <motion.div
+                key="python"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="h-full flex flex-col justify-between font-mono"
+              >
+                {/* Console window */}
+                <div className="flex-1 bg-gray-950/90 text-gray-200 p-3 rounded-xl text-[10px] leading-relaxed overflow-y-auto space-y-1 shadow-inner max-h-[160px] md:max-h-[200px]">
+                  <div className="flex justify-between items-center border-b border-gray-800 pb-1.5 mb-2">
+                    <span className="text-gray-500 text-[8px] tracking-wider uppercase font-sans">python3 compiler</span>
+                    <button 
+                      onClick={runPython}
+                      disabled={isRunningPython}
+                      className="px-2 py-0.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded text-[8px] font-sans font-bold flex items-center gap-1 transition-colors"
+                    >
+                      <Play className="w-2.5 h-2.5 fill-current" /> {isRunningPython ? "Corriendo..." : "Ejecutar"}
+                    </button>
+                  </div>
+                  {pythonOutput.map((line, idx) => (
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: -5 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className={line.startsWith(">>>") ? "text-emerald-400 font-bold" : "text-gray-300"}
+                    >
+                      {line}
+                    </motion.div>
+                  ))}
+                  {pythonOutput.length === 0 && (
+                    <div className="text-gray-500 italic">Haz clic en 'Ejecutar' para correr el modelo...</div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+
+            {/* SQL QUERY TAB */}
+            {activeTab === "sql" && (
+              <motion.div
+                key="sql"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="h-full flex flex-col justify-between"
+              >
+                {/* Query selector bar */}
+                <div className="flex gap-2 mb-3">
+                  {sqlQueries.map((q, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setSqlQueryIndex(idx)}
+                      className={`text-[9px] px-2.5 py-1 rounded-lg border font-bold transition-all ${
+                        sqlQueryIndex === idx
+                          ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                          : "bg-white border-gray-150 text-gray-500 hover:bg-gray-50"
+                      }`}
+                    >
+                      Consulta {idx + 1}
+                    </button>
+                  ))}
+                </div>
+
+                {/* SQL Code Box */}
+                <div className="bg-gray-50 border border-gray-150 p-2.5 rounded-lg font-mono text-[9px] text-gray-700 mb-3 shadow-sm">
+                  <span className="text-purple-600 font-bold">SELECT</span> {sqlQueries[sqlQueryIndex].query.split("SELECT")[1].split("FROM")[0]}
+                  <span className="text-purple-600 font-bold">FROM</span> {sqlQueries[sqlQueryIndex].query.split("FROM")[1].split("GROUP BY")[0].split("WHERE")[0]}
+                  {sqlQueries[sqlQueryIndex].query.includes("WHERE") && (
+                    <>
+                      <span className="text-purple-600 font-bold">WHERE</span> {sqlQueries[sqlQueryIndex].query.split("WHERE")[1].split("GROUP BY")[0]}
+                    </>
+                  )}
+                  {sqlQueries[sqlQueryIndex].query.includes("GROUP BY") && (
+                    <>
+                      <span className="text-purple-600 font-bold">GROUP BY</span> {sqlQueries[sqlQueryIndex].query.split("GROUP BY")[1]}
+                    </>
+                  )}
+                </div>
+
+                {/* Simulated Results Table */}
+                <div className="flex-1 overflow-hidden border border-gray-100 rounded-lg bg-white shadow-sm">
+                  <table className="w-full text-[9px] text-left text-gray-600">
+                    <thead className="bg-gray-50 text-[8px] font-bold text-gray-400 uppercase border-b border-gray-100">
+                      <tr>
+                        {Object.keys(sqlQueries[sqlQueryIndex].results[0]).map((key) => (
+                          <th key={key} className="px-3 py-1.5">{key}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {sqlQueries[sqlQueryIndex].results.map((row, idx) => (
+                        <tr key={idx} className="border-b border-gray-50 hover:bg-gray-50/50">
+                          {Object.values(row).map((val, valIdx) => (
+                            <td key={valIdx} className="px-3 py-1.5 font-bold text-gray-700">{val}</td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </motion.div>
+            )}
+
+          </AnimatePresence>
         </div>
       </motion.div>
 
-      {/* Floating Widget 1: Technology */}
+      {/* Floating Elements surrounding the browser window */}
       <motion.div
-        animate={{ y: [0, 15, 0], x: [0, 5, 0] }}
+        animate={{ y: [0, 8, 0] }}
+        transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
+        className="absolute -right-4 lg:-right-8 top-16 z-20 bg-white/95 backdrop-blur-sm px-3.5 py-2.5 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-3"
+      >
+        <span className="text-xl">🎓</span>
+        <div>
+          <p className="text-[8px] font-bold text-gray-400 uppercase tracking-wider">Tu Progreso</p>
+          <div className="flex items-center gap-1.5">
+            <div className="w-14 h-1.5 bg-gray-150 rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: "85%" }}
+                transition={{ duration: 1.5, delay: 1 }}
+                className="h-full bg-gradient-to-r from-[#1890FF] to-indigo-500"
+              />
+            </div>
+            <span className="text-[9px] font-black text-gray-800">85%</span>
+          </div>
+        </div>
+      </motion.div>
+
+      <motion.div
+        animate={{ y: [0, -10, 0] }}
         transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute -right-2 lg:-right-8 top-12 lg:top-16 z-20 bg-white/90 backdrop-blur-md p-3.5 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-3"
+        className="absolute -left-4 lg:-left-10 bottom-24 z-20 bg-white/95 backdrop-blur-sm p-3 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-2.5"
       >
-        <div className="w-11 h-11 rounded-xl bg-[#F2C811]/15 flex items-center justify-center text-2xl">
-          📊
+        <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg font-bold border border-emerald-100">
+          🏆
         </div>
-        <div className="pr-2">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Power BI</p>
-          <p className="text-sm font-black text-gray-800">Master Level</p>
+        <div>
+          <p className="text-[8px] font-bold text-gray-400 uppercase tracking-wider">Certificación</p>
+          <p className="text-[10px] font-black text-gray-800 flex items-center gap-0.5">
+            Completado <CheckCircle className="w-3 h-3 text-emerald-500 fill-current" />
+          </p>
         </div>
       </motion.div>
 
-      {/* Floating Widget 2: Data Science */}
+      {/* SQL schema bubble */}
       <motion.div
-        animate={{ y: [0, -15, 0], x: [0, -5, 0] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        className="absolute -left-2 lg:-left-12 bottom-16 lg:bottom-24 z-20 bg-white/90 backdrop-blur-md p-3.5 rounded-2xl shadow-xl border border-gray-100 flex items-center gap-3"
+        animate={{ y: [0, 8, 0], x: [0, 4, 0] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        className="absolute left-[38%] -top-8 z-20 bg-white/95 backdrop-blur-sm px-3.5 py-1.5 rounded-full shadow-md border border-gray-100 flex items-center gap-1.5 cursor-pointer hover:scale-105 transition-transform"
       >
-        <div className="w-11 h-11 rounded-xl bg-[#3776AB]/15 flex items-center justify-center text-2xl">
-          🐍
-        </div>
-        <div className="pr-2">
-          <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Python</p>
-          <p className="text-sm font-black text-gray-800">Data Science</p>
-        </div>
-      </motion.div>
-      
-      {/* Floating Widget 3: SQL Database */}
-      <motion.div
-        animate={{ y: [0, 10, 0], x: [0, 5, 0] }}
-        transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut", delay: 3.5 }}
-        className="absolute left-1/2 -translate-x-1/2 -top-6 lg:-top-10 z-20 bg-white/90 backdrop-blur-md px-4 py-2 rounded-full shadow-lg border border-gray-100 flex items-center gap-2"
-      >
-        <Database className="w-4 h-4 text-indigo-500" />
-        <p className="text-xs font-bold text-gray-700">SQL Server & Cloud</p>
+        <span className="text-xs">🗄️</span>
+        <span className="text-[9px] font-black text-gray-700">SQL Server Live Connection</span>
       </motion.div>
     </div>
   );
