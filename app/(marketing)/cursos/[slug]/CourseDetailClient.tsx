@@ -6,7 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, ArrowRight, ChevronDown, Clock, Users,
-  CheckCircle2, BookOpen, Play, Award, Monitor, Lock, ShoppingCart, UserPlus, Star, Tag, FileText, ExternalLink,
+  CheckCircle2, BookOpen, Play, Award, Monitor, Lock, ShoppingCart, UserPlus, Star, Tag, FileText,
   Globe, Calendar, Check
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
@@ -274,68 +274,52 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               </FadeIn>
 
               <FadeIn delay={0.5}>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  {isLoggedIn ? (
-                    <button
-                      onClick={handleCheckoutCTA}
-                      className="group px-8 py-4 rounded-2xl text-white font-bold text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-2 hover:-translate-y-1"
-                      style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 12px 35px -8px ${course.accentColor}60` }}
-                    >
-                      Ver Precio y Acceder <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handleCheckoutCTA}
-                      className="group px-8 py-4 rounded-2xl text-white font-bold text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-2 hover:-translate-y-1"
-                      style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 12px 35px -8px ${course.accentColor}60` }}
-                    >
-                       Regístrate para Cotizar <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  )}
+                {/* ── Primary CTA Button ── */}
+                <button
+                  onClick={handleCheckoutCTA}
+                  className="group w-full sm:w-auto px-10 py-4 rounded-2xl text-white font-bold text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-3 hover:-translate-y-1 hover:shadow-2xl"
+                  style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 14px 40px -8px ${course.accentColor}55` }}
+                >
+                  {isLoggedIn ? "Ver Precio y Acceder" : "Regístrate para Cotizar"}
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </button>
+
+                {/* ── Secondary Actions Row ── */}
+                <div className="grid grid-cols-2 gap-3 mt-5">
                   <Link
                     href="#temario"
-                    className="bg-white text-slate-700 border-2 border-slate-200 px-8 py-4 rounded-2xl font-bold text-lg no-underline transition-all flex items-center justify-center gap-2 shadow-sm"
-                    style={{ borderColor: 'var(--course-border)', '--course-border': '#e2e8f0' } as any}
-                    onMouseEnter={(e) => e.currentTarget.style.borderColor = course.accentColor}
-                    onMouseLeave={(e) => e.currentTarget.style.borderColor = '#e2e8f0'}
+                    className="flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl font-bold text-sm no-underline transition-all bg-white text-slate-700 border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+                    style={{ borderColor: '#e2e8f0' }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = course.accentColor; e.currentTarget.style.color = course.accentColor; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#334155'; }}
                   >
-                    <BookOpen className="w-5 h-5" /> Ver Temario
+                    <BookOpen className="w-4 h-4" /> Ver Temario
                   </Link>
-                </div>
-                
-                {/* Documentos Descargables Hero */}
-                <div className="flex flex-col sm:flex-row gap-3 mt-5">
-                  <a href="https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-between p-3 rounded-xl bg-white border border-slate-100 hover:border-slate-200 hover:bg-slate-50 transition-all no-underline group shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-red-50 text-red-500 flex items-center justify-center shrink-0">
-                        <FileText className="w-4 h-4" />
-                      </div>
-                      <span className="text-[11px] font-bold text-slate-700 leading-tight">Descargar PDF de Temarios</span>
-                    </div>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600" />
-                  </a>
-                  <a href="https://drive.google.com/file/d/1524q4Zz5TiVaGS-IBAqRc10au9yXP1WK/view?usp=drive_link" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-between p-3 rounded-xl bg-white border border-slate-100 hover:border-slate-200 hover:bg-slate-50 transition-all no-underline group shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#1890FF] flex items-center justify-center shrink-0">
-                        <FileText className="w-4 h-4" />
-                      </div>
-                      <span className="text-[11px] font-bold text-slate-700 leading-tight">Ver Presentación Institucional</span>
-                    </div>
-                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600" />
+                  <a
+                    href="https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl font-bold text-sm no-underline transition-all bg-white text-slate-700 border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-red-300 hover:text-red-600"
+                  >
+                    <FileText className="w-4 h-4 text-red-400" /> Descargar PDF
                   </a>
                 </div>
 
+                {/* ── Schedule Card ── */}
                 {levelSchedule && (
-                  <div className="mt-8 p-6 bg-white rounded-3xl border border-slate-200/80 shadow-md relative overflow-hidden transition-all hover:shadow-lg text-left">
-                    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl pointer-events-none" />
-                    <div className="flex justify-between items-center mb-4 gap-4 flex-wrap sm:flex-nowrap">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-xs font-black text-emerald-600 uppercase tracking-widest">
-                          Próxima Fecha Confirmada
+                  <div
+                    className="mt-7 rounded-2xl border border-slate-200/80 shadow-md relative overflow-hidden transition-all hover:shadow-lg text-left"
+                    style={{ borderLeft: `4px solid ${course.accentColor}` }}
+                  >
+                    {/* Header row */}
+                    <div className="flex justify-between items-center px-5 pt-5 pb-3 gap-4 flex-wrap sm:flex-nowrap">
+                      <div className="flex items-center gap-2.5">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-[11px] font-black text-emerald-600 uppercase tracking-widest">
+                          Próxima Fecha
                         </span>
                       </div>
-                      
+
                       {/* Selector de País / Timezone */}
                       <div className="relative shrink-0 z-20">
                         <button
@@ -351,8 +335,8 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                         <AnimatePresence>
                           {isCountryDropdownOpen && (
                             <>
-                              <div 
-                                className="fixed inset-0 z-40" 
+                              <div
+                                className="fixed inset-0 z-40"
                                 onClick={() => setIsCountryDropdownOpen(false)}
                               />
                               <motion.div
@@ -395,6 +379,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       </div>
                     </div>
 
+                    {/* Schedule data */}
                     {(() => {
                       const converted = convertSchedule(
                         levelSchedule.start_date,
@@ -403,41 +388,39 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                         selectedCountry.timeZone
                       );
                       return (
-                        <div className="grid sm:grid-cols-2 gap-4">
-                          <div className="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                        <div className="grid grid-cols-2 gap-3 px-5 pb-4">
+                          <div className="bg-slate-50/70 border border-slate-100 p-3 rounded-xl flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${course.accentColor}12`, color: course.accentColor }}>
                               <Calendar className="w-4 h-4" />
                             </div>
-                            <div>
-                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Fecha de Inicio</p>
-                              <p className="text-sm font-black text-slate-800 capitalize leading-snug">{converted.dateFormatted}</p>
+                            <div className="min-w-0">
+                              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Inicio</p>
+                              <p className="text-[13px] font-black text-slate-800 capitalize leading-snug truncate">{converted.dateFormatted}</p>
                             </div>
                           </div>
 
-                          <div className="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                          <div className="bg-slate-50/70 border border-slate-100 p-3 rounded-xl flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${course.accentColor}12`, color: course.accentColor }}>
                               <Clock className="w-4 h-4" />
                             </div>
-                            <div>
-                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Días y Horario Local</p>
-                              <p className="text-sm font-black text-slate-800 leading-snug">
-                                {converted.days}
-                                <span className="block text-xs text-slate-500 font-bold mt-0.5">{converted.time}</span>
-                              </p>
+                            <div className="min-w-0">
+                              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Horario</p>
+                              <p className="text-[13px] font-black text-slate-800 leading-snug truncate">{converted.days}</p>
+                              <p className="text-[11px] text-slate-500 font-bold">{converted.time}</p>
                             </div>
                           </div>
                         </div>
                       );
                     })()}
-                    
-                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 text-[10px] text-slate-400 font-semibold">
-                      <Globe className="w-3.5 h-3.5 text-slate-300" />
-                      <span>Los horarios se adaptan automáticamente a la zona horaria del país seleccionado.</span>
+
+                    <div className="px-5 pb-4 pt-1 border-t border-slate-100 flex items-center gap-2 text-[10px] text-slate-400 font-semibold">
+                      <Globe className="w-3 h-3 text-slate-300" />
+                      <span>Los horarios se adaptan a tu zona horaria.</span>
                     </div>
                   </div>
                 )}
 
-                <p className="text-xs text-slate-400 mt-3 ml-1">Inicia sesión o regístrate gratis para ver precios y acceder al curso.</p>
+                <p className="text-[11px] text-slate-400 mt-4 ml-0.5">Inicia sesión o regístrate gratis para ver precios y acceder al curso.</p>
               </FadeIn>
             </div>
 
