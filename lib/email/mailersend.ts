@@ -276,52 +276,135 @@ export async function sendQuoteConfirmationToLead(params: {
     console.error("Error al obtener datos dinámicos de Supabase para el email de cotización:", err);
   }
 
-  // Cursos Básicos
-  const basicCoursesSlugs = [
-    { slug: "power-bi", title: "Power BI Básico", color: "#eab308" },
-    { slug: "sql-server", title: "SQL Server Básico", color: "#ef4444" },
-    { slug: "python", title: "Python Básico", color: "#3b82f6" },
-  ];
-  
-  const basicCourses = basicCoursesSlugs.map(item => {
-    const pricing = calculateCoursePrice(item.slug, "Básico", masterCourses, priceOverrides, promotions);
-    const dateStr = getCourseScheduleString(item.slug, "Básico", schedules, staticSchedules, "basic");
+  // Normalizar los cursos cotizados recibidos de la web
+  const normalizedItems: { slug: string; level: string; title: string; color: string; hours: number }[] = [];
+  const processedSlugs = new Set<string>();
+
+  for (const rawCourse of leadSelectedCourses) {
+    const s = rawCourse.toLowerCase().trim();
+    let slug = "";
+    let level = "Básico";
+    let title = "";
+    let color = "#1890FF";
+    let hours = 16;
+
+    if (s.includes("analisis de datos") || s.includes("análisis de datos") || s.includes("analisis-de-datos")) {
+      slug = "analisis-de-datos";
+      level = "Especialización";
+      title = "Pack de Análisis de Datos";
+      color = "#1890FF";
+      hours = 144;
+    } else if (s.includes("power bi") || s.includes("powerbi") || s.includes("power-bi")) {
+      slug = "power-bi";
+      level = s.includes("intermedio") ? "Intermedio" : "Básico";
+      title = `Power BI ${level}`;
+      color = "#eab308";
+      hours = 16;
+    } else if (s.includes("python")) {
+      slug = "python";
+      level = s.includes("intermedio") ? "Intermedio" : "Básico";
+      title = `Python ${level}`;
+      color = "#3b82f6";
+      hours = 16;
+    } else if (s.includes("sql")) {
+      slug = "sql-server";
+      level = s.includes("intermedio") ? "Intermedio" : "Básico";
+      title = `SQL Server ${level}`;
+      color = "#ef4444";
+      hours = 16;
+    } else if (s.includes("excel")) {
+      slug = "excel";
+      level = "Básico";
+      title = "Excel para Negocios";
+      color = "#217346";
+      hours = 16;
+    } else if (s.includes("miner") || s.includes("analitica-mineria")) {
+      slug = "analitica-mineria";
+      level = "Especialización";
+      title = "Análisis de Datos para la Minería";
+      color = "#B45309";
+      hours = 144;
+    } else if (s.includes("finan") || s.includes("analitica-financiera")) {
+      slug = "analitica-financiera";
+      level = "Especialización";
+      title = "Analítica Financiera";
+      color = "#1E3A8A";
+      hours = 144;
+    } else if (s.includes("automate") || s.includes("power-automate")) {
+      slug = "power-automate";
+      level = "Básico";
+      title = "Power Automate & RPA";
+      color = "#0078D4";
+      hours = 16;
+    } else if (s.includes("ia") || s.includes("inteligencia artificial") || s.includes("ia-productividad") || s.includes("machine learning")) {
+      slug = "ia-productividad";
+      level = "Básico";
+      title = "IA en Productividad";
+      color = "#7C3AED";
+      hours = 16;
+    }
+
+    if (slug && !processedSlugs.has(`${slug}-${level}`)) {
+      processedSlugs.add(`${slug}-${level}`);
+      normalizedItems.push({ slug, level, title, color, hours });
+    }
+  }
+
+  // Fallback por defecto si no se seleccionó nada válido
+  if (normalizedItems.length === 0) {
+    normalizedItems.push({
+      slug: "analisis-de-datos",
+      level: "Especialización",
+      title: "Pack de Análisis de Datos",
+      color: "#1890FF",
+      hours: 144
+    });
+  }
+
+  // Mapear a EmailCourseItem calculando precios y horarios
+  const selectedCourses = normalizedItems.map(item => {
+    const isSpec = item.level === "Especialización";
+    const pricing = calculateCoursePrice(item.slug, isSpec ? "Básico" : item.level, masterCourses, priceOverrides, promotions);
+    const dateStr = getCourseScheduleString(item.slug, isSpec ? "Básico" : item.level, schedules, staticSchedules, item.hours > 48 ? "intermediate" : "basic");
     return {
+      slug: item.slug,
       title: item.title,
-      date: dateStr,
-      orig: formatCLP(pricing.originalPrice),
-      offer: formatCLP(pricing.finalPrice),
-      color: item.color
+      levelName: item.level.toUpperCase(),
+      durationHours: item.hours,
+      startDate: dateStr,
+      originalPrice: formatCLP(pricing.originalPrice),
+      finalPrice: formatCLP(pricing.finalPrice),
+      hasDiscount: pricing.hasDiscount || pricing.originalPrice > pricing.finalPrice,
+      color: item.color,
     };
   });
 
-  // Cursos Intermedios
-  const intermediateCoursesSlugs = [
-    { slug: "power-bi", title: "Power BI Intermedio" },
-    { slug: "sql-server", title: "SQL Server Intermedio" },
-    { slug: "python", title: "Python Intermedio" },
-  ];
+  // Determinar recomendación inteligente del Pack de Análisis de Datos
+  const hasIndividualAnalisisCursos = normalizedItems.some(item => ["power-bi", "sql-server", "python"].includes(item.slug));
+  const hasPackAnalisis = normalizedItems.some(item => item.slug === "analisis-de-datos");
+  const showPackRecommendation = hasIndividualAnalisisCursos && !hasPackAnalisis;
 
-  const intermediateCourses = intermediateCoursesSlugs.map(item => {
-    const pricing = calculateCoursePrice(item.slug, "Intermedio", masterCourses, priceOverrides, promotions);
-    const dateStr = getCourseScheduleString(item.slug, "Intermedio", schedules, staticSchedules, "intermediate");
-    return {
-      title: item.title,
-      date: dateStr,
-      price: formatCLP(pricing.finalPrice)
-    };
-  });
-
-  // Pack Análisis de Datos
-  const packPricing = calculateCoursePrice("analisis-de-datos", "Básico", masterCourses, priceOverrides, promotions);
-  const savingPercent = Math.round(((packPricing.originalPrice - packPricing.finalPrice) / packPricing.originalPrice) * 100);
-  const packInfo = {
-    orig: formatCLP(packPricing.originalPrice),
-    offer: formatCLP(packPricing.finalPrice),
-    savingPercent
+  let packRecommendation = {
+    showPackRecommendation,
+    origPrice: "$0",
+    offerPrice: "$0",
+    savingPercent: 0,
+    url: "https://www.programbi.com/cursos/analisis-de-datos",
   };
 
-  const html = buildQuoteEmailHtml(firstName, basicCourses, intermediateCourses, packInfo);
+  if (showPackRecommendation) {
+    const packPricing = calculateCoursePrice("analisis-de-datos", "Básico", masterCourses, priceOverrides, promotions);
+    const savingPercent = Math.round(((packPricing.originalPrice - packPricing.finalPrice) / packPricing.originalPrice) * 100);
+    packRecommendation = {
+      showPackRecommendation: true,
+      origPrice: formatCLP(packPricing.originalPrice),
+      offerPrice: formatCLP(packPricing.finalPrice),
+      savingPercent,
+      url: "https://www.programbi.com/cursos/analisis-de-datos",
+    };
+  }
+
+  const html = buildQuoteEmailHtml(firstName, selectedCourses, packRecommendation);
 
   await sendEmail({
     to: email,

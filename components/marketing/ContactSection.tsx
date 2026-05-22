@@ -70,11 +70,18 @@ export default function ContactSection() {
         "Finanzas": "analitica-financiera"
       };
 
-      if (selectedChips.length === 1 && courseSlugMap[selectedChips[0]]) {
-        window.location.href = `/pago?curso=${courseSlugMap[selectedChips[0]]}`;
-      } else {
-        setIsSuccess(true);
-      }
+      setIsSuccess(true);
+
+      const matchedChip = selectedChips.find(chip => courseSlugMap[chip]);
+      const destSlug = matchedChip ? courseSlugMap[matchedChip] : "";
+
+      setTimeout(() => {
+        if (destSlug) {
+          window.location.href = `/pago?curso=${destSlug}`;
+        } else {
+          window.location.href = `/pago`;
+        }
+      }, 3000);
     } catch (err: any) {
       setErrorMsg(err.message || "Ocurrió un error. Intenta de nuevo.");
     } finally {
@@ -143,13 +150,17 @@ export default function ContactSection() {
                 <motion.div
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className="text-center py-12"
+                  className="text-center py-12 animate-fade-in"
                 >
-                  <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500 text-4xl">
+                  <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6 text-green-500 text-4xl shadow-sm">
                     ✓
                   </div>
-                  <h3 className="text-2xl font-black text-gray-900 mb-3">¡Cotización Enviada!</h3>
-                  <p className="text-gray-500">Revisa tu bandeja de entrada, te enviamos un correo con toda la información.</p>
+                  <h3 className="text-2xl font-black text-gray-900 mb-3 font-display">¡Cotización Enviada!</h3>
+                  <p className="text-gray-500 mb-6 leading-relaxed">La cotización ha sido enviada a su mail. Revisa tu bandeja de entrada.</p>
+                  <div className="flex items-center justify-center gap-2 text-sm text-[#1890FF] font-bold">
+                    <div className="w-4 h-4 border-2 border-[#1890FF]/30 border-t-[#1890FF] rounded-full animate-spin" />
+                    <span>Redirigiendo a la pantalla de pago...</span>
+                  </div>
                 </motion.div>
               ) : (
                 <>

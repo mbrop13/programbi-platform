@@ -836,10 +836,11 @@ function CourseContactForm({ course }: { course: Course }) {
       });
 
       if (!res.ok) throw new Error("Error submitting form");
+      setIsSuccess(true);
       if (contactType === "personal") {
-        window.location.href = `/pago?curso=${course.slug}`;
-      } else {
-        setIsSuccess(true);
+        setTimeout(() => {
+          window.location.href = `/pago?curso=${course.slug}`;
+        }, 3000);
       }
     } catch (err) {
       console.error(err);
@@ -924,8 +925,20 @@ function CourseContactForm({ course }: { course: Course }) {
                   className="text-center py-10"
                 >
                   <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-5 text-emerald-500 text-3xl">✓</div>
-                  <h3 className="text-xl font-black text-gray-900 mb-2">¡Cotización Enviada!</h3>
-                  <p className="text-gray-500 text-sm">Revisa tu bandeja de entrada, te enviamos un correo con toda la información.</p>
+                  <h3 className="text-xl font-black text-gray-900 mb-2">
+                    {isPersonal ? "¡Cotización Enviada!" : "¡Solicitud Recibida!"}
+                  </h3>
+                  <p className="text-gray-500 text-sm mb-4">
+                    {isPersonal
+                      ? "Cotización enviada a su mail. Revisa tu bandeja de entrada."
+                      : "Revisa tu bandeja de entrada, te enviamos un correo con toda la información."}
+                  </p>
+                  {isPersonal && (
+                    <div className="flex items-center justify-center gap-2 text-xs text-[#1890FF] font-bold">
+                      <div className="w-3.5 h-3.5 border-2 border-[#1890FF]/30 border-t-[#1890FF] rounded-full animate-spin" />
+                      <span>Redirigiendo a la pantalla de pago...</span>
+                    </div>
+                  )}
                 </motion.div>
               ) : (
                 <>
