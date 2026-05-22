@@ -416,6 +416,9 @@ export default function PagoClient() {
                        <div className="flex-1 min-w-0 flex flex-col items-start gap-3 w-full">
                           <div>
                             <h3 className="font-bold text-[#0F172A] text-lg lg:text-xl line-clamp-1">{course.title}</h3>
+                            {isBundle && (
+                               <p className="text-[11px] font-bold text-[#1890FF] mt-0.5">(Incluye Power BI + Python + SQL Server)</p>
+                             )}
                             <p className="text-xs text-gray-500 line-clamp-2 mt-1">{getCourseDescription(course)}</p>
                           </div>
 
@@ -683,14 +686,23 @@ export default function PagoClient() {
                                               selectedCurrency.timeZone
                                             );
                                             return (
-                                              <div className="mt-1.5 p-2 bg-blue-50/50 rounded-lg border border-blue-100/40 text-[10px] space-y-0.5">
-                                                <div className="flex items-center gap-1 text-blue-900 font-bold">
-                                                  <Calendar className="w-3 h-3 text-[#1890FF]" />
-                                                  <span>Inicia: {converted.dateFormatted}</span>
-                                                </div>
-                                                <div className="flex items-center gap-1 text-blue-800/80">
-                                                  <Clock className="w-3 h-3 text-blue-400" />
-                                                  <span>{converted.days} — {converted.time}</span>
+                                              <div className="mt-2 rounded-xl border border-blue-100 overflow-hidden">
+                                                <div className="grid grid-cols-2 divide-x divide-blue-100">
+                                                  <div className="flex items-center gap-2 px-3 py-2 bg-blue-50/60">
+                                                    <Calendar className="w-3.5 h-3.5 text-[#1890FF] shrink-0" />
+                                                    <div>
+                                                      <p className="text-[8px] font-bold text-blue-400 uppercase tracking-wider">Inicio</p>
+                                                      <p className="text-[11px] font-black text-blue-900 capitalize leading-tight">{converted.dateFormatted}</p>
+                                                    </div>
+                                                  </div>
+                                                  <div className="flex items-center gap-2 px-3 py-2 bg-blue-50/40">
+                                                    <Clock className="w-3.5 h-3.5 text-[#1890FF] shrink-0" />
+                                                    <div>
+                                                      <p className="text-[8px] font-bold text-blue-400 uppercase tracking-wider">Horario</p>
+                                                      <p className="text-[11px] font-black text-blue-900 leading-tight">{converted.days}</p>
+                                                      <p className="text-[10px] font-bold text-blue-600/70">{converted.time}</p>
+                                                    </div>
+                                                  </div>
                                                 </div>
                                               </div>
                                             );

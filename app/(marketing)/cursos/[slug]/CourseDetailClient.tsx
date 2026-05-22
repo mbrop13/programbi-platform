@@ -229,9 +229,17 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               </FadeIn>
 
               <FadeIn delay={0.2}>
-                <h1 className="font-display font-bold text-4xl sm:text-5xl lg:text-6xl text-slate-900 mb-5 leading-tight tracking-tight">
+                <h1 className="font-display font-bold text-4xl sm:text-5xl lg:text-6xl text-slate-900 mb-2 leading-tight tracking-tight">
                   {course.title}
                 </h1>
+                {(course.slug === "analisis-de-datos" || course.slug === "analitica-mineria" || course.slug === "analitica-financiera") && (
+                  <p className="text-sm sm:text-base font-bold mb-5" style={{ color: course.accentColor }}>
+                    (Incluye Power BI + Python + SQL Server en un solo programa)
+                  </p>
+                )}
+                {course.slug !== "analisis-de-datos" && course.slug !== "analitica-mineria" && course.slug !== "analitica-financiera" && (
+                  <div className="mb-5" />
+                )}
               </FadeIn>
 
               <FadeIn delay={0.3}>
