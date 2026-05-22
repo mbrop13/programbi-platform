@@ -308,7 +308,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 {/* ── Schedule Card ── */}
                 {levelSchedule && (
                   <div
-                    className="mt-7 rounded-2xl border border-slate-200/80 shadow-md relative overflow-hidden transition-all hover:shadow-lg text-left"
+                    className="mt-7 rounded-2xl border border-slate-200/80 shadow-md relative overflow-visible transition-all hover:shadow-lg text-left"
                     style={{ borderLeft: `4px solid ${course.accentColor}` }}
                   >
                     {/* Header row */}
