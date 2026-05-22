@@ -3,20 +3,13 @@
  * Generates the full HTML for the quotation confirmation email.
  */
 
-export function buildQuoteEmailHtml(nombre: string): string {
+export function buildQuoteEmailHtml(
+  nombre: string,
+  courses: Array<{ title: string; date: string; orig: string; offer: string; color: string; }>,
+  intermediate: Array<{ title: string; date: string; price: string; }>,
+  packInfo: { orig: string; offer: string; savingPercent: number; }
+): string {
   const year = new Date().getFullYear();
-
-  const courses = [
-    { title: "Power BI Básico", date: "19 de Mayo · Mar y Jue · 19:30", orig: "$249.000", offer: "$199.200", color: "#eab308" },
-    { title: "SQL Server Básico", date: "22 de Junio · Lun y Mié · 19:30", orig: "$249.000", offer: "$199.200", color: "#ef4444" },
-    { title: "Python Básico", date: "25 de Mayo · Lun y Mié · 19:30", orig: "$249.000", offer: "$199.200", color: "#3b82f6" },
-  ];
-
-  const intermediate = [
-    { title: "Power BI Intermedio", date: "25 de Mayo · Lun y Mié", price: "$199.200" },
-    { title: "SQL Server Intermedio", date: "22 de Junio · Lun y Mié", price: "$199.200" },
-    { title: "Python Intermedio", date: "27 de Julio · Lun y Mié", price: "$199.200" },
-  ];
 
   const basicRows = courses.map(c => courseCard(c.title, c.date, c.orig, c.offer, c.color)).join("");
   const interRows = intermediate.map(c => simpleCard(c.title, c.date, c.price)).join("");
@@ -66,9 +59,9 @@ h1,h2,h3,p{margin:0;padding:0}
 <div style="display:inline-block;background:#fbbf24;color:#78350f;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:1.5px;padding:5px 14px;border-radius:99px;margin-bottom:18px">Recomendado</div>
 <h2 style="font-size:22px;color:#fff;font-weight:800;margin-bottom:6px">Pack Análisis de Datos</h2>
 <p style="font-size:13px;color:#94a3b8;margin-bottom:20px;line-height:1.5">Python + Power BI + SQL Server · 48 Hrs · 3 Meses</p>
-<p style="font-size:13px;color:#64748b;text-decoration:line-through;margin-bottom:4px">$747.000</p>
-<p style="font-size:32px;color:#38bdf8;font-weight:900;line-height:1;margin:0 0 4px">$448.200</p>
-<p style="font-size:11px;color:#10b981;font-weight:700;letter-spacing:0.5px;margin-bottom:24px">AHORRA 40%</p>
+<p style="font-size:13px;color:#64748b;text-decoration:line-through;margin-bottom:4px">${packInfo.orig}</p>
+<p style="font-size:32px;color:#38bdf8;font-weight:900;line-height:1;margin:0 0 4px">${packInfo.offer}</p>
+<p style="font-size:11px;color:#10b981;font-weight:700;letter-spacing:0.5px;margin-bottom:24px">AHORRA ${packInfo.savingPercent}%</p>
 <table align="center" cellpadding="0" cellspacing="0" border="0"><tr><td bgcolor="#2563eb" style="border-radius:8px">
 <a href="https://www.programbi.com/cursos/analisis-de-datos" target="_blank" style="font-size:14px;font-weight:700;color:#fff;text-decoration:none;padding:14px 28px;display:inline-block;letter-spacing:0.5px">Ver Fechas Disponibles</a>
 </td></tr></table>

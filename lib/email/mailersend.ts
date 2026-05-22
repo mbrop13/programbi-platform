@@ -15,8 +15,9 @@
 import nodemailer from "nodemailer";
 import { buildQuoteEmailHtml } from "./quote-template";
 import { buildEnterpriseEmailHtml } from "./enterprise-template";
-import { staticSchedules, formatScheduleDate } from "../data/course-schedules";
+import { staticSchedules, formatScheduleDate, getNearestSchedule } from "../data/course-schedules";
 import { createAdminClient } from "../supabase/server";
+import { courses as masterCourses } from "../data/courses";
 
 // ─── Config ────────────────────────────────────────────────────────────────────
 const SMTP_HOST = process.env.SES_SMTP_HOST || "email-smtp.us-east-1.amazonaws.com";
@@ -115,6 +116,133 @@ function wrapHtml(title: string, content: string) {
 </html>`;
 }
 
+// ─── Helpers de Precios y Horarios para Cotizaciones ────────────────────────────
+
+function calculateCoursePrice(
+  slug: string,
+  levelName: string,
+  masterCoursesList: any[],
+  priceOverridesList: any[],
+  promotionsList: any[]
+) {
+  const masterCourse = masterCoursesList.find(c => c.slug === slug);
+  if (!masterCourse) {
+    return { finalPrice: 0, originalPrice: 0, hasDiscount: false };
+  }
+  
+  let basePrice = 0;
+  let originalPrice = 0;
+  if (levelName) {
+    const masterLevel = masterCourse.levels?.find((l: any) => 
+      l.name.toLowerCase().includes(levelName.toLowerCase()) || 
+      levelName.toLowerCase().includes(l.name.toLowerCase())
+    );
+    if (masterLevel) {
+      basePrice = masterLevel.price || 0;
+      originalPrice = masterLevel.originalPrice || basePrice;
+    }
+  } else if (masterCourse.levels && masterCourse.levels.length > 0) {
+    basePrice = masterCourse.levels[0].price || 0;
+    originalPrice = masterCourse.levels[0].originalPrice || basePrice;
+  }
+
+  // Si es analisis-de-datos y originalPrice es igual a basePrice o no está, forzar a 747000
+  if (slug === "analisis-de-datos" && (originalPrice === basePrice || !originalPrice)) {
+    originalPrice = 747000;
+  }
+
+  // Apply price override if exists
+  const override = priceOverridesList.find(
+    (o: any) => o.item_type === 'course' && o.item_id === slug && o.level_name === levelName
+  );
+  const effectiveBase = override ? override.price : basePrice;
+
+  // Find promotions
+  const promo = promotionsList.find(
+    (pr: any) => pr.target_type === 'all' || pr.target_type === 'courses' || (pr.target_type === 'specific_course' && pr.target_id === slug)
+  );
+
+  if (promo) {
+    if (promo.promo_price) {
+      return { finalPrice: promo.promo_price, originalPrice: effectiveBase === basePrice ? originalPrice : effectiveBase, hasDiscount: true };
+    }
+    const ratio = (100 - promo.discount_percentage) / 100;
+    const finalPrice = Math.round(effectiveBase * ratio);
+    return { finalPrice, originalPrice: effectiveBase === basePrice ? originalPrice : effectiveBase, hasDiscount: true };
+  }
+
+  return { finalPrice: effectiveBase, originalPrice: effectiveBase === basePrice ? originalPrice : effectiveBase, hasDiscount: false };
+}
+
+function formatEmailDate(dateStr: string): string {
+  const date = new Date(dateStr + "T12:00:00");
+  const day = date.getDate();
+  const months = [
+    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+  ];
+  const month = months[date.getMonth()];
+  return `${day} de ${month}`;
+}
+
+function formatEmailDays(daysStr: string): string {
+  let res = daysStr.toLowerCase();
+  res = res.replace("lunes y miércoles", "Lun y Mié");
+  res = res.replace("lunes y miercoles", "Lun y Mié");
+  res = res.replace("martes y jueves", "Mar y Jue");
+  res = res.replace("sábado", "Sáb");
+  res = res.replace("sabado", "Sáb");
+  return res.charAt(0).toUpperCase() + res.slice(1);
+}
+
+function formatEmailTime(timeStr: string): string {
+  const match = timeStr.match(/^(\d{1,2}:\d{2})/);
+  return match ? match[1] : timeStr;
+}
+
+function getCourseScheduleString(
+  slug: string,
+  levelName: string,
+  schedulesList: any[],
+  staticList: any[],
+  type: "basic" | "intermediate"
+): string {
+  const courseSchedules = schedulesList.filter(s => s.course_slug === slug && s.level_name === levelName);
+  let sched = getNearestSchedule(courseSchedules);
+  
+  if (!sched) {
+    const courseStatic = staticList.filter(s => s.course_slug === slug && s.level_name === levelName) as any[];
+    sched = getNearestSchedule(courseStatic);
+  }
+  
+  if (!sched) {
+    const defaultSchedules: Record<string, { start_date: string, schedule_days: string, schedule_time: string, is_active: boolean }> = {
+      "power-bi-Básico": { start_date: "2026-05-19", schedule_days: "Martes y Jueves", schedule_time: "19:30 a 21:30", is_active: true },
+      "sql-server-Básico": { start_date: "2026-06-22", schedule_days: "Lunes y Miércoles", schedule_time: "19:30 a 21:30", is_active: true },
+      "python-Básico": { start_date: "2026-05-25", schedule_days: "Lunes y Miércoles", schedule_time: "19:30 a 21:30", is_active: true },
+      "power-bi-Intermedio": { start_date: "2026-05-25", schedule_days: "Lunes y Miércoles", schedule_time: "19:30 a 21:30", is_active: true },
+      "sql-server-Intermedio": { start_date: "2026-06-22", schedule_days: "Lunes y Miércoles", schedule_time: "19:30 a 21:30", is_active: true },
+      "python-Intermedio": { start_date: "2026-07-27", schedule_days: "Lunes y Miércoles", schedule_time: "19:30 a 21:30", is_active: true },
+    };
+    const key = `${slug}-${levelName}`;
+    sched = defaultSchedules[key] as any;
+  }
+  
+  if (!sched) {
+    return type === "basic" ? "Próximamente · Consultar horarios" : "Próximamente";
+  }
+
+  const dateFormatted = formatEmailDate(sched.start_date);
+  const daysFormatted = formatEmailDays(sched.schedule_days);
+  
+  if (type === "basic") {
+    const timeFormatted = formatEmailTime(sched.schedule_time);
+    return `${dateFormatted} · ${daysFormatted} · ${timeFormatted}`;
+  } else {
+    return `${dateFormatted} · ${daysFormatted}`;
+  }
+}
+
 // ─── Email 1: Cotización Individual (al lead) — Template Premium ────────────
 export async function sendQuoteConfirmationToLead(params: {
   name: string;
@@ -122,17 +250,85 @@ export async function sendQuoteConfirmationToLead(params: {
   courses: string[];
   message?: string;
 }) {
-  const { name, email, courses } = params;
+  const { name, email, courses: leadSelectedCourses } = params;
   const firstName = name.split(" ")[0] || name;
 
-  const html = buildQuoteEmailHtml(firstName);
+  // Intentar cargar datos desde Supabase
+  let schedules: any[] = [];
+  let promotions: any[] = [];
+  let priceOverrides: any[] = [];
+
+  try {
+    const supabase = createAdminClient();
+    const [schRes, promoRes, overRes] = await Promise.all([
+      supabase.from("course_schedules").select("*").eq("is_active", true),
+      supabase.from("promotions").select("*").eq("is_active", true),
+      supabase.from("price_overrides").select("*")
+    ]);
+    
+    if (schRes.data) schedules = schRes.data;
+    if (promoRes.data) {
+      const now = new Date().toISOString();
+      promotions = promoRes.data.filter((p: any) => !p.valid_until || p.valid_until > now);
+    }
+    if (overRes.data) priceOverrides = overRes.data;
+  } catch (err) {
+    console.error("Error al obtener datos dinámicos de Supabase para el email de cotización:", err);
+  }
+
+  // Cursos Básicos
+  const basicCoursesSlugs = [
+    { slug: "power-bi", title: "Power BI Básico", color: "#eab308" },
+    { slug: "sql-server", title: "SQL Server Básico", color: "#ef4444" },
+    { slug: "python", title: "Python Básico", color: "#3b82f6" },
+  ];
+  
+  const basicCourses = basicCoursesSlugs.map(item => {
+    const pricing = calculateCoursePrice(item.slug, "Básico", masterCourses, priceOverrides, promotions);
+    const dateStr = getCourseScheduleString(item.slug, "Básico", schedules, staticSchedules, "basic");
+    return {
+      title: item.title,
+      date: dateStr,
+      orig: formatCLP(pricing.originalPrice),
+      offer: formatCLP(pricing.finalPrice),
+      color: item.color
+    };
+  });
+
+  // Cursos Intermedios
+  const intermediateCoursesSlugs = [
+    { slug: "power-bi", title: "Power BI Intermedio" },
+    { slug: "sql-server", title: "SQL Server Intermedio" },
+    { slug: "python", title: "Python Intermedio" },
+  ];
+
+  const intermediateCourses = intermediateCoursesSlugs.map(item => {
+    const pricing = calculateCoursePrice(item.slug, "Intermedio", masterCourses, priceOverrides, promotions);
+    const dateStr = getCourseScheduleString(item.slug, "Intermedio", schedules, staticSchedules, "intermediate");
+    return {
+      title: item.title,
+      date: dateStr,
+      price: formatCLP(pricing.finalPrice)
+    };
+  });
+
+  // Pack Análisis de Datos
+  const packPricing = calculateCoursePrice("analisis-de-datos", "Básico", masterCourses, priceOverrides, promotions);
+  const savingPercent = Math.round(((packPricing.originalPrice - packPricing.finalPrice) / packPricing.originalPrice) * 100);
+  const packInfo = {
+    orig: formatCLP(packPricing.originalPrice),
+    offer: formatCLP(packPricing.finalPrice),
+    savingPercent
+  };
+
+  const html = buildQuoteEmailHtml(firstName, basicCourses, intermediateCourses, packInfo);
 
   await sendEmail({
     to: email,
     toName: name,
     subject: "Tu Cotización en ProgramBI — Cursos de Datos 100% Aplicados",
     html,
-    text: `Hola ${firstName}, gracias por tu interés en ProgramBI. Diseñamos cursos de programación y análisis de datos 100% aplicados al mercado laboral actual. Revisa tu cotización completa en tu correo. Cursos: ${courses.join(", ")}.`,
+    text: `Hola ${firstName}, gracias por tu interés en ProgramBI. Diseñamos cursos de programación y análisis de datos 100% aplicados al mercado laboral actual. Revisa tu cotización completa en tu correo. Cursos: ${leadSelectedCourses.join(", ")}.`,
     replyTo: ADMIN_EMAIL,
   });
 }
