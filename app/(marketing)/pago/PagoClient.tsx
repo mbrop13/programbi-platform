@@ -601,7 +601,7 @@ export default function PagoClient() {
                               {/* Currency Selector Dropdown */}
                               <div className="mb-6 flex justify-between items-center bg-gray-50 p-3 rounded-2xl border border-gray-100">
                                 <span className="text-xs font-bold text-gray-500 flex items-center gap-1.5">
-                                  <Globe className="w-3.5 h-3.5 text-gray-400" /> Moneda de pago:
+                                  <Globe className="w-3.5 h-3.5 text-gray-400" /> Moneda de Pago y Horario:
                                 </span>
                                 <div className="relative">
                                   <button
@@ -957,7 +957,7 @@ export default function PagoClient() {
             animate={{ y: 0 }}
             exit={{ y: 120 }}
             transition={{ type: "spring", damping: 28, stiffness: 350 }}
-            className="lg:hidden"
+            className="lg:hidden flex flex-col"
             style={{
               position: "fixed",
               bottom: 0,
@@ -969,8 +969,6 @@ export default function PagoClient() {
               backgroundColor: "#fff",
               borderTop: "1px solid #e5e7eb",
               boxShadow: "0 -8px 30px rgba(0,0,0,0.12)",
-              display: "flex",
-              flexDirection: "column" as const,
               overflow: "hidden",
               boxSizing: "border-box" as const,
               maxWidth: "100vw",

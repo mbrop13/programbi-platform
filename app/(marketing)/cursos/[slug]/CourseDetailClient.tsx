@@ -193,7 +193,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   return (
     <>
       {/* ════ HERO ════ */}
-      <section className="relative -mt-20 lg:-mt-24 pt-28 lg:pt-36 pb-16 lg:pb-24 overflow-hidden bg-slate-50">
+      <section className="relative -mt-20 lg:-mt-24 pt-28 lg:pt-36 pb-16 lg:pb-24 overflow-visible bg-slate-50">
         {/* Clean grid bg */}
         <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{
           backgroundSize: "40px 40px",
