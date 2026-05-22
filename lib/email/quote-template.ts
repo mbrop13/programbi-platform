@@ -26,6 +26,7 @@ export interface EmailPackInfo {
 export function buildQuoteEmailHtml(
   nombre: string,
   selectedCourses: EmailCourseItem[],
+  recommendedCourses: EmailCourseItem[],
   packRecommendation: EmailPackInfo
 ): string {
   const year = new Date().getFullYear();
@@ -121,6 +122,61 @@ export function buildQuoteEmailHtml(
     `;
   }
 
+  // Renderizar la sección inteligente de Cursos Recomendados
+  let recommendedCoursesHtml = "";
+  if (recommendedCourses && recommendedCourses.length > 0) {
+    const recommendedCardsHtml = recommendedCourses.map(c => {
+      return `
+        <!-- Curso Recomendado: ${c.title} -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 14px; border-collapse: collapse;">
+          <tr>
+            <td style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.01);">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td valign="top" class="ms" style="padding-bottom: 6px;">
+                    <span style="display: inline-block; background-color: ${c.color}10; color: ${c.color}; font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 8px; border-radius: 4px; margin-bottom: 6px;">
+                      ${c.levelName} · ${c.durationHours} HRS
+                    </span>
+                    <h4 style="margin: 0 0 4px; font-family: 'Outfit', 'Inter', sans-serif; font-size: 15px; font-weight: 800; color: #0f172a; line-height: 1.2;">
+                      ${c.title}
+                    </h4>
+                    <p style="margin: 0; font-family: 'Inter', sans-serif; font-size: 12px; color: #64748b;">
+                      📅 Próximo inicio: <span style="color: #334155; font-weight: 600;">${c.startDate}</span>
+                    </p>
+                  </td>
+                  <td valign="middle" align="right" class="ms" style="width: 140px; min-width: 140px; text-align: right;">
+                    ${c.hasDiscount ? `<span style="font-family: 'Inter', sans-serif; font-size: 11px; color: #94a3b8; text-decoration: line-through; font-weight: 500; margin-right: 6px;">${c.originalPrice}</span>` : ''}
+                    <span style="font-family: 'Outfit', 'Inter', sans-serif; font-size: 16px; font-weight: 950; color: #0f172a;">
+                      ${c.finalPrice}
+                    </span>
+                    <div style="margin-top: 6px;">
+                      <a href="https://www.programbi.com/cursos/${c.slug}" target="_blank" style="display: inline-block; background-color: #ffffff; border: 1px solid #cbd5e1; color: #334155; font-family: 'Inter', sans-serif; font-size: 11px; font-weight: 700; text-decoration: none; padding: 5px 12px; border-radius: 6px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                        Ver Temario →
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      `;
+    }).join("");
+
+    recommendedCoursesHtml = `
+      <!-- SECCIÓN RECOMENDADOS -->
+      <tr>
+        <td style="padding: 16px 40px 24px" class="mp">
+          <div style="height: 1px; background-color: #f1f5f9; margin-bottom: 24px;"></div>
+          <h2 style="font-family: 'Outfit', 'Inter', sans-serif; font-size: 14px; font-weight: 850; color: #475569; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px;">
+            Próximos Inicios Recomendados para Ti
+          </h2>
+          ${recommendedCardsHtml}
+        </td>
+      </tr>
+    `;
+  }
+
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es">
 <head>
@@ -155,12 +211,7 @@ export function buildQuoteEmailHtml(
       <td align="center" style="padding: 40px 16px 60px;" class="outer">
         <table width="600" cellpadding="0" cellspacing="0" border="0" class="card" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.02); border: 1px solid #e2e8f0;">
           
-          <!-- TOP GRADIENT DECORATION BAR -->
-          <tr>
-            <td style="height: 6px; background: linear-gradient(90deg, #1890FF 0%, #4338ca 100%);"></td>
-          </tr>
-
-          <!-- HEADER -->
+          <!-- HEADER (NO TOP GRADIENT BLUE LINE) -->
           <tr>
             <td style="background-color: #ffffff; padding: 36px 40px 24px; text-align: center; border-bottom: 1px solid #f1f5f9" class="mp">
               <a href="https://www.programbi.com" target="_blank" style="text-decoration: none">
@@ -193,6 +244,9 @@ export function buildQuoteEmailHtml(
 
           <!-- PACK RECOMENDADO SECTION -->
           ${packRecommendationHtml}
+
+          <!-- SECCIÓN RECOMENDADOS (OTROS CURSOS CON FECHA PRÓXIMA) -->
+          ${recommendedCoursesHtml}
           
           <!-- SEPARADOR -->
           <tr>

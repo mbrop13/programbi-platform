@@ -218,7 +218,33 @@ async function runTest() {
   console.log("\n--- CALCULATED PACK INFO ---");
   console.log(JSON.stringify(packInfo, null, 2));
 
-  const html = buildQuoteEmailHtml("Estudiante de Prueba", selectedCourses, packInfo);
+  // Cursos Recomendados de Prueba (cursos que NO fueron cotizados)
+  const recommendedCourses = [
+    {
+      slug: "excel",
+      title: "Curso de Excel para Negocios",
+      levelName: "Básico",
+      durationHours: 16,
+      startDate: "10 de Junio · Miércoles · 19:30",
+      originalPrice: "$249.000",
+      finalPrice: "$199.200",
+      hasDiscount: true,
+      color: "#217346"
+    },
+    {
+      slug: "power-automate",
+      title: "Curso de Power Automate & RPA",
+      levelName: "Básico",
+      durationHours: 16,
+      startDate: "15 de Junio · Lunes · 19:30",
+      originalPrice: "$249.000",
+      finalPrice: "$249.000",
+      hasDiscount: false,
+      color: "#0078D4"
+    }
+  ];
+
+  const html = buildQuoteEmailHtml("Estudiante de Prueba", selectedCourses, recommendedCourses, packInfo);
   const outputPath = path.resolve(__dirname, 'test-email-rendered.html');
   fs.writeFileSync(outputPath, html, 'utf8');
   console.log(`\nHTML rendered and saved successfully to ${outputPath}`);

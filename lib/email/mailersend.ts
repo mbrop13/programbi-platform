@@ -404,7 +404,33 @@ export async function sendQuoteConfirmationToLead(params: {
     };
   }
 
-  const html = buildQuoteEmailHtml(firstName, selectedCourses, packRecommendation);
+  // Cursos recomendados (hasta 3 cursos que el usuario NO cotizó)
+  const cotizedSlugs = new Set(normalizedItems.map(item => item.slug));
+  const recommendedItems = masterCourses
+    .filter(c => c.slug !== "analisis-de-datos" && !cotizedSlugs.has(c.slug))
+    .filter(c => c.slug !== "analitica-mineria" && c.slug !== "analitica-financiera")
+    .slice(0, 3);
+
+  const recommendedCourses = recommendedItems.map(item => {
+    const level = "Básico";
+    const color = item.accentColor || "#1890FF";
+    const hours = item.levels?.[0]?.durationHours || item.durationHours || 16;
+    const pricing = calculateCoursePrice(item.slug, level, masterCourses, priceOverrides, promotions);
+    const dateStr = getCourseScheduleString(item.slug, level, schedules, staticSchedules, hours > 48 ? "intermediate" : "basic");
+    return {
+      slug: item.slug,
+      title: item.title,
+      levelName: level.toUpperCase(),
+      durationHours: hours,
+      startDate: dateStr,
+      originalPrice: formatCLP(pricing.originalPrice),
+      finalPrice: formatCLP(pricing.finalPrice),
+      hasDiscount: pricing.hasDiscount || pricing.originalPrice > pricing.finalPrice,
+      color,
+    };
+  });
+
+  const html = buildQuoteEmailHtml(firstName, selectedCourses, recommendedCourses, packRecommendation);
 
   await sendEmail({
     to: email,
