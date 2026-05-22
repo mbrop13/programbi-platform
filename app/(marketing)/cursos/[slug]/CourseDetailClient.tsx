@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft, ArrowRight, ChevronDown, Clock, Users,
-  CheckCircle2, BookOpen, Play, Award, Monitor, Lock, ShoppingCart, UserPlus, Star, Tag, FileText, ExternalLink
+  CheckCircle2, BookOpen, Play, Award, Monitor, Lock, ShoppingCart, UserPlus, Star, Tag, FileText, ExternalLink,
+  Globe, Calendar, Check
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import React from "react";
@@ -23,6 +24,7 @@ import FinanceSyllabus from "./syllabuses/FinanceSyllabus";
 import MiningSyllabus from "./syllabuses/MiningSyllabus";
 import DataAnalyticsSyllabus from "./syllabuses/DataAnalyticsSyllabus";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
+import { type CourseSchedule, SCHEDULE_COUNTRIES, convertSchedule, getNearestSchedule } from "@/lib/data/course-schedules";
 
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
@@ -43,6 +45,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [isFreeTrial, setIsFreeTrial] = useState(false);
   const [bumpSelections, setBumpSelections] = useState<{slug: string, level: string, id?: string}[]>([]);
+  const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
+  const [selectedCountry, setSelectedCountry] = useState(SCHEDULE_COUNTRIES[0]);
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   const relatedCourses = courses.filter((c) => c.slug !== course.slug).slice(0, 3);
 
   // Bump Options logic
@@ -123,8 +128,27 @@ export default function CourseDetailClient({ course }: { course: Course }) {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    fetch("/api/schedules")
+      .then(r => r.json())
+      .then(data => {
+        if (Array.isArray(data)) setSchedules(data);
+      })
+      .catch(console.error);
+  }, []);
+
   const levels = course.levels || [];
   const activeLevel = levels[selectedLevel] || null;
+
+  const levelSchedule = useMemo(() => {
+    if (!activeLevel) return null;
+    if (course.slug === "analisis-de-datos") {
+      const adSchedules = schedules.filter(s => ["sql-server", "power-bi", "python"].includes(s.course_slug));
+      return getNearestSchedule(adSchedules);
+    }
+    const matched = schedules.filter(s => s.course_slug === course.slug && s.level_name === activeLevel.name);
+    return getNearestSchedule(matched);
+  }, [schedules, activeLevel, course.slug]);
   const currentWhatYouLearn = activeLevel ? activeLevel.whatYouLearn : course.whatYouLearn;
   const rawPrice = activeLevel?.price || null;
   
@@ -300,6 +324,119 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                     <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600" />
                   </a>
                 </div>
+
+                {levelSchedule && (
+                  <div className="mt-8 p-6 bg-white rounded-3xl border border-slate-200/80 shadow-md relative overflow-hidden transition-all hover:shadow-lg text-left">
+                    <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full blur-xl pointer-events-none" />
+                    <div className="flex justify-between items-center mb-4 gap-4 flex-wrap sm:flex-nowrap">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                        <span className="text-xs font-black text-emerald-600 uppercase tracking-widest">
+                          Próxima Fecha Confirmada
+                        </span>
+                      </div>
+                      
+                      {/* Selector de País / Timezone */}
+                      <div className="relative shrink-0 z-20">
+                        <button
+                          type="button"
+                          onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
+                          className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100/80 border border-slate-200 hover:border-slate-300 px-3 py-1.5 rounded-xl transition-all font-bold text-xs text-slate-700 shadow-sm outline-none cursor-pointer"
+                        >
+                          <img src={`https://flagcdn.com/w20/${selectedCountry.code}.png`} alt="" className="w-4 h-auto rounded-[2px]" />
+                          <span>{selectedCountry.name}</span>
+                          <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isCountryDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        <AnimatePresence>
+                          {isCountryDropdownOpen && (
+                            <>
+                              <div 
+                                className="fixed inset-0 z-40" 
+                                onClick={() => setIsCountryDropdownOpen(false)}
+                              />
+                              <motion.div
+                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                transition={{ duration: 0.15 }}
+                                className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl p-1.5 z-50 overflow-hidden"
+                              >
+                                <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-2.5 py-1.5 border-b border-slate-50">
+                                  Seleccionar Horario
+                                </div>
+                                <div className="max-h-[180px] overflow-y-auto custom-scrollbar">
+                                  {SCHEDULE_COUNTRIES.map((country) => (
+                                    <button
+                                      type="button"
+                                      key={country.code}
+                                      onClick={() => {
+                                        setSelectedCountry(country);
+                                        setIsCountryDropdownOpen(false);
+                                      }}
+                                      className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-bold transition-all border-none outline-none text-left cursor-pointer ${
+                                        selectedCountry.code === country.code
+                                          ? 'bg-emerald-50 text-emerald-600'
+                                          : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                                      }`}
+                                    >
+                                      <div className="flex items-center gap-2">
+                                        <img src={`https://flagcdn.com/w20/${country.code}.png`} alt="" className="w-4 h-auto rounded-[2px]" />
+                                        <span>{country.name}</span>
+                                      </div>
+                                      {selectedCountry.code === country.code && <Check className="w-3.5 h-3.5 text-emerald-600" />}
+                                    </button>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            </>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+
+                    {(() => {
+                      const converted = convertSchedule(
+                        levelSchedule.start_date,
+                        levelSchedule.schedule_time,
+                        levelSchedule.schedule_days,
+                        selectedCountry.timeZone
+                      );
+                      return (
+                        <div className="grid sm:grid-cols-2 gap-4">
+                          <div className="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                              <Calendar className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Fecha de Inicio</p>
+                              <p className="text-sm font-black text-slate-800 capitalize leading-snug">{converted.dateFormatted}</p>
+                            </div>
+                          </div>
+
+                          <div className="bg-slate-50 border border-slate-100 p-3.5 rounded-2xl flex items-start gap-3">
+                            <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center shrink-0 mt-0.5">
+                              <Clock className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Días y Horario Local</p>
+                              <p className="text-sm font-black text-slate-800 leading-snug">
+                                {converted.days}
+                                <span className="block text-xs text-slate-500 font-bold mt-0.5">{converted.time}</span>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                    
+                    <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 text-[10px] text-slate-400 font-semibold">
+                      <Globe className="w-3.5 h-3.5 text-slate-300" />
+                      <span>Los horarios se adaptan automáticamente a la zona horaria del país seleccionado.</span>
+                    </div>
+                  </div>
+                )}
+
                 <p className="text-xs text-slate-400 mt-3 ml-1">Inicia sesión o regístrate gratis para ver precios y acceder al curso.</p>
               </FadeIn>
             </div>

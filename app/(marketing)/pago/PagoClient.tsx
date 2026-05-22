@@ -12,7 +12,7 @@ import {
   Info, Globe
 } from "lucide-react";
 import { courses as allCourses, Course } from "@/lib/data/courses";
-import { type CourseSchedule, analisisDeDatosSlugs, formatScheduleDate, getNearestSchedule } from "@/lib/data/course-schedules";
+import { type CourseSchedule, analisisDeDatosSlugs, formatScheduleDate, getNearestSchedule, convertSchedule } from "@/lib/data/course-schedules";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { useGeoPricing } from "@/hooks/useGeoPricing";
 
@@ -31,13 +31,13 @@ interface CartItem {
 }
 
 const CURRENCIES = [
-  { code: "CLP", symbol: "$", name: "Peso Chileno", flag: "🇨🇱", rate: 1, format: (val: number) => new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(val) },
-  { code: "USD", symbol: "$", name: "Dólar", flag: "🇺🇸", rate: 1 / 900, format: (val: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(val) },
-  { code: "MXN", symbol: "$", name: "Peso Mexicano", flag: "🇲🇽", rate: 18.5 / 900, format: (val: number) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(val) },
-  { code: "COP", symbol: "$", name: "Peso Colombiano", flag: "🇨🇴", rate: 4100 / 900, format: (val: number) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(val) },
-  { code: "PEN", symbol: "S/.", name: "Sol Peruano", flag: "🇵🇪", rate: 3.75 / 900, format: (val: number) => new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN", maximumFractionDigits: 2 }).format(val) },
-  { code: "EUR", symbol: "€", name: "Euro", flag: "🇪🇺", rate: 0.92 / 900, format: (val: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 2 }).format(val) },
-  { code: "ARS", symbol: "$", name: "Peso Argentino", flag: "🇦🇷", rate: 980 / 900, format: (val: number) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(val) },
+  { code: "CLP", symbol: "$", name: "Peso Chileno", iso: "cl", rate: 1, timeZone: "America/Santiago", format: (val: number) => new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(val) },
+  { code: "USD", symbol: "$", name: "Dólar", iso: "us", rate: 1 / 900, timeZone: "America/New_York", format: (val: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(val) },
+  { code: "MXN", symbol: "$", name: "Peso Mexicano", iso: "mx", rate: 18.5 / 900, timeZone: "America/Mexico_City", format: (val: number) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(val) },
+  { code: "COP", symbol: "$", name: "Peso Colombiano", iso: "co", rate: 4100 / 900, timeZone: "America/Bogota", format: (val: number) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(val) },
+  { code: "PEN", symbol: "S/.", name: "Sol Peruano", iso: "pe", rate: 3.75 / 900, timeZone: "America/Lima", format: (val: number) => new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN", maximumFractionDigits: 2 }).format(val) },
+  { code: "EUR", symbol: "€", name: "Euro", iso: "es", rate: 0.92 / 900, timeZone: "Europe/Madrid", format: (val: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 2 }).format(val) },
+  { code: "ARS", symbol: "$", name: "Peso Argentino", iso: "ar", rate: 980 / 900, timeZone: "America/Argentina/Buenos_Aires", format: (val: number) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(val) },
 ];
 
 export default function PagoClient() {
@@ -434,13 +434,43 @@ export default function PagoClient() {
                             </div>
                           )}
 
-                          <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-500 font-medium mt-2">
+                          <div className="flex flex-col gap-1.5 text-xs text-gray-500 font-medium mt-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 w-full max-w-md">
                                {hasScheduleActive && schedule ? (
-                                  <span className="flex items-center gap-1 text-emerald-600"><Calendar className="w-3.5 h-3.5" /> Inicio: {schedule.start_date ? formatScheduleDate(schedule.start_date) : ''}</span>
+                                 (() => {
+                                   const converted = convertSchedule(
+                                     schedule.start_date,
+                                     schedule.schedule_time,
+                                     schedule.schedule_days,
+                                     selectedCurrency.timeZone
+                                   );
+                                   return (
+                                     <>
+                                       <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
+                                         <Calendar className="w-3.5 h-3.5" />
+                                         <span>Inicio: <span className="font-extrabold text-slate-800">{converted.dateFormatted}</span></span>
+                                         {converted.isShifted && (
+                                           <span className="text-[9px] bg-blue-50 text-[#1890FF] px-1.5 py-0.5 rounded font-black uppercase tracking-wide">
+                                             Zona Horaria
+                                           </span>
+                                         )}
+                                       </span>
+                                       <span className="flex items-center gap-1.5 text-blue-600 font-bold">
+                                         <Clock className="w-3.5 h-3.5" />
+                                         <span>Clases: <span className="font-extrabold text-slate-800">{converted.days} de {converted.time}</span></span>
+                                       </span>
+                                     </>
+                                   );
+                                 })()
                                ) : (
-                                  <span className="flex items-center gap-1 text-amber-500"><Bell className="w-3.5 h-3.5" /> Próxima fecha por confirmar</span>
+                                  <span className="flex items-center gap-1.5 text-amber-500 font-bold">
+                                    <Bell className="w-3.5 h-3.5" /> Próxima fecha por confirmar
+                                  </span>
                                )}
-                               {currentLevelData?.durationHours && <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {currentLevelData.durationHours}h Online</span>}
+                               {currentLevelData?.durationHours && (
+                                 <span className="flex items-center gap-1.5 text-slate-500">
+                                    <Globe className="w-3.5 h-3.5" /> {currentLevelData.durationHours}h Online en vivo por Zoom
+                                 </span>
+                               )}
                           </div>
                        </div>
 
@@ -569,7 +599,7 @@ export default function PagoClient() {
                         ) : (
                            <>
                               {/* Currency Selector Dropdown */}
-                              <div className="relative mb-6 flex justify-between items-center bg-gray-50 p-3 rounded-2xl border border-gray-100">
+                              <div className="mb-6 flex justify-between items-center bg-gray-50 p-3 rounded-2xl border border-gray-100">
                                 <span className="text-xs font-bold text-gray-500 flex items-center gap-1.5">
                                   <Globe className="w-3.5 h-3.5 text-gray-400" /> Moneda de pago:
                                 </span>
@@ -579,7 +609,7 @@ export default function PagoClient() {
                                     onClick={() => setIsCurrencyDropdownOpen(!isCurrencyDropdownOpen)}
                                     className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-gray-200 hover:border-blue-400 transition-all font-bold text-sm text-[#0F172A] shadow-sm outline-none cursor-pointer"
                                   >
-                                    <span className="text-base">{selectedCurrency.flag}</span>
+                                    <img src={`https://flagcdn.com/w20/${selectedCurrency.iso}.png`} alt="" className="w-4.5 h-auto rounded-[2px]" />
                                     <span>{selectedCurrency.code}</span>
                                     <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isCurrencyDropdownOpen ? 'rotate-180' : ''}`} />
                                   </button>
@@ -617,7 +647,7 @@ export default function PagoClient() {
                                                 }`}
                                               >
                                                 <div className="flex items-center gap-2">
-                                                  <span className="text-base">{currency.flag}</span>
+                                                  <img src={`https://flagcdn.com/w20/${currency.iso}.png`} alt="" className="w-4.5 h-auto rounded-[2px]" />
                                                   <span>{currency.code}</span>
                                                   <span className="text-[10px] text-gray-400 font-medium">({currency.name})</span>
                                                 </div>
@@ -640,6 +670,31 @@ export default function PagoClient() {
                                              <span className="font-semibold text-sm text-[#0F172A] leading-tight line-clamp-2">{item.quantity}x {item.title}</span>
                                           </div>
                                           <span className="text-[11px] text-gray-500 mt-0.5 block">{item.levelName}</span>
+                                          {item.slug !== "asesoria" && (() => {
+                                            const itemSchedules = schedules.filter(
+                                              s => s.course_slug === item.slug && s.level_name === item.levelName
+                                            );
+                                            const nearest = getNearestSchedule(itemSchedules);
+                                            if (!nearest) return null;
+                                            const converted = convertSchedule(
+                                              nearest.start_date,
+                                              nearest.schedule_time,
+                                              nearest.schedule_days,
+                                              selectedCurrency.timeZone
+                                            );
+                                            return (
+                                              <div className="mt-1.5 p-2 bg-blue-50/50 rounded-lg border border-blue-100/40 text-[10px] space-y-0.5">
+                                                <div className="flex items-center gap-1 text-blue-900 font-bold">
+                                                  <Calendar className="w-3 h-3 text-[#1890FF]" />
+                                                  <span>Inicia: {converted.dateFormatted}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1 text-blue-800/80">
+                                                  <Clock className="w-3 h-3 text-blue-400" />
+                                                  <span>{converted.days} — {converted.time}</span>
+                                                </div>
+                                              </div>
+                                            );
+                                          })()}
                                        </div>
                                        <div className="flex flex-col items-end shrink-0">
                                           <span className="font-black text-[#0F172A] text-sm">{convertAndFormat(item.price * item.quantity)}</span>
