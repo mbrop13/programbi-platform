@@ -273,26 +273,49 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               </FadeIn>
 
               <FadeIn delay={0.4}>
-                <div className="flex flex-wrap gap-4 sm:gap-6 text-xs sm:text-sm text-slate-500 mb-8">
+                <div className="mb-8">
                   {(() => {
                     let durationLabel = "48 horas 3 niveles en total";
                     if (course.slug === 'analisis-de-datos' || course.slug === 'analitica-mineria' || course.slug === 'analitica-financiera') {
                       durationLabel = "144 horas 3 niveles";
                     }
 
-                    let scheduleLabel = "Clases en vivo por zoom";
+                    const blocks = [
+                      { icon: <Clock className="w-5 h-5" />, title: "Duración", value: durationLabel },
+                      { icon: <Award className="w-5 h-5" />, title: "Certificación", value: "Al completar el programa" }
+                    ];
 
-                    return [
-                      { icon: <Clock className="w-4 h-4" style={{ color: course.accentColor }} />, label: durationLabel },
-                      { icon: <Monitor className="w-4 h-4" style={{ color: course.accentColor }} />, label: scheduleLabel },
-                      { icon: <Users className="w-4 h-4" style={{ color: course.accentColor }} />, label: course.level },
-                      { icon: <Award className="w-4 h-4" style={{ color: course.accentColor }} />, label: "Certificado por completarlo" },
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-center gap-1.5 sm:gap-2">
-                        {item.icon}
-                        <span className="font-semibold capitalize">{item.label}</span>
+                    if (levelSchedule) {
+                      const converted = convertSchedule(levelSchedule.start_date, levelSchedule.schedule_time, levelSchedule.schedule_days, scheduleCountry.timeZone);
+                      blocks.push({ icon: <Calendar className="w-5 h-5" />, title: "Próximo Inicio", value: <span className="capitalize">{converted.dateFormatted}</span> });
+                      blocks.push({ icon: <Monitor className="w-5 h-5" />, title: "Horario", value: <><span className="block truncate">{converted.days}</span><span className="text-[10px] text-slate-500 font-semibold">{converted.time}</span></> });
+                    } else {
+                      blocks.push({ icon: <Monitor className="w-5 h-5" />, title: "Modalidad", value: "Clases en vivo por Zoom" });
+                      blocks.push({ icon: <Users className="w-5 h-5" />, title: "Nivel", value: course.level });
+                    }
+
+                    return (
+                      <div className="flex flex-col gap-2">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                          {blocks.map((b, i) => (
+                            <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 shadow-sm transition-all hover:shadow-md hover:border-slate-300">
+                              <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${course.accentColor}15`, color: course.accentColor }}>
+                                {b.icon}
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">{b.title}</p>
+                                <div className="text-[11px] sm:text-xs font-bold text-slate-800 leading-snug">{b.value}</div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        {levelSchedule && (
+                          <p className="text-[10px] text-slate-400 font-semibold flex items-center gap-1.5 ml-1 mt-1">
+                            <Globe className="w-3 h-3" /> Horarios adaptados a tu zona horaria ({scheduleCountry.timeZone}).
+                          </p>
+                        )}
                       </div>
-                    ));
+                    );
                   })()}
                 </div>
               </FadeIn>
@@ -329,60 +352,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                   </a>
                 </div>
 
-                {/* ── Schedule Card ── */}
-                {levelSchedule && (
-                  <div
-                    className="mt-7 rounded-2xl border border-slate-200/80 shadow-md relative overflow-visible transition-all hover:shadow-lg text-left"
-                    style={{ borderLeft: `4px solid ${course.accentColor}` }}
-                  >
-                    {/* Header row */}
-                    <div className="flex items-center px-5 pt-5 pb-3 gap-2.5">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="text-[11px] font-black text-emerald-600 uppercase tracking-widest">
-                        Próxima Fecha de Inicio
-                      </span>
-                    </div>
 
-                    {/* Schedule data */}
-                    {(() => {
-                      const converted = convertSchedule(
-                        levelSchedule.start_date,
-                        levelSchedule.schedule_time,
-                        levelSchedule.schedule_days,
-                        scheduleCountry.timeZone
-                      );
-                      return (
-                        <div className="grid grid-cols-2 gap-3 px-5 pb-4">
-                          <div className="bg-slate-50/70 border border-slate-100 p-3 rounded-xl flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${course.accentColor}12`, color: course.accentColor }}>
-                              <Calendar className="w-4 h-4" />
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Inicio</p>
-                              <p className="text-[13px] font-black text-slate-800 capitalize leading-snug truncate">{converted.dateFormatted}</p>
-                            </div>
-                          </div>
-
-                          <div className="bg-slate-50/70 border border-slate-100 p-3 rounded-xl flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${course.accentColor}12`, color: course.accentColor }}>
-                              <Clock className="w-4 h-4" />
-                            </div>
-                            <div className="min-w-0">
-                              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">Horario</p>
-                              <p className="text-[13px] font-black text-slate-800 leading-snug truncate">{converted.days}</p>
-                              <p className="text-[11px] text-slate-500 font-bold">{converted.time}</p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })()}
-
-                    <div className="px-5 pb-4 pt-1 border-t border-slate-100 flex items-center gap-2 text-[10px] text-slate-400 font-semibold">
-                      <Globe className="w-3 h-3 text-slate-300" />
-                      <span>Los horarios se adaptan a tu zona horaria.</span>
-                    </div>
-                  </div>
-                )}
 
                 <p className="text-[11px] text-slate-400 mt-4 ml-0.5">Inicia sesión o regístrate gratis para ver precios y acceder al curso.</p>
               </FadeIn>
