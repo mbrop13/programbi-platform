@@ -86,7 +86,7 @@ function renderSimpleMarkdown(text: string) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-[#1890ff]">$1</strong>')
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
     .replace(/`(.+?)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 text-[12px] font-mono">$1</code>')
     .replace(

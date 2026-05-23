@@ -173,8 +173,8 @@ ${dynamicContext}`
       },
     })
 
-    // ─── Respuesta en formato Data Stream (compatible con useChat) ───
-    return result.toDataStreamResponse({
+    // ─── Respuesta en formato Text Stream (compatible con useChat) ───
+    return result.toTextStreamResponse({
       headers: {
         'X-Conversation-Id': conversationId || 'pending',
       },
