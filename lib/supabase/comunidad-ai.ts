@@ -1303,3 +1303,238 @@ export async function unsubscribeFromNewsletter() {
     .eq("user_id", user.id);
   if (error) throw new Error(error.message);
 }
+
+// ════════════════════════════════════════════
+// CHATBOT ADMIN FUNCTIONS
+// ════════════════════════════════════════════
+
+/**
+ * Obtiene conversaciones del chatbot público con filtros, búsqueda y paginación.
+ * Incluye el conteo de mensajes por conversación y el primer mensaje del usuario.
+ */
+export async function getChatbotConversations(filters?: {
+  status?: string;
+  isLead?: boolean;
+  search?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  page?: number;
+  limit?: number;
+}) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const page = filters?.page || 1;
+  const limit = filters?.limit || 20;
+  const offset = (page - 1) * limit;
+
+  // Construir query base para conversaciones
+  let query = adminDb
+    .from("chatbot_conversations")
+    .select("*", { count: "exact" });
+
+  // Aplicar filtros
+  if (filters?.status && filters.status !== "all") {
+    query = query.eq("status", filters.status);
+  }
+  if (filters?.isLead !== undefined && filters.isLead !== null) {
+    query = query.eq("is_lead", filters.isLead);
+  }
+  if (filters?.dateFrom) {
+    query = query.gte("created_at", filters.dateFrom);
+  }
+  if (filters?.dateTo) {
+    // Agregar un día completo para incluir todo el día seleccionado
+    const endDate = new Date(filters.dateTo);
+    endDate.setDate(endDate.getDate() + 1);
+    query = query.lt("created_at", endDate.toISOString());
+  }
+  if (filters?.search) {
+    // Buscar en nombre, email del visitante
+    query = query.or(
+      `visitor_name.ilike.%${filters.search}%,visitor_email.ilike.%${filters.search}%`
+    );
+  }
+
+  // Ordenar y paginar
+  query = query
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  const { data: conversations, error, count } = await query;
+
+  if (error) {
+    console.error("Error fetching chatbot conversations:", error);
+    return { conversations: [], total: 0 };
+  }
+
+  // Obtener IDs para buscar mensajes relacionados
+  const conversationIds = (conversations || []).map((c: any) => c.id);
+
+  if (conversationIds.length === 0) {
+    return { conversations: [], total: count || 0 };
+  }
+
+  // Obtener conteo de mensajes y primer mensaje de usuario por conversación
+  const { data: messages } = await adminDb
+    .from("chatbot_messages")
+    .select("conversation_id, role, content, created_at")
+    .in("conversation_id", conversationIds)
+    .order("created_at", { ascending: true });
+
+  // Agrupar datos de mensajes por conversación
+  const messageStats: Record<string, { count: number; firstUserMessage: string | null }> = {};
+  (messages || []).forEach((m: any) => {
+    if (!messageStats[m.conversation_id]) {
+      messageStats[m.conversation_id] = { count: 0, firstUserMessage: null };
+    }
+    messageStats[m.conversation_id].count++;
+    if (m.role === "user" && !messageStats[m.conversation_id].firstUserMessage) {
+      messageStats[m.conversation_id].firstUserMessage = m.content;
+    }
+  });
+
+  // Enriquecer conversaciones con stats de mensajes
+  const enriched = (conversations || []).map((c: any) => ({
+    ...c,
+    message_count: messageStats[c.id]?.count || 0,
+    first_user_message: messageStats[c.id]?.firstUserMessage || null,
+  }));
+
+  return { conversations: enriched, total: count || 0 };
+}
+
+/**
+ * Obtiene el detalle completo de una conversación del chatbot con todos sus mensajes.
+ */
+export async function getChatbotConversationDetail(conversationId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  // Obtener conversación
+  const { data: conversation, error: convError } = await adminDb
+    .from("chatbot_conversations")
+    .select("*")
+    .eq("id", conversationId)
+    .single();
+
+  if (convError) {
+    console.error("Error fetching conversation:", convError);
+    return { conversation: null, messages: [] };
+  }
+
+  // Obtener todos los mensajes de la conversación
+  const { data: messages, error: msgError } = await adminDb
+    .from("chatbot_messages")
+    .select("id, role, content, created_at")
+    .eq("conversation_id", conversationId)
+    .order("created_at", { ascending: true });
+
+  if (msgError) {
+    console.error("Error fetching messages:", msgError);
+    return { conversation, messages: [] };
+  }
+
+  return { conversation, messages: messages || [] };
+}
+
+/**
+ * Actualiza campos de una conversación del chatbot (estado, tags, lead, info visitante).
+ */
+export async function updateChatbotConversation(id: string, data: {
+  status?: string;
+  tags?: string[];
+  is_lead?: boolean;
+  visitor_name?: string;
+  visitor_email?: string;
+  visitor_phone?: string;
+}) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await adminDb
+    .from("chatbot_conversations")
+    .update({ ...data, updated_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) throw new Error(error.message);
+}
+
+/**
+ * Obtiene estadísticas globales del chatbot: totales, hoy, semana, mes, leads y promedios.
+ */
+export async function getChatbotStats() {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString();
+  const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay()).toISOString();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+  // Obtener todas las conversaciones para cálculos
+  const { count: totalConversations } = await adminDb
+    .from("chatbot_conversations")
+    .select("id", { count: "exact", head: true });
+
+  const { count: conversationsToday } = await adminDb
+    .from("chatbot_conversations")
+    .select("id", { count: "exact", head: true })
+    .gte("created_at", startOfToday);
+
+  const { count: conversationsThisWeek } = await adminDb
+    .from("chatbot_conversations")
+    .select("id", { count: "exact", head: true })
+    .gte("created_at", startOfWeek);
+
+  const { count: conversationsThisMonth } = await adminDb
+    .from("chatbot_conversations")
+    .select("id", { count: "exact", head: true })
+    .gte("created_at", startOfMonth);
+
+  const { count: totalLeads } = await adminDb
+    .from("chatbot_conversations")
+    .select("id", { count: "exact", head: true })
+    .eq("is_lead", true);
+
+  // Calcular promedio de mensajes por conversación
+  const { count: totalMessages } = await adminDb
+    .from("chatbot_messages")
+    .select("id", { count: "exact", head: true });
+
+  const avgMessagesPerConversation =
+    totalConversations && totalConversations > 0
+      ? Math.round(((totalMessages || 0) / totalConversations) * 10) / 10
+      : 0;
+
+  // Top páginas de origen (source_page)
+  const { data: allConvs } = await adminDb
+    .from("chatbot_conversations")
+    .select("source_page")
+    .not("source_page", "is", null);
+
+  const pageCount: Record<string, number> = {};
+  (allConvs || []).forEach((c: any) => {
+    if (c.source_page) {
+      pageCount[c.source_page] = (pageCount[c.source_page] || 0) + 1;
+    }
+  });
+  const topPages = Object.entries(pageCount)
+    .sort(([, a], [, b]) => b - a)
+    .slice(0, 5)
+    .map(([page, count]) => ({ page, count }));
+
+  return {
+    totalConversations: totalConversations || 0,
+    conversationsToday: conversationsToday || 0,
+    conversationsThisWeek: conversationsThisWeek || 0,
+    conversationsThisMonth: conversationsThisMonth || 0,
+    totalLeads: totalLeads || 0,
+    avgMessagesPerConversation,
+    topPages,
+  };
+}

@@ -83,6 +83,7 @@ export default function AdminPanel() {
     { id: "support", label: "Soporte", icon: MessageSquare, badgeCount: unreadSupportCount },
     { id: "members", label: "Miembros", icon: Users, badgeCount: unreadMembersCount },
     { id: "leads", label: "Contactos", icon: Mail, badgeCount: unreadLeadsCount },
+    { id: "chatbot", label: "Chatbot IA", icon: Sparkles },
     { id: "prices", label: "Precios y Promos", icon: DollarSign },
     { id: "cart", label: "Carritos", icon: ShoppingCart },
     { id: "courses", label: "Cursos", icon: GraduationCap },
@@ -117,7 +118,13 @@ export default function AdminPanel() {
              return (
                <button 
                  key={item.id}
-                 onClick={() => handleTabChange(item.id)}
+                 onClick={() => {
+                   if (item.id === "chatbot") {
+                     window.location.href = "/comunidad/admin/chatbot";
+                   } else {
+                     handleTabChange(item.id);
+                   }
+                 }}
                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all relative
                    ${activeTab === item.id 
                      ? "bg-brand-blue text-white shadow-md shadow-brand-blue/20" 
