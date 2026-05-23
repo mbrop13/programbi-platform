@@ -45,7 +45,7 @@ export default function PagoClient() {
   const [loadingData, setLoadingData] = useState(true);
 
   // Country state for dropdown
-  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
+
 
   // Cart state
   const [cart, setCart] = useState<Record<string, CartItem>>({});
@@ -586,69 +586,6 @@ export default function PagoClient() {
                            </div>
                         ) : (
                            <>
-                              {/* Currency Selector Dropdown */}
-                              <div className="mb-6 flex justify-between items-center bg-gray-50 p-3 rounded-2xl border border-gray-100">
-                                <span className="text-xs font-bold text-gray-500 flex items-center gap-1.5">
-                                  <Globe className="w-3.5 h-3.5 text-gray-400" /> País (Moneda y Horario):
-                                </span>
-                                <div className="relative">
-                                  <button
-                                    type="button"
-                                    onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
-                                    className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-gray-200 hover:border-blue-400 transition-all font-bold text-sm text-[#0F172A] shadow-sm outline-none cursor-pointer"
-                                  >
-                                    <img src={country.flagUrl} alt="" className="w-4.5 h-auto rounded-[2px]" />
-                                    <span>{country.shortName}</span>
-                                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isCountryDropdownOpen ? 'rotate-180' : ''}`} />
-                                  </button>
-
-                                  <AnimatePresence>
-                                    {isCountryDropdownOpen && (
-                                      <>
-                                        <div 
-                                          className="fixed inset-0 z-40" 
-                                          onClick={() => setIsCountryDropdownOpen(false)}
-                                        />
-                                        <motion.div
-                                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                          transition={{ duration: 0.15 }}
-                                          className="absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-2xl shadow-xl p-1.5 z-50 overflow-hidden"
-                                        >
-                                          <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2.5 py-1.5 border-b border-gray-50">
-                                            Seleccionar País
-                                          </div>
-                                          <div className="max-h-[240px] overflow-y-auto custom-scrollbar">
-                                            {countries.map((c) => (
-                                              <button
-                                                type="button"
-                                                key={c.iso}
-                                                onClick={() => {
-                                                  setCountryByIso(c.iso);
-                                                  setIsCountryDropdownOpen(false);
-                                                }}
-                                                className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-bold transition-all border-none outline-none text-left cursor-pointer ${
-                                                  country.iso === c.iso
-                                                    ? 'bg-blue-50 text-[#1890FF]'
-                                                    : 'bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                                }`}
-                                              >
-                                                <div className="flex items-center gap-2">
-                                                  <img src={c.flagUrl} alt="" className="w-4.5 h-auto rounded-[2px]" />
-                                                  <span>{c.name}</span>
-                                                  <span className="text-[10px] text-gray-400 font-medium">({c.currency.code})</span>
-                                                </div>
-                                                {country.iso === c.iso && <Check className="w-3.5 h-3.5 text-[#1890FF]" />}
-                                              </button>
-                                            ))}
-                                          </div>
-                                        </motion.div>
-                                      </>
-                                    )}
-                                  </AnimatePresence>
-                                </div>
-                              </div>
 
                               <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                                  {cartItems.map(item => (

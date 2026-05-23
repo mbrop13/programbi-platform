@@ -48,7 +48,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const [bumpSelections, setBumpSelections] = useState<{slug: string, level: string, id?: string}[]>([]);
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
   const { country, setCountryByIso, countries } = useCountry();
-  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   const relatedCourses = courses.filter((c) => c.slug !== course.slug).slice(0, 3);
   const scheduleCountry = SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0];
 
@@ -331,71 +330,11 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                     style={{ borderLeft: `4px solid ${course.accentColor}` }}
                   >
                     {/* Header row */}
-                    <div className="flex justify-between items-center px-5 pt-5 pb-3 gap-4 flex-wrap sm:flex-nowrap">
-                      <div className="flex items-center gap-2.5">
-                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="text-[11px] font-black text-emerald-600 uppercase tracking-widest">
-                          Próxima Fecha
-                        </span>
-                      </div>
-
-                      {/* Selector de País / Timezone */}
-                      <div className="relative shrink-0 z-20">
-                        <button
-                          type="button"
-                          onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
-                          className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100/80 border border-slate-200 hover:border-slate-300 px-3 py-1.5 rounded-xl transition-all font-bold text-xs text-slate-700 shadow-sm outline-none cursor-pointer"
-                        >
-                          <img src={country.flagUrl} alt="" className="w-4 h-auto rounded-[2px]" />
-                          <span>{country.shortName}</span>
-                          <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isCountryDropdownOpen ? 'rotate-180' : ''}`} />
-                        </button>
-
-                        <AnimatePresence>
-                          {isCountryDropdownOpen && (
-                            <>
-                              <div
-                                className="fixed inset-0 z-40"
-                                onClick={() => setIsCountryDropdownOpen(false)}
-                              />
-                              <motion.div
-                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                transition={{ duration: 0.15 }}
-                                className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl p-1.5 z-50 overflow-hidden"
-                              >
-                                <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-2.5 py-1.5 border-b border-slate-50">
-                                  Seleccionar País
-                                </div>
-                                <div className="max-h-[180px] overflow-y-auto custom-scrollbar">
-                                  {countries.map((c) => (
-                                    <button
-                                      type="button"
-                                      key={c.iso}
-                                      onClick={() => {
-                                        setCountryByIso(c.iso);
-                                        setIsCountryDropdownOpen(false);
-                                      }}
-                                      className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-bold transition-all border-none outline-none text-left cursor-pointer ${
-                                        country.iso === c.iso
-                                          ? 'bg-emerald-50 text-emerald-600'
-                                          : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                                      }`}
-                                    >
-                                      <div className="flex items-center gap-2">
-                                        <img src={c.flagUrl} alt="" className="w-4 h-auto rounded-[2px]" />
-                                        <span>{c.name}</span>
-                                      </div>
-                                      {country.iso === c.iso && <Check className="w-3.5 h-3.5 text-emerald-600" />}
-                                    </button>
-                                  ))}
-                                </div>
-                              </motion.div>
-                            </>
-                          )}
-                        </AnimatePresence>
-                      </div>
+                    <div className="flex items-center px-5 pt-5 pb-3 gap-2.5">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-[11px] font-black text-emerald-600 uppercase tracking-widest">
+                        Próxima Fecha de Inicio
+                      </span>
                     </div>
 
                     {/* Schedule data */}
@@ -548,7 +487,17 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       </p>
                       
                       {isLoggedIn ? (
-                        <div className="flex items-end gap-3">
+                        <div className="flex flex-col gap-1">
+                          {rawPrice && discPercent > 0 && (
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-sm font-bold text-slate-400 line-through">
+                                {convertAndFormat(rawPrice)}
+                              </span>
+                              <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                {discPercent}% OFF
+                              </span>
+                            </div>
+                          )}
                           <span className="text-3xl font-black text-slate-900 leading-none">
                             {convertAndFormat(currentPrice)}
                           </span>
@@ -795,7 +744,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         defaultTab="register"
-        redirectUrl={`/pago?curso=${course.slug}`}
       />
     </>
   );
