@@ -1,7 +1,6 @@
 "use client";
 
 import React, { Component, ErrorInfo, ReactNode, useState, useEffect, useRef, useCallback } from "react";
-import { useChat } from "@ai-sdk/react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -17,8 +16,14 @@ import {
   Bot,
   User,
   RotateCcw,
-  Zap,
 } from "lucide-react";
+
+/* ─── Types ────────────────────────────────────────────────────── */
+interface ChatMessage {
+  id: string;
+  role: "user" | "assistant" | "system";
+  content: string;
+}
 
 /* ─── Constantes ───────────────────────────────────────────────── */
 const VISITOR_ID_KEY = "programbi_visitor_id";
@@ -64,7 +69,7 @@ function getVisitorId(): string {
         id = crypto.randomUUID();
       } else {
         id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-          var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+          const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
           return v.toString(16);
         });
       }
@@ -78,6 +83,12 @@ function getVisitorId(): string {
     }
     return memoryVisitorId;
   }
+}
+
+let messageCounter = 0;
+function generateId(): string {
+  messageCounter++;
+  return `msg-${Date.now()}-${messageCounter}`;
 }
 
 function renderSimpleMarkdown(text: string) {
@@ -241,9 +252,13 @@ function ChatWidgetInner() {
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [showQuickActions, setShowQuickActions] = useState(true);
   const [isFirstOpen, setIsFirstOpen] = useState(true);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
   const pathname = usePathname();
 
   // Visitor ID
@@ -254,54 +269,7 @@ function ChatWidgetInner() {
     if (savedConvId) setConversationId(savedConvId);
   }, []);
 
-  // Vercel AI SDK useChat
-  const chatHook: any = useChat({
-    api: "/api/chatbot",
-    body: {
-      conversationId,
-      visitorId,
-      sourcePage: pathname,
-    },
-    onResponse: (response: any) => {
-      const newConvId = response?.headers?.get("X-Conversation-Id");
-      if (newConvId && newConvId !== conversationId) {
-        setConversationId(newConvId);
-        safeStorage.setItem(CONVERSATION_ID_KEY, newConvId);
-      }
-    },
-    onFinish: () => {
-      setTimeout(() => {
-        saveMessagesToStorage();
-      }, 100);
-    },
-    onError: (error: any) => {
-      console.error("Chat error:", error);
-    },
-  } as any);
-
-  const {
-    messages = [],
-    input = "",
-    handleInputChange = () => {},
-    handleSubmit: originalHandleSubmit = (e: any) => e?.preventDefault(),
-    isLoading = false,
-    setMessages = () => {},
-    append = () => {},
-  } = chatHook || {};
-  
-  const safeMessages = Array.isArray(messages) ? messages : [];
-
-  const saveMessagesToStorage = useCallback(() => {
-    if (typeof window === "undefined") return;
-    try {
-      if (!Array.isArray(safeMessages)) return;
-      const toSave = safeMessages.slice(-50);
-      safeStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(toSave));
-    } catch {
-      // Ignorar errores de almacenamiento
-    }
-  }, [safeMessages]);
-
+  // Restore saved messages
   useEffect(() => {
     try {
       const saved = safeStorage.getItem(CHAT_HISTORY_KEY);
@@ -316,30 +284,163 @@ function ChatWidgetInner() {
     } catch {
       // Ignorar
     }
-  }, [setMessages]);
+  }, []);
 
+  const saveMessagesToStorage = useCallback((msgs: ChatMessage[]) => {
+    if (typeof window === "undefined") return;
+    try {
+      const toSave = msgs.slice(-50);
+      safeStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(toSave));
+    } catch {
+      // Ignorar errores de almacenamiento
+    }
+  }, []);
+
+  // Auto-scroll
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [safeMessages, isLoading]);
+  }, [messages, isLoading]);
 
+  // Auto-focus input when chat opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      // Un pequeño delay ayuda con el renderizado en móviles
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
 
+  // Notification badge
   useEffect(() => {
-    if (!isOpen && safeMessages.length > 0) {
-      const lastMsg = safeMessages[safeMessages.length - 1];
+    if (!isOpen && messages.length > 0) {
+      const lastMsg = messages[messages.length - 1];
       if (lastMsg?.role === "assistant") {
         setHasNewMessage(true);
       }
     }
-  }, [safeMessages, isOpen]);
+  }, [messages, isOpen]);
 
+  /* ─── Core: send a message and stream the response ───────────── */
+  const sendMessage = useCallback(async (userContent: string) => {
+    if (!userContent.trim() || isLoading) return;
+
+    // Cancel any in-flight request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const userMsg: ChatMessage = {
+      id: generateId(),
+      role: "user",
+      content: userContent.trim(),
+    };
+
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
+    setInput("");
+    setIsLoading(true);
+    setShowQuickActions(false);
+    setIsFirstOpen(false);
+
+    // Reset textarea height
+    if (inputRef.current) {
+      inputRef.current.style.height = "auto";
+    }
+
+    // Build the messages array for the API (simple {role, content} format)
+    const apiMessages = updatedMessages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    try {
+      const response = await fetch("/api/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: apiMessages,
+          conversationId,
+          visitorId,
+          sourcePage: pathname,
+        }),
+        signal: controller.signal,
+      });
+
+      // Pick up conversation ID from response header
+      const newConvId = response.headers.get("X-Conversation-Id");
+      if (newConvId && newConvId !== "pending" && newConvId !== conversationId) {
+        setConversationId(newConvId);
+        safeStorage.setItem(CONVERSATION_ID_KEY, newConvId);
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      // Create the assistant message placeholder
+      const assistantMsg: ChatMessage = {
+        id: generateId(),
+        role: "assistant",
+        content: "",
+      };
+
+      const withAssistant = [...updatedMessages, assistantMsg];
+      setMessages(withAssistant);
+
+      // Stream the text response
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("No response body");
+
+      const decoder = new TextDecoder();
+      let fullText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        fullText += chunk;
+
+        // Update the assistant message content in-place
+        setMessages((prev) => {
+          const copy = [...prev];
+          const lastIdx = copy.length - 1;
+          if (lastIdx >= 0 && copy[lastIdx].role === "assistant") {
+            copy[lastIdx] = { ...copy[lastIdx], content: fullText };
+          }
+          return copy;
+        });
+      }
+
+      // Save to storage after completion
+      setMessages((prev) => {
+        saveMessagesToStorage(prev);
+        return prev;
+      });
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name === "AbortError") {
+        // User cancelled, ignore
+        return;
+      }
+      console.error("Chat error:", err);
+
+      // Add error message
+      const errorMsg: ChatMessage = {
+        id: generateId(),
+        role: "assistant",
+        content: "Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta nuevamente. Si el problema persiste, contáctanos por WhatsApp al +56 9 3677 6614.",
+      };
+      setMessages((prev) => [...prev, errorMsg]);
+    } finally {
+      setIsLoading(false);
+      abortControllerRef.current = null;
+    }
+  }, [messages, isLoading, conversationId, visitorId, pathname, saveMessagesToStorage]);
+
+  /* ─── Event Handlers ─────────────────────────────────────────── */
   const handleOpen = () => {
     setIsOpen(true);
     setHasNewMessage(false);
@@ -347,37 +448,30 @@ function ChatWidgetInner() {
 
   const handleClose = () => {
     setIsOpen(false);
-    saveMessagesToStorage();
+    saveMessagesToStorage(messages);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input?.trim() || isLoading) return;
-    setShowQuickActions(false);
-    setIsFirstOpen(false);
-    try {
-      originalHandleSubmit(e);
-      // Tras enviar, hacemos un reset artificial del height si fuera necesario
-      if (inputRef.current) {
-        inputRef.current.style.height = "auto";
-      }
-    } catch (err) {
-      console.error("Error submitting message:", err);
-    }
+    sendMessage(input);
   };
 
   const handleQuickAction = (message: string) => {
-    setShowQuickActions(false);
-    setIsFirstOpen(false);
-    append({ role: "user", content: message });
+    sendMessage(message);
   };
 
   const handleNewChat = () => {
+    // Abort any in-flight request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
     setMessages([]);
+    setInput("");
     setConversationId(null);
     setShowQuickActions(true);
     setShowRating(false);
     setIsFirstOpen(true);
+    setIsLoading(false);
     safeStorage.removeItem(CHAT_HISTORY_KEY);
     safeStorage.removeItem(CONVERSATION_ID_KEY);
     if (inputRef.current) inputRef.current.focus();
@@ -399,12 +493,12 @@ function ChatWidgetInner() {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit(e as unknown as React.FormEvent);
+      sendMessage(input);
     }
   };
 
-  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    handleInputChange(e);
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
     // Auto-resize
     const target = e.target;
     target.style.height = "auto";
@@ -489,7 +583,7 @@ function ChatWidgetInner() {
                 <button
                   type="button"
                   onClick={() => {
-                    if (safeMessages.length > 2) setShowRating(true);
+                    if (messages.length > 2) setShowRating(true);
                     handleClose();
                   }}
                   className="p-2 rounded-lg bg-transparent hover:bg-slate-100 border-none cursor-pointer transition-colors text-slate-400 hover:text-slate-700"
@@ -502,7 +596,7 @@ function ChatWidgetInner() {
 
             {/* ─── Messages Area ────────────────────────────── */}
             <div className="flex-1 overflow-y-auto overflow-x-hidden py-5 space-y-5 bg-white scrollbar-thin scrollbar-thumb-slate-200">
-              {(safeMessages.length === 0 || isFirstOpen) && (
+              {(messages.length === 0 || isFirstOpen) && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -525,7 +619,7 @@ function ChatWidgetInner() {
               )}
 
               <AnimatePresence>
-                {showQuickActions && safeMessages.length === 0 && (
+                {showQuickActions && messages.length === 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -553,19 +647,19 @@ function ChatWidgetInner() {
                 )}
               </AnimatePresence>
 
-              {safeMessages
-                .filter((m: any) => m?.role !== "system")
-                .map((message: any) => (
+              {messages
+                .filter((m) => m.role !== "system")
+                .map((message) => (
                   <MessageBubble
-                    key={message?.id}
-                    role={message?.role}
-                    content={message?.content || ""}
+                    key={message.id}
+                    role={message.role}
+                    content={message.content}
                   />
                 ))}
 
               {isLoading && <TypingIndicator />}
 
-              {showRating && safeMessages.length > 2 && (
+              {showRating && messages.length > 2 && (
                 <RatingStars onRate={handleRate} />
               )}
 
@@ -581,8 +675,8 @@ function ChatWidgetInner() {
                 <div className="flex items-end gap-2 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 focus-within:border-blue-500 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-500/10 transition-all shadow-sm">
                   <textarea
                     ref={inputRef}
-                    value={input || ""}
-                    onChange={handleInput}
+                    value={input}
+                    onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
                     placeholder="Escribe tu consulta aquí..."
                     rows={1}
@@ -592,9 +686,9 @@ function ChatWidgetInner() {
                   />
                   <button
                     type="submit"
-                    disabled={!input?.trim() || isLoading}
+                    disabled={!input.trim() || isLoading}
                     className={`p-2.5 rounded-lg transition-all border-none flex-shrink-0 flex items-center justify-center h-[40px] w-[40px] ${
-                      input?.trim() && !isLoading
+                      input.trim() && !isLoading
                         ? "bg-blue-600 text-white shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:scale-105 active:scale-95 cursor-pointer"
                         : "bg-slate-100 text-slate-400 cursor-not-allowed"
                     }`}
