@@ -3,6 +3,7 @@
 import React, { Component, ErrorInfo, ReactNode, useState, useEffect, useRef, useCallback } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCountry } from "@/lib/context/CountryContext";
 import {
   X,
   Send,
@@ -261,17 +262,7 @@ function CourseCard({ slug }: { slug: string }) {
   );
 }
 
-/* ─── Schedule Card with Timezone ──────────────────────────────── */
-const TIMEZONES = [
-  { label: "Chile", offset: -4, flag: "🇨🇱" },
-  { label: "Colombia / Perú / Ecuador", offset: -5, flag: "🇨🇴" },
-  { label: "México Centro", offset: -6, flag: "🇲🇽" },
-  { label: "Argentina", offset: -3, flag: "🇦🇷" },
-  { label: "Bolivia / Venezuela", offset: -4, flag: "🇧🇴" },
-  { label: "República Dominicana", offset: -4, flag: "🇩🇴" },
-  { label: "España", offset: 2, flag: "🇪🇸" },
-];
-
+/* ─── Schedule Card with Global Country ───────────────────── */
 const SCHEDULE_DATA = [
   { course: "Análisis de Datos (SQL)", days: "Martes y Jueves", chileTime: "19:30 - 21:30", slug: "analisis-de-datos" },
   { course: "Power BI", days: "Lunes y Miércoles", chileTime: "19:30 - 21:30", slug: "power-bi" },
@@ -279,31 +270,15 @@ const SCHEDULE_DATA = [
   { course: "Python para Datos", days: "Lunes y Miércoles", chileTime: "19:30 - 21:30", slug: "python" },
 ];
 
-function convertTime(chileTime: string, targetOffset: number): string {
-  const chileOffset = -4;
-  const diff = targetOffset - chileOffset;
-  return chileTime.replace(/(\d{1,2}):(\d{2})/g, (_, h, m) => {
-    let hour = (parseInt(h) + diff + 24) % 24;
-    return `${hour.toString().padStart(2, "0")}:${m}`;
-  });
-}
-
 function ScheduleCards() {
-  const [tz, setTz] = useState(0);
-  const selected = TIMEZONES[tz];
+  const { country, convertTime } = useCountry();
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-2 mt-1">
-      {/* Timezone selector */}
-      <div className="flex items-center gap-2">
-        <span className="text-[11px] text-slate-500 font-medium flex-shrink-0">🌎 Zona:</span>
-        <select value={tz} onChange={(e) => setTz(Number(e.target.value))}
-          className="text-[11px] bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-slate-700 font-medium flex-1 cursor-pointer"
-          style={{ outline: "none" }}>
-          {TIMEZONES.map((t, i) => (
-            <option key={t.label} value={i}>{t.flag} {t.label}</option>
-          ))}
-        </select>
+      {/* Current country indicator */}
+      <div className="flex items-center gap-2 px-2 py-1.5 bg-slate-50 rounded-lg">
+        <img src={country.flagUrl} alt={country.name} className="w-4 h-auto rounded-[1px]" />
+        <span className="text-[11px] text-slate-600 font-medium">Horarios para {country.name}</span>
       </div>
 
       {/* Schedule cards */}
@@ -312,18 +287,18 @@ function ScheduleCards() {
           className="flex items-center justify-between px-3 py-2.5 rounded-xl border border-slate-200 bg-white hover:border-blue-300 hover:shadow-md transition-all no-underline group">
           <div className="flex-1 min-w-0">
             <p className="text-[12px] font-bold text-slate-800 truncate">{s.course}</p>
-            <p className="text-[11px] text-slate-500 mt-0.5">📆 {s.days}</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">{s.days}</p>
           </div>
           <div className="text-right flex-shrink-0 ml-2">
             <p className="text-[12px] font-bold" style={{ color: "#1890ff" }}>
-              {convertTime(s.chileTime, selected.offset)}
+              {convertTime(s.chileTime)}
             </p>
-            <p className="text-[9px] text-slate-400">{selected.flag} {selected.label.split(" / ")[0]}</p>
+            <p className="text-[9px] text-slate-400">{country.timezone.label}</p>
           </div>
         </a>
       ))}
 
-      <p className="text-[10px] text-slate-400 text-center italic">Los horarios pueden variar. Consulta la web para fechas exactas de inicio.</p>
+      <p className="text-[10px] text-slate-400 text-center italic">Cambia tu país en el menú superior para ver otros horarios.</p>
     </motion.div>
   );
 }

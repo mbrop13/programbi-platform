@@ -6,6 +6,7 @@ import { useState, useEffect, FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { useCountry } from "@/lib/context/CountryContext";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -53,6 +54,13 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
   const [phonePrefix, setPhonePrefix] = useState("+56");
   const [showPrefixDropdown, setShowPrefixDropdown] = useState(false);
   const [acceptsPrivacy, setAcceptsPrivacy] = useState(false);
+
+  // Sync phone prefix with global country
+  const { country: globalCountry } = useCountry();
+  useEffect(() => {
+    const matched = COUNTRIES.find(c => c.iso === globalCountry.iso);
+    if (matched) setPhonePrefix(matched.code);
+  }, [globalCountry.iso]);
 
   // Reset state when modal opens/closes or tab changes
   useEffect(() => {

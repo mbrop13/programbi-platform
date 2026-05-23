@@ -15,6 +15,7 @@ import SupportModal from "./SupportModal";
 import NewsletterSubscribeModal from "./NewsletterSubscribeModal";
 import { getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
 import { isCurrentUserAdmin } from "@/lib/supabase/comunidad";
+import { useCountry } from "@/lib/context/CountryContext";
 
 const LOGO_URL = "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974";
 
@@ -44,6 +45,8 @@ export default function Navbar() {
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const [isNlSubModalOpen, setIsNlSubModalOpen] = useState(false);
   const [pendingNlSub, setPendingNlSub] = useState(false);
+  const [isCountryOpen, setIsCountryOpen] = useState(false);
+  const countryDropdownRef = useRef<HTMLDivElement>(null);
   
   // Auth state
   const [user, setUser] = useState<any>(null);
@@ -56,6 +59,18 @@ export default function Navbar() {
   const supabase = createClient();
   const pathname = usePathname();
   const isNewsletter = pathname?.startsWith("/newsletter");
+  const { country, setCountryByIso, countries } = useCountry();
+
+  // Close country dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (countryDropdownRef.current && !countryDropdownRef.current.contains(e.target as Node)) {
+        setIsCountryOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   // Newsletter categories
   const [nlCategories, setNlCategories] = useState<any[]>([]);
@@ -206,6 +221,51 @@ export default function Navbar() {
               priority
             />
           </Link>
+
+          {/* Country Selector (Desktop) */}
+          <div className="hidden lg:block relative" ref={countryDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsCountryOpen(!isCountryOpen)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 transition-all cursor-pointer text-sm font-medium text-slate-600"
+            >
+              <img src={country.flagUrl} alt={country.name} className="w-5 h-auto rounded-[2px]" />
+              <span className="text-[13px]">{country.shortName}</span>
+              <ChevronDown size={13} className={`text-slate-400 transition-transform ${isCountryOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            <AnimatePresence>
+              {isCountryOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -5, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -5, scale: 0.97 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full right-0 mt-2 w-56 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-[100]"
+                >
+                  <div className="px-3 py-2 border-b border-slate-100">
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Seleccionar país</p>
+                  </div>
+                  <div className="max-h-64 overflow-y-auto py-1">
+                    {countries.map((c) => (
+                      <button
+                        key={c.iso}
+                        type="button"
+                        onClick={() => { setCountryByIso(c.iso); setIsCountryOpen(false); }}
+                        className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2.5 transition-colors border-none cursor-pointer ${
+                          c.iso === country.iso ? "bg-blue-50 text-blue-700 font-semibold" : "bg-transparent text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        <img src={c.flagUrl} alt={c.name} className="w-5 h-auto rounded-[2px] flex-shrink-0" />
+                        <span className="flex-1">{c.name}</span>
+                        <span className="text-[11px] text-slate-400">{c.currency.code}</span>
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
 
           {/* Desktop Nav */}
           <div className="hidden lg:flex items-center gap-1 ml-auto">
@@ -441,6 +501,28 @@ export default function Navbar() {
                 <button onClick={() => setIsMobileOpen(false)} className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-600 border-none cursor-pointer hover:bg-gray-100">
                   <X size={22} />
                 </button>
+              </div>
+
+              {/* Country Selector (Mobile) */}
+              <div className="px-5 py-3 border-b border-gray-100">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Tu país</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {countries.map((c) => (
+                    <button
+                      key={c.iso}
+                      type="button"
+                      onClick={() => setCountryByIso(c.iso)}
+                      className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all border cursor-pointer ${
+                        c.iso === country.iso
+                          ? "bg-blue-50 border-blue-200 text-blue-700"
+                          : "bg-white border-slate-200 text-slate-600 hover:bg-slate-50"
+                      }`}
+                    >
+                      <img src={c.flagUrl} alt={c.name} className="w-4 h-auto rounded-[2px]" />
+                      <span>{c.shortName}</span>
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="flex-1 overflow-auto p-5 space-y-1">

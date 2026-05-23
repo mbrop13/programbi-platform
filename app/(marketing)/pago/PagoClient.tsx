@@ -12,13 +12,9 @@ import {
   Info, Globe
 } from "lucide-react";
 import { courses as allCourses, Course } from "@/lib/data/courses";
-import { type CourseSchedule, analisisDeDatosSlugs, formatScheduleDate, getNearestSchedule, convertSchedule } from "@/lib/data/course-schedules";
+import { type CourseSchedule, analisisDeDatosSlugs, formatScheduleDate, getNearestSchedule, convertSchedule, SCHEDULE_COUNTRIES } from "@/lib/data/course-schedules";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
-import { useGeoPricing } from "@/hooks/useGeoPricing";
-
-function formatCLP(price: number) {
-  return new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(price);
-}
+import { useCountry } from "@/lib/context/CountryContext";
 
 type Mode = "individual" | "enterprise";
 
@@ -30,16 +26,6 @@ interface CartItem {
   title: string;
 }
 
-const CURRENCIES = [
-  { code: "CLP", symbol: "$", name: "Peso Chileno", iso: "cl", rate: 1, timeZone: "America/Santiago", format: (val: number) => new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(val) },
-  { code: "USD", symbol: "$", name: "Dólar", iso: "us", rate: 1 / 900, timeZone: "America/New_York", format: (val: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 }).format(val) },
-  { code: "MXN", symbol: "$", name: "Peso Mexicano", iso: "mx", rate: 18.5 / 900, timeZone: "America/Mexico_City", format: (val: number) => new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN", maximumFractionDigits: 0 }).format(val) },
-  { code: "COP", symbol: "$", name: "Peso Colombiano", iso: "co", rate: 4100 / 900, timeZone: "America/Bogota", format: (val: number) => new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(val) },
-  { code: "PEN", symbol: "S/.", name: "Sol Peruano", iso: "pe", rate: 3.75 / 900, timeZone: "America/Lima", format: (val: number) => new Intl.NumberFormat("es-PE", { style: "currency", currency: "PEN", maximumFractionDigits: 2 }).format(val) },
-  { code: "EUR", symbol: "€", name: "Euro", iso: "es", rate: 0.92 / 900, timeZone: "Europe/Madrid", format: (val: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR", maximumFractionDigits: 2 }).format(val) },
-  { code: "ARS", symbol: "$", name: "Peso Argentino", iso: "ar", rate: 980 / 900, timeZone: "America/Argentina/Buenos_Aires", format: (val: number) => new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(val) },
-];
-
 export default function PagoClient() {
   const searchParams = useSearchParams();
   const initialSlug = searchParams.get("curso") || "";
@@ -48,7 +34,8 @@ export default function PagoClient() {
   const initialEmail = searchParams.get("email") || "";
   const initialServicio = searchParams.get("servicio") || "";
 
-  const { isInternational, formatGeoPrice } = useGeoPricing();
+  const { country, countries, setCountryByIso, convertPrice, convertTime } = useCountry();
+  const scheduleCountry = useMemo(() => SCHEDULE_COUNTRIES.find(c => c.code === country.iso) || SCHEDULE_COUNTRIES[0], [country.iso]);
 
   const [mode, setMode] = useState<Mode>("individual");
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
@@ -57,9 +44,8 @@ export default function PagoClient() {
   const [courseDescriptions, setCourseDescriptions] = useState<any[]>([]);
   const [loadingData, setLoadingData] = useState(true);
 
-  // Currency state
-  const [selectedCurrency, setSelectedCurrency] = useState(CURRENCIES[0]);
-  const [isCurrencyDropdownOpen, setIsCurrencyDropdownOpen] = useState(false);
+  // Country state for dropdown
+  const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
 
   // Cart state
   const [cart, setCart] = useState<Record<string, CartItem>>({});
@@ -87,9 +73,8 @@ export default function PagoClient() {
   const [entMessage, setEntMessage] = useState("");
   const [entAcceptsPrivacy, setEntAcceptsPrivacy] = useState(false);
 
-  const convertAndFormat = (clpAmount: number, currency = selectedCurrency) => {
-    const converted = clpAmount * currency.rate;
-    return currency.format(converted);
+  const convertAndFormat = (clpAmount: number) => {
+    return convertPrice(clpAmount);
   };
 
   const getCourseDescription = (course: Course) => {
@@ -444,7 +429,7 @@ export default function PagoClient() {
                                      schedule.start_date,
                                      schedule.schedule_time,
                                      schedule.schedule_days,
-                                     selectedCurrency.timeZone
+                                     scheduleCountry.timeZone
                                    );
                                    return (
                                      <>
@@ -489,7 +474,7 @@ export default function PagoClient() {
                                            <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">{convertAndFormat(747000)}</span>
                                            <div className="flex flex-col items-start sm:items-end">
                                               <span className="text-2xl font-black text-[#0F172A]">{convertAndFormat(pricing.finalPrice)}</span>
-                                              {selectedCurrency.code !== "USD" && (
+                                              {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                                                 <span className="text-xs font-semibold text-gray-400">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
                                               )}
                                            </div>
@@ -502,7 +487,7 @@ export default function PagoClient() {
                                            <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">{convertAndFormat(pricing.originalPrice)}</span>
                                            <div className="flex flex-col items-start sm:items-end">
                                               <span className="text-2xl font-black text-[#0F172A]">{convertAndFormat(pricing.finalPrice)}</span>
-                                              {selectedCurrency.code !== "USD" && (
+                                              {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                                                 <span className="text-xs font-semibold text-gray-400">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
                                               )}
                                            </div>
@@ -512,7 +497,7 @@ export default function PagoClient() {
                                       return (
                                         <div className="flex flex-col items-start sm:items-end">
                                            <span className="text-2xl font-black text-[#0F172A]">{convertAndFormat(pricing.finalPrice)}</span>
-                                           {selectedCurrency.code !== "USD" && (
+                                           {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                                              <span className="text-xs font-semibold text-gray-400">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
                                            )}
                                         </div>
@@ -604,25 +589,25 @@ export default function PagoClient() {
                               {/* Currency Selector Dropdown */}
                               <div className="mb-6 flex justify-between items-center bg-gray-50 p-3 rounded-2xl border border-gray-100">
                                 <span className="text-xs font-bold text-gray-500 flex items-center gap-1.5">
-                                  <Globe className="w-3.5 h-3.5 text-gray-400" /> Moneda de Pago y Horario:
+                                  <Globe className="w-3.5 h-3.5 text-gray-400" /> País (Moneda y Horario):
                                 </span>
                                 <div className="relative">
                                   <button
                                     type="button"
-                                    onClick={() => setIsCurrencyDropdownOpen(!isCurrencyDropdownOpen)}
+                                    onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
                                     className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-gray-200 hover:border-blue-400 transition-all font-bold text-sm text-[#0F172A] shadow-sm outline-none cursor-pointer"
                                   >
-                                    <img src={`https://flagcdn.com/w20/${selectedCurrency.iso}.png`} alt="" className="w-4.5 h-auto rounded-[2px]" />
-                                    <span>{selectedCurrency.code}</span>
-                                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isCurrencyDropdownOpen ? 'rotate-180' : ''}`} />
+                                    <img src={country.flagUrl} alt="" className="w-4.5 h-auto rounded-[2px]" />
+                                    <span>{country.shortName}</span>
+                                    <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isCountryDropdownOpen ? 'rotate-180' : ''}`} />
                                   </button>
 
                                   <AnimatePresence>
-                                    {isCurrencyDropdownOpen && (
+                                    {isCountryDropdownOpen && (
                                       <>
                                         <div 
                                           className="fixed inset-0 z-40" 
-                                          onClick={() => setIsCurrencyDropdownOpen(false)}
+                                          onClick={() => setIsCountryDropdownOpen(false)}
                                         />
                                         <motion.div
                                           initial={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -632,29 +617,29 @@ export default function PagoClient() {
                                           className="absolute right-0 mt-2 w-56 bg-white border border-gray-100 rounded-2xl shadow-xl p-1.5 z-50 overflow-hidden"
                                         >
                                           <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-2.5 py-1.5 border-b border-gray-50">
-                                            Seleccionar Moneda
+                                            Seleccionar País
                                           </div>
                                           <div className="max-h-[240px] overflow-y-auto custom-scrollbar">
-                                            {CURRENCIES.map((currency) => (
+                                            {countries.map((c) => (
                                               <button
                                                 type="button"
-                                                key={currency.code}
+                                                key={c.iso}
                                                 onClick={() => {
-                                                  setSelectedCurrency(currency);
-                                                  setIsCurrencyDropdownOpen(false);
+                                                  setCountryByIso(c.iso);
+                                                  setIsCountryDropdownOpen(false);
                                                 }}
                                                 className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-bold transition-all border-none outline-none text-left cursor-pointer ${
-                                                  selectedCurrency.code === currency.code
+                                                  country.iso === c.iso
                                                     ? 'bg-blue-50 text-[#1890FF]'
                                                     : 'bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900'
                                                 }`}
                                               >
                                                 <div className="flex items-center gap-2">
-                                                  <img src={`https://flagcdn.com/w20/${currency.iso}.png`} alt="" className="w-4.5 h-auto rounded-[2px]" />
-                                                  <span>{currency.code}</span>
-                                                  <span className="text-[10px] text-gray-400 font-medium">({currency.name})</span>
+                                                  <img src={c.flagUrl} alt="" className="w-4.5 h-auto rounded-[2px]" />
+                                                  <span>{c.name}</span>
+                                                  <span className="text-[10px] text-gray-400 font-medium">({c.currency.code})</span>
                                                 </div>
-                                                {selectedCurrency.code === currency.code && <Check className="w-3.5 h-3.5 text-[#1890FF]" />}
+                                                {country.iso === c.iso && <Check className="w-3.5 h-3.5 text-[#1890FF]" />}
                                               </button>
                                             ))}
                                           </div>
@@ -683,7 +668,7 @@ export default function PagoClient() {
                                               nearest.start_date,
                                               nearest.schedule_time,
                                               nearest.schedule_days,
-                                              selectedCurrency.timeZone
+                                              scheduleCountry.timeZone
                                             );
                                             return (
                                               <div className="mt-2 rounded-xl border border-blue-100 overflow-hidden">
@@ -710,7 +695,7 @@ export default function PagoClient() {
                                        </div>
                                        <div className="flex flex-col items-end shrink-0">
                                           <span className="font-black text-[#0F172A] text-sm">{convertAndFormat(item.price * item.quantity)}</span>
-                                          {selectedCurrency.code !== "USD" && (
+                                          {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                                             <span className="text-[10px] font-semibold text-gray-400 mt-0.5">
                                               ≈ ${Math.round((item.price * item.quantity) / 900)} USD
                                             </span>
@@ -747,14 +732,14 @@ export default function PagoClient() {
                                  <span className="font-bold text-gray-500">Total a pagar</span>
                                  <div className="text-right">
                                    <span className="font-black text-2xl text-[#1890FF] block">{convertAndFormat(totalPrice)}</span>
-                                   {selectedCurrency.code !== "USD" && (
-                                     <span className="text-xs font-bold text-gray-400">≈ ${Math.round(totalPrice / 900)} USD</span>
+                                   {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
+                                     <span className="text-xs font-semibold text-gray-400">≈ ${Math.round(totalPrice / 900)} USD</span>
                                    )}
                                  </div>
                               </div>
 
                               {/* Exchange Rate Reference Card */}
-                              {selectedCurrency.code !== "CLP" && (
+                              {country.currency.code !== "CLP" && (
                                 <div className="bg-blue-50/40 border border-blue-100 rounded-2xl p-4 mb-6 text-left">
                                   <div className="flex gap-2.5 items-start">
                                     <Info className="w-4 h-4 text-[#1890FF] shrink-0 mt-0.5" />
@@ -762,13 +747,13 @@ export default function PagoClient() {
                                       <h4 className="text-[11px] font-black text-blue-950 uppercase tracking-wider mb-1">
                                         Información de Conversión
                                       </h4>
-                                      <p className="text-[11px] text-blue-800 leading-relaxed font-medium">
-                                        El procesador de pagos Flow opera estrictamente en **Pesos Chilenos (CLP)**. Tu tarjeta será facturada por el equivalente de <span className="font-bold">{formatCLP(totalPrice)}</span>.
+                                      <p className="text-xs text-blue-700 leading-snug">
+                                        Se realizará un cobro por el equivalente de <span className="font-bold">{convertAndFormat(totalPrice)}</span>.
                                       </p>
                                       <div className="mt-2.5 pt-2 border-t border-blue-100/60 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-blue-600/80 font-bold">
                                         <span>Tasa USD Ref: $1 USD = $900 CLP</span>
-                                        {selectedCurrency.code !== "USD" && (
-                                          <span>Tasa de Cambio: $1 USD ≈ {(selectedCurrency.rate * 900).toFixed(2)} {selectedCurrency.code}</span>
+                                        {country.currency.code !== "USD" && (
+                                          <span>Tasa de Cambio: $1 USD ≈ {(country.currency.rate * 900).toFixed(2)} {country.currency.code}</span>
                                         )}
                                       </div>
                                     </div>
@@ -1020,7 +1005,7 @@ export default function PagoClient() {
                           </div>
                           <div className="flex flex-col items-end flex-shrink-0">
                             <span style={{ fontWeight: 900, color: "#0F172A", fontSize: 15 }}>{convertAndFormat(item.price * item.quantity)}</span>
-                            {selectedCurrency.code !== "USD" && (
+                            {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                               <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 700, marginTop: 2 }}>
                                 ≈ ${Math.round((item.price * item.quantity) / 900)} USD
                               </span>
@@ -1064,7 +1049,7 @@ export default function PagoClient() {
                     Ver Detalles {isMobileCartOpen ? <ChevronDown style={{ width: 14, height: 14 }} /> : <ChevronUp style={{ width: 14, height: 14 }} />}
                   </span>
                   <span style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", lineHeight: 1, display: "block", marginTop: 4 }}>
-                    {convertAndFormat(totalPrice)} {selectedCurrency.code !== "USD" && <span style={{ fontSize: 11, color: "#6b7280", fontWeight: 700 }}>≈ ${Math.round(totalPrice / 900)} USD</span>}
+                    {convertAndFormat(totalPrice)} {country.currency.code !== "USD" && country.currency.code !== "CLP" && <span style={{ fontSize: 11, color: "#6b7280", fontWeight: 700 }}>≈ ${Math.round(totalPrice / 900)} USD</span>}
                   </span>
                 </div>
               </div>

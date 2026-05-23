@@ -25,6 +25,7 @@ import MiningSyllabus from "./syllabuses/MiningSyllabus";
 import DataAnalyticsSyllabus from "./syllabuses/DataAnalyticsSyllabus";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { type CourseSchedule, SCHEDULE_COUNTRIES, convertSchedule, getNearestSchedule } from "@/lib/data/course-schedules";
+import { useCountry } from "@/lib/context/CountryContext";
 
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
@@ -46,9 +47,10 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const [isFreeTrial, setIsFreeTrial] = useState(false);
   const [bumpSelections, setBumpSelections] = useState<{slug: string, level: string, id?: string}[]>([]);
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
-  const [selectedCountry, setSelectedCountry] = useState(SCHEDULE_COUNTRIES[0]);
+  const { country, setCountryByIso, countries } = useCountry();
   const [isCountryDropdownOpen, setIsCountryDropdownOpen] = useState(false);
   const relatedCourses = courses.filter((c) => c.slug !== course.slug).slice(0, 3);
+  const scheduleCountry = SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0];
 
   // Bump Options logic
   const bumpOptions = [
@@ -335,8 +337,8 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                           onClick={() => setIsCountryDropdownOpen(!isCountryDropdownOpen)}
                           className="flex items-center gap-2 bg-slate-50 hover:bg-slate-100/80 border border-slate-200 hover:border-slate-300 px-3 py-1.5 rounded-xl transition-all font-bold text-xs text-slate-700 shadow-sm outline-none cursor-pointer"
                         >
-                          <img src={`https://flagcdn.com/w20/${selectedCountry.code}.png`} alt="" className="w-4 h-auto rounded-[2px]" />
-                          <span>{selectedCountry.name}</span>
+                          <img src={country.flagUrl} alt="" className="w-4 h-auto rounded-[2px]" />
+                          <span>{country.shortName}</span>
                           <ChevronDown className={`w-3.5 h-3.5 text-slate-400 transition-transform ${isCountryDropdownOpen ? 'rotate-180' : ''}`} />
                         </button>
 
@@ -355,28 +357,28 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                                 className="absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-2xl shadow-xl p-1.5 z-50 overflow-hidden"
                               >
                                 <div className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-2.5 py-1.5 border-b border-slate-50">
-                                  Seleccionar Horario
+                                  Seleccionar País
                                 </div>
                                 <div className="max-h-[180px] overflow-y-auto custom-scrollbar">
-                                  {SCHEDULE_COUNTRIES.map((country) => (
+                                  {countries.map((c) => (
                                     <button
                                       type="button"
-                                      key={country.code}
+                                      key={c.iso}
                                       onClick={() => {
-                                        setSelectedCountry(country);
+                                        setCountryByIso(c.iso);
                                         setIsCountryDropdownOpen(false);
                                       }}
                                       className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-bold transition-all border-none outline-none text-left cursor-pointer ${
-                                        selectedCountry.code === country.code
+                                        country.iso === c.iso
                                           ? 'bg-emerald-50 text-emerald-600'
                                           : 'bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                                       }`}
                                     >
                                       <div className="flex items-center gap-2">
-                                        <img src={`https://flagcdn.com/w20/${country.code}.png`} alt="" className="w-4 h-auto rounded-[2px]" />
-                                        <span>{country.name}</span>
+                                        <img src={c.flagUrl} alt="" className="w-4 h-auto rounded-[2px]" />
+                                        <span>{c.name}</span>
                                       </div>
-                                      {selectedCountry.code === country.code && <Check className="w-3.5 h-3.5 text-emerald-600" />}
+                                      {country.iso === c.iso && <Check className="w-3.5 h-3.5 text-emerald-600" />}
                                     </button>
                                   ))}
                                 </div>
@@ -393,7 +395,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                         levelSchedule.start_date,
                         levelSchedule.schedule_time,
                         levelSchedule.schedule_days,
-                        selectedCountry.timeZone
+                        scheduleCountry.timeZone
                       );
                       return (
                         <div className="grid grid-cols-2 gap-3 px-5 pb-4">
