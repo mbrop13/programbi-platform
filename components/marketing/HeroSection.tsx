@@ -342,7 +342,7 @@ function ModernDataVisual() {
 /* ─── MAIN HERO ─── */
 export default function HeroSection() {
   return (
-    <section className="relative overflow-hidden py-10 lg:py-20">
+    <section className="relative overflow-hidden pt-8 pb-10 lg:pt-12 lg:pb-20">
       {/* Bg decorations */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div
