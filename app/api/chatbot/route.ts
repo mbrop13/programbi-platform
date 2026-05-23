@@ -96,8 +96,8 @@ ${dynamicContext}`
     let conversationId = existingConvId || null
 
     // ─── Modelos (primario + fallback) ───
-    const PRIMARY_MODEL = 'deepseek/deepseek-v4-flash'
-    const FALLBACK_MODEL = 'google/gemini-2.0-flash-001'
+    const PRIMARY_MODEL = 'deepseek/deepseek-v3-0324:free'
+    const FALLBACK_MODEL = 'google/gemma-3-27b-it:free'
 
     function tryStreamWithModel(modelName: string) {
       return streamText({
