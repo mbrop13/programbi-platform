@@ -339,7 +339,7 @@ export default function ChatbotAdminClient({
   const renderSimpleMarkdown = (text: string) => {
     // Basic formatting for timeline view
     return text
-      .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-white">$1</strong>')
+      .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-blue-600">$1</strong>')
       .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
       .replace(/\n/g, "<br />");
   };
@@ -347,29 +347,29 @@ export default function ChatbotAdminClient({
   const totalPages = Math.ceil(total / limit) || 1;
 
   return (
-    <div className="bg-[#0b0f19] text-slate-100 min-h-screen py-8 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="bg-slate-50 text-slate-800 min-h-screen py-8 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-7xl mx-auto">
         {/* ─── Header & Breadcrumb ─── */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs text-slate-400 mb-2">
-              <Link href="/comunidad/admin" className="hover:text-blue-400 transition-colors flex items-center gap-1 text-slate-400 no-underline font-semibold">
+            <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+              <Link href="/comunidad/admin" className="hover:text-blue-400 transition-colors flex items-center gap-1 text-slate-500 no-underline font-semibold">
                 <ArrowLeft className="w-3 h-3" /> Panel Admin
               </Link>
               <span>/</span>
-              <span className="text-slate-300 font-semibold">Chatbot IA</span>
+              <span className="text-slate-700 font-semibold">Chatbot IA</span>
             </div>
-            <h1 className="text-3xl font-black tracking-tight text-white flex items-center gap-2">
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 flex items-center gap-2">
               💬 Chatbot IA <span className="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full border border-blue-500/30">Admin</span>
             </h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-slate-500 text-sm mt-1">
               Supervisa y optimiza las dudas de visitantes públicos recopiladas por Programbi.
             </p>
           </div>
           <div className="flex items-center gap-3">
             <button
               onClick={handleRefreshStats}
-              className="flex items-center gap-2 bg-slate-900 border border-slate-800 hover:bg-slate-850 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer"
+              className="flex items-center gap-2 bg-slate-100 border border-slate-200 hover:bg-slate-100 px-4 py-2.5 rounded-xl text-xs font-semibold text-slate-700 hover:text-slate-900 transition-all cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" /> Actualizar Stats
             </button>
@@ -384,10 +384,10 @@ export default function ChatbotAdminClient({
 
         {/* ─── Stats KPI Row ─── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 shadow-sm flex items-center justify-between">
+          <div className="bg-white backdrop-blur-xl border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider font-bold">Total Chats</p>
-              <h3 className="text-2xl font-black text-white mt-1">{stats.totalConversations}</h3>
+              <p className="text-xs text-slate-500 uppercase tracking-wider font-bold">Total Chats</p>
+              <h3 className="text-2xl font-black text-slate-900 mt-1">{stats.totalConversations}</h3>
               <p className="text-[10px] text-blue-400 font-semibold mt-1 flex items-center gap-1">
                 <TrendingUp className="w-3 h-3" /> Todo el tiempo
               </p>
@@ -397,10 +397,10 @@ export default function ChatbotAdminClient({
             </div>
           </div>
 
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 shadow-sm flex items-center justify-between">
+          <div className="bg-white backdrop-blur-xl border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider font-bold">Conversaciones Hoy</p>
-              <h3 className="text-2xl font-black text-white mt-1">{stats.conversationsToday}</h3>
+              <p className="text-xs text-slate-500 uppercase tracking-wider font-bold">Conversaciones Hoy</p>
+              <h3 className="text-2xl font-black text-slate-900 mt-1">{stats.conversationsToday}</h3>
               <p className="text-[10px] text-emerald-400 font-semibold mt-1">
                 Actividad reciente
               </p>
@@ -410,10 +410,10 @@ export default function ChatbotAdminClient({
             </div>
           </div>
 
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 shadow-sm flex items-center justify-between">
+          <div className="bg-white backdrop-blur-xl border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider font-bold">Leads Generados</p>
-              <h3 className="text-2xl font-black text-white mt-1">{stats.totalLeads}</h3>
+              <p className="text-xs text-slate-500 uppercase tracking-wider font-bold">Leads Generados</p>
+              <h3 className="text-2xl font-black text-slate-900 mt-1">{stats.totalLeads}</h3>
               <p className="text-[10px] text-indigo-400 font-semibold mt-1">
                 Tasa conv: {stats.totalConversations > 0 ? Math.round((stats.totalLeads / stats.totalConversations) * 100) : 0}%
               </p>
@@ -423,10 +423,10 @@ export default function ChatbotAdminClient({
             </div>
           </div>
 
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 shadow-sm flex items-center justify-between">
+          <div className="bg-white backdrop-blur-xl border border-slate-200 rounded-2xl p-5 shadow-sm flex items-center justify-between">
             <div>
-              <p className="text-xs text-slate-400 uppercase tracking-wider font-bold">Mensajes / Chat</p>
-              <h3 className="text-2xl font-black text-white mt-1">{stats.avgMessagesPerConversation}</h3>
+              <p className="text-xs text-slate-500 uppercase tracking-wider font-bold">Mensajes / Chat</p>
+              <h3 className="text-2xl font-black text-slate-900 mt-1">{stats.avgMessagesPerConversation}</h3>
               <p className="text-[10px] text-purple-400 font-semibold mt-1">
                 Promedio de engagement
               </p>
@@ -444,7 +444,7 @@ export default function ChatbotAdminClient({
           <div className="lg:col-span-12 xl:col-span-8 space-y-6">
             
             {/* Filters Bar */}
-            <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl p-5 shadow-sm">
+            <div className="bg-white backdrop-blur-xl border border-slate-200 rounded-2xl p-5 shadow-sm">
               <form onSubmit={handleSearchSubmit} className="space-y-4">
                 <div className="flex flex-col md:flex-row gap-3">
                   {/* Search input */}
@@ -454,7 +454,7 @@ export default function ChatbotAdminClient({
                       placeholder="Buscar por nombre, email o mensaje..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 text-slate-100 placeholder:text-slate-500 transition-all"
+                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/40 text-slate-800 placeholder:text-slate-500 transition-all"
                     />
                     <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                   </div>
@@ -462,7 +462,7 @@ export default function ChatbotAdminClient({
                   {/* Submit Button */}
                   <button
                     type="submit"
-                    className="bg-slate-800 border border-slate-700 hover:bg-slate-750 text-white font-bold px-6 py-3 rounded-xl text-sm transition-all cursor-pointer flex items-center justify-center gap-2"
+                    className="bg-slate-100 border border-slate-700 hover:bg-slate-200 text-slate-900 font-bold px-6 py-3 rounded-xl text-sm transition-all cursor-pointer flex items-center justify-center gap-2"
                   >
                     <Filter className="w-4 h-4" /> Buscar
                   </button>
@@ -472,7 +472,7 @@ export default function ChatbotAdminClient({
                     <button
                       type="button"
                       onClick={handleClearFilters}
-                      className="bg-transparent border border-dashed border-slate-850 text-slate-400 hover:text-white px-4 py-3 rounded-xl text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                      className="bg-transparent border border-dashed border-slate-200 text-slate-500 hover:text-slate-900 px-4 py-3 rounded-xl text-sm transition-all cursor-pointer flex items-center justify-center gap-1.5"
                     >
                       <RotateCcw className="w-3.5 h-3.5" /> Limpiar
                     </button>
@@ -486,7 +486,7 @@ export default function ChatbotAdminClient({
                     <select
                       value={statusFilter}
                       onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-                      className="w-full mt-1 px-3 py-2 bg-slate-950/60 border border-slate-800 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-300"
+                      className="w-full mt-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-700"
                     >
                       <option value="all">Todos los estados</option>
                       <option value="active">🟢 Activo</option>
@@ -505,7 +505,7 @@ export default function ChatbotAdminClient({
                         setLeadFilter(val === "all" ? null : val === "leads");
                         setPage(1);
                       }}
-                      className="w-full mt-1 px-3 py-2 bg-slate-950/60 border border-slate-800 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-300"
+                      className="w-full mt-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-700"
                     >
                       <option value="all">Todos</option>
                       <option value="leads">⭐ Solo Leads</option>
@@ -520,7 +520,7 @@ export default function ChatbotAdminClient({
                       type="date"
                       value={dateFrom}
                       onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
-                      className="w-full mt-1 px-3 py-2 bg-slate-950/60 border border-slate-800 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-300 color-scheme-dark"
+                      className="w-full mt-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-700 "
                     />
                   </div>
 
@@ -531,7 +531,7 @@ export default function ChatbotAdminClient({
                       type="date"
                       value={dateTo}
                       onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
-                      className="w-full mt-1 px-3 py-2 bg-slate-950/60 border border-slate-800 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-300 color-scheme-dark"
+                      className="w-full mt-1 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-700 "
                     />
                   </div>
                 </div>
@@ -539,16 +539,16 @@ export default function ChatbotAdminClient({
             </div>
 
             {/* Conversations Table */}
-            <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white backdrop-blur-xl border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
               {isPending ? (
                 <div className="flex flex-col items-center justify-center py-24">
                   <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-                  <p className="text-sm text-slate-400 mt-3 font-semibold">Cargando conversaciones...</p>
+                  <p className="text-sm text-slate-500 mt-3 font-semibold">Cargando conversaciones...</p>
                 </div>
               ) : conversations.length === 0 ? (
                 <div className="text-center py-20 px-6">
                   <MessageSquare className="w-12 h-12 text-slate-700 mx-auto mb-3" />
-                  <h3 className="text-white font-bold text-base mb-1">No se encontraron chats</h3>
+                  <h3 className="text-slate-900 font-bold text-base mb-1">No se encontraron chats</h3>
                   <p className="text-slate-500 text-sm max-w-xs mx-auto">
                     Prueba cambiando los filtros o buscando otro término.
                   </p>
@@ -557,13 +557,13 @@ export default function ChatbotAdminClient({
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="bg-slate-950/60 border-b border-slate-850">
-                        <th className="px-5 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Visitante</th>
-                        <th className="px-5 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Último Mensaje</th>
-                        <th className="px-5 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider text-center">Msg</th>
-                        <th className="px-5 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Estado</th>
-                        <th className="px-5 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Lead</th>
-                        <th className="px-5 py-4 text-xs font-bold text-slate-400 uppercase tracking-wider">Fecha</th>
+                      <tr className="bg-slate-50 border-b border-slate-200">
+                        <th className="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Visitante</th>
+                        <th className="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Último Mensaje</th>
+                        <th className="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-center">Msg</th>
+                        <th className="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Estado</th>
+                        <th className="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Lead</th>
+                        <th className="px-5 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Fecha</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-850/40">
@@ -573,15 +573,15 @@ export default function ChatbotAdminClient({
                           <tr
                             key={conv.id}
                             onClick={() => handleSelectConversation(conv.id)}
-                            className={`hover:bg-slate-850/30 transition-all cursor-pointer ${
-                              isSelected ? "bg-slate-800/40 border-l-4 border-l-blue-500" : ""
+                            className={`hover:bg-blue-50/60 transition-all cursor-pointer ${
+                              isSelected ? "bg-blue-50/60 border-l-4 border-l-blue-500" : ""
                             }`}
                           >
                             <td className="px-5 py-4">
-                              <div className="font-bold text-white text-sm">
+                              <div className="font-bold text-slate-900 text-sm">
                                 {conv.visitor_name || <span className="text-slate-500 italic font-normal">Anon_#{conv.visitor_id?.substring(0, 5) || conv.id.substring(0, 5)}</span>}
                               </div>
-                              <div className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
+                              <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
                                 {conv.visitor_email ? (
                                   <span className="flex items-center gap-1"><Mail className="w-3 h-3 text-slate-500" /> {conv.visitor_email}</span>
                                 ) : (
@@ -590,13 +590,13 @@ export default function ChatbotAdminClient({
                               </div>
                             </td>
                             <td className="px-5 py-4 max-w-xs">
-                              <p className="text-xs text-slate-300 truncate leading-relaxed">
+                              <p className="text-xs text-slate-700 truncate leading-relaxed">
                                 {conv.first_user_message || <span className="text-slate-500 italic">No user messages</span>}
                               </p>
                               {conv.tags && conv.tags.length > 0 && (
                                 <div className="flex flex-wrap gap-1 mt-1.5">
                                   {conv.tags.slice(0, 3).map((t, idx) => (
-                                    <span key={idx} className="bg-slate-800 text-[9px] font-bold text-slate-400 px-1.5 py-0.5 rounded border border-slate-750">
+                                    <span key={idx} className="bg-slate-100 text-[9px] font-bold text-slate-500 px-1.5 py-0.5 rounded border border-slate-200">
                                       {t}
                                     </span>
                                   ))}
@@ -607,7 +607,7 @@ export default function ChatbotAdminClient({
                               )}
                             </td>
                             <td className="px-5 py-4 text-center">
-                              <span className="bg-slate-950/60 text-slate-300 text-xs font-bold px-2 py-0.8 rounded-full border border-slate-850">
+                              <span className="bg-slate-50 text-slate-700 text-xs font-bold px-2 py-0.8 rounded-full border border-slate-200">
                                 {conv.message_count}
                               </span>
                             </td>
@@ -634,7 +634,7 @@ export default function ChatbotAdminClient({
                               )}
                             </td>
                             <td className="px-5 py-4 whitespace-nowrap">
-                              <div className="text-xs font-semibold text-slate-300">
+                              <div className="text-xs font-semibold text-slate-700">
                                 {getRelativeTime(conv.created_at)}
                               </div>
                               <div className="text-[10px] text-slate-500 mt-0.5">
@@ -651,27 +651,27 @@ export default function ChatbotAdminClient({
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="bg-slate-950/60 border-t border-slate-850 px-5 py-4 flex items-center justify-between">
+                <div className="bg-slate-50 border-t border-slate-200 px-5 py-4 flex items-center justify-between">
                   <p className="text-xs text-slate-500 font-medium">
-                    Mostrando <strong className="text-slate-300 font-bold">{(page - 1) * limit + 1}</strong> a{" "}
-                    <strong className="text-slate-300 font-bold">{Math.min(page * limit, total)}</strong> de{" "}
-                    <strong className="text-slate-300 font-bold">{total}</strong> conversaciones
+                    Mostrando <strong className="text-slate-700 font-bold">{(page - 1) * limit + 1}</strong> a{" "}
+                    <strong className="text-slate-700 font-bold">{Math.min(page * limit, total)}</strong> de{" "}
+                    <strong className="text-slate-700 font-bold">{total}</strong> conversaciones
                   </p>
                   <div className="flex gap-2">
                     <button
                       disabled={page === 1}
                       onClick={() => setPage(prev => Math.max(prev - 1, 1))}
-                      className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-850 transition-colors"
+                      className="p-1.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-100 transition-colors"
                     >
                       <ChevronLeft className="w-4 h-4" />
                     </button>
-                    <span className="text-xs text-slate-400 self-center px-1 font-bold">
+                    <span className="text-xs text-slate-500 self-center px-1 font-bold">
                       Pág. {page} de {totalPages}
                     </span>
                     <button
                       disabled={page >= totalPages}
                       onClick={() => setPage(prev => Math.min(prev + 1, totalPages))}
-                      className="p-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-850 transition-colors"
+                      className="p-1.5 rounded-lg bg-slate-100 border border-slate-200 text-slate-500 hover:text-slate-900 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-100 transition-colors"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>
@@ -682,7 +682,7 @@ export default function ChatbotAdminClient({
           </div>
 
           {/* RIGHT: Conversation Details timeline */}
-          <div className="lg:col-span-12 xl:col-span-4 bg-slate-900/60 backdrop-blur-xl border border-slate-800/80 rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-[600px] h-full sticky top-4">
+          <div className="lg:col-span-12 xl:col-span-4 bg-white backdrop-blur-xl border border-slate-200 rounded-2xl shadow-sm overflow-hidden flex flex-col min-h-[600px] h-full sticky top-4">
             <AnimatePresence mode="wait">
               {!selectedConvId ? (
                 <motion.div
@@ -692,10 +692,10 @@ export default function ChatbotAdminClient({
                   exit={{ opacity: 0 }}
                   className="flex-1 flex flex-col items-center justify-center p-8 text-center"
                 >
-                  <div className="w-16 h-16 rounded-3xl bg-slate-950/60 border border-slate-850 flex items-center justify-center text-slate-650 mb-4">
+                  <div className="w-16 h-16 rounded-3xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-650 mb-4">
                     <Bot className="w-8 h-8" />
                   </div>
-                  <h4 className="text-white font-bold text-base mb-1">Detalle del chat</h4>
+                  <h4 className="text-slate-900 font-bold text-base mb-1">Detalle del chat</h4>
                   <p className="text-slate-500 text-xs max-w-[220px]">
                     Selecciona una conversación de la tabla para revisar los mensajes del chatbot en tiempo real.
                   </p>
@@ -709,7 +709,7 @@ export default function ChatbotAdminClient({
                   className="flex-1 flex flex-col items-center justify-center p-8 text-center"
                 >
                   <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-                  <p className="text-xs text-slate-400 mt-3 font-semibold">Descargando mensajes...</p>
+                  <p className="text-xs text-slate-500 mt-3 font-semibold">Descargando mensajes...</p>
                 </motion.div>
               ) : (
                 <motion.div
@@ -720,25 +720,25 @@ export default function ChatbotAdminClient({
                   className="flex-1 flex flex-col h-full min-h-[600px]"
                 >
                   {/* Detail Header */}
-                  <div className="p-4 border-b border-slate-850 bg-slate-950/40 flex items-center justify-between">
+                  <div className="p-4 border-b border-slate-200 bg-slate-50/80 flex items-center justify-between">
                     <div>
-                      <h3 className="font-bold text-white text-sm truncate max-w-[180px]">
+                      <h3 className="font-bold text-slate-900 text-sm truncate max-w-[180px]">
                         {selectedConv?.visitor_name || `Anon_#${selectedConv?.visitor_id?.substring(0, 5)}`}
                       </h3>
-                      <p className="text-[10px] text-slate-400 font-semibold flex items-center gap-1 mt-0.5">
+                      <p className="text-[10px] text-slate-500 font-semibold flex items-center gap-1 mt-0.5">
                         <Clock className="w-3.5 h-3.5 text-slate-500" /> {selectedConv && formatChileanDate(selectedConv.created_at)}
                       </p>
                     </div>
                     <button
                       onClick={() => { setSelectedConvId(null); setSelectedConv(null); }}
-                      className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors cursor-pointer border-none bg-transparent"
+                      className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer border-none bg-transparent"
                     >
                       <X className="w-4 h-4" />
                     </button>
                   </div>
 
                   {/* Tab options / actions sidebar */}
-                  <div className="p-4 bg-slate-950/20 border-b border-slate-850 space-y-4">
+                  <div className="p-4 bg-slate-50/50 border-b border-slate-200 space-y-4">
                     {/* Status Toggle & Lead switch */}
                     <div className="flex flex-wrap items-center justify-between gap-3">
                       {/* Status select buttons */}
@@ -749,7 +749,7 @@ export default function ChatbotAdminClient({
                           className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer border-none flex items-center gap-1 ${
                             selectedConv?.status === "active"
                               ? "bg-blue-600 text-white shadow shadow-blue-500/10"
-                              : "bg-slate-950/60 text-slate-400 hover:text-white hover:bg-slate-900"
+                              : "bg-slate-50 text-slate-500 hover:text-slate-900 hover:bg-slate-100"
                           }`}
                         >
                           🟢 Activo
@@ -760,7 +760,7 @@ export default function ChatbotAdminClient({
                           className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer border-none flex items-center gap-1 ${
                             selectedConv?.status === "resolved"
                               ? "bg-emerald-600 text-white shadow shadow-emerald-500/10"
-                              : "bg-slate-950/60 text-slate-400 hover:text-white hover:bg-slate-900"
+                              : "bg-slate-50 text-slate-500 hover:text-slate-900 hover:bg-slate-100"
                           }`}
                         >
                           🔵 Resuelto
@@ -771,7 +771,7 @@ export default function ChatbotAdminClient({
                           className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer border-none flex items-center gap-1 ${
                             selectedConv?.status === "flagged"
                               ? "bg-rose-600 text-white shadow shadow-rose-500/10"
-                              : "bg-slate-950/60 text-slate-400 hover:text-white hover:bg-slate-900"
+                              : "bg-slate-50 text-slate-500 hover:text-slate-900 hover:bg-slate-100"
                           }`}
                         >
                           🔴 Flagged
@@ -785,7 +785,7 @@ export default function ChatbotAdminClient({
                         className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all cursor-pointer border flex items-center gap-1 ${
                           selectedConv?.is_lead
                             ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
-                            : "bg-slate-950/60 border-slate-800 text-slate-400 hover:text-white"
+                            : "bg-slate-50 border-slate-200 text-slate-500 hover:text-slate-900"
                         }`}
                       >
                         <Star className={`w-3.5 h-3.5 ${selectedConv?.is_lead ? "fill-amber-400 text-amber-400" : "text-slate-450"}`} />
@@ -795,7 +795,7 @@ export default function ChatbotAdminClient({
 
                     {/* Metadata view: Source page */}
                     {selectedConv?.source_page && (
-                      <div className="bg-slate-950/40 p-2.5 rounded-xl border border-slate-850 flex items-start gap-2 text-xs">
+                      <div className="bg-slate-50/80 p-2.5 rounded-xl border border-slate-200 flex items-start gap-2 text-xs">
                         <Compass className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
                         <div>
                           <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">Página Origen</p>
@@ -813,7 +813,7 @@ export default function ChatbotAdminClient({
                   </div>
 
                   {/* Messaging Area timeline */}
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[350px] bg-slate-950/20 chatbot-messages-scroll">
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[350px] bg-slate-50/50 chatbot-messages-scroll">
                     {messages.length === 0 ? (
                       <div className="text-center py-10 text-slate-500 text-xs italic">
                         Sin mensajes registrados
@@ -831,7 +831,7 @@ export default function ChatbotAdminClient({
                               className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 shadow-sm mt-0.5 text-white ${
                                 isBot
                                   ? "bg-gradient-to-br from-blue-500 to-indigo-600"
-                                  : "bg-slate-700"
+                                  : "bg-slate-400"
                               }`}
                             >
                               {isBot ? <Bot className="w-3 h-3" /> : <User className="w-3 h-3" />}
@@ -841,7 +841,7 @@ export default function ChatbotAdminClient({
                             <div
                               className={`max-w-[85%] px-3.5 py-2 text-[12.5px] leading-relaxed rounded-2xl shadow-sm ${
                                 isBot
-                                  ? "bg-slate-800 text-slate-100 rounded-tl-md border border-slate-750"
+                                  ? "bg-slate-100 text-slate-800 rounded-tl-md border border-slate-200"
                                   : "bg-blue-600 text-white rounded-tr-md"
                               }`}
                             >
@@ -851,7 +851,7 @@ export default function ChatbotAdminClient({
                                   __html: renderSimpleMarkdown(msg.content)
                                 }}
                               />
-                              <div className="text-[9px] text-slate-400 text-right mt-1.5 flex items-center justify-end gap-1">
+                              <div className="text-[9px] text-slate-500 text-right mt-1.5 flex items-center justify-end gap-1">
                                 <Clock className="w-2.5 h-2.5 text-slate-500" />
                                 {formatChileanDate(msg.created_at).split(" ")[1]}
                               </div>
@@ -863,7 +863,7 @@ export default function ChatbotAdminClient({
                   </div>
 
                   {/* Visitor Info & Tags panel */}
-                  <div className="p-4 border-t border-slate-850 bg-slate-950/40 space-y-4">
+                  <div className="p-4 border-t border-slate-200 bg-slate-50/80 space-y-4">
                     {/* Tags block */}
                     <div>
                       <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 flex items-center gap-1.5">
@@ -873,12 +873,12 @@ export default function ChatbotAdminClient({
                         {(selectedConv?.tags || []).map((t, idx) => (
                           <span
                             key={idx}
-                            className="bg-slate-900 border border-slate-800 text-slate-300 text-[10px] font-bold px-2 py-0.8 rounded-lg flex items-center gap-1"
+                            className="bg-slate-100 border border-slate-200 text-slate-700 text-[10px] font-bold px-2 py-0.8 rounded-lg flex items-center gap-1"
                           >
                             {t}
                             <button
                               onClick={() => handleRemoveTag(t)}
-                              className="text-slate-500 hover:text-slate-300 p-0 hover:bg-transparent border-none bg-transparent cursor-pointer"
+                              className="text-slate-500 hover:text-slate-700 p-0 hover:bg-transparent border-none bg-transparent cursor-pointer"
                             >
                               <X className="w-3 h-3" />
                             </button>
@@ -893,14 +893,14 @@ export default function ChatbotAdminClient({
                             value={newTag}
                             onChange={(e) => setNewTag(e.target.value)}
                             disabled={savingDetail}
-                            className="bg-slate-950/80 border border-slate-850 text-slate-350 text-[10px] px-2 py-0.8 rounded-lg outline-none max-w-[65px] focus:border-blue-500/40"
+                            className="bg-slate-100 border border-slate-200 text-slate-350 text-[10px] px-2 py-0.8 rounded-lg outline-none max-w-[65px] focus:border-blue-500/40"
                           />
                         </form>
                       </div>
                     </div>
 
                     {/* Visitor Contact Card - Editable */}
-                    <div className="border-t border-slate-850/60 pt-3 space-y-2">
+                    <div className="border-t border-slate-200/60 pt-3 space-y-2">
                       <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">
                         📞 Datos de Contacto del Visitante
                       </h4>
@@ -913,7 +913,7 @@ export default function ChatbotAdminClient({
                             value={editName}
                             onChange={(e) => setEditName(e.target.value)}
                             placeholder="Nombre del visitante"
-                            className="w-full mt-0.5 px-2.5 py-1.5 bg-slate-950/80 border border-slate-850 text-slate-200 text-xs rounded-lg focus:outline-none focus:border-blue-500/40 transition-colors"
+                            className="w-full mt-0.5 px-2.5 py-1.5 bg-slate-100 border border-slate-200 text-slate-700 text-xs rounded-lg focus:outline-none focus:border-blue-500/40 transition-colors"
                           />
                         </div>
 
@@ -925,7 +925,7 @@ export default function ChatbotAdminClient({
                               value={editEmail}
                               onChange={(e) => setEditEmail(e.target.value)}
                               placeholder="correo@ejemplo.com"
-                              className="w-full mt-0.5 px-2.5 py-1.5 bg-slate-950/80 border border-slate-850 text-slate-200 text-xs rounded-lg focus:outline-none focus:border-blue-500/40 transition-colors"
+                              className="w-full mt-0.5 px-2.5 py-1.5 bg-slate-100 border border-slate-200 text-slate-700 text-xs rounded-lg focus:outline-none focus:border-blue-500/40 transition-colors"
                             />
                           </div>
 
@@ -936,7 +936,7 @@ export default function ChatbotAdminClient({
                               value={editPhone}
                               onChange={(e) => setEditPhone(e.target.value)}
                               placeholder="+56912345678"
-                              className="w-full mt-0.5 px-2.5 py-1.5 bg-slate-950/80 border border-slate-850 text-slate-200 text-xs rounded-lg focus:outline-none focus:border-blue-500/40 transition-colors"
+                              className="w-full mt-0.5 px-2.5 py-1.5 bg-slate-100 border border-slate-200 text-slate-700 text-xs rounded-lg focus:outline-none focus:border-blue-500/40 transition-colors"
                             />
                           </div>
                         </div>
@@ -947,7 +947,7 @@ export default function ChatbotAdminClient({
                           type="button"
                           onClick={handleSaveVisitorInfo}
                           disabled={savingDetail || (!editName && !editEmail && !editPhone)}
-                          className="bg-slate-800 border border-slate-700 hover:bg-slate-750 text-slate-200 font-bold px-3 py-1.5 rounded-lg text-[10px] transition-colors cursor-pointer disabled:opacity-40 flex items-center gap-1"
+                          className="bg-slate-100 border border-slate-700 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-[10px] transition-colors cursor-pointer disabled:opacity-40 flex items-center gap-1"
                         >
                           {savingDetail ? <Loader2 className="w-3 h-3 animate-spin" /> : null}
                           Guardar Datos
