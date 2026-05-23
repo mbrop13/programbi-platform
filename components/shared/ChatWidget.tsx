@@ -323,7 +323,7 @@ function MessageBubble({ role, content, cards, scheduleCards, isStreaming }: { r
           <User className="w-3.5 h-3.5 text-slate-500" />
         </div>
       )}
-      <div className="max-w-[85%] flex flex-col gap-2">
+      <div className="max-w-[90%] md:max-w-[85%] flex flex-col gap-2">
         {cleanText && (
           <div className={`px-4 py-3 text-[14px] leading-relaxed shadow-sm ${
             isUser
@@ -380,7 +380,7 @@ function ChatWidgetInner() {
   }, []);
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, isLoading]);
-  useEffect(() => { if (isOpen && inputRef.current) setTimeout(() => inputRef.current?.focus(), 100); }, [isOpen]);
+  useEffect(() => { if (isOpen && inputRef.current && window.innerWidth > 768) setTimeout(() => inputRef.current?.focus(), 100); }, [isOpen]);
   useEffect(() => { if (!isOpen && messages.length > 0 && messages[messages.length - 1]?.role === "assistant") setHasNewMessage(true); }, [messages, isOpen]);
 
   /* ─── Handle pre-built quick action response with typing delay ── */
@@ -480,7 +480,7 @@ function ChatWidgetInner() {
     setMessages([]); setInput(""); setConversationId(null); setShowQuickActions(true);
     setShowRating(false); setIsFirstOpen(true); setIsLoading(false);
     safeStorage.removeItem(CHAT_HISTORY_KEY); safeStorage.removeItem(CONVERSATION_ID_KEY);
-    inputRef.current?.focus();
+    if (window.innerWidth > 768) inputRef.current?.focus();
   };
   const handleRate = async (r: number) => { if (!conversationId) return; try { await fetch("/api/chatbot", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ conversationId, rating: r }) }); } catch {} };
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(input); } };
@@ -541,7 +541,7 @@ function ChatWidgetInner() {
           <motion.div initial={{ opacity: 0, y: 20, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
             className="fixed bottom-6 right-6 z-[9998] w-[400px] h-[650px] max-h-[85vh] flex flex-col bg-white rounded-2xl overflow-hidden shadow-2xl shadow-slate-900/15 border border-slate-200/60
-              max-[480px]:bottom-0 max-[480px]:right-0 max-[480px]:left-0 max-[480px]:w-full max-[480px]:h-[85dvh] max-[480px]:max-h-[85dvh] max-[480px]:rounded-b-none">
+              max-[480px]:bottom-0 max-[480px]:right-0 max-[480px]:left-0 max-[480px]:w-full max-[480px]:h-[100dvh] max-[480px]:max-h-[100dvh] max-[480px]:rounded-none">
 
             {/* Header */}
             <div className="relative flex items-center justify-between px-5 py-4 bg-white border-b border-slate-100 z-10">
