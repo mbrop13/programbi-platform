@@ -574,12 +574,6 @@ function ChatWidgetInner() {
 
             {/* ─── Input Area ───────────────────────────────── */}
             <div className="bg-white border-t border-slate-100 z-10">
-              <div className="flex items-center justify-center py-1.5 bg-slate-50/50 border-b border-slate-100">
-                <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1 uppercase tracking-wider">
-                  <Zap className="w-3 h-3 text-blue-500" />
-                  Powered by ProgramBI AI
-                </span>
-              </div>
               <form
                 onSubmit={handleSubmit}
                 className="p-3"
