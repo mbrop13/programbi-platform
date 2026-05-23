@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { Component, ErrorInfo, ReactNode, useState, useEffect, useRef, useCallback } from "react";
 import { useChat } from "@ai-sdk/react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -41,32 +41,51 @@ const QUICK_ACTIONS = [
   { label: "Contactar", icon: Phone, message: "Quiero hablar con un asesor" },
 ];
 
-/* ─── Visitor ID ───────────────────────────────────────────────── */
+/* ─── Utils ────────────────────────────────────────────────────── */
+const safeStorage = {
+  getItem: (key: string) => {
+    if (typeof window === "undefined") return null;
+    try { return window.localStorage.getItem(key); } catch { return null; }
+  },
+  setItem: (key: string, value: string) => {
+    if (typeof window === "undefined") return;
+    try { window.localStorage.setItem(key, value); } catch {}
+  },
+  removeItem: (key: string) => {
+    if (typeof window === "undefined") return;
+    try { window.localStorage.removeItem(key); } catch {}
+  }
+};
+
+let memoryVisitorId = "";
 function getVisitorId(): string {
   if (typeof window === "undefined") return "";
   try {
-    let id = localStorage.getItem(VISITOR_ID_KEY);
+    let id = safeStorage.getItem(VISITOR_ID_KEY);
     if (!id) {
       if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
         id = crypto.randomUUID();
       } else {
-        // Fallback robusto e inofensivo para generar UUID v4 compatible
+        // Fallback robusto e inofensivo
         id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
           var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
           return v.toString(16);
         });
       }
-      localStorage.setItem(VISITOR_ID_KEY, id);
+      safeStorage.setItem(VISITOR_ID_KEY, id);
     }
     return id;
   } catch (err) {
     console.error("Error retrieving or generating visitor ID:", err);
-    return "anonymous-visitor";
+    if (!memoryVisitorId) {
+      memoryVisitorId = "anonymous-" + Math.random().toString(36).substring(7);
+    }
+    return memoryVisitorId;
   }
 }
 
-/* ─── Markdown simple ──────────────────────────────────────────── */
 function renderSimpleMarkdown(text: string) {
+  if (!text) return "";
   // Convierte markdown básico a HTML seguro
   let html = text
     // Escapar HTML
@@ -142,6 +161,7 @@ function RatingStars({ onRate }: { onRate: (rating: number) => void }) {
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
+            type="button"
             onMouseEnter={() => setHover(star)}
             onMouseLeave={() => setHover(0)}
             onClick={() => {
@@ -217,7 +237,7 @@ function MessageBubble({
         ) : (
           <div
             className="chatbot-markdown"
-            dangerouslySetInnerHTML={{ __html: renderSimpleMarkdown(content) }}
+            dangerouslySetInnerHTML={{ __html: renderSimpleMarkdown(content || "") }}
           />
         )}
       </div>
@@ -226,9 +246,9 @@ function MessageBubble({
 }
 
 /* ═══════════════════════════════════════════════════════════════ */
-/* MAIN CHAT WIDGET                                               */
+/* MAIN CHAT WIDGET INNER                                         */
 /* ═══════════════════════════════════════════════════════════════ */
-export default function ChatWidget() {
+function ChatWidgetInner() {
   const [isOpen, setIsOpen] = useState(false);
   const [showRating, setShowRating] = useState(false);
   const [hasNewMessage, setHasNewMessage] = useState(false);
@@ -245,7 +265,7 @@ export default function ChatWidget() {
   useEffect(() => {
     setVisitorId(getVisitorId());
     // Restaurar conversation ID si existe
-    const savedConvId = localStorage.getItem(CONVERSATION_ID_KEY);
+    const savedConvId = safeStorage.getItem(CONVERSATION_ID_KEY);
     if (savedConvId) setConversationId(savedConvId);
   }, []);
 
@@ -259,10 +279,10 @@ export default function ChatWidget() {
     },
     onResponse: (response: any) => {
       // Capturar el conversation ID del header
-      const newConvId = response.headers.get("X-Conversation-Id");
+      const newConvId = response?.headers?.get("X-Conversation-Id");
       if (newConvId && newConvId !== conversationId) {
         setConversationId(newConvId);
-        localStorage.setItem(CONVERSATION_ID_KEY, newConvId);
+        safeStorage.setItem(CONVERSATION_ID_KEY, newConvId);
       }
     },
     onFinish: () => {
@@ -277,34 +297,37 @@ export default function ChatWidget() {
   } as any);
 
   const {
-    messages,
-    input,
-    handleInputChange,
-    handleSubmit: originalHandleSubmit,
-    isLoading,
-    setMessages,
-    append,
-    reload,
-  } = chatHook;
+    messages = [],
+    input = "",
+    handleInputChange = () => {},
+    handleSubmit: originalHandleSubmit = (e: any) => e?.preventDefault(),
+    isLoading = false,
+    setMessages = () => {},
+    append = () => {},
+    reload = () => {},
+  } = chatHook || {};
+  
+  const safeMessages = Array.isArray(messages) ? messages : [];
 
   // Guardar mensajes en localStorage
   const saveMessagesToStorage = useCallback(() => {
     if (typeof window === "undefined") return;
     try {
-      const toSave = messages.slice(-50); // Últimos 50 mensajes
-      localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(toSave));
+      if (!Array.isArray(safeMessages)) return;
+      const toSave = safeMessages.slice(-50); // Últimos 50 mensajes
+      safeStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(toSave));
     } catch {
       // Storage full, no pasa nada
     }
-  }, [messages]);
+  }, [safeMessages]);
 
   // Restaurar historial al montar
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(CHAT_HISTORY_KEY);
+      const saved = safeStorage.getItem(CHAT_HISTORY_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.length > 0) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           setMessages(parsed);
           setShowQuickActions(false);
           setIsFirstOpen(false);
@@ -320,7 +343,7 @@ export default function ChatWidget() {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages, isLoading]);
+  }, [safeMessages, isLoading]);
 
   // Focus input cuando se abre
   useEffect(() => {
@@ -331,13 +354,13 @@ export default function ChatWidget() {
 
   // Notificación visual si llega mensaje mientras está cerrado
   useEffect(() => {
-    if (!isOpen && messages.length > 0) {
-      const lastMsg = messages[messages.length - 1];
-      if (lastMsg.role === "assistant") {
+    if (!isOpen && safeMessages.length > 0) {
+      const lastMsg = safeMessages[safeMessages.length - 1];
+      if (lastMsg?.role === "assistant") {
         setHasNewMessage(true);
       }
     }
-  }, [messages, isOpen]);
+  }, [safeMessages, isOpen]);
 
   // Abrir chat
   const handleOpen = () => {
@@ -354,10 +377,14 @@ export default function ChatWidget() {
   // Enviar mensaje
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (!input?.trim() || isLoading) return;
     setShowQuickActions(false);
     setIsFirstOpen(false);
-    originalHandleSubmit(e);
+    try {
+      originalHandleSubmit(e);
+    } catch (err) {
+      console.error("Error submitting message:", err);
+    }
   };
 
   // Quick action click
@@ -374,8 +401,8 @@ export default function ChatWidget() {
     setShowQuickActions(true);
     setShowRating(false);
     setIsFirstOpen(true);
-    localStorage.removeItem(CHAT_HISTORY_KEY);
-    localStorage.removeItem(CONVERSATION_ID_KEY);
+    safeStorage.removeItem(CHAT_HISTORY_KEY);
+    safeStorage.removeItem(CONVERSATION_ID_KEY);
   };
 
   // Rating
@@ -407,12 +434,13 @@ export default function ChatWidget() {
       <AnimatePresence>
         {!isOpen && (
           <motion.button
+            type="button"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 20 }}
             onClick={handleOpen}
-            className="fixed bottom-6 right-6 z-[9998] group cursor-pointer border-none"
+            className="fixed bottom-6 right-6 z-[9998] group cursor-pointer border-none bg-transparent"
             aria-label="Abrir chat"
             id="chatbot-trigger"
           >
@@ -493,6 +521,7 @@ export default function ChatWidget() {
               <div className="flex items-center gap-1">
                 {/* New chat */}
                 <button
+                  type="button"
                   onClick={handleNewChat}
                   className="p-2 rounded-xl bg-transparent hover:bg-white/[0.06] border-none cursor-pointer transition-colors group"
                   title="Nueva conversación"
@@ -501,6 +530,7 @@ export default function ChatWidget() {
                 </button>
                 {/* Minimize */}
                 <button
+                  type="button"
                   onClick={handleClose}
                   className="p-2 rounded-xl bg-transparent hover:bg-white/[0.06] border-none cursor-pointer transition-colors group"
                   title="Minimizar"
@@ -509,6 +539,7 @@ export default function ChatWidget() {
                 </button>
                 {/* Close */}
                 <button
+                  type="button"
                   onClick={() => {
                     setShowRating(true);
                     handleClose();
@@ -524,7 +555,7 @@ export default function ChatWidget() {
             {/* ─── Messages Area ────────────────────────────── */}
             <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 space-y-4 scrollbar-hide">
               {/* Welcome message */}
-              {(messages.length === 0 || isFirstOpen) && (
+              {(safeMessages.length === 0 || isFirstOpen) && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -548,7 +579,7 @@ export default function ChatWidget() {
 
               {/* Quick Actions */}
               <AnimatePresence>
-                {showQuickActions && messages.length === 0 && (
+                {showQuickActions && safeMessages.length === 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -559,6 +590,7 @@ export default function ChatWidget() {
                     {QUICK_ACTIONS.map((action, i) => (
                       <motion.button
                         key={action.label}
+                        type="button"
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 + i * 0.08 }}
@@ -574,14 +606,14 @@ export default function ChatWidget() {
               </AnimatePresence>
 
               {/* Chat Messages */}
-              {(messages || [])
-                .filter((m: any) => m.role !== "system")
+              {safeMessages
+                .filter((m: any) => m?.role !== "system")
                 .map((message: any, index: number) => (
                   <MessageBubble
-                    key={message.id}
-                    role={message.role}
-                    content={message.content}
-                    isLast={index === messages.length - 1}
+                    key={message?.id || index}
+                    role={message?.role}
+                    content={message?.content || ""}
+                    isLast={index === safeMessages.length - 1}
                   />
                 ))}
 
@@ -589,7 +621,7 @@ export default function ChatWidget() {
               {isLoading && <TypingIndicator />}
 
               {/* Rating */}
-              {showRating && messages.length > 2 && (
+              {showRating && safeMessages.length > 2 && (
                 <RatingStars onRate={handleRate} />
               )}
 
@@ -612,7 +644,7 @@ export default function ChatWidget() {
               <div className="flex items-end gap-2 bg-white/[0.05] border border-white/[0.08] rounded-2xl px-4 py-2 focus-within:border-blue-500/40 focus-within:bg-white/[0.07] transition-all">
                 <textarea
                   ref={inputRef}
-                  value={input}
+                  value={input || ""}
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
                   placeholder="Escribe tu consulta..."
@@ -623,9 +655,9 @@ export default function ChatWidget() {
                 />
                 <button
                   type="submit"
-                  disabled={!input.trim() || isLoading}
+                  disabled={!input?.trim() || isLoading}
                   className={`p-2 rounded-xl transition-all border-none cursor-pointer flex-shrink-0 ${
-                    input.trim() && !isLoading
+                    input?.trim() && !isLoading
                       ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:scale-105 active:scale-95"
                       : "bg-white/[0.05] text-white/20 cursor-not-allowed"
                   }`}
@@ -638,5 +670,36 @@ export default function ChatWidget() {
         )}
       </AnimatePresence>
     </>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════ */
+/* ERROR BOUNDARY WRAPPER                                         */
+/* ═══════════════════════════════════════════════════════════════ */
+class ChatErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError(_: Error) {
+    return { hasError: true };
+  }
+  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    console.error("ChatWidget Error Boundary Caught:", error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      // Si el widget falla, simplemente no lo renderizamos para no romper toda la página en producción
+      return null;
+    }
+    return this.props.children;
+  }
+}
+
+export default function ChatWidget() {
+  return (
+    <ChatErrorBoundary>
+      <ChatWidgetInner />
+    </ChatErrorBoundary>
   );
 }
