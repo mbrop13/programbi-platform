@@ -189,6 +189,48 @@ function extractCourseWidgets(text: string): { cleanText: string; cardSlugs: str
   return { cleanText: cleanText.trim(), cardSlugs: slugs };
 }
 
+/* ─── Rotating Tooltip ─────────────────────────────────────────── */
+const TOOLTIP_MESSAGES = [
+  "¿Tienes dudas? 💭",
+  "¿Quieres saber los horarios? 🕒",
+  "Descubre nuestros descuentos 🎁",
+  "Consulta por los temarios 📚"
+];
+
+function RotatingTooltip() {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % TOOLTIP_MESSAGES.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 1.5, duration: 0.3 }}
+      className="absolute right-[72px] top-1/2 -translate-y-1/2 bg-slate-900 text-white text-[12px] font-medium px-4 py-2.5 rounded-xl shadow-xl pointer-events-none z-50 flex items-center justify-center min-w-[210px] h-[36px]"
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.3 }}
+          className="absolute whitespace-nowrap"
+        >
+          {TOOLTIP_MESSAGES[index]}
+        </motion.div>
+      </AnimatePresence>
+      <div className="absolute right-[-4px] top-1/2 -translate-y-1/2 w-3 h-3 bg-slate-900 rotate-45 rounded-sm" />
+    </motion.div>
+  );
+}
+
 /* ─── Typing Indicator ─────────────────────────────────────────── */
 function TypingIndicator() {
   return (
