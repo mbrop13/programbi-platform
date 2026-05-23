@@ -117,7 +117,7 @@ const PREBUILT_RESPONSES: Record<string, { text: string; cards: string[] }> = {
     cards: ["analisis-de-datos"],
   },
   "Quiero hablar con un asesor": {
-    text: `¡Por supuesto! 😊 Puedes contactar a nuestro equipo:\n\n📱 **WhatsApp**: [+56 9 3677 6614](https://wa.me/56936776614)\n📧 **Email**: contacto@programbi.com\n\n¿Hay algo más en lo que pueda ayudarte?`,
+    text: `¡Por supuesto! 😊 Puedes contactar a nuestro equipo:\n\n📱 **WhatsApp**: [+56 9 3540 9699](https://wa.me/56935409699)\n📧 **Email**: contacto@programbi.cl\n\n¿Hay algo más en lo que pueda ayudarte?`,
     cards: [],
   },
 };
@@ -400,7 +400,7 @@ function ChatWidgetInner() {
         const c = [...prev]; const li = c.length - 1;
         if (li >= 0 && c[li].role === "assistant") {
           c[li] = { ...c[li], isStreaming: false,
-            content: fullText.trim() || "Disculpa, no pude generar una respuesta. 😔 Contáctanos por **WhatsApp** al [+56 9 3677 6614](https://wa.me/56936776614)."
+            content: fullText.trim() || "Disculpa, no pude generar una respuesta. 😔 Contáctanos por **WhatsApp** al [+56 9 3540 9699](https://wa.me/56935409699)."
           };
         }
         saveMessages(c); return c;
@@ -409,7 +409,7 @@ function ChatWidgetInner() {
       if (err instanceof Error && err.name === "AbortError") return;
       console.error("Chat error:", err);
       const errMsg: ChatMessage = { id: generateId(), role: "assistant",
-        content: "Lo siento, hubo un error. 😔 Por favor, intenta nuevamente o contáctanos por **WhatsApp** al [+56 9 3677 6614](https://wa.me/56936776614)." };
+        content: "Lo siento, hubo un error. 😔 Por favor, intenta nuevamente o contáctanos por **WhatsApp** al [+56 9 3540 9699](https://wa.me/56935409699)." };
       setMessages((prev) => { const u = [...prev, errMsg]; saveMessages(u); return u; });
     } finally { setIsLoading(false); abortControllerRef.current = null; }
   }, [messages, isLoading, conversationId, visitorId, pathname, saveMessages, handlePrebuilt]);
@@ -430,18 +430,46 @@ function ChatWidgetInner() {
 
   return (
     <>
-      {/* FAB */}
+      {/* FAB Widget Button */}
       <AnimatePresence>
         {!isOpen && (
           <motion.button type="button" initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }} onClick={handleOpen}
+            transition={{ type: "spring", stiffness: 260, damping: 18 }} onClick={handleOpen}
             className="fixed bottom-6 right-6 z-[9998] group cursor-pointer border-none bg-transparent" aria-label="Abrir chat">
-            <div className="absolute inset-0 rounded-full bg-blue-600/20 blur-lg group-hover:bg-blue-600/30 transition-all scale-110" />
-            <div className="relative w-[60px] h-[60px] rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-900/20 group-hover:shadow-blue-900/40 transition-all group-hover:-translate-y-1 group-active:scale-95">
-              <MessageCircle className="w-7 h-7 text-white drop-shadow-sm" />
+
+            {/* Animated pulse ring */}
+            <motion.div
+              className="absolute inset-0 rounded-full border-2 border-blue-400/40"
+              animate={{ scale: [1, 1.35, 1.35], opacity: [0.6, 0, 0] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
+              style={{ width: 64, height: 64, top: -2, left: -2 }}
+            />
+
+            {/* Glow */}
+            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/25 to-indigo-500/25 blur-xl scale-150 group-hover:scale-[1.8] transition-transform duration-500" />
+
+            {/* Main button */}
+            <div className="relative w-[60px] h-[60px] rounded-full bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-xl shadow-blue-600/30 group-hover:shadow-blue-600/50 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:scale-105 group-active:scale-95 group-active:translate-y-0">
+              {/* Inner highlight */}
+              <div className="absolute inset-[2px] rounded-full bg-gradient-to-b from-white/20 to-transparent" />
+              <MessageCircle className="w-6 h-6 text-white drop-shadow relative z-10" />
             </div>
+
+            {/* Tooltip */}
+            <motion.div
+              initial={{ opacity: 0, x: 8 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.5, duration: 0.3 }}
+              className="absolute right-[72px] top-1/2 -translate-y-1/2 bg-slate-900 text-white text-[12px] font-medium px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap pointer-events-none"
+            >
+              ¿Tienes dudas? 💬
+              <div className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-slate-900 rotate-45" />
+            </motion.div>
+
+            {/* Notification Badge */}
             {hasNewMessage && (
-              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 border-2 border-white flex items-center justify-center shadow-sm">
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500, damping: 15 }}
+                className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 border-2 border-white flex items-center justify-center shadow-md z-20">
                 <span className="text-[10px] font-bold text-white leading-none">1</span>
               </motion.div>
             )}

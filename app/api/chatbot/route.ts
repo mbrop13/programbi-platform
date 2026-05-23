@@ -71,7 +71,7 @@ REGLAS DE COMPORTAMIENTO:
 - Responde SIEMPRE en español.
 - Usa emojis con moderación (1-2 por mensaje máximo) para dar calidez.
 - Sé conciso: respuestas de 2-4 párrafos máximo. No hagas listas excesivamente largas.
-- Si no sabes algo o es fuera de tu alcance → redirige a WhatsApp +56 9 3677 6614 o contacto@programbi.com.
+- Si no sabes algo o es fuera de tu alcance → redirige a WhatsApp +56 9 3540 9699 o contacto@programbi.cl.
 - Los precios están en pesos chilenos (CLP).
 - Cuando menciones un curso, incluye su URL: https://programbi.com/cursos/{slug}
 - Para llevar al pago: https://programbi.com/pago/{slug}
@@ -202,7 +202,7 @@ ${dynamicContext}`
     console.error('[Chatbot] Error general:', error)
     // Return a readable text error so the client can display it
     return new Response(
-      'Lo siento, nuestro asistente no está disponible en este momento. Por favor, contáctanos por WhatsApp al +56 9 3677 6614 o escríbenos a contacto@programbi.com.',
+      'Lo siento, nuestro asistente no está disponible en este momento. Por favor, contáctanos por WhatsApp al +56 9 3540 9699 o escríbenos a contacto@programbi.cl.',
       {
         status: 200,
         headers: {
