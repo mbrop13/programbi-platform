@@ -556,15 +556,7 @@ function ChatWidgetInner() {
             </div>
 
             {/* Tooltip */}
-            <motion.div
-              initial={{ opacity: 0, x: 8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 1.5, duration: 0.3 }}
-              className="absolute right-[72px] top-1/2 -translate-y-1/2 bg-slate-900 text-white text-[12px] font-medium px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap pointer-events-none"
-            >
-              ¿Tienes dudas? 💬
-              <div className="absolute right-[-5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-slate-900 rotate-45" />
-            </motion.div>
+            <RotatingTooltip />
 
             {/* Notification Badge */}
             {hasNewMessage && (
