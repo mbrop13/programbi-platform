@@ -14,17 +14,14 @@ import {
   Tag,
   Phone,
   Star,
-  ChevronDown,
   Bot,
   User,
-  Minus,
   RotateCcw,
   Zap,
 } from "lucide-react";
 
 /* ─── Constantes ───────────────────────────────────────────────── */
 const VISITOR_ID_KEY = "programbi_visitor_id";
-const CHAT_OPEN_KEY = "programbi_chat_open";
 const CHAT_HISTORY_KEY = "programbi_chat_history";
 const CONVERSATION_ID_KEY = "programbi_conversation_id";
 
@@ -66,7 +63,6 @@ function getVisitorId(): string {
       if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
         id = crypto.randomUUID();
       } else {
-        // Fallback robusto e inofensivo
         id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
           var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
           return v.toString(16);
@@ -86,30 +82,22 @@ function getVisitorId(): string {
 
 function renderSimpleMarkdown(text: string) {
   if (!text) return "";
-  // Convierte markdown básico a HTML seguro
   let html = text
-    // Escapar HTML
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    // Bold
-    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold text-white">$1</strong>')
-    // Italic
+    .replace(/\*\*(.+?)\*\*/g, '<strong class="font-bold text-slate-900">$1</strong>')
     .replace(/\*(.+?)\*/g, "<em>$1</em>")
-    // Inline code
-    .replace(/`(.+?)`/g, '<code class="px-1.5 py-0.5 rounded bg-white/10 text-blue-300 text-[12px] font-mono">$1</code>')
-    // Links
+    .replace(/`(.+?)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 text-[12px] font-mono">$1</code>')
     .replace(
       /\[(.+?)\]\((.+?)\)/g,
-      '<a href="$2" target="_blank" rel="noopener" class="text-blue-400 underline underline-offset-2 hover:text-blue-300 transition-colors">$1</a>'
+      '<a href="$2" target="_blank" rel="noopener" class="text-blue-600 font-medium underline underline-offset-2 hover:text-blue-700 transition-colors">$1</a>'
     )
-    // Line breaks
     .replace(/\n/g, "<br />");
 
-  // Bullet points
   html = html.replace(
     /(?:^|<br \/>)(?:[-•]|\d+\.)\s+(.+?)(?=<br \/>|$)/g,
-    '<div class="flex gap-2 mt-1"><span class="text-blue-400 flex-shrink-0">•</span><span>$1</span></div>'
+    '<div class="flex gap-2 mt-1.5"><span class="text-blue-500 flex-shrink-0 font-bold">•</span><span>$1</span></div>'
   );
 
   return html;
@@ -118,24 +106,24 @@ function renderSimpleMarkdown(text: string) {
 /* ─── Typing Indicator ─────────────────────────────────────────── */
 function TypingIndicator() {
   return (
-    <div className="flex items-center gap-3 px-4 py-3">
-      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20">
+    <div className="flex items-center gap-2.5 px-4 py-2">
+      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5">
         <Bot className="w-3.5 h-3.5 text-white" />
       </div>
-      <div className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-white/[0.06] border border-white/[0.06]">
+      <div className="flex items-center gap-1.5 px-4 py-3 rounded-2xl rounded-tl-md bg-slate-100 border border-slate-200/60 shadow-sm">
         <motion.div
-          className="w-2 h-2 rounded-full bg-blue-400"
-          animate={{ y: [0, -6, 0] }}
+          className="w-1.5 h-1.5 rounded-full bg-blue-500/60"
+          animate={{ y: [0, -4, 0] }}
           transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
         />
         <motion.div
-          className="w-2 h-2 rounded-full bg-blue-400"
-          animate={{ y: [0, -6, 0] }}
+          className="w-1.5 h-1.5 rounded-full bg-blue-500/60"
+          animate={{ y: [0, -4, 0] }}
           transition={{ duration: 0.6, repeat: Infinity, delay: 0.15 }}
         />
         <motion.div
-          className="w-2 h-2 rounded-full bg-blue-400"
-          animate={{ y: [0, -6, 0] }}
+          className="w-1.5 h-1.5 rounded-full bg-blue-500/60"
+          animate={{ y: [0, -4, 0] }}
           transition={{ duration: 0.6, repeat: Infinity, delay: 0.3 }}
         />
       </div>
@@ -152,12 +140,12 @@ function RatingStars({ onRate }: { onRate: (rating: number) => void }) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col items-center gap-2 py-3"
+      className="flex flex-col items-center gap-2 py-4"
     >
-      <p className="text-[11px] font-semibold text-white/40 uppercase tracking-wider">
+      <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
         ¿Te fue útil esta conversación?
       </p>
-      <div className="flex gap-1">
+      <div className="flex gap-1.5">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}
@@ -168,13 +156,13 @@ function RatingStars({ onRate }: { onRate: (rating: number) => void }) {
               setSelected(star);
               onRate(star);
             }}
-            className="p-1 transition-all cursor-pointer bg-transparent border-none"
+            className="p-1 transition-all cursor-pointer bg-transparent border-none outline-none"
           >
             <Star
               className={`w-5 h-5 transition-all ${
                 star <= (hover || selected)
-                  ? "text-yellow-400 fill-yellow-400 scale-110"
-                  : "text-white/20"
+                  ? "text-yellow-400 fill-yellow-400 scale-110 drop-shadow-sm"
+                  : "text-slate-300 hover:text-slate-400"
               }`}
             />
           </button>
@@ -182,9 +170,9 @@ function RatingStars({ onRate }: { onRate: (rating: number) => void }) {
       </div>
       {selected > 0 && (
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-[12px] text-emerald-400 font-medium"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-[12px] text-emerald-600 font-medium bg-emerald-50 px-3 py-1 rounded-full mt-1"
         >
           ¡Gracias por tu feedback! 🎉
         </motion.p>
@@ -197,11 +185,9 @@ function RatingStars({ onRate }: { onRate: (rating: number) => void }) {
 function MessageBubble({
   role,
   content,
-  isLast,
 }: {
   role: string;
   content: string;
-  isLast: boolean;
 }) {
   const isUser = role === "user";
 
@@ -214,29 +200,29 @@ function MessageBubble({
     >
       {/* Avatar */}
       {!isUser && (
-        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 mt-0.5">
+        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5">
           <Bot className="w-3.5 h-3.5 text-white" />
         </div>
       )}
       {isUser && (
-        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-slate-600 to-slate-700 flex items-center justify-center flex-shrink-0 shadow-md mt-0.5">
-          <User className="w-3.5 h-3.5 text-white" />
+        <div className="w-7 h-7 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0 mt-0.5">
+          <User className="w-3.5 h-3.5 text-slate-500" />
         </div>
       )}
 
       {/* Bubble */}
       <div
-        className={`max-w-[82%] px-4 py-2.5 text-[13.5px] leading-relaxed ${
+        className={`max-w-[85%] px-4 py-3 text-[14px] leading-relaxed shadow-sm ${
           isUser
-            ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl rounded-tr-md shadow-lg shadow-blue-500/20"
-            : "bg-white/[0.06] text-white/85 rounded-2xl rounded-tl-md border border-white/[0.06]"
+            ? "bg-gradient-to-br from-blue-600 to-indigo-600 text-white rounded-2xl rounded-tr-md shadow-blue-500/10"
+            : "bg-slate-100 text-slate-800 rounded-2xl rounded-tl-md border border-slate-200/60"
         }`}
       >
         {isUser ? (
-          <span>{content}</span>
+          <span className="whitespace-pre-wrap">{content}</span>
         ) : (
           <div
-            className="chatbot-markdown"
+            className="chatbot-markdown space-y-2"
             dangerouslySetInnerHTML={{ __html: renderSimpleMarkdown(content || "") }}
           />
         )}
@@ -264,7 +250,6 @@ function ChatWidgetInner() {
   const [visitorId, setVisitorId] = useState("");
   useEffect(() => {
     setVisitorId(getVisitorId());
-    // Restaurar conversation ID si existe
     const savedConvId = safeStorage.getItem(CONVERSATION_ID_KEY);
     if (savedConvId) setConversationId(savedConvId);
   }, []);
@@ -278,7 +263,6 @@ function ChatWidgetInner() {
       sourcePage: pathname,
     },
     onResponse: (response: any) => {
-      // Capturar el conversation ID del header
       const newConvId = response?.headers?.get("X-Conversation-Id");
       if (newConvId && newConvId !== conversationId) {
         setConversationId(newConvId);
@@ -286,7 +270,6 @@ function ChatWidgetInner() {
       }
     },
     onFinish: () => {
-      // Guardar historial en localStorage
       setTimeout(() => {
         saveMessagesToStorage();
       }, 100);
@@ -304,24 +287,21 @@ function ChatWidgetInner() {
     isLoading = false,
     setMessages = () => {},
     append = () => {},
-    reload = () => {},
   } = chatHook || {};
   
   const safeMessages = Array.isArray(messages) ? messages : [];
 
-  // Guardar mensajes en localStorage
   const saveMessagesToStorage = useCallback(() => {
     if (typeof window === "undefined") return;
     try {
       if (!Array.isArray(safeMessages)) return;
-      const toSave = safeMessages.slice(-50); // Últimos 50 mensajes
+      const toSave = safeMessages.slice(-50);
       safeStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(toSave));
     } catch {
-      // Storage full, no pasa nada
+      // Ignorar errores de almacenamiento
     }
   }, [safeMessages]);
 
-  // Restaurar historial al montar
   useEffect(() => {
     try {
       const saved = safeStorage.getItem(CHAT_HISTORY_KEY);
@@ -334,25 +314,23 @@ function ChatWidgetInner() {
         }
       }
     } catch {
-      // Ignore parse errors
+      // Ignorar
     }
   }, [setMessages]);
 
-  // Auto-scroll al final
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [safeMessages, isLoading]);
 
-  // Focus input cuando se abre
   useEffect(() => {
     if (isOpen && inputRef.current) {
-      setTimeout(() => inputRef.current?.focus(), 300);
+      // Un pequeño delay ayuda con el renderizado en móviles
+      setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
 
-  // Notificación visual si llega mensaje mientras está cerrado
   useEffect(() => {
     if (!isOpen && safeMessages.length > 0) {
       const lastMsg = safeMessages[safeMessages.length - 1];
@@ -362,19 +340,16 @@ function ChatWidgetInner() {
     }
   }, [safeMessages, isOpen]);
 
-  // Abrir chat
   const handleOpen = () => {
     setIsOpen(true);
     setHasNewMessage(false);
   };
 
-  // Cerrar/minimizar
   const handleClose = () => {
     setIsOpen(false);
     saveMessagesToStorage();
   };
 
-  // Enviar mensaje
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input?.trim() || isLoading) return;
@@ -382,19 +357,21 @@ function ChatWidgetInner() {
     setIsFirstOpen(false);
     try {
       originalHandleSubmit(e);
+      // Tras enviar, hacemos un reset artificial del height si fuera necesario
+      if (inputRef.current) {
+        inputRef.current.style.height = "auto";
+      }
     } catch (err) {
       console.error("Error submitting message:", err);
     }
   };
 
-  // Quick action click
   const handleQuickAction = (message: string) => {
     setShowQuickActions(false);
     setIsFirstOpen(false);
     append({ role: "user", content: message });
   };
 
-  // Nueva conversación
   const handleNewChat = () => {
     setMessages([]);
     setConversationId(null);
@@ -403,24 +380,22 @@ function ChatWidgetInner() {
     setIsFirstOpen(true);
     safeStorage.removeItem(CHAT_HISTORY_KEY);
     safeStorage.removeItem(CONVERSATION_ID_KEY);
+    if (inputRef.current) inputRef.current.focus();
   };
 
-  // Rating
   const handleRate = async (rating: number) => {
     if (!conversationId) return;
     try {
-      // Enviar rating al servidor (simple fetch)
       await fetch("/api/chatbot", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ conversationId, rating }),
       });
     } catch {
-      // Silent fail
+      // Silencioso
     }
   };
 
-  // Enter para enviar, Shift+Enter para nueva línea
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -428,9 +403,16 @@ function ChatWidgetInner() {
     }
   };
 
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    handleInputChange(e);
+    // Auto-resize
+    const target = e.target;
+    target.style.height = "auto";
+    target.style.height = `${Math.min(target.scrollHeight, 120)}px`;
+  };
+
   return (
     <>
-      {/* ─── Botón Flotante ─────────────────────────────────── */}
       <AnimatePresence>
         {!isOpen && (
           <motion.button
@@ -442,38 +424,29 @@ function ChatWidgetInner() {
             onClick={handleOpen}
             className="fixed bottom-6 right-6 z-[9998] group cursor-pointer border-none bg-transparent"
             aria-label="Abrir chat"
-            id="chatbot-trigger"
           >
-            {/* Glow */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 blur-xl opacity-40 group-hover:opacity-60 transition-opacity scale-110" />
+            {/* Soft Shadow Base */}
+            <div className="absolute inset-0 rounded-full bg-blue-600/20 blur-lg group-hover:bg-blue-600/30 transition-all scale-110" />
 
-            {/* Pulse ring */}
-            <motion.div
-              className="absolute inset-0 rounded-full border-2 border-blue-400/30"
-              animate={{ scale: [1, 1.4, 1.4], opacity: [0.6, 0, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
-            />
-
-            {/* Button */}
-            <div className="relative w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-2xl shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-all group-hover:scale-110 group-active:scale-95">
-              <MessageCircle className="w-6 h-6 text-white" />
+            {/* Clean Premium Button */}
+            <div className="relative w-[60px] h-[60px] rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-900/20 group-hover:shadow-blue-900/40 transition-all group-hover:-translate-y-1 group-active:translate-y-0 group-active:scale-95">
+              <MessageCircle className="w-7 h-7 text-white drop-shadow-sm" />
             </div>
 
-            {/* Badge */}
+            {/* Notification Badge */}
             {hasNewMessage && (
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 border-2 border-white flex items-center justify-center"
+                className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-red-500 border-2 border-white flex items-center justify-center shadow-sm"
               >
-                <span className="text-[9px] font-black text-white">1</span>
+                <span className="text-[10px] font-bold text-white leading-none">1</span>
               </motion.div>
             )}
           </motion.button>
         )}
       </AnimatePresence>
 
-      {/* ─── Panel del Chat ─────────────────────────────────── */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -481,80 +454,54 @@ function ChatWidgetInner() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="fixed bottom-6 right-6 z-[9998] w-[380px] h-[600px] max-h-[85vh] flex flex-col rounded-3xl overflow-hidden shadow-2xl shadow-black/40
-              max-[480px]:bottom-0 max-[480px]:right-0 max-[480px]:left-0 max-[480px]:top-0 max-[480px]:w-full max-[480px]:h-full max-[480px]:max-h-full max-[480px]:rounded-none"
-            style={{
-              background: "linear-gradient(160deg, #0c1220 0%, #111827 40%, #0f172a 100%)",
-              border: "1px solid rgba(255,255,255,0.08)",
-            }}
-            id="chatbot-panel"
+            className="fixed bottom-6 right-6 z-[9998] w-[400px] h-[650px] max-h-[85vh] flex flex-col bg-white rounded-2xl overflow-hidden shadow-2xl shadow-slate-900/15 border border-slate-200/60
+              max-[480px]:bottom-0 max-[480px]:right-0 max-[480px]:left-0 max-[480px]:w-full max-[480px]:h-[85dvh] max-[480px]:max-h-[85dvh] max-[480px]:rounded-b-none"
           >
             {/* ─── Header ───────────────────────────────────── */}
-            <div className="relative flex items-center justify-between px-5 py-4 border-b border-white/[0.06]">
-              {/* Gradient accent line */}
-              <div
-                className="absolute top-0 left-0 right-0 h-[2px]"
-                style={{
-                  background: "linear-gradient(90deg, transparent, #1890FF, #6366F1, transparent)",
-                }}
-              />
-
+            <div className="relative flex items-center justify-between px-5 py-4 bg-white border-b border-slate-100 z-10">
               <div className="flex items-center gap-3">
                 <div className="relative">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-sm shadow-blue-600/20">
                     <Sparkles className="w-5 h-5 text-white" />
                   </div>
-                  {/* Online indicator */}
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-emerald-500 border-2 border-[#0f172a]" />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 border-2 border-white shadow-sm" />
                 </div>
                 <div>
-                  <h3 className="text-[15px] font-bold text-white leading-tight">
-                    Programbi
+                  <h3 className="text-[16px] font-bold text-slate-900 leading-tight">
+                    Programbi AI
                   </h3>
-                  <p className="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
-                    En línea
+                  <p className="text-[12px] text-emerald-600 font-medium flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    En línea ahora
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-1">
-                {/* New chat */}
                 <button
                   type="button"
                   onClick={handleNewChat}
-                  className="p-2 rounded-xl bg-transparent hover:bg-white/[0.06] border-none cursor-pointer transition-colors group"
-                  title="Nueva conversación"
+                  className="p-2 rounded-lg bg-transparent hover:bg-slate-100 border-none cursor-pointer transition-colors text-slate-400 hover:text-blue-600"
+                  title="Reiniciar chat"
                 >
-                  <RotateCcw className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors" />
+                  <RotateCcw className="w-4 h-4" />
                 </button>
-                {/* Minimize */}
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="p-2 rounded-xl bg-transparent hover:bg-white/[0.06] border-none cursor-pointer transition-colors group"
-                  title="Minimizar"
-                >
-                  <Minus className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors" />
-                </button>
-                {/* Close */}
                 <button
                   type="button"
                   onClick={() => {
-                    setShowRating(true);
+                    if (safeMessages.length > 2) setShowRating(true);
                     handleClose();
                   }}
-                  className="p-2 rounded-xl bg-transparent hover:bg-white/[0.06] border-none cursor-pointer transition-colors group"
+                  className="p-2 rounded-lg bg-transparent hover:bg-slate-100 border-none cursor-pointer transition-colors text-slate-400 hover:text-slate-700"
                   title="Cerrar"
                 >
-                  <X className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors" />
+                  <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
             {/* ─── Messages Area ────────────────────────────── */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 space-y-4 scrollbar-hide">
-              {/* Welcome message */}
+            <div className="flex-1 overflow-y-auto overflow-x-hidden py-5 space-y-5 bg-white scrollbar-thin scrollbar-thumb-slate-200">
               {(safeMessages.length === 0 || isFirstOpen) && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -562,12 +509,12 @@ function ChatWidgetInner() {
                   className="px-4"
                 >
                   <div className="flex gap-2.5">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-500/20 mt-0.5">
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-sm mt-0.5">
                       <Bot className="w-3.5 h-3.5 text-white" />
                     </div>
-                    <div className="max-w-[82%] px-4 py-2.5 text-[13.5px] leading-relaxed bg-white/[0.06] text-white/85 rounded-2xl rounded-tl-md border border-white/[0.06]">
+                    <div className="max-w-[85%] px-4 py-3 text-[14px] leading-relaxed bg-slate-100 text-slate-800 rounded-2xl rounded-tl-md border border-slate-200/60 shadow-sm">
                       <div
-                        className="chatbot-markdown"
+                        className="chatbot-markdown space-y-2"
                         dangerouslySetInnerHTML={{
                           __html: renderSimpleMarkdown(WELCOME_MESSAGE),
                         }}
@@ -577,7 +524,6 @@ function ChatWidgetInner() {
                 </motion.div>
               )}
 
-              {/* Quick Actions */}
               <AnimatePresence>
                 {showQuickActions && safeMessages.length === 0 && (
                   <motion.div
@@ -585,7 +531,7 @@ function ChatWidgetInner() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ delay: 0.3 }}
-                    className="px-4 grid grid-cols-2 gap-2"
+                    className="px-4 grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2"
                   >
                     {QUICK_ACTIONS.map((action, i) => (
                       <motion.button
@@ -595,9 +541,11 @@ function ChatWidgetInner() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.4 + i * 0.08 }}
                         onClick={() => handleQuickAction(action.message)}
-                        className="flex items-center gap-2.5 px-3.5 py-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] hover:border-blue-500/30 text-white/60 hover:text-white/90 text-[12px] font-medium transition-all cursor-pointer group text-left"
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-blue-700 hover:border-blue-500 hover:shadow-md hover:shadow-blue-500/5 text-[13px] font-medium transition-all cursor-pointer group text-left"
                       >
-                        <action.icon className="w-4 h-4 text-blue-400/60 group-hover:text-blue-400 transition-colors flex-shrink-0" />
+                        <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors">
+                          <action.icon className="w-4 h-4 text-blue-600 flex-shrink-0" />
+                        </div>
                         {action.label}
                       </motion.button>
                     ))}
@@ -605,67 +553,63 @@ function ChatWidgetInner() {
                 )}
               </AnimatePresence>
 
-              {/* Chat Messages */}
               {safeMessages
                 .filter((m: any) => m?.role !== "system")
-                .map((message: any, index: number) => (
+                .map((message: any) => (
                   <MessageBubble
-                    key={message?.id || index}
+                    key={message?.id}
                     role={message?.role}
                     content={message?.content || ""}
-                    isLast={index === safeMessages.length - 1}
                   />
                 ))}
 
-              {/* Typing Indicator */}
               {isLoading && <TypingIndicator />}
 
-              {/* Rating */}
               {showRating && safeMessages.length > 2 && (
                 <RatingStars onRate={handleRate} />
               )}
 
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* ─── Powered By Badge ────────────────────────── */}
-            <div className="flex items-center justify-center py-1.5 border-t border-white/[0.03]">
-              <span className="text-[9px] text-white/15 font-medium flex items-center gap-1">
-                <Zap className="w-2.5 h-2.5" />
-                Powered by ProgramBI AI
-              </span>
+              <div ref={messagesEndRef} className="h-2" />
             </div>
 
             {/* ─── Input Area ───────────────────────────────── */}
-            <form
-              onSubmit={handleSubmit}
-              className="relative px-4 pb-4 pt-2"
-            >
-              <div className="flex items-end gap-2 bg-white/[0.05] border border-white/[0.08] rounded-2xl px-4 py-2 focus-within:border-blue-500/40 focus-within:bg-white/[0.07] transition-all">
-                <textarea
-                  ref={inputRef}
-                  value={input || ""}
-                  onChange={handleInputChange}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Escribe tu consulta..."
-                  rows={1}
-                  className="flex-1 bg-transparent border-none outline-none text-[14px] text-white/90 placeholder:text-white/25 resize-none max-h-24 leading-relaxed font-sans"
-                  style={{ fontFamily: "inherit" }}
-                  disabled={isLoading}
-                />
-                <button
-                  type="submit"
-                  disabled={!input?.trim() || isLoading}
-                  className={`p-2 rounded-xl transition-all border-none cursor-pointer flex-shrink-0 ${
-                    input?.trim() && !isLoading
-                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 hover:scale-105 active:scale-95"
-                      : "bg-white/[0.05] text-white/20 cursor-not-allowed"
-                  }`}
-                >
-                  <Send className="w-4 h-4" />
-                </button>
+            <div className="bg-white border-t border-slate-100 z-10">
+              <div className="flex items-center justify-center py-1.5 bg-slate-50/50 border-b border-slate-100">
+                <span className="text-[10px] text-slate-400 font-medium flex items-center gap-1 uppercase tracking-wider">
+                  <Zap className="w-3 h-3 text-blue-500" />
+                  Powered by ProgramBI AI
+                </span>
               </div>
-            </form>
+              <form
+                onSubmit={handleSubmit}
+                className="p-3"
+              >
+                <div className="flex items-end gap-2 bg-slate-50 border border-slate-200 rounded-xl px-2 py-2 focus-within:border-blue-500 focus-within:bg-white focus-within:ring-4 focus-within:ring-blue-500/10 transition-all shadow-sm">
+                  <textarea
+                    ref={inputRef}
+                    value={input || ""}
+                    onChange={handleInput}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Escribe tu consulta aquí..."
+                    rows={1}
+                    className="flex-1 bg-transparent border-none outline-none text-[14px] text-slate-800 placeholder:text-slate-400 resize-none max-h-[120px] min-h-[24px] px-2 py-1.5 leading-relaxed"
+                    style={{ fontFamily: "inherit" }}
+                    disabled={isLoading}
+                  />
+                  <button
+                    type="submit"
+                    disabled={!input?.trim() || isLoading}
+                    className={`p-2.5 rounded-lg transition-all border-none flex-shrink-0 flex items-center justify-center h-[40px] w-[40px] ${
+                      input?.trim() && !isLoading
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-600/20 hover:bg-blue-700 hover:scale-105 active:scale-95 cursor-pointer"
+                        : "bg-slate-100 text-slate-400 cursor-not-allowed"
+                    }`}
+                  >
+                    <Send className="w-4 h-4 ml-0.5" />
+                  </button>
+                </div>
+              </form>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -673,9 +617,6 @@ function ChatWidgetInner() {
   );
 }
 
-/* ═══════════════════════════════════════════════════════════════ */
-/* ERROR BOUNDARY WRAPPER                                         */
-/* ═══════════════════════════════════════════════════════════════ */
 class ChatErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   constructor(props: { children: ReactNode }) {
     super(props);
@@ -689,7 +630,6 @@ class ChatErrorBoundary extends Component<{ children: ReactNode }, { hasError: b
   }
   render() {
     if (this.state.hasError) {
-      // Si el widget falla, simplemente no lo renderizamos para no romper toda la página en producción
       return null;
     }
     return this.props.children;
