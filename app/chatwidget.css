@@ -1,4 +1,4 @@
-/* 🤖 Chatbot IA — Estilos Personalizados */
+/* 🤖 Chatbot IA — Estilos Personalizados (Modo Claro) */
 
 /* Estilos para el renderizado de Markdown Simple */
 .chatbot-markdown {
@@ -15,7 +15,7 @@
 
 .chatbot-markdown strong {
   font-weight: 700;
-  color: #ffffff !important;
+  color: #1890ff !important;
 }
 
 .chatbot-markdown em {
@@ -23,35 +23,29 @@
 }
 
 .chatbot-markdown a {
-  color: #60a5fa !important;
+  color: #2563eb !important;
   text-decoration: underline;
   text-underline-offset: 2px;
   transition: color 0.2s ease;
 }
 
 .chatbot-markdown a:hover {
-  color: #93c5fd !important;
+  color: #1d4ed8 !important;
 }
 
 .chatbot-markdown code {
   font-family: var(--font-mono, monospace);
   font-size: 0.85em;
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: #e2e8f0;
   padding: 0.15rem 0.3rem;
   border-radius: 4px;
-  color: #93c5fd !important;
+  color: #475569 !important;
 }
 
-/* Efectos de Hover y Transiciones del Widget */
-#chatbot-panel {
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-}
-
-/* Scrollbar personalizado para el área de mensajes */
+/* Scrollbar personalizado (modo claro) */
 .chatbot-messages-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+  scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
 }
 
 .chatbot-messages-scroll::-webkit-scrollbar {
@@ -63,20 +57,32 @@
 }
 
 .chatbot-messages-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   border-radius: 9999px;
 }
 
 .chatbot-messages-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.2);
 }
 
-/* Animaciones del Typing Indicator */
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
+/* Streaming message reveal effect */
+@keyframes chatReveal {
+  from {
+    mask-image: linear-gradient(to bottom, black 0%, transparent 60%);
+    -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 60%);
   }
-  50% {
-    transform: translateY(-6px);
+  to {
+    mask-image: linear-gradient(to bottom, black 100%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, black 100%, transparent 100%);
   }
+}
+
+.chat-streaming-msg {
+  mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+}
+
+.chat-streaming-msg.done {
+  mask-image: none;
+  -webkit-mask-image: none;
 }

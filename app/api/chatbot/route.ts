@@ -95,90 +95,104 @@ ${dynamicContext}`
     // ─── Determinar o crear el conversationId ───
     let conversationId = existingConvId || null
 
-    // ─── Stream con DeepSeek V3 ───
-    const result = streamText({
-      model: openrouter('deepseek/deepseek-v3-0324:free'),
-      system: systemPrompt,
-      messages,
-      onFinish: async ({ text }) => {
-        try {
-          const supabase = createAdminClient()
+    // ─── Modelos (primario + fallback) ───
+    const PRIMARY_MODEL = 'deepseek/deepseek-v3-0324:free'
+    const FALLBACK_MODEL = 'google/gemma-3-27b-it:free'
 
-          // Si no hay conversación existente, crear una nueva
-          if (!conversationId) {
-            const { data: newConv, error: convError } = await supabase
-              .from('chatbot_conversations')
-              .insert({
-                visitor_id: visitorId || null,
-                source_page: sourcePage || null,
-              })
-              .select('id')
-              .single()
+    function tryStreamWithModel(modelName: string) {
+      return streamText({
+        model: openrouter(modelName),
+        system: systemPrompt,
+        messages,
+        onFinish: async ({ text }) => {
+          try {
+            const supabase = createAdminClient()
 
-            if (convError) {
-              console.error('[Chatbot] Error al crear conversación:', convError)
-              return
-            }
-
-            conversationId = newConv.id
-          }
-
-          // Obtener el último mensaje del usuario para guardarlo
-          const lastUserMsg = messages
-            .filter((m: { role: string }) => m.role === 'user')
-            .pop()
-
-          // Guardar mensajes en batch: usuario + asistente
-          const messagesToInsert = []
-
-          if (lastUserMsg) {
-            messagesToInsert.push({
-              conversation_id: conversationId,
-              role: 'user',
-              content: lastUserMsg.content,
-            })
-          }
-
-          if (text) {
-            messagesToInsert.push({
-              conversation_id: conversationId,
-              role: 'assistant',
-              content: text,
-            })
-          }
-
-          if (messagesToInsert.length > 0) {
-            const { error: msgError } = await supabase
-              .from('chatbot_messages')
-              .insert(messagesToInsert)
-
-            if (msgError) {
-              console.error('[Chatbot] Error al guardar mensajes:', msgError)
-            }
-          }
-
-          // Actualizar timestamp y contador de la conversación
-          await supabase.rpc('increment_chatbot_message_count', {
-            conv_id: conversationId,
-          }).then(({ error }) => {
-            // Si la función RPC no existe, hacer update manual
-            if (error) {
-              return supabase
+            if (!conversationId) {
+              const { data: newConv, error: convError } = await supabase
                 .from('chatbot_conversations')
-                .update({
-                  updated_at: new Date().toISOString(),
-                  message_count: messagesToInsert.length, // al menos incrementar
+                .insert({
+                  visitor_id: visitorId || null,
+                  source_page: sourcePage || null,
                 })
-                .eq('id', conversationId)
-            }
-          })
-        } catch (err) {
-          console.error('[Chatbot] Error en onFinish:', err)
-        }
-      },
-    })
+                .select('id')
+                .single()
 
-    // ─── Respuesta en formato Text Stream (compatible con useChat) ───
+              if (convError) {
+                console.error('[Chatbot] Error al crear conversación:', convError)
+                return
+              }
+
+              conversationId = newConv.id
+            }
+
+            const lastUserMsg = messages
+              .filter((m: { role: string }) => m.role === 'user')
+              .pop()
+
+            const messagesToInsert = []
+
+            if (lastUserMsg) {
+              messagesToInsert.push({
+                conversation_id: conversationId,
+                role: 'user',
+                content: lastUserMsg.content,
+              })
+            }
+
+            if (text) {
+              messagesToInsert.push({
+                conversation_id: conversationId,
+                role: 'assistant',
+                content: text,
+              })
+            }
+
+            if (messagesToInsert.length > 0) {
+              const { error: msgError } = await supabase
+                .from('chatbot_messages')
+                .insert(messagesToInsert)
+
+              if (msgError) {
+                console.error('[Chatbot] Error al guardar mensajes:', msgError)
+              }
+            }
+
+            await supabase.rpc('increment_chatbot_message_count', {
+              conv_id: conversationId,
+            }).then(({ error }) => {
+              if (error) {
+                return supabase
+                  .from('chatbot_conversations')
+                  .update({
+                    updated_at: new Date().toISOString(),
+                    message_count: messagesToInsert.length,
+                  })
+                  .eq('id', conversationId)
+              }
+            })
+          } catch (err) {
+            console.error('[Chatbot] Error en onFinish:', err)
+          }
+        },
+      })
+    }
+
+    // ─── Intentar modelo primario, fallback si falla ───
+    let result
+    try {
+      result = tryStreamWithModel(PRIMARY_MODEL)
+    } catch (primaryError) {
+      console.error('[Chatbot] Primary model failed, trying fallback:', primaryError)
+      try {
+        result = tryStreamWithModel(FALLBACK_MODEL)
+      } catch (fallbackError) {
+        console.error('[Chatbot] Fallback model also failed:', fallbackError)
+        throw fallbackError
+      }
+    }
+
+    // ─── Respuesta en formato Text Stream ───
     return result.toTextStreamResponse({
       headers: {
         'X-Conversation-Id': conversationId || 'pending',
@@ -186,14 +200,17 @@ ${dynamicContext}`
     })
   } catch (error) {
     console.error('[Chatbot] Error general:', error)
+    // Return a readable text error so the client can display it
     return new Response(
-      JSON.stringify({
-        error: 'Error al procesar tu mensaje. Por favor, intenta nuevamente.',
-      }),
+      'Lo siento, nuestro asistente no está disponible en este momento. Por favor, contáctanos por WhatsApp al +56 9 3677 6614 o escríbenos a contacto@programbi.com.',
       {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
+        status: 200,
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'X-Conversation-Id': 'error',
+        },
       }
     )
   }
 }
+
