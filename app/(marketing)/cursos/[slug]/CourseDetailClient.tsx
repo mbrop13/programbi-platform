@@ -280,7 +280,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       durationLabel = "144 horas 3 niveles";
                     }
 
-                    const blocks = [
+                    const blocks: { icon: React.ReactNode; title: string; value: React.ReactNode }[] = [
                       { icon: <Clock className="w-5 h-5" />, title: "Duración", value: durationLabel },
                       { icon: <Award className="w-5 h-5" />, title: "Certificación", value: "Al completar el programa" }
                     ];
