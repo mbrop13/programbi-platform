@@ -4,7 +4,6 @@ import React, { Component, ErrorInfo, ReactNode, useState, useEffect, useRef, us
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  MessageCircle,
   X,
   Send,
   Sparkles,
@@ -439,20 +438,20 @@ function ChatWidgetInner() {
 
             {/* Animated pulse ring */}
             <motion.div
-              className="absolute inset-0 rounded-full border-2 border-blue-400/40"
+              className="absolute inset-0 rounded-full"
+              style={{ border: "2px solid rgba(24,144,255,0.4)", width: 64, height: 64, top: -2, left: -2 }}
               animate={{ scale: [1, 1.35, 1.35], opacity: [0.6, 0, 0] }}
               transition={{ duration: 2.5, repeat: Infinity, ease: "easeOut" }}
-              style={{ width: 64, height: 64, top: -2, left: -2 }}
             />
 
             {/* Glow */}
-            <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/25 to-indigo-500/25 blur-xl scale-150 group-hover:scale-[1.8] transition-transform duration-500" />
+            <div className="absolute inset-0 rounded-full blur-xl scale-150 group-hover:scale-[1.8] transition-transform duration-500" style={{ background: "rgba(24,144,255,0.2)" }} />
 
             {/* Main button */}
-            <div className="relative w-[60px] h-[60px] rounded-full bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 flex items-center justify-center shadow-xl shadow-blue-600/30 group-hover:shadow-blue-600/50 transition-all duration-300 group-hover:-translate-y-1.5 group-hover:scale-105 group-active:scale-95 group-active:translate-y-0">
-              {/* Inner highlight */}
+            <div className="relative w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-300 group-hover:-translate-y-1.5 group-hover:scale-105 group-active:scale-95 group-active:translate-y-0"
+              style={{ background: "#1890ff", boxShadow: "0 8px 24px rgba(24,144,255,0.4)" }}>
               <div className="absolute inset-[2px] rounded-full bg-gradient-to-b from-white/20 to-transparent" />
-              <MessageCircle className="w-6 h-6 text-white drop-shadow relative z-10" />
+              <Sparkles className="w-6 h-6 text-white drop-shadow relative z-10" />
             </div>
 
             {/* Tooltip */}
