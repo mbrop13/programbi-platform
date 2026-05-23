@@ -52,6 +52,15 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const relatedCourses = courses.filter((c) => c.slug !== course.slug).slice(0, 3);
   const scheduleCountry = SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0];
 
+  const convertAndFormat = (priceCLP: number | null | undefined) => {
+    if (!priceCLP) return "";
+    if (country.currency.code === "CLP") {
+      return new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(priceCLP);
+    }
+    const converted = priceCLP * country.currency.rate;
+    return new Intl.NumberFormat("en-US", { style: "currency", currency: country.currency.code, maximumFractionDigits: 0 }).format(converted);
+  };
+
   // Bump Options logic
   const bumpOptions = [
     { id: 'py-basic', slug: 'python', level: 'Básico', name: 'Python - Plan Básico', price: 99000 },
@@ -530,6 +539,44 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                           {tag.icon} {tag.text}
                         </span>
                       ))}
+                    </div>
+
+                    {/* Price Block */}
+                    <div className="mb-6 border-t border-slate-100 pt-6">
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
+                        Inversión del Programa
+                      </p>
+                      
+                      {isLoggedIn ? (
+                        <div className="flex items-end gap-3">
+                          <span className="text-3xl font-black text-slate-900 leading-none">
+                            {convertAndFormat(currentPrice)}
+                          </span>
+                        </div>
+                      ) : (
+                        <div 
+                          className="relative overflow-hidden rounded-xl border border-slate-200 cursor-pointer group"
+                          onClick={() => setShowAuthModal(true)}
+                        >
+                           {/* Blurred Price Background */}
+                           <div className="absolute inset-0 bg-slate-50/50 flex flex-col items-center justify-center pointer-events-none z-0">
+                             <div className="blur-md opacity-30 select-none">
+                               <span className="text-4xl font-black text-slate-900">$299.000</span>
+                             </div>
+                           </div>
+                           
+                           {/* Overlay Content */}
+                           <div className="relative z-10 flex flex-col items-center text-center p-4 bg-white/40 backdrop-blur-[2px] transition-all group-hover:bg-white/60">
+                             <Lock className="w-5 h-5 text-slate-500 mb-2" />
+                             <p className="text-xs font-bold text-slate-700 leading-relaxed max-w-[200px]">
+                               Regístrate para ver precios, solicitar becas y acceder a opciones en cuotas
+                             </p>
+                             <span className="mt-2 text-[10px] font-black text-[#1890FF] uppercase tracking-wider group-hover:underline">
+                               Crear cuenta gratis
+                             </span>
+                           </div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Call to Action mapping to Checkout form */}
