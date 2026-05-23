@@ -208,8 +208,8 @@ export default function Navbar() {
             : "bg-white/60 backdrop-blur-lg py-3 lg:py-4"
         }`}
       >
-        <div className="max-w-[1300px] mx-auto px-5 lg:px-12 xl:px-16 flex items-center justify-between xl:justify-start gap-3 lg:gap-8">
-          <div className="flex items-center gap-3 lg:gap-8">
+        <div className="max-w-[1300px] mx-auto px-5 lg:px-12 xl:px-16 flex items-center justify-between xl:justify-start gap-4 lg:gap-8">
+          <div className="flex items-center gap-4 lg:gap-8">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-0 no-underline group flex-shrink-0">
               <Image
@@ -217,7 +217,7 @@ export default function Navbar() {
                 alt="ProgramBI"
                 width={180}
                 height={48}
-                className="h-7 lg:h-11 w-auto object-contain transition-transform group-hover:scale-[1.02]"
+                className="h-8 lg:h-11 w-auto object-contain transition-transform group-hover:scale-[1.02]"
                 unoptimized
                 priority
               />
@@ -228,11 +228,11 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setIsCountryOpen(!isCountryOpen)}
-                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 transition-all cursor-pointer text-xs lg:text-sm font-medium text-slate-600 shadow-sm"
+                className="flex items-center gap-1.5 px-2 py-1.5 lg:px-2.5 rounded-lg border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 transition-all cursor-pointer text-xs lg:text-sm font-medium text-slate-600 shadow-sm"
               >
-                <img src={country.flagUrl} alt={country.name} className="w-4 lg:w-5 h-auto rounded-[2px]" />
-                <span className="text-[11px] lg:text-[13px]">{country.shortName}</span>
-                <ChevronDown size={13} className={`text-slate-400 transition-transform ${isCountryOpen ? "rotate-180" : ""}`} />
+                <img src={country.flagUrl} alt={country.name} className="w-5 h-auto rounded-[2px]" />
+                <span className="hidden lg:block text-[13px]">{country.shortName}</span>
+                <ChevronDown size={13} className={`hidden lg:block text-slate-400 transition-transform ${isCountryOpen ? "rotate-180" : ""}`} />
               </button>
 
               <AnimatePresence>
