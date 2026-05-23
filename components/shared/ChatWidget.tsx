@@ -44,12 +44,25 @@ const QUICK_ACTIONS = [
 /* ─── Visitor ID ───────────────────────────────────────────────── */
 function getVisitorId(): string {
   if (typeof window === "undefined") return "";
-  let id = localStorage.getItem(VISITOR_ID_KEY);
-  if (!id) {
-    id = crypto.randomUUID();
-    localStorage.setItem(VISITOR_ID_KEY, id);
+  try {
+    let id = localStorage.getItem(VISITOR_ID_KEY);
+    if (!id) {
+      if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        id = crypto.randomUUID();
+      } else {
+        // Fallback robusto e inofensivo para generar UUID v4 compatible
+        id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      }
+      localStorage.setItem(VISITOR_ID_KEY, id);
+    }
+    return id;
+  } catch (err) {
+    console.error("Error retrieving or generating visitor ID:", err);
+    return "anonymous-visitor";
   }
-  return id;
 }
 
 /* ─── Markdown simple ──────────────────────────────────────────── */
