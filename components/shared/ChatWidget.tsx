@@ -26,6 +26,7 @@ interface ChatMessage {
   role: "user" | "assistant" | "system";
   content: string;
   cards?: string[];
+  scheduleCards?: boolean;
   isStreaming?: boolean;
 }
 
@@ -102,17 +103,18 @@ const COURSE_CARDS: Record<string, {
 };
 
 /* ─── Pre-built responses ──────────────────────────────────────── */
-const PREBUILT_RESPONSES: Record<string, { text: string; cards: string[] }> = {
+const PREBUILT_RESPONSES: Record<string, { text: string; cards: string[]; scheduleCards?: boolean }> = {
   "¿Qué cursos tienen disponibles?": {
     text: `¡Tenemos una variedad de cursos diseñados para impulsar tu carrera en **Data Analytics**! 🚀\n\nAquí te muestro nuestros cursos principales:`,
     cards: ["analisis-de-datos", "power-bi", "python", "sql-server", "excel", "ia-productividad", "machine-learning", "power-automate"],
   },
   "¿Cuándo empiezan los próximos cursos?": {
-    text: `📅 Los horarios se actualizan constantemente. Normalmente tenemos clases **Martes y Jueves** o **Lunes y Miércoles**, en horario **19:30 a 21:30 hrs (Chile)**.\n\n¿Te interesa algún curso en particular? Puedo darte más detalles 👇`,
-    cards: ["analisis-de-datos", "power-bi", "sql-server"],
+    text: `📅 Los horarios se actualizan constantemente. Normalmente tenemos clases **Martes y Jueves** o **Lunes y Miércoles**.\n\nAquí puedes ver los horarios según tu zona horaria 👇`,
+    cards: [],
+    scheduleCards: true,
   },
   "¿Tienen alguna promoción activa?": {
-    text: `🏷️ ¡Sí! Nuestro programa más completo, el **Curso de Análisis de Datos** (144 horas), tiene un precio especial.\n\nLos cursos individuales de **48 horas** también tienen excelentes precios.\n\n¿Quieres más información sobre algún curso?`,
+    text: `🏷️ ¡Sí! Nuestro programa más completo es el **Curso de Análisis de Datos**, que tiene **3 niveles** (SQL, Power BI y Python), cada uno de **48 horas**.\n\nTambién tenemos cursos individuales de **48 horas** con excelentes descuentos.\n\nPara conocer los precios y ofertas actuales, regístrate en la página del curso que te interese 👇`,
     cards: ["analisis-de-datos"],
   },
   "Quiero hablar con un asesor": {
@@ -259,8 +261,75 @@ function CourseCard({ slug }: { slug: string }) {
   );
 }
 
-/* ─── Message Bubble ───────────────────────────────────────────── */
-function MessageBubble({ role, content, cards, isStreaming }: { role: string; content: string; cards?: string[]; isStreaming?: boolean }) {
+/* ─── Schedule Card with Timezone ──────────────────────────────── */
+const TIMEZONES = [
+  { label: "Chile", offset: -4, flag: "🇨🇱" },
+  { label: "Colombia / Perú / Ecuador", offset: -5, flag: "🇨🇴" },
+  { label: "México Centro", offset: -6, flag: "🇲🇽" },
+  { label: "Argentina", offset: -3, flag: "🇦🇷" },
+  { label: "Bolivia / Venezuela", offset: -4, flag: "🇧🇴" },
+  { label: "República Dominicana", offset: -4, flag: "🇩🇴" },
+  { label: "España", offset: 2, flag: "🇪🇸" },
+];
+
+const SCHEDULE_DATA = [
+  { course: "Análisis de Datos (SQL)", days: "Martes y Jueves", chileTime: "19:30 - 21:30", slug: "analisis-de-datos" },
+  { course: "Power BI", days: "Lunes y Miércoles", chileTime: "19:30 - 21:30", slug: "power-bi" },
+  { course: "SQL Server", days: "Martes y Jueves", chileTime: "19:30 - 21:30", slug: "sql-server" },
+  { course: "Python para Datos", days: "Lunes y Miércoles", chileTime: "19:30 - 21:30", slug: "python" },
+];
+
+function convertTime(chileTime: string, targetOffset: number): string {
+  const chileOffset = -4;
+  const diff = targetOffset - chileOffset;
+  return chileTime.replace(/(\d{1,2}):(\d{2})/g, (_, h, m) => {
+    let hour = (parseInt(h) + diff + 24) % 24;
+    return `${hour.toString().padStart(2, "0")}:${m}`;
+  });
+}
+
+function ScheduleCards() {
+  const [tz, setTz] = useState(0);
+  const selected = TIMEZONES[tz];
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-2 mt-1">
+      {/* Timezone selector */}
+      <div className="flex items-center gap-2">
+        <span className="text-[11px] text-slate-500 font-medium flex-shrink-0">🌎 Zona:</span>
+        <select value={tz} onChange={(e) => setTz(Number(e.target.value))}
+          className="text-[11px] bg-white border border-slate-200 rounded-lg px-2 py-1.5 text-slate-700 font-medium flex-1 cursor-pointer"
+          style={{ outline: "none" }}>
+          {TIMEZONES.map((t, i) => (
+            <option key={t.label} value={i}>{t.flag} {t.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Schedule cards */}
+      {SCHEDULE_DATA.map((s) => (
+        <a key={s.slug} href={`/cursos/${s.slug}`} target="_blank" rel="noopener"
+          className="flex items-center justify-between px-3 py-2.5 rounded-xl border border-slate-200 bg-white hover:border-blue-300 hover:shadow-md transition-all no-underline group">
+          <div className="flex-1 min-w-0">
+            <p className="text-[12px] font-bold text-slate-800 truncate">{s.course}</p>
+            <p className="text-[11px] text-slate-500 mt-0.5">📆 {s.days}</p>
+          </div>
+          <div className="text-right flex-shrink-0 ml-2">
+            <p className="text-[12px] font-bold" style={{ color: "#1890ff" }}>
+              {convertTime(s.chileTime, selected.offset)}
+            </p>
+            <p className="text-[9px] text-slate-400">{selected.flag} {selected.label.split(" / ")[0]}</p>
+          </div>
+        </a>
+      ))}
+
+      <p className="text-[10px] text-slate-400 text-center italic">Los horarios pueden variar. Consulta la web para fechas exactas de inicio.</p>
+    </motion.div>
+  );
+}
+
+/* ─── Message Bubble ─────────────────────────────────────── */
+function MessageBubble({ role, content, cards, scheduleCards, isStreaming }: { role: string; content: string; cards?: string[]; scheduleCards?: boolean; isStreaming?: boolean }) {
   const isUser = role === "user";
   const { cleanText, cardSlugs } = isUser ? { cleanText: content, cardSlugs: [] } : extractCourseWidgets(content || "");
   const allCards = [...cardSlugs, ...(cards || [])];
@@ -299,6 +368,7 @@ function MessageBubble({ role, content, cards, isStreaming }: { role: string; co
             {allCards.map((s) => <CourseCard key={s} slug={s} />)}
           </div>
         )}
+        {scheduleCards && !isStreaming && <ScheduleCards />}
       </div>
     </motion.div>
   );
@@ -338,11 +408,25 @@ function ChatWidgetInner() {
   useEffect(() => { if (isOpen && inputRef.current) setTimeout(() => inputRef.current?.focus(), 100); }, [isOpen]);
   useEffect(() => { if (!isOpen && messages.length > 0 && messages[messages.length - 1]?.role === "assistant") setHasNewMessage(true); }, [messages, isOpen]);
 
+  /* ─── Handle pre-built quick action response with typing delay ── */
   const handlePrebuilt = useCallback((userContent: string) => {
-    const pre = PREBUILT_RESPONSES[userContent]; if (!pre) return false;
-    const u: ChatMessage = { id: generateId(), role: "user", content: userContent };
-    const a: ChatMessage = { id: generateId(), role: "assistant", content: pre.text, cards: pre.cards };
-    const upd = [...messages, u, a]; setMessages(upd); setShowQuickActions(false); setIsFirstOpen(false); saveMessages(upd); return true;
+    const prebuilt = PREBUILT_RESPONSES[userContent]; if (!prebuilt) return false;
+
+    const userMsg: ChatMessage = { id: generateId(), role: "user", content: userContent };
+    setMessages((prev) => [...prev, userMsg]);
+    setShowQuickActions(false); setIsFirstOpen(false); setIsLoading(true);
+
+    // Simulate a 3-second typing delay
+    setTimeout(() => {
+      const assistantMsg: ChatMessage = {
+        id: generateId(), role: "assistant", content: prebuilt.text,
+        cards: prebuilt.cards, scheduleCards: prebuilt.scheduleCards,
+      };
+      setMessages((prev) => { const upd = [...prev, assistantMsg]; saveMessages(upd); return upd; });
+      setIsLoading(false);
+    }, 3000);
+
+    return true;
   }, [messages, saveMessages]);
 
   const sendMessage = useCallback(async (userContent: string) => {
@@ -541,7 +625,7 @@ function ChatWidgetInner() {
                 )}
               </AnimatePresence>
               {messages.filter((m) => m.role !== "system").map((m) => (
-                <MessageBubble key={m.id} role={m.role} content={m.content} cards={m.cards} isStreaming={m.isStreaming} />
+                <MessageBubble key={m.id} role={m.role} content={m.content} cards={m.cards} scheduleCards={m.scheduleCards} isStreaming={m.isStreaming} />
               ))}
               {isLoading && <TypingIndicator />}
               {showRating && messages.length > 2 && <RatingStars onRate={handleRate} />}
