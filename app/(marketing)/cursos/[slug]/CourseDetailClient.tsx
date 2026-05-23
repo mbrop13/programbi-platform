@@ -161,6 +161,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   }, [schedules, activeLevel, course.slug]);
   const currentWhatYouLearn = activeLevel ? activeLevel.whatYouLearn : course.whatYouLearn;
   const rawPrice = activeLevel?.price || null;
+  const baseOriginalPrice = activeLevel?.originalPrice || course.originalPrice || rawPrice;
   
   // Calculate discount
   const isSpecialization = course.durationHours > 50 || course.slug === "analisis-de-datos" || course.slug === "analitica-mineria" || course.slug === "analitica-financiera";
@@ -171,6 +172,11 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
   const currentPrice = rawPrice ? Math.floor(rawPrice * (1 - discPercent / 100)) : null;
   const grandTotal = currentPrice ? currentPrice + (bumpSelections.length * 99000) : null;
+  const originalGrandTotal = baseOriginalPrice ? baseOriginalPrice + (bumpSelections.length * 99000) : null;
+  
+  const totalDiscountPercentage = originalGrandTotal && grandTotal && originalGrandTotal > grandTotal 
+    ? Math.round(((originalGrandTotal - grandTotal) / originalGrandTotal) * 100) 
+    : 0;
 
   const handleCheckout = async () => {
     if (!isLoggedIn) {
@@ -488,18 +494,18 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       
                       {isLoggedIn ? (
                         <div className="flex flex-col gap-1">
-                          {rawPrice && discPercent > 0 && (
+                          {originalGrandTotal && totalDiscountPercentage > 0 && (
                             <div className="flex items-center gap-2 mb-1">
                               <span className="text-sm font-bold text-slate-400 line-through">
-                                {convertAndFormat(rawPrice)}
+                                {convertAndFormat(originalGrandTotal)}
                               </span>
                               <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                {discPercent}% OFF
+                                {totalDiscountPercentage}% OFF
                               </span>
                             </div>
                           )}
                           <span className="text-3xl font-black text-slate-900 leading-none">
-                            {convertAndFormat(currentPrice)}
+                            {convertAndFormat(grandTotal)}
                           </span>
                         </div>
                       ) : (
