@@ -133,11 +133,11 @@ export default function WebinarClient() {
               
               <div className="bg-white border border-slate-200 rounded-2xl p-5 mb-8 flex items-center gap-5 max-w-sm shadow-sm">
                 <div className="w-16 h-16 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-xl flex flex-col items-center justify-center shrink-0">
-                  <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">MAY</span>
-                  <span className="text-2xl font-black text-slate-900 leading-none mt-0.5">23</span>
+                  <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest">JUN</span>
+                  <span className="text-2xl font-black text-slate-900 leading-none mt-0.5">6</span>
                 </div>
                 <div>
-                  <p className="text-slate-900 font-bold text-lg">Sábado 23 de Mayo</p>
+                  <p className="text-slate-900 font-bold text-lg">Sábado 6 de Junio</p>
                   <p className="text-slate-500 text-sm font-medium">11:00 AM · Vía Zoom</p>
                 </div>
               </div>
@@ -339,11 +339,11 @@ export default function WebinarClient() {
           <div className="inline-flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/20 rounded-full px-4 py-1.5 mb-6">
             <span className="text-yellow-400 text-xs font-bold uppercase tracking-widest">🎁 Bonus para asistentes</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tight mb-4">No te quedes fuera.</h2>
+          <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-6">Asegura tu Lugar en el Webinar</h2>
           <p className="text-slate-400 max-w-lg mx-auto mb-4 leading-relaxed">
             Descuento especial en nuestros programas + recursos descargables exclusivos que compartiremos solo en vivo.
           </p>
-          <p className="text-white font-bold text-lg mb-8">Sábado 23 de Mayo · 11:00 AM · Vía Zoom</p>
+          <p className="text-white font-bold text-lg mb-8">Sábado 6 de Junio • 11:00 AM • Vía Zoom</p>
           <a href="#top" className="inline-flex items-center gap-2 btn-gradient text-white font-bold py-4 px-10 rounded-xl text-sm uppercase tracking-wider transition-all">
             <ArrowRight className="w-4 h-4" /> Inscribirme ahora
           </a>
