@@ -12,7 +12,7 @@ import {
   Info, Globe
 } from "lucide-react";
 import { courses as allCourses, Course } from "@/lib/data/courses";
-import { type CourseSchedule, analisisDeDatosSlugs, formatScheduleDate, getNearestSchedule, convertSchedule, SCHEDULE_COUNTRIES } from "@/lib/data/course-schedules";
+import { type CourseSchedule, analisisDeDatosSlugs, formatScheduleDate, getNearestSchedule, getAllActiveSchedules, convertSchedule, SCHEDULE_COUNTRIES } from "@/lib/data/course-schedules";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { useCountry } from "@/lib/context/CountryContext";
 
@@ -361,7 +361,7 @@ export default function PagoClient() {
                const isBundle = ["analisis-de-datos", "analitica-mineria", "analitica-financiera"].includes(course.slug);
                
                // Logic to check active schedule
-               let schedule: CourseSchedule | undefined | null = undefined;
+               let courseSchedules: CourseSchedule[] = [];
                
                // Specialty courses can always be purchased
                const alwaysAvailable = ["analitica-mineria", "analitica-financiera"].includes(course.slug);
@@ -369,13 +369,15 @@ export default function PagoClient() {
                if (course.slug === "analisis-de-datos") {
                   if (activeLevel?.includes("Básico") || activeLevel?.includes("Completo")) {
                       const adSchedules = schedules.filter(s => analisisDeDatosSlugs.includes(s.course_slug));
-                      schedule = getNearestSchedule(adSchedules);
+                      courseSchedules = getAllActiveSchedules(adSchedules);
                   }
                } else if (!alwaysAvailable) {
-                  schedule = schedules.find(s => s.course_slug === course.slug && s.level_name === activeLevel);
+                  courseSchedules = getAllActiveSchedules(
+                    schedules.filter(s => s.course_slug === course.slug && s.level_name === activeLevel)
+                  );
                }
 
-               const hasScheduleActive = !!schedule || alwaysAvailable;
+               const hasScheduleActive = courseSchedules.length > 0 || alwaysAvailable;
                // Overwrite hasScheduleActive if fetching schedules is done but it evaluates to false, we assume you cannot purchase and must notify.
                const canBuy = mode === 'individual' && hasScheduleActive && currentLevelData?.price;
 
@@ -423,32 +425,25 @@ export default function PagoClient() {
                           )}
 
                           <div className="flex flex-col gap-1.5 text-xs text-gray-500 font-medium mt-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 w-full max-w-md">
-                               {hasScheduleActive && schedule ? (
-                                 (() => {
-                                   const converted = convertSchedule(
-                                     schedule.start_date,
-                                     schedule.schedule_time,
-                                     schedule.schedule_days,
-                                     scheduleCountry.timeZone
-                                   );
-                                   return (
-                                     <>
-                                       <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
+                               {hasScheduleActive && courseSchedules.length > 0 ? (
+                                 <>
+                                   {courseSchedules.map((sch, idx) => {
+                                     const converted = convertSchedule(
+                                       sch.start_date,
+                                       sch.schedule_time,
+                                       sch.schedule_days,
+                                       scheduleCountry.timeZone
+                                     );
+                                     return (
+                                       <span key={idx} className="flex items-center gap-1.5 text-emerald-600 font-bold">
                                          <Calendar className="w-3.5 h-3.5" />
-                                         <span>Inicio: <span className="font-extrabold text-slate-800">{converted.dateFormatted}</span></span>
-                                         {converted.isShifted && (
-                                           <span className="text-[9px] bg-blue-50 text-[#1890FF] px-1.5 py-0.5 rounded font-black uppercase tracking-wide">
-                                             Zona Horaria
-                                           </span>
-                                         )}
+                                         <span className="capitalize">{converted.dateFormatted}</span>
+                                         <span className="text-slate-500 font-semibold">·</span>
+                                         <span className="text-blue-600">{converted.days} {converted.time}</span>
                                        </span>
-                                       <span className="flex items-center gap-1.5 text-blue-600 font-bold">
-                                         <Clock className="w-3.5 h-3.5" />
-                                         <span>Clases: <span className="font-extrabold text-slate-800">{converted.days} de {converted.time}</span></span>
-                                       </span>
-                                     </>
-                                   );
-                                 })()
+                                     );
+                                   })}
+                                 </>
                                ) : (
                                   <span className="flex items-center gap-1.5 text-amber-500 font-bold">
                                     <Bell className="w-3.5 h-3.5" /> Próxima fecha por confirmar

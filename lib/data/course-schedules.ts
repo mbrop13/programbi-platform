@@ -73,6 +73,14 @@ export function getNearestSchedule(schedules: CourseSchedule[]): CourseSchedule 
   return future[0] || null;
 }
 
+// Get ALL active future schedules sorted by date
+export function getAllActiveSchedules(schedules: CourseSchedule[]): CourseSchedule[] {
+  const now = new Date();
+  return schedules
+    .filter(s => new Date(s.start_date + "T12:00:00") >= now && s.is_active)
+    .sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
+}
+
 export interface CountryConfig {
   code: string; // ISO 2-letter code in lowercase
   name: string;

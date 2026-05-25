@@ -24,7 +24,7 @@ import FinanceSyllabus from "./syllabuses/FinanceSyllabus";
 import MiningSyllabus from "./syllabuses/MiningSyllabus";
 import DataAnalyticsSyllabus from "./syllabuses/DataAnalyticsSyllabus";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
-import { type CourseSchedule, SCHEDULE_COUNTRIES, convertSchedule, getNearestSchedule } from "@/lib/data/course-schedules";
+import { type CourseSchedule, SCHEDULE_COUNTRIES, convertSchedule, getNearestSchedule, getAllActiveSchedules } from "@/lib/data/course-schedules";
 import { useCountry } from "@/lib/context/CountryContext";
 
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
@@ -150,15 +150,16 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const levels = course.levels || [];
   const activeLevel = levels[selectedLevel] || null;
 
-  const levelSchedule = useMemo(() => {
-    if (!activeLevel) return null;
+  const levelSchedules = useMemo(() => {
+    if (!activeLevel) return [];
     if (course.slug === "analisis-de-datos") {
       const adSchedules = schedules.filter(s => ["sql-server", "power-bi", "python"].includes(s.course_slug));
-      return getNearestSchedule(adSchedules);
+      return getAllActiveSchedules(adSchedules);
     }
     const matched = schedules.filter(s => s.course_slug === course.slug && s.level_name === activeLevel.name);
-    return getNearestSchedule(matched);
+    return getAllActiveSchedules(matched);
   }, [schedules, activeLevel, course.slug]);
+  const levelSchedule = levelSchedules[0] || null;
   const currentWhatYouLearn = activeLevel ? activeLevel.whatYouLearn : course.whatYouLearn;
   const rawPrice = activeLevel?.price || null;
   const baseOriginalPrice = activeLevel?.originalPrice || course.originalPrice || rawPrice;
@@ -285,11 +286,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       { icon: <Award className="w-5 h-5" />, title: "Certificación", value: "Al completar el programa" }
                     ];
 
-                    if (levelSchedule) {
-                      const converted = convertSchedule(levelSchedule.start_date, levelSchedule.schedule_time, levelSchedule.schedule_days, scheduleCountry.timeZone);
-                      blocks.push({ icon: <Calendar className="w-5 h-5" />, title: "Próximo Inicio", value: <span className="capitalize">{converted.dateFormatted}</span> });
-                      blocks.push({ icon: <Monitor className="w-5 h-5" />, title: "Horario", value: <><span className="block truncate">{converted.days}</span><span className="text-[10px] text-slate-500 font-semibold">{converted.time}</span></> });
-                    } else {
+                    if (levelSchedules.length === 0) {
                       blocks.push({ icon: <Monitor className="w-5 h-5" />, title: "Modalidad", value: "Clases en vivo por Zoom" });
                       blocks.push({ icon: <Users className="w-5 h-5" />, title: "Nivel", value: course.level });
                     }
@@ -309,10 +306,32 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                             </div>
                           ))}
                         </div>
-                        {levelSchedule && (
-                          <p className="text-[10px] text-slate-400 font-semibold flex items-center gap-1.5 ml-1 mt-1">
-                            <Globe className="w-3 h-3" /> Horarios adaptados a tu zona horaria ({scheduleCountry.timeZone}).
-                          </p>
+
+                        {/* All active schedules */}
+                        {levelSchedules.length > 0 && (
+                          <div className="flex flex-col gap-2 mt-1">
+                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5 ml-1">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              {levelSchedules.length === 1 ? 'Próxima Fecha' : 'Próximas Fechas'}
+                            </p>
+                            {levelSchedules.map((sch, idx) => {
+                              const converted = convertSchedule(sch.start_date, sch.schedule_time, sch.schedule_days, scheduleCountry.timeZone);
+                              return (
+                                <div key={idx} className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 shadow-sm">
+                                  <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${course.accentColor}15`, color: course.accentColor }}>
+                                    <Calendar className="w-5 h-5" />
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <div className="text-[11px] sm:text-xs font-bold text-slate-800 leading-snug capitalize">{converted.dateFormatted}</div>
+                                    <div className="text-[10px] text-slate-500 font-semibold">{converted.days} · {converted.time}</div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                            <p className="text-[10px] text-slate-400 font-semibold flex items-center gap-1.5 ml-1">
+                              <Globe className="w-3 h-3" /> Horarios adaptados a tu zona horaria ({scheduleCountry.timeZone}).
+                            </p>
+                          </div>
                         )}
                       </div>
                     );
