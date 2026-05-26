@@ -461,7 +461,7 @@ function ChatWidgetInner() {
     const apiMessages = updated.map((m) => ({ role: m.role, content: m.content }));
 
     try {
-      const timeoutId = setTimeout(() => controller.abort(), 55000);
+      const timeoutId = setTimeout(() => controller.abort(), 120000);
       const response = await fetch("/api/chatbot", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: apiMessages, conversationId, visitorId, sourcePage: pathname }),

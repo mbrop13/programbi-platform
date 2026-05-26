@@ -24,8 +24,8 @@ const openrouter = createOpenAI({
   },
 })
 
-// Permitir hasta 60 segundos de ejecución (modelos free pueden ser lentos)
-export const maxDuration = 60
+// Permitir hasta 120 segundos de ejecución
+export const maxDuration = 120
 
 export async function POST(req: Request) {
   try {
@@ -172,7 +172,7 @@ ${dynamicContext}`
 
     // ─── Stream con el modelo primario ───
     const result = streamText({
-      model: openrouter('deepseek/deepseek-v4-flash:free'),
+      model: openrouter('deepseek/deepseek-v4-flash'),
       system: systemPrompt,
       messages,
       onFinish: onFinishCallback,
