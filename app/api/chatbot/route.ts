@@ -95,104 +95,89 @@ ${dynamicContext}`
     // ─── Determinar o crear el conversationId ───
     let conversationId = existingConvId || null
 
-    // ─── Modelos (primario + fallback) ───
-    const PRIMARY_MODEL = 'deepseek/deepseek-v4-flash'
-    const FALLBACK_MODEL = 'google/gemini-2.0-flash-001'
 
-    function tryStreamWithModel(modelName: string) {
-      return streamText({
-        model: openrouter(modelName),
-        system: systemPrompt,
-        messages,
-        onFinish: async ({ text }) => {
-          try {
-            const supabase = createAdminClient()
 
-            if (!conversationId) {
-              const { data: newConv, error: convError } = await supabase
-                .from('chatbot_conversations')
-                .insert({
-                  visitor_id: visitorId || null,
-                  source_page: sourcePage || null,
-                })
-                .select('id')
-                .single()
-
-              if (convError) {
-                console.error('[Chatbot] Error al crear conversación:', convError)
-                return
-              }
-
-              conversationId = newConv.id
-            }
-
-            const lastUserMsg = messages
-              .filter((m: { role: string }) => m.role === 'user')
-              .pop()
-
-            const messagesToInsert = []
-
-            if (lastUserMsg) {
-              messagesToInsert.push({
-                conversation_id: conversationId,
-                role: 'user',
-                content: lastUserMsg.content,
-              })
-            }
-
-            if (text) {
-              messagesToInsert.push({
-                conversation_id: conversationId,
-                role: 'assistant',
-                content: text,
-              })
-            }
-
-            if (messagesToInsert.length > 0) {
-              const { error: msgError } = await supabase
-                .from('chatbot_messages')
-                .insert(messagesToInsert)
-
-              if (msgError) {
-                console.error('[Chatbot] Error al guardar mensajes:', msgError)
-              }
-            }
-
-            await supabase.rpc('increment_chatbot_message_count', {
-              conv_id: conversationId,
-            }).then(({ error }) => {
-              if (error) {
-                return supabase
-                  .from('chatbot_conversations')
-                  .update({
-                    updated_at: new Date().toISOString(),
-                    message_count: messagesToInsert.length,
-                  })
-                  .eq('id', conversationId)
-              }
-            })
-          } catch (err) {
-            console.error('[Chatbot] Error en onFinish:', err)
-          }
-        },
-      })
-    }
-
-    // ─── Intentar modelo primario, fallback si falla ───
-    let result
-    try {
-      result = tryStreamWithModel(PRIMARY_MODEL)
-    } catch (primaryError) {
-      console.error('[Chatbot] Primary model failed, trying fallback:', primaryError)
+    // ─── Persistencia de conversación (callback reutilizable) ───
+    const onFinishCallback = async ({ text }: { text: string }) => {
       try {
-        result = tryStreamWithModel(FALLBACK_MODEL)
-      } catch (fallbackError) {
-        console.error('[Chatbot] Fallback model also failed:', fallbackError)
-        throw fallbackError
+        const supabase = createAdminClient()
+
+        if (!conversationId) {
+          const { data: newConv, error: convError } = await supabase
+            .from('chatbot_conversations')
+            .insert({
+              visitor_id: visitorId || null,
+              source_page: sourcePage || null,
+            })
+            .select('id')
+            .single()
+
+          if (convError) {
+            console.error('[Chatbot] Error al crear conversación:', convError)
+            return
+          }
+
+          conversationId = newConv.id
+        }
+
+        const lastUserMsg = messages
+          .filter((m: { role: string }) => m.role === 'user')
+          .pop()
+
+        const messagesToInsert = []
+
+        if (lastUserMsg) {
+          messagesToInsert.push({
+            conversation_id: conversationId,
+            role: 'user',
+            content: lastUserMsg.content,
+          })
+        }
+
+        if (text) {
+          messagesToInsert.push({
+            conversation_id: conversationId,
+            role: 'assistant',
+            content: text,
+          })
+        }
+
+        if (messagesToInsert.length > 0) {
+          const { error: msgError } = await supabase
+            .from('chatbot_messages')
+            .insert(messagesToInsert)
+
+          if (msgError) {
+            console.error('[Chatbot] Error al guardar mensajes:', msgError)
+          }
+        }
+
+        await supabase.rpc('increment_chatbot_message_count', {
+          conv_id: conversationId,
+        }).then(({ error }) => {
+          if (error) {
+            return supabase
+              .from('chatbot_conversations')
+              .update({
+                updated_at: new Date().toISOString(),
+                message_count: messagesToInsert.length,
+              })
+              .eq('id', conversationId)
+          }
+        })
+      } catch (err) {
+        console.error('[Chatbot] Error en onFinish:', err)
       }
     }
 
-    // ─── Respuesta en formato Text Stream ───
+    // ─── Stream con el modelo primario ───
+    const result = streamText({
+      model: openrouter('deepseek/deepseek-v4-flash:free'),
+      system: systemPrompt,
+      messages,
+      onFinish: onFinishCallback,
+    })
+
     return result.toTextStreamResponse({
       headers: {
         'X-Conversation-Id': conversationId || 'pending',
