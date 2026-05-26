@@ -86,7 +86,7 @@ export function buildQuoteEmailHtml(
                 </h2>
                 <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #94a3b8; margin: 0 0 24px; line-height: 1.5; font-weight: 500;">
                   SQL Server + Power BI + Python <br>
-                  <span style="color: #38bdf8; font-weight: 700;">Ruta completa de 144 horas · 3 meses de clases en vivo</span>
+                  <span style="color: #38bdf8; font-weight: 700;">Especialización 48 horas · Clases en vivo</span>
                 </p>
                 
                 <table align="center" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">

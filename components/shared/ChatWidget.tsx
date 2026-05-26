@@ -307,13 +307,50 @@ function CourseCard({ slug }: { slug: string }) {
 /* ─── Schedule Card with Global Country ───────────────────── */
 const SCHEDULE_DATA = [
   { course: "Análisis de Datos (SQL)", days: "Martes y Jueves", chileTime: "19:30 - 21:30", slug: "analisis-de-datos" },
-  { course: "Power BI", days: "Lunes y Miércoles", chileTime: "19:30 - 21:30", slug: "power-bi" },
+  { course: "Power BI (Semanal)", days: "Lunes y Miércoles", chileTime: "19:30 - 21:30", slug: "power-bi" },
+  { course: "Power BI (Sabatino)", days: "Sábado", chileTime: "09:00 - 13:00", slug: "power-bi" },
   { course: "SQL Server", days: "Martes y Jueves", chileTime: "19:30 - 21:30", slug: "sql-server" },
   { course: "Python para Datos", days: "Lunes y Miércoles", chileTime: "19:30 - 21:30", slug: "python" },
 ];
 
 function ScheduleCards() {
   const { country, convertTime } = useCountry();
+  const [schedules, setSchedules] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetch("/api/schedules")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setSchedules(data);
+        }
+      })
+      .catch((err) => console.error("Error fetching chatbot schedules:", err));
+  }, []);
+
+  const getCourseTitle = (slug: string) => {
+    return COURSE_CARDS[slug]?.title || slug;
+  };
+
+  const formatDateString = (dateStr: string) => {
+    const d = new Date(dateStr + "T12:00:00");
+    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+    return `${d.getDate()} ${months[d.getMonth()]}`;
+  };
+
+  const displaySchedules = schedules.length > 0
+    ? schedules.map((s) => ({
+        course: `${getCourseTitle(s.course_slug)} (${s.level_name})`,
+        days: `${s.schedule_days} · Inicia ${formatDateString(s.start_date)}`,
+        chileTime: s.schedule_time,
+        slug: s.course_slug
+      }))
+    : SCHEDULE_DATA.map((s) => ({
+        course: s.course,
+        days: s.days,
+        chileTime: s.chileTime,
+        slug: s.slug
+      }));
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="flex flex-col gap-2 mt-1">
@@ -324,8 +361,8 @@ function ScheduleCards() {
       </div>
 
       {/* Schedule cards */}
-      {SCHEDULE_DATA.map((s) => (
-        <a key={s.slug} href={`/cursos/${s.slug}`} target="_blank" rel="noopener"
+      {displaySchedules.map((s, idx) => (
+        <a key={`${s.slug}-${idx}`} href={`/cursos/${s.slug}`} target="_blank" rel="noopener"
           className="flex items-center justify-between px-3 py-2.5 rounded-xl border border-slate-200 bg-white hover:border-blue-300 hover:shadow-md transition-all no-underline group">
           <div className="flex-1 min-w-0">
             <p className="text-[12px] font-bold text-slate-800 truncate">{s.course}</p>

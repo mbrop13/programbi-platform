@@ -200,6 +200,46 @@ function formatEmailTime(timeStr: string): string {
   return match ? match[1] : timeStr;
 }
 
+function hasAvailableSchedules(
+  slug: string,
+  levelName: string,
+  schedulesList: any[],
+  staticList: any[]
+): boolean {
+  const now = new Date();
+  
+  // 1. Check dynamic database schedules that are active and in the future
+  const dbScheds = schedulesList.filter(
+    s => s.course_slug === slug && 
+         s.level_name === levelName && 
+         s.is_active && 
+         new Date(s.start_date + "T12:00:00") >= now
+  );
+  if (dbScheds.length > 0) return true;
+  
+  // 2. Check static schedules that are active and in the future
+  const staticScheds = staticList.filter(
+    s => s.course_slug === slug && 
+         s.level_name === levelName && 
+         s.is_active && 
+         new Date(s.start_date + "T12:00:00") >= now
+  );
+  if (staticScheds.length > 0) return true;
+
+  // 3. Check default schedules as legacy fallback (only if active and in the future)
+  const defaultSchedules: Record<string, { start_date: string, is_active: boolean }> = {
+    "power-bi-Básico": { start_date: "2026-05-19", is_active: true },
+    "sql-server-Básico": { start_date: "2026-06-22", is_active: true },
+    "python-Básico": { start_date: "2026-05-25", is_active: true },
+    "power-bi-Intermedio": { start_date: "2026-05-25", is_active: true },
+    "sql-server-Intermedio": { start_date: "2026-06-22", is_active: true },
+    "python-Intermedio": { start_date: "2026-07-27", is_active: true },
+  };
+  const key = `${slug}-${levelName}`;
+  const def = defaultSchedules[key];
+  return !!(def && def.is_active && new Date(def.start_date + "T12:00:00") >= now);
+}
+
 function getCourseScheduleString(
   slug: string,
   levelName: string,
@@ -207,15 +247,28 @@ function getCourseScheduleString(
   staticList: any[],
   type: "basic" | "intermediate"
 ): string {
-  const courseSchedules = schedulesList.filter(s => s.course_slug === slug && s.level_name === levelName);
-  let sched = getNearestSchedule(courseSchedules);
+  const now = new Date();
   
-  if (!sched) {
-    const courseStatic = staticList.filter(s => s.course_slug === slug && s.level_name === levelName) as any[];
-    sched = getNearestSchedule(courseStatic);
+  // Get dynamic schedules
+  let courseSchedules = schedulesList.filter(
+    s => s.course_slug === slug && 
+         s.level_name === levelName && 
+         s.is_active && 
+         new Date(s.start_date + "T12:00:00") >= now
+  );
+  
+  // If none, use static schedules
+  if (courseSchedules.length === 0) {
+    courseSchedules = staticList.filter(
+      s => s.course_slug === slug && 
+           s.level_name === levelName && 
+           s.is_active && 
+           new Date(s.start_date + "T12:00:00") >= now
+    ) as any[];
   }
   
-  if (!sched) {
+  // If still none, use default legacy schedules
+  if (courseSchedules.length === 0) {
     const defaultSchedules: Record<string, { start_date: string, schedule_days: string, schedule_time: string, is_active: boolean }> = {
       "power-bi-Básico": { start_date: "2026-05-19", schedule_days: "Martes y Jueves", schedule_time: "19:30 a 21:30", is_active: true },
       "sql-server-Básico": { start_date: "2026-06-22", schedule_days: "Lunes y Miércoles", schedule_time: "19:30 a 21:30", is_active: true },
@@ -225,22 +278,37 @@ function getCourseScheduleString(
       "python-Intermedio": { start_date: "2026-07-27", schedule_days: "Lunes y Miércoles", schedule_time: "19:30 a 21:30", is_active: true },
     };
     const key = `${slug}-${levelName}`;
-    sched = defaultSchedules[key] as any;
+    const def = defaultSchedules[key];
+    if (def && new Date(def.start_date + "T12:00:00") >= now) {
+      courseSchedules = [def];
+    }
   }
   
-  if (!sched) {
+  if (courseSchedules.length === 0) {
     return type === "basic" ? "Próximamente · Consultar horarios" : "Próximamente";
   }
 
-  const dateFormatted = formatEmailDate(sched.start_date);
-  const daysFormatted = formatEmailDays(sched.schedule_days);
-  
-  if (type === "basic") {
-    const timeFormatted = formatEmailTime(sched.schedule_time);
-    return `${dateFormatted} · ${daysFormatted} · ${timeFormatted}`;
-  } else {
-    return `${dateFormatted} · ${daysFormatted}`;
-  }
+  // Sort schedules by start_date ascending
+  courseSchedules.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
+
+  // Format all active future schedules
+  return courseSchedules.map((sched, idx) => {
+    const dateFormatted = formatEmailDate(sched.start_date);
+    const daysFormatted = formatEmailDays(sched.schedule_days);
+    
+    let scheduleStr = "";
+    if (type === "basic") {
+      const timeFormatted = formatEmailTime(sched.schedule_time);
+      scheduleStr = `${dateFormatted} · ${daysFormatted} · ${timeFormatted}`;
+    } else {
+      scheduleStr = `${dateFormatted} · ${daysFormatted}`;
+    }
+
+    if (courseSchedules.length > 1) {
+      return `<div style="margin-top: ${idx > 0 ? '4px' : '0px'}; font-size: 13px;">Opción ${idx + 1}: ${scheduleStr}</div>`;
+    }
+    return scheduleStr;
+  }).join("");
 }
 
 // ─── Email 1: Cotización Individual (al lead) — Template Premium ────────────
@@ -293,7 +361,7 @@ export async function sendQuoteConfirmationToLead(params: {
       level = "Especialización";
       title = "Pack de Análisis de Datos";
       color = "#1890FF";
-      hours = 144;
+      hours = 48; // Especialización son 48 horas
     } else if (s.includes("power bi") || s.includes("powerbi") || s.includes("power-bi")) {
       slug = "power-bi";
       level = s.includes("intermedio") ? "Intermedio" : "Básico";
@@ -357,12 +425,23 @@ export async function sendQuoteConfirmationToLead(params: {
       level: "Especialización",
       title: "Pack de Análisis de Datos",
       color: "#1890FF",
-      hours: 144
+      hours: 48
     });
   }
 
+  // Filtrar los cursos cotizados para mostrar solo los que tienen fecha disponible
+  let filteredItems = normalizedItems.filter(item => {
+    const isSpec = item.level === "Especialización";
+    return hasAvailableSchedules(item.slug, isSpec ? "Básico" : item.level, schedules, staticSchedules);
+  });
+
+  // Si todos quedan filtrados, mostramos todos los originales como fallback de seguridad
+  if (filteredItems.length === 0) {
+    filteredItems = normalizedItems;
+  }
+
   // Mapear a EmailCourseItem calculando precios y horarios
-  const selectedCourses = normalizedItems.map(item => {
+  const selectedCourses = filteredItems.map(item => {
     const isSpec = item.level === "Especialización";
     const pricing = calculateCoursePrice(item.slug, isSpec ? "Básico" : item.level, masterCourses, priceOverrides, promotions);
     const dateStr = getCourseScheduleString(item.slug, isSpec ? "Básico" : item.level, schedules, staticSchedules, item.hours > 48 ? "intermediate" : "basic");
@@ -404,11 +483,15 @@ export async function sendQuoteConfirmationToLead(params: {
     };
   }
 
-  // Cursos recomendados (hasta 3 cursos que el usuario NO cotizó)
+  // Cursos recomendados (hasta 3 cursos que el usuario NO cotizó y que tienen fecha disponible)
   const cotizedSlugs = new Set(normalizedItems.map(item => item.slug));
   const recommendedItems = masterCourses
     .filter(c => c.slug !== "analisis-de-datos" && !cotizedSlugs.has(c.slug))
     .filter(c => c.slug !== "analitica-mineria" && c.slug !== "analitica-financiera")
+    .filter(c => {
+      const levels = c.levels || [{ name: "Básico" }];
+      return levels.some(l => hasAvailableSchedules(c.slug, l.name, schedules, staticSchedules));
+    })
     .slice(0, 3);
 
   const recommendedCourses = recommendedItems.map(item => {
