@@ -47,6 +47,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const [isFreeTrial, setIsFreeTrial] = useState(false);
   const [bumpSelections, setBumpSelections] = useState<{slug: string, level: string, id?: string}[]>([]);
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
+  const [promotions, setPromotions] = useState<any[]>([]);
   const { country, setCountryByIso, countries } = useCountry();
   const relatedCourses = courses.filter((c) => c.slug !== course.slug).slice(0, 3);
   const scheduleCountry = SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0];
@@ -139,12 +140,13 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   }, []);
 
   useEffect(() => {
-    fetch("/api/schedules")
-      .then(r => r.json())
-      .then(data => {
-        if (Array.isArray(data)) setSchedules(data);
-      })
-      .catch(console.error);
+    Promise.all([
+      fetch("/api/schedules").then(r => r.json()),
+      fetch("/api/promotions").then(r => r.json()),
+    ]).then(([schData, promoData]) => {
+      if (Array.isArray(schData)) setSchedules(schData);
+      if (Array.isArray(promoData)) setPromotions(promoData);
+    }).catch(console.error);
   }, []);
 
   const levels = course.levels || [];
@@ -164,16 +166,39 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const rawPrice = activeLevel?.price || null;
   const baseOriginalPrice = activeLevel?.originalPrice || course.originalPrice || rawPrice;
   
-  // Calculate discount
+  // Apply Supabase promotions (same logic as PagoClient)
+  const applicablePromo = promotions.find(p => p.target_type === 'all' || p.target_type === 'courses' || (p.target_type === 'specific_course' && p.target_id === course.slug));
+  
+  let promoDiscountedPrice = rawPrice;
+  let promoOriginalPrice = rawPrice;
+  let hasPromoDiscount = false;
+  
+  if (applicablePromo && rawPrice) {
+    promoOriginalPrice = rawPrice;
+    if (applicablePromo.promo_price) {
+      promoDiscountedPrice = applicablePromo.promo_price;
+      hasPromoDiscount = true;
+    } else if (applicablePromo.discount_percentage) {
+      promoDiscountedPrice = Math.round(rawPrice * (100 - applicablePromo.discount_percentage) / 100);
+      hasPromoDiscount = true;
+    }
+  }
+
+  // Calculate plan-based discount (stacks on top of promo)
   const isSpecialization = course.durationHours > 50 || course.slug === "analisis-de-datos" || course.slug === "analitica-mineria" || course.slug === "analitica-financiera";
   let discPercent = 0;
   if (userPlan === 'pro') discPercent = isSpecialization ? 10 : 20;
   else if (userPlan === 'max') discPercent = isSpecialization ? 12.5 : 25;
   else if (userPlan === 'ultra') discPercent = isSpecialization ? 20 : 40;
 
-  const currentPrice = rawPrice ? Math.floor(rawPrice * (1 - discPercent / 100)) : null;
+  // Use promo-discounted price as the base, then apply plan discount on top
+  const priceAfterPromo = hasPromoDiscount ? promoDiscountedPrice : rawPrice;
+  const currentPrice = priceAfterPromo ? Math.floor(priceAfterPromo * (1 - discPercent / 100)) : null;
   const grandTotal = currentPrice ? currentPrice + (bumpSelections.length * 99000) : null;
-  const originalGrandTotal = baseOriginalPrice ? baseOriginalPrice + (bumpSelections.length * 99000) : null;
+  
+  // For showing the "original" crossed-out price, pick whichever is highest
+  const effectiveOriginal = hasPromoDiscount ? promoOriginalPrice : (baseOriginalPrice || rawPrice);
+  const originalGrandTotal = effectiveOriginal ? effectiveOriginal + (bumpSelections.length * 99000) : null;
   
   const totalDiscountPercentage = originalGrandTotal && grandTotal && originalGrandTotal > grandTotal 
     ? Math.round(((originalGrandTotal - grandTotal) / originalGrandTotal) * 100) 
