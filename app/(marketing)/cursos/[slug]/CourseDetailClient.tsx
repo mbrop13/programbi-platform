@@ -156,7 +156,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
     if (!activeLevel) return [];
     if (course.slug === "analisis-de-datos") {
       const adSchedules = schedules.filter(s => ["sql-server", "power-bi", "python"].includes(s.course_slug));
-      return getAllActiveSchedules(adSchedules);
+      return getAllActiveSchedules(adSchedules).slice(0, 2);
     }
     const matched = schedules.filter(s => s.course_slug === course.slug && s.level_name === activeLevel.name);
     return getAllActiveSchedules(matched);
