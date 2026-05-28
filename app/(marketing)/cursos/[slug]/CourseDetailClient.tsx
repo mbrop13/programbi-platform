@@ -48,6 +48,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const [bumpSelections, setBumpSelections] = useState<{slug: string, level: string, id?: string}[]>([]);
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
   const [promotions, setPromotions] = useState<any[]>([]);
+  const [showAllDates, setShowAllDates] = useState(false);
   const { country, setCountryByIso, countries } = useCountry();
   const relatedCourses = courses.filter((c) => c.slug !== course.slug).slice(0, 3);
   const scheduleCountry = SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0];
@@ -155,8 +156,11 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const levelSchedules = useMemo(() => {
     if (!activeLevel) return [];
     if (course.slug === "analisis-de-datos") {
-      const adSchedules = schedules.filter(s => ["sql-server", "power-bi", "python"].includes(s.course_slug));
-      return getAllActiveSchedules(adSchedules).slice(0, 2);
+      const adSchedules = schedules.filter(s => 
+        ["sql-server", "power-bi", "python"].includes(s.course_slug) &&
+        s.level_name === "Básico"
+      );
+      return getAllActiveSchedules(adSchedules);
     }
     const matched = schedules.filter(s => s.course_slug === course.slug && s.level_name === activeLevel.name);
     return getAllActiveSchedules(matched);
@@ -337,23 +341,81 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                           <div className="flex flex-col gap-2 mt-1">
                             <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5 ml-1">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                              {levelSchedules.length === 1 ? 'Próxima Fecha' : 'Próximas Fechas'}
+                              Próxima Fecha
                             </p>
-                            {levelSchedules.map((sch, idx) => {
+                            
+                            {/* Main nearest schedule */}
+                            {(() => {
+                              const sch = levelSchedules[0];
                               const converted = convertSchedule(sch.start_date, sch.schedule_time, sch.schedule_days, scheduleCountry.timeZone);
                               return (
-                                <div key={idx} className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 shadow-sm">
+                                <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 shadow-sm">
                                   <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${course.accentColor}15`, color: course.accentColor }}>
                                     <Calendar className="w-5 h-5" />
                                   </div>
                                   <div className="min-w-0 flex-1">
-                                    <div className="text-[11px] sm:text-xs font-bold text-slate-800 leading-snug capitalize">{converted.dateFormatted}</div>
+                                    <div className="text-[11px] sm:text-xs font-bold text-slate-800 leading-snug capitalize">
+                                      {converted.dateFormatted}
+                                      {course.slug === "analisis-de-datos" && (
+                                        <span className="ml-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold uppercase tracking-wider">
+                                          {sch.course_slug.replace("-server", "").toUpperCase()}
+                                        </span>
+                                      )}
+                                    </div>
                                     <div className="text-[10px] text-slate-500 font-semibold">{converted.days} · {converted.time}</div>
                                   </div>
                                 </div>
                               );
-                            })}
-                            <p className="text-[10px] text-slate-400 font-semibold flex items-center gap-1.5 ml-1">
+                            })()}
+
+                            {/* Dropdown for other dates */}
+                            {levelSchedules.length > 1 && (
+                              <div className="mt-1">
+                                <button
+                                  type="button"
+                                  onClick={() => setShowAllDates(!showAllDates)}
+                                  className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-bold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200/60"
+                                >
+                                  <span>{showAllDates ? "Ocultar otras fechas" : `Ver otras fechas (${levelSchedules.length - 1})`}</span>
+                                  <svg
+                                    className={`w-3.5 h-3.5 transition-transform duration-200 ${showAllDates ? "rotate-180" : ""}`}
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                  >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+                                  </svg>
+                                </button>
+
+                                {showAllDates && (
+                                  <div className="flex flex-col gap-2 mt-2 pl-1 border-l-2 border-slate-100">
+                                    {levelSchedules.slice(1).map((sch, idx) => {
+                                      const converted = convertSchedule(sch.start_date, sch.schedule_time, sch.schedule_days, scheduleCountry.timeZone);
+                                      return (
+                                        <div key={idx} className="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-sm transition-all hover:border-slate-300">
+                                          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${course.accentColor}10`, color: course.accentColor }}>
+                                            <Calendar className="w-4 h-4" />
+                                          </div>
+                                          <div className="min-w-0 flex-1">
+                                            <div className="text-[10px] sm:text-[11px] font-bold text-slate-800 leading-snug capitalize">
+                                              {converted.dateFormatted}
+                                              {course.slug === "analisis-de-datos" && (
+                                                <span className="ml-1.5 text-[8px] px-1 py-0.25 rounded-full bg-slate-100 text-slate-600 font-semibold uppercase tracking-wider">
+                                                  {sch.course_slug.replace("-server", "").toUpperCase()}
+                                                </span>
+                                              )}
+                                            </div>
+                                            <div className="text-[9px] text-slate-500 font-medium">{converted.days} · {converted.time}</div>
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            <p className="text-[10px] text-slate-400 font-semibold flex items-center gap-1.5 ml-1 mt-1">
                               <Globe className="w-3 h-3" /> Horarios adaptados a tu zona horaria ({scheduleCountry.timeZone}).
                             </p>
                           </div>
