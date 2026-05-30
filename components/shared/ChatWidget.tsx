@@ -114,10 +114,6 @@ const PREBUILT_RESPONSES: Record<string, { text: string; cards: string[]; schedu
     cards: [],
     scheduleCards: true,
   },
-  "¿Tienen alguna promoción activa?": {
-    text: `🏷️ ¡Sí! Nuestro programa más completo es el **Curso de Análisis de Datos**, que tiene **3 niveles** (SQL, Power BI y Python), cada uno de **48 horas**.\n\nTambién tenemos cursos individuales de **48 horas** con excelentes descuentos.\n\nPara conocer los precios y ofertas actuales, regístrate en la página del curso que te interese 👇`,
-    cards: ["analisis-de-datos"],
-  },
   "Quiero hablar con un asesor": {
     text: `¡Por supuesto! 😊 Puedes contactar a nuestro equipo:\n\n📱 **WhatsApp**: [+56 9 3540 9699](https://wa.me/56935409699)\n📧 **Email**: contacto@programbi.cl\n\n¿Hay algo más en lo que pueda ayudarte?`,
     cards: [],
@@ -131,7 +127,7 @@ const CONVERSATION_ID_KEY = "programbi_conversation_id";
 
 const WELCOME_MESSAGE = `¡Hola! 👋 Soy **Programbi**, tu asistente virtual.
 
-Puedo ayudarte con información sobre nuestros **cursos de Data Analytics**, horarios, precios, promociones y más.
+🔥 ¡Estamos en **CYBER DAY**! Disfruta de hasta **60% de descuento** en todos nuestros cursos de datos. Ofertas válidas hasta el 3 de junio a las 23:59 hrs. ⚡
 
 ¿En qué te puedo ayudar hoy?`;
 
@@ -441,6 +437,37 @@ function ChatWidgetInner() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [timeLeft, setTimeLeft] = useState("");
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const difference = +new Date("2026-06-03T23:59:59") - +new Date();
+      if (difference <= 0) return "Terminó";
+      
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((difference / 1000 / 60) % 60);
+      const seconds = Math.floor((difference / 1000) % 60);
+      
+      if (days > 0) {
+        return `${days}d ${hours}h`;
+      }
+      return `${hours}h ${minutes}m ${seconds}s`;
+    };
+
+    setTimeLeft(calculateTimeLeft());
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const quickActionsList = [
+    { label: "Ver cursos", icon: BookOpen, message: "¿Qué cursos tienen disponibles?" },
+    { label: "Horarios", icon: Calendar, message: "¿Cuándo empiezan los próximos cursos?" },
+    { label: `Cyber Day ⚡ (${timeLeft || "Cargando..."})`, icon: Tag, message: "¿Cuáles son las promociones de Cyber Day? ⚡" },
+    { label: "Contactar", icon: Phone, message: "Quiero hablar con un asesor" },
+  ];
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -464,7 +491,26 @@ function ChatWidgetInner() {
 
   /* ─── Handle pre-built quick action response with typing delay ── */
   const handlePrebuilt = useCallback((userContent: string) => {
-    const prebuilt = PREBUILT_RESPONSES[userContent]; if (!prebuilt) return false;
+    let prebuiltText = "";
+    let prebuiltCards: string[] = [];
+    let prebuiltSchedules = false;
+
+    if (userContent === "¿Cuáles son las promociones de Cyber Day? ⚡") {
+      prebuiltText = `🏷️ ¡Llegó el **CYBER DAY** a ProgramBI! ⚡\n\n` +
+        `Disfruta de hasta **60% de descuento** en todos nuestros programas de formación en datos en vivo:\n\n` +
+        `🔥 **Curso de Análisis de Datos (Especialización 48h)**: SQL + Power BI + Python por solo **$299.000** (antes $747.000).\n\n` +
+        `📈 **Cursos Individuales (Power BI, Python, SQL)**: Desde solo **$149.000** con matrícula gratis.\n\n` +
+        `⏳ **La oferta finaliza en**:\n` +
+        `⏰ **${timeLeft}**\n\n` +
+        `¡No dejes pasar esta oportunidad de potenciar tu futuro profesional! Regístrate en el curso de tu interés para asegurar tu descuento 👇`;
+      prebuiltCards = ["analisis-de-datos"];
+    } else {
+      const prebuilt = PREBUILT_RESPONSES[userContent];
+      if (!prebuilt) return false;
+      prebuiltText = prebuilt.text;
+      prebuiltCards = prebuilt.cards;
+      prebuiltSchedules = !!prebuilt.scheduleCards;
+    }
 
     const userMsg: ChatMessage = { id: generateId(), role: "user", content: userContent };
     setMessages((prev) => [...prev, userMsg]);
@@ -473,15 +519,15 @@ function ChatWidgetInner() {
     // Simulate a 3-second typing delay
     setTimeout(() => {
       const assistantMsg: ChatMessage = {
-        id: generateId(), role: "assistant", content: prebuilt.text,
-        cards: prebuilt.cards, scheduleCards: prebuilt.scheduleCards,
+        id: generateId(), role: "assistant", content: prebuiltText,
+        cards: prebuiltCards, scheduleCards: prebuiltSchedules,
       };
       setMessages((prev) => { const upd = [...prev, assistantMsg]; saveMessages(upd); return upd; });
       setIsLoading(false);
     }, 3000);
 
     return true;
-  }, [messages, saveMessages]);
+  }, [messages, saveMessages, timeLeft]);
 
   const sendMessage = useCallback(async (userContent: string) => {
     if (!userContent.trim() || isLoading) return;
@@ -657,8 +703,8 @@ function ChatWidgetInner() {
                 {showQuickActions && messages.length === 0 && (
                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} transition={{ delay: 0.3 }}
                     className="px-4 grid grid-cols-2 gap-2 mt-2">
-                    {QUICK_ACTIONS.map((a, i) => (
-                      <motion.button key={a.label} type="button" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + i * 0.08 }}
+                    {quickActionsList.map((a, i) => (
+                      <motion.button key={a.message} type="button" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + i * 0.08 }}
                         onClick={() => handleQuickAction(a.message)}
                         className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-blue-700 hover:border-blue-400 hover:shadow-md text-[12px] font-medium transition-all cursor-pointer group text-left">
                         <div className="w-7 h-7 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-blue-50 transition-colors flex-shrink-0">

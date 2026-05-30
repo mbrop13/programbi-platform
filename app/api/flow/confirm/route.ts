@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFlowPaymentStatus, flowStatusToString, FLOW_STATUS } from "@/lib/flow/client";
 import { createAdminClient } from "@/lib/supabase/server";
-import { sendPaymentConfirmation } from "@/lib/email/mailersend";
+import { sendPaymentConfirmation, sendNewPurchaseNotificationToAdmin } from "@/lib/email/mailersend";
 
 /**
  * Flow calls this webhook POST with { token } after payment is processed.
@@ -24,10 +24,10 @@ export async function POST(req: NextRequest) {
 
     const supabase = createAdminClient();
 
-    // Find our payment record
+    // Find our payment record (no invalid columns)
     const { data: payment } = await supabase
       .from("payments")
-      .select("id, user_id, course_id, status, metadata, amount, flow_order, payer_email")
+      .select("id, user_id, course_id, status, amount, flow_order")
       .eq("flow_order", flowStatus.commerceOrder)
       .single();
 
@@ -43,36 +43,47 @@ export async function POST(req: NextRequest) {
 
     const newStatus = flowStatusToString(flowStatus.status);
 
-    // Update payment record
+    // Update payment record (removed invalid payer_email column)
     await supabase.from("payments").update({
       status: newStatus,
       flow_status: flowStatus.status,
       payment_method: flowStatus.paymentData?.media || null,
-      payer_email: flowStatus.payer,
       paid_at: flowStatus.status === FLOW_STATUS.PAID ? new Date().toISOString() : null,
     }).eq("id", payment.id);
 
     // If paid → auto-enroll user and send confirmation email
     if (flowStatus.status === FLOW_STATUS.PAID && payment.user_id) {
-      const metadata = (payment.metadata as any) || {};
-      const cartItems = metadata.items || [];
+      let cartItems: any[] = [];
+      let schedulingSlots: any[] = [];
+      try {
+        const opt = typeof flowStatus.optional === "string" ? JSON.parse(flowStatus.optional) : flowStatus.optional;
+        if (opt?.items) {
+          cartItems = typeof opt.items === "string" ? JSON.parse(opt.items) : opt.items;
+        }
+        if (opt?.scheduling_slots) {
+          schedulingSlots = typeof opt.scheduling_slots === "string" ? JSON.parse(opt.scheduling_slots) : opt.scheduling_slots;
+        }
+      } catch (err) {
+        console.error("Error parsing optional data:", err);
+      }
 
       // 1. Send confirmation email
       try {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("full_name, email")
+          .select("full_name, email, phone")
           .eq("id", payment.user_id)
           .single();
 
         const name = profile?.full_name || "Estudiante";
-        const email = profile?.email || flowStatus.payer || payment.payer_email || "";
+        const email = profile?.email || flowStatus.payer || "";
 
         const coursesToSend = cartItems.map((item: any) => ({
           slug: item.slug,
           title: item.title,
           levelName: item.levelName,
           price: item.pricePerUnit * item.quantity,
+          selectedStartDate: item.selectedStartDate || null
         }));
 
         let fallbackCourses = [];
@@ -84,6 +95,7 @@ export async function POST(req: NextRequest) {
               title: c.title,
               levelName: "Básico",
               price: payment.amount || 0,
+              selectedStartDate: null
             });
           }
         }
@@ -99,6 +111,22 @@ export async function POST(req: NextRequest) {
             paymentMethod: flowStatus.paymentData?.media || "Flow",
           });
           console.log(`📧 Purchase confirmation email sent successfully to ${email}`);
+
+          // Send admin notification
+          try {
+            await sendNewPurchaseNotificationToAdmin({
+              name,
+              email,
+              phone: profile?.phone || "",
+              courses: finalCourses,
+              orderId: flowStatus.commerceOrder || payment.flow_order,
+              totalPaid: payment.amount || flowStatus.amount,
+              paymentMethod: flowStatus.paymentData?.media || "Flow"
+            });
+            console.log("📧 Purchase notification email sent successfully to admin moliva@programbi.cl");
+          } catch (adminEmailErr) {
+            console.error("❌ Error sending admin purchase notification:", adminEmailErr);
+          }
         } else {
           console.warn(`⚠️ Could not send confirmation email: Missing email address for user ${payment.user_id}`);
         }
@@ -146,8 +174,7 @@ export async function POST(req: NextRequest) {
         }
       }
       // 4. Confirm scheduling slots if any
-      const schedulingSlots = metadata.scheduling_slots || [];
-      if (schedulingSlots.length > 0) {
+      if (schedulingSlots && schedulingSlots.length > 0) {
         await supabase.from("asesoria_slots")
           .update({ status: "booked" })
           .eq("flow_order", flowStatus.commerceOrder);

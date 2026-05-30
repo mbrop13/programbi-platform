@@ -117,7 +117,8 @@ export async function POST(req: NextRequest) {
           levelName: item.levelName || "Básico",
           quantity: item.quantity || 1,
           pricePerUnit: finalPriceClp,
-          title: masterCourse.title
+          title: masterCourse.title,
+          selectedStartDate: item.selectedStartDate || null
        });
     }
 
@@ -144,7 +145,9 @@ export async function POST(req: NextRequest) {
       amount: grandTotalClp,
       email,
       optional: {
-        userId: user.id
+        userId: user.id,
+        items: JSON.stringify(validatedItems),
+        scheduling_slots: JSON.stringify(body.scheduling_slots || [])
       },
     });
 
@@ -161,10 +164,7 @@ export async function POST(req: NextRequest) {
       flow_token: flowResult.token,
       amount: grandTotalClp,
       currency: "CLP",
-      status: "pending",
-      payer_email: email,
-      // Pass items payload as metadata for robust processing logic later
-      metadata: { items: validatedItems, scheduling_slots: body.scheduling_slots || [] }
+      status: "pending"
     } as any);
 
     // Save scheduling_slots as pending_payment

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFlowPaymentStatus, FLOW_STATUS } from "@/lib/flow/client";
 import { createAdminClient } from "@/lib/supabase/server";
-import { sendPaymentConfirmation } from "@/lib/email/mailersend";
+import { sendPaymentConfirmation, sendNewPurchaseNotificationToAdmin } from "@/lib/email/mailersend";
 
 /**
  * Flow redirects user here after payment.
@@ -22,7 +22,7 @@ async function handleReturn(req: NextRequest, token: string | null) {
   try {
     // 1. Get status from Flow
     const flowStatus = await getFlowPaymentStatus(token);
-    console.log("📦 Flow status:", flowStatus.status, "| order:", flowStatus.commerceOrder);
+    console.log("📦 Flow return status:", flowStatus.status, "| order:", flowStatus.commerceOrder);
 
     if (flowStatus.status !== FLOW_STATUS.PAID) {
       const statusMap: Record<number, string> = {
@@ -39,7 +39,7 @@ async function handleReturn(req: NextRequest, token: string | null) {
     // Try to find payment record
     const { data: payment } = await supabase
       .from("payments")
-      .select("id, user_id, course_id, status, metadata, payer_email, amount, flow_order")
+      .select("id, user_id, course_id, status, amount, flow_order")
       .eq("flow_order", flowStatus.commerceOrder)
       .maybeSingle();
 
@@ -55,24 +55,20 @@ async function handleReturn(req: NextRequest, token: string | null) {
     let bumpSelections: any[] = [];
     let cartItems: any[] = [];
 
-    // Fallback: extract from Flow optional data
-    if (!userId || !courseSlug || !bumpSelections.length) {
-      try {
-        const opt = typeof flowStatus.optional === "string" ? JSON.parse(flowStatus.optional) : flowStatus.optional;
-        if (!userId && opt?.userId) userId = opt.userId;
-        if (!courseSlug && opt?.courseSlug) courseSlug = opt.courseSlug;
-        if (opt?.bumpSelections) {
-          bumpSelections = typeof opt.bumpSelections === "string" ? JSON.parse(opt.bumpSelections) : opt.bumpSelections;
-        }
-      } catch { /* ignore parse errors */ }
-    }
+    // Extract from Flow optional data
+    try {
+      const opt = typeof flowStatus.optional === "string" ? JSON.parse(flowStatus.optional) : flowStatus.optional;
+      if (!userId && opt?.userId) userId = opt.userId;
+      if (!courseSlug && opt?.courseSlug) courseSlug = opt.courseSlug;
+      if (opt?.bumpSelections) {
+        bumpSelections = typeof opt.bumpSelections === "string" ? JSON.parse(opt.bumpSelections) : opt.bumpSelections;
+      }
+      if (opt?.items) {
+        cartItems = typeof opt.items === "string" ? JSON.parse(opt.items) : opt.items;
+      }
+    } catch { /* ignore parse errors */ }
 
-    // Extract cart items from native payment DB metadata since Flow optional has strict length limits
-    if (payment?.metadata?.items && Array.isArray(payment.metadata.items)) {
-         cartItems = payment.metadata.items;
-    }
-
-    console.log("🎯 Enrollment data:", { userId, courseSlug, bumpSelections });
+    console.log("🎯 Return Enrollment data:", { userId, courseSlug, bumpSelections, cartItemsCount: cartItems.length });
 
     // 3. Update payment record
     let wasUpdatedToPaid = false;
@@ -81,7 +77,6 @@ async function handleReturn(req: NextRequest, token: string | null) {
         status: "paid",
         flow_status: flowStatus.status,
         payment_method: flowStatus.paymentData?.media || null,
-        payer_email: flowStatus.payer || null,
         paid_at: new Date().toISOString(),
       }).eq("id", payment.id);
       wasUpdatedToPaid = true;
@@ -92,18 +87,19 @@ async function handleReturn(req: NextRequest, token: string | null) {
       try {
         const { data: profile } = await supabase
           .from("profiles")
-          .select("full_name, email")
+          .select("full_name, email, phone")
           .eq("id", userId)
           .single();
 
         const name = profile?.full_name || "Estudiante";
-        const email = profile?.email || flowStatus.payer || payment?.payer_email || "";
+        const email = profile?.email || flowStatus.payer || "";
 
         const coursesToSend = cartItems.map((item: any) => ({
           slug: item.slug,
           title: item.title,
           levelName: item.levelName,
           price: item.pricePerUnit * item.quantity,
+          selectedStartDate: item.selectedStartDate || null
         }));
 
         let fallbackCourses = [];
@@ -115,6 +111,7 @@ async function handleReturn(req: NextRequest, token: string | null) {
               title: c.title,
               levelName: "Básico",
               price: payment?.amount || 0,
+              selectedStartDate: null
             });
           }
         }
@@ -130,6 +127,22 @@ async function handleReturn(req: NextRequest, token: string | null) {
             paymentMethod: flowStatus.paymentData?.media || "Flow",
           });
           console.log(`📧 Purchase confirmation email sent successfully to ${email} via return redirect`);
+
+          // Send admin notification
+          try {
+            await sendNewPurchaseNotificationToAdmin({
+              name,
+              email,
+              phone: profile?.phone || "",
+              courses: finalCourses,
+              orderId: flowStatus.commerceOrder || payment?.flow_order,
+              totalPaid: payment?.amount || flowStatus.amount,
+              paymentMethod: flowStatus.paymentData?.media || "Flow"
+            });
+            console.log("📧 Purchase notification email sent successfully to admin moliva@programbi.cl via return redirect");
+          } catch (adminEmailErr) {
+            console.error("❌ Error sending admin purchase notification:", adminEmailErr);
+          }
         } else {
           console.warn(`⚠️ Could not send confirmation email in return redirect: Missing email for user ${userId}`);
         }

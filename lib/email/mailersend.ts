@@ -727,7 +727,7 @@ export async function sendNotifyMeConfirmation(params: {
 export async function sendPaymentConfirmation(params: {
   name: string;
   email: string;
-  courses: Array<{ slug?: string; title: string; levelName: string; price: number }>;
+  courses: Array<{ slug?: string; title: string; levelName: string; price: number; selectedStartDate?: string | null }>;
   orderId: string;
   totalPaid: number;
   paymentMethod?: string;
@@ -750,13 +750,22 @@ export async function sendPaymentConfirmation(params: {
   // Generar tarjetas para cada curso comprado con información detallada de fechas e inicio
   const courseDetailCards = courses.map(c => {
     // Buscar horario
-    let sched = activeSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName);
-    if (!sched && c.slug) {
-      sched = staticSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName);
+    let sched = null;
+    if (c.selectedStartDate) {
+      sched = activeSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName && s.start_date === c.selectedStartDate);
+      if (!sched && c.slug) {
+        sched = staticSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName && s.start_date === c.selectedStartDate);
+      }
+    }
+    if (!sched) {
+      sched = activeSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName);
+      if (!sched && c.slug) {
+        sched = staticSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName);
+      }
     }
 
     const hasSchedule = !!sched;
-    const startDateFormatted = hasSchedule && sched.start_date ? formatScheduleDate(sched.start_date) : "Por confirmar";
+    const startDateFormatted = hasSchedule && sched.start_date ? formatScheduleDate(sched.start_date) : (c.selectedStartDate ? formatScheduleDate(c.selectedStartDate) : "Por confirmar");
     const days = hasSchedule ? sched.schedule_days : "Por confirmar";
     const time = hasSchedule ? sched.schedule_time : "Por confirmar";
 
@@ -932,6 +941,123 @@ export async function sendPaymentConfirmation(params: {
     subject: "🎉 ¡Inscripción exitosa! Tu lugar en ProgramBI está confirmado",
     html,
     text: `¡Hola ${name}! Tu pago fue confirmado con éxito. ID Orden: ${orderId}. Cursos inscritos: ${courses.map(c => `${c.title} (${c.levelName})`).join(", ")}. Si tienes dudas escríbenos por WhatsApp al +56935409699`,
+  });
+}
+
+// ─── Email 5b: Notificación de compra exitosa al administrador ──────────────────
+export async function sendNewPurchaseNotificationToAdmin(params: {
+  name: string;
+  email: string;
+  phone?: string;
+  courses: Array<{ slug?: string; title: string; levelName: string; price: number; selectedStartDate?: string | null }>;
+  orderId: string;
+  totalPaid: number;
+  paymentMethod?: string;
+}) {
+  const { name, email, phone, courses, orderId, totalPaid, paymentMethod } = params;
+
+  // Intentar obtener las fechas reales desde Supabase
+  let activeSchedules: any[] = [];
+  try {
+    const supabase = createAdminClient();
+    const { data } = await supabase
+      .from("course_schedules")
+      .select("*")
+      .eq("is_active", true);
+    if (data) activeSchedules = data;
+  } catch (err) {
+    console.warn("Could not load schedules for admin notification:", err);
+  }
+
+  const courseRows = courses.map(c => {
+    // Buscar horario
+    let sched = null;
+    if (c.selectedStartDate) {
+      sched = activeSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName && s.start_date === c.selectedStartDate);
+      if (!sched && c.slug) {
+        sched = staticSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName && s.start_date === c.selectedStartDate);
+      }
+    }
+    if (!sched) {
+      sched = activeSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName);
+      if (!sched && c.slug) {
+        sched = staticSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName);
+      }
+    }
+
+    const hasSchedule = !!sched;
+    const dateFormatted = hasSchedule ? formatScheduleDate(sched.start_date) : (c.selectedStartDate ? formatScheduleDate(c.selectedStartDate) : "Por confirmar");
+    const days = hasSchedule ? sched.schedule_days : "Por confirmar";
+    const time = hasSchedule ? sched.schedule_time : "Por confirmar";
+
+    return `
+      <tr style="border-bottom:1px solid #F1F5F9;">
+        <td style="padding:12px 0;font-size:14px;color:#0F172A;text-align:left;font-weight:bold;">
+          ${c.title} (${c.levelName})
+          <div style="font-size:11px;color:#1890FF;font-weight:normal;margin-top:4px;">
+            📅 Inicio: ${dateFormatted} <br/>
+            ⏰ Horario: ${days} ${time}
+          </div>
+        </td>
+        <td style="padding:12px 0;font-size:14px;font-weight:bold;color:#0F172A;text-align:right;vertical-align:top;">${formatCLP(c.price)}</td>
+      </tr>
+    `;
+  }).join("");
+
+  const timestamp = new Date().toLocaleString("es-CL", { timeZone: "America/Santiago" });
+
+  const html = wrapHtml("💰 ¡Nueva venta procesada! — ProgramBI", `
+    <div style="display:inline-block;background:#DCFCE7;color:#166534;font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">
+      🛒 Nueva Venta exitosa
+    </div>
+    <h1 style="margin:0 0 8px;font-size:22px;font-weight:900;color:#0F172A;">¡Venta procesada de ${name}!</h1>
+    <p style="margin:0 0 20px;font-size:12px;color:#94A3B8;">Confirmada el ${timestamp}</p>
+
+    <h2 style="font-size:13px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;text-align:left;border-bottom:1px solid #F1F5F9;padding-bottom:6px;">👤 Datos del Alumno</h2>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+      <tr><td style="padding:8px 0;font-size:13px;color:#64748B;width:120px;">Nombre</td><td style="padding:8px 0;font-size:14px;font-weight:600;color:#0F172A;">${name}</td></tr>
+      <tr><td style="padding:8px 0;font-size:13px;color:#64748B;">Email</td><td style="padding:8px 0;font-size:14px;font-weight:600;"><a href="mailto:${email}" style="color:#1890FF;text-decoration:none;">${email}</a></td></tr>
+      ${phone ? `<tr><td style="padding:8px 0;font-size:13px;color:#64748B;">WhatsApp</td><td style="padding:8px 0;font-size:14px;font-weight:600;"><a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" style="color:#25D366;text-decoration:none;font-weight:bold;">${phone}</a></td></tr>` : ""}
+    </table>
+
+    <h2 style="font-size:13px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;text-align:left;border-bottom:1px solid #F1F5F9;padding-bottom:6px;">📚 Detalle de la Compra</h2>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+      <tbody>${courseRows}</tbody>
+      <tfoot>
+        <tr>
+          <td style="padding-top:14px;font-size:15px;font-weight:800;color:#0F172A;text-align:left;">Total Recaudado</td>
+          <td style="padding-top:14px;font-size:18px;font-weight:900;color:#10B981;text-align:right;">${formatCLP(totalPaid)}</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div style="background:#F8FAFC;border: 1px solid #E2E8F0;border-radius:12px;padding:14px;font-size:12px;color:#64748B;margin-top:10px;">
+      <strong>Método de Pago:</strong> ${paymentMethod || "Flow"} <br/>
+      <strong>ID Orden:</strong> <span style="font-family:monospace;">${orderId}</span>
+    </div>
+
+    <div style="margin-top:28px;text-align:center;display:flex;gap:12px;justify-content:center;">
+      <a href="mailto:${email}?subject=Bienvenido a ProgramBI — ${encodeURIComponent(name)}" 
+         style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:13px;font-weight:700;text-decoration:none;padding:12px 20px;border-radius:10px;">
+        📧 Escribir Email →
+      </a>
+      ${phone ? `<a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" 
+         style="display:inline-block;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;font-size:13px;font-weight:700;text-decoration:none;padding:12px 20px;border-radius:10px;">
+        💬 Chatear WhatsApp →
+      </a>` : ""}
+    </div>
+  `);
+
+  const transporter = getTransporter();
+
+  // Email to moliva@programbi.cl
+  await transporter.sendMail({
+    from: fromAddress(),
+    to: "moliva@programbi.cl",
+    subject: `💰 ¡Nueva Venta! ${name} — ${courses.map(c => c.title).join(", ")}`,
+    html,
+    text: `¡Nueva Venta! Alumno: ${name} | Email: ${email}${phone ? ` | WhatsApp: ${phone}` : ""} | Cursos: ${courses.map(c => `${c.title} (${c.levelName})`).join(", ")} | Total: ${formatCLP(totalPaid)} | Orden: ${orderId}`,
+    replyTo: email,
   });
 }
 

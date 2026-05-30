@@ -24,6 +24,9 @@ interface CartItem {
   price: number;
   quantity: number;
   title: string;
+  selectedStartDate?: string;
+  selectedScheduleDays?: string;
+  selectedScheduleTime?: string;
 }
 
 export default function PagoClient() {
@@ -55,6 +58,12 @@ export default function PagoClient() {
   
   // Selected levels per course slug
   const [selectedLevels, setSelectedLevels] = useState<Record<string, string>>({});
+
+  // Selected start dates per course level combination
+  const [selectedDates, setSelectedDates] = useState<Record<string, string>>({});
+
+  // Custom dropdown open key (slug-levelName)
+  const [openDropdownKey, setOpenDropdownKey] = useState<string | null>(null);
 
   const [notifyLoading, setNotifyLoading] = useState<string | null>(null);
   const [notifySuccess, setNotifySuccess] = useState<Set<string>>(new Set());
@@ -164,11 +173,71 @@ export default function PagoClient() {
     }
   }, [loadingData, initialSlug, initialLevel, initialServicio, promotions]);
 
+  // Pre-select nearest starting dates once schedules are loaded
+  useEffect(() => {
+    if (schedules.length > 0) {
+      const datesUpdate: Record<string, string> = { ...selectedDates };
+      let cartUpdated = false;
+      const updatedCart = { ...cart };
+
+      allCourses.forEach(course => {
+        course.levels?.forEach(lvl => {
+          const key = `${course.slug}-${lvl.name}`;
+          
+          let courseSchedules: CourseSchedule[] = [];
+          if (course.slug === "analisis-de-datos") {
+             if (lvl.name.includes("Básico") || lvl.name.includes("Completo")) {
+                 const adSchedules = schedules.filter(s => analisisDeDatosSlugs.includes(s.course_slug));
+                 courseSchedules = getAllActiveSchedules(adSchedules);
+             }
+          } else {
+             courseSchedules = getAllActiveSchedules(
+               schedules.filter(s => s.course_slug === course.slug && s.level_name === lvl.name)
+             );
+          }
+
+          if (courseSchedules.length > 0) {
+            const nearest = courseSchedules[0];
+            if (!datesUpdate[key]) {
+              datesUpdate[key] = nearest.start_date;
+            }
+
+            // If this item is in the cart but lacks selectedStartDate, populate it
+            if (updatedCart[key] && !updatedCart[key].selectedStartDate) {
+              updatedCart[key] = {
+                ...updatedCart[key],
+                selectedStartDate: nearest.start_date,
+                selectedScheduleDays: nearest.schedule_days,
+                selectedScheduleTime: nearest.schedule_time
+              };
+              cartUpdated = true;
+            }
+          }
+        });
+      });
+
+      setSelectedDates(datesUpdate);
+      if (cartUpdated) {
+        setCart(updatedCart);
+      }
+    }
+  }, [schedules, cart]);
+
   const changeLevel = (slug: string, newLevelName: string) => {
     setSelectedLevels(prev => ({ ...prev, [slug]: newLevelName }));
   };
 
-  const updateCartQuantity = (slug: string, title: string, levelName: string, price: number, active: boolean, increment: number) => {
+  const updateCartQuantity = (
+    slug: string,
+    title: string,
+    levelName: string,
+    price: number,
+    active: boolean,
+    increment: number,
+    selectedStartDate?: string,
+    selectedScheduleDays?: string,
+    selectedScheduleTime?: string
+  ) => {
     if (!active) return; // Cannot buy inter/avanzado without dates
 
     setCart(prev => {
@@ -184,7 +253,38 @@ export default function PagoClient() {
 
       return {
         ...prev,
-        [key]: { slug, title, levelName, price, quantity: newQty }
+        [key]: {
+          slug,
+          title,
+          levelName,
+          price,
+          quantity: newQty,
+          selectedStartDate: selectedStartDate || current?.selectedStartDate,
+          selectedScheduleDays: selectedScheduleDays || current?.selectedScheduleDays,
+          selectedScheduleTime: selectedScheduleTime || current?.selectedScheduleTime
+        }
+      };
+    });
+  };
+
+  const handleDateChange = (slug: string, levelName: string, dateVal: string, courseSchedules: CourseSchedule[]) => {
+    setSelectedDates(prev => ({ ...prev, [`${slug}-${levelName}`]: dateVal }));
+    
+    // Find matching schedule
+    const chosenSchedule = courseSchedules.find(s => s.start_date === dateVal);
+    if (!chosenSchedule) return;
+
+    setCart(prev => {
+      const key = `${slug}-${levelName}`;
+      if (!prev[key]) return prev; // Not in cart, no need to update
+      return {
+        ...prev,
+        [key]: {
+          ...prev[key],
+          selectedStartDate: chosenSchedule.start_date,
+          selectedScheduleDays: chosenSchedule.schedule_days,
+          selectedScheduleTime: chosenSchedule.schedule_time
+        }
       };
     });
   };
@@ -241,7 +341,8 @@ export default function PagoClient() {
             courseSlug: item.slug,
             levelName: item.levelName,
             quantity: item.quantity,
-            price: item.price
+            price: item.price,
+            selectedStartDate: item.selectedStartDate || null
           }))
         }),
       });
@@ -426,24 +527,126 @@ export default function PagoClient() {
 
                           <div className="flex flex-col gap-1.5 text-xs text-gray-500 font-medium mt-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 w-full max-w-md">
                                {hasScheduleActive && courseSchedules.length > 0 ? (
-                                 <>
-                                   {courseSchedules.map((sch, idx) => {
-                                     const converted = convertSchedule(
-                                       sch.start_date,
-                                       sch.schedule_time,
-                                       sch.schedule_days,
-                                       scheduleCountry.timeZone
-                                     );
-                                     return (
-                                       <span key={idx} className="flex items-center gap-1.5 text-emerald-600 font-bold">
-                                         <Calendar className="w-3.5 h-3.5" />
-                                         <span className="capitalize">{converted.dateFormatted}</span>
-                                         <span className="text-slate-500 font-semibold">·</span>
-                                         <span className="text-blue-600">{converted.days} {converted.time}</span>
-                                       </span>
-                                     );
-                                   })}
-                                 </>
+                                  <>
+                                    {courseSchedules.length > 1 ? (
+                                      <div className="relative w-full">
+                                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+                                          Selecciona tu fecha de inicio:
+                                        </label>
+                                        
+                                        {(() => {
+                                          const dropdownKey = `${course.slug}-${activeLevel}`;
+                                          const isDropdownOpen = openDropdownKey === dropdownKey;
+                                          const selectedDateVal = selectedDates[dropdownKey] || courseSchedules[0]?.start_date;
+                                          
+                                          const selectedSchedule = courseSchedules.find(s => s.start_date === selectedDateVal) || courseSchedules[0];
+                                          const selectedConverted = convertSchedule(
+                                            selectedSchedule.start_date,
+                                            selectedSchedule.schedule_time,
+                                            selectedSchedule.schedule_days,
+                                            scheduleCountry.timeZone
+                                          );
+
+                                          return (
+                                            <>
+                                              {/* Invisible overlay backdrop to close dropdown on click outside */}
+                                              {isDropdownOpen && (
+                                                <div 
+                                                  className="fixed inset-0 z-40 cursor-default" 
+                                                  onClick={() => setOpenDropdownKey(null)} 
+                                                />
+                                              )}
+                                              
+                                              <div className="relative z-50">
+                                                <button
+                                                  type="button"
+                                                  onClick={() => setOpenDropdownKey(isDropdownOpen ? null : dropdownKey)}
+                                                  className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:border-gray-300 hover:bg-slate-50 transition-all flex items-center justify-between cursor-pointer shadow-sm select-none outline-none focus:border-[#1890FF] focus:ring-2 focus:ring-blue-100"
+                                                >
+                                                  <span className="flex items-center gap-2 truncate">
+                                                    <Calendar className="w-3.5 h-3.5 text-[#1890FF] shrink-0" />
+                                                    <span className="capitalize text-slate-800">{selectedConverted.dateFormatted}</span>
+                                                    <span className="text-slate-400 font-semibold shrink-0">·</span>
+                                                    <span className="text-blue-600 truncate">{selectedConverted.days} {selectedConverted.time}</span>
+                                                  </span>
+                                                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0 ${isDropdownOpen ? "rotate-180 text-[#1890FF]" : ""}`} />
+                                                </button>
+
+                                                <AnimatePresence>
+                                                  {isDropdownOpen && (
+                                                    <motion.div
+                                                      initial={{ opacity: 0, y: -6, scale: 0.98 }}
+                                                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                      exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                                                      transition={{ duration: 0.12, ease: "easeOut" }}
+                                                      className="absolute left-0 right-0 mt-1.5 bg-white border border-gray-200 rounded-2xl shadow-xl py-1.5 z-50 overflow-hidden divide-y divide-slate-50 max-h-60 overflow-y-auto"
+                                                    >
+                                                      {courseSchedules.map((sch) => {
+                                                        const isSelected = sch.start_date === selectedDateVal;
+                                                        const converted = convertSchedule(
+                                                          sch.start_date,
+                                                          sch.schedule_time,
+                                                          sch.schedule_days,
+                                                          scheduleCountry.timeZone
+                                                        );
+
+                                                        return (
+                                                          <button
+                                                            key={sch.start_date}
+                                                            type="button"
+                                                            onClick={() => {
+                                                              handleDateChange(course.slug, activeLevel, sch.start_date, courseSchedules);
+                                                              setOpenDropdownKey(null);
+                                                            }}
+                                                            className={`w-full px-4 py-2.5 text-left transition-colors flex items-center justify-between gap-3 cursor-pointer select-none hover:bg-blue-50/50 ${isSelected ? "bg-blue-50/30 font-bold" : ""}`}
+                                                          >
+                                                            <div className="truncate">
+                                                              <span className={`block text-xs font-black capitalize ${isSelected ? "text-[#1890FF]" : "text-slate-800"}`}>
+                                                                {converted.dateFormatted}
+                                                              </span>
+                                                              <span className="block text-[10.5px] text-slate-500 font-bold mt-0.5 truncate">
+                                                                {converted.days} &middot; {converted.time}
+                                                              </span>
+                                                            </div>
+                                                            {isSelected && (
+                                                              <Check className="w-3.5 h-3.5 text-[#1890FF] shrink-0" />
+                                                            )}
+                                                          </button>
+                                                        );
+                                                      })}
+                                                    </motion.div>
+                                                  )}
+                                                </AnimatePresence>
+                                              </div>
+                                            </>
+                                          );
+                                        })()}
+                                      </div>
+                                    ) : (
+                                      <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
+                                        <Calendar className="w-3.5 h-3.5" />
+                                        <span className="capitalize">{(() => {
+                                          const converted = convertSchedule(
+                                            courseSchedules[0].start_date,
+                                            courseSchedules[0].schedule_time,
+                                            courseSchedules[0].schedule_days,
+                                            scheduleCountry.timeZone
+                                          );
+                                          return converted.dateFormatted;
+                                        })()}</span>
+                                        <span className="text-slate-500 font-semibold">·</span>
+                                        <span className="text-blue-600">{(() => {
+                                          const converted = convertSchedule(
+                                            courseSchedules[0].start_date,
+                                            courseSchedules[0].schedule_time,
+                                            courseSchedules[0].schedule_days,
+                                            scheduleCountry.timeZone
+                                          );
+                                          return `${converted.days} ${converted.time}`;
+                                        })()}</span>
+                                      </span>
+                                    )}
+                                  </>
                                ) : (
                                   <span className="flex items-center gap-1.5 text-amber-500 font-bold">
                                     <Bell className="w-3.5 h-3.5" /> Próxima fecha por confirmar
@@ -520,11 +723,25 @@ export default function PagoClient() {
                                       {itemQty}
                                    </div>
                                    <button 
-                                     onClick={() => updateCartQuantity(course.slug, course.title, activeLevel, getDiscountedPrice(course.slug, currentLevelData!.price, activeLevel).finalPrice, true, 1)}
-                                     className="w-10 h-full flex items-center justify-center text-[#1890FF] hover:bg-blue-50"
-                                   >
-                                      <Plus className="w-4 h-4" />
-                                   </button>
+                                      onClick={() => {
+                                        const chosenDateStr = selectedDates[`${course.slug}-${activeLevel}`] || courseSchedules[0]?.start_date;
+                                        const chosenSchedule = courseSchedules.find(s => s.start_date === chosenDateStr) || courseSchedules[0];
+                                        updateCartQuantity(
+                                          course.slug,
+                                          course.title,
+                                          activeLevel,
+                                          getDiscountedPrice(course.slug, currentLevelData!.price, activeLevel).finalPrice,
+                                          true,
+                                          1,
+                                          chosenSchedule?.start_date,
+                                          chosenSchedule?.schedule_days,
+                                          chosenSchedule?.schedule_time
+                                        );
+                                      }}
+                                      className="w-10 h-full flex items-center justify-center text-[#1890FF] hover:bg-blue-50"
+                                    >
+                                       <Plus className="w-4 h-4" />
+                                    </button>
                                 </div>
                               ) : (
                                 <button
@@ -590,16 +807,11 @@ export default function PagoClient() {
                                              <span className="font-semibold text-sm text-[#0F172A] leading-tight line-clamp-2">{item.quantity}x {item.title}</span>
                                           </div>
                                           <span className="text-[11px] text-gray-500 mt-0.5 block">{item.levelName}</span>
-                                          {item.slug !== "asesoria" && (() => {
-                                            const itemSchedules = schedules.filter(
-                                              s => s.course_slug === item.slug && s.level_name === item.levelName
-                                            );
-                                            const nearest = getNearestSchedule(itemSchedules);
-                                            if (!nearest) return null;
+                                          {item.slug !== "asesoria" && item.selectedStartDate && (() => {
                                             const converted = convertSchedule(
-                                              nearest.start_date,
-                                              nearest.schedule_time,
-                                              nearest.schedule_days,
+                                              item.selectedStartDate,
+                                              item.selectedScheduleTime || "19:30 a 21:30",
+                                              item.selectedScheduleDays || "Martes y Jueves",
                                               scheduleCountry.timeZone
                                             );
                                             return (
