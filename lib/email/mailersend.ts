@@ -953,8 +953,9 @@ export async function sendNewPurchaseNotificationToAdmin(params: {
   orderId: string;
   totalPaid: number;
   paymentMethod?: string;
+  adminEmail?: string;
 }) {
-  const { name, email, phone, courses, orderId, totalPaid, paymentMethod } = params;
+  const { name, email, phone, courses, orderId, totalPaid, paymentMethod, adminEmail } = params;
 
   // Intentar obtener las fechas reales desde Supabase
   let activeSchedules: any[] = [];
@@ -1053,7 +1054,7 @@ export async function sendNewPurchaseNotificationToAdmin(params: {
   // Email to moliva@programbi.cl
   await transporter.sendMail({
     from: fromAddress(),
-    to: "moliva@programbi.cl",
+    to: adminEmail || "moliva@programbi.cl",
     subject: `💰 ¡Nueva Venta! ${name} — ${courses.map(c => c.title).join(", ")}`,
     html,
     text: `¡Nueva Venta! Alumno: ${name} | Email: ${email}${phone ? ` | WhatsApp: ${phone}` : ""} | Cursos: ${courses.map(c => `${c.title} (${c.levelName})`).join(", ")} | Total: ${formatCLP(totalPaid)} | Orden: ${orderId}`,
