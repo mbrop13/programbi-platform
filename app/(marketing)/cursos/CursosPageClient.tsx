@@ -16,30 +16,17 @@ function DynamicIcon({ name, className }: { name: string; className?: string }) 
   return <Icon className={className} />;
 }
 
-const categories = [
-  { value: "all", label: "Todos" },
-  { value: "programacion", label: "Programación" },
-  { value: "visualizacion", label: "Visualización" },
-  { value: "especializacion", label: "Especialización" },
-  { value: "ia", label: "IA & Automatización" },
-  { value: "automatizacion", label: "Automatización" },
-  { value: "gestion", label: "Gestión" },
-  { value: "fundamental", label: "Fundamental" },
-];
-
 export default function CursosPageClient() {
-  const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   const featured = getFeaturedCourses();
 
   const filteredCourses = courses.filter((course) => {
-    const matchesCategory = activeCategory === "all" || course.category === activeCategory;
     const matchesSearch =
       !searchQuery ||
       course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.techStack.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesCategory && matchesSearch;
+    return matchesSearch;
   });
 
   return (
@@ -53,7 +40,7 @@ export default function CursosPageClient() {
       `}} />
 
       {/* ════ PREMIUM HERO & SEARCH ════ */}
-      <section className="relative -mt-20 lg:-mt-24 pt-32 lg:pt-44 pb-8 lg:pb-12 overflow-hidden bg-[#F8FAFC]">
+      <section className="relative -mt-20 lg:-mt-24 pt-32 lg:pt-44 pb-3 lg:pb-4 overflow-hidden bg-[#F8FAFC]">
         {/* Abstract Background Elements */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-40" style={{
           backgroundSize: "60px 60px",
@@ -110,33 +97,13 @@ export default function CursosPageClient() {
       </section>
 
       {/* ════ COURSE CATALOG ════ */}
-      <section className="pt-4 pb-16 lg:pt-8 lg:pb-24 bg-[#F8FAFC]">
+      <section className="pt-0 pb-16 lg:pt-0 lg:pb-24 bg-[#F8FAFC]">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
-          {/* Category pills */}
-          <FadeIn>
-            <div className="flex overflow-x-auto pb-4 pt-2 gap-2.5 mb-6 lg:mb-10 lg:flex-wrap lg:justify-center scrollbar-hide px-5 lg:px-0 -mx-5 lg:mx-0 snap-x">
-              {categories.map((cat) => (
-                <motion.button
-                  key={cat.value}
-                  onClick={() => setActiveCategory(cat.value)}
-                  className={`px-5 lg:px-6 py-2 lg:py-2.5 rounded-full text-[13px] font-bold border cursor-pointer transition-all whitespace-nowrap snap-center ${
-                    activeCategory === cat.value
-                      ? "bg-[#1890FF] text-white border-[#1890FF] shadow-lg shadow-blue-500/20"
-                      : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700 hover:shadow-sm"
-                  }`}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {cat.label}
-                </motion.button>
-              ))}
-            </div>
-          </FadeIn>
 
           {/* Grid */}
           <AnimatePresence mode="wait">
             <motion.div
-              key={activeCategory + searchQuery}
+              key={searchQuery}
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
