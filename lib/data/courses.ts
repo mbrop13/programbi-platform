@@ -49,7 +49,7 @@ export const courses: Course[] = [
     modality: "online",
     level: "principiante",
     imageUrl:
-      "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop",
+      "https://mail.programbi.com/uploads/dise%C3%B1a_una_imagen_similar_a_202605311714.jpeg",
     icon: "BarChart3",
     accentColor: "#1890FF",
     isFeatured: true,
@@ -217,7 +217,7 @@ export const courses: Course[] = [
     modality: "online",
     level: "básico a avanzado",
     imageUrl:
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=2070&auto=format&fit=crop",
+      "https://mail.programbi.com/uploads/bien_pero_que_solo_tengan_202605311720.jpeg",
     icon: "HardHat",
     accentColor: "#B45309",
     isFeatured: false,
@@ -282,7 +282,7 @@ export const courses: Course[] = [
     modality: "online",
     level: "intermedio",
     imageUrl:
-      "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2000&auto=format&fit=crop",
+      "https://mail.programbi.com/uploads/ahora_que_se_vea_dede_202605311728.jpeg",
     icon: "Sparkles",
     accentColor: "#7C3AED",
     isFeatured: false,
@@ -592,7 +592,7 @@ export const courses: Course[] = [
     modality: "online",
     level: "básico a avanzado",
     imageUrl:
-      "https://images.unsplash.com/photo-1591696205602-2f950c417cb9?q=80&w=2070&auto=format&fit=crop",
+      "https://mail.programbi.com/uploads/has_que_se_vean_varias_202605311731.jpeg",
     icon: "TrendingUp",
     accentColor: "#1E3A8A",
     isFeatured: false,
