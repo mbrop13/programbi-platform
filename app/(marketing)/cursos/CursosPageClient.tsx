@@ -40,7 +40,7 @@ export default function CursosPageClient() {
       `}} />
 
       {/* ════ PREMIUM HERO & SEARCH ════ */}
-      <section className="relative -mt-20 lg:-mt-24 pt-32 lg:pt-44 pb-3 lg:pb-4 overflow-hidden bg-[#F8FAFC]">
+      <section className="relative -mt-20 lg:-mt-24 pt-32 lg:pt-44 pb-6 lg:pb-8 overflow-hidden bg-[#F8FAFC]">
         {/* Abstract Background Elements */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-40" style={{
           backgroundSize: "60px 60px",
@@ -97,7 +97,7 @@ export default function CursosPageClient() {
       </section>
 
       {/* ════ COURSE CATALOG ════ */}
-      <section className="pt-0 pb-16 lg:pt-0 lg:pb-24 bg-[#F8FAFC]">
+      <section className="pt-6 pb-16 lg:pt-8 lg:pb-24 bg-[#F8FAFC]">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
 
           {/* Grid */}
