@@ -24,7 +24,7 @@ import FinanceSyllabus from "./syllabuses/FinanceSyllabus";
 import MiningSyllabus from "./syllabuses/MiningSyllabus";
 import DataAnalyticsSyllabus from "./syllabuses/DataAnalyticsSyllabus";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
-import { type CourseSchedule, SCHEDULE_COUNTRIES, convertSchedule, getNearestSchedule, getAllActiveSchedules } from "@/lib/data/course-schedules";
+import { type CourseSchedule, SCHEDULE_COUNTRIES, convertSchedule, getNearestSchedule, getAllActiveSchedules, staticSchedules } from "@/lib/data/course-schedules";
 import { useCountry } from "@/lib/context/CountryContext";
 
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
@@ -49,6 +49,8 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
   const [promotions, setPromotions] = useState<any[]>([]);
   const [showAllDates, setShowAllDates] = useState(false);
+  const [selectedScheduleIndex, setSelectedScheduleIndex] = useState(0);
+  const [isScheduleDropdownOpen, setIsScheduleDropdownOpen] = useState(false);
   const { country, setCountryByIso, countries } = useCountry();
   const relatedCourses = courses.filter((c) => c.slug !== course.slug).slice(0, 3);
   const scheduleCountry = SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0];
@@ -165,7 +167,34 @@ export default function CourseDetailClient({ course }: { course: Course }) {
     const matched = schedules.filter(s => s.course_slug === course.slug && s.level_name === activeLevel.name);
     return getAllActiveSchedules(matched);
   }, [schedules, activeLevel, course.slug]);
-  const levelSchedule = levelSchedules[0] || null;
+
+  // Merge level schedules and static schedules fallback
+  const activeSchedulesList = useMemo(() => {
+    if (levelSchedules.length > 0) return levelSchedules;
+    const matchedStatic = staticSchedules.filter(s => s.course_slug === course.slug && s.level_name === (activeLevel?.name || "Básico"));
+    const now = new Date();
+    const futureStatic = matchedStatic.filter(s => new Date(s.start_date + "T12:00:00") >= now);
+    if (futureStatic.length > 0) {
+      return futureStatic.map((s, idx) => ({ ...s, id: `static-${idx}`, is_active: true } as CourseSchedule));
+    }
+    return [];
+  }, [levelSchedules, course.slug, activeLevel]);
+
+  const levelSchedule = activeSchedulesList[selectedScheduleIndex] || activeSchedulesList[0] || null;
+
+  // Reset selected schedule index when level or schedules change
+  useEffect(() => {
+    setSelectedScheduleIndex(0);
+  }, [selectedLevel, activeSchedulesList.length]);
+
+  const themeGlows = useMemo(() => {
+    return {
+      bg: "bg-gradient-to-br from-blue-50/50 via-slate-50 to-slate-50",
+      glow1: "#1890FF",
+      glow2: "#6366F1",
+      glow3: "#8B5CF6"
+    };
+  }, []);
   const currentWhatYouLearn = activeLevel ? activeLevel.whatYouLearn : course.whatYouLearn;
   const rawPrice = activeLevel?.price || null;
   const baseOriginalPrice = activeLevel?.originalPrice || course.originalPrice || rawPrice;
@@ -239,235 +268,319 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   return (
     <>
       {/* ════ HERO ════ */}
-      <section className="relative -mt-20 lg:-mt-24 pt-28 lg:pt-36 pb-16 lg:pb-24 overflow-visible bg-slate-50">
-        {/* Clean grid bg */}
-        <div className="absolute inset-0 z-0 opacity-10 pointer-events-none" style={{
-          backgroundSize: "40px 40px",
-          backgroundImage: `linear-gradient(to right, #e2e8f0 1px, transparent 1px), linear-gradient(to bottom, #e2e8f0 1px, transparent 1px)`,
-        }} />
+      <section className={`relative -mt-20 lg:-mt-24 pt-28 lg:pt-32 pb-16 lg:pb-20 overflow-visible ${themeGlows.bg}`}>
+        {/* Soft fading top/bottom overlay for premium blending */}
+        <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-b from-white/20 via-transparent to-slate-50/60" />
+        
+        {/* Ambient mesh blobs tailored to the course brand colors */}
+        <div 
+          className="absolute top-[-10%] right-[10%] w-[650px] h-[650px] rounded-full blur-[140px] pointer-events-none opacity-40 mix-blend-multiply" 
+          style={{ backgroundColor: `${themeGlows.glow1}22` }} 
+        />
+        <div 
+          className="absolute bottom-[-10%] left-[5%] w-[550px] h-[550px] rounded-full blur-[140px] pointer-events-none opacity-30 mix-blend-multiply" 
+          style={{ backgroundColor: `${themeGlows.glow2}18` }} 
+        />
+        <div 
+          className="absolute top-[20%] left-[30%] w-[450px] h-[450px] rounded-full blur-[150px] pointer-events-none opacity-20 mix-blend-multiply" 
+          style={{ backgroundColor: `${themeGlows.glow3}15` }} 
+        />
 
-        <div className="relative z-10 max-w-[1400px] mx-auto px-5 lg:px-8">
-          {/* Breadcrumb */}
-          <FadeIn>
-            <Link href="/cursos" 
-                  className="inline-flex items-center gap-2 text-gray-400 hover:text-emerald-600 text-sm font-medium mb-8 no-underline transition-colors"
-                  style={{ '--hover-color': course.accentColor } as any}
-            >
-              <ArrowLeft className="w-4 h-4" /> Volver a Cursos
-            </Link>
-          </FadeIn>
-
-          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
-            {/* Left */}
-            <div>
-              <FadeIn delay={0.1}>
+        <div className="relative z-10 max-w-[1200px] mx-auto px-5 lg:px-8">
+          <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
+            {/* Left Column: Course Details */}
+            <div className="lg:col-span-7 flex flex-col items-start text-left">
+              <FadeIn delay={0.1} className="w-full">
+                {/* Category / Badge Label */}
                 {course.badgeLabel && (
-                  <motion.span
-                    initial={{ scale: 0.9 }}
-                    animate={{ scale: 1 }}
-                    className="inline-flex items-center gap-2 px-5 py-2 rounded-full text-[0.7rem] font-extrabold tracking-wider uppercase mb-6 text-white shadow-lg"
-                    style={{ backgroundColor: course.badgeColor || course.accentColor }}
+                  <span
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[0.65rem] font-black tracking-wider uppercase text-white shadow-sm mb-4 bg-[#1890FF]"
                   >
-                    <DynamicIcon name={course.icon} className="w-4 h-4" />
+                    <DynamicIcon name={course.icon} className="w-3.5 h-3.5" />
                     {course.badgeLabel}
-                  </motion.span>
+                  </span>
                 )}
-              </FadeIn>
-
-              <FadeIn delay={0.2}>
-                <h1 className="font-display font-bold text-4xl sm:text-5xl lg:text-6xl text-slate-900 mb-2 leading-tight tracking-tight">
+                
+                {/* Course Name (Title) */}
+                <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-slate-900 mb-3 leading-tight tracking-tight">
                   {course.title}
                 </h1>
                 {(course.slug === "analisis-de-datos" || course.slug === "analitica-mineria" || course.slug === "analitica-financiera") && (
-                  <p className="text-sm sm:text-base font-bold mb-5" style={{ color: course.accentColor }}>
-                    (Incluye Power BI + Python + SQL Server en un solo programa)
+                  <p className="text-xs sm:text-sm font-black uppercase tracking-wider mb-4 text-[#1890FF]">
+                    ★ INCLUYE POWER BI + PYTHON + SQL SERVER EN UN SOLO PROGRAMA
                   </p>
                 )}
-                {course.slug !== "analisis-de-datos" && course.slug !== "analitica-mineria" && course.slug !== "analitica-financiera" && (
-                  <div className="mb-5" />
-                )}
               </FadeIn>
 
-              <FadeIn delay={0.3}>
-                <p className="text-gray-500 text-lg lg:text-xl leading-relaxed mb-6">{course.description}</p>
-              </FadeIn>
+              {/* Description & Key Outcomes */}
+              <FadeIn delay={0.2} className="w-full">
+                <p className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6">
+                  {course.description}
+                </p>
+                
+                {/* Key Outcomes bullet points (no white block, larger text) */}
+                <div className="mb-8 space-y-3 max-w-[580px]">
+                  <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider mb-4">
+                    ¿Qué lograrás con este programa?
+                  </h3>
+                  {[
+                    "Dominar herramientas líderes de la industria en nivel profesional.",
+                    "Crear un portafolio de proyectos prácticos con datos reales.",
+                    "Resolver casos de negocio reales paso a paso con mentoría.",
+                    "Acreditar tus conocimientos con una certificación valorada en el mercado.",
+                  ].map((bullet, idx) => (
+                    <div key={idx} className="flex items-start gap-3">
+                      <Check className="w-5 h-5 text-[#1890FF] mt-0.5 flex-shrink-0" />
+                      <span className="text-[14px] text-slate-600 leading-relaxed font-semibold">{bullet}</span>
+                    </div>
+                  ))}
+                </div>
 
-              <FadeIn delay={0.35}>
-                <div className="flex flex-wrap gap-2 mb-6">
+                <div className="flex flex-wrap gap-1.5 mb-8">
                   {course.techStack.map((tech) => (
-                    <span key={tech} className="px-4 py-1.5 bg-white border border-gray-200 text-gray-700 text-sm font-bold rounded-xl shadow-sm">
+                    <span key={tech} className="px-3 py-1.5 bg-white border border-slate-200/80 text-slate-700 text-xs font-bold rounded-xl shadow-sm">
                       {tech}
                     </span>
                   ))}
                 </div>
               </FadeIn>
 
-              <FadeIn delay={0.4}>
-                <div className="mb-8">
-                  {(() => {
-                    let durationLabel = "48 horas 3 niveles en total";
-                    if (course.slug === 'analisis-de-datos' || course.slug === 'analitica-mineria' || course.slug === 'analitica-financiera') {
-                      durationLabel = "144 horas 3 niveles";
-                    }
-
-                    const blocks: { icon: React.ReactNode; title: string; value: React.ReactNode }[] = [
-                      { icon: <Clock className="w-5 h-5" />, title: "Duración", value: durationLabel },
-                      { icon: <Award className="w-5 h-5" />, title: "Certificación", value: "Al completar el programa" }
-                    ];
-
-                    if (levelSchedules.length === 0) {
-                      blocks.push({ icon: <Monitor className="w-5 h-5" />, title: "Modalidad", value: "Clases en vivo por Zoom" });
-                      blocks.push({ icon: <Users className="w-5 h-5" />, title: "Nivel", value: course.level });
-                    }
-
-                    return (
-                      <div className="flex flex-col gap-2">
-                        <div className="grid grid-cols-2 gap-3 sm:gap-4">
-                          {blocks.map((b, i) => (
-                            <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 shadow-sm transition-all hover:shadow-md hover:border-slate-300">
-                              <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${course.accentColor}15`, color: course.accentColor }}>
-                                {b.icon}
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-0.5">{b.title}</p>
-                                <div className="text-[11px] sm:text-xs font-bold text-slate-800 leading-snug">{b.value}</div>
-                              </div>
-                            </div>
-                          ))}
+              {/* Schedules Dropdown container */}
+              <div className="w-full space-y-6 max-w-[580px]">
+                {/* Schedules Dropdown */}
+                <FadeIn delay={0.3} className="relative z-30 w-full">
+                  <label className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-2 block">
+                    Fechas y Horarios Próximos
+                  </label>
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setIsScheduleDropdownOpen(!isScheduleDropdownOpen)}
+                      className="w-full flex items-center justify-between p-4 bg-white border border-slate-200/80 rounded-2xl text-left text-sm font-bold hover:border-slate-300 transition-colors shadow-sm cursor-pointer outline-none"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Calendar className="w-5 h-5 text-[#1890FF]" />
+                        <div className="min-w-0">
+                          {levelSchedule ? (
+                            <>
+                              <span className="text-slate-800 block text-xs font-extrabold">
+                                Clases en vivo vía Zoom
+                              </span>
+                              <span className="text-slate-500 text-[11px] font-semibold block truncate mt-0.5">
+                                Inicia: {(() => {
+                                  const conv = convertSchedule(levelSchedule.start_date, levelSchedule.schedule_time, levelSchedule.schedule_days, scheduleCountry.timeZone);
+                                  return conv.dateFormatted.charAt(0).toUpperCase() + conv.dateFormatted.slice(1);
+                                })()}
+                                &nbsp;·&nbsp;
+                                {(() => {
+                                  const conv = convertSchedule(levelSchedule.start_date, levelSchedule.schedule_time, levelSchedule.schedule_days, scheduleCountry.timeZone);
+                                  return `${conv.days} (${conv.time})`;
+                                })()}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-slate-600 block text-xs font-semibold">
+                              Fechas de clases en vivo por confirmar
+                            </span>
+                          )}
                         </div>
+                      </div>
+                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isScheduleDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
 
-                        {/* All active schedules */}
-                        {levelSchedules.length > 0 && (
-                          <div className="flex flex-col gap-2 mt-1">
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider flex items-center gap-1.5 ml-1">
-                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                              Próxima Fecha
-                            </p>
-                            
-                            {/* Main nearest schedule */}
-                            {(() => {
-                              const sch = levelSchedules[0];
-                              const converted = convertSchedule(sch.start_date, sch.schedule_time, sch.schedule_days, scheduleCountry.timeZone);
-                              return (
-                                <div className="flex items-center gap-3 p-3 rounded-xl bg-white border border-slate-200 shadow-sm">
-                                  <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${course.accentColor}15`, color: course.accentColor }}>
-                                    <Calendar className="w-5 h-5" />
-                                  </div>
-                                  <div className="min-w-0 flex-1">
-                                    <div className="text-[11px] sm:text-xs font-bold text-slate-800 leading-snug capitalize">
-                                      {converted.dateFormatted}
-                                      {course.slug === "analisis-de-datos" && (
-                                        <span className="ml-1.5 text-[9px] px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold uppercase tracking-wider">
-                                          {sch.course_slug.replace("-server", "").toUpperCase()}
-                                        </span>
-                                      )}
-                                    </div>
-                                    <div className="text-[10px] text-slate-500 font-semibold">{converted.days} · {converted.time}</div>
-                                  </div>
-                                </div>
-                              );
-                            })()}
-
-                            {/* Dropdown for other dates */}
-                            {levelSchedules.length > 1 && (
-                              <div className="mt-1">
-                                <button
-                                  type="button"
-                                  onClick={() => setShowAllDates(!showAllDates)}
-                                  className="w-full flex items-center justify-between px-3 py-2 text-[11px] font-bold text-slate-600 hover:text-slate-900 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors border border-slate-200/60"
-                                >
-                                  <span>{showAllDates ? "Ocultar otras fechas" : `Ver otras fechas (${levelSchedules.length - 1})`}</span>
-                                  <svg
-                                    className={`w-3.5 h-3.5 transition-transform duration-200 ${showAllDates ? "rotate-180" : ""}`}
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                    stroke="currentColor"
+                    <AnimatePresence>
+                      {isScheduleDropdownOpen && activeSchedulesList.length > 0 && (
+                        <>
+                          <div className="fixed inset-0 z-30" onClick={() => setIsScheduleDropdownOpen(false)} />
+                          <motion.div
+                            initial={{ opacity: 0, y: 8 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 8 }}
+                            transition={{ duration: 0.15 }}
+                            className="absolute top-full left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden z-40 max-h-64 overflow-y-auto"
+                          >
+                            <div className="py-2 px-1 space-y-1">
+                              {activeSchedulesList.map((sch, idx) => {
+                                const conv = convertSchedule(sch.start_date, sch.schedule_time, sch.schedule_days, scheduleCountry.timeZone);
+                                return (
+                                  <button
+                                    key={sch.id || idx}
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedScheduleIndex(idx);
+                                      setIsScheduleDropdownOpen(false);
+                                    }}
+                                    className={`w-full p-3 text-left hover:bg-slate-50 transition-colors flex items-start gap-3 rounded-xl border-none bg-transparent cursor-pointer ${
+                                      selectedScheduleIndex === idx ? "bg-slate-50" : ""
+                                    }`}
                                   >
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
-                                  </svg>
-                                </button>
+                                    <Clock className="w-4 h-4 mt-0.5 text-[#1890FF]" />
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-xs font-bold text-slate-800">
+                                        Inicia: {conv.dateFormatted.charAt(0).toUpperCase() + conv.dateFormatted.slice(1)}
+                                      </p>
+                                      <p className="text-[10px] text-slate-500 mt-0.5">
+                                        {conv.days} · {conv.time} ({scheduleCountry.name})
+                                      </p>
+                                    </div>
+                                    {selectedScheduleIndex === idx && (
+                                      <Check className="w-4 h-4 text-emerald-500 ml-auto flex-shrink-0" />
+                                    )}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          </motion.div>
+                        </>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </FadeIn>
+              </div>
+            </div>
 
-                                {showAllDates && (
-                                  <div className="flex flex-col gap-2 mt-2 pl-1 border-l-2 border-slate-100">
-                                    {levelSchedules.slice(1).map((sch, idx) => {
-                                      const converted = convertSchedule(sch.start_date, sch.schedule_time, sch.schedule_days, scheduleCountry.timeZone);
-                                      return (
-                                        <div key={idx} className="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-slate-200/80 shadow-sm transition-all hover:border-slate-300">
-                                          <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${course.accentColor}10`, color: course.accentColor }}>
-                                            <Calendar className="w-4 h-4" />
-                                          </div>
-                                          <div className="min-w-0 flex-1">
-                                            <div className="text-[10px] sm:text-[11px] font-bold text-slate-800 leading-snug capitalize">
-                                              {converted.dateFormatted}
-                                              {course.slug === "analisis-de-datos" && (
-                                                <span className="ml-1.5 text-[8px] px-1 py-0.25 rounded-full bg-slate-100 text-slate-600 font-semibold uppercase tracking-wider">
-                                                  {sch.course_slug.replace("-server", "").toUpperCase()}
-                                                </span>
-                                              )}
-                                            </div>
-                                            <div className="text-[9px] text-slate-500 font-medium">{converted.days} · {converted.time}</div>
-                                          </div>
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                )}
+            {/* Right Column: Course Image & Preview Card */}
+            <div className="lg:col-span-5 w-full flex flex-col lg:pt-2">
+              <FadeIn delay={0.2}>
+                <div className="relative group transition-all duration-500 w-full">
+                  {/* Glowing backdrop border matching the template blue color */}
+                  <div 
+                    className="absolute -inset-1 rounded-2xl blur-md opacity-20 group-hover:opacity-35 transition-opacity duration-500 pointer-events-none"
+                    style={{ backgroundColor: "#1890FF" }}
+                  />
+                  
+                  {/* Unified Premium Card Container (slightly less rounded: rounded-2xl) */}
+                  <div className="relative bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-xl">
+                    
+                    {/* Top: Image with Play Video Overlay */}
+                    <div 
+                      className="relative w-full aspect-[16/9] bg-slate-900 overflow-hidden cursor-pointer group/img"
+                    >
+                      <img 
+                        src={course.imageUrl} 
+                        alt={course.title} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-105 opacity-90 group-hover/img:opacity-80" 
+                      />
+                      {/* Play Button Overlay */}
+                      <div className="absolute inset-0 flex items-center justify-center bg-slate-950/20 group-hover/img:bg-slate-950/40 transition-colors">
+                        <div className="w-14 h-14 rounded-full bg-white/95 flex items-center justify-center shadow-lg transition-transform duration-300 group-hover/img:scale-110">
+                          <Play className="w-5 h-5 ml-0.5 text-slate-900 fill-slate-900" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Bottom: Card Body (Prices, Action Buttons & Benefits) */}
+                    <div className="p-6 bg-white space-y-6">
+                      
+                      {/* Pricing block inside the card */}
+                      <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">
+                          Inversión del Curso
+                        </p>
+                        
+                        {isLoggedIn ? (
+                          <div className="flex flex-col items-start gap-1">
+                            {originalGrandTotal && totalDiscountPercentage > 0 && (
+                              <div className="flex items-center gap-2 mb-0.5">
+                                <span className="text-sm font-bold text-slate-400 line-through">
+                                  {convertAndFormat(originalGrandTotal)}
+                                </span>
+                                <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                  {totalDiscountPercentage}% OFF
+                                </span>
                               </div>
                             )}
-
-                            <p className="text-[10px] text-slate-400 font-semibold flex items-center gap-1.5 ml-1 mt-1">
-                              <Globe className="w-3 h-3" /> Horarios adaptados a tu zona horaria ({scheduleCountry.timeZone}).
-                            </p>
+                            <span className="text-3xl font-black text-slate-900 leading-none">
+                              {convertAndFormat(grandTotal)}
+                            </span>
+                            <p className="text-[9px] text-slate-400 mt-1 font-semibold">Precios Cyber Day válidos hasta el 3 de Junio</p>
+                          </div>
+                        ) : (
+                          <div 
+                            className="relative overflow-hidden rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50/50 via-white to-white p-4 cursor-pointer group mb-1 hover:border-blue-300 hover:shadow-md transition-all duration-300"
+                            onClick={() => setShowAuthModal(true)}
+                          >
+                             <div className="flex items-start gap-3">
+                               <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+                                 <Lock className="w-4 h-4" />
+                               </div>
+                               <div className="text-left">
+                                 <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-wider mb-0.5">
+                                   Precios y Becas Exclusivos
+                                 </h4>
+                                 <p className="text-[10px] font-semibold text-slate-500 leading-relaxed max-w-[220px]">
+                                   Inicia sesión o regístrate gratis para ver precios Cyber Day y opciones de financiamiento.
+                                 </p>
+                                 <div className="flex items-center gap-1.5 mt-2">
+                                   <span className="text-[9px] font-black text-[#1890FF] uppercase tracking-wider group-hover:underline">
+                                     Crear cuenta gratis
+                                   </span>
+                                   <ArrowRight className="w-3 h-3 text-[#1890FF] transition-transform group-hover:translate-x-0.5" />
+                                 </div>
+                               </div>
+                             </div>
                           </div>
                         )}
                       </div>
-                    );
-                  })()}
+
+                      {/* Main checkout / registration CTA button */}
+                      <button
+                        onClick={handleCheckoutCTA}
+                        className="w-full py-4 rounded-xl text-white font-bold text-sm flex justify-center items-center gap-2 transition-all cursor-pointer border-none shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                        style={{ background: 'linear-gradient(135deg, #1890FF, #0050b3)' }}
+                      >
+                        {isLoggedIn ? "Inscribirse y pagar" : "Registrarse para cotizar"} <ArrowRight className="w-4 h-4" />
+                      </button>
+
+                      <hr className="border-slate-100 my-0" />
+
+                      {/* Benefits list */}
+                      <div>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3.5">
+                          Este curso incluye:
+                        </p>
+                        <div className="space-y-3">
+                          {[
+                            { text: "Clases Online en Vivo vía Zoom", icon: "💻" },
+                            { text: `${course.durationHours} Horas de formación total`, icon: "⏱️" },
+                            { text: "Acceso ilimitado a grabaciones 24/7", icon: "📂" },
+                            { text: "Certificado de aprobación oficial", icon: "🎓" },
+                            { text: "Proyectos prácticos con datos reales", icon: "📊" },
+                          ].map((item, idx) => (
+                            <div key={idx} className="flex items-center gap-3">
+                              <span className="text-sm select-none text-slate-500">{item.icon}</span>
+                              <span className="text-xs font-bold text-slate-700">{item.text}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <hr className="border-slate-100 my-0" />
+
+                      {/* Secondary actions inside the card */}
+                      <div className="flex gap-2">
+                        <Link
+                          href="#temario"
+                          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl font-bold text-[10px] no-underline transition-all bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/50 shadow-sm"
+                        >
+                          <BookOpen className="w-3.5 h-3.5" /> Ver Temario
+                        </Link>
+                        <a
+                          href="https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl font-bold text-[10px] no-underline transition-all bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 shadow-sm"
+                        >
+                          <FileText className="w-3.5 h-3.5 text-red-500" /> Folleto PDF
+                        </a>
+                      </div>
+
+                    </div>
+
+                  </div>
                 </div>
-              </FadeIn>
-
-              <FadeIn delay={0.5}>
-                {/* ── Primary CTA Button ── */}
-                <button
-                  onClick={handleCheckoutCTA}
-                  className="group w-full sm:w-auto px-10 py-4 rounded-2xl text-white font-bold text-lg border-none cursor-pointer transition-all flex items-center justify-center gap-3 hover:-translate-y-1 hover:shadow-2xl"
-                  style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)`, boxShadow: `0 14px 40px -8px ${course.accentColor}55` }}
-                >
-                  {isLoggedIn ? "Ver Precio y Acceder" : "Regístrate para Cotizar"}
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </button>
-
-                {/* ── Secondary Actions Row ── */}
-                <div className="grid grid-cols-2 gap-3 mt-5">
-                  <Link
-                    href="#temario"
-                    className="flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl font-bold text-sm no-underline transition-all bg-white text-slate-700 border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-0.5"
-                    style={{ borderColor: '#e2e8f0' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = course.accentColor; e.currentTarget.style.color = course.accentColor; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#334155'; }}
-                  >
-                    <BookOpen className="w-4 h-4" /> Ver Temario
-                  </Link>
-                  <a
-                    href="https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2.5 px-5 py-3.5 rounded-2xl font-bold text-sm no-underline transition-all bg-white text-slate-700 border border-slate-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 hover:border-red-300 hover:text-red-600"
-                  >
-                    <FileText className="w-4 h-4 text-red-400" /> Descargar PDF
-                  </a>
-                </div>
-
-
-
-                <p className="text-[11px] text-slate-400 mt-4 ml-0.5">Inicia sesión o regístrate gratis para ver precios y acceder al curso.</p>
               </FadeIn>
             </div>
-
-            {/* Right — IDE Simulator */}
-            <FadeIn delay={0.3} direction="left">
-              <CourseIDE course={course} />
-            </FadeIn>
           </div>
         </div>
       </section>
@@ -521,7 +634,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                         transition={{ delay: i * 0.08 }}
                         className="flex items-start gap-4 p-4 rounded-xl hover:bg-[#F8FAFC] transition-colors"
                       >
-                        <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: course.accentColor }} />
+                        <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: "#1890FF" }} />
                         <span className="text-gray-700 text-base leading-relaxed">{item}</span>
                       </motion.div>
                     ))}
@@ -529,96 +642,14 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 </AnimatePresence>
               </FadeIn>
 
-              {/* Lead Capture Form — replaces Detalles del Programa */}
+              {/* Interactive IDE Simulator Section */}
               <FadeIn delay={0.2}>
-                <div id="pricing-card" className="relative bg-white rounded-[2rem] border border-gray-200 sticky top-28 overflow-hidden"
-                  style={{ boxShadow: "0 20px 50px -15px rgba(0,0,0,0.08)" }}>
-                  
-                  <div className="p-8 lg:p-10">
-                    {/* Course quick info */}
-                    <div className="flex items-center gap-3 mb-6">
-                      <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ backgroundColor: `${course.accentColor}15`, color: course.accentColor }}>
-                        <DynamicIcon name={course.icon} className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <h3 className="font-display font-bold text-lg text-[#0F172A]">
-                          {activeLevel ? `${course.title} — ${activeLevel.name.split("—")[0].trim()}` : course.title}
-                        </h3>
-                        <p className="text-xs text-gray-400">{activeLevel?.durationHours || course.durationHours} horas · {course.modality} · Certificado incluido</p>
-                      </div>
-                    </div>
-
-                    {/* Quick details */}
-                    <div className="flex flex-wrap gap-2 mb-8">
-                      {[
-                        { icon: "🕐", text: `${activeLevel?.durationHours || course.durationHours}h` },
-                        { icon: "🎓", text: "Certificado" },
-                        { icon: "🌐", text: "Online" },
-                        { icon: "📹", text: "Clases en vivo" },
-                      ].map((tag, i) => (
-                        <span key={i} className="flex items-center gap-1.5 text-xs font-medium text-gray-500 bg-gray-50 px-3 py-1.5 rounded-full border border-gray-100">
-                          {tag.icon} {tag.text}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Price Block */}
-                    <div className="mb-6 border-t border-slate-100 pt-6">
-                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">
-                        Inversión del Programa
-                      </p>
-                      
-                      {isLoggedIn ? (
-                        <div className="flex flex-col gap-1">
-                          {originalGrandTotal && totalDiscountPercentage > 0 && (
-                            <div className="flex items-center gap-2 mb-1">
-                              <span className="text-sm font-bold text-slate-400 line-through">
-                                {convertAndFormat(originalGrandTotal)}
-                              </span>
-                              <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
-                                {totalDiscountPercentage}% OFF
-                              </span>
-                            </div>
-                          )}
-                          <span className="text-3xl font-black text-slate-900 leading-none">
-                            {convertAndFormat(grandTotal)}
-                          </span>
-                        </div>
-                      ) : (
-                        <div 
-                          className="relative overflow-hidden rounded-xl border border-slate-200 cursor-pointer group"
-                          onClick={() => setShowAuthModal(true)}
-                        >
-                           {/* Blurred Price Background */}
-                           <div className="absolute inset-0 bg-slate-50/50 flex flex-col items-center justify-center pointer-events-none z-0">
-                             <div className="blur-md opacity-30 select-none">
-                               <span className="text-4xl font-black text-slate-900">$299.000</span>
-                             </div>
-                           </div>
-                           
-                           {/* Overlay Content */}
-                           <div className="relative z-10 flex flex-col items-center text-center p-4 bg-white/40 backdrop-blur-[2px] transition-all group-hover:bg-white/60">
-                             <Lock className="w-5 h-5 text-slate-500 mb-2" />
-                             <p className="text-xs font-bold text-slate-700 leading-relaxed max-w-[200px]">
-                               Regístrate para ver precios, solicitar becas y acceder a opciones en cuotas
-                             </p>
-                             <span className="mt-2 text-[10px] font-black text-[#1890FF] uppercase tracking-wider group-hover:underline">
-                               Crear cuenta gratis
-                             </span>
-                           </div>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Call to Action mapping to Checkout form */}
-                    <button
-                      onClick={handleCheckoutCTA}
-                      className="w-full py-4 rounded-xl text-white font-bold text-base flex justify-center items-center gap-2 transition-all cursor-pointer border-none"
-                      style={{ background: `linear-gradient(135deg, ${course.accentColor}, ${course.accentColor}cc)` }}
-                    >
-                      {isLoggedIn ? "Ver Precios y Fechas" : "Regístrate para Cotizar"} <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
+                <div className="sticky top-28">
+                  <h3 className="font-display font-bold text-xl text-slate-800 mb-6 flex items-center gap-2">
+                    <span className="w-1.5 h-6 rounded bg-[#1890FF]" />
+                    Laboratorio Interactivo de Datos
+                  </h3>
+                  <CourseIDE course={course} />
                 </div>
               </FadeIn>
             </div>
@@ -691,8 +722,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                     >
                       <div className="flex items-center gap-4">
                         <div
-                          className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-md"
-                          style={{ backgroundColor: course.accentColor }}
+                          className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-md bg-[#1890FF]"
                         >
                           {idx + 1}
                         </div>
@@ -729,7 +759,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                                   {isLocked ? (
                                     <Lock className="w-3.5 h-3.5 flex-shrink-0 text-gray-400" />
                                   ) : (
-                                    <Play className="w-3.5 h-3.5 flex-shrink-0" style={{ color: course.accentColor }} />
+                                    <Play className="w-3.5 h-3.5 flex-shrink-0 text-[#1890FF]" />
                                   )}
                                   {isLocked ? (
                                     <span className="italic flex items-center gap-2">
@@ -762,7 +792,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
           <FadeIn>
             <div className="flex flex-col md:flex-row gap-8 items-center md:items-start bg-[#F8FAFC] rounded-[2rem] p-8 lg:p-12 border border-gray-100 shadow-sm">
               <div className="w-40 h-40 md:w-48 md:h-48 shrink-0 relative group">
-                <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-blue-50 rounded-3xl -rotate-6 group-hover:-rotate-3 transition-transform duration-300 z-0" style={{ backgroundColor: `${course.accentColor}20` }} />
+                <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-blue-50 rounded-3xl -rotate-6 group-hover:-rotate-3 transition-transform duration-300 z-0" style={{ backgroundColor: "#1890FF20" }} />
                 <div className="relative w-full h-full rounded-3xl overflow-hidden border-4 border-white shadow-xl z-10 bg-white transition-transform duration-300 group-hover:scale-[1.02]">
                   <Image src={founderImage} alt="Manuel Oliva" fill className="object-cover" unoptimized />
                 </div>

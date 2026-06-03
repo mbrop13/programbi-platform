@@ -60,8 +60,8 @@ export default function HomePage() {
       <HeroSection />
       <LogoSlider />
       <CoursesSection />
-      <AsesoriasPromoSection />
       <GallerySection />
+      <AsesoriasPromoSection />
       <DiagnosticSection />
       <MentorsSection />
       <FounderSection />

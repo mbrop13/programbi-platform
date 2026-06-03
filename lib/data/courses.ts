@@ -399,7 +399,7 @@ export const courses: Course[] = [
       "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/gempages_519842279402243040-95e6ef6f-0d9e-4e69-a5a7-1a3f7a4c0c45_7bda5e0b-a12a-4293-81c0-8c8fb3c345aa.png?v=1736654931",
     icon: "Code",
     accentColor: "#3776AB",
-    isFeatured: false,
+    isFeatured: true,
     sortOrder: 6,
     youtubeVideoId: "csPtN5bI_cw",
     whatYouLearn: [

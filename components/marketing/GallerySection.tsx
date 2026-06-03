@@ -1,97 +1,214 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
-import { Expand } from "lucide-react";
+import { useRef, useState } from "react";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
-import { galleryImages } from "@/lib/data/images";
+import { casesOfUse, CaseStudy } from "@/lib/data/cases";
 
-export default function GallerySection() {
-  const [mainIndex, setMainIndex] = useState(0);
+// Render vector graphic overlays corresponding to the brand themes
+const renderCardGraphic = (theme: string) => {
+  switch (theme) {
+    case "runway":
+      return (
+        <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 via-cyan-500 to-sky-400 flex items-center justify-center">
+          <div className="absolute inset-0 opacity-15 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white via-transparent to-transparent pointer-events-none" />
+          <svg className="w-20 h-20 text-white drop-shadow-[0_8px_16px_rgba(0,0,0,0.15)]" viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M30 80 V20 H55 C68.7 20 80 31.3 80 45 C80 58.7 68.7 70 55 70 H30 M55 70 L75 80" />
+          </svg>
+        </div>
+      );
+    case "supabase":
+      return (
+        <div className="absolute inset-0 bg-[#0B0F19] flex items-center justify-center overflow-hidden border border-slate-800">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none" />
+          <svg className="w-16 h-16 text-emerald-500 drop-shadow-[0_0_20px_rgba(16,185,129,0.4)]" viewBox="0 0 100 100" fill="currentColor">
+            <path d="M55,10 L25,55 L48,55 L45,90 L75,45 L52,45 Z" />
+          </svg>
+        </div>
+      );
+    case "linear":
+      return (
+        <div className="absolute inset-0 bg-[#120B29] flex items-center justify-center border border-[#1e133e] overflow-hidden">
+          <div className="absolute w-44 h-44 rounded-full bg-violet-600/10 blur-2xl" />
+          <svg className="w-20 h-20 drop-shadow-[0_0_25px_rgba(139,92,246,0.35)]" viewBox="0 0 100 100">
+            <defs>
+              <linearGradient id="sphereGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#c084fc" />
+                <stop offset="100%" stopColor="#5b21b6" />
+              </linearGradient>
+            </defs>
+            <mask id="sphereMask">
+              <rect width="100" height="100" fill="white" />
+              <line x1="20" y1="100" x2="100" y2="20" stroke="black" strokeWidth="5.5" />
+              <line x1="10" y1="90" x2="90" y2="10" stroke="black" strokeWidth="5.5" />
+              <line x1="0" y1="80" x2="80" y2="0" stroke="black" strokeWidth="5.5" />
+            </mask>
+            <circle cx="50" cy="50" r="32" fill="url(#sphereGrad)" mask="url(#sphereMask)" />
+          </svg>
+        </div>
+      );
+    case "elevenlabs":
+      return (
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-400 via-fuchsia-300 to-rose-300 flex items-center justify-center">
+          <svg className="w-18 h-18 text-white drop-shadow-[0_6px_12px_rgba(0,0,0,0.1)]" viewBox="0 0 100 100" fill="currentColor">
+            <rect x="32" y="22" width="11" height="56" rx="4" />
+            <rect x="57" y="22" width="11" height="56" rx="4" />
+            <path d="M 32 50 A 25 25 0 0 1 68 50" fill="none" stroke="white" strokeWidth="5" strokeLinecap="round" opacity="0.25" />
+          </svg>
+        </div>
+      );
+    default:
+      return null;
+  }
+};
 
-  const handleSwap = (index: number) => {
-    if (index === mainIndex) return;
-    setMainIndex(index);
-  };
+// Sub-component for individual Case Cards
+function CaseCard({ item }: { item: CaseStudy }) {
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
   return (
-    <section className="pt-8 pb-16 lg:pt-12 lg:pb-24 bg-[#F8FAFC] relative overflow-hidden">
-      <div className="max-w-[1200px] mx-auto px-5 lg:px-10 relative z-10">
-        {/* Header */}
-        <FadeIn>
-          <div className="text-center mb-16 max-w-[900px] mx-auto">
-            <span className="inline-block bg-[rgba(24,144,255,0.08)] text-[#1890FF] font-extrabold tracking-[0.15em] uppercase text-sm px-5 py-2.5 rounded-full border border-[rgba(24,144,255,0.2)] mb-4">
-              Galería Interactiva
-            </span>
-            <h2 className="font-display text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold text-[#0F172A] leading-tight mb-6">
-              Visualiza el Flujo de Datos
-            </h2>
-            <p className="text-lg text-[#64748B] leading-relaxed">
-              Explora cada etapa del proceso: desde la consulta SQL y el código Python, hasta el modelado de datos y el dashboard final en Power BI.
-              <br />
-              <span className="text-sm opacity-70">(Haz clic en las imágenes pequeñas para ampliarlas)</span>
-            </p>
-          </div>
-        </FadeIn>
-
-        {/* Gallery Layout */}
-        <FadeIn delay={0.2}>
-          <div className="grid grid-cols-1 lg:grid-cols-[1.8fr_1fr] gap-6" style={{ height: "auto" }}>
-            {/* Main Stage */}
-            <div
-              className="relative rounded-[2rem] overflow-hidden bg-white border border-[#E2E8F0] cursor-pointer h-[350px] lg:h-[600px] transition-all duration-400"
-              style={{ boxShadow: "0 20px 50px -15px rgba(15,23,42,0.1)" }}
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={mainIndex}
-                  initial={{ opacity: 0, scale: 1.05 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.4 }}
-                  className="absolute inset-0"
-                >
-                  <Image
-                    src={galleryImages[mainIndex].url}
-                    alt={galleryImages[mainIndex].label}
-                    fill
-                    className="object-contain bg-[#f8fafc] hover:scale-[1.02] transition-transform duration-600"
-                    unoptimized
-                  />
-                </motion.div>
-              </AnimatePresence>
-              <div className="absolute top-6 left-6 bg-white/90 backdrop-blur-lg px-5 py-2.5 rounded-xl font-extrabold text-[#1890FF] text-sm z-10 shadow-md">
-                {galleryImages[mainIndex].label}
+    <Link
+      href={`/casos/${item.slug}`}
+      className="snap-start shrink-0 flex flex-col group w-[280px] hover:w-[350px] transition-all duration-500 ease-out no-underline"
+    >
+      {/* Visual Card Wrapper - Smoothly fades in video once loaded or shows a beautiful placeholder */}
+      <div className="relative w-full aspect-[4/5] rounded-[1.8rem] overflow-hidden mb-6 shadow-md shadow-slate-100/80 border border-slate-150/40 group-hover:shadow-xl group-hover:shadow-blue-500/5 transition-all duration-500 cursor-pointer bg-slate-950">
+        {item.videoUrl ? (
+          <div className="absolute inset-0 flex items-center justify-center">
+            {/* Themed gradient placeholder visible while video is loading */}
+            <div className={`absolute inset-0 bg-gradient-to-tr from-[#0F172A] via-[#1E293B] to-[#0B0F19] flex items-center justify-center pointer-events-none transition-opacity duration-1000 ${
+              isVideoLoaded ? "opacity-0" : "opacity-100"
+            }`}>
+              <div className="opacity-30">
+                {renderCardGraphic(item.theme)}
               </div>
             </div>
 
-            {/* Thumbnails */}
-            <div className="grid grid-cols-2 lg:grid-cols-2 lg:grid-rows-3 gap-4">
-              {galleryImages.slice(0, 6).map((img, i) => (
-                <motion.div
-                  key={i}
-                  onClick={() => handleSwap(i)}
-                  className={`relative rounded-2xl overflow-hidden cursor-pointer h-[120px] lg:h-auto bg-white transition-all duration-300 ${
-                    i === mainIndex ? "ring-2 ring-[#1890FF] ring-offset-2" : "border-2 border-transparent hover:border-[#1890FF]"
-                  }`}
-                  whileHover={{ y: -4, boxShadow: "0 15px 30px rgba(24,144,255,0.15)" }}
-                >
-                  <Image
-                    src={img.url}
-                    alt={img.label}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                  <div className="absolute inset-0 bg-[rgba(24,144,255,0.2)] flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                    <Expand className="text-white w-6 h-6 drop-shadow-lg" />
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            <video
+              src={item.videoUrl}
+              poster={item.posterUrl}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              onPlay={() => setIsVideoLoaded(true)}
+              onLoadedData={() => setIsVideoLoaded(true)}
+              className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-1000 ease-out pointer-events-none ${
+                isVideoLoaded ? "opacity-100" : "opacity-0"
+              }`}
+            />
+            {/* Subtle dark gradient overlay to ensure text contrast */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/20 pointer-events-none" />
+          </div>
+        ) : (
+          <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
+            {renderCardGraphic(item.theme)}
+          </div>
+        )}
+
+        {/* Technology Overlay tag top right */}
+        <div className="absolute top-5 right-5 font-sans text-[9px] text-white font-bold bg-white/15 backdrop-blur-md py-1 px-2.5 rounded-full border border-white/20 z-10">
+          {item.techBadge}
+        </div>
+      </div>
+
+      {/* Text Block beneath visual card - Locked to 280px to completely prevent re-wrapping/reflow */}
+      <div className="text-left px-1 flex flex-col w-[280px] shrink-0 font-sans">
+        <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#1890FF]">
+          {item.category}
+        </span>
+        
+        <h3 className="font-display font-black text-gray-900 mt-2 text-base md:text-lg leading-snug group-hover:text-[#1890FF] transition-colors line-clamp-3">
+          {item.title}
+        </h3>
+        
+        <p className="text-slate-500 text-xs md:text-sm leading-relaxed mt-2.5 line-clamp-3">
+          {item.description}
+        </p>
+
+        <div className="mt-4 text-[#1890FF] text-xs font-bold flex items-center gap-1 group-hover:gap-2 transition-all">
+          <span>{item.linkText}</span>
+          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+export default function GallerySection() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: "left" | "right") => {
+    if (scrollRef.current) {
+      const { scrollLeft } = scrollRef.current;
+      const scrollAmount = 304; // 280px (base width) + 24px (gap-6)
+      // Slide two cards at a time
+      const scrollTo = direction === "left" ? scrollLeft - scrollAmount * 2 : scrollLeft + scrollAmount * 2;
+      scrollRef.current.scrollTo({
+        left: scrollTo,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  return (
+    <section className="pt-4 pb-3 lg:pt-6 lg:pb-4 bg-white relative overflow-hidden border-b border-slate-100">
+      {/* CSS injection to hide scrollbars on all browsers while keeping horizontal scrolling functional */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}} />
+      <div className="max-w-[1400px] mx-auto px-5 lg:px-8 relative z-10">
+        
+        {/* Header and Scroll Buttons */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+          <FadeIn className="max-w-2xl">
+            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 leading-tight">
+              ¿Cómo pueden ayudarte <br />estos programas?
+            </h2>
+            <p className="text-lg text-gray-500 leading-relaxed mt-4">
+              Proyectos prácticos inspirados en desafíos corporativos reales que aprenderás a automatizar, modelar y predecir.
+            </p>
+          </FadeIn>
+
+          {/* Navigation Arrows */}
+          <FadeIn delay={0.15} className="flex gap-3 self-end md:self-auto shrink-0">
+            <button
+              onClick={() => scroll("left")}
+              className="w-12 h-12 rounded-full bg-slate-50 border border-slate-200 text-gray-600 hover:bg-slate-100 hover:text-gray-900 hover:border-slate-350 transition-all flex items-center justify-center cursor-pointer shadow-sm hover:shadow"
+              aria-label="Anterior"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <button
+              onClick={() => scroll("right")}
+              className="w-12 h-12 rounded-full bg-slate-50 border border-slate-200 text-gray-600 hover:bg-slate-100 hover:text-gray-900 hover:border-slate-350 transition-all flex items-center justify-center cursor-pointer shadow-sm hover:shadow"
+              aria-label="Siguiente"
+            >
+              <ArrowRight size={20} />
+            </button>
+          </FadeIn>
+        </div>
+
+        {/* Sliding Deck Layout */}
+        <FadeIn delay={0.25}>
+          <div
+            ref={scrollRef}
+            className="flex overflow-x-auto gap-6 pb-8 scroll-smooth no-scrollbar snap-x snap-mandatory -mx-5 px-5 md:mx-0 md:px-0"
+          >
+            {casesOfUse.map((item, idx) => (
+              <CaseCard key={idx} item={item} />
+            ))}
           </div>
         </FadeIn>
+
       </div>
     </section>
   );

@@ -9,10 +9,10 @@ export default function LogoSlider() {
   const allLogos = [...companyLogos, ...companyLogos];
 
   return (
-    <section className="border-y border-gray-100 bg-white py-12 lg:py-16">
+    <section className="bg-white py-6 lg:py-8">
       <FadeIn>
-        <div className="max-w-[1200px] mx-auto px-5 text-center mb-8">
-          <p className="text-sm sm:text-base font-bold text-gray-400 uppercase tracking-[0.2em] font-display">
+        <div className="max-w-[1200px] mx-auto px-5 text-center mb-4">
+          <p className="text-xs sm:text-sm font-bold text-gray-400 uppercase tracking-[0.2em] font-display">
             Empresas que confían en nosotros
           </p>
         </div>
@@ -53,7 +53,7 @@ export default function LogoSlider() {
         }
         .logo-item {
           width: 180px;
-          padding: 0 20px;
+          padding: 0 15px;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -62,7 +62,7 @@ export default function LogoSlider() {
         @media (min-width: 1024px) {
           .logo-item {
             width: 260px;
-            padding: 0 40px;
+            padding: 0 25px;
           }
         }
         .logo-item :global(.logo-img) {
@@ -81,7 +81,7 @@ export default function LogoSlider() {
         .logo-item:hover :global(.logo-img) {
           filter: grayscale(0%);
           opacity: 1;
-          transform: scale(1.08);
+          transform: scale(1.06);
         }
         @keyframes logo-scroll {
           0% { transform: translateX(0); }

@@ -304,18 +304,6 @@ export default function Navbar() {
                       >
                         <div className="p-8 bg-white relative">
                           <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100/50 rounded-full blur-3xl opacity-50 -mt-20 -mr-20 pointer-events-none" />
-                          <div className="flex justify-between items-center mb-6 relative z-10">
-                            <h3 className="text-xs font-black tracking-widest uppercase text-[#1890FF] flex items-center gap-2">
-                              <Sparkles size={14} /> Catálogo de Cursos
-                            </h3>
-                            <Link
-                              href="/cursos"
-                              onClick={() => setIsMegaOpen(false)}
-                              className="text-xs font-bold text-[#1890FF] hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition-colors no-underline flex items-center gap-1"
-                            >
-                              Explorar todo <ArrowRight size={12} />
-                            </Link>
-                          </div>
                           <div className="grid grid-cols-2 gap-4 relative z-10">
                             {courses.map((course) => (
                               <Link
@@ -324,12 +312,12 @@ export default function Navbar() {
                                 onClick={() => setIsMegaOpen(false)}
                                 className="group/item flex gap-4 p-3 rounded-2xl hover:bg-slate-50 hover:shadow-lg hover:shadow-slate-200/40 transition-all no-underline border border-transparent hover:border-slate-100/60 items-center relative overflow-hidden bg-white"
                               >
-                                <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 relative bg-slate-100">
+                                <div className="w-28 aspect-[16/9] rounded-xl overflow-hidden flex-shrink-0 relative bg-slate-50 border border-slate-100/80 shadow-sm">
                                   <Image
                                     src={course.imageUrl}
                                     alt={course.title}
                                     fill
-                                    className="object-cover transition-transform duration-500 group-hover/item:scale-110"
+                                    className="object-cover transition-transform duration-500 group-hover/item:scale-[1.03]"
                                     unoptimized
                                   />
                                 </div>
@@ -342,6 +330,15 @@ export default function Navbar() {
                                 </div>
                               </Link>
                             ))}
+                          </div>
+                          <div className="flex justify-center items-center mt-6 pt-5 border-t border-slate-100 relative z-10">
+                            <Link
+                              href="/cursos"
+                              onClick={() => setIsMegaOpen(false)}
+                              className="text-xs font-bold text-[#1890FF] hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-5 py-2.5 rounded-xl transition-all duration-300 no-underline flex items-center gap-1.5 shadow-sm hover:shadow"
+                            >
+                              Explorar todo el catálogo <ArrowRight size={12} />
+                            </Link>
                           </div>
                         </div>
                       </motion.div>
