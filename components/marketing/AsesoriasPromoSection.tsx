@@ -9,7 +9,7 @@ export default function AsesoriasPromoSection() {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
   return (
-    <section className="pt-3 pb-6 lg:pt-4 lg:pb-8 bg-gradient-to-br from-slate-50/50 via-white to-white relative overflow-hidden">
+    <section className="pt-3 pb-6 lg:pt-4 lg:pb-8 bg-white relative overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-5 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
           

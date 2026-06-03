@@ -717,7 +717,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden pt-12 pb-2 lg:pt-20 lg:pb-4">
+    <section className="relative overflow-hidden pt-3 pb-2 lg:pt-6 lg:pb-4">
       {/* Bg decorations */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div
@@ -735,7 +735,7 @@ export default function HeroSection() {
         />
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-5 lg:px-8 relative z-10 py-4">
+      <div className="max-w-[1400px] mx-auto px-5 lg:px-8 relative z-10 pt-1 pb-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
           {/* ── Left Column (7/12) ── */}
           <div className="lg:col-span-7 text-center lg:text-left">

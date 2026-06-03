@@ -139,7 +139,7 @@ export default function CoursesSection() {
   const filteredCourses = getFilteredCourses();
 
   return (
-    <section className="w-full bg-[#F8FAFC] text-slate-900 py-12 lg:py-18 relative overflow-hidden flex justify-center items-center">
+    <section className="w-full bg-white text-slate-900 py-12 lg:py-18 relative overflow-hidden flex justify-center items-center">
       {/* Glow backdrop points (light/soft accent) */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#1890FF]/3 rounded-full blur-[160px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#6366F1]/2 rounded-full blur-[160px] pointer-events-none" />

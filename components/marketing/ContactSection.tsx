@@ -90,8 +90,7 @@ export default function ContactSection() {
   };
 
   return (
-    <section id="contacto" className="py-16 lg:py-24 relative overflow-hidden"
-      style={{ background: "linear-gradient(180deg, #F9FAFB 0%, #FFFFFF 100%)" }}>
+    <section id="contacto" className="py-16 lg:py-24 bg-white relative overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-5 lg:px-10 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-start">
           {/* Left: Gallery */}
