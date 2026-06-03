@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   ArrowRight, 
   Clock, 
@@ -91,7 +91,6 @@ const getPriceInfo = (course: Course, promotions: any[]) => {
 };
 
 export default function CoursesSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
   const [selectedCat, setSelectedCat] = useState<"destacados" | "datos" | "python" | "auto">("destacados");
   const [promotions, setPromotions] = useState<any[]>([]);
 
@@ -105,28 +104,6 @@ export default function CoursesSection() {
       })
       .catch((err) => console.error("Error loading promotions in CoursesSection:", err));
   }, []);
-
-  // Track scroll position of the section block
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start end", "center center"]
-  });
-
-  // Dynamic animation values based on scroll (Width expands from 82vw to 100vw)
-  const containerWidth = useTransform(scrollYProgress, [0, 0.85], ["82vw", "100vw"]);
-  const containerRadius = useTransform(scrollYProgress, [0, 0.85], ["40px", "0px"]);
-
-  // Glowing blue border that fades out when fully stretched
-  const borderGlowColor = useTransform(
-    scrollYProgress,
-    [0.75, 0.85],
-    ["0px 0px 20px 2px rgba(24, 144, 255, 0.45)", "0px 0px 0px 0px rgba(24, 144, 255, 0)"]
-  );
-  const borderColor = useTransform(
-    scrollYProgress,
-    [0.75, 0.85],
-    ["rgba(24, 144, 255, 0.6)", "rgba(24, 144, 255, 0)"]
-  );
 
   // Filter logic
   const getFilteredCourses = () => {
@@ -162,39 +139,25 @@ export default function CoursesSection() {
   const filteredCourses = getFilteredCourses();
 
   return (
-    <div 
-      ref={containerRef} 
-      className="w-full flex justify-center bg-white pt-2 pb-2 lg:pt-3 lg:pb-3 overflow-hidden"
-    >
-      <motion.section
-        style={{
-          width: containerWidth,
-          borderRadius: containerRadius,
-          boxShadow: borderGlowColor,
-          borderColor: borderColor,
-          borderWidth: "1.5px",
-          borderStyle: "solid"
-        }}
-        className="bg-[#F8FAFC] text-slate-900 py-12 lg:py-18 relative overflow-hidden shadow-none origin-center flex justify-center items-center"
-      >
-        {/* Glow backdrop points (light/soft accent) */}
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#1890FF]/3 rounded-full blur-[160px] pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#6366F1]/2 rounded-full blur-[160px] pointer-events-none" />
+    <section className="w-full bg-[#F8FAFC] text-slate-900 py-12 lg:py-18 relative overflow-hidden flex justify-center items-center">
+      {/* Glow backdrop points (light/soft accent) */}
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#1890FF]/3 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#6366F1]/2 rounded-full blur-[160px] pointer-events-none" />
 
-        {/* CSS adjustment to hide horizontal scrollbar in categories pill row on mobile */}
-        <style dangerouslySetInnerHTML={{__html: `
-          .no-scrollbar::-webkit-scrollbar {
-            display: none;
-          }
-          .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-          }
-        `}} />
+      {/* CSS adjustment to hide horizontal scrollbar in categories pill row on mobile */}
+      <style dangerouslySetInnerHTML={{__html: `
+        .no-scrollbar::-webkit-scrollbar {
+          display: none;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+      `}} />
 
-        {/* Centering wrapper */}
-        <div className="w-[100vw] shrink-0 px-6 md:px-12 max-w-[1400px] mx-auto relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+      {/* Centering wrapper */}
+      <div className="w-full px-6 md:px-12 max-w-[1400px] mx-auto relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
             
             {/* Left Column (Sticky Sidebar on Desktop) */}
             <div className="lg:col-span-4 lg:sticky lg:top-10 text-left flex flex-col gap-5 z-20">
@@ -209,8 +172,8 @@ export default function CoursesSection() {
                   Clases en vivo por Zoom, aprendizaje práctico con proyectos reales y apoyo técnico de mentores expertos 24/7.
                 </p>
 
-                {/* Category selector list (vertical on all screen sizes to keep button directly under RPA) */}
-                <div className="flex flex-col gap-2.5 w-full shrink-0">
+                {/* Category selector list (hidden on mobile, vertical on desktop) */}
+                <div className="hidden lg:flex flex-col gap-2.5 w-full shrink-0">
                   {categories.map((cat) => {
                     const IconComponent = cat.id === "destacados" ? Sparkles : cat.id === "datos" ? Database : cat.id === "python" ? Code : Zap;
                     const isActive = selectedCat === cat.id;
@@ -450,8 +413,7 @@ export default function CoursesSection() {
 
           </div>
         </div>
-      </motion.section>
-    </div>
+      </section>
   );
 }
 
