@@ -414,7 +414,7 @@ export default function CoursesSection() {
                                      <div className="flex flex-col text-right items-end justify-center font-sans">
                                        <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Inversión</span>
                                        <span className="mt-1.5 text-[9px] font-extrabold px-2.5 py-1 bg-blue-50 text-[#1890FF] rounded-lg border border-blue-100/60 flex items-center gap-1 shadow-sm">
-                                         <Lock size={10} /> Ver Precios
+                                         <Lock size={10} /> Registrarse para ver precios
                                        </span>
                                      </div>
                                    )}
