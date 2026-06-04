@@ -268,23 +268,26 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   return (
     <>
       {/* ════ HERO ════ */}
-      <section className={`relative -mt-20 lg:-mt-24 pt-28 lg:pt-32 pb-16 lg:pb-20 overflow-x-hidden overflow-y-visible ${themeGlows.bg}`}>
-        {/* Soft fading top/bottom overlay for premium blending */}
-        <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-b from-white/20 via-transparent to-slate-50/60" />
-        
-        {/* Ambient mesh blobs tailored to the course brand colors */}
-        <div 
-          className="absolute top-[-10%] right-[10%] w-[650px] h-[650px] rounded-full blur-[140px] pointer-events-none opacity-40 mix-blend-multiply" 
-          style={{ backgroundColor: `${themeGlows.glow1}22` }} 
-        />
-        <div 
-          className="absolute bottom-[-10%] left-[5%] w-[550px] h-[550px] rounded-full blur-[140px] pointer-events-none opacity-30 mix-blend-multiply" 
-          style={{ backgroundColor: `${themeGlows.glow2}18` }} 
-        />
-        <div 
-          className="absolute top-[20%] left-[30%] w-[450px] h-[450px] rounded-full blur-[150px] pointer-events-none opacity-20 mix-blend-multiply" 
-          style={{ backgroundColor: `${themeGlows.glow3}15` }} 
-        />
+      <section className={`relative z-20 -mt-20 lg:-mt-24 pt-28 lg:pt-32 pb-6 lg:pb-20 ${themeGlows.bg}`}>
+        {/* Overflow container for decorative blobs — keeps them from causing horizontal scroll on mobile */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Soft fading top/bottom overlay for premium blending */}
+          <div className="absolute inset-0 z-0 bg-gradient-to-b from-white/20 via-transparent to-slate-50/60" />
+          
+          {/* Ambient mesh blobs tailored to the course brand colors */}
+          <div 
+            className="absolute top-[-10%] right-[10%] w-[650px] h-[650px] rounded-full blur-[140px] opacity-40 mix-blend-multiply" 
+            style={{ backgroundColor: `${themeGlows.glow1}22` }} 
+          />
+          <div 
+            className="absolute bottom-[-10%] left-[5%] w-[550px] h-[550px] rounded-full blur-[140px] opacity-30 mix-blend-multiply" 
+            style={{ backgroundColor: `${themeGlows.glow2}18` }} 
+          />
+          <div 
+            className="absolute top-[20%] left-[30%] w-[450px] h-[450px] rounded-full blur-[150px] opacity-20 mix-blend-multiply" 
+            style={{ backgroundColor: `${themeGlows.glow3}15` }} 
+          />
+        </div>
 
         <div className="relative z-10 max-w-[1200px] mx-auto px-5 lg:px-8">
           {/* Mobile Header (visible on mobile, hidden on desktop) */}
@@ -601,7 +604,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
       {/* ════ LEVEL SELECTOR + WHAT YOU LEARN + DETAILS ════ */}
       {(course.whatYouLearn?.length > 0 || levels.length > 0) && (
-        <section className="py-10 lg:py-14 bg-white overflow-hidden">
+        <section className="relative z-10 py-10 lg:py-14 bg-white overflow-hidden">
           <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
 
             {/* Level Selector Pills */}
