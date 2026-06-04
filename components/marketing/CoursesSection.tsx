@@ -16,11 +16,13 @@ import {
   TrendingUp, 
   Brain, 
   HardHat, 
-  Zap 
+  Zap,
+  Lock
 } from "lucide-react";
 import React from "react";
 import { courses, type Course } from "@/lib/data/courses";
 import { FadeIn, StaggerChildren, StaggerItem, TiltCard } from "@/components/shared/AnimatedComponents";
+import { createClient } from "@/lib/supabase/client";
 
 const categories = [
   { id: "destacados", label: "Programas Destacados", desc: "Nuestros bootcamps de élite más populares" },
@@ -93,6 +95,7 @@ const getPriceInfo = (course: Course, promotions: any[]) => {
 export default function CoursesSection() {
   const [selectedCat, setSelectedCat] = useState<"destacados" | "datos" | "python" | "auto">("destacados");
   const [promotions, setPromotions] = useState<any[]>([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     fetch("/api/promotions")
@@ -103,6 +106,23 @@ export default function CoursesSection() {
         }
       })
       .catch((err) => console.error("Error loading promotions in CoursesSection:", err));
+  }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      setIsLoggedIn(!!data.user);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      if (event === 'SIGNED_IN') {
+        setIsLoggedIn(true);
+      } else if (event === 'SIGNED_OUT') {
+        setIsLoggedIn(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   // Filter logic
@@ -358,38 +378,47 @@ export default function CoursesSection() {
                               {/* Card Footer */}
                               <div className="mt-auto">
                                 <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                                  {/* Duration & Modality */}
-                                  <div className="flex flex-col gap-1 text-left">
-                                    <span className="flex items-center gap-1.5 text-xs text-slate-600 font-bold">
-                                      <Clock size={13} className="text-[#1890FF]" /> {course.durationHours} hrs
-                                    </span>
-                                    <span className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-slate-400 font-semibold">
-                                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Online en vivo
-                                    </span>
-                                  </div>
+                                   {/* Duration & Modality */}
+                                   <div className="flex flex-col gap-1 text-left">
+                                     <span className="flex items-center gap-1.5 text-xs text-slate-600 font-bold">
+                                       <Clock size={13} className="text-[#1890FF]" /> {course.durationHours} hrs
+                                     </span>
+                                     <span className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-slate-400 font-semibold">
+                                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Online en vivo
+                                     </span>
+                                   </div>
 
-                                  {/* CLP price tag & Discount */}
-                                  {price ? (
-                                    <div className="flex flex-col text-right items-end justify-center">
-                                      <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Inversión</span>
-                                      <div className="flex items-center gap-1.5 mt-0.5">
-                                        {originalPrice && (
-                                          <span className="text-[10px] line-through text-slate-400 font-medium">
-                                            {new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(originalPrice)}
-                                          </span>
-                                        )}
-                                        <span className="text-[13px] font-black text-slate-900">
-                                          {new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(price)}
-                                        </span>
-                                      </div>
-                                      {discountPercent && (
-                                        <span className="mt-0.5 text-[8px] font-extrabold px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded border border-emerald-200">
-                                          -{discountPercent}% DCTO
-                                        </span>
-                                      )}
-                                    </div>
-                                  ) : null}
-                                </div>
+                                   {/* CLP price tag & Discount */}
+                                   {isLoggedIn ? (
+                                     price ? (
+                                       <div className="flex flex-col text-right items-end justify-center font-sans">
+                                         <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Inversión</span>
+                                         <div className="flex items-center gap-1.5 mt-0.5">
+                                           {originalPrice && (
+                                             <span className="text-[10px] line-through text-slate-400 font-medium">
+                                               {new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(originalPrice)}
+                                             </span>
+                                           )}
+                                           <span className="text-[13px] font-black text-slate-900">
+                                             {new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(price)}
+                                           </span>
+                                         </div>
+                                         {discountPercent && (
+                                           <span className="mt-0.5 text-[8px] font-extrabold px-1.5 py-0.5 bg-emerald-50 text-emerald-650 rounded border border-emerald-200">
+                                             -{discountPercent}% DCTO
+                                           </span>
+                                         )}
+                                       </div>
+                                     ) : null
+                                   ) : (
+                                     <div className="flex flex-col text-right items-end justify-center font-sans">
+                                       <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Inversión</span>
+                                       <span className="mt-1.5 text-[9px] font-extrabold px-2.5 py-1 bg-blue-50 text-[#1890FF] rounded-lg border border-blue-100/60 flex items-center gap-1 shadow-sm">
+                                         <Lock size={10} /> Ver Precios
+                                       </span>
+                                     </div>
+                                   )}
+                                 </div>
                                 
                                 <div className="mt-4 w-full flex items-center justify-between font-bold text-slate-800 group-hover:text-[#1890FF] transition-colors text-xs font-sans">
                                   <span>Ver especialización</span>

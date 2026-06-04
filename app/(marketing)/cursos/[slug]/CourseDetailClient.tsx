@@ -287,37 +287,60 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         />
 
         <div className="relative z-10 max-w-[1200px] mx-auto px-5 lg:px-8">
+          {/* Mobile Header (visible on mobile, hidden on desktop) */}
+          <div className="block lg:hidden text-left mb-6">
+            {course.badgeLabel && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[0.65rem] font-black tracking-wider uppercase text-white shadow-sm mb-4 bg-[#1890FF]">
+                <DynamicIcon name={course.icon} className="w-3.5 h-3.5" />
+                {course.badgeLabel}
+              </span>
+            )}
+            <h1 className="font-display font-black text-3xl sm:text-4xl text-slate-900 mb-3 leading-tight tracking-tight">
+              {course.title}
+            </h1>
+            {(course.slug === "analisis-de-datos" || course.slug === "analitica-mineria" || course.slug === "analitica-financiera") && (
+              <p className="text-xs font-black uppercase tracking-wider mb-4 text-[#1890FF]">
+                ★ INCLUYE POWER BI + PYTHON + SQL SERVER EN UN SOLO PROGRAMA
+              </p>
+            )}
+            <p className="text-slate-600 text-base leading-relaxed">
+              {course.description}
+            </p>
+          </div>
+
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
             {/* Left Column: Course Details */}
             <div className="lg:col-span-7 flex flex-col items-start text-left">
-              <FadeIn delay={0.1} className="w-full">
-                {/* Category / Badge Label */}
-                {course.badgeLabel && (
-                  <span
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[0.65rem] font-black tracking-wider uppercase text-white shadow-sm mb-4 bg-[#1890FF]"
-                  >
-                    <DynamicIcon name={course.icon} className="w-3.5 h-3.5" />
-                    {course.badgeLabel}
-                  </span>
-                )}
-                
-                {/* Course Name (Title) */}
-                <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-slate-900 mb-3 leading-tight tracking-tight">
-                  {course.title}
-                </h1>
-                {(course.slug === "analisis-de-datos" || course.slug === "analitica-mineria" || course.slug === "analitica-financiera") && (
-                  <p className="text-xs sm:text-sm font-black uppercase tracking-wider mb-4 text-[#1890FF]">
-                    ★ INCLUYE POWER BI + PYTHON + SQL SERVER EN UN SOLO PROGRAMA
-                  </p>
-                )}
-              </FadeIn>
+              {/* Desktop Header Content (hidden on mobile) */}
+              <div className="hidden lg:block w-full">
+                <FadeIn delay={0.1} className="w-full">
+                  {/* Category / Badge Label */}
+                  {course.badgeLabel && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[0.65rem] font-black tracking-wider uppercase text-white shadow-sm mb-4 bg-[#1890FF]">
+                      <DynamicIcon name={course.icon} className="w-3.5 h-3.5" />
+                      {course.badgeLabel}
+                    </span>
+                  )}
+                  
+                  {/* Course Name (Title) */}
+                  <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-slate-900 mb-3 leading-tight tracking-tight">
+                    {course.title}
+                  </h1>
+                  {(course.slug === "analisis-de-datos" || course.slug === "analitica-mineria" || course.slug === "analitica-financiera") && (
+                    <p className="text-xs sm:text-sm font-black uppercase tracking-wider mb-4 text-[#1890FF]">
+                      ★ INCLUYE POWER BI + PYTHON + SQL SERVER EN UN SOLO PROGRAMA
+                    </p>
+                  )}
+                </FadeIn>
 
-              {/* Description & Key Outcomes */}
-              <FadeIn delay={0.2} className="w-full">
-                <p className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6">
-                  {course.description}
-                </p>
-                
+                <FadeIn delay={0.2} className="w-full">
+                  <p className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6">
+                    {course.description}
+                  </p>
+                </FadeIn>
+              </div>
+
+              <FadeIn delay={0.25} className="w-full">
                 {/* Key Outcomes bullet points (no white block, larger text) */}
                 <div className="mb-8 space-y-3 max-w-[580px]">
                   <h3 className="text-sm font-black text-slate-800 uppercase tracking-wider mb-4">
@@ -440,7 +463,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
             </div>
 
             {/* Right Column: Course Image & Preview Card */}
-            <div className="lg:col-span-5 w-full flex flex-col lg:pt-2">
+            <div className="lg:col-span-5 w-full flex flex-col lg:pt-2 order-first lg:order-last">
               <FadeIn delay={0.2}>
                 <div className="relative group transition-all duration-500 w-full">
                   {/* Glowing backdrop border matching the template blue color */}
@@ -493,7 +516,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                             <span className="text-3xl font-black text-slate-900 leading-none">
                               {convertAndFormat(grandTotal)}
                             </span>
-                            <p className="text-[9px] text-slate-400 mt-1 font-semibold">Precios Cyber Day válidos hasta el 3 de Junio</p>
+                            <p className="text-[9px] text-slate-400 mt-1 font-semibold">Precios Cyber extendido válidos hasta el domingo 7 de Junio a las 12:00 PM</p>
                           </div>
                         ) : (
                           <div 

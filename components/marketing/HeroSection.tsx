@@ -699,7 +699,7 @@ export default function HeroSection() {
 
   useEffect(() => {
     const calculate = () => {
-      const difference = +new Date("2026-06-03T23:59:59") - +new Date();
+      const difference = +new Date("2026-06-07T12:00:00") - +new Date();
       if (difference <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
       return {
         days: Math.floor(difference / (1000 * 60 * 60 * 24)),
@@ -741,12 +741,12 @@ export default function HeroSection() {
           <div className="lg:col-span-7 text-center lg:text-left">
             {/* Pill Badge */}
             <FadeIn delay={0}>
-              <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-red-50 border border-red-150 text-red-600 text-xs sm:text-sm font-black mb-6 animate-pulse">
+              <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-red-50 border border-red-150 text-red-650 font-black mb-6 animate-pulse">
                 <span className="relative flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600" />
                 </span>
-                <span>⚡ ¡CYBER DAY PROGRAMBI! — HASTA 60% DCTO ⚡</span>
+                <span>⚡ ¡CYBER EXTENDIDO HASTA EL DOMINGO 7! — HASTA 60% DCTO ⚡</span>
               </div>
             </FadeIn>
 
@@ -756,7 +756,7 @@ export default function HeroSection() {
                 Impulsa tu carrera <br className="hidden lg:block" />
                 con las ofertas de{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 animate-pulse">
-                  Cyber Day ⚡
+                  Cyber Extendido ⚡
                 </span>
               </h1>
             </FadeIn>
@@ -781,7 +781,7 @@ export default function HeroSection() {
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-650" />
                     </span>
-                    <p className="text-[11px] font-black text-red-600 tracking-wider uppercase font-sans">El Cyber Day finaliza en:</p>
+                    <p className="text-[11px] font-black text-red-655 tracking-wider uppercase font-sans">El Cyber extendido finaliza en:</p>
                   </div>
                   <span className="text-[9px] font-black text-red-600 bg-red-50 border border-red-100 px-2.5 py-0.75 rounded-full uppercase tracking-wider font-mono">CUPOS LIMITADOS</span>
                 </div>
