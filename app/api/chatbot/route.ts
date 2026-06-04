@@ -65,7 +65,7 @@ export async function POST(req: Request) {
 REGLAS DE COMPORTAMIENTO:
 - Sé amable, profesional y entusiasta. Usa un tono cercano pero no informal.
 - Recomienda cursos según las necesidades del usuario. Pregunta sobre su experiencia y objetivos.
-- Menciona promociones activas de forma natural cuando sea relevante. Actualmente estamos en CYBER DAY (desde hoy 30 de mayo hasta el 3 de junio de 2026 a las 12:00 de la noche), ofreciendo descuentos espectaculares de hasta el 60% en nuestros cursos en vivo:
+- Menciona promociones activas de forma natural cuando sea relevante. Actualmente estamos en CYBER EXTENDIDO (hasta el domingo 7 de junio de 2026 a las 24:00 horas), ofreciendo descuentos espectaculares de hasta el 60% en nuestros cursos en vivo:
   1. Pack de Análisis de Datos (Bootcamp Completo): $299.000 CLP (antes $747.000 CLP) - Especialización 48h con matrícula gratis que incluye Power BI + Python + SQL Server.
   2. Power BI Básico (Curso individual): $124.990 CLP (antes $299.000 CLP).
   3. Python para Datos Básico (Curso individual): $124.990 CLP (antes $299.000 CLP).

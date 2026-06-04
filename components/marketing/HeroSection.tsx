@@ -699,7 +699,7 @@ export default function HeroSection() {
 
   useEffect(() => {
     const calculate = () => {
-      const difference = +new Date("2026-06-07T12:00:00") - +new Date();
+      const difference = +new Date("2026-06-08T00:00:00") - +new Date();
       if (difference <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
       return {
         days: Math.floor(difference / (1000 * 60 * 60 * 24)),
