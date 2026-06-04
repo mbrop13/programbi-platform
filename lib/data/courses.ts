@@ -37,15 +37,15 @@ export const courses: Course[] = [
     slug: "analisis-de-datos",
     title: "Curso de Análisis de Datos",
     shortDescription:
-      "El programa integral de 144 horas. Domina el ciclo completo del dato desde la extracción hasta la visualización.",
+      "El programa de 48 horas. Domina el ciclo completo del dato desde la extracción hasta la visualización.",
     description:
-      "Programa integral de 144 horas donde dominarás SQL Server, Power BI y Python. Aprende a extraer, transformar y visualizar datos para tomar decisiones estratégicas en cualquier industria.",
+      "Programa de 48 horas donde dominarás SQL Server, Power BI y Python. Aprende a extraer, transformar y visualizar datos para tomar decisiones estratégicas en cualquier industria.",
     category: "programacion",
     categoryLabel: "MÁS POPULAR",
     badgeLabel: "MÁS POPULAR",
     badgeColor: "#1890FF",
     techStack: ["SQL", "Power BI", "Python"],
-    durationHours: 144,
+    durationHours: 48,
     modality: "online",
     level: "principiante",
     imageUrl:
@@ -147,7 +147,7 @@ export const courses: Course[] = [
     badgeLabel: "NUEVO 2026",
     badgeColor: "#0078D4",
     techStack: ["RPA", "Cloud Flows", "Copilot IA"],
-    durationHours: 48,
+    durationHours: 16,
     modality: "online",
     level: "intermedio",
     imageUrl:
@@ -205,15 +205,15 @@ export const courses: Course[] = [
     slug: "analitica-mineria",
     title: "Análisis de Datos para la Minería",
     shortDescription:
-      "Optimización de Procesos y Toma de Decisiones en Entornos Mineros. Un trayecto integral de 144 horas para optimizar procesos y predecir fallas.",
+      "Optimización de Procesos y Toma de Decisiones en Entornos Mineros. Un trayecto integral de 48 horas para optimizar procesos y predecir fallas.",
     description:
-      "Especialización técnica de 144h para profesionales mineros e industriales. Domina el ciclo completo del dato, desde la automatización de flotas hasta el mantenimiento predictivo, respaldado por nuestra experiencia en CAP y AngloAmerican.",
+      "Especialización técnica de 48h para profesionales mineros e industriales. Domina el ciclo completo del dato, desde la automatización de flotas hasta el mantenimiento predictivo, respaldado por nuestra experiencia en CAP y AngloAmerican.",
     category: "especializacion",
     categoryLabel: "ESPECIALIZACIÓN",
     badgeLabel: "ESPECIALIZACIÓN",
     badgeColor: "#B45309",
     techStack: ["Excel", "Power BI", "SQL", "Python"],
-    durationHours: 144,
+    durationHours: 48,
     modality: "online",
     level: "básico a avanzado",
     imageUrl:
@@ -228,7 +228,7 @@ export const courses: Course[] = [
       "Control de Datos Nativos: Conexión mediante SQL a servidores de la mina (PI System, SCADA)",
       "Mantenimiento Predictivo: Uso de Python (Pandas, Plotly) para modelar vida útil de activos",
       "Optimización de Tiempos: Reduce consolidación de reportes de faena de horas a minutos",
-      "Integración de IA: Inteligencia Artificial en cada nivel para generar scripts y resolver cruces complejos",
+      "Integración de IA: Inteligencia Artificial en cada nivel",
     ],
     syllabus: [
       {
@@ -239,7 +239,7 @@ export const courses: Course[] = [
           "Python: Automatización de logs de sensores con Pandas",
           "Integración IA: Consultas en lenguaje natural de faena"
         ],
-        hours: 48,
+        hours: 16,
       },
       {
         module: "Nivel II: Análisis de Faena",
@@ -249,7 +249,7 @@ export const courses: Course[] = [
           "Python: Análisis de tendencias y visualizaciones industriales",
           "Integración IA: Medidas DAX complejas asistidas"
         ],
-        hours: 48,
+        hours: 16,
       },
       {
         module: "Nivel III: Predictividad y Servidores",
@@ -259,13 +259,13 @@ export const courses: Course[] = [
           "Python: Modelos predictivos de fallos y dashboards interactivos",
           "Integración IA: Procesos ETL predictivos"
         ],
-        hours: 48,
+        hours: 16,
       },
     ],
     levels: [
-      { name: "Básico", price: 498000, durationHours: 48, whatYouLearn: ["Fundamentos de Power BI, SQL y Python", "Automatización de reportes de turnos", "Consultas a bases de la mina", "IA generativa para scripts básicos"] },
-      { name: "Intermedio", price: 498000, durationHours: 48, whatYouLearn: ["Consolidado MINA - PLANTA - RRHH", "DAX avanzado y relaciones de área", "Joins avanzados y vistas de reporte", "Matplotlib y Seaborn industrial"] },
-      { name: "Avanzado", price: 498000, durationHours: 48, whatYouLearn: ["Mantenimiento predictivo con Python", "Seguridad RLS por jefe de área", "Stored Procedures para Data Warehouse", "Dashboards interactivos con Plotly"] },
+      { name: "Básico", price: 498000, durationHours: 16, whatYouLearn: ["Fundamentos de Power BI, SQL y Python", "Automatización de reportes de turnos", "Consultas a bases de la mina", "IA generativa para scripts básicos"] },
+      { name: "Intermedio", price: 498000, durationHours: 16, whatYouLearn: ["Consolidado MINA - PLANTA - RRHH", "DAX avanzado y relaciones de área", "Joins avanzados y vistas de reporte", "Matplotlib y Seaborn industrial"] },
+      { name: "Avanzado", price: 498000, durationHours: 16, whatYouLearn: ["Mantenimiento predictivo con Python", "Seguridad RLS por jefe de área", "Stored Procedures para Data Warehouse", "Dashboards interactivos con Plotly"] },
     ],
   },
   {
@@ -278,7 +278,7 @@ export const courses: Course[] = [
     category: "ia",
     categoryLabel: "IA & Automatización",
     techStack: ["ChatGPT", "Copilot", "Agentes IA"],
-    durationHours: 24,
+    durationHours: 16,
     modality: "online",
     level: "intermedio",
     imageUrl:
@@ -326,7 +326,7 @@ export const courses: Course[] = [
     category: "visualizacion",
     categoryLabel: "Visualización",
     techStack: ["Power Query", "DAX", "Dashboards"],
-    durationHours: 48,
+    durationHours: 16,
     modality: "online",
     level: "principiante",
     imageUrl:
@@ -392,7 +392,7 @@ export const courses: Course[] = [
     category: "programacion",
     categoryLabel: "Programación",
     techStack: ["Python", "Pandas", "Matplotlib"],
-    durationHours: 48,
+    durationHours: 16,
     modality: "online",
     level: "principiante",
     imageUrl:
@@ -457,7 +457,7 @@ export const courses: Course[] = [
     category: "gestion",
     categoryLabel: "Gestión",
     techStack: ["T-SQL", "SSMS", "Stored Procedures"],
-    durationHours: 48,
+    durationHours: 16,
     modality: "online",
     level: "principiante",
     imageUrl:
@@ -522,7 +522,7 @@ export const courses: Course[] = [
     category: "fundamental",
     categoryLabel: "Fundamental",
     techStack: ["Excel", "Power Query", "VBA"],
-    durationHours: 36,
+    durationHours: 16,
     modality: "online",
     level: "principiante",
     imageUrl:
@@ -580,7 +580,7 @@ export const courses: Course[] = [
     slug: "analitica-financiera",
     title: "Analítica Financiera",
     shortDescription:
-      "Automatización de reportes contables, análisis de riesgo y dashboards de inversión. Ideal para banca.",
+      "Automatización de reportes contables, análisis de riesgo y dashboards de inversión.",
     description:
       "Programa especializado para el sector financiero. Automatiza reportes contables, analiza riesgo con Python y crea dashboards de inversión con Power BI.",
     category: "especializacion",
@@ -588,7 +588,7 @@ export const courses: Course[] = [
     badgeLabel: "Especialización",
     badgeColor: "#10B981",
     techStack: ["Excel", "SQL", "Power BI", "Python"],
-    durationHours: 144,
+    durationHours: 48,
     modality: "online",
     level: "básico a avanzado",
     imageUrl:
@@ -613,7 +613,7 @@ export const courses: Course[] = [
           "Python: Fundamentos de análisis de portafolios y Pandas inicial",
           "Integración IA: Consultas de balances en lenguaje natural"
         ],
-        hours: 48,
+        hours: 16,
       },
       {
         module: "Nivel II: Intermedio (Modelado e Inversiones)",
@@ -623,7 +623,7 @@ export const courses: Course[] = [
           "Python: Visualización de tendencias e índices financieros",
           "Integración IA: Conciliación automática de múltiples fuentes bancarias"
         ],
-        hours: 48,
+        hours: 16,
       },
       {
         module: "Nivel III: Avanzado (Predictividad de Riesgos)",
@@ -633,13 +633,13 @@ export const courses: Course[] = [
           "Python: Análisis predictivo de portafolios y dashboards Plotly",
           "Integración IA: Flujos ETL predictivos para proyecciones"
         ],
-        hours: 48,
+        hours: 16,
       },
     ],
     levels: [
-      { name: "Básico", price: 498000, originalPrice: 420000, durationHours: 48, whatYouLearn: ["Power Query contable y Dashboards iniciales", "Filtros temporales y cruces JOIN en SQL", "Carga de datos y manipulación con Pandas", "IA para consultas de balances"] },
-      { name: "Intermedio", price: 498000, originalPrice: 420000, durationHours: 48, whatYouLearn: ["DAX intermedio para rentabilidad y ROI", "Resúmenes agregados y auditorías con SQL", "Gráficos de rendimientos con Matplotlib/Seaborn", "IA para conciliación bancaria"] },
-      { name: "Avanzado", price: 498000, originalPrice: 420000, durationHours: 48, whatYouLearn: ["Inteligencia de tiempo y seguridad RLS", "Stored Procedures para reporteo diario", "Modelos predictivos y dashboards interactivos", "IA para proyecciones presupuestarias"] },
+      { name: "Básico", price: 498000, originalPrice: 420000, durationHours: 16, whatYouLearn: ["Power Query contable y Dashboards iniciales", "Filtros temporales y cruces JOIN en SQL", "Carga de datos y manipulación con Pandas", "IA para consultas de balances"] },
+      { name: "Intermedio", price: 498000, originalPrice: 420000, durationHours: 16, whatYouLearn: ["DAX intermedio para rentabilidad y ROI", "Resúmenes agregados y auditorías con SQL", "Gráficos de rendimientos con Matplotlib/Seaborn", "IA para conciliación bancaria"] },
+      { name: "Avanzado", price: 498000, originalPrice: 420000, durationHours: 16, whatYouLearn: ["Inteligencia de tiempo y seguridad RLS", "Stored Procedures para reporteo diario", "Modelos predictivos y dashboards interactivos", "IA para proyecciones presupuestarias"] },
     ],
   },
   {
@@ -652,7 +652,7 @@ export const courses: Course[] = [
     category: "ia",
     categoryLabel: "IA Avanzada",
     techStack: ["Python", "Scikit-learn", "TensorFlow"],
-    durationHours: 48,
+    durationHours: 16,
     modality: "online",
     level: "avanzado",
     imageUrl:

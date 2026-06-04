@@ -29,7 +29,7 @@ export default function MiningSyllabus() {
             Especialización en <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-amber-800">Datos para la Minería</span>
           </h2>
           <p className="text-base md:text-xl text-stone-600 max-w-4xl mx-auto font-light leading-relaxed">
-            Un trayecto formativo de 144 horas divididas en 3 niveles, combinando el poder de <strong>Power BI, SQL Server y Python</strong> para optimizar procesos y predecir fallas en la operación minera.
+            Un trayecto formativo de 48 horas divididas en 3 niveles, combinando el poder de <strong>Power BI, SQL Server y Python</strong> para optimizar procesos y predecir fallas en la operación minera.
           </p>
         </div>
 
@@ -41,7 +41,7 @@ export default function MiningSyllabus() {
                     <Target className="w-6 h-6 text-amber-700" /> Dirigido a:
                 </h3>
                 <p className="text-base text-stone-600 leading-relaxed relative z-10">
-                    Especialización técnica de 144h para profesionales mineros e industriales. Domina el ciclo completo del dato, desde la automatización de flotas hasta el mantenimiento predictivo.
+                    Especialización técnica de 48h para profesionales mineros e industriales. Domina el ciclo completo del dato, desde la automatización de flotas hasta el mantenimiento predictivo.
                 </p>
                 <div className="mt-8 pt-8 border-t border-stone-100">
                     <p className="text-xs text-amber-800 flex items-center gap-3 bg-amber-50/50 p-4 rounded-2xl border border-amber-100/50">
@@ -76,7 +76,7 @@ export default function MiningSyllabus() {
             </div>
         </div>
         
-        {/* NAVEGACIÓN DE PESTAÑAS (3 Niveles de 48h) */}
+        {/* NAVEGACIÓN DE PESTAÑAS (3 Niveles de 16h) */}
         <div className="flex justify-center mb-16">
           <div className="inline-flex flex-wrap lg:flex-nowrap bg-stone-200/50 p-2 rounded-[2rem] border border-stone-200 shadow-sm backdrop-blur-md w-full max-w-4xl justify-center gap-2">
             
@@ -88,7 +88,7 @@ export default function MiningSyllabus() {
               }`}
             >
               <span className="text-lg">Nivel I: Básico</span>
-              <span className="text-[10px] uppercase tracking-widest mt-1 opacity-60">Fundamentos Operativos (48h)</span>
+              <span className="text-[10px] uppercase tracking-widest mt-1 opacity-60">Fundamentos Operativos (16h)</span>
             </button>
 
             {/* Tab 2: Nivel II */}
@@ -99,7 +99,7 @@ export default function MiningSyllabus() {
                }`}
             >
               <span className="text-lg">Nivel II: Intermedio</span>
-              <span className="text-[10px] uppercase tracking-widest mt-1 opacity-60">Análisis y KPIs (48h)</span>
+              <span className="text-[10px] uppercase tracking-widest mt-1 opacity-60">Análisis y KPIs (16h)</span>
             </button>
 
             {/* Tab 3: Nivel III */}
@@ -110,7 +110,7 @@ export default function MiningSyllabus() {
                }`}
             >
               <span className="text-lg">Nivel III: Avanzado</span>
-              <span className="text-[10px] uppercase tracking-widest mt-1 opacity-60">Predictividad (48h)</span>
+              <span className="text-[10px] uppercase tracking-widest mt-1 opacity-60">Predictividad (16h)</span>
             </button>
           </div>
         </div>

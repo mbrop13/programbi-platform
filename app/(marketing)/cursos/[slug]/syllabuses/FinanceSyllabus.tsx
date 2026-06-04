@@ -29,7 +29,7 @@ export default function FinanceSyllabus() {
             Análisis de Datos para el <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-800">Sector Financiero</span>
           </h2>
           <p className="text-base md:text-xl text-slate-600 max-w-4xl mx-auto font-light leading-relaxed">
-            Un trayecto formativo de 144 horas divididas en 3 niveles, combinando el poder de <strong>Power BI, SQL Server y Python</strong> para optimizar reportes, pronósticos y controles.
+            Un trayecto formativo de 48 horas divididas en 3 niveles, combinando el poder de <strong>Power BI, SQL Server y Python</strong> para optimizar reportes, pronósticos y controles.
           </p>
         </div>
 
@@ -73,7 +73,7 @@ export default function FinanceSyllabus() {
             </div>
         </div>
 
-        {/* NAVEGACIÓN DE PESTAÑAS (3 Niveles de 48h) */}
+        {/* NAVEGACIÓN DE PESTAÑAS (3 Niveles de 16h) */}
         <div className="flex justify-center mb-16">
           <div className="inline-flex flex-wrap lg:flex-nowrap bg-slate-100/80 p-1.5 rounded-[2rem] border border-slate-200 shadow-inner backdrop-blur-md w-full max-w-4xl justify-center gap-2">
             
@@ -84,7 +84,7 @@ export default function FinanceSyllabus() {
                 activeTab === "nivel1" ? "bg-white text-blue-700 shadow-xl scale-[1.02]" : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
               }`}
             >
-              <span className="uppercase tracking-tighter text-[10px] opacity-70">48 Horas de Especialización</span>
+              <span className="uppercase tracking-tighter text-[10px] opacity-70">16 Horas de Especialización</span>
               <span className="text-base">Nivel I: Básico</span>
               <span className="text-[11px] font-medium opacity-60">Fundamentos Contables</span>
             </button>
@@ -96,7 +96,7 @@ export default function FinanceSyllabus() {
                  activeTab === "nivel2" ? "bg-white text-blue-700 shadow-xl scale-[1.02]" : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
                }`}
             >
-              <span className="uppercase tracking-tighter text-[10px] opacity-70">48 Horas de Especialización</span>
+              <span className="uppercase tracking-tighter text-[10px] opacity-70">16 Horas de Especialización</span>
               <span className="text-base">Nivel II: Intermedio</span>
               <span className="text-[11px] font-medium opacity-60">Modelado e Inversiones</span>
             </button>
@@ -108,7 +108,7 @@ export default function FinanceSyllabus() {
                  activeTab === "nivel3" ? "bg-white text-blue-700 shadow-xl scale-[1.02]" : "text-slate-500 hover:text-slate-900 hover:bg-white/50"
                }`}
             >
-              <span className="uppercase tracking-tighter text-[10px] opacity-70">48 Horas de Especialización</span>
+              <span className="uppercase tracking-tighter text-[10px] opacity-70">16 Horas de Especialización</span>
               <span className="text-base">Nivel III: Avanzado</span>
               <span className="text-[11px] font-medium opacity-60">Predictividad de Riesgos</span>
             </button>

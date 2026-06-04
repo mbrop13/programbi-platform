@@ -29,7 +29,7 @@ export default function DataAnalyticsSyllabus() {
             Especialización en <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-700 to-slate-900">Análisis de Datos</span>
           </h2>
           <p className="text-base md:text-xl text-slate-600 max-w-4xl mx-auto font-light leading-relaxed">
-            Un trayecto formativo de 144 horas divididas en 3 niveles, combinando el poder de <strong>Power BI, SQL Server y Python</strong> con integración transversal de Inteligencia Artificial.
+            Un trayecto formativo de 48 horas, combinando el poder de <strong>Power BI, SQL Server y Python</strong> con integración transversal de Inteligencia Artificial.
           </p>
         </div>
 

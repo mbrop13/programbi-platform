@@ -44,7 +44,7 @@ const COURSE_CARDS: Record<string, {
   "analisis-de-datos": {
     slug: "analisis-de-datos", title: "Análisis de Datos",
     shortDesc: "Programa integral: SQL + Power BI + Python",
-    techStack: ["SQL", "Power BI", "Python"], hours: 144, color: "#1890FF",
+    techStack: ["SQL", "Power BI", "Python"], hours: 48, color: "#1890FF",
     imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=400&auto=format&fit=crop",
   },
   "power-bi": {
@@ -127,7 +127,7 @@ const CONVERSATION_ID_KEY = "programbi_conversation_id";
 
 const WELCOME_MESSAGE = `¡Hola! 👋 Soy **Programbi**, tu asistente virtual.
 
-🔥 ¡Estamos en **CYBER DAY**! Disfruta de hasta **60% de descuento** en todos nuestros cursos de datos. Ofertas válidas hasta el 3 de junio a las 23:59 hrs. ⚡
+🔥 ¡Estamos en **CYBER DAY**! Disfruta de hasta **60% de descuento** en todos nuestros cursos de datos. Ofertas válidas hasta el domingo 7 de junio a las 12:00 PM. ⚡
 
 ¿En qué te puedo ayudar hoy?`;
 
@@ -441,7 +441,7 @@ function ChatWidgetInner() {
 
   useEffect(() => {
     const calculateTimeLeft = () => {
-      const difference = +new Date("2026-06-03T23:59:59") - +new Date();
+      const difference = +new Date("2026-06-07T12:00:00") - +new Date();
       if (difference <= 0) return "Terminó";
       
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));

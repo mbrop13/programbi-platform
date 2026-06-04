@@ -103,7 +103,7 @@ export default function ContactSection() {
                 Domina los Datos,<br />Lidera el Futuro
               </h2>
               <p className="text-lg lg:text-xl text-gray-500 mt-6 leading-relaxed">
-                La única certificación que integra <strong>SQL, Power BI y Python</strong> en 144 horas
+                La única certificación que integra <strong>SQL, Power BI y Python</strong> en 48 horas
                 de práctica intensiva. De principiante a experto en datos.
               </p>
             </FadeIn>

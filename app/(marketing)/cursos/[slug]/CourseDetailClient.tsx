@@ -303,9 +303,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 ★ INCLUYE POWER BI + PYTHON + SQL SERVER EN UN SOLO PROGRAMA
               </p>
             )}
-            <p className="text-slate-600 text-base leading-relaxed">
-              {course.description}
-            </p>
           </div>
 
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-16 items-start">
@@ -459,11 +456,31 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                     </AnimatePresence>
                   </div>
                 </FadeIn>
+
+                {/* Secondary actions below schedules dropdown */}
+                <FadeIn delay={0.35} className="w-full">
+                  <div className="flex gap-3">
+                    <Link
+                      href="#temario"
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-3 rounded-xl font-bold text-xs no-underline transition-all bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 shadow-sm"
+                    >
+                      <BookOpen className="w-4 h-4" /> Ver Temario
+                    </Link>
+                    <a
+                      href="https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-3 rounded-xl font-bold text-xs no-underline transition-all bg-white hover:bg-slate-50 text-slate-600 border border-slate-200/80 shadow-sm"
+                    >
+                      <FileText className="w-4 h-4 text-red-500" /> Folleto PDF
+                    </a>
+                  </div>
+                </FadeIn>
               </div>
             </div>
 
             {/* Right Column: Course Image & Preview Card */}
-            <div className="lg:col-span-5 w-full flex flex-col lg:pt-2 order-first lg:order-last">
+            <div className="lg:col-span-5 w-full max-w-md mx-auto lg:max-w-none flex flex-col lg:pt-2 order-first lg:order-last">
               <FadeIn delay={0.2}>
                 <div className="relative group transition-all duration-500 w-full">
                   {/* Glowing backdrop border matching the template blue color */}
@@ -475,21 +492,15 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                   {/* Unified Premium Card Container (slightly less rounded: rounded-2xl) */}
                   <div className="relative bg-white rounded-2xl overflow-hidden border border-slate-200/80 shadow-xl">
                     
-                    {/* Top: Image with Play Video Overlay */}
+                    {/* Top: Image */}
                     <div 
-                      className="relative w-full aspect-[16/9] bg-slate-900 overflow-hidden cursor-pointer group/img"
+                      className="relative w-full aspect-[16/9] bg-slate-900 overflow-hidden"
                     >
                       <img 
                         src={course.imageUrl} 
                         alt={course.title} 
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover/img:scale-105 opacity-90 group-hover/img:opacity-80" 
+                        className="w-full h-full object-cover opacity-95" 
                       />
-                      {/* Play Button Overlay */}
-                      <div className="absolute inset-0 flex items-center justify-center bg-slate-950/20 group-hover/img:bg-slate-950/40 transition-colors">
-                        <div className="w-14 h-14 rounded-full bg-white/95 flex items-center justify-center shadow-lg transition-transform duration-300 group-hover/img:scale-110">
-                          <Play className="w-5 h-5 ml-0.5 text-slate-900 fill-slate-900" />
-                        </div>
-                      </div>
                     </div>
 
                     {/* Bottom: Card Body (Prices, Action Buttons & Benefits) */}
@@ -576,26 +587,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                             </div>
                           ))}
                         </div>
-                      </div>
-
-                      <hr className="border-slate-100 my-0" />
-
-                      {/* Secondary actions inside the card */}
-                      <div className="flex gap-2">
-                        <Link
-                          href="#temario"
-                          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl font-bold text-[10px] no-underline transition-all bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/50 shadow-sm"
-                        >
-                          <BookOpen className="w-3.5 h-3.5" /> Ver Temario
-                        </Link>
-                        <a
-                          href="https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl font-bold text-[10px] no-underline transition-all bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 shadow-sm"
-                        >
-                          <FileText className="w-3.5 h-3.5 text-red-500" /> Folleto PDF
-                        </a>
                       </div>
 
                     </div>
