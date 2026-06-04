@@ -34,40 +34,40 @@ export default function ExcelSyllabus() {
         </div>
 
         {/* TABS - Segmented Control */}
-        <div className="flex justify-center mb-14">
-          <div className="inline-flex flex-col sm:flex-row bg-gray-50/80 p-1.5 rounded-2xl sm:rounded-full border border-gray-200/60 shadow-sm backdrop-blur-md w-full sm:w-auto relative">
+        <div className="flex justify-center mb-12 sm:mb-16 max-w-full">
+          <div className="inline-flex bg-gray-50/80 p-1 rounded-full border border-gray-200/60 shadow-sm backdrop-blur-md w-full max-w-4xl overflow-x-auto scrollbar-hide flex-nowrap gap-1 sm:p-1.5 sm:gap-2 sm:w-auto">
             
             {/* Tab 1 */}
             <button
               onClick={() => setActiveTab("nivel1")}
-              className={`relative px-8 py-3 rounded-xl sm:rounded-full text-sm font-semibold transition-all duration-300 w-full sm:w-auto flex flex-col items-center ${
+              className={`relative px-4 py-2.5 sm:px-8 sm:py-3.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 flex-1 min-w-[130px] sm:min-w-[160px] flex flex-col items-center border-none cursor-pointer outline-none shrink-0 ${
                 activeTab === "nivel1" ? "bg-white text-green-700 shadow-[0_2px_10px_rgba(0,0,0,0.06)]" : "text-gray-500 hover:text-gray-800 hover:bg-gray-100/50"
               }`}
             >
-              <span>Nivel I: Básico</span>
-              <span className={`text-[10px] uppercase tracking-wider mt-0.5 ${activeTab === "nivel1" ? "text-gray-400" : "text-gray-400"}`}>Fundamentos (16h)</span>
+              <span className="whitespace-nowrap">Nivel I: Básico</span>
+              <span className="text-[8px] sm:text-[10px] uppercase tracking-wider mt-0.5 sm:mt-1 opacity-60 whitespace-nowrap">Fundamentos (16h)</span>
             </button>
 
             {/* Tab 2 */}
             <button
                onClick={() => setActiveTab("nivel2")}
-               className={`relative px-8 py-3 rounded-xl sm:rounded-full text-sm font-semibold transition-all duration-300 w-full sm:w-auto flex flex-col items-center mt-2 sm:mt-0 sm:ml-2 ${
+               className={`relative px-4 py-2.5 sm:px-8 sm:py-3.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 flex-1 min-w-[130px] sm:min-w-[160px] flex flex-col items-center border-none cursor-pointer outline-none shrink-0 ${
                  activeTab === "nivel2" ? "bg-white text-green-700 shadow-[0_2px_10px_rgba(0,0,0,0.06)]" : "text-gray-500 hover:text-gray-800 hover:bg-gray-100/50"
                }`}
             >
-              <span>Nivel II: Intermedio</span>
-              <span className={`text-[10px] uppercase tracking-wider mt-0.5 ${activeTab === "nivel2" ? "text-gray-400" : "text-gray-400"}`}>Análisis & Tablas (16h)</span>
+              <span className="whitespace-nowrap">Nivel II: Intermedio</span>
+              <span className="text-[8px] sm:text-[10px] uppercase tracking-wider mt-0.5 sm:mt-1 opacity-60 whitespace-nowrap">Análisis & Tablas (16h)</span>
             </button>
 
             {/* Tab 3 */}
             <button
                onClick={() => setActiveTab("nivel3")}
-               className={`relative px-8 py-3 rounded-xl sm:rounded-full text-sm font-semibold transition-all duration-300 w-full sm:w-auto flex flex-col items-center mt-2 sm:mt-0 sm:ml-2 ${
+               className={`relative px-4 py-2.5 sm:px-8 sm:py-3.5 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 flex-1 min-w-[130px] sm:min-w-[160px] flex flex-col items-center border-none cursor-pointer outline-none shrink-0 ${
                  activeTab === "nivel3" ? "bg-white text-green-700 shadow-[0_2px_10px_rgba(0,0,0,0.06)]" : "text-gray-500 hover:text-gray-800 hover:bg-gray-100/50"
                }`}
             >
-              <span>Nivel III: Avanzado</span>
-              <span className={`text-[10px] uppercase tracking-wider mt-0.5 ${activeTab === "nivel3" ? "text-gray-400" : "text-gray-400"}`}>Macros & PQ (16h)</span>
+              <span className="whitespace-nowrap">Nivel III: Avanzado</span>
+              <span className="text-[8px] sm:text-[10px] uppercase tracking-wider mt-0.5 sm:mt-1 opacity-60 whitespace-nowrap">Macros & PQ (16h)</span>
             </button>
           </div>
         </div>
@@ -81,7 +81,7 @@ export default function ExcelSyllabus() {
               
               {/* Tarjetas Informativas */}
               <div className="grid md:grid-cols-5 gap-6 mb-10">
-                <div className="md:col-span-2 bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] relative overflow-hidden group hover:border-green-100 transition-colors">
+                <div className="md:col-span-2 bg-white p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] relative overflow-hidden group hover:border-green-100 transition-colors">
                   <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gray-50 rounded-full blur-2xl group-hover:bg-green-50/50 transition-colors pointer-events-none" />
                   <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
                     <Target className="w-5 h-5 text-green-700" /> Dirigido a:
@@ -91,7 +91,7 @@ export default function ExcelSyllabus() {
                   </p>
                 </div>
 
-                <div className="md:col-span-3 bg-gradient-to-br from-green-50/40 to-white p-6 md:p-8 rounded-[2rem] border border-green-100/50 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)]">
+                <div className="md:col-span-3 bg-gradient-to-br from-green-50/40 to-white p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-green-100/50 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)]">
                   <h3 className="text-lg font-bold text-green-700 mb-5 flex items-center gap-2">
                     <Trophy className="w-5 h-5" /> Beneficios Principales:
                   </h3>
@@ -153,7 +153,7 @@ export default function ExcelSyllabus() {
           {activeTab === "nivel2" && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="grid md:grid-cols-5 gap-6 mb-10">
-                <div className="md:col-span-2 bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] relative overflow-hidden group hover:border-purple-100 transition-colors">
+                <div className="md:col-span-2 bg-white p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] relative overflow-hidden group hover:border-purple-100 transition-colors">
                   <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gray-50 rounded-full blur-2xl group-hover:bg-purple-50/50 transition-colors pointer-events-none" />
                   <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
                     <Target className="w-5 h-5 text-purple-600" /> Dirigido a:
@@ -163,7 +163,7 @@ export default function ExcelSyllabus() {
                   </p>
                 </div>
 
-                <div className="md:col-span-3 bg-gradient-to-br from-purple-50/40 to-white p-6 md:p-8 rounded-[2rem] border border-purple-100/50 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)]">
+                <div className="md:col-span-3 bg-gradient-to-br from-purple-50/40 to-white p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-purple-100/50 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)]">
                   <h3 className="text-lg font-bold text-purple-600 mb-5 flex items-center gap-2">
                     <Trophy className="w-5 h-5" /> Beneficios Principales:
                   </h3>
@@ -224,7 +224,7 @@ export default function ExcelSyllabus() {
           {activeTab === "nivel3" && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                <div className="grid md:grid-cols-5 gap-6 mb-10">
-                <div className="md:col-span-2 bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] relative overflow-hidden group hover:border-orange-100 transition-colors">
+                <div className="md:col-span-2 bg-white p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] relative overflow-hidden group hover:border-orange-100 transition-colors">
                   <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gray-50 rounded-full blur-2xl group-hover:bg-orange-50/50 transition-colors pointer-events-none" />
                   <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
                     <Target className="w-5 h-5 text-orange-600" /> Dirigido a:
@@ -234,7 +234,7 @@ export default function ExcelSyllabus() {
                   </p>
                 </div>
 
-                <div className="md:col-span-3 bg-gradient-to-br from-orange-50/40 to-white p-6 md:p-8 rounded-[2rem] border border-orange-100/50 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)]">
+                <div className="md:col-span-3 bg-gradient-to-br from-orange-50/40 to-white p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-orange-100/50 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.02)]">
                   <h3 className="text-lg font-bold text-orange-600 mb-5 flex items-center gap-2">
                     <Trophy className="w-5 h-5" /> Beneficios Principales:
                   </h3>

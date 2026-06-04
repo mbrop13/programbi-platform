@@ -376,17 +376,17 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                     <button
                       type="button"
                       onClick={() => setIsScheduleDropdownOpen(!isScheduleDropdownOpen)}
-                      className="w-full flex items-center justify-between p-4 bg-white border border-slate-200/80 rounded-2xl text-left text-sm font-bold hover:border-slate-300 transition-colors shadow-sm cursor-pointer outline-none"
+                      className="w-full flex items-center justify-between p-2.5 sm:p-4 bg-white border border-slate-200/80 rounded-2xl text-left text-[11px] sm:text-sm font-bold hover:border-slate-300 transition-colors shadow-sm cursor-pointer outline-none"
                     >
-                      <div className="flex items-center gap-3">
-                        <Calendar className="w-5 h-5 text-[#1890FF]" />
-                        <div className="min-w-0">
+                      <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                        <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#1890FF] flex-shrink-0" />
+                        <div className="min-w-0 flex-1">
                           {levelSchedule ? (
                             <>
-                              <span className="text-slate-800 block text-xs font-extrabold">
+                              <span className="text-slate-800 block text-[10px] sm:text-xs font-black truncate">
                                 Clases en vivo vía Zoom
                               </span>
-                              <span className="text-slate-500 text-[11px] font-semibold block truncate mt-0.5">
+                              <span className="text-slate-500 text-[9px] sm:text-[11px] font-semibold block mt-0.5 whitespace-normal">
                                 Inicia: {(() => {
                                   const conv = convertSchedule(levelSchedule.start_date, levelSchedule.schedule_time, levelSchedule.schedule_days, scheduleCountry.timeZone);
                                   return conv.dateFormatted.charAt(0).toUpperCase() + conv.dateFormatted.slice(1);
@@ -399,13 +399,13 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                               </span>
                             </>
                           ) : (
-                            <span className="text-slate-600 block text-xs font-semibold">
+                            <span className="text-slate-650 block text-[10px] sm:text-xs font-semibold truncate">
                               Fechas de clases en vivo por confirmar
                             </span>
                           )}
                         </div>
                       </div>
-                      <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${isScheduleDropdownOpen ? 'rotate-180' : ''}`} />
+                      <ChevronDown className={`w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 flex-shrink-0 transition-transform duration-200 ${isScheduleDropdownOpen ? 'rotate-180' : ''}`} />
                     </button>
 
                     <AnimatePresence>
@@ -430,21 +430,21 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                                       setSelectedScheduleIndex(idx);
                                       setIsScheduleDropdownOpen(false);
                                     }}
-                                    className={`w-full p-3 text-left hover:bg-slate-50 transition-colors flex items-start gap-3 rounded-xl border-none bg-transparent cursor-pointer ${
+                                    className={`w-full p-2.5 sm:p-3 text-left hover:bg-slate-50 transition-colors flex items-start gap-2.5 sm:gap-3 rounded-xl border-none bg-transparent cursor-pointer ${
                                       selectedScheduleIndex === idx ? "bg-slate-50" : ""
                                     }`}
                                   >
-                                    <Clock className="w-4 h-4 mt-0.5 text-[#1890FF]" />
+                                    <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 mt-0.5 text-[#1890FF] flex-shrink-0" />
                                     <div className="flex-1 min-w-0">
-                                      <p className="text-xs font-bold text-slate-800">
+                                      <p className="text-[10px] sm:text-xs font-bold text-slate-800">
                                         Inicia: {conv.dateFormatted.charAt(0).toUpperCase() + conv.dateFormatted.slice(1)}
                                       </p>
-                                      <p className="text-[10px] text-slate-500 mt-0.5">
+                                      <p className="text-[9px] sm:text-[10px] text-slate-500 mt-0.5">
                                         {conv.days} · {conv.time} ({scheduleCountry.name})
                                       </p>
                                     </div>
                                     {selectedScheduleIndex === idx && (
-                                      <Check className="w-4 h-4 text-emerald-500 ml-auto flex-shrink-0" />
+                                      <Check className="w-3.5 h-3.5 text-emerald-500 ml-auto flex-shrink-0" />
                                     )}
                                   </button>
                                 );
@@ -459,20 +459,20 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
                 {/* Secondary actions below schedules dropdown */}
                 <FadeIn delay={0.35} className="w-full">
-                  <div className="flex gap-3">
+                  <div className="flex gap-2.5 sm:gap-3">
                     <Link
                       href="#temario"
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-3 rounded-xl font-bold text-xs no-underline transition-all bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 shadow-sm"
+                      className="flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-3 rounded-xl font-extrabold text-[11px] sm:text-xs no-underline transition-all bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 shadow-sm"
                     >
-                      <BookOpen className="w-4 h-4" /> Ver Temario
+                      <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1890FF] flex-shrink-0" /> Ver Temario
                     </Link>
                     <a
                       href="https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-1.5 px-3 py-3 rounded-xl font-bold text-xs no-underline transition-all bg-white hover:bg-slate-50 text-slate-600 border border-slate-200/80 shadow-sm"
+                      className="flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-3 rounded-xl font-extrabold text-[11px] sm:text-xs no-underline transition-all bg-white hover:bg-slate-50 text-slate-650 border border-slate-200/80 shadow-sm"
                     >
-                      <FileText className="w-4 h-4 text-red-500" /> Folleto PDF
+                      <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500 flex-shrink-0" /> Folleto PDF
                     </a>
                   </div>
                 </FadeIn>
@@ -504,52 +504,52 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                     </div>
 
                     {/* Bottom: Card Body (Prices, Action Buttons & Benefits) */}
-                    <div className="p-6 bg-white space-y-6">
+                    <div className="p-4 sm:p-6 bg-white space-y-4 sm:space-y-6">
                       
                       {/* Pricing block inside the card */}
                       <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">
+                        <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
                           Inversión del Curso
                         </p>
                         
                         {isLoggedIn ? (
                           <div className="flex flex-col items-start gap-1">
                             {originalGrandTotal && totalDiscountPercentage > 0 && (
-                              <div className="flex items-center gap-2 mb-0.5">
-                                <span className="text-sm font-bold text-slate-400 line-through">
+                              <div className="flex items-center gap-1.5 mb-0.5">
+                                <span className="text-xs sm:text-sm font-bold text-slate-400 line-through">
                                   {convertAndFormat(originalGrandTotal)}
                                 </span>
-                                <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                <span className="text-[8px] sm:text-[10px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full uppercase tracking-wider">
                                   {totalDiscountPercentage}% OFF
                                 </span>
                               </div>
                             )}
-                            <span className="text-3xl font-black text-slate-900 leading-none">
+                            <span className="text-2xl sm:text-3xl font-black text-slate-900 leading-none">
                               {convertAndFormat(grandTotal)}
                             </span>
-                            <p className="text-[9px] text-slate-400 mt-1 font-semibold">Precios Cyber extendido válidos hasta el domingo 7 de Junio a las 12:00 PM</p>
+                            <p className="text-[8px] sm:text-[9px] text-slate-400 mt-1 font-semibold">Precios Cyber extendido válidos hasta el domingo 7 de Junio a las 12:00 PM</p>
                           </div>
                         ) : (
                           <div 
-                            className="relative overflow-hidden rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50/50 via-white to-white p-4 cursor-pointer group mb-1 hover:border-blue-300 hover:shadow-md transition-all duration-300"
+                            className="relative overflow-hidden rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50/50 via-white to-white p-3 sm:p-4 cursor-pointer group mb-1 hover:border-blue-300 hover:shadow-md transition-all duration-300"
                             onClick={() => setShowAuthModal(true)}
                           >
-                             <div className="flex items-start gap-3">
-                               <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
-                                 <Lock className="w-4 h-4" />
+                             <div className="flex items-start gap-2.5 sm:gap-3">
+                               <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+                                 <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                                </div>
-                               <div className="text-left">
-                                 <h4 className="text-[11px] font-black text-slate-900 uppercase tracking-wider mb-0.5">
+                               <div className="text-left min-w-0 flex-1">
+                                 <h4 className="text-[10px] sm:text-[11px] font-black text-slate-900 uppercase tracking-wider mb-0.5 truncate">
                                    Precios y Becas Exclusivos
                                  </h4>
-                                 <p className="text-[10px] font-semibold text-slate-500 leading-relaxed max-w-[220px]">
+                                 <p className="text-[9px] sm:text-[10px] font-semibold text-slate-500 leading-relaxed max-w-full">
                                    Inicia sesión o regístrate gratis para ver precios Cyber Day y opciones de financiamiento.
                                  </p>
-                                 <div className="flex items-center gap-1.5 mt-2">
-                                   <span className="text-[9px] font-black text-[#1890FF] uppercase tracking-wider group-hover:underline">
+                                 <div className="flex items-center gap-1 mt-1.5">
+                                   <span className="text-[8px] sm:text-[9px] font-black text-[#1890FF] uppercase tracking-wider group-hover:underline">
                                      Crear cuenta gratis
                                    </span>
-                                   <ArrowRight className="w-3 h-3 text-[#1890FF] transition-transform group-hover:translate-x-0.5" />
+                                   <ArrowRight className="w-2.5 h-2.5 text-[#1890FF] transition-transform group-hover:translate-x-0.5" />
                                  </div>
                                </div>
                              </div>
@@ -560,20 +560,20 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       {/* Main checkout / registration CTA button */}
                       <button
                         onClick={handleCheckoutCTA}
-                        className="w-full py-4 rounded-xl text-white font-bold text-sm flex justify-center items-center gap-2 transition-all cursor-pointer border-none shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                        className="w-full py-3 sm:py-4 rounded-xl text-white font-bold text-xs sm:text-sm flex justify-center items-center gap-1.5 sm:gap-2 transition-all cursor-pointer border-none shadow-md hover:shadow-lg hover:-translate-y-0.5"
                         style={{ background: 'linear-gradient(135deg, #1890FF, #0050b3)' }}
                       >
-                        {isLoggedIn ? "Inscribirse y pagar" : "Registrarse para cotizar"} <ArrowRight className="w-4 h-4" />
+                        {isLoggedIn ? "Inscribirse y pagar" : "Registrarse para cotizar"} <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </button>
 
                       <hr className="border-slate-100 my-0" />
 
                       {/* Benefits list */}
                       <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3.5">
+                        <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2.5">
                           Este curso incluye:
                         </p>
-                        <div className="space-y-3">
+                        <div className="space-y-2.5 sm:space-y-3">
                           {[
                             { text: "Clases Online en Vivo vía Zoom", icon: "💻" },
                             { text: `${course.durationHours} Horas de formación total`, icon: "⏱️" },
@@ -581,9 +581,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                             { text: "Certificado de aprobación oficial", icon: "🎓" },
                             { text: "Proyectos prácticos con datos reales", icon: "📊" },
                           ].map((item, idx) => (
-                            <div key={idx} className="flex items-center gap-3">
-                              <span className="text-sm select-none text-slate-500">{item.icon}</span>
-                              <span className="text-xs font-bold text-slate-700">{item.text}</span>
+                            <div key={idx} className="flex items-center gap-2.5 sm:gap-3">
+                              <span className="text-xs sm:text-sm select-none text-slate-500 shrink-0">{item.icon}</span>
+                              <span className="text-[11px] sm:text-xs font-bold text-slate-700">{item.text}</span>
                             </div>
                           ))}
                         </div>
@@ -607,13 +607,13 @@ export default function CourseDetailClient({ course }: { course: Course }) {
             {/* Level Selector Pills */}
             {levels.length > 0 && (
               <FadeIn>
-                <div className="flex justify-center mb-12">
-                  <div className="inline-flex bg-gray-100 rounded-full p-1.5 gap-1">
+                <div className="flex justify-center mb-8 max-w-full">
+                  <div className="inline-flex bg-gray-100 rounded-full p-1 sm:p-1.5 gap-0.5 sm:gap-1 max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
                     {levels.map((level, idx) => (
                       <button
                         key={idx}
                         onClick={() => setSelectedLevel(idx)}
-                        className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
+                        className={`px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap shrink-0 border-none bg-transparent cursor-pointer ${
                           selectedLevel === idx
                             ? "bg-white text-gray-900 shadow-md"
                             : "text-gray-500 hover:text-gray-700"
@@ -699,13 +699,13 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
           {/* Syllabus level selector */}
           {levels.length > 0 && (
-            <div className="flex justify-center mb-10">
-              <div className="inline-flex bg-white border border-brand-blue/20 rounded-full p-1.5 gap-1 shadow-sm">
+            <div className="flex justify-center mb-8 max-w-full">
+              <div className="inline-flex bg-white border border-brand-blue/20 rounded-full p-1 sm:p-1.5 gap-0.5 sm:gap-1 shadow-sm max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
                 {levels.map((level, idx) => (
                   <button
                     key={idx}
                     onClick={() => setSelectedLevel(idx)}
-                    className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${
+                    className={`px-3.5 sm:px-6 py-1.5 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap shrink-0 border-none bg-transparent cursor-pointer ${
                       selectedLevel === idx
                         ? 'bg-brand-blue text-white shadow-md'
                         : 'text-gray-500 hover:text-gray-900 hover:bg-blue-50/50'
@@ -1599,7 +1599,7 @@ function IDETabContent({ tech, accentColor }: { tech: string; accentColor: strin
           <motion.span animate={{ opacity: [1, 0.4, 1] }} transition={{ repeat: Infinity, duration: 2 }} className="text-[9px] font-bold text-emerald-600">● Live Analytics</motion.span>
         </div>
         <div className="flex-1 p-4 lg:p-6 bg-[#F1F5F9] overflow-hidden">
-          <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-3 mb-4">
             {[
               { label: "Revenue", value: 10.5, prefix: "$", suffix: "M", change: "+12%", up: true },
               { label: "Margen", value: 37.8, prefix: "", suffix: "%", change: "+3.2pp", up: true },
@@ -1610,13 +1610,13 @@ function IDETabContent({ tech, accentColor }: { tech: string; accentColor: strin
                 initial={{ scale: 0.8, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.2, type: "spring", stiffness: 200 }}
-                className="bg-white rounded-xl p-3 border border-gray-200 shadow-sm"
+                className="bg-white rounded-xl p-1.5 sm:p-3 border border-gray-200 shadow-sm"
               >
-                <p className="text-[9px] lg:text-[10px] text-gray-400 font-bold uppercase">{kpi.label}</p>
-                <p className="text-lg lg:text-2xl font-black text-[#0F172A] whitespace-nowrap">
+                <p className="text-[8px] sm:text-[10px] text-gray-400 font-bold uppercase truncate">{kpi.label}</p>
+                <p className="text-[12px] sm:text-lg lg:text-2xl font-black text-[#0F172A] whitespace-nowrap truncate">
                   {kpi.prefix}<CountUp target={kpi.value} duration={2} decimals={kpi.value % 1 !== 0 ? 1 : 0} />{kpi.suffix}
                 </p>
-                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 + i * 0.1 }} className={`text-[10px] font-bold ${kpi.up ? "text-emerald-500" : "text-red-500"}`}>▲ {kpi.change}</motion.p>
+                <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 + i * 0.1 }} className={`text-[8px] sm:text-[10px] font-bold ${kpi.up ? "text-emerald-500" : "text-red-500"}`}>▲ {kpi.change}</motion.p>
               </motion.div>
             ))}
           </div>
