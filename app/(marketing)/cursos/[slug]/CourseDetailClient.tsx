@@ -268,7 +268,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   return (
     <>
       {/* ════ HERO ════ */}
-      <section className={`relative -mt-20 lg:-mt-24 pt-28 lg:pt-32 pb-16 lg:pb-20 overflow-visible ${themeGlows.bg}`}>
+      <section className={`relative -mt-20 lg:-mt-24 pt-28 lg:pt-32 pb-16 lg:pb-20 overflow-x-hidden overflow-y-visible ${themeGlows.bg}`}>
         {/* Soft fading top/bottom overlay for premium blending */}
         <div className="absolute inset-0 z-0 pointer-events-none bg-gradient-to-b from-white/20 via-transparent to-slate-50/60" />
         
@@ -601,7 +601,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
       {/* ════ LEVEL SELECTOR + WHAT YOU LEARN + DETAILS ════ */}
       {(course.whatYouLearn?.length > 0 || levels.length > 0) && (
-        <section className="py-10 lg:py-14 bg-white">
+        <section className="py-10 lg:py-14 bg-white overflow-hidden">
           <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
 
             {/* Level Selector Pills */}
@@ -801,7 +801,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       </div>
 
       {/* ════ INSTRUCTOR ════ */}
-      <section className="py-16 lg:py-20 bg-white border-t border-gray-100">
+      <section className="py-16 lg:py-20 bg-white border-t border-gray-100 overflow-hidden">
         <div className="max-w-[1000px] mx-auto px-5 lg:px-10">
           <FadeIn>
             <div className="flex flex-col md:flex-row gap-8 items-center md:items-start bg-[#F8FAFC] rounded-[2rem] p-8 lg:p-12 border border-gray-100 shadow-sm">
@@ -976,7 +976,7 @@ function CourseContactForm({ course }: { course: Course }) {
   const isPersonal = contactType === "personal";
 
   return (
-    <section className="py-16 lg:py-24 bg-[#F8FAFC]">
+    <section className="py-16 lg:py-24 bg-[#F8FAFC] overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Left: Info */}
