@@ -695,26 +695,7 @@ function ModernDataVisual() {
 
 /* ─── MAIN HERO ─── */
 export default function HeroSection() {
-  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
-  useEffect(() => {
-    const calculate = () => {
-      const difference = +new Date("2026-06-08T00:00:00") - +new Date();
-      if (difference <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
-      return {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    };
-
-    setTimeLeft(calculate());
-    const timer = setInterval(() => {
-      setTimeLeft(calculate());
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   return (
     <section className="relative overflow-hidden pt-3 pb-2 lg:pt-6 lg:pb-4">
@@ -741,22 +722,22 @@ export default function HeroSection() {
           <div className="lg:col-span-7 text-center lg:text-left">
             {/* Pill Badge */}
             <FadeIn delay={0}>
-              <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-red-50 border border-red-150 text-red-650 font-black mb-6 animate-pulse">
+              <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-blue-50 border border-blue-100 text-[#1890FF] text-xs sm:text-sm font-bold mb-6">
                 <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-600" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-[#1890FF]" />
                 </span>
-                <span>⚡ ¡CYBER EXTENDIDO HASTA EL DOMINGO 7! — HASTA 60% DCTO ⚡</span>
+                <span>Clases en vivo online y presencial</span>
               </div>
             </FadeIn>
 
             {/* Main Title */}
             <FadeIn delay={0.15}>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 tracking-tight leading-tight lg:leading-[1.1] mb-6 font-display">
-                Impulsa tu carrera <br className="hidden lg:block" />
-                con las ofertas de{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-orange-500 to-yellow-500 animate-pulse">
-                  Cyber Extendido ⚡
+                Aprende Análisis de <br className="hidden lg:block" />
+                Datos con{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
+                  Expertos
                 </span>
               </h1>
             </FadeIn>
@@ -764,65 +745,29 @@ export default function HeroSection() {
             {/* Subtitle */}
             <FadeIn delay={0.3}>
               <p className="text-lg lg:text-2xl text-gray-500 mb-8 font-light leading-relaxed max-w-2xl mx-auto lg:mx-0 font-sans">
-                Ahorra hasta un <strong className="text-[#1890FF] font-black">60%</strong> en nuestros cursos en vivo de Análisis de Datos, Power BI, Python y SQL. Asegura tu cupo con matrícula gratis.
+                Capacitaciones diseñadas para profesionales que buscan potenciar su carrera con <strong className="text-gray-900 font-semibold">Power BI, Python, SQL, Excel y Big Data</strong>.
               </p>
             </FadeIn>
 
-            {/* Countdown timer */}
-            <FadeIn delay={0.38}>
-              <div className="bg-white/95 border-2 border-red-500/20 rounded-3xl p-6 mb-8 max-w-xl mx-auto lg:mx-0 shadow-[0_20px_50px_rgba(239,68,68,0.12)] relative overflow-hidden backdrop-blur-md text-left">
-                {/* Cyber decoration pattern */}
-                <div className="absolute top-0 right-0 w-24 h-24 bg-red-500/5 rounded-full blur-xl pointer-events-none" />
-                <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#1890FF]/5 rounded-full blur-xl pointer-events-none" />
 
-                <div className="flex items-center justify-between mb-4 relative z-10">
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-2.5 w-2.5 relative">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-650" />
-                    </span>
-                    <p className="text-[11px] font-black text-red-655 tracking-wider uppercase font-sans">El Cyber extendido finaliza en:</p>
-                  </div>
-                  <span className="text-[9px] font-black text-red-600 bg-red-50 border border-red-100 px-2.5 py-0.75 rounded-full uppercase tracking-wider font-mono">CUPOS LIMITADOS</span>
-                </div>
-
-                <div className="grid grid-cols-4 gap-3 text-center relative z-10">
-                  {[
-                    { label: "Días", val: timeLeft.days },
-                    { label: "Horas", val: timeLeft.hours },
-                    { label: "Minutos", val: timeLeft.minutes },
-                    { label: "Segundos", val: timeLeft.seconds },
-                  ].map((t) => (
-                    <div key={t.label} className="bg-gradient-to-b from-white to-slate-50 border border-slate-100 shadow-sm rounded-2xl py-3 px-1">
-                      <span className="text-3xl sm:text-4xl font-black text-slate-900 block mb-0.5 leading-none font-mono">
-                        {String(t.val).padStart(2, "0")}
-                      </span>
-                      <span className="text-[9px] font-bold text-slate-450 uppercase tracking-widest block font-sans">
-                        {t.label}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </FadeIn>
 
             {/* CTAs */}
             <FadeIn delay={0.45}>
               <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
                 <Link
-                  href="/cursos"
+                  href="/cursos/analisis-de-datos"
                   className="group px-8 py-4 sm:px-10 sm:py-5 rounded-xl text-white font-bold text-[16px] sm:text-lg flex items-center justify-center gap-3 no-underline transition-all duration-300 hover:-translate-y-1 shadow-lg"
                   style={{
-                    background: "linear-gradient(135deg, #EF4444 0%, #B91C1C 100%)",
-                    boxShadow: "0 12px 35px -8px rgba(239,68,68,0.4)",
+                    background: "linear-gradient(135deg, #1890FF 0%, #0050b3 100%)",
+                    boxShadow: "0 12px 35px -8px rgba(24,144,255,0.4)",
                   }}
                 >
-                  <span>Ver Oferta Cyber ⚡</span>
+                  <span>Cotiza Ahora</span>
                   <Briefcase className="w-5 h-5 group-hover:rotate-12 transition-transform text-white" />
                 </Link>
                 <Link
                   href="/cursos"
-                  className="px-8 py-4 sm:px-10 sm:py-5 rounded-xl bg-white text-gray-700 font-bold text-[16px] sm:text-lg border border-gray-200 hover:border-red-500 hover:text-red-500 transition-all flex items-center justify-center gap-3 no-underline hover:-translate-y-1 shadow-sm hover:shadow"
+                  className="px-8 py-4 sm:px-10 sm:py-5 rounded-xl bg-white text-gray-700 font-bold text-[16px] sm:text-lg border border-gray-200 hover:border-[#1890FF] hover:text-[#1890FF] transition-all flex items-center justify-center gap-3 no-underline hover:-translate-y-1 shadow-sm hover:shadow"
                 >
                   <span>Ver Cursos</span>
                   <ArrowRight className="w-5 h-5 text-gray-400" />
