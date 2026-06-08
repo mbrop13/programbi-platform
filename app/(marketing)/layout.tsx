@@ -1,7 +1,7 @@
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import PromoPopup from "@/components/shared/PromoPopup";
-import ChatWidget from "@/components/shared/ChatWidget";
+import WhatsAppButton from "@/components/shared/WhatsAppButton";
 
 export default function MarketingLayout({
   children,
@@ -14,7 +14,7 @@ export default function MarketingLayout({
       <main className="flex-1">{children}</main>
       <Footer />
       <PromoPopup />
-      <ChatWidget />
+      <WhatsAppButton />
     </>
   );
 }
