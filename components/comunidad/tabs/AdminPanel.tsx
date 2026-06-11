@@ -661,18 +661,30 @@ function AdminLeads() {
   const leads = allLeads.filter(l => l.lead_type !== "abandoned_cart");
 
   const exportToCSV = () => {
-    if (leads.length === 0) return;
-    const headers = ["Nombre,Email,WhatsApp,Cursos Interés,Mensaje,Origen,Fecha"];
+    if (leads.length === 0) return alert("No hay contactos para exportar.");
+    const head = ["Email", "Nombre", "WhatsApp", "Cursos Interés", "Mensaje", "Origen", "Fecha"];
     const rows = leads.map(l => {
       const date = new Date(l.created_at).toLocaleDateString('es-CL');
       const courses = (l.selected_courses || []).join(" | ");
-      return `"${l.name}","${l.email}","${l.whatsapp || ''}","${courses}","${(l.message || '').replace(/"/g, '""')}","${l.source_course || ''}","${date}"`;
+      return [
+        l.email || '',
+        `"${(l.name || '').replace(/"/g, '""')}"`,
+        l.whatsapp || '',
+        `"${courses}"`,
+        `"${(l.message || '').replace(/"/g, '""')}"`,
+        l.source_course || '',
+        date
+      ].join(',');
     });
-    const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join("\n");
-    const encodedUri = encodeURI(csvContent);
+
+    // UTF-8 BOM so Excel opens it with accents correctly
+    const csvContent = "\uFEFF" + [head.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const encodedUri = URL.createObjectURL(blob);
+
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `programbi_leads_${new Date().toISOString().split('T')[0]}.csv`);
+    link.href = encodedUri;
+    link.download = `programbi_leads_${new Date().toISOString().split('T')[0]}.csv`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -1058,11 +1070,11 @@ function AdminMembers() {
 
   const exportToCSV = () => {
     if (filtered.length === 0) return alert("No hay miembros para exportar.");
-    const head = ["ID", "Nombre", "Email", "Teléfono", "Rol", "Fecha Registro"];
+    const head = ["Email", "Nombre", "ID", "Teléfono", "Rol", "Fecha Registro"];
     const rows = filtered.map(u => [
-      u.id,
-      `"${(u.full_name || '').replace(/"/g, '""')}"`,
       u.email || '',
+      `"${(u.full_name || '').replace(/"/g, '""')}"`,
+      u.id,
       u.phone || '',
       u.role || 'student',
       u.created_at ? new Date(u.created_at).toLocaleDateString("es-CL") : ''
@@ -1670,13 +1682,13 @@ function AdminExportCsv() {
     if (filtered.length === 0) return alert("No hay usuarios que coincidan con estos filtros.");
 
     // UTF-8 BOM helps excel read accents properly
-    const head = ["ID", "Nombre", "Email", "Rol", "Suscripción", "Cursos (Slugs)", "Fecha Registro"];
+    const head = ["Email", "Nombre", "ID", "Rol", "Suscripción", "Cursos (Slugs)", "Fecha Registro"];
     const rows = filtered.map(u => {
       const coursesNames = (u.enrollments || []).map((e: any) => e.course_slug).join(' | ');
       return [
-        u.id,
+        u.email || '',
         `"${u.full_name || ''}"`,
-        u.email,
+        u.id,
         u.role || 'student',
         u.subscription_plan || 'ninguno',
         `"${coursesNames}"`,
