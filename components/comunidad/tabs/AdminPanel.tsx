@@ -1056,6 +1056,31 @@ function AdminMembers() {
     (u.email || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const exportToCSV = () => {
+    if (filtered.length === 0) return alert("No hay miembros para exportar.");
+    const head = ["ID", "Nombre", "Email", "Teléfono", "Rol", "Fecha Registro"];
+    const rows = filtered.map(u => [
+      u.id,
+      `"${(u.full_name || '').replace(/"/g, '""')}"`,
+      u.email || '',
+      u.phone || '',
+      u.role || 'student',
+      u.created_at ? new Date(u.created_at).toLocaleDateString("es-CL") : ''
+    ].join(','));
+
+    // UTF-8 BOM so Excel opens it with accents correctly
+    const csvContent = "\uFEFF" + [head.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const encodedUri = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = encodedUri;
+    link.download = `programbi_miembros_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="p-6 sm:p-8">
        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -1063,12 +1088,18 @@ function AdminMembers() {
             <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Miembros</h2>
             <p className="text-sm text-gray-400">{users.length} usuarios registrados</p>
           </div>
-          <div className="relative">
-             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-             <input type="text" placeholder="Buscar usuario..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-               className="pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 focus:bg-white outline-none transition-all w-full sm:w-64" />
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+             <button onClick={exportToCSV} className="flex items-center justify-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-emerald-100 transition-colors border border-emerald-100 hover:border-emerald-250 cursor-pointer shadow-sm">
+               <Download className="w-4 h-4" /> Exportar
+             </button>
+             <div className="relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input type="text" placeholder="Buscar usuario..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+                  className="pl-9 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 focus:bg-white outline-none transition-all w-full sm:w-64" />
+             </div>
           </div>
        </div>
+
 
        {/* User detail panel */}
        <AnimatePresence>
