@@ -662,7 +662,7 @@ function AdminLeads() {
 
   const exportToCSV = () => {
     if (leads.length === 0) return alert("No hay contactos para exportar.");
-    const head = ["Email", "Nombre", "WhatsApp", "Cursos Interés", "Mensaje", "Origen", "Fecha"];
+    const head = ["email", "name", "WhatsApp", "Cursos Interés", "Mensaje", "Origen", "Fecha"];
     const rows = leads.map(l => {
       const date = new Date(l.created_at).toLocaleDateString('es-CL');
       const courses = (l.selected_courses || []).join(" | ");
@@ -1070,7 +1070,7 @@ function AdminMembers() {
 
   const exportToCSV = () => {
     if (filtered.length === 0) return alert("No hay miembros para exportar.");
-    const head = ["Email", "Nombre", "ID", "Teléfono", "Rol", "Fecha Registro"];
+    const head = ["email", "name", "ID", "Teléfono", "Rol", "Fecha Registro"];
     const rows = filtered.map(u => [
       u.email || '',
       `"${(u.full_name || '').replace(/"/g, '""')}"`,
@@ -1682,7 +1682,7 @@ function AdminExportCsv() {
     if (filtered.length === 0) return alert("No hay usuarios que coincidan con estos filtros.");
 
     // UTF-8 BOM helps excel read accents properly
-    const head = ["Email", "Nombre", "ID", "Rol", "Suscripción", "Cursos (Slugs)", "Fecha Registro"];
+    const head = ["email", "name", "ID", "Rol", "Suscripción", "Cursos (Slugs)", "Fecha Registro"];
     const rows = filtered.map(u => {
       const coursesNames = (u.enrollments || []).map((e: any) => e.course_slug).join(' | ');
       return [
