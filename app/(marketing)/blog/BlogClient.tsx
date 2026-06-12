@@ -20,9 +20,12 @@ const categoryLabels: Record<string, string> = {
   "power-bi": "Tecnología",
   sql: "Tecnología",
   python: "Tecnología",
+  tecnologia: "Tecnología",
   ia: "AI",
   industria: "Economía",
+  economia: "Economía",
   general: "Cultura",
+  cultura: "Cultura",
 };
 
 /* ── Helpers ──────────────────────────────────── */
@@ -147,11 +150,11 @@ export default function BlogClient({ articles }: { articles: any[] }) {
     if (activeCategory === "ia") {
       temp = temp.filter((a) => a.category === "ia");
     } else if (activeCategory === "economia") {
-      temp = temp.filter((a) => a.category === "industria");
+      temp = temp.filter((a) => ["industria", "economia"].includes(a.category));
     } else if (activeCategory === "tecnologia") {
-      temp = temp.filter((a) => ["power-bi", "sql", "python"].includes(a.category));
+      temp = temp.filter((a) => ["power-bi", "sql", "python", "tecnologia"].includes(a.category));
     } else if (activeCategory === "cultura") {
-      temp = temp.filter((a) => a.category === "general");
+      temp = temp.filter((a) => ["general", "cultura"].includes(a.category));
     }
 
     // Filter by search query

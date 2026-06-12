@@ -3008,36 +3008,21 @@ function AdminPrices() {
 
 // ─── NEWSLETTER ───
 
+// ─── NEWSLETTER / BLOG ───
+
+const blogCategoryNames: Record<string, string> = {
+  "ia": "AI",
+  "industria": "Economía",
+  "general": "Cultura",
+  "power-bi": "Tecnología - Power BI",
+  "sql": "Tecnología - SQL",
+  "python": "Tecnología - Python",
+  "tecnologia": "Tecnología - General",
+};
+
 function AdminNewsletter() {
-  const [subTab, setSubTab] = useState<"articles" | "categories">("articles");
-
   return (
-    <div className="p-6 sm:p-8">
-      <div className="flex items-center gap-4 mb-8">
-        <h2 className="font-display font-black text-2xl text-gray-900">Blog</h2>
-      </div>
-
-      {/* Sub-tabs */}
-      <div className="flex items-center gap-1 border-b border-gray-200 mb-6">
-        {[
-          { id: "articles" as const, label: "📰 Artículos" },
-          { id: "categories" as const, label: "📂 Categorías / Secciones" },
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setSubTab(tab.id)}
-            className={`px-4 py-2.5 text-sm font-bold border-none cursor-pointer transition-all bg-transparent border-b-2 -mb-[1px] ${
-              subTab === tab.id ? "border-b-brand-blue text-brand-blue" : "border-b-transparent text-gray-400 hover:text-gray-600"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      {subTab === "articles" && <AdminNewsletterArticles />}
-      {subTab === "categories" && <AdminNewsletterCategories />}
-    </div>
+    <AdminNewsletterArticles />
   );
 }
 
@@ -3045,7 +3030,6 @@ function AdminNewsletter() {
 
 function AdminNewsletterArticles() {
   const [articles, setArticles] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingArticle, setEditingArticle] = useState<any>(null);
@@ -3057,7 +3041,7 @@ function AdminNewsletterArticles() {
   const [formContent, setFormContent] = useState("");
   const [formBlocks, setFormBlocks] = useState<any[]>([]);
   const [formCoverImage, setFormCoverImage] = useState("");
-  const [formCategory, setFormCategory] = useState("general");
+  const [formCategory, setFormCategory] = useState("ia");
   const [formTags, setFormTags] = useState("");
   const [formAuthor, setFormAuthor] = useState("ProgramBI");
   const [formReadingTime, setFormReadingTime] = useState(5);
@@ -3068,9 +3052,8 @@ function AdminNewsletterArticles() {
 
   const loadArticles = useCallback(async () => {
     try {
-      const [arts, cats] = await Promise.all([adminGetArticles(), adminGetNewsletterCategories()]);
+      const arts = await adminGetArticles();
       setArticles(arts);
-      setCategories(cats.filter((c: any) => !c.parent_id));
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   }, []);
@@ -3090,7 +3073,7 @@ function AdminNewsletterArticles() {
   const resetForm = () => {
     setFormTitle(""); setFormSlug(""); setFormExcerpt(""); setFormContent("");
     setFormBlocks([]);
-    setFormCoverImage(""); setFormCategory("general"); setFormTags("");
+    setFormCoverImage(""); setFormCategory("ia"); setFormTags("");
     setFormAuthor("ProgramBI"); setFormReadingTime(5); setFormStatus("draft");
     setFormFeatured(false); setEditingArticle(null);
   };
@@ -3115,7 +3098,7 @@ function AdminNewsletterArticles() {
       setFormBlocks([{ type: "paragraph", text: article.content || "" }]);
     }
     setFormCoverImage(article.cover_image || "");
-    setFormCategory(article.category || "general");
+    setFormCategory(article.category || "ia");
     setFormTags((article.tags || []).join(", "));
     setFormAuthor(article.author_name || "ProgramBI");
     setFormReadingTime(article.reading_time_min || 5);
@@ -3266,7 +3249,13 @@ function AdminNewsletterArticles() {
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Categoría</label>
                   <select value={formCategory} onChange={(e) => setFormCategory(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none">
-                    {categories.map(c => <option key={c.id} value={c.slug}>{c.name}</option>)}
+                    <option value="ia">AI</option>
+                    <option value="industria">Economía</option>
+                    <option value="general">Cultura</option>
+                    <option value="power-bi">Tecnología - Power BI</option>
+                    <option value="sql">Tecnología - SQL</option>
+                    <option value="python">Tecnología - Python</option>
+                    <option value="tecnologia">Tecnología - General</option>
                   </select>
                 </div>
                 <div>
@@ -3373,7 +3362,7 @@ function AdminNewsletterArticles() {
                     <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-100 text-amber-700">⭐ Destacado</span>
                   )}
                   <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-blue-50 text-blue-600">
-                    {categories.find(c => c.slug === article.category)?.name || article.category}
+                    {blogCategoryNames[article.category] || article.category}
                   </span>
                 </div>
                 <h4 className="font-bold text-sm text-gray-900 truncate">{article.title}</h4>
