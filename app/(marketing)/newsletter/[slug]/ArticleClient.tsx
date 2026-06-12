@@ -90,6 +90,14 @@ export default function ArticleClient({ slug }: { slug: string }) {
 
   const shareUrl = typeof window !== "undefined" ? window.location.href : "";
 
+  let posterUrl = "";
+  if (article?.content) {
+    const match = article.content.match(/^(?:#\s*)?(?:poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido)\s*:\s*(https?:\/\/[^\s\n]+)/im);
+    if (match) {
+      posterUrl = match[1].trim();
+    }
+  }
+
   return (
     <div className="-mt-20 lg:-mt-24 pt-20 lg:pt-24 min-h-screen bg-[#FAFBFC]">
       {article.cover_image && (
@@ -97,6 +105,7 @@ export default function ArticleClient({ slug }: { slug: string }) {
           {isVideoUrl(article.cover_image) ? (
             <video
               src={article.cover_image}
+              poster={posterUrl || undefined}
               autoPlay
               loop
               muted

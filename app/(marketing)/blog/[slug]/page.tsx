@@ -14,16 +14,21 @@ interface PageProps {
 
 function getArticlePoster(article: any): string {
   if (!article) return "https://programbi.com/opengraph-image";
-  if (article.cover_image && !isVideoUrl(article.cover_image)) {
-    return article.cover_image;
-  }
-  // Try to find poster/thumbnail/cover_poster in the content markdown
+  
+  // 1. Try to find poster/thumbnail/cover_poster in the content markdown first
   if (article.content) {
     const match = article.content.match(/^(?:#\s*)?(?:poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido)\s*:\s*(https?:\/\/[^\s\n]+)/im);
     if (match) {
       return match[1].trim();
     }
   }
+
+  // 2. If no poster, check if cover image is not a video
+  if (article.cover_image && !isVideoUrl(article.cover_image)) {
+    return article.cover_image;
+  }
+
+  // 3. Fallback
   return "https://programbi.com/opengraph-image";
 }
 

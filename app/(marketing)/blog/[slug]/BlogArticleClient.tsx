@@ -188,6 +188,12 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
     </div>
   );
 
+  const posterUrl = useMemo(() => {
+    if (!article.content) return "";
+    const match = article.content.match(/^(?:#\s*)?(?:poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido)\s*:\s*(https?:\/\/[^\s\n]+)/im);
+    return match ? match[1].trim() : "";
+  }, [article.content]);
+
   return (
     <div className={`min-h-screen pb-24 transition-colors duration-300 ${themeCls}`}>
       {/* Dynamic theme style overrides for blockquote, paragraphs, and markdown tags */}
@@ -294,6 +300,7 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
               {isVideoUrl(article.cover_image) ? (
                 <video
                   src={article.cover_image}
+                  poster={posterUrl || undefined}
                   autoPlay
                   loop
                   muted

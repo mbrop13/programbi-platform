@@ -3600,15 +3600,40 @@ El pasado 9 de junio, Anthropic lanzó...`}
               }`}
             >
               {/* Cover thumb */}
-              {article.cover_image ? (
-                <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 relative">
-                  <img src={article.cover_image} alt="" className="w-full h-full object-cover" />
-                </div>
-              ) : (
-                <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
-                  <FileText className="w-6 h-6 text-gray-300" />
-                </div>
-              )}
+              {(() => {
+                const cover = article.cover_image || "";
+                const isVideo = /\.(mp4|webm|ogg|mov|m4v)(?:\?.*)?$/i.test(cover);
+                let imageToShow = cover;
+
+                // Try to find poster in content first if we have one
+                let posterUrl = "";
+                if (article.content) {
+                  const match = article.content.match(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido)\s*:\s*([^\n\r]+)/im);
+                  if (match) {
+                    posterUrl = match[1].trim();
+                  }
+                }
+
+                if (posterUrl) {
+                  imageToShow = posterUrl;
+                } else if (isVideo) {
+                  imageToShow = ""; // If it's a video but has no poster, don't try to render video URL inside <img> tag
+                }
+
+                if (imageToShow) {
+                  return (
+                    <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 relative">
+                      <img src={imageToShow} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center flex-shrink-0">
+                    <FileText className="w-6 h-6 text-gray-300" />
+                  </div>
+                );
+              })()}
 
               {/* Info */}
               <div className="flex-1 min-w-0">

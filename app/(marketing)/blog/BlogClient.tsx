@@ -10,6 +10,12 @@ import { createClient } from "@/lib/supabase/client";
 import { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 import { isVideoUrl } from "@/lib/utils";
 
+function getPosterFromContent(content?: string): string | undefined {
+  if (!content) return undefined;
+  const match = content.match(/^(?:#\s*)?(?:poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido)\s*:\s*(https?:\/\/[^\s\n]+)/im);
+  return match ? match[1].trim() : undefined;
+}
+
 /* ── Category config ─────────────────────────── */
 
 const CATEGORIES = [
@@ -114,6 +120,7 @@ function BlogSlider({ articles }: { articles: any[] }) {
                 isVideoUrl(current.cover_image) ? (
                   <video
                     src={current.cover_image}
+                    poster={getPosterFromContent(current.content)}
                     autoPlay
                     loop
                     muted
@@ -207,6 +214,7 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
             isVideoUrl(article.cover_image) ? (
               <video
                 src={article.cover_image}
+                poster={getPosterFromContent(article.content)}
                 autoPlay
                 loop
                 muted
