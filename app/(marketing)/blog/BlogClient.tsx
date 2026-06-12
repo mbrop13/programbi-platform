@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, ChevronRight, Search, X, Sparkles, DollarSign, Cpu, Sliders } from "lucide-react";
+import { BookOpen, ChevronRight, Search, X, Sparkles, DollarSign, Cpu, Sliders, ChevronLeft } from "lucide-react";
 import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
 
 /* ── Category config ─────────────────────────── */
@@ -39,47 +39,145 @@ function formatDate(d: string) {
   });
 }
 
-/* ── Featured Hero (Editorial News Banner) ───── */
+/* ── Featured News Slider (Editorial Carrusel) ─── */
 
-function FeaturedHero({ article }: { article: any }) {
-  const categoryLabel = categoryLabels[article.category] || article.category;
+function BlogSlider({ articles }: { articles: any[] }) {
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+
+  useEffect(() => {
+    if (articles.length <= 1) return;
+    const timer = setInterval(() => {
+      setDirection(1);
+      setIndex((prev) => (prev + 1) % articles.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, [index, articles.length]);
+
+  // Reset index if filtered articles length changes to avoid out of bounds
+  useEffect(() => {
+    setIndex(0);
+  }, [articles.length]);
+
+  if (articles.length === 0) return null;
+
+  const handleNext = () => {
+    setDirection(1);
+    setIndex((prev) => (prev + 1) % articles.length);
+  };
+
+  const handlePrev = () => {
+    setDirection(-1);
+    setIndex((prev) => (prev - 1 + articles.length) % articles.length);
+  };
+
+  const slideVariants = {
+    enter: (dir: number) => ({
+      x: dir > 0 ? "100%" : "-100%",
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (dir: number) => ({
+      x: dir < 0 ? "100%" : "-100%",
+      opacity: 0,
+    }),
+  };
+
+  const current = articles[index];
+  const categoryLabel = categoryLabels[current.category] || current.category;
 
   return (
-    <Link href={`/blog/${article.slug}`} className="block no-underline group mb-16">
-      <div className="w-full relative aspect-[21/9] lg:aspect-[2.39/1] min-h-[380px] md:min-h-[500px] bg-slate-950 overflow-hidden shadow-sm">
-        {/* Background Image */}
-        {article.cover_image ? (
-          <Image
-            src={article.cover_image}
-            alt={article.title}
-            fill
-            className="object-cover opacity-50 transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
-            unoptimized
-            priority
-          />
-        ) : (
-          <div className="absolute inset-0 bg-slate-900" />
-        )}
-        {/* Dark Vignette Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/20" />
+    <div className="relative w-full mb-16 select-none overflow-hidden rounded-2xl border border-slate-100 shadow-sm bg-slate-950">
+      <div className="relative w-full aspect-[21/9] lg:aspect-[2.39/1] min-h-[350px] md:min-h-[480px]">
+        <AnimatePresence initial={false} custom={direction} mode="popLayout">
+          <motion.div
+            key={current.id}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: "spring", stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 },
+            }}
+            className="absolute inset-0 w-full h-full"
+          >
+            <Link href={`/blog/${current.slug}`} className="absolute inset-0 block no-underline group">
+              {current.cover_image ? (
+                <Image
+                  src={current.cover_image}
+                  alt={current.title}
+                  fill
+                  className="object-cover opacity-60 transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
+                  unoptimized
+                  priority
+                />
+              ) : (
+                <div className="absolute inset-0 bg-slate-900" />
+              )}
+              {/* Overlay Vignette */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10" />
 
-        {/* Content Centered Over Image */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-12 text-center text-white z-10">
-          <span className="text-[10px] sm:text-xs font-bold tracking-[0.25em] uppercase text-[#1890FF] mb-4">
-            {categoryLabel}
-          </span>
-          <h2 className="font-serif font-bold text-2xl sm:text-4xl lg:text-5xl xl:text-6xl text-white max-w-5xl leading-[1.15] mb-5 tracking-tight drop-shadow-md">
-            {article.title}
-          </h2>
-          <p className="text-sm sm:text-base text-slate-300 font-light italic mb-8">
-            por {article.author_name || "Manuel Oliva"}
-          </p>
-          <span className="px-8 py-3 border border-white hover:bg-white hover:text-black text-white text-xs font-bold tracking-widest uppercase transition-all duration-300">
-            LEER
-          </span>
-        </div>
+              {/* Centered Content */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-12 text-center text-white z-10">
+                <span className="text-[10px] sm:text-xs font-bold tracking-[0.25em] uppercase text-[#1890FF] mb-4">
+                  {categoryLabel}
+                </span>
+                <h2 className="font-serif font-bold text-2xl sm:text-4xl lg:text-5xl xl:text-6xl text-white max-w-5xl leading-[1.15] mb-5 tracking-tight drop-shadow-md">
+                  {current.title}
+                </h2>
+                <p className="text-sm sm:text-base text-slate-350 font-light italic mb-8">
+                  por {current.author_name || "Manuel Oliva"}
+                </p>
+                <span className="px-8 py-3 border border-white hover:bg-white hover:text-black text-white text-xs font-bold tracking-widest uppercase transition-all duration-300">
+                  LEER
+                </span>
+              </div>
+            </Link>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Navigation Arrows */}
+        {articles.length > 1 && (
+          <>
+            <button
+              onClick={handlePrev}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/55 border border-white/10 text-white flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={handleNext}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 rounded-full bg-black/30 hover:bg-black/55 border border-white/10 text-white flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </>
+        )}
+
+        {/* Dots indicators */}
+        {articles.length > 1 && (
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+            {articles.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => {
+                  setDirection(i > index ? 1 : -1);
+                  setIndex(i);
+                }}
+                className={`w-2 h-2 rounded-full transition-all cursor-pointer p-0 border-none ${
+                  i === index ? "bg-[#1890FF] w-6" : "bg-white/40 hover:bg-white/60"
+                }`}
+              />
+            ))}
+          </div>
+        )}
       </div>
-    </Link>
+    </div>
   );
 }
 
@@ -97,7 +195,7 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
     >
       <Link href={`/blog/${article.slug}`} className="block no-underline text-slate-950 group-hover:opacity-95 transition-opacity">
         {/* Cover Image */}
-        <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-50 border border-slate-100">
+        <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-50 border border-slate-100 rounded-xl">
           {article.cover_image ? (
             <Image
               src={article.cover_image}
@@ -193,8 +291,8 @@ export default function BlogClient({ articles }: { articles: any[] }) {
     return temp;
   }, [articles, activeCategory, searchQuery]);
 
-  const featured = filtered.find((a) => a.is_featured) || null;
-  const rest = featured ? filtered.filter((a) => a.id !== featured.id) : filtered;
+  const sliderArticles = filtered.slice(0, Math.min(5, filtered.length));
+  const gridArticles = filtered.slice(Math.min(5, filtered.length));
 
   return (
     <div className="min-h-screen bg-white pb-28">
@@ -305,11 +403,11 @@ export default function BlogClient({ articles }: { articles: any[] }) {
           </div>
         ) : (
           <>
-            {/* Featured */}
-            {featured && <FeaturedHero article={featured} />}
+            {/* News Slider (Latest 5 articles) */}
+            {sliderArticles.length > 0 && <BlogSlider articles={sliderArticles} />}
 
             {/* Title for Recent list */}
-            {rest.length > 0 && (
+            {gridArticles.length > 0 && (
               <h3 className="font-serif font-bold text-2xl text-slate-950 mb-8 border-b border-slate-100 pb-3 tracking-tight">
                 Últimas Entradas
               </h3>
@@ -317,7 +415,7 @@ export default function BlogClient({ articles }: { articles: any[] }) {
 
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-              {rest.map((article, i) => (
+              {gridArticles.map((article, i) => (
                 <ArticleCard key={article.id} article={article} index={i} />
               ))}
             </div>

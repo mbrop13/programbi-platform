@@ -278,7 +278,7 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
       {/* Cover Image */}
       {article.cover_image && (
         <div className="max-w-[1140px] mx-auto px-6 lg:px-12 xl:px-16 mb-16">
-          <div className="relative aspect-[21/9] w-full rounded-lg overflow-hidden bg-slate-50 border border-slate-100">
+          <div className="relative aspect-[21/9] w-full rounded-2xl overflow-hidden bg-slate-50 border border-slate-100">
             <Image
               src={article.cover_image}
               alt={article.title}
@@ -475,8 +475,8 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
                     prefs.theme === "dark" ? "bg-slate-900 border border-slate-800 text-white rounded-xl overflow-hidden p-4" : "bg-white text-slate-950"
                   }`}>
                     {/* Image */}
-                    <div className={`relative aspect-[16/10] w-full overflow-hidden ${
-                      prefs.theme === "dark" ? "bg-slate-950 rounded-lg" : "bg-slate-50 border border-slate-100"
+                    <div className={`relative aspect-[16/10] w-full overflow-hidden rounded-xl ${
+                      prefs.theme === "dark" ? "bg-slate-950" : "bg-slate-50 border border-slate-100"
                     }`}>
                       {art.cover_image ? (
                         <Image

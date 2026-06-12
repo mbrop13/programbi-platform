@@ -305,11 +305,11 @@ function BlockCode({ block }: { block: any }) {
 function BlockImage({ block }: { block: any }) {
   return (
     <figure className="my-8">
-      <div className="relative w-full h-auto rounded-lg overflow-hidden border border-slate-100 shadow-sm">
+      <div className="relative w-full h-auto rounded-xl overflow-hidden border border-slate-100 shadow-sm">
         <img
           src={block.src}
           alt={block.alt || ""}
-          className="w-full h-auto object-cover rounded-lg"
+          className="w-full h-auto object-cover rounded-xl"
           loading="lazy"
         />
       </div>
@@ -407,7 +407,7 @@ export default function ArticleBlockRenderer({ content }: { content: string }) {
           prose-p:text-slate-850 prose-p:leading-[1.85] prose-p:font-serif
           prose-a:text-[#1890FF] prose-a:font-semibold prose-a:underline hover:prose-a:text-[#0050b3]
           prose-strong:text-slate-950
-          prose-img:rounded-lg prose-img:border prose-img:border-slate-100
+          prose-img:rounded-xl prose-img:border prose-img:border-slate-100
           prose-blockquote:border-l-4 prose-blockquote:border-l-slate-950 prose-blockquote:bg-slate-50 prose-blockquote:py-4 prose-blockquote:pl-5 prose-blockquote:pr-6 prose-blockquote:italic prose-blockquote:font-serif
           mb-12"
         dangerouslySetInnerHTML={{ __html: htmlContent }}
