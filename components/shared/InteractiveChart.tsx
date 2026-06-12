@@ -10,6 +10,7 @@ interface ChartData {
   data: number[];
   legend?: string;
   yAxis?: string;
+  colors?: string[];
 }
 
 interface InteractiveChartProps {
@@ -19,7 +20,7 @@ interface InteractiveChartProps {
 const PALETTE = ["#1890FF", "#10B981", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899", "#06B6D4"];
 
 export default function InteractiveChart({ chartData }: InteractiveChartProps) {
-  const { type, title, labels = [], data = [], legend = "Valor", yAxis = "" } = chartData;
+  const { type, title, labels = [], data = [], legend = "Valor", yAxis = "", colors = [] } = chartData;
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
   const uniqueId = useId();
@@ -55,13 +56,14 @@ export default function InteractiveChart({ chartData }: InteractiveChartProps) {
   const renderBarChart = () => {
     const barWidth = (plotWidth / data.length) * 0.6;
     const colWidth = plotWidth / data.length;
+    const baseColor = colors[0] || "#1890FF";
 
     return (
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto text-current select-none">
         <defs>
           <linearGradient id={`barGrad-${uniqueId}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#1890FF" />
-            <stop offset="100%" stopColor="#6366F1" />
+            <stop offset="0%" stopColor={baseColor} />
+            <stop offset="100%" stopColor={colors[1] || `${baseColor}cc`} />
           </linearGradient>
         </defs>
 
@@ -119,7 +121,7 @@ export default function InteractiveChart({ chartData }: InteractiveChartProps) {
                 x={x}
                 width={barWidth}
                 rx={4}
-                fill={`url(#barGrad-${uniqueId})`}
+                fill={colors.length > 1 ? colors[i % colors.length] : `url(#barGrad-${uniqueId})`}
                 initial={{ height: 0, y: paddingTop + plotHeight }}
                 animate={{
                   height: barHeight,
@@ -167,12 +169,14 @@ export default function InteractiveChart({ chartData }: InteractiveChartProps) {
       ? `${pathD} L ${points[points.length - 1].x} ${paddingTop + plotHeight} L ${points[0].x} ${paddingTop + plotHeight} Z`
       : "";
 
+    const lineColor = colors[0] || "#1890FF";
+
     return (
       <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-auto text-current select-none">
         <defs>
           <linearGradient id={`areaGrad-${uniqueId}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#1890FF" stopOpacity="0.4" />
-            <stop offset="100%" stopColor="#1890FF" stopOpacity="0.0" />
+            <stop offset="0%" stopColor={lineColor} stopOpacity="0.4" />
+            <stop offset="100%" stopColor={lineColor} stopOpacity="0.0" />
           </linearGradient>
         </defs>
 
@@ -220,7 +224,7 @@ export default function InteractiveChart({ chartData }: InteractiveChartProps) {
           <motion.path
             d={pathD}
             fill="none"
-            stroke="#1890FF"
+            stroke={lineColor}
             strokeWidth={3}
             strokeLinecap="round"
             initial={{ pathLength: 0 }}
@@ -237,7 +241,7 @@ export default function InteractiveChart({ chartData }: InteractiveChartProps) {
             y1={paddingTop}
             x2={points[hoveredIdx].x}
             y2={paddingTop + plotHeight}
-            stroke="#1890FF"
+            stroke={lineColor}
             strokeWidth={1}
             strokeDasharray="4 4"
             className="opacity-50"
@@ -267,8 +271,8 @@ export default function InteractiveChart({ chartData }: InteractiveChartProps) {
                 cx={p.x}
                 cy={p.y}
                 r={isHovered ? 6 : 4}
-                fill={isHovered ? "#FFFFFF" : "#1890FF"}
-                stroke="#1890FF"
+                fill={isHovered ? "#FFFFFF" : lineColor}
+                stroke={lineColor}
                 strokeWidth={isHovered ? 3 : 2}
                 animate={{
                   scale: isHovered ? 1.2 : 1,
@@ -299,6 +303,7 @@ export default function InteractiveChart({ chartData }: InteractiveChartProps) {
     const cy = 100;
     const r = 85;
     const innerR = 55; // Donut style!
+    const palette = colors.length > 0 ? colors : PALETTE;
 
     let accumulatedAngle = 0;
 
@@ -309,7 +314,7 @@ export default function InteractiveChart({ chartData }: InteractiveChartProps) {
           <svg viewBox="0 0 200 200" className="w-full h-full text-current select-none">
             {data.map((val, i) => {
               const sliceAngle = (val / totalValue) * 360;
-              const color = PALETTE[i % PALETTE.length];
+              const color = palette[i % palette.length];
               const isHovered = hoveredIdx === i;
 
               // Arc math
@@ -410,7 +415,7 @@ export default function InteractiveChart({ chartData }: InteractiveChartProps) {
         <div className="flex flex-col gap-2.5 max-w-[200px] select-none text-left">
           {labels.map((lbl, i) => {
             const isHovered = hoveredIdx === i;
-            const color = PALETTE[i % PALETTE.length];
+            const color = palette[i % palette.length];
             return (
               <div 
                 key={i} 

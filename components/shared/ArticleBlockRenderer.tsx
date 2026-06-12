@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Info, Lightbulb, AlertTriangle, Zap, Quote, Copy, Check } from "lucide-react";
 import { useState } from "react";
 import InteractiveChart from "./InteractiveChart";
+import TradingViewWidget from "./TradingViewWidget";
 
 /* ─── Lightweight Markdown Parser ─── */
 
@@ -387,7 +388,7 @@ function BlockDivider() {
 /* ─── Markdown Blocks Parser (incorporates interactive charts) ─── */
 
 interface ContentBlock {
-  type: "html" | "chart";
+  type: "html" | "chart" | "ticker";
   content: string;
   chartData?: {
     type: "bar" | "line" | "pie";
@@ -396,7 +397,9 @@ interface ContentBlock {
     data: number[];
     legend?: string;
     yAxis?: string;
+    colors?: string[];
   };
+  tickers?: string[];
 }
 
 function parseMarkdownIntoBlocks(markdown: string): ContentBlock[] {
@@ -409,7 +412,28 @@ function parseMarkdownIntoBlocks(markdown: string): ContentBlock[] {
     const line = lines[i];
     const trimmed = line.trim();
     
-    // Detect chart block start
+    // 1. Detect TradingView Tickers block
+    const isTickerStart = trimmed.match(/^(?:Ticker|TradingView|Accion|Acción)\s*:\s*(.+)$/i);
+    if (isTickerStart) {
+      if (currentHtmlLines.length > 0) {
+        blocks.push({
+          type: "html",
+          content: currentHtmlLines.join("\n")
+        });
+        currentHtmlLines = [];
+      }
+      
+      const rawTickers = isTickerStart[1].split(",").map(t => t.trim().toUpperCase()).filter(Boolean);
+      blocks.push({
+        type: "ticker",
+        content: "",
+        tickers: rawTickers
+      });
+      i++;
+      continue;
+    }
+
+    // 2. Detect chart block start
     const isChartStart = trimmed.match(/^Grafico de (barra|linea|torta|barras|línea|pastel|dona|donut|circular):/i);
     
     if (isChartStart) {
@@ -433,6 +457,7 @@ function parseMarkdownIntoBlocks(markdown: string): ContentBlock[] {
       let dataValues: number[] = [];
       let legend = "Valor";
       let yAxis = "";
+      let colors: string[] = [];
       
       i++; // move past start line
       
@@ -441,7 +466,7 @@ function parseMarkdownIntoBlocks(markdown: string): ContentBlock[] {
         const chartLine = lines[i];
         const chartLineTrimmed = chartLine.trim();
         
-        if (chartLineTrimmed === "" || chartLineTrimmed === "---" || chartLineTrimmed.match(/^Grafico de /i)) {
+        if (chartLineTrimmed === "" || chartLineTrimmed === "---" || chartLineTrimmed.match(/^Grafico de /i) || chartLineTrimmed.match(/^(?:Ticker|TradingView|Accion)/i)) {
           // stop parsing chart block (don't consume separator/next chart line, let outer loop handle it)
           break;
         }
@@ -451,6 +476,7 @@ function parseMarkdownIntoBlocks(markdown: string): ContentBlock[] {
         const dataMatch = chartLineTrimmed.match(/^(?:Datos|Data|Valores)\s*:\s*(.+)$/i);
         const legendMatch = chartLineTrimmed.match(/^(?:Leyenda|Legend)\s*:\s*(.+)$/i);
         const yAxisMatch = chartLineTrimmed.match(/^(?:Eje\s*Y|EjeY|YAxis)\s*:\s*(.+)$/i);
+        const colorsMatch = chartLineTrimmed.match(/^(?:Colores|Color|Colors)\s*:\s*(.+)$/i);
         
         if (titleMatch) {
           title = titleMatch[1].trim();
@@ -483,6 +509,8 @@ function parseMarkdownIntoBlocks(markdown: string): ContentBlock[] {
           legend = legendMatch[1].trim();
         } else if (yAxisMatch) {
           yAxis = yAxisMatch[1].trim();
+        } else if (colorsMatch) {
+          colors = colorsMatch[1].split(",").map(s => s.trim());
         }
         
         i++;
@@ -497,7 +525,8 @@ function parseMarkdownIntoBlocks(markdown: string): ContentBlock[] {
           labels,
           data: dataValues,
           legend,
-          yAxis
+          yAxis,
+          colors
         }
       });
     } else {
@@ -530,7 +559,7 @@ export default function ArticleBlockRenderer({ content }: { content: string }) {
 
   // Fallback to Markdown / HTML render
   if (!blocks) {
-    const isMarkdown = content.trim().startsWith("#") || content.includes("\n## ") || content.includes("\n- ") || content.includes("\n* ") || content.includes("---") || content.match(/Grafico de/i);
+    const isMarkdown = content.trim().startsWith("#") || content.includes("\n## ") || content.includes("\n- ") || content.includes("\n* ") || content.includes("---") || content.match(/Grafico de/i) || content.match(/Ticker:/i) || content.match(/TradingView:/i) || content.match(/Accion:/i);
     
     if (!isMarkdown) {
       return (
@@ -543,9 +572,9 @@ export default function ArticleBlockRenderer({ content }: { content: string }) {
 
     const subBlocks = parseMarkdownIntoBlocks(content);
 
-    // If there are no chart blocks, render everything as a single html article to maintain exact layout
-    const hasCharts = subBlocks.some(b => b.type === "chart");
-    if (!hasCharts) {
+    // If there are no chart or ticker blocks, render everything as a single html article to maintain exact layout
+    const hasSpecialBlocks = subBlocks.some(b => b.type === "chart" || b.type === "ticker");
+    if (!hasSpecialBlocks) {
       const htmlContent = parseMarkdownToHtml(content);
       return (
         <article
@@ -560,6 +589,8 @@ export default function ArticleBlockRenderer({ content }: { content: string }) {
         {subBlocks.map((b, idx) => {
           if (b.type === "chart") {
             return <InteractiveChart key={`chart-${idx}`} chartData={b.chartData!} />;
+          } else if (b.type === "ticker") {
+            return <TradingViewWidget key={`ticker-${idx}`} tickers={b.tickers!} />;
           } else {
             const htmlContent = parseMarkdownToHtml(b.content);
             return (
@@ -599,6 +630,9 @@ export default function ArticleBlockRenderer({ content }: { content: string }) {
             return <BlockDivider key={key} />;
           case "chart":
             return <InteractiveChart key={key} chartData={block} />;
+          case "ticker":
+          case "tradingview":
+            return <TradingViewWidget key={key} tickers={block.tickers || []} />;
           default:
             return null;
         }
