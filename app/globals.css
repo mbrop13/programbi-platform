@@ -61,6 +61,7 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Poppins', ui-sans-serif, system-ui, sans-serif;
   --font-mono: 'Fira Code', ui-monospace, monospace;
+  --font-serif: var(--font-serif), Georgia, ui-serif, serif;
 
   /* Animations */
   --animate-fade-in: fade-in 0.5s ease-out;
@@ -238,5 +239,14 @@ img {
 /* Font display class */
 .font-display {
   font-family: var(--font-display);
+}
+
+/* Editorial serif styles for article content */
+.serif {
+  font-family: var(--font-serif), Georgia, ui-serif, serif;
+}
+
+.serif-body {
+  font-family: Georgia, ui-serif, Cambria, serif;
 }
 
