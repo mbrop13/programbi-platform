@@ -68,7 +68,7 @@ function ModernDataVisual() {
       />
 
       {/* Video Container (No browser frame, no floating, borderless, shadowless, rounded-3xl) */}
-      <div className="relative z-10 w-full max-w-[760px] aspect-video rounded-3xl overflow-hidden lg:-mr-28 xl:-mr-44 bg-transparent">
+      <div className="relative z-10 w-full max-w-[760px] aspect-video rounded-3xl overflow-hidden lg:-ml-12 xl:-ml-20 bg-transparent">
         <div className="w-full h-full relative">
           <AnimatePresence mode="wait">
             <motion.div
