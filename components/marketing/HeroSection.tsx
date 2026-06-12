@@ -54,7 +54,7 @@ function ModernDataVisual() {
   const activeVideo = VIDEOS[activeIndex];
 
   return (
-    <div className="relative w-full flex items-center justify-center select-none">
+    <div className="relative w-full flex items-center justify-end select-none">
       {/* Ambient background glowing blobs */}
       <motion.div
         animate={{ scale: [1, 1.15, 1], x: [0, 10, 0], y: [0, -10, 0] }}
@@ -67,11 +67,11 @@ function ModernDataVisual() {
         className="absolute right-10 bottom-0 z-0 w-56 h-56 bg-gradient-to-tr from-cyan-300/15 to-blue-300/15 rounded-full blur-3xl pointer-events-none"
       />
 
-      {/* Video Container (No browser frame, larger size) */}
+      {/* Video Container (No browser frame, border, shadow or black background) */}
       <motion.div
         animate={{ y: [0, -8, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        className="relative z-10 w-full max-w-[720px] aspect-video rounded-3xl overflow-hidden shadow-[0_30px_80px_rgba(24,144,255,0.2)] border border-slate-200/40 bg-slate-950 flex flex-col justify-end"
+        className="relative z-10 w-full max-w-[760px] aspect-video flex flex-col justify-end lg:-mr-16 xl:-mr-28 bg-transparent"
       >
         <div className="w-full h-full relative">
           <AnimatePresence mode="wait">
@@ -90,14 +90,14 @@ function ModernDataVisual() {
                 muted
                 playsInline
                 onEnded={handleVideoEnded}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover mix-blend-multiply bg-transparent"
               />
             </motion.div>
           </AnimatePresence>
         </div>
 
-        {/* Overlaid Navigation Controls */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-1.5 sm:gap-2 bg-slate-950/85 backdrop-blur-md border border-white/10 rounded-full p-1.5 shadow-xl max-w-[95%] w-max">
+        {/* Liquid Glass Navigation Controls */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-1 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-1 shadow-[0_8px_32px_0_rgba(31,38,135,0.05)] w-max">
           {VIDEOS.map((video, idx) => {
             const Icon = video.icon;
             const isActive = activeIndex === idx;
@@ -106,12 +106,19 @@ function ModernDataVisual() {
                 key={video.id}
                 type="button"
                 onClick={() => handleTabClick(idx)}
-                className={`py-2 px-3 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap ${
+                className={`relative py-1.5 px-3.5 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap z-10 ${
                   isActive
-                    ? "bg-[#1890FF] text-white shadow-md shadow-blue-500/20"
-                    : "text-slate-300 hover:text-white hover:bg-white/5"
+                    ? "text-white"
+                    : "text-slate-650 hover:text-slate-900"
                 }`}
               >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTabGlow"
+                    className="absolute inset-0 bg-gradient-to-r from-[#1890FF] to-blue-500 rounded-full -z-10 shadow-[0_4px_12px_rgba(24,144,255,0.3),inset_0_1px_1px_rgba(255,255,255,0.3)]"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
                 <Icon className="w-3.5 h-3.5" />
                 <span>{video.title}</span>
               </button>
@@ -148,9 +155,9 @@ export default function HeroSection() {
       </div>
 
       <div className="max-w-[1400px] mx-auto px-5 lg:px-8 relative z-10 pt-1 pb-4">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-          {/* ── Left Column (5/12) ── */}
-          <div className="lg:col-span-5 text-center lg:text-left">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+          {/* ── Left Column (6/12) ── */}
+          <div className="lg:col-span-6 text-center lg:text-left relative z-20">
             {/* Pill Badge */}
             <FadeIn delay={0}>
               <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-blue-50 border border-blue-100 text-[#1890FF] text-xs sm:text-sm font-bold mb-6">
@@ -231,8 +238,8 @@ export default function HeroSection() {
             </FadeIn>
           </div>
 
-          {/* ── Right Column (7/12) ── */}
-          <div className="lg:col-span-7 relative w-full flex justify-center">
+          {/* ── Right Column (6/12) ── */}
+          <div className="lg:col-span-6 relative w-full flex justify-end z-10">
             <FadeIn delay={0.4} direction="left" className="w-full">
               <ModernDataVisual />
             </FadeIn>
