@@ -16,12 +16,12 @@ import { motion } from "framer-motion";
 import ArticleBlockRenderer from "@/components/shared/ArticleBlockRenderer";
 
 const categoryLabels: Record<string, string> = {
-  "power-bi": "Power BI",
-  sql: "SQL Server",
-  python: "Python",
-  ia: "Inteligencia Artificial",
-  industria: "Industria",
-  general: "General",
+  "power-bi": "Tecnología",
+  sql: "Tecnología",
+  python: "Tecnología",
+  ia: "AI",
+  industria: "Economía",
+  general: "Cultura",
 };
 
 interface BlogArticleClientProps {

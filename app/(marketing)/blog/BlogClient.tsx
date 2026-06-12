@@ -4,27 +4,25 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { BookOpen, ChevronRight, Search } from "lucide-react";
+import { BookOpen, ChevronRight, Search, X } from "lucide-react";
 
 /* ── Category config ─────────────────────────── */
 
 const CATEGORIES = [
-  { value: "all", label: "Todos" },
-  { value: "power-bi", label: "Power BI" },
-  { value: "sql", label: "SQL Server" },
-  { value: "python", label: "Python" },
-  { value: "ia", label: "Inteligencia Artificial" },
-  { value: "industria", label: "Industria" },
-  { value: "general", label: "General" },
+  { value: "all", label: "Todo" },
+  { value: "ia", label: "AI" },
+  { value: "economia", label: "Economía" },
+  { value: "tecnologia", label: "Tecnología" },
+  { value: "cultura", label: "Cultura" },
 ] as const;
 
 const categoryLabels: Record<string, string> = {
-  "power-bi": "Power BI",
-  sql: "SQL Server",
-  python: "Python",
-  ia: "Inteligencia Artificial",
-  industria: "Industria",
-  general: "General",
+  "power-bi": "Tecnología",
+  sql: "Tecnología",
+  python: "Tecnología",
+  ia: "AI",
+  industria: "Economía",
+  general: "Cultura",
 };
 
 /* ── Helpers ──────────────────────────────────── */
@@ -140,11 +138,35 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
 
 export default function BlogClient({ articles }: { articles: any[] }) {
   const [activeCategory, setActiveCategory] = useState("all");
+  const [isSearchActive, setIsSearchActive] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const filtered = useMemo(() => {
-    if (activeCategory === "all") return articles;
-    return articles.filter((a) => a.category === activeCategory);
-  }, [articles, activeCategory]);
+    let temp = articles;
+
+    // Filter by category
+    if (activeCategory === "ia") {
+      temp = temp.filter((a) => a.category === "ia");
+    } else if (activeCategory === "economia") {
+      temp = temp.filter((a) => a.category === "industria");
+    } else if (activeCategory === "tecnologia") {
+      temp = temp.filter((a) => ["power-bi", "sql", "python"].includes(a.category));
+    } else if (activeCategory === "cultura") {
+      temp = temp.filter((a) => a.category === "general");
+    }
+
+    // Filter by search query
+    if (searchQuery.trim() !== "") {
+      const query = searchQuery.toLowerCase();
+      temp = temp.filter((a) => 
+        a.title.toLowerCase().includes(query) ||
+        (a.excerpt && a.excerpt.toLowerCase().includes(query)) ||
+        (a.author_name && a.author_name.toLowerCase().includes(query))
+      );
+    }
+
+    return temp;
+  }, [articles, activeCategory, searchQuery]);
 
   const featured = filtered.find((a) => a.is_featured) || null;
   const rest = featured ? filtered.filter((a) => a.id !== featured.id) : filtered;
@@ -152,49 +174,84 @@ export default function BlogClient({ articles }: { articles: any[] }) {
   return (
     <div className="min-h-screen bg-white pb-28">
       {/* ── Main Header (Journal/Newspaper Header) ── */}
-      <header className="max-w-[1200px] mx-auto px-6 pt-20 sm:pt-24 pb-8">
+      <header className="max-w-[1200px] mx-auto px-6 pt-14 sm:pt-16 pb-8">
+        
+        {/* Top tagline */}
+        <div className="flex items-center justify-end text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-3">
+          <span className="hidden sm:inline">CONOCIMIENTO COMPARTIDO</span>
+        </div>
 
         {/* Central Logo */}
-        <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-slate-950 text-center py-5 select-none">
-          Programbi.
+        <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-slate-950 text-center pt-0 pb-4 select-none">
+          Programbi
         </h1>
 
         {/* Division border */}
         <div className="border-t border-slate-950 mt-4 mb-2" />
 
         {/* Categories navigation & search */}
-        <div className="flex flex-col md:flex-row items-center justify-between py-1.5 border-b border-slate-950/10 text-[10px] tracking-widest font-bold text-slate-700">
+        <div className="flex flex-col md:flex-row items-center justify-between py-1.5 border-b border-slate-950/10 text-[10px] tracking-widest font-bold text-slate-700 min-h-[36px]">
           
-          {/* Swipable categories row */}
-          <div className="flex flex-nowrap md:flex-wrap items-center overflow-x-auto scrollbar-hide gap-6 md:gap-8 pb-3 md:pb-0 uppercase w-full md:w-auto -mx-6 px-6 md:mx-0 md:px-0 select-none">
-            {CATEGORIES.map((cat) => {
-              const isActive = activeCategory === cat.value;
-              return (
-                <button
-                  key={cat.value}
-                  onClick={() => setActiveCategory(cat.value)}
-                  className={`relative py-1.5 whitespace-nowrap cursor-pointer transition-colors border-none bg-transparent text-[10px] tracking-widest font-bold ${
-                    isActive
-                      ? "text-black border-b border-black font-extrabold"
-                      : "text-slate-500 hover:text-slate-950"
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              );
-            })}
-          </div>
+          {isSearchActive ? (
+            /* Search input mode */
+            <div className="flex items-center gap-3 w-full py-1 animate-fade-in">
+              <Search className="w-4 h-4 text-[#1890FF]" />
+              <input
+                type="text"
+                placeholder="Escribe para buscar artículos por título, tema o autor..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-transparent border-none outline-none text-xs tracking-wider text-slate-950 font-bold placeholder-slate-400"
+                autoFocus
+              />
+              <button 
+                onClick={() => {
+                  setIsSearchActive(false);
+                  setSearchQuery("");
+                }}
+                className="cursor-pointer bg-transparent border-none text-slate-450 hover:text-slate-950 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            /* Standard categories navigation mode */
+            <>
+              {/* Swipable categories row */}
+              <div className="flex flex-nowrap md:flex-wrap items-center overflow-x-auto scrollbar-hide gap-6 md:gap-8 pb-3 md:pb-0 uppercase w-full md:w-auto -mx-6 px-6 md:mx-0 md:px-0 select-none">
+                {CATEGORIES.map((cat) => {
+                  const isActive = activeCategory === cat.value;
+                  return (
+                    <button
+                      key={cat.value}
+                      onClick={() => setActiveCategory(cat.value)}
+                      className={`relative py-1.5 whitespace-nowrap cursor-pointer transition-colors border-none bg-transparent text-[10px] tracking-widest font-bold ${
+                        isActive
+                          ? "text-black border-b border-black font-extrabold"
+                          : "text-slate-550 hover:text-slate-950"
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  );
+                })}
+              </div>
 
-          {/* Right side static links */}
-          <div className="flex items-center gap-6 mt-4 md:mt-0 uppercase select-none w-full md:w-auto justify-end border-t md:border-t-0 pt-3 md:pt-0 border-slate-100">
-            <button className="hover:text-black transition-colors cursor-pointer bg-transparent border-none font-bold text-[10px] tracking-widest text-slate-500 flex items-center gap-1">
-              <Search className="w-3.5 h-3.5" />
-              <span>BUSCAR</span>
-            </button>
-            <Link href="#newsletter" className="hover:text-black no-underline transition-colors text-[10px] tracking-widest font-bold text-slate-500">
-              SUSCRÍBETE
-            </Link>
-          </div>
+              {/* Right side static links */}
+              <div className="flex items-center gap-6 mt-4 md:mt-0 uppercase select-none w-full md:w-auto justify-end border-t md:border-t-0 pt-3 md:pt-0 border-slate-105">
+                <button 
+                  onClick={() => setIsSearchActive(true)}
+                  className="hover:text-black transition-colors cursor-pointer bg-transparent border-none font-bold text-[10px] tracking-widest text-slate-500 flex items-center gap-1.5"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                  <span>BUSCAR</span>
+                </button>
+                <Link href="#newsletter" className="hover:text-black no-underline transition-colors text-[10px] tracking-widest font-bold text-slate-500">
+                  SUSCRÍBETE
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </header>
 
@@ -205,10 +262,10 @@ export default function BlogClient({ articles }: { articles: any[] }) {
           <div className="text-center py-24 bg-slate-50 rounded-2xl border border-slate-100">
             <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-5" />
             <h2 className="font-serif font-bold text-2xl text-slate-950 mb-2">
-              No hay artículos en esta categoría
+              No se encontraron artículos
             </h2>
             <p className="text-slate-500 text-sm max-w-md mx-auto leading-relaxed font-light">
-              Pronto publicaremos contenido increíble. ¡Vuelve pronto o explora otra categoría!
+              Pronto publicaremos contenido increíble. ¡Vuelve pronto o intenta otra búsqueda!
             </p>
           </div>
         ) : (
