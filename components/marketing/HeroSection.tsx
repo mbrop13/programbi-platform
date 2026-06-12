@@ -67,62 +67,21 @@ function ModernDataVisual() {
         className="absolute right-10 bottom-0 z-0 w-56 h-56 bg-gradient-to-tr from-cyan-300/15 to-blue-300/15 rounded-full blur-3xl pointer-events-none"
       />
 
-      {/* Widescreen Browser Mockup */}
+      {/* Video Container (No browser frame, larger size) */}
       <motion.div
         animate={{ y: [0, -8, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        className="relative z-10 w-full max-w-[520px] aspect-[16/11] bg-white/75 backdrop-blur-2xl border border-white/80 rounded-[1.8rem] overflow-hidden shadow-[0_25px_65px_rgba(24,144,255,0.12)] flex flex-col"
-        style={{ aspectRatio: "16/11" }}
+        className="relative z-10 w-full max-w-[720px] aspect-video rounded-3xl overflow-hidden shadow-[0_30px_80px_rgba(24,144,255,0.2)] border border-slate-200/40 bg-slate-950 flex flex-col justify-end"
       >
-        {/* Browser Header */}
-        <div className="flex items-center justify-between px-4 py-3 bg-white/90 border-b border-gray-100 shrink-0">
-          <div className="flex items-center gap-1.5">
-            <div className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
-            <div className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
-            <div className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-          </div>
-          <div className="bg-gray-50 border border-gray-100/50 rounded-lg px-6 py-0.5 text-[9px] text-gray-400 font-mono flex items-center gap-1">
-            <span className="text-gray-300">https://</span>
-            <span className="text-gray-600 font-medium">campus.programbi.com</span>
-          </div>
-          <div className="w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center text-[8px] font-bold text-[#1890FF]">
-            JD
-          </div>
-        </div>
-
-        {/* Tab Selector inside mock app */}
-        <div className="flex border-b border-gray-100 bg-white/40 shrink-0">
-          {VIDEOS.map((video, idx) => {
-            const Icon = video.icon;
-            const isActive = activeIndex === idx;
-            const activeColorClasses = video.color.split(" ");
-            return (
-              <button
-                key={video.id}
-                type="button"
-                onClick={() => handleTabClick(idx)}
-                className={`flex-1 py-2.5 text-[11px] font-bold transition-all flex items-center justify-center gap-1 ${
-                  isActive
-                    ? `bg-white ${activeColorClasses[0]} border-b-2 ${activeColorClasses[1]} shadow-sm`
-                    : "text-gray-400 hover:text-gray-600"
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" /> {video.title}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Tab Contents */}
-        <div className="flex-1 overflow-hidden bg-slate-950 relative flex items-center justify-center">
+        <div className="w-full h-full relative">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeIndex}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-              className="w-full h-full flex items-center justify-center"
+              transition={{ duration: 0.35 }}
+              className="w-full h-full"
             >
               <video
                 ref={videoRef}
@@ -135,6 +94,29 @@ function ModernDataVisual() {
               />
             </motion.div>
           </AnimatePresence>
+        </div>
+
+        {/* Overlaid Navigation Controls */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-1.5 sm:gap-2 bg-slate-950/85 backdrop-blur-md border border-white/10 rounded-full p-1.5 shadow-xl max-w-[95%] w-max">
+          {VIDEOS.map((video, idx) => {
+            const Icon = video.icon;
+            const isActive = activeIndex === idx;
+            return (
+              <button
+                key={video.id}
+                type="button"
+                onClick={() => handleTabClick(idx)}
+                className={`py-2 px-3 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap ${
+                  isActive
+                    ? "bg-[#1890FF] text-white shadow-md shadow-blue-500/20"
+                    : "text-slate-300 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span>{video.title}</span>
+              </button>
+            );
+          })}
         </div>
       </motion.div>
     </div>
@@ -167,8 +149,8 @@ export default function HeroSection() {
 
       <div className="max-w-[1400px] mx-auto px-5 lg:px-8 relative z-10 pt-1 pb-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
-          {/* ── Left Column (7/12) ── */}
-          <div className="lg:col-span-7 text-center lg:text-left">
+          {/* ── Left Column (5/12) ── */}
+          <div className="lg:col-span-5 text-center lg:text-left">
             {/* Pill Badge */}
             <FadeIn delay={0}>
               <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-blue-50 border border-blue-100 text-[#1890FF] text-xs sm:text-sm font-bold mb-6">
@@ -249,8 +231,8 @@ export default function HeroSection() {
             </FadeIn>
           </div>
 
-          {/* ── Right Column (5/12) ── */}
-          <div className="lg:col-span-5 relative w-full flex justify-center">
+          {/* ── Right Column (7/12) ── */}
+          <div className="lg:col-span-7 relative w-full flex justify-center">
             <FadeIn delay={0.4} direction="left" className="w-full">
               <ModernDataVisual />
             </FadeIn>
