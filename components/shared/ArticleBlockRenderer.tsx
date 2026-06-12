@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Info, Lightbulb, AlertTriangle, Zap, Quote, Copy, Check } from "lucide-react";
 import { useState } from "react";
+import InteractiveChart from "./InteractiveChart";
 
 /* ─── Lightweight Markdown Parser ─── */
 
@@ -383,6 +384,138 @@ function BlockDivider() {
   );
 }
 
+/* ─── Markdown Blocks Parser (incorporates interactive charts) ─── */
+
+interface ContentBlock {
+  type: "html" | "chart";
+  content: string;
+  chartData?: {
+    type: "bar" | "line" | "pie";
+    title: string;
+    labels: string[];
+    data: number[];
+    legend?: string;
+    yAxis?: string;
+  };
+}
+
+function parseMarkdownIntoBlocks(markdown: string): ContentBlock[] {
+  const lines = markdown.split("\n");
+  const blocks: ContentBlock[] = [];
+  let currentHtmlLines: string[] = [];
+  
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
+    const trimmed = line.trim();
+    
+    // Detect chart block start
+    const isChartStart = trimmed.match(/^Grafico de (barra|linea|torta|barras|línea|pastel|dona|donut|circular):/i);
+    
+    if (isChartStart) {
+      // Push accumulated HTML block first
+      if (currentHtmlLines.length > 0) {
+        blocks.push({
+          type: "html",
+          content: currentHtmlLines.join("\n")
+        });
+        currentHtmlLines = [];
+      }
+      
+      const rawType = isChartStart[1].toLowerCase();
+      let chartType: "bar" | "line" | "pie" = "bar";
+      if (rawType.includes("line")) chartType = "line";
+      else if (rawType.includes("torta") || rawType.includes("pastel") || rawType.includes("dona") || rawType.includes("donut") || rawType.includes("circular")) chartType = "pie";
+      
+      // Parse chart options
+      let title = "Gráfico";
+      let labels: string[] = [];
+      let dataValues: number[] = [];
+      let legend = "Valor";
+      let yAxis = "";
+      
+      i++; // move past start line
+      
+      // Read lines until empty line, end of file, or separator/divider
+      while (i < lines.length) {
+        const chartLine = lines[i];
+        const chartLineTrimmed = chartLine.trim();
+        
+        if (chartLineTrimmed === "" || chartLineTrimmed === "---" || chartLineTrimmed.match(/^Grafico de /i)) {
+          // stop parsing chart block (don't consume separator/next chart line, let outer loop handle it)
+          break;
+        }
+        
+        const titleMatch = chartLineTrimmed.match(/^(?:Titulo|Title|Título)\s*:\s*(.+)$/i);
+        const labelsMatch = chartLineTrimmed.match(/^(?:Eje\s*X|EjeX|Labels|Categorías|Categorias)\s*:\s*(.+)$/i);
+        const dataMatch = chartLineTrimmed.match(/^(?:Datos|Data|Valores)\s*:\s*(.+)$/i);
+        const legendMatch = chartLineTrimmed.match(/^(?:Leyenda|Legend)\s*:\s*(.+)$/i);
+        const yAxisMatch = chartLineTrimmed.match(/^(?:Eje\s*Y|EjeY|YAxis)\s*:\s*(.+)$/i);
+        
+        if (titleMatch) {
+          title = titleMatch[1].trim();
+        } else if (labelsMatch) {
+          labels = labelsMatch[1].split(",").map(s => s.trim());
+        } else if (dataMatch) {
+          const rawData = dataMatch[1].trim();
+          // Support two formats:
+          // 1) "120, 150, 180" (comma separated numbers)
+          // 2) "Ene: 120, Feb: 150" (label-value pairs)
+          if (rawData.includes(":")) {
+            const pairs = rawData.split(",").map(p => p.trim());
+            const parsedLabels: string[] = [];
+            const parsedValues: number[] = [];
+            pairs.forEach(p => {
+              const parts = p.split(":");
+              if (parts.length >= 2) {
+                parsedLabels.push(parts[0].trim());
+                parsedValues.push(parseFloat(parts[1].trim()) || 0);
+              }
+            });
+            if (parsedLabels.length > 0) {
+              labels = parsedLabels;
+              dataValues = parsedValues;
+            }
+          } else {
+            dataValues = rawData.split(",").map(s => parseFloat(s.trim()) || 0);
+          }
+        } else if (legendMatch) {
+          legend = legendMatch[1].trim();
+        } else if (yAxisMatch) {
+          yAxis = yAxisMatch[1].trim();
+        }
+        
+        i++;
+      }
+      
+      blocks.push({
+        type: "chart",
+        content: "",
+        chartData: {
+          type: chartType,
+          title,
+          labels,
+          data: dataValues,
+          legend,
+          yAxis
+        }
+      });
+    } else {
+      currentHtmlLines.push(line);
+      i++;
+    }
+  }
+  
+  if (currentHtmlLines.length > 0) {
+    blocks.push({
+      type: "html",
+      content: currentHtmlLines.join("\n")
+    });
+  }
+  
+  return blocks;
+}
+
 /* ─── MAIN RENDERER ─── */
 
 export default function ArticleBlockRenderer({ content }: { content: string }) {
@@ -397,21 +530,48 @@ export default function ArticleBlockRenderer({ content }: { content: string }) {
 
   // Fallback to Markdown / HTML render
   if (!blocks) {
-    const isMarkdown = content.trim().startsWith("#") || content.includes("\n## ") || content.includes("\n- ") || content.includes("\n* ") || content.includes("---");
-    const htmlContent = isMarkdown ? parseMarkdownToHtml(content) : content;
+    const isMarkdown = content.trim().startsWith("#") || content.includes("\n## ") || content.includes("\n- ") || content.includes("\n* ") || content.includes("---") || content.match(/Grafico de/i);
+    
+    if (!isMarkdown) {
+      return (
+        <article
+          className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-950 prose-p:text-slate-850 prose-p:leading-[1.85] prose-p:font-serif prose-a:text-[#1890FF] prose-a:font-semibold prose-a:underline hover:prose-a:text-[#0050b3] prose-strong:text-slate-950 prose-img:rounded-xl prose-img:border prose-img:border-slate-100 prose-blockquote:border-l-4 prose-blockquote:border-l-slate-950 prose-blockquote:bg-slate-50 prose-blockquote:py-4 prose-blockquote:pl-5 prose-blockquote:pr-6 prose-blockquote:italic prose-blockquote:font-serif mb-12"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      );
+    }
+
+    const subBlocks = parseMarkdownIntoBlocks(content);
+
+    // If there are no chart blocks, render everything as a single html article to maintain exact layout
+    const hasCharts = subBlocks.some(b => b.type === "chart");
+    if (!hasCharts) {
+      const htmlContent = parseMarkdownToHtml(content);
+      return (
+        <article
+          className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-950 prose-p:text-slate-850 prose-p:leading-[1.85] prose-p:font-serif prose-a:text-[#1890FF] prose-a:font-semibold prose-a:underline hover:prose-a:text-[#0050b3] prose-strong:text-slate-950 prose-img:rounded-xl prose-img:border prose-img:border-slate-100 prose-blockquote:border-l-4 prose-blockquote:border-l-slate-950 prose-blockquote:bg-slate-50 prose-blockquote:py-4 prose-blockquote:pl-5 prose-blockquote:pr-6 prose-blockquote:italic prose-blockquote:font-serif mb-12"
+          dangerouslySetInnerHTML={{ __html: htmlContent }}
+        />
+      );
+    }
 
     return (
-      <article
-        className="prose prose-lg max-w-none
-          prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-950
-          prose-p:text-slate-850 prose-p:leading-[1.85] prose-p:font-serif
-          prose-a:text-[#1890FF] prose-a:font-semibold prose-a:underline hover:prose-a:text-[#0050b3]
-          prose-strong:text-slate-950
-          prose-img:rounded-xl prose-img:border prose-img:border-slate-100
-          prose-blockquote:border-l-4 prose-blockquote:border-l-slate-950 prose-blockquote:bg-slate-50 prose-blockquote:py-4 prose-blockquote:pl-5 prose-blockquote:pr-6 prose-blockquote:italic prose-blockquote:font-serif
-          mb-12"
-        dangerouslySetInnerHTML={{ __html: htmlContent }}
-      />
+      <article className="mb-12">
+        {subBlocks.map((b, idx) => {
+          if (b.type === "chart") {
+            return <InteractiveChart key={`chart-${idx}`} chartData={b.chartData!} />;
+          } else {
+            const htmlContent = parseMarkdownToHtml(b.content);
+            return (
+              <div
+                key={`html-${idx}`}
+                className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-950 prose-p:text-slate-850 prose-p:leading-[1.85] prose-p:font-serif prose-a:text-[#1890FF] prose-a:font-semibold prose-a:underline hover:prose-a:text-[#0050b3] prose-strong:text-slate-950 prose-img:rounded-xl prose-img:border prose-img:border-slate-100 prose-blockquote:border-l-4 prose-blockquote:border-l-slate-950 prose-blockquote:bg-slate-50 prose-blockquote:py-4 prose-blockquote:pl-5 prose-blockquote:pr-6 prose-blockquote:italic prose-blockquote:font-serif mb-6"
+                dangerouslySetInnerHTML={{ __html: htmlContent }}
+              />
+            );
+          }
+        })}
+      </article>
     );
   }
 
@@ -437,6 +597,8 @@ export default function ArticleBlockRenderer({ content }: { content: string }) {
             return <BlockList key={key} block={block} />;
           case "divider":
             return <BlockDivider key={key} />;
+          case "chart":
+            return <InteractiveChart key={key} chartData={block} />;
           default:
             return null;
         }

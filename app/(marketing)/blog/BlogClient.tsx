@@ -121,16 +121,13 @@ function BlogSlider({ articles }: { articles: any[] }) {
                 <div className="absolute inset-0 bg-slate-900" />
               )}
               {/* Overlay Vignette */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/10" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
 
               {/* Centered Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-12 text-center text-white z-10">
-                <h2 className="font-serif font-bold text-2xl sm:text-4xl lg:text-5xl xl:text-6xl text-white max-w-5xl leading-[1.15] mb-5 tracking-tight drop-shadow-md">
+                <h2 className="font-serif font-bold text-2xl sm:text-4xl lg:text-5xl xl:text-6xl text-white max-w-5xl leading-[1.15] mb-8 tracking-tight drop-shadow-md">
                   {current.title}
                 </h2>
-                <p className="text-sm sm:text-base text-slate-350 font-light italic mb-8">
-                  por {current.author_name || "Manuel Oliva"}
-                </p>
                 <span className="px-8 py-3 border border-white hover:bg-white hover:text-black text-white text-xs font-bold tracking-widest uppercase transition-all duration-300">
                   LEER
                 </span>
@@ -370,30 +367,32 @@ export default function BlogClient({ articles }: { articles: any[] }) {
         <AnimatePresence>
           {isSearchActive && (
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
+              initial={{ height: 0, opacity: 0, y: -10 }}
+              animate={{ height: "auto", opacity: 1, y: 0 }}
+              exit={{ height: 0, opacity: 0, y: -10 }}
               transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="overflow-hidden bg-slate-50 border-b border-slate-200 mt-2"
+              className="overflow-hidden mt-3 mb-6"
             >
-              <div className="py-4 px-4 flex items-center gap-3">
-                <Search className="w-4 h-4 text-slate-950 flex-shrink-0" />
-                <input
-                  type="text"
-                  placeholder="Buscar artículos por título, tema o autor..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent border-none outline-none text-xs sm:text-sm tracking-wider text-slate-950 font-bold placeholder-slate-400 uppercase"
-                  autoFocus
-                />
-                {searchQuery && (
-                  <button 
-                    onClick={() => setSearchQuery("")}
-                    className="cursor-pointer bg-transparent border-none text-slate-450 hover:text-slate-950 text-[10px] tracking-widest font-bold uppercase transition-colors"
-                  >
-                    Limpiar
-                  </button>
-                )}
+              <div className="max-w-[600px] mx-auto">
+                <div className="flex items-center gap-3.5 px-5 py-3 rounded-2xl bg-slate-50 border border-slate-200/60 shadow-sm transition-all duration-300 focus-within:bg-white focus-within:border-slate-950 focus-within:shadow-md">
+                  <Search className="w-4 h-4 text-slate-400 flex-shrink-0 transition-colors group-focus-within:text-slate-950" />
+                  <input
+                    type="text"
+                    placeholder="Buscar artículos..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-transparent border-none outline-none text-xs sm:text-sm tracking-wider text-slate-950 font-bold placeholder-slate-400 uppercase focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none"
+                    autoFocus
+                  />
+                  {searchQuery && (
+                    <button 
+                      onClick={() => setSearchQuery("")}
+                      className="cursor-pointer bg-transparent border-none text-slate-450 hover:text-slate-950 text-[10px] tracking-widest font-bold uppercase transition-colors"
+                    >
+                      Limpiar
+                    </button>
+                  )}
+                </div>
               </div>
             </motion.div>
           )}
