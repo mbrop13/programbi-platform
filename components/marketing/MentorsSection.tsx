@@ -18,30 +18,38 @@ const LinkedinIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const themeMap: Record<string, { bg: string; text: string; border: string; hoverBg: string }> = {
+const themeMap: Record<string, { bg: string; text: string; border: string; hoverBg: string; hoverText: string; hoverBorder: string }> = {
   UserCheck: {
     bg: "bg-[#F0F7FF]",
     text: "text-[#1890FF]",
     border: "border-blue-100/55",
     hoverBg: "group-hover:bg-[#1890FF]",
+    hoverText: "group-hover:text-[#1890FF]",
+    hoverBorder: "#1890FF",
   },
   BarChart3: {
     bg: "bg-emerald-50",
     text: "text-emerald-600",
     border: "border-emerald-100/55",
     hoverBg: "group-hover:bg-emerald-600",
+    hoverText: "group-hover:text-emerald-600",
+    hoverBorder: "#10B981",
   },
   Brain: {
     bg: "bg-purple-50",
     text: "text-purple-600",
     border: "border-purple-100/55",
     hoverBg: "group-hover:bg-purple-600",
+    hoverText: "group-hover:text-purple-600",
+    hoverBorder: "#8B5CF6",
   },
   Monitor: {
     bg: "bg-amber-50",
     text: "text-amber-600",
     border: "border-amber-100/55",
     hoverBg: "group-hover:bg-amber-600",
+    hoverText: "group-hover:text-amber-600",
+    hoverBorder: "#F59E0B",
   },
 };
 
@@ -90,31 +98,20 @@ export default function MentorsSection() {
                   style={{ boxShadow: "0 10px 30px -10px rgba(15,23,42,0.03)" }}
                   whileHover={{
                     y: -12,
-                    borderColor: mentor.isFounder ? "#1890FF" : "#cbd5e1",
-                    boxShadow: "0 30px 60px -15px rgba(24,144,255,0.12)",
+                    borderColor: theme.hoverBorder,
+                    boxShadow: `0 30px 60px -15px ${theme.hoverBorder}1a`,
                   }}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
                 >
-                  {/* Visual card glow on hover for founder */}
-                  {mentor.isFounder && (
-                    <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-[#1890FF] to-indigo-500" />
-                  )}
-
                   <div className="flex-1 flex flex-col">
-                    {/* Avatar / Icon container */}
-                    <div className="relative w-24 h-24 mx-auto mb-6">
-                      {mentor.imageUrl ? (
-                        <div className="w-24 h-24 rounded-[1.8rem] overflow-hidden border-2 border-slate-100 shadow-sm relative group-hover:border-[#1890FF] transition-all duration-300 bg-white">
-                          <img src={mentor.imageUrl} alt={mentor.name} className="w-full h-full object-cover" />
-                        </div>
-                      ) : (
-                        <div className={`w-24 h-24 rounded-[1.8rem] ${theme.bg} border ${theme.border} flex items-center justify-center ${theme.text} ${theme.hoverBg} group-hover:text-white transition-all duration-300`}>
-                          {Icon ? <Icon className="w-9 h-9" /> : <UserCheck className="w-9 h-9" />}
-                        </div>
-                      )}
+                    {/* Icon container (Clean, consistent look without photos) */}
+                    <div className="relative w-20 h-20 mx-auto mb-6">
+                      <div className={`w-20 h-20 rounded-[1.6rem] ${theme.bg} border ${theme.border} flex items-center justify-center ${theme.text} ${theme.hoverBg} group-hover:text-white transition-all duration-300 shadow-sm`}>
+                        {Icon ? <Icon className="w-8 h-8" /> : <UserCheck className="w-8 h-8" />}
+                      </div>
                       
                       {mentor.isFounder && (
-                        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-[#1890FF] text-white text-[9px] font-black uppercase tracking-wider rounded-full shadow-sm">
+                        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-2.5 py-0.5 bg-[#1890FF] text-white text-[8px] font-black uppercase tracking-wider rounded-full shadow-sm">
                           Fundador
                         </span>
                       )}
@@ -122,7 +119,7 @@ export default function MentorsSection() {
 
                     {/* Name & LinkedIn */}
                     <div className="flex items-center justify-center gap-1.5 mb-1.5">
-                      <h3 className="font-display text-lg font-black text-[#0F172A] group-hover:text-[#1890FF] transition-colors">
+                      <h3 className={`font-display text-lg font-black text-[#0F172A] ${theme.hoverText} transition-colors`}>
                         {mentor.name}
                       </h3>
                       {mentor.linkedinUrl && (
@@ -139,7 +136,7 @@ export default function MentorsSection() {
                     </div>
 
                     {/* Role / Job Title */}
-                    <p className="text-xs font-black text-[#1890FF] uppercase tracking-widest mb-6">
+                    <p className={`text-xs font-black ${theme.text} uppercase tracking-widest mb-6`}>
                       {mentor.role}
                     </p>
 
@@ -149,7 +146,7 @@ export default function MentorsSection() {
                     <ul className="text-left space-y-3.5 mb-6">
                       {mentor.credentials.map((cred, i) => (
                         <li key={i} className="flex items-start gap-3 text-sm text-[#64748B] leading-relaxed">
-                          <svg className="w-4.5 h-4.5 text-[#10B981] group-hover:text-[#1890FF] transition-colors flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className={`w-4.5 h-4.5 text-[#10B981] ${theme.hoverText} transition-colors flex-shrink-0 mt-0.5`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
                           </svg>
                           <span>{cred}</span>
