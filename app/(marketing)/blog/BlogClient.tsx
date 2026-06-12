@@ -152,19 +152,7 @@ export default function BlogClient({ articles }: { articles: any[] }) {
   return (
     <div className="min-h-screen bg-white pb-28">
       {/* ── Main Header (Journal/Newspaper Header) ── */}
-      <header className="max-w-[1200px] mx-auto px-6 pt-28 sm:pt-32 pb-8">
-        
-        {/* Top tagline and Breadcrumb */}
-        <div className="flex items-center justify-between text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-4">
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5">
-            <Link href="/" className="hover:text-[#1890FF] no-underline text-slate-400 transition-colors">
-              Inicio
-            </Link>
-            <ChevronRight className="w-3 h-3" />
-            <span className="text-slate-700 font-bold">Blog</span>
-          </nav>
-          <span className="hidden sm:inline">CONOCIMIENTO COMPARTIDO</span>
-        </div>
+      <header className="max-w-[1200px] mx-auto px-6 pt-20 sm:pt-24 pb-8">
 
         {/* Central Logo */}
         <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-slate-950 text-center py-5 select-none">
