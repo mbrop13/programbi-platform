@@ -34,14 +34,16 @@ export default function TradingViewWidget({ tickers }: TradingViewWidgetProps) {
 
     // Build symbols array
     const symbols = tickers.map(t => {
-      let displayName = t;
-      let ticketString = t;
-      if (t.includes(":")) {
-        const parts = t.split(":");
+      // Remove all spaces (e.g., "NASDAQ: SPCX" -> "NASDAQ:SPCX")
+      const cleanT = t.replace(/\s+/g, "");
+      let displayName = cleanT;
+      let ticketString = cleanT;
+      if (cleanT.includes(":")) {
+        const parts = cleanT.split(":");
         displayName = parts[1];
         ticketString = `${parts[0]}:${parts[1]}|1D`;
       } else {
-        ticketString = `NASDAQ:${t}|1D`;
+        ticketString = `NASDAQ:${cleanT}|1D`;
       }
       return [displayName, ticketString];
     });
