@@ -67,33 +67,36 @@ function ModernDataVisual() {
         className="absolute right-10 bottom-0 z-0 w-56 h-56 bg-gradient-to-tr from-cyan-300/15 to-blue-300/15 rounded-full blur-3xl pointer-events-none"
       />
 
-      {/* Video Container (No browser frame, no floating, borderless, shadowless, rounded-3xl, aligned and cropped) */}
-      <div className="relative z-10 w-full max-w-[680px] aspect-video rounded-3xl overflow-hidden bg-transparent">
-        <div className="w-full h-full relative">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeIndex}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.35 }}
-              className="w-full h-full"
-            >
-              <video
-                ref={videoRef}
-                src={activeVideo.url}
-                autoPlay
-                muted
-                playsInline
-                onEnded={handleVideoEnded}
-                className="w-full h-full object-cover mix-blend-multiply bg-transparent scale-[1.20] origin-center"
-              />
-            </motion.div>
-          </AnimatePresence>
+      {/* Wrapper of Video + Controls (Centered relative to each other) */}
+      <div className="relative z-10 w-full max-w-[680px] flex flex-col items-center gap-5">
+        {/* Video Container (No browser frame, no floating, borderless, shadowless, rounded-3xl, cropped) */}
+        <div className="w-full aspect-video rounded-3xl overflow-hidden bg-transparent">
+          <div className="w-full h-full relative">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeIndex}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.35 }}
+                className="w-full h-full"
+              >
+                <video
+                  ref={videoRef}
+                  src={activeVideo.url}
+                  autoPlay
+                  muted
+                  playsInline
+                  onEnded={handleVideoEnded}
+                  className="w-full h-full object-cover mix-blend-multiply bg-transparent scale-[1.20] origin-center"
+                />
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </div>
 
-        {/* Liquid Glass Navigation Controls */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-1 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full p-1 shadow-[0_8px_32px_0_rgba(31,38,135,0.05)] w-max">
+        {/* Liquid Glass Navigation Controls (Placed Below) */}
+        <div className="flex gap-1 bg-[#0F172A]/85 backdrop-blur-xl border border-white/10 rounded-full p-1 shadow-[0_8px_32px_rgba(15,23,42,0.12)] w-max">
           {VIDEOS.map((video, idx) => {
             const Icon = video.icon;
             const isActive = activeIndex === idx;
