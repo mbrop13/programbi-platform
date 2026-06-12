@@ -3028,11 +3028,81 @@ function AdminNewsletter() {
 
 // ─── NEWSLETTER: ARTICLES TAB ───
 
+function parseMarkdownImport(text: string) {
+  const metadata: Record<string, string> = {};
+  let bodyContent = "";
+
+  const lines = text.split("\n");
+  let inFrontmatter = false;
+  let hasParsedFrontmatter = false;
+  const bodyLines: string[] = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmed = line.trim();
+
+    if (trimmed === "---" && !hasParsedFrontmatter) {
+      if (!inFrontmatter) {
+        inFrontmatter = true;
+      } else {
+        inFrontmatter = false;
+        hasParsedFrontmatter = true;
+      }
+      continue;
+    }
+
+    if (inFrontmatter) {
+      const colonIdx = line.indexOf(":");
+      if (colonIdx !== -1) {
+        const key = line.slice(0, colonIdx).trim().toLowerCase();
+        const value = line.slice(colonIdx + 1).trim();
+        metadata[key] = value;
+      }
+    } else {
+      const match = trimmed.match(/^(?:#\s*)?(titulo|title|imagen|image|cover|categoria|category|autor|author|tiempo|reading_time|tags|tags_list)\s*:\s*(.+)$/i);
+      
+      if (match && !hasParsedFrontmatter) {
+        const key = match[1].toLowerCase();
+        const value = match[2].trim();
+        metadata[key] = value;
+      } else {
+        if (trimmed !== "" && !trimmed.startsWith("---") && Object.keys(metadata).length > 0) {
+          hasParsedFrontmatter = true;
+        }
+        bodyLines.push(line);
+      }
+    }
+  }
+
+  bodyContent = bodyLines.join("\n").trim();
+
+  const title = metadata.titulo || metadata.title || "";
+  const cover_image = metadata.cover_image || metadata.cover_url || metadata.imagen || metadata.image || metadata.cover || "";
+  const category = metadata.categoria || metadata.category || "";
+  const author_name = metadata.autor || metadata.author || "";
+  const reading_time = metadata.reading_time || metadata.tiempo || metadata.time || "";
+  const tags = metadata.tags || metadata.tags_list || "";
+
+  return {
+    title,
+    cover_image,
+    category,
+    author_name,
+    reading_time,
+    tags,
+    content: bodyContent
+  };
+}
+
 function AdminNewsletterArticles() {
   const [articles, setArticles] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingArticle, setEditingArticle] = useState<any>(null);
+
+  // Editor modes
+  const [editorMode, setEditorMode] = useState<"visual" | "markdown">("markdown");
+  const [formMarkdownText, setFormMarkdownText] = useState("");
 
   // Form fields
   const [formTitle, setFormTitle] = useState("");
@@ -3076,6 +3146,7 @@ function AdminNewsletterArticles() {
     setFormCoverImage(""); setFormCategory("ia"); setFormTags("");
     setFormAuthor("ProgramBI"); setFormReadingTime(5); setFormStatus("draft");
     setFormFeatured(false); setEditingArticle(null);
+    setFormMarkdownText(""); setEditorMode("markdown");
   };
 
   const openCreateForm = () => {
@@ -3089,44 +3160,93 @@ function AdminNewsletterArticles() {
     setFormSlug(article.slug);
     setFormExcerpt(article.excerpt || "");
     setFormContent(article.content || "");
-    // Try to parse blocks from content
+    
+    let isJson = false;
     try {
       const parsed = JSON.parse(article.content || "[]");
-      if (Array.isArray(parsed)) setFormBlocks(parsed);
-      else setFormBlocks([{ type: "paragraph", text: article.content || "" }]);
-    } catch {
-      setFormBlocks([{ type: "paragraph", text: article.content || "" }]);
-    }
+      if (Array.isArray(parsed)) isJson = true;
+    } catch {}
+
+    const tagsStr = (article.tags || []).join(", ");
     setFormCoverImage(article.cover_image || "");
     setFormCategory(article.category || "ia");
-    setFormTags((article.tags || []).join(", "));
+    setFormTags(tagsStr);
     setFormAuthor(article.author_name || "ProgramBI");
     setFormReadingTime(article.reading_time_min || 5);
     setFormStatus(article.status);
     setFormFeatured(article.is_featured || false);
+
+    if (isJson) {
+      setEditorMode("visual");
+      try {
+        const parsed = JSON.parse(article.content || "[]");
+        setFormBlocks(parsed);
+      } catch {
+        setFormBlocks([{ type: "paragraph", text: article.content || "" }]);
+      }
+      setFormMarkdownText("");
+    } else {
+      setEditorMode("markdown");
+      const fm = `---
+title: ${article.title}
+cover_image: ${article.cover_image || ""}
+category: ${article.category || "ia"}
+author: ${article.author_name || "ProgramBI"}
+reading_time: ${article.reading_time_min || 5}
+tags: ${tagsStr}
+---
+
+${article.content || ""}`;
+      setFormMarkdownText(fm);
+      setFormBlocks([]);
+    }
     setShowForm(true);
   };
 
   const handleSave = async () => {
-    if (!formTitle || formBlocks.length === 0) return;
+    if (editorMode === "visual" && (!formTitle || formBlocks.length === 0)) return;
+    if (editorMode === "markdown" && !formMarkdownText.trim()) return;
+
     setSaving(true);
     try {
-      const slug = formSlug || generateSlug(formTitle);
-      const tags = formTags.split(",").map(t => t.trim()).filter(Boolean);
+      let payload: any = {};
 
-      const payload = {
-        title: formTitle,
-        slug,
-        excerpt: formExcerpt,
-        content: JSON.stringify(formBlocks),
-        cover_image: formCoverImage || undefined,
-        category: formCategory,
-        tags,
-        author_name: formAuthor,
-        reading_time_min: formReadingTime,
-        status: formStatus,
-        is_featured: formFeatured,
-      };
+      if (editorMode === "markdown") {
+        const parsed = parseMarkdownImport(formMarkdownText);
+        const titleVal = parsed.title || formTitle;
+        const slugVal = formSlug || generateSlug(titleVal);
+        const excerptVal = formExcerpt || (parsed.content.slice(0, 160) + "...");
+        const tagsVal = (parsed.tags || formTags).split(",").map(t => t.trim()).filter(Boolean);
+
+        payload = {
+          title: titleVal,
+          slug: slugVal,
+          excerpt: excerptVal,
+          content: parsed.content, // Save raw Markdown string
+          cover_image: parsed.cover_image || formCoverImage || undefined,
+          category: parsed.category || formCategory,
+          tags: tagsVal,
+          author_name: parsed.author_name || formAuthor,
+          reading_time_min: parseInt(parsed.reading_time) || formReadingTime,
+          status: formStatus,
+          is_featured: formFeatured,
+        };
+      } else {
+        const tagsVal = formTags.split(",").map(t => t.trim()).filter(Boolean);
+        payload = {
+          title: formTitle,
+          slug: formSlug || generateSlug(formTitle),
+          excerpt: formExcerpt,
+          content: JSON.stringify(formBlocks),
+          cover_image: formCoverImage || undefined,
+          category: formCategory,
+          tags: tagsVal,
+          author_name: formAuthor,
+          reading_time_min: formReadingTime,
+          status: formStatus,
+          is_featured: formFeatured,
+        };
+      }
 
       if (editingArticle) {
         await adminUpdateArticle(editingArticle.id, payload);
@@ -3200,111 +3320,200 @@ function AdminNewsletterArticles() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Título *</label>
-                  <input
-                    type="text" value={formTitle}
-                    onChange={(e) => { setFormTitle(e.target.value); if (!editingArticle) setFormSlug(generateSlug(e.target.value)); }}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
-                    placeholder="Título del artículo"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Slug (URL)</label>
-                  <input
-                    type="text" value={formSlug}
-                    onChange={(e) => setFormSlug(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
-                    placeholder="titulo-del-articulo"
-                  />
-                </div>
+              {/* Toggle Editor Mode */}
+              <div className="flex gap-2 mb-6">
+                <button
+                  onClick={() => setEditorMode("markdown")}
+                  type="button"
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border-none cursor-pointer ${
+                    editorMode === "markdown" ? "bg-brand-blue text-white shadow-sm" : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-200"
+                  }`}
+                >
+                  📝 Editor Markdown (Un solo bloque)
+                </button>
+                <button
+                  onClick={() => setEditorMode("visual")}
+                  type="button"
+                  className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border-none cursor-pointer ${
+                    editorMode === "visual" ? "bg-brand-blue text-white shadow-sm" : "bg-white text-gray-500 hover:bg-gray-100 border border-gray-200"
+                  }`}
+                >
+                  🎨 Editor Visual (Bloques JSON)
+                </button>
               </div>
 
-              <div className="mb-4">
-                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Extracto</label>
-                <textarea
-                  value={formExcerpt} onChange={(e) => setFormExcerpt(e.target.value)}
-                  rows={2}
-                  className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40 resize-none"
-                  placeholder="Breve resumen del artículo..."
-                />
-              </div>
+              {editorMode === "markdown" ? (
+                <div className="mb-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Documento Completo (Markdown + Metadatos)</label>
+                    <span className="text-[10px] text-gray-400 font-medium">Usa las etiquetas en la cabecera (entre ---) para configurar todo en un solo bloque.</span>
+                  </div>
+                  <textarea
+                    value={formMarkdownText}
+                    onChange={(e) => {
+                      setFormMarkdownText(e.target.value);
+                      const parsed = parseMarkdownImport(e.target.value);
+                      if (parsed.title) setFormTitle(parsed.title);
+                      if (parsed.cover_image) setFormCoverImage(parsed.cover_image);
+                      if (parsed.category) setFormCategory(parsed.category);
+                      if (parsed.author_name) setFormAuthor(parsed.author_name);
+                      if (parsed.reading_time) setFormReadingTime(parseInt(parsed.reading_time) || 5);
+                      if (parsed.tags) setFormTags(parsed.tags);
+                    }}
+                    rows={20}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white font-mono text-sm focus:outline-none focus:border-brand-blue/40 resize-y"
+                    placeholder={`---
+title: Claude Fable 5: el modelo de IA más potente del año
+cover_image: https://example.com/portada.png
+category: ia
+author: Por el equipo ProgramBI
+reading_time: 5
+tags: power-bi, ai
+---
 
-              <ArticleBlockEditor
-                blocks={formBlocks}
-                onChange={(blocks) => setFormBlocks(blocks)}
-              />
+El pasado 9 de junio, Anthropic lanzó...`}
+                  />
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Título *</label>
+                      <input
+                        type="text" value={formTitle}
+                        onChange={(e) => { setFormTitle(e.target.value); if (!editingArticle) setFormSlug(generateSlug(e.target.value)); }}
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                        placeholder="Título del artículo"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Slug (URL)</label>
+                      <input
+                        type="text" value={formSlug}
+                        onChange={(e) => setFormSlug(e.target.value)}
+                        className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                        placeholder="titulo-del-articulo"
+                      />
+                    </div>
+                  </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Imagen de Portada (URL)</label>
-                  <input
-                    type="text" value={formCoverImage} onChange={(e) => setFormCoverImage(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
-                    placeholder="https://..."
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Categoría</label>
-                  <select value={formCategory} onChange={(e) => setFormCategory(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none">
-                    <option value="ia">AI</option>
-                    <option value="industria">Economía</option>
-                    <option value="general">Cultura</option>
-                    <option value="power-bi">Tecnología - Power BI</option>
-                    <option value="sql">Tecnología - SQL</option>
-                    <option value="python">Tecnología - Python</option>
-                    <option value="tecnologia">Tecnología - General</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Autor</label>
-                  <input
-                    type="text" value={formAuthor} onChange={(e) => setFormAuthor(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Lectura (min)</label>
-                  <input
-                    type="number" value={formReadingTime} onChange={(e) => setFormReadingTime(parseInt(e.target.value) || 5)}
-                    min={1}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
-                  />
-                </div>
-              </div>
+                  <div className="mb-4">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Extracto</label>
+                    <textarea
+                      value={formExcerpt} onChange={(e) => setFormExcerpt(e.target.value)}
+                      rows={2}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40 resize-none"
+                      placeholder="Breve resumen del artículo..."
+                    />
+                  </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Tags (separados por coma)</label>
-                  <input
-                    type="text" value={formTags} onChange={(e) => setFormTags(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
-                    placeholder="power-bi, dashboard, tips"
+                  <ArticleBlockEditor
+                    blocks={formBlocks}
+                    onChange={(blocks) => setFormBlocks(blocks)}
                   />
+                </>
+              )}
+
+              {/* Form Metadata fields (always visible or collapsed) */}
+              <div className="border-t border-gray-200 pt-6 mt-6">
+                <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Campos de Metadatos Detectados / Adicionales</h4>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Título</label>
+                    <input
+                      type="text" value={formTitle} onChange={(e) => { setFormTitle(e.target.value); if (!editingArticle) setFormSlug(generateSlug(e.target.value)); }}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Slug (URL)</label>
+                    <input
+                      type="text" value={formSlug} onChange={(e) => setFormSlug(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Imagen de Portada (URL)</label>
+                    <input
+                      type="text" value={formCoverImage} onChange={(e) => setFormCoverImage(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Categoría</label>
+                    <select value={formCategory} onChange={(e) => setFormCategory(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none">
+                      <option value="ia">AI</option>
+                      <option value="industria">Economía</option>
+                      <option value="general">Cultura</option>
+                      <option value="power-bi">Tecnología - Power BI</option>
+                      <option value="sql">Tecnología - SQL</option>
+                      <option value="python">Tecnología - Python</option>
+                      <option value="tecnologia">Tecnología - General</option>
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Estado</label>
-                  <select value={formStatus} onChange={(e) => setFormStatus(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none">
-                    <option value="draft">Borrador</option>
-                    <option value="published">Publicado</option>
-                    <option value="archived">Archivado</option>
-                  </select>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Autor</label>
+                    <input
+                      type="text" value={formAuthor} onChange={(e) => setFormAuthor(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Lectura (min)</label>
+                    <input
+                      type="number" value={formReadingTime} onChange={(e) => setFormReadingTime(parseInt(e.target.value) || 5)}
+                      min={1}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Tags (separados por coma)</label>
+                    <input
+                      type="text" value={formTags} onChange={(e) => setFormTags(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                      placeholder="power-bi, dashboard, tips"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Estado</label>
+                    <select value={formStatus} onChange={(e) => setFormStatus(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none">
+                      <option value="draft">Borrador</option>
+                      <option value="published">Publicado</option>
+                      <option value="archived">Archivado</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="flex items-end">
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" checked={formFeatured} onChange={(e) => setFormFeatured(e.target.checked)} className="w-4 h-4 rounded" />
-                    <span className="text-sm font-bold text-gray-700">⭐ Artículo Destacado</span>
-                  </label>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Extracto</label>
+                    <textarea
+                      value={formExcerpt} onChange={(e) => setFormExcerpt(e.target.value)}
+                      rows={2}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40 resize-none"
+                      placeholder="Breve resumen del artículo..."
+                    />
+                  </div>
+                  <div className="flex items-end pb-3">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input type="checkbox" checked={formFeatured} onChange={(e) => setFormFeatured(e.target.checked)} className="w-4 h-4 rounded" />
+                      <span className="text-sm font-bold text-gray-700">⭐ Artículo Destacado</span>
+                    </label>
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
                 <button
                   onClick={handleSave}
-                  disabled={!formTitle || formBlocks.length === 0 || saving}
+                  disabled={(editorMode === "visual" && (!formTitle || formBlocks.length === 0)) || (editorMode === "markdown" && !formMarkdownText.trim()) || saving}
                   className="px-6 py-2.5 bg-brand-blue text-white font-bold rounded-xl text-sm hover:bg-blue-600 transition-colors border-none cursor-pointer disabled:opacity-40 flex items-center gap-2"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
