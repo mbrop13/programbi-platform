@@ -210,52 +210,66 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
       />
 
       {/* ── ARTICLE HEADER ── */}
-      <header className="max-w-[1140px] mx-auto px-6 pt-20 sm:pt-24 pb-8">
-        {/* Top Navigation Row inside header */}
-        <div className={`flex items-center justify-between text-[10px] font-bold uppercase tracking-widest mb-10 pb-4 border-b ${
-          prefs.theme === "dark" ? "text-slate-500 border-slate-800" : "text-slate-400 border-slate-100"
-        }`}>
-          <Link 
-            href="/blog" 
-            className={`flex items-center gap-1.5 no-underline transition-colors group ${
-              prefs.theme === "dark" ? "text-slate-400 hover:text-white" : "text-slate-550 hover:text-black"
-            }`}
-          >
-            <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
-            <span>Volver</span>
-          </Link>
+      <header className="max-w-[1140px] mx-auto px-6 pt-10 sm:pt-12 pb-6">
+        {/* Navigation row flanking the title on desktop, above the title on mobile */}
+        <div className="relative flex flex-col lg:flex-row items-center justify-between gap-6">
           
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5">
-            <Link href="/" className={`no-underline transition-colors ${prefs.theme === "dark" ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-black"}`}>Inicio</Link>
-            <ChevronRight className="w-3 h-3" />
-            <Link href="/blog" className={`no-underline transition-colors ${prefs.theme === "dark" ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-black"}`}>Blog</Link>
-          </nav>
-        </div>
+          {/* Volver - left side on desktop, top-left on mobile */}
+          <div className="w-full lg:w-auto lg:absolute lg:left-0 lg:top-2 flex justify-between lg:justify-start text-[10px] font-bold uppercase tracking-widest">
+            <Link 
+              href="/blog" 
+              className={`flex items-center gap-1.5 no-underline transition-colors group ${
+                prefs.theme === "dark" ? "text-slate-400 hover:text-white" : "text-slate-550 hover:text-black"
+              }`}
+            >
+              <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
+              <span>Volver</span>
+            </Link>
 
-        {/* Title, Excerpt and Metadata */}
-        <div className="max-w-[900px] mx-auto text-center">
-          <h1 className={`font-serif font-bold text-3xl sm:text-5xl lg:text-6xl leading-tight tracking-tight mb-6 ${
-            prefs.theme === "dark" ? "text-white" : "text-slate-950"
-          }`}>
-            {article.title}
-          </h1>
+            {/* Breadcrumb on mobile right-aligned in same top row */}
+            <div className="lg:hidden">
+              <nav aria-label="Breadcrumb" className="flex items-center gap-1.5">
+                <Link href="/" className={`no-underline transition-colors ${prefs.theme === "dark" ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-black"}`}>Inicio</Link>
+                <ChevronRight className="w-3 h-3" />
+                <Link href="/blog" className={`no-underline transition-colors ${prefs.theme === "dark" ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-black"}`}>Blog</Link>
+              </nav>
+            </div>
+          </div>
 
-          {article.excerpt && (
-            <p className={`text-lg sm:text-xl leading-relaxed mb-6 font-light ${
-              prefs.theme === "dark" ? "text-slate-400" : "text-slate-655"
+          {/* Central Title, Excerpt and Metadata */}
+          <div className="max-w-[900px] mx-auto text-center px-0 lg:px-24">
+            <h1 className={`font-serif font-bold text-3xl sm:text-5xl lg:text-6xl leading-tight tracking-tight mb-6 ${
+              prefs.theme === "dark" ? "text-white" : "text-slate-950"
             }`}>
-              {article.excerpt}
-            </p>
-          )}
+              {article.title}
+            </h1>
 
-          <div className={`flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-widest pb-4 max-w-lg mx-auto ${
-            prefs.theme === "dark" ? "text-slate-500" : "text-slate-455"
-          }`}>
-            <span>por {article.author_name || "Manuel Oliva"}</span>
-            <span>•</span>
-            <span>{formatDate(article.published_at || article.created_at)}</span>
-            <span>•</span>
-            <span>{article.reading_time_min} min</span>
+            {article.excerpt && (
+              <p className={`text-lg sm:text-xl leading-relaxed mb-6 font-light ${
+                prefs.theme === "dark" ? "text-slate-400" : "text-slate-655"
+              }`}>
+                {article.excerpt}
+              </p>
+            )}
+
+            <div className={`flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-widest pb-4 max-w-lg mx-auto ${
+              prefs.theme === "dark" ? "text-slate-500" : "text-slate-455"
+            }`}>
+              <span>por {article.author_name || "Manuel Oliva"}</span>
+              <span>•</span>
+              <span>{formatDate(article.published_at || article.created_at)}</span>
+              <span>•</span>
+              <span>{article.reading_time_min} min</span>
+            </div>
+          </div>
+
+          {/* Breadcrumbs - right side on desktop, hidden on mobile */}
+          <div className="hidden lg:flex lg:absolute lg:right-0 lg:top-2 text-[10px] font-bold uppercase tracking-widest">
+            <nav aria-label="Breadcrumb" className="flex items-center gap-1.5">
+              <Link href="/" className={`no-underline transition-colors ${prefs.theme === "dark" ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-black"}`}>Inicio</Link>
+              <ChevronRight className="w-3 h-3" />
+              <Link href="/blog" className={`no-underline transition-colors ${prefs.theme === "dark" ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-black"}`}>Blog</Link>
+            </nav>
           </div>
         </div>
       </header>
