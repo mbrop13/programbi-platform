@@ -24,6 +24,7 @@ const navLinks = [
   { href: "/cursos", label: "Cursos", hasMega: true },
   { href: "/asesorias", label: "Asesorías" },
   { href: "/webinar", label: "Webinar" },
+  { href: "/blog", label: "Blog" },
   // { href: "/comunidad", label: "Comunidad" },
 ];
 
