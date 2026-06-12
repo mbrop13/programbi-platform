@@ -18,13 +18,13 @@ const CATEGORIES = [
   { value: "general", label: "General" },
 ] as const;
 
-const categoryColors: Record<string, string> = {
-  "power-bi": "#F59E0B", // Amber
-  sql: "#EF4444",      // Red
-  python: "#3B82F6",   // Blue
-  ia: "#8B5CF6",       // Purple
-  industria: "#10B981",// Emerald
-  general: "#1890FF",  // Brand Blue
+const CATEGORY_THEMES: Record<string, { color: string; rgb: string }> = {
+  "power-bi": { color: "#F59E0B", rgb: "245, 158, 11" },
+  sql: { color: "#EF4444", rgb: "239, 68, 68" },
+  python: { color: "#3B82F6", rgb: "59, 130, 246" },
+  ia: { color: "#8B5CF6", rgb: "139, 92, 246" },
+  industria: { color: "#10B981", rgb: "16, 185, 129" },
+  general: { color: "#1890FF", rgb: "24, 144, 255" },
 };
 
 const categoryLabels: Record<string, string> = {
@@ -49,77 +49,91 @@ function formatDate(d: string) {
 /* ── Featured Hero ───────────────────────────── */
 
 function FeaturedHero({ article }: { article: any }) {
-  const catColor = categoryColors[article.category] || "#1890FF";
+  const theme = CATEGORY_THEMES[article.category] || CATEGORY_THEMES.general;
 
   return (
-    <Link href={`/blog/${article.slug}`} className="block no-underline group mb-16">
-      <div className="relative rounded-3xl overflow-hidden bg-white border border-slate-100 hover:border-slate-200/80 shadow-[0_15px_40px_rgba(15,23,42,0.015)] hover:shadow-[0_30px_70px_rgba(24,144,255,0.07)] transition-all duration-500">
+    <Link href={`/blog/${article.slug}`} className="block no-underline group mb-20">
+      <div 
+        className="relative rounded-3xl overflow-hidden bg-white border border-slate-100/80 shadow-[0_15px_50px_rgba(15,23,42,0.015)] hover:shadow-[0_30px_70px_rgba(var(--cat-rgb),0.12)] transition-all duration-500"
+        style={{ "--cat-rgb": theme.rgb } as React.CSSProperties}
+      >
         <div className="grid lg:grid-cols-12 gap-0">
           {/* Image */}
-          <div className="lg:col-span-7 relative h-72 sm:h-96 lg:h-[460px] overflow-hidden bg-slate-50">
+          <div className="lg:col-span-7 relative h-72 sm:h-96 lg:h-[480px] overflow-hidden bg-slate-50 border-r border-slate-100/50">
             {article.cover_image ? (
               <Image
                 src={article.cover_image}
                 alt={article.title}
                 fill
-                className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 unoptimized
                 priority
               />
             ) : (
               <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
-                <BookOpen className="w-16 h-16 text-slate-350" />
+                <BookOpen className="w-16 h-16 text-slate-300" />
               </div>
             )}
-            <div className="absolute top-4 left-4 z-20 flex gap-2">
+            <div className="absolute top-5 left-5 z-20 flex gap-2.5">
               <span
-                className="px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest text-white shadow-sm"
-                style={{ backgroundColor: catColor }}
+                className="px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider border shadow-sm animate-fade-in"
+                style={{
+                  backgroundColor: `${theme.color}14`,
+                  borderColor: `${theme.color}33`,
+                  color: theme.color,
+                }}
               >
                 {categoryLabels[article.category] || article.category}
               </span>
-              <span className="bg-slate-900/80 backdrop-blur-md text-amber-400 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1 shadow-sm">
-                <Sparkles className="w-3.5 h-3.5 fill-amber-400" />
+              <span className="bg-amber-500/10 backdrop-blur-md text-amber-700 border border-amber-500/20 px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 fill-amber-500 text-amber-600" />
                 Destacado
               </span>
             </div>
           </div>
 
           {/* Content */}
-          <div className="lg:col-span-5 relative flex flex-col justify-between p-8 sm:p-10 lg:p-12 bg-white">
+          <div className="lg:col-span-5 relative flex flex-col justify-between p-8 sm:p-10 lg:p-12 xl:p-14 bg-white">
             <div className="flex-1 flex flex-col justify-center">
-              <h2 className="font-display font-black text-2xl sm:text-3xl lg:text-4xl text-slate-900 leading-tight tracking-tight mb-4 group-hover:text-[#1890FF] transition-colors duration-300">
+              <h2 className="font-display font-extrabold text-2xl sm:text-3xl lg:text-4xl text-slate-900 leading-tight tracking-tight mb-5 group-hover:text-[#1890FF] transition-colors duration-300">
                 {article.title}
               </h2>
 
               {article.excerpt && (
-                <p className="text-slate-550 text-sm sm:text-base leading-relaxed mb-6 line-clamp-4 font-light">
+                <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-8 line-clamp-4 font-light">
                   {article.excerpt}
                 </p>
               )}
             </div>
 
             {/* Author Footer */}
-            <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-auto">
+            <div className="flex items-center justify-between pt-6 border-t border-slate-100/80 mt-auto">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1890FF] to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow-sm">
+                <div 
+                  className="w-10 h-10 rounded-xl flex items-center justify-center text-sm font-bold border shadow-sm"
+                  style={{
+                    backgroundColor: `${theme.color}14`,
+                    borderColor: `${theme.color}2b`,
+                    color: theme.color
+                  }}
+                >
                   {article.author_name ? article.author_name[0] : "P"}
                 </div>
                 <div>
                   <span className="text-sm font-bold text-slate-800 block leading-none mb-1">
                     {article.author_name || "ProgramBI"}
                   </span>
-                  <span className="text-[10px] text-slate-400 block">
+                  <span className="text-[10px] text-slate-400 block font-medium">
                     {formatDate(article.published_at || article.created_at)}
                   </span>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <span className="flex items-center gap-1.5 text-xs font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+                <span className="flex items-center gap-1.5 text-xs font-bold text-slate-500 bg-slate-50 px-3.5 py-1.5 rounded-full border border-slate-100/80">
                   <Clock className="w-3.5 h-3.5 text-slate-400" />
-                  {article.reading_time_min} min
+                  <span>{article.reading_time_min} min</span>
                 </span>
-                <span className="w-9 h-9 rounded-full bg-slate-50 hover:bg-[#1890FF] text-slate-400 hover:text-white flex items-center justify-center transition-all duration-300 shadow-sm border border-slate-100 group-hover:border-[#1890FF] group-hover:scale-105">
+                <span className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 group-hover:bg-[#1890FF] group-hover:text-white text-slate-400 flex items-center justify-center transition-all duration-300 group-hover:translate-x-1 shadow-sm">
                   <ChevronRight className="w-5 h-5" />
                 </span>
               </div>
@@ -134,25 +148,28 @@ function FeaturedHero({ article }: { article: any }) {
 /* ── Article Card ────────────────────────────── */
 
 function ArticleCard({ article, index }: { article: any; index: number }) {
-  const catColor = categoryColors[article.category] || "#1890FF";
+  const theme = CATEGORY_THEMES[article.category] || CATEGORY_THEMES.general;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
+      initial={{ opacity: 0, y: 24 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className="h-full"
     >
       <Link href={`/blog/${article.slug}`} className="block no-underline group h-full">
-        <article className="bg-white rounded-3xl border border-slate-100 hover:border-slate-200 overflow-hidden hover:-translate-y-2 transition-all duration-350 h-full flex flex-col shadow-[0_10px_30px_rgba(15,23,42,0.015)] hover:shadow-[0_20px_45px_rgba(15,23,42,0.04)]">
+        <article 
+          className="bg-white rounded-3xl border border-slate-100/80 overflow-hidden hover:-translate-y-2 transition-all duration-300 h-full flex flex-col shadow-[0_10px_30px_rgba(15,23,42,0.01)] hover:shadow-[0_20px_45px_rgba(var(--cat-rgb),0.12)]"
+          style={{ "--cat-rgb": theme.rgb } as React.CSSProperties}
+        >
           {/* Image */}
-          <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-50">
+          <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-50 border-b border-slate-100/30">
             {article.cover_image ? (
               <Image
                 src={article.cover_image}
                 alt={article.title}
                 fill
-                className="object-cover transition-transform duration-750 group-hover:scale-[1.04]"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                 unoptimized
               />
             ) : (
@@ -162,16 +179,20 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
             )}
             {/* Category tag overlaid on top left */}
             <span
-              className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest text-white shadow-sm"
-              style={{ backgroundColor: catColor }}
+              className="absolute top-4 left-4 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-wider border shadow-sm backdrop-blur-md"
+              style={{
+                backgroundColor: `${theme.color}24`,
+                borderColor: `${theme.color}47`,
+                color: theme.color,
+              }}
             >
               {categoryLabels[article.category] || article.category}
             </span>
           </div>
 
           {/* Content */}
-          <div className="p-6 flex flex-col flex-1">
-            <h3 className="font-display font-black text-lg text-slate-900 leading-snug group-hover:text-[#1890FF] transition-colors duration-300 line-clamp-2 mb-3">
+          <div className="p-6 sm:p-7 flex flex-col flex-1">
+            <h3 className="font-display font-extrabold text-lg sm:text-xl text-slate-900 leading-snug group-hover:text-[#1890FF] transition-colors duration-300 line-clamp-2 mb-3">
               {article.title}
             </h3>
 
@@ -182,23 +203,30 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
             )}
 
             {/* Footer */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
+            <div className="flex items-center justify-between pt-4.5 border-t border-slate-100/80 mt-auto">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1890FF] to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                <div 
+                  className="w-8.5 h-8.5 rounded-lg flex items-center justify-center text-xs font-bold border"
+                  style={{
+                    backgroundColor: `${theme.color}14`,
+                    borderColor: `${theme.color}2b`,
+                    color: theme.color
+                  }}
+                >
                   {article.author_name ? article.author_name[0] : "P"}
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-slate-800 block leading-none mb-0.5">
+                  <span className="text-xs font-bold text-slate-800 block leading-none mb-1">
                     {article.author_name || "ProgramBI"}
                   </span>
-                  <span className="text-[10px] text-slate-400 block leading-none">
+                  <span className="text-[10px] text-slate-400 block font-medium leading-none">
                     {formatDate(article.published_at || article.created_at)}
                   </span>
                 </div>
               </div>
-              <span className="flex items-center gap-1 text-[10px] font-bold text-slate-500 bg-slate-50 px-2.5 py-1.5 rounded-full border border-slate-100">
-                <Clock className="w-3 h-3 text-slate-400" />
-                {article.reading_time_min} min
+              <span className="flex items-center gap-1.5 text-[10px] font-bold text-slate-500 bg-slate-50 px-2.5 py-1.5 rounded-full border border-slate-100/80">
+                <Clock className="w-3.5 h-3.5 text-slate-400" />
+                <span>{article.reading_time_min} min</span>
               </span>
             </div>
           </div>
@@ -222,38 +250,39 @@ export default function BlogClient({ articles }: { articles: any[] }) {
   const rest = featured ? filtered.filter((a) => a.id !== featured.id) : filtered;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/50 to-white pb-24 relative overflow-hidden">
-      {/* Premium background accents */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden max-h-[900px]">
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/30 to-white pb-28 relative overflow-hidden">
+      {/* Premium background grid pattern & radial glows */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden max-h-[1000px]">
         <div
           className="absolute inset-0"
           style={{
-            backgroundSize: "40px 40px",
+            backgroundSize: "60px 60px",
             backgroundImage:
-              "linear-gradient(to right, rgba(24,144,255,0.015) 1px, transparent 1px), linear-gradient(to bottom, rgba(24,144,255,0.015) 1px, transparent 1px)",
+              "linear-gradient(to right, rgba(24,144,255,0.018) 1px, transparent 1px), linear-gradient(to bottom, rgba(24,144,255,0.018) 1px, transparent 1px)",
           }}
         />
-        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-blue-100/15 rounded-full blur-[130px]" />
-        <div className="absolute top-1/4 left-10 w-[500px] h-[500px] bg-indigo-100/10 rounded-full blur-[110px]" />
+        <div className="absolute top-0 right-1/4 w-[700px] h-[700px] bg-gradient-to-tr from-[#1890FF]/8 to-blue-500/8 rounded-full blur-[140px]" />
+        <div className="absolute top-1/3 left-10 w-[600px] h-[600px] bg-gradient-to-tr from-violet-500/5 to-indigo-500/5 rounded-full blur-[120px]" />
+        <div className="absolute top-10 left-1/3 w-[500px] h-[500px] bg-gradient-to-tr from-cyan-500/5 to-blue-500/5 rounded-full blur-[110px]" />
       </div>
 
       <div className="relative z-10">
         {/* ── Header ─────────────────────────── */}
-        <header className="max-w-[1300px] mx-auto px-6 lg:px-12 xl:px-16 pt-28 sm:pt-32 pb-10">
+        <header className="max-w-[1340px] mx-auto px-6 lg:px-12 xl:px-16 pt-32 sm:pt-36 pb-12">
           {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-gray-400 mb-8">
-            <Link href="/" className="hover:text-[#1890FF] no-underline text-gray-400 transition-colors">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs font-semibold text-slate-400 mb-8">
+            <Link href="/" className="hover:text-[#1890FF] no-underline text-slate-400 transition-colors">
               Inicio
             </Link>
-            <ChevronRight className="w-3 h-3 text-slate-350" />
-            <span className="text-slate-700 font-medium">Blog</span>
+            <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
+            <span className="text-slate-700 font-bold">Blog</span>
           </nav>
 
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-100 text-[#1890FF] text-xs font-bold uppercase tracking-wider mb-4">
-            Recursos y Conocimiento
+          <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-[#1890FF] text-[10px] font-black uppercase tracking-wider mb-5 shadow-sm">
+            Recursos y Conocimiento Técnico
           </span>
 
-          <h1 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-slate-900 tracking-tight leading-tight mb-4">
+          <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl xl:text-7xl text-slate-900 tracking-tight leading-[1.08] mb-5">
             Blog de{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
               Datos e IA
@@ -264,7 +293,7 @@ export default function BlogClient({ articles }: { articles: any[] }) {
           </p>
 
           {/* Category Filter Tabs (Sliding Glass menu style!) */}
-          <div className="relative flex flex-wrap gap-1 mt-10 p-1 bg-white/80 backdrop-blur-md border border-slate-200/50 rounded-2xl w-max max-w-full shadow-[0_8px_30px_rgba(0,0,0,0.03)]" role="tablist" aria-label="Filtrar por categoría">
+          <div className="relative flex flex-wrap gap-1 mt-12 p-1 bg-white/80 backdrop-blur-xl border border-slate-200/40 rounded-2xl w-max max-w-full shadow-[0_8px_32px_rgba(31,38,135,0.04)]" role="tablist" aria-label="Filtrar por categoría">
             {CATEGORIES.map((cat) => {
               const isActive = activeCategory === cat.value;
               return (
@@ -273,7 +302,7 @@ export default function BlogClient({ articles }: { articles: any[] }) {
                   role="tab"
                   aria-selected={isActive}
                   onClick={() => setActiveCategory(cat.value)}
-                  className={`relative py-2.5 px-5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center whitespace-nowrap z-10 border-none cursor-pointer bg-transparent ${
+                  className={`relative py-2.5 px-5.5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center whitespace-nowrap z-10 border-none cursor-pointer bg-transparent ${
                     isActive
                       ? "text-white"
                       : "text-slate-600 hover:text-slate-900"
@@ -282,7 +311,7 @@ export default function BlogClient({ articles }: { articles: any[] }) {
                   {isActive && (
                     <motion.div
                       layoutId="activeCategoryGlow"
-                      className="absolute inset-0 bg-gradient-to-r from-[#1890FF] to-blue-500 rounded-xl -z-10 shadow-[0_4px_12px_rgba(24,144,255,0.25),inset_0_1px_1px_rgba(255,255,255,0.3)]"
+                      className="absolute inset-0 bg-gradient-to-r from-[#1890FF] to-blue-500 rounded-xl -z-10 shadow-[0_4px_14px_rgba(24,144,255,0.3),inset_0_1px_1px_rgba(255,255,255,0.35)]"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
                     />
                   )}
@@ -294,12 +323,12 @@ export default function BlogClient({ articles }: { articles: any[] }) {
         </header>
 
         {/* ── Content ────────────────────────── */}
-        <main className="max-w-[1300px] mx-auto px-6 lg:px-12 xl:px-16 py-4">
+        <main className="max-w-[1340px] mx-auto px-6 lg:px-12 xl:px-16 py-4">
           {filtered.length === 0 ? (
             /* Empty State */
-            <div className="text-center py-24 bg-white rounded-3xl border border-slate-100 shadow-[0_15px_40px_rgba(15,23,42,0.01)]">
-              <BookOpen className="w-14 h-14 text-slate-200 mx-auto mb-5" />
-              <h2 className="font-display font-bold text-2xl text-slate-900 mb-2">
+            <div className="text-center py-28 bg-white rounded-3xl border border-slate-100 shadow-[0_15px_50px_rgba(15,23,42,0.01)]">
+              <BookOpen className="w-16 h-16 text-slate-200 mx-auto mb-6" />
+              <h2 className="font-display font-extrabold text-2xl text-slate-900 mb-2">
                 No hay artículos en esta categoría
               </h2>
               <p className="text-slate-400 text-sm max-w-md mx-auto leading-relaxed font-light">
@@ -313,13 +342,13 @@ export default function BlogClient({ articles }: { articles: any[] }) {
 
               {/* Grid Title */}
               {rest.length > 0 && (
-                <h3 className="font-display font-black text-xl text-slate-900 mb-8 tracking-tight">
+                <h3 className="font-display font-extrabold text-xl lg:text-2xl text-slate-900 mb-8 tracking-tight">
                   Últimos Artículos
                 </h3>
               )}
 
               {/* Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
                 {rest.map((article, i) => (
                   <ArticleCard key={article.id} article={article} index={i} />
                 ))}

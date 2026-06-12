@@ -154,7 +154,7 @@ export default function HeroSection() {
       </div>
 
       <div className="max-w-[1500px] mx-auto px-4 lg:px-6 relative z-10 pt-1 pb-4">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
           {/* ── Left Column (6/12) ── */}
           <div className="lg:col-span-6 text-center lg:text-left relative z-20">
             {/* Pill Badge */}
@@ -238,7 +238,7 @@ export default function HeroSection() {
           </div>
 
           {/* ── Right Column (6/12) ── */}
-          <div className="lg:col-span-6 relative w-full flex justify-center lg:justify-end z-10">
+          <div className="lg:col-span-6 relative w-full flex justify-center lg:justify-end z-10 lg:pt-16">
             <FadeIn delay={0.4} direction="left" className="w-full">
               <ModernDataVisual />
             </FadeIn>
