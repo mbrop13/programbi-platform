@@ -67,12 +67,8 @@ function ModernDataVisual() {
         className="absolute right-10 bottom-0 z-0 w-56 h-56 bg-gradient-to-tr from-cyan-300/15 to-blue-300/15 rounded-full blur-3xl pointer-events-none"
       />
 
-      {/* Video Container (No browser frame, border, shadow or black background) */}
-      <motion.div
-        animate={{ y: [0, -8, 0] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        className="relative z-10 w-full max-w-[760px] aspect-video flex flex-col justify-end lg:-mr-16 xl:-mr-28 bg-transparent"
-      >
+      {/* Video Container (No browser frame, no floating, borderless, shadowless, rounded-3xl) */}
+      <div className="relative z-10 w-full max-w-[760px] aspect-video rounded-3xl overflow-hidden lg:-mr-28 xl:-mr-44 bg-transparent">
         <div className="w-full h-full relative">
           <AnimatePresence mode="wait">
             <motion.div
@@ -109,7 +105,7 @@ function ModernDataVisual() {
                 className={`relative py-1.5 px-3.5 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap z-10 ${
                   isActive
                     ? "text-white"
-                    : "text-slate-650 hover:text-slate-900"
+                    : "text-white/60 hover:text-white"
                 }`}
               >
                 {isActive && (
@@ -125,7 +121,7 @@ function ModernDataVisual() {
             );
           })}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
