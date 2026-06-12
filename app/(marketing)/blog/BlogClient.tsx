@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, ChevronRight, Search, X } from "lucide-react";
+import { BookOpen, ChevronRight, Search, X, Sparkles, DollarSign, Cpu, Sliders } from "lucide-react";
+import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
 
 /* ── Category config ─────────────────────────── */
 
@@ -142,6 +143,28 @@ export default function BlogClient({ articles }: { articles: any[] }) {
   const [activeCategory, setActiveCategory] = useState("all");
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [prefs, setPrefs] = useState<BlogPrefs>(defaultPrefs);
+  const [showPrefs, setShowPrefs] = useState(false);
+
+  // Load preferences from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("programbi-blog-prefs");
+    if (saved) {
+      try {
+        setPrefs(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse preferences:", e);
+      }
+    }
+  }, []);
+
+  const handleCategoryClick = (category: string) => {
+    if (activeCategory === category) {
+      setActiveCategory("all");
+    } else {
+      setActiveCategory(category);
+    }
+  };
 
   const filtered = useMemo(() => {
     let temp = articles;
@@ -224,9 +247,12 @@ export default function BlogClient({ articles }: { articles: any[] }) {
               <Search className="w-3.5 h-3.5" />
               <span>{isSearchActive ? "CERRAR BUSCAR" : "BUSCAR"}</span>
             </button>
-            <Link href="#newsletter" className="hover:text-black no-underline transition-colors text-[10px] tracking-widest font-bold text-slate-500">
+            <button 
+              onClick={() => window.dispatchEvent(new Event("open-nl-subscribe"))}
+              className="hover:text-black no-underline transition-colors text-[10px] tracking-widest font-bold text-slate-500 cursor-pointer bg-transparent border-none uppercase"
+            >
               SUSCRÍBETE
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -298,6 +324,70 @@ export default function BlogClient({ articles }: { articles: any[] }) {
           </>
         )}
       </main>
+
+      {/* Mobile Bottom Navigation Menu (Fintualist style) */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200/80 px-4 py-2 flex items-center justify-around shadow-[0_-4px_16px_rgba(0,0,0,0.06)] pb-4">
+        {/* AI tab */}
+        <button
+          onClick={() => handleCategoryClick("ia")}
+          className={`flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer transition-colors ${
+            activeCategory === "ia" ? "text-slate-950 font-bold" : "text-slate-400 hover:text-slate-600"
+          }`}
+        >
+          <Sparkles className="w-5 h-5" />
+          <span className="text-[9px] uppercase tracking-wider font-sans font-bold">AI</span>
+        </button>
+
+        {/* Economía tab */}
+        <button
+          onClick={() => handleCategoryClick("economia")}
+          className={`flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer transition-colors ${
+            activeCategory === "economia" ? "text-slate-950 font-bold" : "text-slate-400 hover:text-slate-600"
+          }`}
+        >
+          <DollarSign className="w-5 h-5" />
+          <span className="text-[9px] uppercase tracking-wider font-sans font-bold">Economía</span>
+        </button>
+
+        {/* Tecnología tab */}
+        <button
+          onClick={() => handleCategoryClick("tecnologia")}
+          className={`flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer transition-colors ${
+            activeCategory === "tecnologia" ? "text-slate-950 font-bold" : "text-slate-400 hover:text-slate-600"
+          }`}
+        >
+          <Cpu className="w-5 h-5" />
+          <span className="text-[9px] uppercase tracking-wider font-sans font-bold">Tecnología</span>
+        </button>
+
+        {/* Cultura tab */}
+        <button
+          onClick={() => handleCategoryClick("cultura")}
+          className={`flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer transition-colors ${
+            activeCategory === "cultura" ? "text-slate-950 font-bold" : "text-slate-400 hover:text-slate-600"
+          }`}
+        >
+          <BookOpen className="w-5 h-5" />
+          <span className="text-[9px] uppercase tracking-wider font-sans font-bold">Cultura</span>
+        </button>
+
+        {/* Preferencias tab */}
+        <button
+          onClick={() => setShowPrefs(true)}
+          className="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-950 transition-colors bg-transparent border-none cursor-pointer"
+        >
+          <Sliders className="w-5 h-5" />
+          <span className="text-[9px] uppercase tracking-wider font-sans font-bold">Ajustes</span>
+        </button>
+      </div>
+
+      {/* Preferences panel (reused, changes will persist and apply on article page) */}
+      <BlogPreferences
+        isOpen={showPrefs}
+        onClose={() => setShowPrefs(false)}
+        prefs={prefs}
+        onChange={setPrefs}
+      />
     </div>
   );
 }

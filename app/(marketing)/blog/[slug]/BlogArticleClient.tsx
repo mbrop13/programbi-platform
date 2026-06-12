@@ -10,10 +10,12 @@ import {
   Copy, 
   Check,
   ChevronRight,
-  BookOpen
+  BookOpen,
+  Sliders
 } from "lucide-react";
 import { motion } from "framer-motion";
 import ArticleBlockRenderer from "@/components/shared/ArticleBlockRenderer";
+import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
 
 const categoryLabels: Record<string, string> = {
   "power-bi": "Tecnología",
@@ -32,6 +34,20 @@ interface BlogArticleClientProps {
 export default function BlogArticleClient({ article, related }: BlogArticleClientProps) {
   const [copied, setCopied] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
+  const [prefs, setPrefs] = useState<BlogPrefs>(defaultPrefs);
+  const [showPrefs, setShowPrefs] = useState(false);
+
+  // Load preferences from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("programbi-blog-prefs");
+    if (saved) {
+      try {
+        setPrefs(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse blog preferences:", e);
+      }
+    }
+  }, []);
 
   // Calculate reading progress
   useEffect(() => {
@@ -108,31 +124,113 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
     ? "CEO y Fundador de ProgramBI SPA. Magíster en Data Science (Universidad Adolfo Ibáñez), Contador Auditor (U. de Concepción), Ex-Mesa de Dinero Banco Itaú Chile. Consultor y docente especializado en analítica empresarial."
     : "Instructor experto de ProgramBI, profesional activo de la industria especializado en análisis de datos, visualización y desarrollo de reportes.";
 
+  // Dynamic theme wrapper classes
+  const themeCls = prefs.theme === "dark" 
+    ? "bg-slate-950 text-slate-100 theme-dark" 
+    : prefs.theme === "sepia" 
+    ? "bg-[#F4ECD8] text-[#5B4636] theme-sepia" 
+    : "bg-white text-slate-900";
+
+  // ShareRow component to render share buttons horizontally
+  const ShareRow = () => (
+    <div className="flex items-center gap-2.5 justify-center py-2.5">
+      <span className={`text-[9px] font-bold uppercase tracking-widest mr-1.5 ${
+        prefs.theme === "dark" ? "text-slate-500" : "text-slate-400"
+      }`}>Compartir</span>
+      <a 
+        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+          prefs.theme === "dark" ? "bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white" : "bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800"
+        }`}
+        title="Compartir en LinkedIn"
+      >
+        <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+          <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+        </svg>
+      </a>
+      <a 
+        href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+          prefs.theme === "dark" ? "bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white" : "bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-800"
+        }`}
+        title="Compartir en X"
+      >
+        <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      </a>
+      <button 
+        onClick={handleCopyLink}
+        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all border-none cursor-pointer ${
+          prefs.theme === "dark" ? "bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white" : "bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-[#1890FF]"
+        }`}
+        title="Copiar enlace"
+      >
+        {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+      </button>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-white pb-24">
-      {/* Thin black reading progress bar */}
+    <div className={`min-h-screen pb-24 transition-colors duration-300 ${themeCls}`}>
+      {/* Dynamic theme style overrides for blockquote, paragraphs, and markdown tags */}
+      <style dangerouslySetInnerHTML={{ __html: `
+        .theme-dark h1, .theme-dark h2, .theme-dark h3, .theme-dark h4 { color: #ffffff !important; }
+        .theme-dark p, .theme-dark td, .theme-dark li { color: #cbd5e1 !important; }
+        .theme-dark blockquote { background-color: #1e293b !important; color: #cbd5e1 !important; border-left-color: #1890FF !important; }
+        .theme-dark hr { border-color: #334155 !important; }
+        .theme-dark table th { background-color: #1e293b !important; color: #f8fafc !important; }
+        .theme-dark table td { border-color: #334155 !important; }
+        .theme-dark table tr:hover { background-color: rgba(30, 41, 59, 0.3) !important; }
+        .theme-dark pre code { color: #e2e8f0 !important; }
+        
+        .theme-sepia h1, .theme-sepia h2, .theme-sepia h3, .theme-sepia h4 { color: #3e2713 !important; }
+        .theme-sepia p, .theme-sepia td, .theme-sepia li { color: #5b4636 !important; }
+        .theme-sepia blockquote { background-color: #ebdcb9 !important; color: #5b4636 !important; border-left-color: #8c6d53 !important; }
+        .theme-sepia hr { border-color: #e2d7be !important; }
+        .theme-sepia table th { background-color: #ebdcb9 !important; color: #3e2713 !important; }
+        .theme-sepia table td { border-color: #e2d7be !important; }
+        .theme-sepia table tr:hover { background-color: rgba(235, 220, 185, 0.3) !important; }
+        .theme-sepia pre code { color: #5b4636 !important; }
+      `}} />
+
+      {/* Thin reading progress bar */}
       <div 
-        className="fixed top-0 left-0 h-[3px] bg-slate-950 z-50 transition-all duration-100"
+        className={`fixed top-0 left-0 h-[3px] z-50 transition-all duration-100 ${
+          prefs.theme === "dark" ? "bg-white" : "bg-slate-950"
+        }`}
         style={{ width: `${readingProgress}%` }}
       />
 
       {/* Breadcrumbs Row & Back button */}
-      <div className="border-b border-slate-100/80 py-4.5 pt-24 sm:pt-28">
+      <div className={`border-b py-4 pt-16 sm:pt-20 ${
+        prefs.theme === "dark" ? "border-slate-800" : "border-slate-100/80"
+      }`}>
         <div className="max-w-[1140px] mx-auto px-6 lg:px-12 xl:px-16 flex flex-wrap items-center justify-between gap-4">
           <Link 
             href="/blog" 
-            className="flex items-center gap-2 text-[10px] font-bold text-slate-500 hover:text-black uppercase tracking-widest no-underline transition-colors group"
+            className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest no-underline transition-colors group ${
+              prefs.theme === "dark" ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-black"
+            }`}
           >
             <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
             <span>Volver</span>
           </Link>
           
-          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            <Link href="/" className="hover:text-black no-underline text-slate-400 transition-colors">Inicio</Link>
+          <nav aria-label="Breadcrumb" className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest ${
+            prefs.theme === "dark" ? "text-slate-500" : "text-slate-400"
+          }`}>
+            <Link href="/" className={`no-underline transition-colors ${prefs.theme === "dark" ? "text-slate-400 hover:text-white" : "text-slate-400 hover:text-black"}`}>Inicio</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/blog" className="hover:text-black no-underline text-slate-400 transition-colors">Blog</Link>
+            <Link href="/blog" className={`no-underline transition-colors ${prefs.theme === "dark" ? "text-slate-400 hover:text-white" : "text-slate-400 hover:text-black"}`}>Blog</Link>
             <ChevronRight className="w-3 h-3" />
-            <span className="text-slate-700 font-bold truncate max-w-[120px] sm:max-w-[200px]">
+            <span className={`font-bold truncate max-w-[120px] sm:max-w-[200px] ${
+              prefs.theme === "dark" ? "text-slate-300" : "text-slate-700"
+            }`}>
               {article.title}
             </span>
           </nav>
@@ -140,27 +238,40 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
       </div>
 
       {/* ── ARTICLE HEADER ── */}
-      <header className="max-w-[900px] mx-auto px-6 pt-16 pb-10 text-center">
-        <span className="inline-block text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase text-[#1890FF] mb-5">
+      <header className="max-w-[900px] mx-auto px-6 pt-8 pb-10 text-center">
+        <span className="inline-block text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase text-[#1890FF] mb-4">
           {categoryLabel}
         </span>
         
-        <h1 className="font-serif font-bold text-3xl sm:text-5xl lg:text-6xl text-slate-950 leading-tight tracking-tight mb-8 max-w-4xl mx-auto">
+        <h1 className={`font-serif font-bold text-3xl sm:text-5xl lg:text-6xl leading-tight tracking-tight mb-6 max-w-4xl mx-auto ${
+          prefs.theme === "dark" ? "text-white" : "text-slate-950"
+        }`}>
           {article.title}
         </h1>
 
         {article.excerpt && (
-          <p className="text-slate-600 text-lg sm:text-xl leading-relaxed mb-8 font-light max-w-3xl mx-auto">
+          <p className={`text-lg sm:text-xl leading-relaxed mb-6 font-light max-w-3xl mx-auto ${
+            prefs.theme === "dark" ? "text-slate-400" : "text-slate-650"
+          }`}>
             {article.excerpt}
           </p>
         )}
 
-        <div className="flex items-center justify-center gap-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest pb-6 border-b border-slate-100 max-w-lg mx-auto">
+        <div className={`flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-widest pb-6 border-b max-w-lg mx-auto ${
+          prefs.theme === "dark" ? "text-slate-500 border-slate-800" : "text-slate-455 border-slate-100"
+        }`}>
           <span>por {article.author_name || "Manuel Oliva"}</span>
           <span>•</span>
           <span>{formatDate(article.published_at || article.created_at)}</span>
           <span>•</span>
           <span>{article.reading_time_min} min</span>
+        </div>
+
+        {/* Share buttons horizontally in header */}
+        <div className={`flex justify-center mt-6 max-w-xs mx-auto border-b pb-4 ${
+          prefs.theme === "dark" ? "border-slate-800" : "border-slate-100"
+        }`}>
+          <ShareRow />
         </div>
       </header>
 
@@ -183,51 +294,18 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
       {/* ── BODY LAYOUTS ── */}
       <div className="max-w-[1140px] mx-auto px-6 lg:px-12 xl:px-16">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-          
-          {/* Share Buttons Sidebar (Floating capsule) */}
-          <aside className="lg:col-span-1 flex lg:flex-col lg:items-center justify-start gap-4 lg:py-6 order-2 lg:order-1 border-t lg:border-t-0 pt-6 lg:pt-0 border-slate-100 lg:sticky lg:top-32 bg-white lg:pr-6">
-            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest hidden lg:block mb-2 text-center w-full">Compartir</span>
-            
-            <a 
-              href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full hover:bg-slate-50 text-slate-400 hover:text-slate-800 flex items-center justify-center transition-all duration-300"
-              title="Compartir en LinkedIn"
-            >
-              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-              </svg>
-            </a>
-
-            <a 
-              href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-10 h-10 rounded-full hover:bg-slate-50 text-slate-400 hover:text-slate-800 flex items-center justify-center transition-all duration-300"
-              title="Compartir en X / Twitter"
-            >
-              <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-              </svg>
-            </a>
-
-            <button 
-              onClick={handleCopyLink}
-              className="w-10 h-10 rounded-full hover:bg-slate-50 text-slate-400 hover:text-slate-800 flex items-center justify-center transition-all duration-300 border-none cursor-pointer"
-              title="Copiar link"
-            >
-              {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
-            </button>
-          </aside>
 
           {/* Main Article Content & Tutorial Layout */}
-          <main className={`${template === "tutorial" ? "lg:col-span-8" : "lg:col-span-11"} order-1 lg:order-2 flex flex-col`}>
+          <main className={`${template === "tutorial" ? "lg:col-span-9" : "lg:col-span-12"} flex flex-col`}>
             
             {/* Table of Contents for Mobile Tutorial layout */}
             {template === "tutorial" && headings.length > 0 && (
-              <div className="bg-slate-50 border border-slate-100 rounded-lg p-6 mb-8 lg:hidden">
-                <h3 className="font-sans font-bold text-xs text-slate-400 uppercase tracking-widest mb-4">
+              <div className={`border rounded-xl p-6 mb-8 lg:hidden ${
+                prefs.theme === "dark" ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-100"
+              }`}>
+                <h3 className={`font-sans font-bold text-xs uppercase tracking-widest mb-4 ${
+                  prefs.theme === "dark" ? "text-slate-400" : "text-slate-400"
+                }`}>
                   Contenido de esta guía
                 </h3>
                 <nav>
@@ -236,7 +314,9 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
                       <li key={i} className="pl-0">
                         <a 
                           href={`#${h.id}`}
-                          className="text-xs text-slate-600 hover:text-[#1890FF] no-underline font-semibold leading-snug block transition-colors"
+                          className={`text-xs no-underline font-semibold leading-snug block transition-colors ${
+                            prefs.theme === "dark" ? "text-slate-300 hover:text-[#1890FF]" : "text-slate-600 hover:text-[#1890FF]"
+                          }`}
                         >
                           {h.text}
                         </a>
@@ -247,34 +327,68 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
               </div>
             )}
 
-            {/* Renderer */}
-            <div className="prose-wrapper">
+            {/* Renderer wrapper with dynamic preferences styling */}
+            <div className={`prose-wrapper ${
+              prefs.fontFamily === "serif" ? "font-serif" : prefs.fontFamily === "mono" ? "font-mono" : "font-sans"
+            } ${
+              prefs.fontSize === "sm" ? "[&_p]:text-sm [&_li]:text-sm [&_td]:text-sm [&_h2]:text-xl [&_h3]:text-lg" :
+              prefs.fontSize === "lg" ? "[&_p]:text-lg [&_li]:text-lg [&_td]:text-lg [&_p]:sm:text-[20px] [&_li]:sm:text-[20px] [&_h2]:text-3xl [&_h2]:sm:text-4xl [&_h3]:text-2xl [&_h3]:sm:text-3xl" :
+              prefs.fontSize === "xl" ? "[&_p]:text-xl [&_li]:text-xl [&_td]:text-xl [&_p]:sm:text-[22px] [&_li]:sm:text-[22px] [&_h2]:text-4xl [&_h2]:sm:text-5xl [&_h3]:text-3xl [&_h3]:sm:text-4xl" :
+              "[&_p]:text-base [&_li]:text-base [&_td]:text-base [&_p]:sm:text-[18px] [&_li]:sm:text-[18px] [&_h2]:text-2xl [&_h2]:sm:text-3xl [&_h3]:text-xl [&_h3]:sm:text-2xl"
+            } ${
+              prefs.lineHeight === "normal" ? "[&_p]:leading-normal [&_li]:leading-normal" :
+              prefs.lineHeight === "loose" ? "[&_p]:leading-loose [&_li]:leading-loose" :
+              "[&_p]:leading-relaxed [&_li]:leading-relaxed [&_p]:leading-[1.85]"
+            } ${
+              prefs.theme === "dark" ? "text-slate-350" : prefs.theme === "sepia" ? "text-[#5b4636]" : "text-slate-800"
+            }`}>
               <ArticleBlockRenderer content={article.content} />
             </div>
 
+            {/* Horizontal Share Buttons at the end of content */}
+            <div className={`mt-12 py-4 border-t flex items-center justify-between flex-wrap gap-4 ${
+              prefs.theme === "dark" ? "border-slate-800" : "border-slate-100"
+            }`}>
+              <span className={`text-[10px] font-bold uppercase tracking-widest ${
+                prefs.theme === "dark" ? "text-slate-400" : "text-slate-500"
+              }`}>¿Te gustó este artículo?</span>
+              <ShareRow />
+            </div>
+
             {/* Author info box (E-E-A-T builder) */}
-            <div className="border-y border-slate-100 py-10 mt-16 flex flex-col sm:flex-row gap-6 items-start">
-              <div className="w-12 h-12 rounded-full bg-slate-900 text-white flex items-center justify-center text-sm font-serif font-bold flex-shrink-0">
+            <div className={`border-y py-10 mt-16 flex flex-col sm:flex-row gap-6 items-start ${
+              prefs.theme === "dark" ? "border-slate-800" : "border-slate-100"
+            }`}>
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-serif font-bold flex-shrink-0 ${
+                prefs.theme === "dark" ? "bg-white text-slate-950" : "bg-slate-900 text-white"
+              }`}>
                 {article.author_name ? article.author_name[0] : "P"}
               </div>
               <div className="flex-1">
-                <h4 className="font-serif font-bold text-slate-950 text-lg mb-2 flex items-center gap-2">
+                <h4 className={`font-serif font-bold text-lg mb-2 flex items-center gap-2 ${
+                  prefs.theme === "dark" ? "text-white" : "text-slate-950"
+                }`}>
                   Escrito por {article.author_name || "Manuel Oliva"}
-                  <span className="text-[9px] bg-slate-100 text-slate-600 font-bold px-2.5 py-0.5 rounded uppercase tracking-wider">
+                  <span className={`text-[9px] font-bold px-2.5 py-0.5 rounded uppercase tracking-wider ${
+                    prefs.theme === "dark" ? "bg-slate-900 text-slate-400" : "bg-slate-100 text-slate-655"
+                  }`}>
                     {isManuel ? "CEO & Fundador" : "Docente"}
                   </span>
                 </h4>
-                <p className="text-slate-600 text-sm leading-relaxed my-0 font-light">
+                <p className={`text-sm leading-relaxed my-0 font-light ${
+                  prefs.theme === "dark" ? "text-slate-400" : "text-slate-650"
+                }`}>
                   {authorBio}
                 </p>
               </div>
             </div>
-
           </main>
 
           {/* Table of Contents Sidebar (TUTORIAL LAYOUT ONLY) */}
           {template === "tutorial" && headings.length > 0 && (
-            <aside className="lg:col-span-3 hidden lg:block order-3 lg:sticky lg:top-32 border-l border-slate-100 pl-6">
+            <aside className={`lg:col-span-3 hidden lg:block order-3 lg:sticky lg:top-32 border-l pl-6 ${
+              prefs.theme === "dark" ? "border-slate-800" : "border-slate-100"
+            }`}>
               <div className="space-y-6">
                 <div>
                   <h3 className="font-sans font-bold text-[10px] tracking-widest text-slate-400 uppercase mb-4">
@@ -286,7 +400,9 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
                         <li key={i} className="pl-0">
                           <a 
                             href={`#${h.id}`}
-                            className="text-xs text-slate-500 hover:text-[#1890FF] no-underline font-medium leading-relaxed block transition-all hover:translate-x-0.5"
+                            className={`text-xs no-underline font-medium leading-relaxed block transition-all hover:translate-x-0.5 ${
+                              prefs.theme === "dark" ? "text-slate-400 hover:text-[#1890FF]" : "text-slate-505 hover:text-[#1890FF]"
+                            }`}
                           >
                             {h.text}
                           </a>
@@ -304,26 +420,36 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
 
       {/* ── COURSE CTA SECTION (Newspaper Box Style Advert) ── */}
       <section className="max-w-[800px] mx-auto px-6 mt-20">
-        <div className="border-4 border-slate-950 p-8 sm:p-12 text-center bg-white relative">
+        <div className={`border-4 p-8 sm:p-12 text-center relative transition-colors ${
+          prefs.theme === "dark" ? "border-white bg-slate-900 text-white" : "border-slate-950 bg-white text-slate-950"
+        }`}>
           <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#1890FF] mb-3 inline-block">
             PROGRAMBI CAPACITACIONES
           </span>
-          <h3 className="font-serif font-bold text-2xl sm:text-3xl text-slate-950 leading-tight mb-4 tracking-tight">
+          <h3 className={`font-serif font-bold text-2xl sm:text-3xl leading-tight mb-4 tracking-tight ${
+            prefs.theme === "dark" ? "text-white" : "text-slate-950"
+          }`}>
             Domina SQL, Power BI y Python con expertos activos
           </h3>
-          <p className="text-slate-650 text-sm sm:text-base leading-relaxed mb-8 font-light max-w-xl mx-auto">
+          <p className={`text-sm sm:text-base leading-relaxed mb-8 font-light max-w-xl mx-auto ${
+            prefs.theme === "dark" ? "text-slate-350" : "text-slate-650"
+          }`}>
             Capacítate 100% en vivo desde Chile y Latinoamérica con clases grabadas de por vida, soporte continuo y proyectos reales de la industria.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
               href="/cursos" 
-              className="px-7 py-3 bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs tracking-widest uppercase no-underline transition-all"
+              className={`px-7 py-3 font-bold text-xs tracking-widest uppercase no-underline transition-all ${
+                prefs.theme === "dark" ? "bg-white text-slate-950 hover:bg-slate-100" : "bg-slate-950 text-white hover:bg-slate-800"
+              }`}
             >
               EXPLORAR CURSOS
             </Link>
             <Link 
               href="/asesorias" 
-              className="px-7 py-3 border border-slate-950 hover:bg-slate-50 text-slate-950 font-bold text-xs tracking-widest uppercase no-underline transition-all"
+              className={`px-7 py-3 border font-bold text-xs tracking-widest uppercase no-underline transition-all ${
+                prefs.theme === "dark" ? "border-white text-white hover:bg-slate-800" : "border-slate-950 text-slate-950 hover:bg-slate-50"
+              }`}
             >
               ASESORÍAS CORPORATIVAS
             </Link>
@@ -333,17 +459,25 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
 
       {/* ── RELATED ARTICLES ── */}
       {related.length > 0 && (
-        <section className="max-w-[1140px] mx-auto px-6 mt-28 pt-20 border-t border-slate-100">
-          <h3 className="font-serif font-bold text-2xl text-slate-950 mb-8 tracking-tight text-center">
+        <section className={`max-w-[1140px] mx-auto px-6 mt-28 pt-20 border-t ${
+          prefs.theme === "dark" ? "border-slate-800" : "border-slate-100"
+        }`}>
+          <h3 className={`font-serif font-bold text-2xl mb-8 tracking-tight text-center ${
+            prefs.theme === "dark" ? "text-white" : "text-slate-950"
+          }`}>
             Artículos Relacionados
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {related.map((art: any) => {
               return (
                 <Link key={art.id} href={`/blog/${art.slug}`} className="block no-underline group">
-                  <article className="flex flex-col h-full bg-white">
+                  <article className={`flex flex-col h-full transition-colors ${
+                    prefs.theme === "dark" ? "bg-slate-900 border border-slate-800 text-white rounded-xl overflow-hidden p-4" : "bg-white text-slate-950"
+                  }`}>
                     {/* Image */}
-                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-50 border border-slate-100">
+                    <div className={`relative aspect-[16/10] w-full overflow-hidden ${
+                      prefs.theme === "dark" ? "bg-slate-950 rounded-lg" : "bg-slate-50 border border-slate-100"
+                    }`}>
                       {art.cover_image ? (
                         <Image
                           src={art.cover_image}
@@ -353,7 +487,7 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
                           unoptimized
                         />
                       ) : (
-                        <div className="absolute inset-0 bg-slate-50 flex items-center justify-center">
+                        <div className="absolute inset-0 flex items-center justify-center">
                           <BookOpen className="w-6 h-6 text-slate-200" />
                         </div>
                       )}
@@ -363,10 +497,14 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
                       <span className="text-[9px] font-bold tracking-widest text-[#1890FF] uppercase mb-1.5">
                         {categoryLabels[art.category] || art.category}
                       </span>
-                      <h4 className="font-serif font-bold text-base text-slate-950 leading-snug group-hover:underline decoration-[#1890FF] decoration-2 underline-offset-4 mb-2">
+                      <h4 className={`font-serif font-bold text-base leading-snug group-hover:underline decoration-[#1890FF] decoration-2 underline-offset-4 mb-2 ${
+                        prefs.theme === "dark" ? "text-slate-100" : "text-slate-950"
+                      }`}>
                         {art.title}
                       </h4>
-                      <time className="text-[10px] text-slate-400 font-bold mt-auto block uppercase tracking-widest">
+                      <time className={`text-[10px] font-bold mt-auto block uppercase tracking-widest ${
+                        prefs.theme === "dark" ? "text-slate-500" : "text-slate-400"
+                      }`}>
                         {formatDate(art.published_at || art.created_at)}
                       </time>
                     </div>
@@ -377,6 +515,25 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
           </div>
         </section>
       )}
+
+      {/* Floating Preferences Button (Desktop only, hidden on mobile bottom-nav) */}
+      <button
+        onClick={() => setShowPrefs(true)}
+        className={`fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 w-12 h-12 rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer border border-slate-200 hidden md:flex ${
+          prefs.theme === "dark" ? "bg-white text-slate-950 hover:bg-slate-100" : "bg-slate-950 text-white hover:bg-slate-800"
+        }`}
+        title="Preferencias de lectura"
+      >
+        <Sliders className="w-5 h-5" />
+      </button>
+
+      {/* Preferences Modal Panel */}
+      <BlogPreferences
+        isOpen={showPrefs}
+        onClose={() => setShowPrefs(false)}
+        prefs={prefs}
+        onChange={setPrefs}
+      />
     </div>
   );
 }

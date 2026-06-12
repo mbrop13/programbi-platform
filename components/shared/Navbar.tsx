@@ -141,10 +141,19 @@ export default function Navbar() {
 
   // Listen for open-subscribe events from newsletter page
   useEffect(() => {
-    const handleOpen = () => setIsNlSubModalOpen(true);
+    const handleOpen = () => {
+      if (user) {
+        setIsNlSubModalOpen(true);
+      } else {
+        setAuthModal({ isOpen: true, tab: "register" });
+      }
+    };
     const handleOpenAuth = () => {
-      setPendingNlSub(true);
-      setAuthModal({ isOpen: true, tab: "register" });
+      if (user) {
+        setIsNlSubModalOpen(true);
+      } else {
+        setAuthModal({ isOpen: true, tab: "register" });
+      }
     };
     window.addEventListener("open-nl-subscribe", handleOpen);
     window.addEventListener("open-nl-subscribe-auth", handleOpenAuth);
@@ -152,7 +161,7 @@ export default function Navbar() {
       window.removeEventListener("open-nl-subscribe", handleOpen);
       window.removeEventListener("open-nl-subscribe-auth", handleOpenAuth);
     };
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     if (isMobileOpen || authModal.isOpen) {

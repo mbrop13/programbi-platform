@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { useCountry } from "@/lib/context/CountryContext";
+import { subscribeToNewsletter } from "@/lib/supabase/comunidad-ai";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -54,6 +55,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
   const [phonePrefix, setPhonePrefix] = useState("+56");
   const [showPrefixDropdown, setShowPrefixDropdown] = useState(false);
   const [acceptsPrivacy, setAcceptsPrivacy] = useState(false);
+  const [subscribeToBlog, setSubscribeToBlog] = useState(true);
 
   // Sync phone prefix with global country
   const { country: globalCountry } = useCountry();
@@ -73,6 +75,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     setShowPassword(false);
     setShowPrefixDropdown(false);
     setAcceptsPrivacy(false);
+    setSubscribeToBlog(true);
   }, [isOpen, tab]);
 
   // Update tab when defaultTab changes
@@ -165,6 +168,13 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           setSuccess("¡Cuenta creada exitosamente! Revisa tu correo para verificar tu cuenta.");
         } else {
           setSuccess("¡Bienvenido a ProgramBI! 🎉");
+
+          if (subscribeToBlog) {
+            subscribeToNewsletter({
+              categories: ["ia", "economia", "tecnologia", "general"],
+              frequency: "weekly",
+            }).catch((err) => console.error("Error subscribing to blog on register:", err));
+          }
 
           // Notificar al admin del nuevo registro (fire-and-forget)
           fetch("/api/auth/new-member", {
@@ -518,6 +528,20 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                         <label htmlFor="privacy-auth" className="text-[10px] text-slate-400 cursor-pointer leading-relaxed">
                           Acepto la{" "}
                           <Link href="/privacidad" className="text-[#1890FF] font-semibold no-underline hover:underline" target="_blank">Política de Privacidad</Link>
+                        </label>
+                      </div>
+
+                      {/* Blog subscription checkbox */}
+                      <div className="flex items-start gap-2.5 mt-2">
+                        <input
+                          type="checkbox"
+                          id="subscribe-blog"
+                          checked={subscribeToBlog}
+                          onChange={(e) => setSubscribeToBlog(e.target.checked)}
+                          className="mt-0.5 w-3.5 h-3.5 rounded border-gray-300 accent-[#1890FF] cursor-pointer flex-shrink-0"
+                        />
+                        <label htmlFor="subscribe-blog" className="text-[10px] text-slate-400 cursor-pointer leading-relaxed">
+                          Suscribirse al blog para recibir la mejor información gratis (marcado por defecto)
                         </label>
                       </div>
                       <button
