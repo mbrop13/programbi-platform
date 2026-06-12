@@ -54,7 +54,7 @@ function ModernDataVisual() {
   const activeVideo = VIDEOS[activeIndex];
 
   return (
-    <div className="relative w-full flex items-center justify-center select-none">
+    <div className="relative w-full flex items-center justify-center lg:justify-end select-none lg:-translate-y-8">
       {/* Ambient background glowing blobs */}
       <motion.div
         animate={{ scale: [1, 1.15, 1], x: [0, 10, 0], y: [0, -10, 0] }}
@@ -67,7 +67,7 @@ function ModernDataVisual() {
         className="absolute right-10 bottom-0 z-0 w-56 h-56 bg-gradient-to-tr from-cyan-300/15 to-blue-300/15 rounded-full blur-3xl pointer-events-none"
       />
 
-      {/* Video Container (No browser frame, no floating, borderless, shadowless, rounded-3xl, centered and cropped) */}
+      {/* Video Container (No browser frame, no floating, borderless, shadowless, rounded-3xl, aligned and cropped) */}
       <div className="relative z-10 w-full max-w-[680px] aspect-video rounded-3xl overflow-hidden bg-transparent">
         <div className="w-full h-full relative">
           <AnimatePresence mode="wait">
@@ -86,7 +86,7 @@ function ModernDataVisual() {
                 muted
                 playsInline
                 onEnded={handleVideoEnded}
-                className="w-full h-full object-cover mix-blend-multiply bg-transparent scale-[1.28] origin-center"
+                className="w-full h-full object-cover mix-blend-multiply bg-transparent scale-[1.20] origin-center"
               />
             </motion.div>
           </AnimatePresence>
@@ -150,7 +150,7 @@ export default function HeroSection() {
         />
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-5 lg:px-8 relative z-10 pt-1 pb-4">
+      <div className="max-w-[1400px] mx-auto pl-5 pr-2.5 lg:pl-8 lg:pr-4 relative z-10 pt-1 pb-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           {/* ── Left Column (6/12) ── */}
           <div className="lg:col-span-6 text-center lg:text-left relative z-20">
@@ -235,7 +235,7 @@ export default function HeroSection() {
           </div>
 
           {/* ── Right Column (6/12) ── */}
-          <div className="lg:col-span-6 relative w-full flex justify-center z-10">
+          <div className="lg:col-span-6 relative w-full flex justify-center lg:justify-end z-10">
             <FadeIn delay={0.4} direction="left" className="w-full">
               <ModernDataVisual />
             </FadeIn>
