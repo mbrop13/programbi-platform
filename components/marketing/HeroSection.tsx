@@ -54,7 +54,7 @@ function ModernDataVisual() {
   const activeVideo = VIDEOS[activeIndex];
 
   return (
-    <div className="relative w-full flex items-center justify-center lg:justify-end select-none lg:-translate-y-8">
+    <div className="relative w-full flex items-center justify-center lg:justify-end select-none">
       {/* Ambient background glowing blobs */}
       <motion.div
         animate={{ scale: [1, 1.15, 1], x: [0, 10, 0], y: [0, -10, 0] }}

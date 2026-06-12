@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Clock, User, BookOpen, ChevronRight } from "lucide-react";
+import { Clock, BookOpen, ChevronRight, Sparkles } from "lucide-react";
 
 /* ── Category config ─────────────────────────── */
 
@@ -19,12 +19,12 @@ const CATEGORIES = [
 ] as const;
 
 const categoryColors: Record<string, string> = {
-  "power-bi": "#F2C811",
-  sql: "#CC2927",
-  python: "#3776AB",
-  ia: "#7C3AED",
-  industria: "#059669",
-  general: "#1890FF",
+  "power-bi": "#F59E0B", // Amber
+  sql: "#EF4444",      // Red
+  python: "#3B82F6",   // Blue
+  ia: "#8B5CF6",       // Purple
+  industria: "#10B981",// Emerald
+  general: "#1890FF",  // Brand Blue
 };
 
 const categoryLabels: Record<string, string> = {
@@ -52,62 +52,81 @@ function FeaturedHero({ article }: { article: any }) {
   const catColor = categoryColors[article.category] || "#1890FF";
 
   return (
-    <Link href={`/blog/${article.slug}`} className="block no-underline group">
-      <article className="relative rounded-2xl overflow-hidden bg-slate-900 mb-10">
-        <div className="grid lg:grid-cols-2 gap-0">
+    <Link href={`/blog/${article.slug}`} className="block no-underline group mb-16">
+      <div className="relative rounded-3xl overflow-hidden bg-white border border-slate-100 hover:border-slate-200/80 shadow-[0_15px_40px_rgba(15,23,42,0.015)] hover:shadow-[0_30px_70px_rgba(24,144,255,0.07)] transition-all duration-500">
+        <div className="grid lg:grid-cols-12 gap-0">
           {/* Image */}
-          <div className="relative h-64 sm:h-80 lg:h-[420px] overflow-hidden">
+          <div className="lg:col-span-7 relative h-72 sm:h-96 lg:h-[460px] overflow-hidden bg-slate-50">
             {article.cover_image ? (
               <Image
                 src={article.cover_image}
                 alt={article.title}
                 fill
-                className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
                 unoptimized
                 priority
               />
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-700 to-slate-800" />
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                <BookOpen className="w-16 h-16 text-slate-350" />
+              </div>
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent to-slate-900/60 hidden lg:block" />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 to-transparent lg:hidden" />
-          </div>
-
-          {/* Content */}
-          <div className="relative flex flex-col justify-center p-8 lg:p-12">
-            <span
-              className="inline-block self-start px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-white mb-4"
-              style={{ backgroundColor: catColor }}
-            >
-              {categoryLabels[article.category] || article.category}
-            </span>
-
-            <h2 className="font-display font-black text-2xl sm:text-3xl lg:text-4xl text-white leading-[1.15] tracking-tight mb-4 group-hover:text-[#1890FF] transition-colors">
-              {article.title}
-            </h2>
-
-            {article.excerpt && (
-              <p className="text-slate-400 text-sm lg:text-base leading-relaxed line-clamp-3 mb-6">
-                {article.excerpt}
-              </p>
-            )}
-
-            <div className="flex items-center gap-4 text-sm text-slate-500">
-              <span className="flex items-center gap-1.5">
-                <User className="w-3.5 h-3.5" />
-                {article.author_name || "ProgramBI"}
+            <div className="absolute top-4 left-4 z-20 flex gap-2">
+              <span
+                className="px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest text-white shadow-sm"
+                style={{ backgroundColor: catColor }}
+              >
+                {categoryLabels[article.category] || article.category}
               </span>
-              <span className="flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5" />
-                {article.reading_time_min} min
-              </span>
-              <span>
-                {formatDate(article.published_at || article.created_at)}
+              <span className="bg-slate-900/80 backdrop-blur-md text-amber-400 px-3.5 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest flex items-center gap-1 shadow-sm">
+                <Sparkles className="w-3.5 h-3.5 fill-amber-400" />
+                Destacado
               </span>
             </div>
           </div>
+
+          {/* Content */}
+          <div className="lg:col-span-5 relative flex flex-col justify-between p-8 sm:p-10 lg:p-12 bg-white">
+            <div className="flex-1 flex flex-col justify-center">
+              <h2 className="font-display font-black text-2xl sm:text-3xl lg:text-4xl text-slate-900 leading-tight tracking-tight mb-4 group-hover:text-[#1890FF] transition-colors duration-300">
+                {article.title}
+              </h2>
+
+              {article.excerpt && (
+                <p className="text-slate-550 text-sm sm:text-base leading-relaxed mb-6 line-clamp-4 font-light">
+                  {article.excerpt}
+                </p>
+              )}
+            </div>
+
+            {/* Author Footer */}
+            <div className="flex items-center justify-between pt-6 border-t border-slate-100 mt-auto">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1890FF] to-indigo-600 flex items-center justify-center text-white text-sm font-bold shadow-sm">
+                  {article.author_name ? article.author_name[0] : "P"}
+                </div>
+                <div>
+                  <span className="text-sm font-bold text-slate-800 block leading-none mb-1">
+                    {article.author_name || "ProgramBI"}
+                  </span>
+                  <span className="text-[10px] text-slate-400 block">
+                    {formatDate(article.published_at || article.created_at)}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="flex items-center gap-1.5 text-xs font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+                  <Clock className="w-3.5 h-3.5 text-slate-400" />
+                  {article.reading_time_min} min
+                </span>
+                <span className="w-9 h-9 rounded-full bg-slate-50 hover:bg-[#1890FF] text-slate-400 hover:text-white flex items-center justify-center transition-all duration-300 shadow-sm border border-slate-100 group-hover:border-[#1890FF] group-hover:scale-105">
+                  <ChevronRight className="w-5 h-5" />
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-      </article>
+      </div>
     </Link>
   );
 }
@@ -119,30 +138,31 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.05, duration: 0.4 }}
+      transition={{ delay: index * 0.05, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="h-full"
     >
       <Link href={`/blog/${article.slug}`} className="block no-underline group h-full">
-        <article className="bg-white rounded-2xl border border-gray-100 overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all duration-300 h-full flex flex-col">
+        <article className="bg-white rounded-3xl border border-slate-100 hover:border-slate-200 overflow-hidden hover:-translate-y-2 transition-all duration-350 h-full flex flex-col shadow-[0_10px_30px_rgba(15,23,42,0.015)] hover:shadow-[0_20px_45px_rgba(15,23,42,0.04)]">
           {/* Image */}
-          <div className="relative h-48 sm:h-52 overflow-hidden">
+          <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-50">
             {article.cover_image ? (
               <Image
                 src={article.cover_image}
                 alt={article.title}
                 fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
+                className="object-cover transition-transform duration-750 group-hover:scale-[1.04]"
                 unoptimized
               />
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
-                <BookOpen className="w-8 h-8 text-slate-300" />
+              <div className="absolute inset-0 bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
+                <BookOpen className="w-10 h-10 text-slate-300" />
               </div>
             )}
-            {/* Category badge on image */}
+            {/* Category tag overlaid on top left */}
             <span
-              className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-white"
+              className="absolute top-4 left-4 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest text-white shadow-sm"
               style={{ backgroundColor: catColor }}
             >
               {categoryLabels[article.category] || article.category}
@@ -150,37 +170,34 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
           </div>
 
           {/* Content */}
-          <div className="p-5 flex flex-col flex-1">
-            <h3 className="font-display font-bold text-lg text-slate-900 leading-snug group-hover:text-[#1890FF] transition-colors line-clamp-2 mb-2">
+          <div className="p-6 flex flex-col flex-1">
+            <h3 className="font-display font-black text-lg text-slate-900 leading-snug group-hover:text-[#1890FF] transition-colors duration-300 line-clamp-2 mb-3">
               {article.title}
             </h3>
 
             {article.excerpt && (
-              <p className="text-sm text-gray-500 leading-relaxed line-clamp-2 mb-4 flex-1">
+              <p className="text-sm text-slate-500 leading-relaxed line-clamp-2 mb-6 flex-1 font-light">
                 {article.excerpt}
               </p>
             )}
 
             {/* Footer */}
-            <div className="flex items-center justify-between pt-4 border-t border-gray-50 mt-auto">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#1890FF] to-indigo-600 flex items-center justify-center text-white text-[10px] font-bold">
-                  {(article.author_name || "P")[0]}
+            <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1890FF] to-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-sm">
+                  {article.author_name ? article.author_name[0] : "P"}
                 </div>
                 <div>
-                  <span className="text-xs font-semibold text-slate-800 block leading-tight">
+                  <span className="text-xs font-bold text-slate-800 block leading-none mb-0.5">
                     {article.author_name || "ProgramBI"}
                   </span>
-                  <time
-                    dateTime={article.published_at || article.created_at}
-                    className="text-[11px] text-gray-400"
-                  >
+                  <span className="text-[10px] text-slate-400 block leading-none">
                     {formatDate(article.published_at || article.created_at)}
-                  </time>
+                  </span>
                 </div>
               </div>
-              <span className="flex items-center gap-1 text-[11px] font-medium text-gray-400 bg-gray-50 px-2 py-1 rounded-full">
-                <Clock className="w-3 h-3" />
+              <span className="flex items-center gap-1 text-[10px] font-bold text-slate-500 bg-slate-50 px-2.5 py-1.5 rounded-full border border-slate-100">
+                <Clock className="w-3 h-3 text-slate-400" />
                 {article.reading_time_min} min
               </span>
             </div>
@@ -205,29 +222,49 @@ export default function BlogClient({ articles }: { articles: any[] }) {
   const rest = featured ? filtered.filter((a) => a.id !== featured.id) : filtered;
 
   return (
-    <div className="min-h-screen bg-[#FAFBFC]">
-      {/* ── Header ─────────────────────────── */}
-      <section className="bg-white border-b border-gray-100">
-        <div className="max-w-6xl mx-auto px-5 pt-12 pb-8">
+    <div className="min-h-screen bg-gradient-to-b from-white via-slate-50/50 to-white pb-24 relative overflow-hidden">
+      {/* Premium background accents */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden max-h-[900px]">
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundSize: "40px 40px",
+            backgroundImage:
+              "linear-gradient(to right, rgba(24,144,255,0.015) 1px, transparent 1px), linear-gradient(to bottom, rgba(24,144,255,0.015) 1px, transparent 1px)",
+          }}
+        />
+        <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-blue-100/15 rounded-full blur-[130px]" />
+        <div className="absolute top-1/4 left-10 w-[500px] h-[500px] bg-indigo-100/10 rounded-full blur-[110px]" />
+      </div>
+
+      <div className="relative z-10">
+        {/* ── Header ─────────────────────────── */}
+        <header className="max-w-[1300px] mx-auto px-6 lg:px-12 xl:px-16 pt-28 sm:pt-32 pb-10">
           {/* Breadcrumb */}
-          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-gray-400 mb-6">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-gray-400 mb-8">
             <Link href="/" className="hover:text-[#1890FF] no-underline text-gray-400 transition-colors">
               Inicio
             </Link>
-            <ChevronRight className="w-3 h-3" />
+            <ChevronRight className="w-3 h-3 text-slate-350" />
             <span className="text-slate-700 font-medium">Blog</span>
           </nav>
 
-          <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-slate-900 tracking-tight mb-3">
-            Blog
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-100 text-[#1890FF] text-xs font-bold uppercase tracking-wider mb-4">
+            Recursos y Conocimiento
+          </span>
+
+          <h1 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-slate-900 tracking-tight leading-tight mb-4">
+            Blog de{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
+              Datos e IA
+            </span>
           </h1>
-          <p className="text-gray-500 text-base lg:text-lg max-w-2xl leading-relaxed">
-            Artículos, tutoriales y guías prácticas sobre Power BI, SQL, Python,
-            Machine Learning y análisis de datos.
+          <p className="text-slate-500 text-base lg:text-lg max-w-2xl leading-relaxed font-light">
+            Artículos de nivel profesional, tutoriales técnicos y guías de aplicación en vivo sobre SQL Server, Power BI, Python y Machine Learning.
           </p>
 
-          {/* Category Filter Tabs */}
-          <div className="flex flex-wrap gap-2 mt-8" role="tablist" aria-label="Filtrar por categoría">
+          {/* Category Filter Tabs (Sliding Glass menu style!) */}
+          <div className="relative flex flex-wrap gap-1 mt-10 p-1 bg-white/80 backdrop-blur-md border border-slate-200/50 rounded-2xl w-max max-w-full shadow-[0_8px_30px_rgba(0,0,0,0.03)]" role="tablist" aria-label="Filtrar por categoría">
             {CATEGORIES.map((cat) => {
               const isActive = activeCategory === cat.value;
               return (
@@ -236,46 +273,60 @@ export default function BlogClient({ articles }: { articles: any[] }) {
                   role="tab"
                   aria-selected={isActive}
                   onClick={() => setActiveCategory(cat.value)}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all border-none cursor-pointer ${
+                  className={`relative py-2.5 px-5 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center whitespace-nowrap z-10 border-none cursor-pointer bg-transparent ${
                     isActive
-                      ? "bg-[#1890FF] text-white shadow-md shadow-blue-500/20"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      ? "text-white"
+                      : "text-slate-600 hover:text-slate-900"
                   }`}
                 >
-                  {cat.label}
+                  {isActive && (
+                    <motion.div
+                      layoutId="activeCategoryGlow"
+                      className="absolute inset-0 bg-gradient-to-r from-[#1890FF] to-blue-500 rounded-xl -z-10 shadow-[0_4px_12px_rgba(24,144,255,0.25),inset_0_1px_1px_rgba(255,255,255,0.3)]"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <span>{cat.label}</span>
                 </button>
               );
             })}
           </div>
-        </div>
-      </section>
+        </header>
 
-      {/* ── Content ────────────────────────── */}
-      <div className="max-w-6xl mx-auto px-5 py-10">
-        {filtered.length === 0 ? (
-          /* Empty State */
-          <div className="text-center py-24">
-            <BookOpen className="w-14 h-14 text-gray-200 mx-auto mb-5" />
-            <h2 className="font-display font-bold text-2xl text-gray-900 mb-2">
-              No hay artículos en esta categoría
-            </h2>
-            <p className="text-gray-400 text-sm max-w-md mx-auto leading-relaxed">
-              Pronto publicaremos contenido increíble. ¡Vuelve pronto o explora otra categoría!
-            </p>
-          </div>
-        ) : (
-          <>
-            {/* Featured */}
-            {featured && <FeaturedHero article={featured} />}
-
-            {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {rest.map((article, i) => (
-                <ArticleCard key={article.id} article={article} index={i} />
-              ))}
+        {/* ── Content ────────────────────────── */}
+        <main className="max-w-[1300px] mx-auto px-6 lg:px-12 xl:px-16 py-4">
+          {filtered.length === 0 ? (
+            /* Empty State */
+            <div className="text-center py-24 bg-white rounded-3xl border border-slate-100 shadow-[0_15px_40px_rgba(15,23,42,0.01)]">
+              <BookOpen className="w-14 h-14 text-slate-200 mx-auto mb-5" />
+              <h2 className="font-display font-bold text-2xl text-slate-900 mb-2">
+                No hay artículos en esta categoría
+              </h2>
+              <p className="text-slate-400 text-sm max-w-md mx-auto leading-relaxed font-light">
+                Pronto publicaremos contenido increíble. ¡Vuelve pronto o explora otra categoría!
+              </p>
             </div>
-          </>
-        )}
+          ) : (
+            <>
+              {/* Featured */}
+              {featured && <FeaturedHero article={featured} />}
+
+              {/* Grid Title */}
+              {rest.length > 0 && (
+                <h3 className="font-display font-black text-xl text-slate-900 mb-8 tracking-tight">
+                  Últimos Artículos
+                </h3>
+              )}
+
+              {/* Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {rest.map((article, i) => (
+                  <ArticleCard key={article.id} article={article} index={i} />
+                ))}
+              </div>
+            </>
+          )}
+        </main>
       </div>
     </div>
   );
