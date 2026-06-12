@@ -8,6 +8,7 @@ import { Newspaper, Bell } from "lucide-react";
 import { getPublishedArticles, getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
 import { createClient } from "@/lib/supabase/client";
 import { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
+import { isVideoUrl } from "@/lib/utils";
 
 export default function NewsletterClient() {
   const [articles, setArticles] = useState<any[]>([]);
@@ -105,14 +106,25 @@ export default function NewsletterClient() {
             <Link href={`/newsletter/${featured.slug}`} className="block no-underline group">
               <div className="relative w-full h-[420px] sm:h-[500px] lg:h-[560px] overflow-hidden">
                 {featured.cover_image ? (
-                  <Image
-                    src={featured.cover_image}
-                    alt={featured.title}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
-                    unoptimized
-                    priority
-                  />
+                  isVideoUrl(featured.cover_image) ? (
+                    <video
+                      src={featured.cover_image}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover opacity-80 transition-transform duration-700 group-hover:scale-[1.02]"
+                    />
+                  ) : (
+                    <Image
+                      src={featured.cover_image}
+                      alt={featured.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
+                      unoptimized
+                      priority
+                    />
+                  )
                 ) : (
                   <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300" />
                 )}
@@ -151,13 +163,24 @@ export default function NewsletterClient() {
                   >
                     <div className="relative w-full h-48 sm:h-52 overflow-hidden rounded-sm mb-4">
                       {article.cover_image ? (
-                        <Image
-                          src={article.cover_image}
-                          alt={article.title}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          unoptimized
-                        />
+                        isVideoUrl(article.cover_image) ? (
+                          <video
+                            src={article.cover_image}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                        ) : (
+                          <Image
+                            src={article.cover_image}
+                            alt={article.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            unoptimized
+                          />
+                        )
                       ) : (
                         <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                           <Newspaper className="w-8 h-8 text-gray-300" />
@@ -221,13 +244,24 @@ export default function NewsletterClient() {
                   <Link href={`/newsletter/${catArticles[0].slug}`} className="lg:col-span-7 group block no-underline">
                     <div className="relative w-full h-64 lg:h-80 overflow-hidden rounded-sm mb-4">
                       {catArticles[0].cover_image ? (
-                        <Image
-                          src={catArticles[0].cover_image}
-                          alt={catArticles[0].title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          unoptimized
-                        />
+                        isVideoUrl(catArticles[0].cover_image) ? (
+                          <video
+                            src={catArticles[0].cover_image}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500"
+                          />
+                        ) : (
+                          <Image
+                            src={catArticles[0].cover_image}
+                            alt={catArticles[0].title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            unoptimized
+                          />
+                        )
                       ) : (
                         <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
                           <Newspaper className="w-10 h-10 text-gray-300" />
@@ -257,13 +291,24 @@ export default function NewsletterClient() {
                       <Link key={article.id} href={`/newsletter/${article.slug}`} className="group flex gap-4 no-underline">
                         <div className="relative w-24 h-24 flex-shrink-0 overflow-hidden rounded-sm">
                           {article.cover_image ? (
-                            <Image
-                              src={article.cover_image}
-                              alt={article.title}
-                              fill
-                              className="object-cover group-hover:scale-105 transition-transform duration-500"
-                              unoptimized
-                            />
+                            isVideoUrl(article.cover_image) ? (
+                              <video
+                                src={article.cover_image}
+                                autoPlay
+                                loop
+                                muted
+                                playsInline
+                                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500"
+                              />
+                            ) : (
+                              <Image
+                                src={article.cover_image}
+                                alt={article.title}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                unoptimized
+                              />
+                            )
                           ) : (
                             <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
                               <Newspaper className="w-5 h-5 text-gray-300" />

@@ -18,6 +18,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import ArticleBlockRenderer, { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
+import { isVideoUrl } from "@/lib/utils";
 
 const categoryLabels: Record<string, string> = {
   "power-bi": "Tecnología",
@@ -288,16 +289,27 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
       {article.cover_image && (
         <div className="max-w-[1140px] mx-auto px-6 lg:px-12 xl:px-16 mb-16">
           <div className="flex flex-col md:flex-row gap-6 items-stretch">
-            {/* Image (Main part) */}
+            {/* Image/Video (Main part) */}
             <div className="flex-1 relative aspect-[21/9] rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 w-full">
-              <Image
-                src={article.cover_image}
-                alt={article.title}
-                fill
-                className="object-cover"
-                unoptimized
-                priority
-              />
+              {isVideoUrl(article.cover_image) ? (
+                <video
+                  src={article.cover_image}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              ) : (
+                <Image
+                  src={article.cover_image}
+                  alt={article.title}
+                  fill
+                  className="object-cover"
+                  unoptimized
+                  priority
+                />
+              )}
             </div>
             
             {/* Share Buttons stacked vertically to the right of the image */}
@@ -649,11 +661,22 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
               <div className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50 shadow-sm select-none">
                 {article.cover_image && (
                   <div className="relative aspect-[1.91/1] w-full bg-slate-100">
-                    <img 
-                      src={article.cover_image} 
-                      alt="" 
-                      className="w-full h-full object-cover" 
-                    />
+                    {isVideoUrl(article.cover_image) ? (
+                      <video
+                        src={article.cover_image}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <img 
+                        src={article.cover_image} 
+                        alt="" 
+                        className="w-full h-full object-cover" 
+                      />
+                    )}
                   </div>
                 )}
                 <div className="p-4 bg-white border-t border-slate-100 text-left">

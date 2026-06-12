@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { getArticleBySlug, getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import ArticleBlockRenderer, { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
+import { isVideoUrl } from "@/lib/utils";
 
 const categoryColors: Record<string, string> = {
   "power-bi": "#F2C811",
@@ -91,17 +92,27 @@ export default function ArticleClient({ slug }: { slug: string }) {
 
   return (
     <div className="-mt-20 lg:-mt-24 pt-20 lg:pt-24 min-h-screen bg-[#FAFBFC]">
-      {/* Cover Image */}
       {article.cover_image && (
         <div className="relative w-full h-[300px] lg:h-[480px] overflow-hidden">
-          <Image
-            src={article.cover_image}
-            alt={article.title}
-            fill
-            className="object-cover"
-            unoptimized
-            priority
-          />
+          {isVideoUrl(article.cover_image) ? (
+            <video
+              src={article.cover_image}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <Image
+              src={article.cover_image}
+              alt={article.title}
+              fill
+              className="object-cover"
+              unoptimized
+              priority
+            />
+          )}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/80 via-transparent to-[#0F172A]/30" />
         </div>
       )}
@@ -221,13 +232,24 @@ export default function ArticleClient({ slug }: { slug: string }) {
                   <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-all">
                     <div className="relative h-32 overflow-hidden">
                       {r.cover_image ? (
-                        <Image
-                          src={r.cover_image}
-                          alt={r.title}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          unoptimized
-                        />
+                        isVideoUrl(r.cover_image) ? (
+                          <video
+                            src={r.cover_image}
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-500"
+                          />
+                        ) : (
+                          <Image
+                            src={r.cover_image}
+                            alt={r.title}
+                            fill
+                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            unoptimized
+                          />
+                        )
                       ) : (
                         <div className="absolute inset-0 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
                           <Sparkles className="w-6 h-6 text-slate-300" />

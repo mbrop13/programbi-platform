@@ -8,6 +8,7 @@ import { BookOpen, ChevronRight, Search, X, Sparkles, DollarSign, Cpu, Sliders, 
 import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
 import { createClient } from "@/lib/supabase/client";
 import { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
+import { isVideoUrl } from "@/lib/utils";
 
 /* ── Category config ─────────────────────────── */
 
@@ -110,14 +111,25 @@ function BlogSlider({ articles }: { articles: any[] }) {
           >
             <Link href={`/blog/${current.slug}`} className="absolute inset-0 block no-underline group">
               {current.cover_image ? (
-                <Image
-                  src={current.cover_image}
-                  alt={current.title}
-                  fill
-                  className="object-cover opacity-60 transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
-                  unoptimized
-                  priority
-                />
+                isVideoUrl(current.cover_image) ? (
+                  <video
+                    src={current.cover_image}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
+                  />
+                ) : (
+                  <Image
+                    src={current.cover_image}
+                    alt={current.title}
+                    fill
+                    className="object-cover opacity-60 transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
+                    unoptimized
+                    priority
+                  />
+                )
               ) : (
                 <div className="absolute inset-0 bg-slate-900" />
               )}
@@ -190,16 +202,26 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
       className="flex flex-col h-full bg-white group"
     >
       <Link href={`/blog/${article.slug}`} className="block no-underline text-slate-950 group-hover:opacity-95 transition-opacity">
-        {/* Cover Image */}
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-50 border border-slate-100 rounded-xl">
           {article.cover_image ? (
-            <Image
-              src={article.cover_image}
-              alt={article.title}
-              fill
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-              unoptimized
-            />
+            isVideoUrl(article.cover_image) ? (
+              <video
+                src={article.cover_image}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+              />
+            ) : (
+              <Image
+                src={article.cover_image}
+                alt={article.title}
+                fill
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
+                unoptimized
+              />
+            )
           ) : (
             <div className="absolute inset-0 bg-slate-50 flex items-center justify-center">
               <BookOpen className="w-10 h-10 text-slate-200" />
