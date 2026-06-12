@@ -11,9 +11,11 @@ import {
   Check,
   ChevronRight,
   BookOpen,
-  Sliders
+  Sliders,
+  Eye,
+  X
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import ArticleBlockRenderer from "@/components/shared/ArticleBlockRenderer";
 import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
 
@@ -36,6 +38,7 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
   const [readingProgress, setReadingProgress] = useState(0);
   const [prefs, setPrefs] = useState<BlogPrefs>(defaultPrefs);
   const [showPrefs, setShowPrefs] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
 
   // Load preferences from localStorage on mount
   useEffect(() => {
@@ -206,87 +209,136 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
         style={{ width: `${readingProgress}%` }}
       />
 
-      {/* Breadcrumbs Row & Back button */}
-      <div className={`border-b py-4 pt-16 sm:pt-20 ${
-        prefs.theme === "dark" ? "border-slate-800" : "border-slate-100/80"
-      }`}>
-        <div className="max-w-[1140px] mx-auto px-6 lg:px-12 xl:px-16 flex flex-wrap items-center justify-between gap-4">
+      {/* ── ARTICLE HEADER ── */}
+      <header className="max-w-[1140px] mx-auto px-6 pt-20 sm:pt-24 pb-8">
+        {/* Top Navigation Row inside header */}
+        <div className={`flex items-center justify-between text-[10px] font-bold uppercase tracking-widest mb-10 pb-4 border-b ${
+          prefs.theme === "dark" ? "text-slate-500 border-slate-800" : "text-slate-400 border-slate-100"
+        }`}>
           <Link 
             href="/blog" 
-            className={`flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest no-underline transition-colors group ${
-              prefs.theme === "dark" ? "text-slate-400 hover:text-white" : "text-slate-500 hover:text-black"
+            className={`flex items-center gap-1.5 no-underline transition-colors group ${
+              prefs.theme === "dark" ? "text-slate-400 hover:text-white" : "text-slate-550 hover:text-black"
             }`}
           >
             <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
             <span>Volver</span>
           </Link>
           
-          <nav aria-label="Breadcrumb" className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest ${
-            prefs.theme === "dark" ? "text-slate-500" : "text-slate-400"
-          }`}>
-            <Link href="/" className={`no-underline transition-colors ${prefs.theme === "dark" ? "text-slate-400 hover:text-white" : "text-slate-400 hover:text-black"}`}>Inicio</Link>
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5">
+            <Link href="/" className={`no-underline transition-colors ${prefs.theme === "dark" ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-black"}`}>Inicio</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href="/blog" className={`no-underline transition-colors ${prefs.theme === "dark" ? "text-slate-400 hover:text-white" : "text-slate-400 hover:text-black"}`}>Blog</Link>
-            <ChevronRight className="w-3 h-3" />
-            <span className={`font-bold truncate max-w-[120px] sm:max-w-[200px] ${
-              prefs.theme === "dark" ? "text-slate-300" : "text-slate-700"
-            }`}>
-              {article.title}
-            </span>
+            <Link href="/blog" className={`no-underline transition-colors ${prefs.theme === "dark" ? "text-slate-500 hover:text-white" : "text-slate-400 hover:text-black"}`}>Blog</Link>
           </nav>
         </div>
-      </div>
 
-      {/* ── ARTICLE HEADER ── */}
-      <header className="max-w-[900px] mx-auto px-6 pt-8 pb-10 text-center">
-        <span className="inline-block text-[10px] sm:text-xs font-bold tracking-[0.2em] uppercase text-[#1890FF] mb-4">
-          {categoryLabel}
-        </span>
-        
-        <h1 className={`font-serif font-bold text-3xl sm:text-5xl lg:text-6xl leading-tight tracking-tight mb-6 max-w-4xl mx-auto ${
-          prefs.theme === "dark" ? "text-white" : "text-slate-950"
-        }`}>
-          {article.title}
-        </h1>
-
-        {article.excerpt && (
-          <p className={`text-lg sm:text-xl leading-relaxed mb-6 font-light max-w-3xl mx-auto ${
-            prefs.theme === "dark" ? "text-slate-400" : "text-slate-650"
+        {/* Title, Excerpt and Metadata */}
+        <div className="max-w-[900px] mx-auto text-center">
+          <h1 className={`font-serif font-bold text-3xl sm:text-5xl lg:text-6xl leading-tight tracking-tight mb-6 ${
+            prefs.theme === "dark" ? "text-white" : "text-slate-950"
           }`}>
-            {article.excerpt}
-          </p>
-        )}
+            {article.title}
+          </h1>
 
-        <div className={`flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-widest pb-6 border-b max-w-lg mx-auto ${
-          prefs.theme === "dark" ? "text-slate-500 border-slate-800" : "text-slate-455 border-slate-100"
-        }`}>
-          <span>por {article.author_name || "Manuel Oliva"}</span>
-          <span>•</span>
-          <span>{formatDate(article.published_at || article.created_at)}</span>
-          <span>•</span>
-          <span>{article.reading_time_min} min</span>
-        </div>
+          {article.excerpt && (
+            <p className={`text-lg sm:text-xl leading-relaxed mb-6 font-light ${
+              prefs.theme === "dark" ? "text-slate-400" : "text-slate-655"
+            }`}>
+              {article.excerpt}
+            </p>
+          )}
 
-        {/* Share buttons horizontally in header */}
-        <div className={`flex justify-center mt-6 max-w-xs mx-auto border-b pb-4 ${
-          prefs.theme === "dark" ? "border-slate-800" : "border-slate-100"
-        }`}>
-          <ShareRow />
+          <div className={`flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-widest pb-4 max-w-lg mx-auto ${
+            prefs.theme === "dark" ? "text-slate-500" : "text-slate-455"
+          }`}>
+            <span>por {article.author_name || "Manuel Oliva"}</span>
+            <span>•</span>
+            <span>{formatDate(article.published_at || article.created_at)}</span>
+            <span>•</span>
+            <span>{article.reading_time_min} min</span>
+          </div>
         </div>
       </header>
 
-      {/* Cover Image */}
+      {/* Cover Image and Share Buttons Sidebar */}
       {article.cover_image && (
         <div className="max-w-[1140px] mx-auto px-6 lg:px-12 xl:px-16 mb-16">
-          <div className="relative aspect-[21/9] w-full rounded-2xl overflow-hidden bg-slate-50 border border-slate-100">
-            <Image
-              src={article.cover_image}
-              alt={article.title}
-              fill
-              className="object-cover"
-              unoptimized
-              priority
-            />
+          <div className="flex flex-col md:flex-row gap-6 items-stretch">
+            {/* Image (Main part) */}
+            <div className="flex-1 relative aspect-[21/9] rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 w-full">
+              <Image
+                src={article.cover_image}
+                alt={article.title}
+                fill
+                className="object-cover"
+                unoptimized
+                priority
+              />
+            </div>
+            
+            {/* Share Buttons stacked vertically to the right of the image */}
+            <div className={`flex md:flex-col items-center justify-center gap-4 py-4 px-3 rounded-2xl border ${
+              prefs.theme === "dark" ? "bg-slate-900 border-slate-800" : "bg-slate-50 border-slate-100"
+            }`}>
+              <span className={`text-[9px] font-bold uppercase tracking-widest md:-rotate-90 md:my-4 whitespace-nowrap ${
+                prefs.theme === "dark" ? "text-slate-500" : "text-slate-400"
+              }`}>
+                Compartir
+              </span>
+              
+              {/* LinkedIn button */}
+              <a 
+                href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
+                  prefs.theme === "dark" ? "bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white" : "bg-white hover:bg-slate-100 text-slate-500 hover:text-slate-800 shadow-sm"
+                }`}
+                title="Compartir en LinkedIn"
+              >
+                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+                </svg>
+              </a>
+
+              {/* X button */}
+              <a 
+                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${
+                  prefs.theme === "dark" ? "bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white" : "bg-white hover:bg-slate-100 text-slate-500 hover:text-slate-800 shadow-sm"
+                }`}
+                title="Compartir en X"
+              >
+                <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+              </a>
+
+              {/* Copy link button */}
+              <button 
+                onClick={handleCopyLink}
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all border-none cursor-pointer ${
+                  prefs.theme === "dark" ? "bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white" : "bg-white hover:bg-slate-100 text-slate-500 hover:text-[#1890FF] shadow-sm"
+                }`}
+                title="Copiar enlace"
+              >
+                {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+              </button>
+
+              {/* Visual preview button */}
+              <button 
+                type="button"
+                onClick={() => setShowPreview(true)}
+                className={`w-9 h-9 rounded-full flex items-center justify-center transition-all border-none cursor-pointer ${
+                  prefs.theme === "dark" ? "bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white" : "bg-white hover:bg-slate-100 text-slate-500 hover:text-[#1890FF] shadow-sm"
+                }`}
+                title="Vista previa de compartido"
+              >
+                <Eye className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -534,6 +586,86 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
         prefs={prefs}
         onChange={setPrefs}
       />
+
+      {/* Visual Share Preview Modal */}
+      <AnimatePresence>
+        {showPreview && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowPreview(false)}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[10002]"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
+              className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[10003] w-[calc(100%-2rem)] max-w-lg overflow-hidden bg-white border border-slate-200 rounded-3xl shadow-2xl p-6"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-5 text-slate-950">
+                <span className="font-serif font-bold text-sm uppercase tracking-wider">
+                  Vista Previa del Enlace
+                </span>
+                <button
+                  onClick={() => setShowPreview(false)}
+                  className="w-8 h-8 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-450 hover:text-slate-900 flex items-center justify-center transition-colors cursor-pointer border-none"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <p className="text-xs text-slate-400 mb-4 font-medium font-sans">
+                Así es como verán tus contactos esta noticia cuando compartas el enlace en WhatsApp, LinkedIn, X o Slack:
+              </p>
+
+              {/* Social Card Mockup */}
+              <div className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50 shadow-sm select-none">
+                {article.cover_image && (
+                  <div className="relative aspect-[1.91/1] w-full bg-slate-100">
+                    <img 
+                      src={article.cover_image} 
+                      alt="" 
+                      className="w-full h-full object-cover" 
+                    />
+                  </div>
+                )}
+                <div className="p-4 bg-white border-t border-slate-100 text-left">
+                  <span className="text-[10px] font-bold text-blue-500 uppercase tracking-widest block mb-1 font-sans">
+                    programbi.com
+                  </span>
+                  <h4 className="font-serif font-bold text-slate-950 text-base leading-snug mb-1.5">
+                    {article.title}
+                  </h4>
+                  {article.excerpt && (
+                    <p className="text-xs text-slate-450 leading-relaxed line-clamp-2 my-0 font-sans">
+                      {article.excerpt}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Action buttons inside preview */}
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={handleCopyLink}
+                  className="flex-1 py-3 bg-slate-950 hover:bg-slate-800 text-white font-bold text-xs tracking-widest uppercase rounded-xl transition-all border-none cursor-pointer text-center"
+                >
+                  {copied ? "¡Enlace Copiado!" : "Copiar Enlace"}
+                </button>
+                <button
+                  onClick={() => setShowPreview(false)}
+                  className="px-5 py-3 border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs tracking-widest uppercase rounded-xl transition-all bg-white cursor-pointer"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
