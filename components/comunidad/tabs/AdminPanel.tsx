@@ -93,7 +93,7 @@ export default function AdminPanel() {
     { id: "import", label: "Importar CSV", icon: Upload },
     { id: "plans", label: "Planes", icon: CreditCard },
     { id: "popups", label: "Pop-ups", icon: Megaphone },
-    { id: "newsletter", label: "Newsletter", icon: Newspaper },
+    { id: "newsletter", label: "Blog", icon: Newspaper },
     { id: "diplomas", label: "Diplomas", icon: Award },
     { id: "settings", label: "Configuración", icon: Settings },
   ];
@@ -3014,7 +3014,7 @@ function AdminNewsletter() {
   return (
     <div className="p-6 sm:p-8">
       <div className="flex items-center gap-4 mb-8">
-        <h2 className="font-display font-black text-2xl text-gray-900">Newsletter</h2>
+        <h2 className="font-display font-black text-2xl text-gray-900">Blog</h2>
       </div>
 
       {/* Sub-tabs */}
@@ -3194,7 +3194,7 @@ function AdminNewsletterArticles() {
     <div className="p-6 sm:p-8">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Newsletter</h2>
+          <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Blog</h2>
           <p className="text-sm text-gray-400">{articles.length} artículos · Gestiona tu blog</p>
         </div>
         <button
@@ -3335,7 +3335,7 @@ function AdminNewsletterArticles() {
         <div className="text-center py-12 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50">
           <Newspaper className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <h3 className="text-gray-900 font-bold mb-1">Sin artículos</h3>
-          <p className="text-gray-400 text-sm">Crea tu primer artículo para el newsletter.</p>
+          <p className="text-gray-400 text-sm">Crea tu primer artículo para el blog.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -3391,7 +3391,7 @@ function AdminNewsletterArticles() {
                   className={`p-2 rounded-lg transition-colors border-none cursor-pointer ${article.status === 'published' ? 'bg-emerald-50 text-emerald-500 hover:bg-emerald-100' : 'hover:bg-gray-100 text-gray-400'}`}>
                   {article.status === 'published' ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                 </button>
-                <a href={`/newsletter/${article.slug}`} target="_blank" rel="noreferrer" title="Ver" className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">
+                <a href={`/blog/${article.slug}`} target="_blank" rel="noreferrer" title="Ver" className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">
                   <ExternalLink className="w-4 h-4" />
                 </a>
                 <button onClick={() => openEditForm(article)} title="Editar" className="p-2 rounded-lg hover:bg-blue-50 text-gray-400 hover:text-brand-blue transition-colors border-none cursor-pointer">
@@ -3513,7 +3513,7 @@ function AdminNewsletterCategories() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <p className="text-sm text-gray-400">{categories.length} categorías · Estas aparecen en la barra de navegación del Newsletter</p>
+          <p className="text-sm text-gray-400">{categories.length} categorías · Estas aparecen en la barra de navegación del Blog</p>
         </div>
         <button
           onClick={() => { resetForm(); setShowForm(true); }}
@@ -3601,7 +3601,7 @@ function AdminNewsletterCategories() {
         <div className="text-center py-12 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50">
           <Newspaper className="w-10 h-10 text-gray-300 mx-auto mb-3" />
           <h3 className="text-gray-900 font-bold mb-1 text-sm">Sin categorías</h3>
-          <p className="text-gray-400 text-xs">Crea categorías para organizar tu newsletter.</p>
+          <p className="text-gray-400 text-xs">Crea categorías para organizar tu blog.</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -3684,7 +3684,7 @@ function AdminNewsletterCategories() {
       {/* Info box */}
       <div className="mt-6 p-4 bg-blue-50/50 rounded-xl border border-blue-100">
         <p className="text-xs text-blue-700 font-medium leading-relaxed">
-          💡 <strong>Tip:</strong> Las categorías principales aparecen en la barra de navegación del Newsletter. 
+          💡 <strong>Tip:</strong> Las categorías principales aparecen en la barra de navegación del Blog. 
           Las subcategorías sirven para organizar el contenido dentro de una categoría principal.
           Cambia el <strong>orden</strong> para controlar su posición en la barra. Usa el botón del ojo para <strong>ocultar/mostrar</strong> categorías sin eliminarlas.
         </p>
