@@ -174,12 +174,7 @@ export default function BlogClient({ articles }: { articles: any[] }) {
   return (
     <div className="min-h-screen bg-white pb-28">
       {/* ── Main Header (Journal/Newspaper Header) ── */}
-      <header className="max-w-[1200px] mx-auto px-6 pt-14 sm:pt-16 pb-8">
-        
-        {/* Top tagline */}
-        <div className="flex items-center justify-end text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-3">
-          <span className="hidden sm:inline">CONOCIMIENTO COMPARTIDO</span>
-        </div>
+      <header className="max-w-[1200px] mx-auto px-6 pt-2 sm:pt-3 pb-8">
 
         {/* Central Logo */}
         <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-slate-950 text-center pt-0 pb-4 select-none">
