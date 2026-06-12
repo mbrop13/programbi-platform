@@ -3084,6 +3084,7 @@ function parseMarkdownImport(text: string) {
   const tags = metadata.tags || metadata.tags_list || "";
   const excerpt = metadata.excerpt || metadata.resumen || metadata.description || metadata.descripcion || metadata.extracto || metadata.subtitulo || metadata.subtitle || "";
   const ticker = metadata.ticker || metadata.tickers || metadata.tradingview || metadata.accion || metadata.ticket || metadata.tickets || "";
+  const poster = metadata.poster || metadata.thumbnail || metadata.thumbnail_url || metadata.cover_poster || metadata.imagen_compartido || "";
 
   return {
     title,
@@ -3094,6 +3095,7 @@ function parseMarkdownImport(text: string) {
     tags,
     excerpt,
     ticker,
+    poster,
     content: bodyContent
   };
 }
@@ -3227,6 +3229,12 @@ ${article.content || ""}`;
           const hasTickerInBody = parsed.content.match(/^(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets)\s*:/im);
           if (!hasTickerInBody) {
             finalContent = `${parsed.content}\n\nTicker: ${parsed.ticker}`;
+          }
+        }
+        if (parsed.poster) {
+          const hasPosterInBody = parsed.content.match(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido)\s*:/im);
+          if (!hasPosterInBody) {
+            finalContent = `${finalContent}\n\nPoster: ${parsed.poster}`;
           }
         }
 
