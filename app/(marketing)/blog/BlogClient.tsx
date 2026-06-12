@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, ChevronRight, Search, X, Sparkles, DollarSign, Cpu, Sliders, ChevronLeft } from "lucide-react";
 import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
 import { createClient } from "@/lib/supabase/client";
+import { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 
 /* ── Category config ─────────────────────────── */
 
@@ -215,9 +216,10 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
             {article.title}
           </h3>
           {article.excerpt && (
-            <p className="text-sm text-slate-650 leading-relaxed font-light line-clamp-3 mb-5 flex-1">
-              {article.excerpt}
-            </p>
+            <p 
+              className="text-sm text-slate-650 leading-relaxed font-light line-clamp-3 mb-5 flex-1"
+              dangerouslySetInnerHTML={{ __html: applyInlineMarkdown(article.excerpt) }}
+            />
           )}
           <div className="text-[11px] text-slate-400 font-semibold mt-auto flex items-center gap-1.5">
             <span>por {article.author_name || "Manuel Oliva"}</span>

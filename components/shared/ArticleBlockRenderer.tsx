@@ -9,7 +9,7 @@ import TradingViewWidget from "./TradingViewWidget";
 
 /* ─── Lightweight Markdown Parser ─── */
 
-function applyInlineMarkdown(text: string): string {
+export function applyInlineMarkdown(text: string): string {
   let html = text;
   // Inline code: `code`
   html = html.replace(/`(.*?)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-100 font-mono text-[14px] text-slate-900 font-semibold">$1</code>');

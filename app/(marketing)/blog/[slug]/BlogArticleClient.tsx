@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { 
@@ -16,7 +16,7 @@ import {
   X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import ArticleBlockRenderer from "@/components/shared/ArticleBlockRenderer";
+import ArticleBlockRenderer, { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
 
 const categoryLabels: Record<string, string> = {
@@ -34,6 +34,7 @@ interface BlogArticleClientProps {
 }
 
 export default function BlogArticleClient({ article, related }: BlogArticleClientProps) {
+  const articleRef = useRef<HTMLElement>(null);
   const [copied, setCopied] = useState(false);
   const [readingProgress, setReadingProgress] = useState(0);
   const [prefs, setPrefs] = useState<BlogPrefs>(defaultPrefs);
@@ -55,14 +56,22 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
   // Calculate reading progress
   useEffect(() => {
     const updateReadingProgress = () => {
-      const currentProgress = window.scrollY;
-      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
-      if (scrollHeight > 0) {
-        setReadingProgress(Number((currentProgress / scrollHeight).toFixed(2)) * 100);
+      if (articleRef.current) {
+        const rect = articleRef.current.getBoundingClientRect();
+        const absoluteTop = rect.top + window.scrollY;
+        const absoluteBottom = absoluteTop + rect.height;
+        const maxScroll = absoluteBottom - window.innerHeight;
+        if (maxScroll > 0) {
+          const progress = Math.min(100, Math.max(0, (window.scrollY / maxScroll) * 100));
+          setReadingProgress(Math.round(progress));
+        } else {
+          setReadingProgress(100);
+        }
       }
     };
 
     window.addEventListener("scroll", updateReadingProgress);
+    updateReadingProgress();
     return () => window.removeEventListener("scroll", updateReadingProgress);
   }, []);
 
@@ -245,11 +254,12 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
             </h1>
 
             {article.excerpt && (
-              <p className={`text-lg sm:text-xl leading-relaxed mb-6 font-light ${
-                prefs.theme === "dark" ? "text-slate-400" : "text-slate-655"
-              }`}>
-                {article.excerpt}
-              </p>
+              <p 
+                className={`text-lg sm:text-xl leading-relaxed mb-6 font-light ${
+                  prefs.theme === "dark" ? "text-slate-400" : "text-slate-655"
+                }`}
+                dangerouslySetInnerHTML={{ __html: applyInlineMarkdown(article.excerpt) }}
+              />
             )}
 
             <div className={`flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-widest pb-4 max-w-lg mx-auto ${
@@ -362,7 +372,7 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
           {/* Main Article Content & Tutorial Layout */}
-          <main className={`${template === "tutorial" ? "lg:col-span-9" : "lg:col-span-12"} flex flex-col`}>
+          <main ref={articleRef} className={`${template === "tutorial" ? "lg:col-span-9" : "lg:col-span-12"} flex flex-col`}>
             
             {/* Table of Contents for Mobile Tutorial layout */}
             {template === "tutorial" && headings.length > 0 && (

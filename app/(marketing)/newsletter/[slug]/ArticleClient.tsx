@@ -7,7 +7,7 @@ import { ArrowLeft, Clock, Calendar, Tag, Share2, ChevronRight, Newspaper, Spark
 import { motion } from "framer-motion";
 import { getArticleBySlug, getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
-import ArticleBlockRenderer from "@/components/shared/ArticleBlockRenderer";
+import ArticleBlockRenderer, { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 
 const categoryColors: Record<string, string> = {
   "power-bi": "#F2C811",
@@ -155,9 +155,10 @@ export default function ArticleClient({ slug }: { slug: string }) {
 
             {/* Excerpt */}
             {article.excerpt && (
-              <p className="text-xl text-gray-600 leading-relaxed font-medium mb-10 border-l-4 border-[#1890FF] pl-5">
-                {article.excerpt}
-              </p>
+              <p 
+                className="text-xl text-gray-600 leading-relaxed font-medium mb-10 border-l-4 border-[#1890FF] pl-5"
+                dangerouslySetInnerHTML={{ __html: applyInlineMarkdown(article.excerpt) }}
+              />
             )}
 
             {/* Article Body */}

@@ -3059,7 +3059,7 @@ function parseMarkdownImport(text: string) {
         metadata[key] = value;
       }
     } else {
-      const match = trimmed.match(/^(?:#\s*)?(titulo|title|imagen|image|cover|categoria|category|autor|author|tiempo|reading_time|tags|tags_list)\s*:\s*(.+)$/i);
+      const match = trimmed.match(/^(?:#\s*)?(titulo|title|imagen|image|cover|categoria|category|autor|author|tiempo|reading_time|tags|tags_list|excerpt|resumen|description|descripcion|extracto|subtitulo|subtitle)\s*:\s*(.+)$/i);
       
       if (match && !hasParsedFrontmatter) {
         const key = match[1].toLowerCase();
@@ -3082,6 +3082,7 @@ function parseMarkdownImport(text: string) {
   const author_name = metadata.autor || metadata.author || "";
   const reading_time = metadata.reading_time || metadata.tiempo || metadata.time || "";
   const tags = metadata.tags || metadata.tags_list || "";
+  const excerpt = metadata.excerpt || metadata.resumen || metadata.description || metadata.descripcion || metadata.extracto || metadata.subtitulo || metadata.subtitle || "";
 
   return {
     title,
@@ -3090,6 +3091,7 @@ function parseMarkdownImport(text: string) {
     author_name,
     reading_time,
     tags,
+    excerpt,
     content: bodyContent
   };
 }
@@ -3215,7 +3217,7 @@ ${article.content || ""}`;
         const parsed = parseMarkdownImport(formMarkdownText);
         const titleVal = parsed.title || formTitle;
         const slugVal = formSlug || generateSlug(titleVal);
-        const excerptVal = formExcerpt || (parsed.content.slice(0, 160) + "...");
+        const excerptVal = formExcerpt || parsed.excerpt || (parsed.content.slice(0, 160) + "...");
         const tagsVal = (parsed.tags || formTags).split(",").map(t => t.trim()).filter(Boolean);
 
         payload = {

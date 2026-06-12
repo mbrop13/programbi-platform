@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Newspaper, Bell } from "lucide-react";
 import { getPublishedArticles, getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
 import { createClient } from "@/lib/supabase/client";
+import { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 
 export default function NewsletterClient() {
   const [articles, setArticles] = useState<any[]>([]);
@@ -237,9 +238,10 @@ export default function NewsletterClient() {
                       {catArticles[0].title}
                     </h3>
                     {catArticles[0].excerpt && (
-                      <p className="text-gray-500 text-sm serif-body leading-relaxed line-clamp-2 mb-2">
-                        {catArticles[0].excerpt}
-                      </p>
+                      <p 
+                        className="text-gray-500 text-sm serif-body leading-relaxed line-clamp-2 mb-2"
+                        dangerouslySetInnerHTML={{ __html: applyInlineMarkdown(catArticles[0].excerpt) }}
+                      />
                     )}
                     <p className="text-[13px] text-gray-400 serif-body">
                       por <span className="text-gray-600 font-medium">{catArticles[0].author_name || "ProgramBI"}</span>
