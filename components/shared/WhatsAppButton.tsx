@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export default function WhatsAppButton() {
+  const pathname = usePathname();
   const [showTooltip, setShowTooltip] = useState(false);
 
   useEffect(() => {
@@ -18,6 +20,9 @@ export default function WhatsAppButton() {
   }, []);
 
   const whatsappUrl = "https://wa.me/56935409699?text=Hola!%20Me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20los%20cursos%20de%20ProgramBI.";
+
+  const isBlog = pathname?.startsWith("/blog");
+  if (isBlog) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-[9998] flex items-center justify-end select-none pointer-events-none">
