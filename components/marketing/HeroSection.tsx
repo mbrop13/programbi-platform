@@ -95,35 +95,35 @@ function ModernDataVisual() {
           </div>
         </div>
 
-        {/* Liquid Glass Navigation Controls (Placed Below) */}
-        <div className="flex gap-1 bg-[#0F172A]/85 backdrop-blur-xl border border-white/10 rounded-full p-1 shadow-[0_8px_32px_rgba(15,23,42,0.12)] w-max">
-          {VIDEOS.map((video, idx) => {
-            const Icon = video.icon;
-            const isActive = activeIndex === idx;
-            return (
-              <button
-                key={video.id}
-                type="button"
-                onClick={() => handleTabClick(idx)}
-                className={`relative py-1.5 px-3.5 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap z-10 ${
-                  isActive
-                    ? "text-white"
-                    : "text-white/60 hover:text-white"
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeTabGlow"
-                    className="absolute inset-0 bg-gradient-to-r from-[#1890FF] to-blue-500 rounded-full -z-10 shadow-[0_4px_12px_rgba(24,144,255,0.3),inset_0_1px_1px_rgba(255,255,255,0.3)]"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <Icon className="w-3.5 h-3.5" />
-                <span>{video.title}</span>
-              </button>
-            );
-          })}
-        </div>
+        {/* Liquid Glass Navigation Controls (Light Mode Below) */}
+      <div className="flex gap-1 bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-full p-1 shadow-[0_8px_32px_rgba(31,38,135,0.06)] w-max">
+        {VIDEOS.map((video, idx) => {
+          const Icon = video.icon;
+          const isActive = activeIndex === idx;
+          return (
+            <button
+              key={video.id}
+              type="button"
+              onClick={() => handleTabClick(idx)}
+              className={`relative py-1.5 px-3.5 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap z-10 ${
+                isActive
+                  ? "text-white"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="activeTabGlow"
+                  className="absolute inset-0 bg-gradient-to-r from-[#1890FF] to-blue-500 rounded-full -z-10 shadow-[0_4px_12px_rgba(24,144,255,0.25),inset_0_1px_1px_rgba(255,255,255,0.3)]"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+              <Icon className="w-3.5 h-3.5" />
+              <span>{video.title}</span>
+            </button>
+          );
+        })}
+      </div>
       </div>
     </div>
   );
@@ -170,7 +170,7 @@ export default function HeroSection() {
 
             {/* Main Title */}
             <FadeIn delay={0.15}>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 tracking-tight leading-tight lg:leading-[1.1] mb-6 font-display">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight lg:leading-[1.15] mb-6 font-display">
                 Aprende Análisis de <br className="hidden lg:block" />
                 Datos con{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
