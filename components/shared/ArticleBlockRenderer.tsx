@@ -7,16 +7,130 @@ import { useState } from "react";
 
 /* ─── Lightweight Markdown Parser ─── */
 
+function applyInlineMarkdown(text: string): string {
+  let html = text;
+  // Inline code: `code`
+  html = html.replace(/`(.*?)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-100 font-mono text-[14px] text-slate-900 font-semibold">$1</code>');
+  // Bold: **text** or __text__
+  html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-950">$1</strong>');
+  html = html.replace(/__(.*?)__/g, '<strong class="font-bold text-slate-950">$1</strong>');
+  // Italic: *text* or _text_
+  html = html.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
+  html = html.replace(/_(.*?)_/g, '<em class="italic">$1</em>');
+  // Links: [text](url)
+  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-[#1890FF] font-semibold underline underline-offset-4 hover:text-[#0050b3] transition-colors">$1</a>');
+  return html;
+}
+
 function parseMarkdownToHtml(markdown: string): string {
   const lines = markdown.split("\n");
   const parsedLines: string[] = [];
   let inList = false;
   let inOrderList = false;
+  let inTable = false;
+  let inCodeBlock = false;
+  let tableAlignments: string[] = [];
+  let tableRowIndex = 0; // 0 for header, 1 for separator, 2+ for data
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
 
-    // Horizontal Rule
+    // 1. Code Block Processing
+    if (inCodeBlock) {
+      if (line.startsWith("```")) {
+        inCodeBlock = false;
+        parsedLines.push("</code></pre></div></div>");
+      } else {
+        // Escape HTML tags in raw code
+        const escaped = line
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+        parsedLines.push(escaped);
+      }
+      continue;
+    }
+
+    if (line.startsWith("```")) {
+      const lang = line.slice(3).trim() || "plaintext";
+      inCodeBlock = true;
+      if (inList) { parsedLines.push("</ul>"); inList = false; }
+      if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
+      if (inTable) { parsedLines.push("</tbody></table></div>"); inTable = false; }
+      parsedLines.push(`
+        <div class="relative rounded-2xl overflow-hidden mb-6 group">
+          <div class="flex items-center justify-between px-5 py-2.5 bg-[#1E293B] border-b border-white/5">
+            <div class="flex items-center gap-2">
+              <div class="flex gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-red-400/60" />
+                <span class="w-3 h-3 rounded-full bg-amber-400/60" />
+                <span class="w-3 h-3 rounded-full bg-emerald-400/60" />
+              </div>
+              <span class="text-[10px] font-bold text-white/30 uppercase tracking-wider ml-2">${lang}</span>
+            </div>
+          </div>
+          <div class="relative bg-[#0F172A] px-5 py-4 overflow-x-auto">
+            <pre class="text-[13px] leading-relaxed"><code class="text-slate-300 font-mono whitespace-pre">`);
+      continue;
+    }
+
+    // 2. Table Line Processing
+    const isTableLine = line.startsWith("|");
+    if (isTableLine) {
+      if (inList) { parsedLines.push("</ul>"); inList = false; }
+      if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
+
+      const rawCells = line.split("|");
+      // Split and clean cell content
+      const cells = rawCells.slice(1, rawCells.length - (rawCells[rawCells.length - 1] === "" ? 1 : 0)).map(c => c.trim());
+
+      if (!inTable) {
+        inTable = true;
+        tableRowIndex = 0;
+        tableAlignments = [];
+        parsedLines.push('<div class="overflow-x-auto my-6 border border-slate-200 rounded-xl"><table class="min-w-full divide-y divide-slate-200">');
+      }
+
+      const isSeparator = cells.every(c => c.match(/^:?-+:?$/));
+
+      if (isSeparator) {
+        tableAlignments = cells.map(c => {
+          const left = c.startsWith(":");
+          const right = c.endsWith(":");
+          if (left && right) return "text-center";
+          if (right) return "text-right";
+          return "text-left";
+        });
+        tableRowIndex = 1;
+        continue;
+      }
+
+      if (tableRowIndex === 0) {
+        parsedLines.push('<thead class="bg-slate-50"><tr>');
+        cells.forEach((cell) => {
+          parsedLines.push(`<th class="px-6 py-3 text-left text-xs font-bold text-slate-700 uppercase tracking-wider font-sans">${applyInlineMarkdown(cell)}</th>`);
+        });
+        parsedLines.push('</tr></thead><tbody class="bg-white divide-y divide-slate-100">');
+        tableRowIndex = 2;
+      } else {
+        parsedLines.push('<tr class="hover:bg-slate-50/50 transition-colors">');
+        cells.forEach((cell, idx) => {
+          const align = tableAlignments[idx] || "text-left";
+          parsedLines.push(`<td class="px-6 py-4 whitespace-nowrap text-sm text-slate-800 ${align} font-serif">${applyInlineMarkdown(cell)}</td>`);
+        });
+        parsedLines.push('</tr>');
+      }
+      continue;
+    } else {
+      if (inTable) {
+        parsedLines.push('</tbody></table></div>');
+        inTable = false;
+        tableAlignments = [];
+        tableRowIndex = 0;
+      }
+    }
+
+    // 3. Horizontal Rule
     if (line === "---" || line === "***" || line === "___") {
       if (inList) { parsedLines.push("</ul>"); inList = false; }
       if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
@@ -24,12 +138,12 @@ function parseMarkdownToHtml(markdown: string): string {
       continue;
     }
 
-    // Headings
+    // 4. Headings
     const h1Match = line.match(/^#\s+(.+)$/);
     if (h1Match) {
       if (inList) { parsedLines.push("</ul>"); inList = false; }
       if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
-      parsedLines.push(`<h1 class="font-serif text-3xl sm:text-4xl font-bold text-slate-950 mt-10 mb-5 leading-tight">${h1Match[1]}</h1>`);
+      parsedLines.push(`<h1 class="font-serif text-3xl sm:text-4xl font-bold text-slate-950 mt-10 mb-5 leading-tight">${applyInlineMarkdown(h1Match[1])}</h1>`);
       continue;
     }
 
@@ -37,7 +151,7 @@ function parseMarkdownToHtml(markdown: string): string {
     if (h2Match) {
       if (inList) { parsedLines.push("</ul>"); inList = false; }
       if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
-      parsedLines.push(`<h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-950 mt-8 mb-4 leading-tight">${h2Match[1]}</h2>`);
+      parsedLines.push(`<h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-950 mt-8 mb-4 leading-tight">${applyInlineMarkdown(h2Match[1])}</h2>`);
       continue;
     }
 
@@ -45,20 +159,20 @@ function parseMarkdownToHtml(markdown: string): string {
     if (h3Match) {
       if (inList) { parsedLines.push("</ul>"); inList = false; }
       if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
-      parsedLines.push(`<h3 class="font-serif text-xl sm:text-2xl font-bold text-slate-950 mt-6 mb-3 leading-tight">${h3Match[1]}</h3>`);
+      parsedLines.push(`<h3 class="font-serif text-xl sm:text-2xl font-bold text-slate-950 mt-6 mb-3 leading-tight">${applyInlineMarkdown(h3Match[1])}</h3>`);
       continue;
     }
 
-    // Blockquotes (handled escaped &gt; or plain >)
+    // 5. Blockquotes
     const quoteMatch = line.match(/^&gt;\s*(.+)$/) || line.match(/^>\s*(.+)$/);
     if (quoteMatch) {
       if (inList) { parsedLines.push("</ul>"); inList = false; }
       if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
-      parsedLines.push(`<blockquote class="border-l-4 border-slate-950 bg-slate-50 pl-5 py-4 pr-6 my-6 font-serif italic text-slate-800 text-lg leading-relaxed">${quoteMatch[1]}</blockquote>`);
+      parsedLines.push(`<blockquote class="border-l-4 border-slate-950 bg-slate-50 pl-5 py-4 pr-6 my-6 font-serif italic text-slate-800 text-lg leading-relaxed">${applyInlineMarkdown(quoteMatch[1])}</blockquote>`);
       continue;
     }
 
-    // Bullet Lists
+    // 6. Bullet Lists
     const listMatch = line.match(/^[-*+]\s+(.+)$/);
     if (listMatch) {
       if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
@@ -66,11 +180,11 @@ function parseMarkdownToHtml(markdown: string): string {
         parsedLines.push('<ul class="list-disc pl-6 space-y-2 mb-5 text-slate-700 font-serif text-base sm:text-[18px]">');
         inList = true;
       }
-      parsedLines.push(`<li>${listMatch[1]}</li>`);
+      parsedLines.push(`<li>${applyInlineMarkdown(listMatch[1])}</li>`);
       continue;
     }
 
-    // Ordered Lists
+    // 7. Ordered Lists
     const oListMatch = line.match(/^(\d+)\.\s+(.+)$/);
     if (oListMatch) {
       if (inList) { parsedLines.push("</ul>"); inList = false; }
@@ -78,45 +192,35 @@ function parseMarkdownToHtml(markdown: string): string {
         parsedLines.push('<ol class="list-decimal pl-6 space-y-2 mb-5 text-slate-700 font-serif text-base sm:text-[18px]">');
         inOrderList = true;
       }
-      parsedLines.push(`<li>${oListMatch[2]}</li>`);
+      parsedLines.push(`<li>${applyInlineMarkdown(oListMatch[2])}</li>`);
       continue;
     }
 
-    // Empty line (closes lists)
+    // 8. Empty line (closes lists & tables)
     if (line === "") {
       if (inList) { parsedLines.push("</ul>"); inList = false; }
       if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
+      if (inTable) { parsedLines.push("</tbody></table></div>"); inTable = false; }
       continue;
     }
 
-    // Regular paragraph line
+    // 9. Regular paragraph line
     if (inList) {
-      parsedLines[parsedLines.length - 1] = parsedLines[parsedLines.length - 1].slice(0, -5) + " " + line + "</li>";
+      parsedLines[parsedLines.length - 1] = parsedLines[parsedLines.length - 1].slice(0, -5) + " " + applyInlineMarkdown(line) + "</li>";
     } else if (inOrderList) {
-      parsedLines[parsedLines.length - 1] = parsedLines[parsedLines.length - 1].slice(0, -5) + " " + line + "</li>";
+      parsedLines[parsedLines.length - 1] = parsedLines[parsedLines.length - 1].slice(0, -5) + " " + applyInlineMarkdown(line) + "</li>";
     } else {
-      parsedLines.push(`<p class="text-slate-850 text-base sm:text-[18px] leading-[1.85] font-serif mb-6">${line}</p>`);
+      parsedLines.push(`<p class="text-slate-850 text-base sm:text-[18px] leading-[1.85] font-serif mb-6">${applyInlineMarkdown(line)}</p>`);
     }
   }
 
-  // Close open lists at the end
+  // Close open lists & tables at the end
   if (inList) parsedLines.push("</ul>");
   if (inOrderList) parsedLines.push("</ol>");
+  if (inTable) parsedLines.push("</tbody></table></div>");
+  if (inCodeBlock) parsedLines.push("</code></pre></div></div>");
 
-  let parsedHtml = parsedLines.join("\n");
-
-  // Inline formatting: Bold (**text** or __text__)
-  parsedHtml = parsedHtml.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-950">$1</strong>');
-  parsedHtml = parsedHtml.replace(/__(.*?)__/g, '<strong class="font-bold text-slate-950">$1</strong>');
-
-  // Inline formatting: Italic (*text* or _text_)
-  parsedHtml = parsedHtml.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
-  parsedHtml = parsedHtml.replace(/_(.*?)_/g, '<em class="italic">$1</em>');
-
-  // Inline formatting: Links ([text](url))
-  parsedHtml = parsedHtml.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-[#1890FF] font-semibold underline underline-offset-4 hover:text-[#0050b3] transition-colors">$1</a>');
-
-  return parsedHtml;
+  return parsedLines.join("\n");
 }
 
 /* ─── Helper Copy Button ─── */
@@ -152,6 +256,8 @@ function BlockHeading({ block }: { block: any }) {
 
 function BlockParagraph({ block }: { block: any }) {
   let parsedText = block.text || "";
+  // Code
+  parsedText = parsedText.replace(/`(.*?)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-100 font-mono text-[14px] text-slate-900 font-semibold">$1</code>');
   // Bold
   parsedText = parsedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
   // Italic
