@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, ChevronRight, Search, X, Sparkles, DollarSign, Cpu, Sliders, ChevronLeft } from "lucide-react";
 import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
+import { createClient } from "@/lib/supabase/client";
 
 /* ── Category config ─────────────────────────── */
 
@@ -124,9 +125,6 @@ function BlogSlider({ articles }: { articles: any[] }) {
 
               {/* Centered Content */}
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 md:p-12 text-center text-white z-10">
-                <span className="text-[10px] sm:text-xs font-bold tracking-[0.25em] uppercase text-[#1890FF] mb-4">
-                  {categoryLabel}
-                </span>
                 <h2 className="font-serif font-bold text-2xl sm:text-4xl lg:text-5xl xl:text-6xl text-white max-w-5xl leading-[1.15] mb-5 tracking-tight drop-shadow-md">
                   {current.title}
                 </h2>
@@ -243,6 +241,18 @@ export default function BlogClient({ articles }: { articles: any[] }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [prefs, setPrefs] = useState<BlogPrefs>(defaultPrefs);
   const [showPrefs, setShowPrefs] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Load preferences from localStorage on mount
   useEffect(() => {
@@ -345,12 +355,14 @@ export default function BlogClient({ articles }: { articles: any[] }) {
               <Search className="w-3.5 h-3.5" />
               <span>{isSearchActive ? "CERRAR BUSCAR" : "BUSCAR"}</span>
             </button>
-            <button 
-              onClick={() => window.dispatchEvent(new Event("open-nl-subscribe"))}
-              className="hover:text-black no-underline transition-colors text-[10px] tracking-widest font-bold text-slate-500 cursor-pointer bg-transparent border-none uppercase"
-            >
-              SUSCRÍBETE
-            </button>
+            {!user && (
+              <button 
+                onClick={() => window.dispatchEvent(new Event("open-nl-subscribe"))}
+                className="hover:text-black no-underline transition-colors text-[10px] tracking-widest font-bold text-slate-500 cursor-pointer bg-transparent border-none uppercase"
+              >
+                SUSCRÍBETE
+              </button>
+            )}
           </div>
         </div>
 

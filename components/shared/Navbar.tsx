@@ -12,7 +12,6 @@ import { courses } from "@/lib/data/courses";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "./AuthModal";
 import SupportModal from "./SupportModal";
-import NewsletterSubscribeModal from "./NewsletterSubscribeModal";
 import { getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
 import { isCurrentUserAdmin } from "@/lib/supabase/comunidad";
 import { useCountry } from "@/lib/context/CountryContext";
@@ -44,8 +43,6 @@ export default function Navbar() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [authModal, setAuthModal] = useState<{ isOpen: boolean, tab: "login" | "register" }>({ isOpen: false, tab: "login" });
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
-  const [isNlSubModalOpen, setIsNlSubModalOpen] = useState(false);
-  const [pendingNlSub, setPendingNlSub] = useState(false);
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const countryDropdownRef = useRef<HTMLDivElement>(null);
   
@@ -125,13 +122,7 @@ export default function Navbar() {
     return () => subscription.unsubscribe();
   }, [supabase.auth]);
 
-  // If user just logged in after pressing "subscribe", open the subscribe modal
-  useEffect(() => {
-    if (user && pendingNlSub) {
-      setPendingNlSub(false);
-      setTimeout(() => setIsNlSubModalOpen(true), 500);
-    }
-  }, [user, pendingNlSub]);
+
 
   // Load newsletter categories when on newsletter page
   useEffect(() => {
@@ -142,16 +133,12 @@ export default function Navbar() {
   // Listen for open-subscribe events from newsletter page
   useEffect(() => {
     const handleOpen = () => {
-      if (user) {
-        setIsNlSubModalOpen(true);
-      } else {
+      if (!user) {
         setAuthModal({ isOpen: true, tab: "register" });
       }
     };
     const handleOpenAuth = () => {
-      if (user) {
-        setIsNlSubModalOpen(true);
-      } else {
+      if (!user) {
         setAuthModal({ isOpen: true, tab: "register" });
       }
     };
@@ -207,7 +194,6 @@ export default function Navbar() {
     <>
       <AuthModal isOpen={authModal.isOpen} onClose={() => setAuthModal(prev => ({ ...prev, isOpen: false }))} defaultTab={authModal.tab} />
       <SupportModal isOpen={isSupportModalOpen} onClose={() => setIsSupportModalOpen(false)} userEmail={user?.email || ""} />
-      <NewsletterSubscribeModal isOpen={isNlSubModalOpen} onClose={() => setIsNlSubModalOpen(false)} />
       
       <motion.nav
         animate={{ y: isHidden ? "-100%" : "0%" }}
@@ -482,19 +468,20 @@ export default function Navbar() {
                   </button>
                 ))}
               </div>
-              <button
-                onClick={() => {
-                  if (user) {
-                    setIsNlSubModalOpen(true);
-                  } else {
-                    setPendingNlSub(true);
+              {user ? (
+                <span className="hidden lg:block text-[10px] font-bold tracking-[0.12em] text-emerald-500 uppercase whitespace-nowrap">
+                  ✓ Ya estás suscrito
+                </span>
+              ) : (
+                <button
+                  onClick={() => {
                     setAuthModal({ isOpen: true, tab: "register" });
-                  }
-                }}
-                className="hidden lg:block text-[10px] font-bold tracking-[0.12em] text-gray-400 hover:text-black uppercase whitespace-nowrap bg-transparent border-none cursor-pointer transition-colors"
-              >
-                Suscríbete al Newsletter
-              </button>
+                  }}
+                  className="hidden lg:block text-[10px] font-bold tracking-[0.12em] text-gray-400 hover:text-black uppercase whitespace-nowrap bg-transparent border-none cursor-pointer transition-colors"
+                >
+                  Suscríbete al Newsletter
+                </button>
+              )}
             </div>
           </div>
         )}

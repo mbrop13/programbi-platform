@@ -186,19 +186,21 @@ export default function NewsletterClient() {
             <p className="text-gray-400 text-sm max-w-md mx-auto mb-6 serif-body">
               Suscríbete y recibe artículos sobre datos, IA y tecnología cada semana, directo en tu correo.
             </p>
-            <button
-              onClick={() => {
-                if (user) {
-                  window.dispatchEvent(new CustomEvent("open-nl-subscribe"));
-                } else {
+            {user ? (
+              <span className="inline-flex items-center gap-2 px-8 py-3.5 text-emerald-600 font-bold text-xs tracking-[0.15em] uppercase font-sans">
+                ✓ Ya estás suscrito al Newsletter
+              </span>
+            ) : (
+              <button
+                onClick={() => {
                   window.dispatchEvent(new CustomEvent("open-nl-subscribe-auth"));
-                }
-              }}
-              className="inline-flex items-center gap-2 px-8 py-3.5 bg-gray-900 hover:bg-black text-white font-bold text-xs tracking-[0.15em] uppercase rounded-sm transition-colors border-none cursor-pointer"
-            >
-              <Bell className="w-4 h-4" />
-              Suscribirme al Newsletter
-            </button>
+                }}
+                className="inline-flex items-center gap-2 px-8 py-3.5 bg-gray-900 hover:bg-black text-white font-bold text-xs tracking-[0.15em] uppercase rounded-sm transition-colors border-none cursor-pointer"
+              >
+                <Bell className="w-4 h-4" />
+                Suscribirme Gratis
+              </button>
+            )}
           </div>
 
           {/* ═══ CATEGORY SECTIONS — editorial flow ═══ */}

@@ -4,11 +4,24 @@ import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { X, Mail } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { createClient } from "@/lib/supabase/client";
 
 export default function BlogSubscribeWidget() {
   const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     // Show widget 2 seconds after mount if it wasn't dismissed
@@ -20,7 +33,7 @@ export default function BlogSubscribeWidget() {
 
   const isBlog = pathname?.startsWith("/blog");
 
-  if (!isBlog || dismissed) return null;
+  if (!isBlog || dismissed || user) return null;
 
   const handleOpenSubscribe = () => {
     window.dispatchEvent(new Event("open-nl-subscribe"));
