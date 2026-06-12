@@ -164,18 +164,12 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         />
       )}
       
-      {/* TL;DR Summary Block for GEO/SEO Optimization */}
-      <section className="bg-slate-50 border-b border-slate-100 py-6 pt-24 -mb-20 relative z-30">
-        <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
-          <div className="bg-white/90 backdrop-blur-md p-4 sm:p-5 rounded-2xl border border-blue-50 flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 shadow-sm">
-            <span className="bg-[#1890FF]/10 text-[#1890FF] text-[9px] font-black uppercase tracking-wider px-2.5 py-1.5 rounded-lg shrink-0">
-              Resumen Rápido (TL;DR)
-            </span>
-            <p className="text-slate-600 text-xs sm:text-sm leading-relaxed my-0 font-semibold">
-              El <strong>{course.title}</strong> es un programa de capacitación online en vivo de {course.durationHours} horas dictado en español. Está diseñado para formar profesionales con proyectos reales, grabaciones permanentes y certificado oficial de ProgramBI SPA.
-            </p>
-          </div>
-        </div>
+      {/* TL;DR Summary Block for GEO/SEO Optimization (Visually hidden for users, accessible for LLMs/Crawlers) */}
+      <section className="sr-only">
+        <h2>Resumen Rápido (TL;DR) - {course.title}</h2>
+        <p>
+          El {course.title} es un programa de capacitación online en vivo de {course.durationHours} horas dictado en español. Está diseñado para formar profesionales con proyectos reales, grabaciones permanentes y certificado oficial de ProgramBI SPA.
+        </p>
       </section>
 
       <CourseDetailClient course={course} />
