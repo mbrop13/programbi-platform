@@ -3059,7 +3059,7 @@ function parseMarkdownImport(text: string) {
         metadata[key] = value;
       }
     } else {
-      const match = trimmed.match(/^(?:#\s*)?(titulo|title|imagen|image|cover|categoria|category|autor|author|tiempo|reading_time|tags|tags_list|excerpt|resumen|description|descripcion|extracto|subtitulo|subtitle)\s*:\s*(.+)$/i);
+      const match = trimmed.match(/^(?:#\s*)?(titulo|title|imagen|image|cover|categoria|category|autor|author|tiempo|reading_time|tags|tags_list|excerpt|resumen|description|descripcion|extracto|subtitulo|subtitle|ticker|tickers|tradingview|accion|ticket|tickets)\s*:\s*(.+)$/i);
       
       if (match && !hasParsedFrontmatter) {
         const key = match[1].toLowerCase();
@@ -3083,6 +3083,7 @@ function parseMarkdownImport(text: string) {
   const reading_time = metadata.reading_time || metadata.tiempo || metadata.time || "";
   const tags = metadata.tags || metadata.tags_list || "";
   const excerpt = metadata.excerpt || metadata.resumen || metadata.description || metadata.descripcion || metadata.extracto || metadata.subtitulo || metadata.subtitle || "";
+  const ticker = metadata.ticker || metadata.tickers || metadata.tradingview || metadata.accion || metadata.ticket || metadata.tickets || "";
 
   return {
     title,
@@ -3092,6 +3093,7 @@ function parseMarkdownImport(text: string) {
     reading_time,
     tags,
     excerpt,
+    ticker,
     content: bodyContent
   };
 }
@@ -3220,11 +3222,19 @@ ${article.content || ""}`;
         const excerptVal = formExcerpt || parsed.excerpt || (parsed.content.slice(0, 160) + "...");
         const tagsVal = (parsed.tags || formTags).split(",").map(t => t.trim()).filter(Boolean);
 
+        let finalContent = parsed.content;
+        if (parsed.ticker) {
+          const hasTickerInBody = parsed.content.match(/^(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets)\s*:/im);
+          if (!hasTickerInBody) {
+            finalContent = `${parsed.content}\n\nTicker: ${parsed.ticker}`;
+          }
+        }
+
         payload = {
           title: titleVal,
           slug: slugVal,
           excerpt: excerptVal,
-          content: parsed.content, // Save raw Markdown string
+          content: finalContent, // Save raw Markdown string
           cover_image: parsed.cover_image || formCoverImage || undefined,
           category: parsed.category || formCategory,
           tags: tagsVal,

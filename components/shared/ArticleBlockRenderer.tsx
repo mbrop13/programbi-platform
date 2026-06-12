@@ -413,7 +413,7 @@ function parseMarkdownIntoBlocks(markdown: string): ContentBlock[] {
     const trimmed = line.trim();
     
     // 1. Detect TradingView Tickers block
-    const isTickerStart = trimmed.match(/^(?:Ticker|TradingView|Accion|Acción)\s*:\s*(.+)$/i);
+    const isTickerStart = trimmed.match(/^(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets)\s*:\s*(.+)$/i);
     if (isTickerStart) {
       if (currentHtmlLines.length > 0) {
         blocks.push({
@@ -466,7 +466,7 @@ function parseMarkdownIntoBlocks(markdown: string): ContentBlock[] {
         const chartLine = lines[i];
         const chartLineTrimmed = chartLine.trim();
         
-        if (chartLineTrimmed === "" || chartLineTrimmed === "---" || chartLineTrimmed.match(/^Grafico de /i) || chartLineTrimmed.match(/^(?:Ticker|TradingView|Accion)/i)) {
+        if (chartLineTrimmed === "" || chartLineTrimmed === "---" || chartLineTrimmed.match(/^Grafico de /i) || chartLineTrimmed.match(/^(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets)/i)) {
           // stop parsing chart block (don't consume separator/next chart line, let outer loop handle it)
           break;
         }
@@ -559,7 +559,7 @@ export default function ArticleBlockRenderer({ content }: { content: string }) {
 
   // Fallback to Markdown / HTML render
   if (!blocks) {
-    const isMarkdown = content.trim().startsWith("#") || content.includes("\n## ") || content.includes("\n- ") || content.includes("\n* ") || content.includes("---") || content.match(/Grafico de/i) || content.match(/Ticker:/i) || content.match(/TradingView:/i) || content.match(/Accion:/i);
+    const isMarkdown = content.trim().startsWith("#") || content.includes("\n## ") || content.includes("\n- ") || content.includes("\n* ") || content.includes("---") || content.match(/Grafico de/i) || content.match(/(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets):/i);
     
     if (!isMarkdown) {
       return (
