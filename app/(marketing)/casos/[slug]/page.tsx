@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Globe, Award, CheckCircle, ArrowUpRight, BarChart } from "lucide-react";
@@ -16,6 +17,24 @@ export async function generateStaticParams() {
   }));
 }
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const currentCase = casesOfUse.find((c) => c.slug === slug);
+  if (!currentCase) return { title: "Caso no encontrado" };
+
+  return {
+    title: currentCase.fullTitle,
+    description: currentCase.description,
+    alternates: { canonical: `/casos/${slug}` },
+    openGraph: {
+      title: `${currentCase.fullTitle} | ProgramBI`,
+      description: currentCase.description,
+      url: `https://programbi.com/casos/${slug}`,
+      type: "article",
+    },
+  };
+}
+
 export default async function CaseStudyPage({ params }: PageProps) {
   const { slug } = await params;
   const currentCase = casesOfUse.find((c) => c.slug === slug);
@@ -24,10 +43,23 @@ export default async function CaseStudyPage({ params }: PageProps) {
     notFound();
   }
 
-
+  const caseJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: currentCase.fullTitle,
+    description: currentCase.description,
+    author: { "@type": "Organization", name: "ProgramBI", url: "https://programbi.com" },
+    publisher: { "@id": "https://programbi.com/#organization" },
+    mainEntityOfPage: `https://programbi.com/casos/${slug}`,
+    about: currentCase.productsUsed.map((p: string) => ({ "@type": "Thing", name: p })),
+  };
 
   return (
     <main className="bg-white min-h-screen pt-28 pb-20 lg:pt-32 lg:pb-32">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(caseJsonLd) }}
+      />
       <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
         
         {/* Breadcrumbs Row */}

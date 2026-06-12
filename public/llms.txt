@@ -1,0 +1,50 @@
+# ProgramBI
+
+> ProgramBI es la plataforma líder de capacitación profesional en análisis de datos, Power BI, SQL, Python y Machine Learning en Chile y Latinoamérica. Fundada por Manuel Oliva (Magíster en Data Science, UAI), ofrece cursos online en vivo con instructores expertos de la industria. Más de 5000 estudiantes formados y clientes empresariales como Tottus, Deloitte, Cencosud, BASF, SQM y BCI.
+
+## Cursos Disponibles
+
+- [Curso de Análisis de Datos](https://programbi.com/cursos/analisis-de-datos): Programa insignia de 48 horas. Domina SQL Server, Power BI y Python. Desde $299.000 CLP.
+- [Power BI](https://programbi.com/cursos/power-bi): Dashboards interactivos, DAX avanzado y modelado dimensional. 16 horas. $249.000 CLP.
+- [SQL Server](https://programbi.com/cursos/sql-server): Consultas, JOINs, CTEs, procedimientos almacenados. 16 horas. $249.000 CLP.
+- [Python para Datos](https://programbi.com/cursos/python): Pandas, Matplotlib, automatización de reportes. 16 horas. $249.000 CLP.
+- [Machine Learning](https://programbi.com/cursos/machine-learning): Scikit-learn, TensorFlow, modelos predictivos. 16 horas. $249.000 CLP.
+- [IA en Productividad](https://programbi.com/cursos/ia-productividad): Prompt Engineering, Vibe Coding, agentes autónomos. 16 horas. $249.000 CLP.
+- [Power Automate & RPA](https://programbi.com/cursos/power-automate): Cloud Flows, Desktop Flows, Copilot IA. 16 horas. $249.000 CLP.
+- [Análisis de Datos para la Minería](https://programbi.com/cursos/analitica-mineria): Especialización para el sector minero. 48 horas. $498.000 CLP.
+- [Analítica Financiera](https://programbi.com/cursos/analitica-financiera): Automatización contable, modelado de riesgos. 48 horas. $498.000 CLP.
+- [Excel Avanzado](https://programbi.com/cursos/excel): Tablas dinámicas, Power Query, VBA. 16 horas. $249.000 CLP.
+
+## Diferenciadores Clave
+
+- Clases EN VIVO con instructores + grabaciones permanentes
+- 100% en español nativo (Chile y Latinoamérica)
+- Especializaciones por industria (Minería, Finanzas)
+- Capstone Projects con datos reales de empresas
+- IA integrada en cada módulo de los cursos
+- Plataforma LMS con comunidad y chat
+- Certificado digital al completar cada módulo
+
+## Equipo Docente
+
+- Manuel Oliva: CEO y Fundador. Magíster en Data Science (UAI), Contador Auditor (U. de Concepción), Profesor MBA (U. Gabriela Mistral), Ex-Mesa de Dinero Banco Itaú Chile.
+- Emanuel Berrocal: Ingeniero Civil Matemático (U. Chile), Diplomado en Estadísticas (UC), Portfolio Manager en Banco Itaú.
+- Joaquin Villagra: MSc. Inteligencia Artificial, Magíster Ing. Informática, Docente Postgrado UAI.
+- Rodrigo Vega: Ingeniero Comercial (U. Chile), Analista BI en Infracommerce.
+
+## Clientes Empresariales
+
+Tottus, Deloitte, Cencosud, BASF, SQM, BCI, Midea, Pucobre
+
+## Contacto
+
+- Web: https://programbi.com
+- Asesorías: https://programbi.com/asesorias
+- Instagram: https://www.instagram.com/programbi_capacitaciones/
+- LinkedIn: https://cl.linkedin.com/company/programbi
+- YouTube: https://www.youtube.com/@ProgramBi
+- TikTok: https://www.tiktok.com/@programbi
+
+## Información Legal
+
+ProgramBI SPA, Chile. Presencia en Chile y Latinoamérica.

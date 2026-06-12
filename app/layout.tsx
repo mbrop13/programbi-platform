@@ -112,9 +112,10 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "Organization",
+      "@type": ["Organization", "EducationalOrganization"],
       "@id": "https://programbi.com/#organization",
       name: "ProgramBI",
+      legalName: "ProgramBI SPA",
       url: "https://programbi.com",
       logo: {
         "@type": "ImageObject",
@@ -123,7 +124,41 @@ const jsonLd = {
         height: 160,
       },
       description:
-        "Capacitaciones profesionales en análisis de datos, Power BI, Python, SQL, Excel y Big Data para profesionales y empresas en Chile y Latinoamérica.",
+        "ProgramBI es la plataforma líder de capacitación profesional en análisis de datos, Power BI, SQL, Python y Machine Learning en Chile y Latinoamérica. Más de 5000 estudiantes formados con clases en vivo e instructores expertos de la industria.",
+      slogan: "Capacitaciones profesionales en análisis de datos con expertos",
+      foundingDate: "2021",
+      areaServed: [
+        { "@type": "Country", name: "Chile" },
+        { "@type": "Country", name: "Colombia" },
+        { "@type": "Country", name: "México" },
+        { "@type": "Country", name: "Perú" },
+        { "@type": "Country", name: "Argentina" },
+      ],
+      knowsAbout: [
+        "Power BI", "DAX", "SQL Server", "Python", "Pandas",
+        "Machine Learning", "Análisis de Datos", "Data Analytics",
+        "Business Intelligence", "Data Science", "Excel Avanzado",
+        "Power Query", "ETL", "Visualización de Datos", "Dashboards",
+        "Automatización de Reportes", "RPA", "Power Automate",
+        "Inteligencia Artificial", "Prompt Engineering",
+      ],
+      founder: {
+        "@type": "Person",
+        name: "Manuel Oliva",
+        jobTitle: "CEO & Fundador",
+        alumniOf: [
+          { "@type": "EducationalOrganization", name: "Universidad Adolfo Ibáñez" },
+          { "@type": "EducationalOrganization", name: "Universidad de Concepción" },
+        ],
+        knowsAbout: ["Data Science", "Riesgo Financiero", "Econometría", "Power BI", "Python"],
+      },
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "4.9",
+        reviewCount: "327",
+        bestRating: "5",
+        worstRating: "1",
+      },
       sameAs: [
         "https://www.instagram.com/programbi_capacitaciones/",
         "https://www.tiktok.com/@programbi",

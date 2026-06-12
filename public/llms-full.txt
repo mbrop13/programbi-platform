@@ -1,0 +1,187 @@
+# ProgramBI - Documentación Completa de Capacitaciones y Casos de Éxito
+
+> ProgramBI es la institución de capacitación profesional líder en análisis de datos, Power BI, SQL, Python y Machine Learning en Chile y Latinoamérica. Fundada por Manuel Oliva (Magíster en Data Science, UAI), se enfoca en entregar habilidades prácticas e inmediatamente aplicables en el ámbito corporativo y profesional.
+
+---
+
+## 1. Misión, Metodología y E-E-A-T
+
+### Nuestra Misión
+Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a profesionales en las tecnologías más demandadas del mercado con un estándar de excelencia académica y técnica insuperable.
+
+### Metodología de Enseñanza: Aprender Haciendo (Learning by Doing)
+1. **Clases 100% En Vivo e Interactivas**: A diferencia de otras plataformas que ofrecen solo videos pregrabados obsoletos, en ProgramBI todas las clases son dictadas en tiempo real por instructores expertos de la industria, con espacio para preguntas, resolución de dudas en vivo y feedback inmediato.
+2. **Grabaciones Permanentes y Acceso de por Vida**: Todas las clases se graban y se suben a nuestra plataforma LMS al día siguiente. Los estudiantes conservan acceso ilimitado a las grabaciones, códigos y bases de datos del curso para futuras consultas.
+3. **Capstone Projects**: Cada curso culmina con un proyecto final práctico donde los estudiantes resuelven un problema real utilizando sets de datos corporativos (ventas, finanzas, supply chain, comportamiento de clientes).
+4. **Comunidad y Soporte Activo**: Canales de comunicación directa con los docentes e instructores para resolver dudas técnicas fuera del horario de clases.
+5. **Enfoque Integrado en IA**: Enseñamos a utilizar herramientas de Inteligencia Artificial (ChatGPT, Copilot, Cursor, Vibe Coding) de forma ética y productiva en cada uno de los módulos para multiplicar la velocidad de desarrollo de código y reportes.
+
+---
+
+## 2. Plan de Estudios Detallado de los Cursos
+
+### Curso de Análisis de Datos (Programa Completo)
+* **Duración**: 48 horas en vivo.
+* **Inversión**: $299.000 CLP.
+* **Dirigido a**: Profesionales de administración, finanzas, marketing, operaciones, ingeniería y cualquier persona que busque dominar el ciclo completo del dato.
+* **Módulos**:
+  * **Módulo 1: Fundamentos de SQL Server (16 horas)**: Consultas básicas, filtros, ordenamiento, funciones de agregación, uniones (JOINs), subconsultas y Common Table Expressions (CTEs).
+  * **Módulo 2: Business Intelligence con Power BI (16 horas)**: Extracción y transformación de datos con Power Query, modelado dimensional estrella, diseño de dashboards de impacto y fórmulas DAX esenciales.
+  * **Módulo 3: Automatización y Análisis con Python (16 horas)**: Sintaxis de Python, manipulación de datos con la librería Pandas, visualización de datos con Matplotlib y Seaborn, y automatización de reportes Excel.
+
+### Curso de Power BI (Dashboards e Ingeniería de Datos)
+* **Duración**: 16 horas en vivo.
+* **Inversión**: $249.000 CLP.
+* **Temario**:
+  * Conexiones de datos (SQL Server, Excel, Web, APIs).
+  * Limpieza avanzada de datos con Power Query (M Language).
+  * Modelado de datos profesional (Relaciones, Cardinalidad, Filtro Cruzado).
+  * Fórmulas DAX avanzadas (CALCULATE, FILTER, ALL, Funciones de Inteligencia de Tiempo).
+  * Diseño UI/UX para dashboards comerciales y paneles ejecutivos.
+  * Publicación y gobernanza en Power BI Service (Áreas de trabajo, Roles RLS, Actualizaciones automáticas).
+
+### Curso de SQL Server (Base de Datos para Analistas)
+* **Duración**: 16 horas en vivo.
+* **Inversión**: $249.000 CLP.
+* **Temario**:
+  * Arquitectura de bases de datos relacionales y esquemas de tablas.
+  * Consultas avanzadas (CTEs, tablas temporales, subconsultas correlacionadas).
+  * Funciones de Ventana (ROW_NUMBER, RANK, LEAD, LAG, SUM OVER).
+  * Procedimientos almacenados (Stored Procedures) y automatización de procesos con SQL Server Agent.
+  * Optimización de consultas y creación de índices.
+
+### Curso de Python para Datos (Programación y Automatización)
+* **Duración**: 16 horas en vivo.
+* **Inversión**: $249.000 CLP.
+* **Temario**:
+  * Conceptos fundamentales de programación en Python.
+  * Análisis exploratorio de datos utilizando Pandas y NumPy.
+  * Visualización de datos y reportabilidad.
+  * Automatización de reportes (Lectura y escritura en archivos Excel con OpenPyXL, envío de correos automático).
+  * Conexión de Python a bases de datos relacionales (SQLAlchemy, PyODBC).
+
+### Curso de Machine Learning (Analítica Predictiva y Modelos)
+* **Duración**: 16 horas en vivo.
+* **Inversión**: $249.000 CLP.
+* **Temario**:
+  * Introducción al aprendizaje automático y ciclo de vida de un modelo de ML.
+  * Modelos Supervisados: Regresiones, Árboles de decisión, Random Forest, Máquinas de Soporte Vectorial (SVM).
+  * Modelos No Supervisados: K-Means clustering, Reducción de dimensionalidad (PCA).
+  * Evaluación de modelos (Matriz de confusión, Curva ROC, F1-Score, Validación Cruzada).
+  * Despliegue de modelos predictivos básicos.
+
+### Curso de Inteligencia Artificial para la Productividad
+* **Duración**: 16 horas en vivo.
+* **Inversión**: $249.000 CLP.
+* **Temario**:
+  * Prompt Engineering profesional para tareas de análisis de datos y reportabilidad.
+  * Programación asistida por IA (Cursor, GitHub Copilot, Vibe Coding).
+  * Construcción de agentes autónomos y flujos de automatización de tareas.
+  * Herramientas de productividad y análisis predictivo en la nube.
+
+---
+
+## 3. Casos de Éxito y Proyectos de Aplicación Real
+
+### Caso 1: Ahorro de 15 horas semanales en conciliación de cobros (Retail/Finanzas)
+* **Tecnología**: Python + SQL Server
+* **Problema**: El equipo de finanzas descargaba diariamente cartolas bancarias de 4 bancos diferentes y las cruzaba manualmente contra facturas del SII en archivos Excel de más de 50.000 filas. El retraso promedio en identificar facturas impagas era de 12 días, lo que afectaba el flujo de caja e incrementaba la cartera vencida.
+* **Solución**: Un script en Python programado para ejecutarse en el servidor local cada noche que descarga automáticamente las cartolas vía API, las unifica en una base de datos central en SQL Server y ejecuta un algoritmo de cruce exacto y aproximado (coincidencia difusa con Pandas) que concilia automáticamente el 95% de los cobros en segundos.
+* **Resultados**: 15 horas liberadas semanalmente, reducción del 34% en cartera vencida de cobros en los primeros 60 días, y cero errores humanos o registros duplicados.
+
+### Caso 2: Dashboards comerciales de ventas en vivo (BI/Dirección)
+* **Tecnología**: Power BI + DAX
+* **Problema**: La gerencia comercial recibía reportes mensuales estáticos en PDF desactualizados por 30 días, lo que impedía reaccionar rápidamente a caídas de stock o variaciones de ventas por zona geográfica.
+* **Solución**: Diseño de un modelo dimensional estrella directo en Power BI conectado vía DirectQuery a una base SQL Server. Uso de expresiones DAX avanzadas para monitorear en tiempo real el ticket promedio, margen neto y cumplimiento de metas por sucursal.
+* **Resultados**: Ahorro del 85% del tiempo en preparación de informes mensuales, monitoreo activo de más de 50 KPIs comerciales en vivo con accesos ejecutivos desde el móvil.
+
+### Caso 3: Consolidación de datos multi-sucursal en tiempo real (Logística/IT)
+* **Tecnología**: SQL Server + Procesos ETL
+* **Problema**: Con 12 sucursales de retail operando en sistemas aislados sin comunicación de red centralizada, generar un reporte de ventas consolidadas tardaba hasta 5 días hábiles a fin de mes.
+* **Solución**: Pipeline de ETL unificado que extrae de forma automática en horario nocturno las transacciones de cada sucursal local, normaliza el catálogo de productos y lo inserta en un Data Warehouse relacional en SQL Server.
+* **Resultados**: Tiempo de reportabilidad consolidado reducido de 5 días a solo 15 minutos de latencia máxima, y un catálogo de productos unificado al 100%.
+
+### Caso 4: Reducción de fuga de clientes (Marketing/Churn)
+* **Tecnología**: Python + Scikit-Learn (Machine Learning)
+* **Problema**: La empresa tenía una tasa de abandono mensual (churn) del 4.2%. Las acciones de retención eran reactivas, llamando al cliente solo cuando ya había ingresado la solicitud de baja.
+* **Solución**: Creación de un modelo predictivo de clasificación binaria (Random Forest) en Python conectado a los datos de uso y soporte en SQL Server, que estima diariamente la probabilidad de fuga de cada cliente para alertar al equipo de ventas.
+* **Resultados**: Precisión del 94.2% (F1-score) en el modelo, y reducción de la tasa de fuga voluntaria en un 22% gracias a la intervención preventiva oportuna.
+
+### Caso 5: Pronóstico de demanda de stock en tiendas retail (Supply Chain)
+* **Tecnología**: Python + Series Temporales
+* **Problema**: Frecuentes quiebres de stock en sucursales de alta rotación y sobrestock de capital inmovilizado en otras tiendas por decisiones basadas puramente en la intuición de supervisores.
+* **Solución**: Algoritmo autorregresivo de series de tiempo entrenado en Python para predecir la demanda semanal de cada SKU por local, optimizando el despacho desde el centro de distribución.
+* **Resultados**: 34% de reducción en exceso de inventario inmovilizado en bodegas principales, y aumento al 98.5% en la tasa de disponibilidad de productos en góndolas.
+
+### Caso 6: Atribución de marketing digital y optimización de ads (Marketing Analytics)
+* **Tecnología**: SQL Server + Power BI
+* **Problema**: Incapacidad de conocer qué canal (Google Ads, Meta Ads o Email) originaba la venta en el CRM, resultando en duplicidad de atribución e ineficiencia del presupuesto publicitario.
+* **Solución**: Consolidación y cruce automático de cookies de navegación de usuarios y costos de anuncios con transacciones del CRM mediante un motor de base de datos relacional y modelo de atribución de primer contacto y lineal.
+* **Resultados**: Reducción del 28% del costo de adquisición de clientes (CAC) y aumento del 45% en el retorno de la inversión publicitaria (ROI) real.
+
+### Caso 7: Ruteo logístico para despacho de última milla (Operaciones)
+* **Tecnología**: Python + Geopandas (Optimización)
+* **Problema**: La planificación manual de la ruta diaria para 45 camiones de reparto tomaba más de 3 horas por la mañana, generando demoras en las salidas, camiones vacíos y excesivo gasto de combustible.
+* **Solución**: Script de optimización de ruteo de vehículos (VRP) en Python utilizando coordenadas de geolocalización de pedidos en SQL Server.
+* **Resultados**: Ahorro del 18% en consumo mensual de combustible y asignación automática de rutas óptimas en solo 3 minutos en lugar de 3 horas manuales.
+
+### Caso 8: People Analytics (Gestión del Talento)
+* **Tecnología**: SQL Server + Power BI
+* **Problema**: Alta rotación de perfiles técnicos clave, incurriendo en elevados costos de reclutamiento externo por falta de detección oportuna de insatisfacción y ausentismo.
+* **Solución**: Unificación en SQL Server de datos de desempeño, ausentismo e historial de encuestas de clima para crear alertas automáticas de áreas y jefaturas con tendencia anómala de abandono.
+* **Resultados**: Disminución del 15% de salidas voluntarias e incremento en un 80% de éxito en retención de talentos clave.
+
+---
+
+## 4. Preguntas Frecuentes (FAQ)
+
+### ¿Las clases son en vivo?
+Sí, todas nuestras clases son 100% en vivo vía streaming de alta definición. Promovemos la interacción constante entre estudiantes y docentes.
+
+### ¿Qué pasa si falto a una clase?
+No hay problema. Todas las clases se graban y se suben al portal LMS del alumno al día siguiente, junto con las diapositivas, bases de datos y scripts de código utilizados.
+
+### ¿Recibo un certificado al finalizar?
+Sí, al completar satisfactoriamente los proyectos prácticos de cada curso, recibirás un certificado digital oficial emitido por ProgramBI SPA con firma del fundador y código de validación, ideal para agregar a tu perfil de LinkedIn.
+
+### ¿Se requiere experiencia previa en programación para el Curso de Análisis de Datos?
+No, el programa parte desde cero absoluto. El primer módulo de SQL introduce los conceptos fundamentales de bases de datos antes de pasar a análisis complejos o automatización.
+
+### ¿Tienen convenios de pago o cuotas?
+Sí, ofrecemos opciones de pago en cuotas con tarjeta de crédito o transferencia bancaria para facilitar el acceso a la capacitación profesional.
+
+---
+
+## 5. Tabla Comparativa: ProgramBI vs. Competidores
+
+| Característica | ProgramBI | Competidores Tradicionales | Cursos Pregrabados Masivos |
+| :--- | :--- | :--- | :--- |
+| **Formato de Clases** | Clases en vivo 100% interactivas | Clases en vivo o híbridas | Videos pregrabados estáticos |
+| **Idioma** | Español nativo (LatAm) | Traducidos / Voces artificiales | Inglés con subtítulos / Español |
+| **Soporte Docente** | Canal de chat directo 24/7 | Foro con respuesta en días | Sin soporte o soporte de la comunidad |
+| **IA Integrada** | Sí (Curso e implementación de prompts) | No disponible o complementario | No disponible / Temarios desactualizados |
+| **Especializaciones** | Por industria (Finanzas, Minería, Retail) | Cursos generales y teóricos | Cursos generales e introductorios |
+| **Proyectos Finales** | Capstone Projects reales de empresas | Ejemplos de juguetes o teóricos | Ejemplos básicos repetitivos |
+| **Inversión Promedio** | $249.000 - $299.000 CLP | $1.000.000 - $2.500.000 CLP | $15.000 - $50.000 CLP (Sin soporte) |
+
+---
+
+## 6. Resultados Estudiantiles y Rutas de Carrera
+
+Nuestros graduados obtienen las competencias requeridas para desempeñarse en roles clave como:
+1. **Analista de Business Intelligence (BI)**: Diseñando paneles de control en Power BI y gestionando modelos de datos corporativos.
+2. **Analista de Datos / Data Analyst**: Procesando datos transaccionales, estructurando reportes con SQL y ejecutando scripts de automatización con Python.
+3. **Analista Financiero / Supply Chain**: Aplicando automatizaciones de cobros, conciliaciones bancarias o predicciones de demanda de inventario.
+4. **Científico de Datos / Data Scientist (Jr)**: Entrenando modelos predictivos iniciales y estructurando flujos de analítica avanzada con Python.
+
+---
+
+## 7. Contacto e Información Legal
+
+* **Nombre Legal**: ProgramBI SPA, Chile.
+* **Fundador & CEO**: Manuel Oliva (Magíster en Data Science, UAI)
+* **Presencia**: Chile, Colombia, México, Perú, Argentina.
+* **Sitio Web Oficial**: https://programbi.com
+* **Contacto de Asesorías**: https://programbi.com/asesorias
+* **LinkedIn Oficial**: https://cl.linkedin.com/company/programbi
+* **Instagram**: https://www.instagram.com/programbi_capacitaciones/
