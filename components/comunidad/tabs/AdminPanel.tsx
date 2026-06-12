@@ -3059,7 +3059,7 @@ function parseMarkdownImport(text: string) {
         metadata[key] = value;
       }
     } else {
-      const match = trimmed.match(/^(?:#\s*)?(titulo|title|imagen|image|cover|categoria|category|autor|author|tiempo|reading_time|tags|tags_list|excerpt|resumen|description|descripcion|extracto|subtitulo|subtitle|ticker|tickers|tradingview|accion|ticket|tickets)\s*:\s*(.+)$/i);
+      const match = trimmed.match(/^(?:#\s*)?(titulo|title|imagen|image|cover|categoria|category|autor|author|tiempo|reading_time|tags|tags_list|excerpt|resumen|description|descripcion|extracto|subtitulo|subtitle|ticker|tickers|tradingview|accion|ticket|tickets|poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido)\s*:\s*(.+)$/i);
       
       if (match && !hasParsedFrontmatter) {
         const key = match[1].toLowerCase();
@@ -3193,16 +3193,49 @@ function AdminNewsletterArticles() {
       setFormMarkdownText("");
     } else {
       setEditorMode("markdown");
-      const fm = `---
-title: ${article.title}
-cover_image: ${article.cover_image || ""}
-category: ${article.category || "ia"}
-author: ${article.author_name || "ProgramBI"}
-reading_time: ${article.reading_time_min || 5}
-tags: ${tagsStr}
----
+      
+      let contentBody = article.content || "";
+      let parsedPoster = "";
+      let parsedTicker = "";
 
-${article.content || ""}`;
+      // Extract poster if present in body
+      const posterMatch = contentBody.match(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido)\s*:\s*([^\n\r]+)/im);
+      if (posterMatch) {
+        parsedPoster = posterMatch[1].trim();
+        contentBody = contentBody.replace(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido)\s*:[^\n\r]*(?:\r?\n|$)/im, "");
+      }
+
+      // Extract ticker if present in body
+      const tickerMatch = contentBody.match(/^(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets)\s*:\s*([^\n\r]+)/im);
+      if (tickerMatch) {
+        parsedTicker = tickerMatch[1].trim();
+        contentBody = contentBody.replace(/^(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets)\s*:[^\n\r]*(?:\r?\n|$)/im, "");
+      }
+
+      contentBody = contentBody.trim();
+
+      const fmLines = [
+        "---",
+        `title: ${article.title}`,
+        `cover_image: ${article.cover_image || ""}`
+      ];
+      
+      if (parsedPoster) {
+        fmLines.push(`Poster: ${parsedPoster}`);
+      }
+      if (parsedTicker) {
+        fmLines.push(`Ticker: ${parsedTicker}`);
+      }
+      
+      fmLines.push(`category: ${article.category || "ia"}`);
+      fmLines.push(`author: ${article.author_name || "ProgramBI"}`);
+      fmLines.push(`reading_time: ${article.reading_time_min || 5}`);
+      fmLines.push(`tags: ${tagsStr}`);
+      fmLines.push("---");
+      fmLines.push("");
+      fmLines.push(contentBody);
+
+      const fm = fmLines.join("\n");
       setFormMarkdownText(fm);
       setFormBlocks([]);
     }
