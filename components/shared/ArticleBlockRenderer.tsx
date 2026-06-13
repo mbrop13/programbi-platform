@@ -147,6 +147,15 @@ function parseMarkdownToHtml(markdown: string): string {
       continue;
     }
 
+    // Skip main poster or ticker metadata declarations if they appear in the content body (e.g. from frontmatter append)
+    const skipMatch = line.match(/^(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets|Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido|Imagen|Image)\s*:\s*(.+)$/i);
+    if (skipMatch) {
+      if (inList) { parsedLines.push("</ul>"); inList = false; }
+      if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
+      if (inTable) { parsedLines.push("</tbody></table></div>"); inTable = false; }
+      continue;
+    }
+
     // 3.5. Images / Secondary Images on their own line
     // Matches standard Markdown image: ![alt](url)
     const imgMatch = line.match(/^!\[(.*?)\]\((https?:\/\/[^\s\n\)]+)\)$/);
