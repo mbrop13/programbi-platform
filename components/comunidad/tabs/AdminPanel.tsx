@@ -3059,7 +3059,7 @@ function parseMarkdownImport(text: string) {
         metadata[key] = value;
       }
     } else {
-      const match = trimmed.match(/^(?:#\s*)?(titulo|title|imagen|image|cover|categoria|category|autor|author|tiempo|reading_time|tags|tags_list|excerpt|resumen|description|descripcion|extracto|subtitulo|subtitle|ticker|tickers|tradingview|accion|ticket|tickets|poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido|video|video_url)\s*:\s*(.+)$/i);
+      const match = trimmed.match(/^(?:#\s*)?(titulo|title|imagen|image|cover|categoria|category|autor|author|tiempo|reading_time|tags|tags_list|excerpt|resumen|description|descripcion|extracto|subtitulo|subtitle|ticker|tickers|tradingview|accion|ticket|tickets|poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido|video|video_url|date|published_at|fecha)\s*:\s*(.+)$/i);
       
       if (match && !hasParsedFrontmatter) {
         const key = match[1].toLowerCase();
@@ -3086,6 +3086,7 @@ function parseMarkdownImport(text: string) {
   const ticker = metadata.ticker || metadata.tickers || metadata.tradingview || metadata.accion || metadata.ticket || metadata.tickets || "";
   const poster = metadata.poster || metadata.thumbnail || metadata.thumbnail_url || metadata.cover_poster || metadata.imagen_compartido || metadata.imagen || metadata.image || "";
   const video = metadata.video || metadata.video_url || "";
+  const publishedAt = metadata.date || metadata.published_at || metadata.fecha || "";
 
   return {
     title,
@@ -3098,9 +3099,19 @@ function parseMarkdownImport(text: string) {
     ticker,
     poster,
     video,
+    publishedAt,
     content: bodyContent
   };
 }
+
+const toLocalDateTimeString = (dateInput?: string) => {
+  if (!dateInput) return "";
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return "";
+  const offset = d.getTimezoneOffset();
+  const localDate = new Date(d.getTime() - offset * 60000);
+  return localDate.toISOString().slice(0, 16);
+};
 
 function AdminNewsletterArticles() {
   const [articles, setArticles] = useState<any[]>([]);
@@ -3127,6 +3138,7 @@ function AdminNewsletterArticles() {
   const [formReadingTime, setFormReadingTime] = useState(5);
   const [formStatus, setFormStatus] = useState("draft");
   const [formFeatured, setFormFeatured] = useState(false);
+  const [formPublishedAt, setFormPublishedAt] = useState("");
   const [saving, setSaving] = useState(false);
 
 
@@ -3155,7 +3167,7 @@ function AdminNewsletterArticles() {
     setFormBlocks([]);
     setFormCoverImage(""); setFormPoster(""); setFormVideo(""); setFormCategory("ia"); setFormTags("");
     setFormAuthor("ProgramBI"); setFormReadingTime(5); setFormStatus("draft");
-    setFormFeatured(false); setEditingArticle(null);
+    setFormFeatured(false); setFormPublishedAt(""); setEditingArticle(null);
     setFormMarkdownText(""); setEditorMode("markdown");
   };
 
@@ -3185,6 +3197,7 @@ function AdminNewsletterArticles() {
     setFormReadingTime(article.reading_time_min || 5);
     setFormStatus(article.status);
     setFormFeatured(article.is_featured || false);
+    setFormPublishedAt(article.published_at ? toLocalDateTimeString(article.published_at) : "");
 
     if (isJson) {
       setEditorMode("visual");
@@ -3204,6 +3217,7 @@ function AdminNewsletterArticles() {
       let parsedPoster = "";
       let parsedVideo = "";
       let parsedTicker = "";
+      let parsedDate = "";
 
       // Extract poster if present in body
       const posterMatch = contentBody.match(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido|Imagen|Image)\s*:\s*([^\n\r]+)/im);
@@ -3228,6 +3242,14 @@ function AdminNewsletterArticles() {
         contentBody = contentBody.replace(/^(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets)\s*:[^\n\r]*(?:\r?\n|$)/im, "");
       }
 
+      // Extract date if present in body
+      const dateMatch = contentBody.match(/^(?:Date|Published_At|Fecha)\s*:\s*([^\n\r]+)/im);
+      if (dateMatch) {
+        parsedDate = dateMatch[1].trim();
+        contentBody = contentBody.replace(/^(?:Date|Published_At|Fecha)\s*:[^\n\r]*(?:\r?\n|$)/im, "");
+        setFormPublishedAt(toLocalDateTimeString(parsedDate));
+      }
+
       contentBody = contentBody.trim();
 
       const fmLines = [
@@ -3244,6 +3266,11 @@ function AdminNewsletterArticles() {
       }
       if (parsedTicker) {
         fmLines.push(`Ticker: ${parsedTicker}`);
+      }
+      
+      const dateVal = parsedDate || article.published_at;
+      if (dateVal) {
+        fmLines.push(`Date: ${dateVal}`);
       }
       
       fmLines.push(`category: ${article.category || "ia"}`);
@@ -3297,6 +3324,13 @@ function AdminNewsletterArticles() {
             finalContent = `${finalContent}\n\nVideo: ${videoVal}`;
           }
         }
+        const dateVal = formPublishedAt || parsed.publishedAt;
+        if (dateVal) {
+          const hasDateInBody = parsed.content.match(/^(?:Date|Published_At|Fecha)\s*:/im);
+          if (!hasDateInBody) {
+            finalContent = `${finalContent}\n\nDate: ${dateVal}`;
+          }
+        }
 
         payload = {
           title: titleVal,
@@ -3310,6 +3344,7 @@ function AdminNewsletterArticles() {
           reading_time_min: parseInt(parsed.reading_time) || formReadingTime,
           status: formStatus,
           is_featured: formFeatured,
+          published_at: formPublishedAt ? new Date(formPublishedAt).toISOString() : (parsed.publishedAt ? new Date(parsed.publishedAt).toISOString() : (formStatus === "published" ? new Date().toISOString() : null)),
         };
       } else {
         const tagsVal = formTags.split(",").map(t => t.trim()).filter(Boolean);
@@ -3325,6 +3360,7 @@ function AdminNewsletterArticles() {
           reading_time_min: formReadingTime,
           status: formStatus,
           is_featured: formFeatured,
+          published_at: formPublishedAt ? new Date(formPublishedAt).toISOString() : (formStatus === "published" ? new Date().toISOString() : null),
         };
       }
 
@@ -3595,8 +3631,8 @@ Más texto del artículo...
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                  <div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                  <div className="sm:col-span-2">
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Extracto</label>
                     <textarea
                       value={formExcerpt} onChange={(e) => setFormExcerpt(e.target.value)}
@@ -3605,11 +3641,22 @@ Más texto del artículo...
                       placeholder="Breve resumen del artículo..."
                     />
                   </div>
-                  <div className="flex items-end pb-3">
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input type="checkbox" checked={formFeatured} onChange={(e) => setFormFeatured(e.target.checked)} className="w-4 h-4 rounded" />
-                      <span className="text-sm font-bold text-gray-700">⭐ Artículo Destacado</span>
-                    </label>
+                  <div className="flex flex-col justify-between gap-3">
+                    <div>
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Fecha de Publicación</label>
+                      <input
+                        type="datetime-local"
+                        value={formPublishedAt}
+                        onChange={(e) => setFormPublishedAt(e.target.value)}
+                        className="w-full px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                      />
+                    </div>
+                    <div className="flex items-center pb-1">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" checked={formFeatured} onChange={(e) => setFormFeatured(e.target.checked)} className="w-4 h-4 rounded" />
+                        <span className="text-sm font-bold text-gray-700">⭐ Artículo Destacado</span>
+                      </label>
+                    </div>
                   </div>
                 </div>
               </div>
