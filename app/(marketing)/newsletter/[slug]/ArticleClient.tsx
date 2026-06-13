@@ -92,7 +92,7 @@ export default function ArticleClient({ slug }: { slug: string }) {
 
   let posterUrl = "";
   if (article?.content) {
-    const match = article.content.match(/^(?:#\s*)?(?:poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido)\s*:\s*(https?:\/\/[^\s\n]+)/im);
+    const match = article.content.match(/^(?:#\s*)?(?:poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido|imagen|image)\s*:\s*(https?:\/\/[^\s\n]+)/im);
     if (match) {
       posterUrl = match[1].trim();
     }

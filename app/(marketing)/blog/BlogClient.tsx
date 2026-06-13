@@ -12,7 +12,7 @@ import { isVideoUrl } from "@/lib/utils";
 
 function getPosterFromContent(content?: string): string | undefined {
   if (!content) return undefined;
-  const match = content.match(/^(?:#\s*)?(?:poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido)\s*:\s*(https?:\/\/[^\s\n]+)/im);
+  const match = content.match(/^(?:#\s*)?(?:poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido|imagen|image)\s*:\s*(https?:\/\/[^\s\n]+)/im);
   return match ? match[1].trim() : undefined;
 }
 
@@ -200,6 +200,9 @@ function BlogSlider({ articles }: { articles: any[] }) {
 
 function ArticleCard({ article, index }: { article: any; index: number }) {
   const categoryLabel = categoryLabels[article.category] || article.category;
+  const poster = getPosterFromContent(article.content);
+  const displayImage = isVideoUrl(article.cover_image) ? (poster || article.cover_image) : article.cover_image;
+  const isDisplayVideo = isVideoUrl(displayImage);
 
   return (
     <motion.div
@@ -210,11 +213,10 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
     >
       <Link href={`/blog/${article.slug}`} className="block no-underline text-slate-950 group-hover:opacity-95 transition-opacity">
         <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-50 border border-slate-100 rounded-xl">
-          {article.cover_image ? (
-            isVideoUrl(article.cover_image) ? (
+          {displayImage ? (
+            isDisplayVideo ? (
               <video
-                src={article.cover_image}
-                poster={getPosterFromContent(article.content)}
+                src={displayImage}
                 autoPlay
                 loop
                 muted
@@ -223,7 +225,7 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
               />
             ) : (
               <Image
-                src={article.cover_image}
+                src={displayImage}
                 alt={article.title}
                 fill
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"

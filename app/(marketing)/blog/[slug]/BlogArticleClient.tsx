@@ -190,7 +190,7 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
 
   const posterUrl = useMemo(() => {
     if (!article.content) return "";
-    const match = article.content.match(/^(?:#\s*)?(?:poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido)\s*:\s*(https?:\/\/[^\s\n]+)/im);
+    const match = article.content.match(/^(?:#\s*)?(?:poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido|imagen|image)\s*:\s*(https?:\/\/[^\s\n]+)/im);
     return match ? match[1].trim() : "";
   }, [article.content]);
 

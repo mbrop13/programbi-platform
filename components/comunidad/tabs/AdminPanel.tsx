@@ -3084,7 +3084,7 @@ function parseMarkdownImport(text: string) {
   const tags = metadata.tags || metadata.tags_list || "";
   const excerpt = metadata.excerpt || metadata.resumen || metadata.description || metadata.descripcion || metadata.extracto || metadata.subtitulo || metadata.subtitle || "";
   const ticker = metadata.ticker || metadata.tickers || metadata.tradingview || metadata.accion || metadata.ticket || metadata.tickets || "";
-  const poster = metadata.poster || metadata.thumbnail || metadata.thumbnail_url || metadata.cover_poster || metadata.imagen_compartido || "";
+  const poster = metadata.poster || metadata.thumbnail || metadata.thumbnail_url || metadata.cover_poster || metadata.imagen_compartido || metadata.imagen || metadata.image || "";
 
   return {
     title,
@@ -3199,10 +3199,10 @@ function AdminNewsletterArticles() {
       let parsedTicker = "";
 
       // Extract poster if present in body
-      const posterMatch = contentBody.match(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido)\s*:\s*([^\n\r]+)/im);
+      const posterMatch = contentBody.match(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido|Imagen|Image)\s*:\s*([^\n\r]+)/im);
       if (posterMatch) {
         parsedPoster = posterMatch[1].trim();
-        contentBody = contentBody.replace(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido)\s*:[^\n\r]*(?:\r?\n|$)/im, "");
+        contentBody = contentBody.replace(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido|Imagen|Image)\s*:[^\n\r]*(?:\r?\n|$)/im, "");
       }
 
       // Extract ticker if present in body
@@ -3265,7 +3265,7 @@ function AdminNewsletterArticles() {
           }
         }
         if (parsed.poster) {
-          const hasPosterInBody = parsed.content.match(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido)\s*:/im);
+          const hasPosterInBody = parsed.content.match(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido|Imagen|Image)\s*:/im);
           if (!hasPosterInBody) {
             finalContent = `${finalContent}\n\nPoster: ${parsed.poster}`;
           }
@@ -3614,7 +3614,7 @@ Más texto del artículo...
                 // Try to find poster in content first if we have one
                 let posterUrl = "";
                 if (article.content) {
-                  const match = article.content.match(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido)\s*:\s*([^\n\r]+)/im);
+                  const match = article.content.match(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido|Imagen|Image)\s*:\s*([^\n\r]+)/im);
                   if (match) {
                     posterUrl = match[1].trim();
                   }

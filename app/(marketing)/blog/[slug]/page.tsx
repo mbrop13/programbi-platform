@@ -17,7 +17,7 @@ function getArticlePoster(article: any): string {
   
   // 1. Try to find poster/thumbnail/cover_poster in the content markdown first
   if (article.content) {
-    const match = article.content.match(/^(?:#\s*)?(?:poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido)\s*:\s*(https?:\/\/[^\s\n]+)/im);
+    const match = article.content.match(/^(?:#\s*)?(?:poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido|imagen|image)\s*:\s*(https?:\/\/[^\s\n]+)/im);
     if (match) {
       return match[1].trim();
     }
