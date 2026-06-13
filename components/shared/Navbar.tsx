@@ -12,6 +12,7 @@ import { courses } from "@/lib/data/courses";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "./AuthModal";
 import SupportModal from "./SupportModal";
+import ProfileSettingsModal from "./ProfileSettingsModal";
 import { getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
 import { isCurrentUserAdmin } from "@/lib/supabase/comunidad";
 import { useCountry } from "@/lib/context/CountryContext";
@@ -42,6 +43,7 @@ export default function Navbar() {
   const [isMegaOpen, setIsMegaOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [authModal, setAuthModal] = useState<{ isOpen: boolean, tab: "login" | "register" }>({ isOpen: false, tab: "login" });
+  const [profileModal, setProfileModal] = useState<{ isOpen: boolean, tab: "profile" | "settings" }>({ isOpen: false, tab: "profile" });
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const countryDropdownRef = useRef<HTMLDivElement>(null);
@@ -193,6 +195,7 @@ export default function Navbar() {
   return (
     <>
       <AuthModal isOpen={authModal.isOpen} onClose={() => setAuthModal(prev => ({ ...prev, isOpen: false }))} defaultTab={authModal.tab} />
+      <ProfileSettingsModal isOpen={profileModal.isOpen} onClose={() => setProfileModal(prev => ({ ...prev, isOpen: false }))} defaultTab={profileModal.tab} />
       <SupportModal isOpen={isSupportModalOpen} onClose={() => setIsSupportModalOpen(false)} userEmail={user?.email || ""} />
       
       <motion.nav
@@ -388,12 +391,18 @@ export default function Navbar() {
                       <Link href="/comunidad/mis-cursos" className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-slate-600 hover:bg-slate-50 hover:text-[#1890FF] no-underline transition-colors">
                         <LayoutDashboard size={16} /> Comunidad
                       </Link>
-                      <Link href="/comunidad/perfil" className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-slate-600 hover:bg-slate-50 hover:text-[#1890FF] no-underline transition-colors">
+                      <button
+                        onClick={() => { setIsUserMenuOpen(false); setProfileModal({ isOpen: true, tab: "profile" }); }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-[14px] text-slate-600 hover:bg-slate-50 hover:text-[#1890FF] transition-colors border-none bg-transparent cursor-pointer text-left font-sans"
+                      >
                         <UserCircle size={16} /> Ver Perfil
-                      </Link>
-                      <Link href="/comunidad/perfil" className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-slate-600 hover:bg-slate-50 hover:text-[#1890FF] no-underline transition-colors">
+                      </button>
+                      <button
+                        onClick={() => { setIsUserMenuOpen(false); setProfileModal({ isOpen: true, tab: "settings" }); }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-[14px] text-slate-600 hover:bg-slate-50 hover:text-[#1890FF] transition-colors border-none bg-transparent cursor-pointer text-left font-sans"
+                      >
                         <Settings size={16} /> Configuración
-                      </Link>
+                      </button>
                       {isAdmin && (
                         <Link href="/comunidad/admin" className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-amber-600 hover:bg-amber-50 no-underline transition-colors font-semibold">
                           <ShieldAlert size={16} /> Panel Admin
@@ -518,10 +527,13 @@ export default function Navbar() {
                             <LayoutDashboard size={20} />
                             <span className="text-[10px] font-bold uppercase">Comunidad</span>
                          </Link>
-                         <Link href="/comunidad/perfil" onClick={() => setIsMobileOpen(false)} className="flex flex-col items-center gap-2 p-3 rounded-2xl bg-white border border-slate-100 text-slate-500 no-underline">
-                            <UserCircle size={20} />
-                            <span className="text-[10px] font-bold uppercase">Perfil</span>
-                         </Link>
+                          <button
+                             onClick={() => { setIsMobileOpen(false); setProfileModal({ isOpen: true, tab: "profile" }); }}
+                             className="flex flex-col items-center gap-2 p-3 rounded-2xl bg-white border border-slate-100 text-slate-500 bg-transparent cursor-pointer font-sans"
+                          >
+                             <UserCircle size={20} />
+                             <span className="text-[10px] font-bold uppercase">Perfil</span>
+                          </button>
                          {isAdmin && (
                            <Link href="/comunidad/admin" onClick={() => setIsMobileOpen(false)} className="flex flex-col items-center gap-2 p-3 rounded-2xl bg-amber-50 border border-amber-100 text-amber-600 no-underline col-span-2">
                               <ShieldAlert size={20} />

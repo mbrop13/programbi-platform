@@ -14,7 +14,7 @@ export async function getCurrentUserProfile() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, full_name, email, avatar_url, role, subscription_plan, subscription_expires_at")
+    .select("id, full_name, email, avatar_url, role, subscription_plan, subscription_expires_at, phone")
     .eq("id", user.id)
     .single();
 
@@ -25,7 +25,8 @@ export async function getCurrentUserProfile() {
     avatar_url: null, 
     role: "student",
     subscription_plan: null,
-    subscription_expires_at: null
+    subscription_expires_at: null,
+    phone: null
   };
 }
 
