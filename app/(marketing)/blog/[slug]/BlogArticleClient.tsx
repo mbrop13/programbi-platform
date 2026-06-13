@@ -20,6 +20,12 @@ import ArticleBlockRenderer, { applyInlineMarkdown } from "@/components/shared/A
 import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
 import { isVideoUrl } from "@/lib/utils";
 
+function getVideoFromContent(content?: string): string | undefined {
+  if (!content) return undefined;
+  const match = content.match(/^(?:#\s*)?(?:video|video_url)\s*:\s*(https?:\/\/[^\s\n]+)/im);
+  return match ? match[1].trim() : undefined;
+}
+
 const categoryLabels: Record<string, string> = {
   "power-bi": "Tecnología",
   sql: "Tecnología",
@@ -287,26 +293,32 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
           <div className="flex flex-col md:flex-row gap-6 items-stretch">
             {/* Image/Video (Main part) */}
             <div className="flex-1 relative aspect-[21/9] rounded-2xl overflow-hidden bg-slate-50 border border-slate-100 w-full">
-              {isVideoUrl(article.cover_image) ? (
-                <video
-                  src={article.cover_image}
-                  poster={posterUrl || undefined}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="absolute inset-0 w-full h-full object-cover"
-                />
-              ) : (
-                <Image
-                  src={article.cover_image}
-                  alt={article.title}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                  priority
-                />
-              )}
+              {(() => {
+                const videoUrl = getVideoFromContent(article.content) || (isVideoUrl(article.cover_image) ? article.cover_image : undefined);
+                if (videoUrl) {
+                  return (
+                    <video
+                      src={videoUrl}
+                      poster={isVideoUrl(article.cover_image) ? (posterUrl || undefined) : article.cover_image}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  );
+                }
+                return (
+                  <Image
+                    src={article.cover_image}
+                    alt={article.title}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                    priority
+                  />
+                );
+              })()}
             </div>
             
             {/* Share Buttons stacked vertically to the right of the image */}

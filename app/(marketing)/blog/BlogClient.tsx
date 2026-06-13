@@ -16,6 +16,12 @@ function getPosterFromContent(content?: string): string | undefined {
   return match ? match[1].trim() : undefined;
 }
 
+function getVideoFromContent(content?: string): string | undefined {
+  if (!content) return undefined;
+  const match = content.match(/^(?:#\s*)?(?:video|video_url)\s*:\s*(https?:\/\/[^\s\n]+)/im);
+  return match ? match[1].trim() : undefined;
+}
+
 /* ── Category config ─────────────────────────── */
 
 const CATEGORIES = [
@@ -116,30 +122,35 @@ function BlogSlider({ articles }: { articles: any[] }) {
             className="absolute inset-0 w-full h-full"
           >
             <Link href={`/blog/${current.slug}`} className="absolute inset-0 block no-underline group">
-              {current.cover_image ? (
-                isVideoUrl(current.cover_image) ? (
-                  <video
-                    src={current.cover_image}
-                    poster={getPosterFromContent(current.content)}
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    className="absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
-                  />
-                ) : (
-                  <Image
-                    src={current.cover_image}
-                    alt={current.title}
-                    fill
-                    className="object-cover opacity-60 transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
-                    unoptimized
-                    priority
-                  />
-                )
-              ) : (
-                <div className="absolute inset-0 bg-slate-900" />
-              )}
+              {(() => {
+                const videoUrl = getVideoFromContent(current.content) || (isVideoUrl(current.cover_image) ? current.cover_image : undefined);
+                if (videoUrl) {
+                  return (
+                    <video
+                      src={videoUrl}
+                      poster={isVideoUrl(current.cover_image) ? getPosterFromContent(current.content) : current.cover_image}
+                      autoPlay
+                      loop
+                      muted
+                      playsInline
+                      className="absolute inset-0 w-full h-full object-cover opacity-60 transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
+                    />
+                  );
+                }
+                if (current.cover_image) {
+                  return (
+                    <Image
+                      src={current.cover_image}
+                      alt={current.title}
+                      fill
+                      className="object-cover opacity-60 transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
+                      unoptimized
+                      priority
+                    />
+                  );
+                }
+                return <div className="absolute inset-0 bg-slate-900" />;
+              })()}
               {/* Overlay Vignette */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
 

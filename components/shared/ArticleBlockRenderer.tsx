@@ -148,7 +148,7 @@ function parseMarkdownToHtml(markdown: string): string {
     }
 
     // Skip main poster or ticker metadata declarations if they appear in the content body (e.g. from frontmatter append)
-    const skipMatch = line.match(/^(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets|Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido|Imagen|Image)\s*:\s*(.+)$/i);
+    const skipMatch = line.match(/^(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets|Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido|Imagen|Image|Video|Video_Url)\s*:\s*(.+)$/i);
     if (skipMatch) {
       if (inList) { parsedLines.push("</ul>"); inList = false; }
       if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }

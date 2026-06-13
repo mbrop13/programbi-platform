@@ -3059,7 +3059,7 @@ function parseMarkdownImport(text: string) {
         metadata[key] = value;
       }
     } else {
-      const match = trimmed.match(/^(?:#\s*)?(titulo|title|imagen|image|cover|categoria|category|autor|author|tiempo|reading_time|tags|tags_list|excerpt|resumen|description|descripcion|extracto|subtitulo|subtitle|ticker|tickers|tradingview|accion|ticket|tickets|poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido)\s*:\s*(.+)$/i);
+      const match = trimmed.match(/^(?:#\s*)?(titulo|title|imagen|image|cover|categoria|category|autor|author|tiempo|reading_time|tags|tags_list|excerpt|resumen|description|descripcion|extracto|subtitulo|subtitle|ticker|tickers|tradingview|accion|ticket|tickets|poster|thumbnail|thumbnail_url|cover_poster|imagen_compartido|video|video_url)\s*:\s*(.+)$/i);
       
       if (match && !hasParsedFrontmatter) {
         const key = match[1].toLowerCase();
@@ -3085,6 +3085,7 @@ function parseMarkdownImport(text: string) {
   const excerpt = metadata.excerpt || metadata.resumen || metadata.description || metadata.descripcion || metadata.extracto || metadata.subtitulo || metadata.subtitle || "";
   const ticker = metadata.ticker || metadata.tickers || metadata.tradingview || metadata.accion || metadata.ticket || metadata.tickets || "";
   const poster = metadata.poster || metadata.thumbnail || metadata.thumbnail_url || metadata.cover_poster || metadata.imagen_compartido || metadata.imagen || metadata.image || "";
+  const video = metadata.video || metadata.video_url || "";
 
   return {
     title,
@@ -3096,6 +3097,7 @@ function parseMarkdownImport(text: string) {
     excerpt,
     ticker,
     poster,
+    video,
     content: bodyContent
   };
 }
@@ -3118,6 +3120,7 @@ function AdminNewsletterArticles() {
   const [formBlocks, setFormBlocks] = useState<any[]>([]);
   const [formCoverImage, setFormCoverImage] = useState("");
   const [formPoster, setFormPoster] = useState("");
+  const [formVideo, setFormVideo] = useState("");
   const [formCategory, setFormCategory] = useState("ia");
   const [formTags, setFormTags] = useState("");
   const [formAuthor, setFormAuthor] = useState("ProgramBI");
@@ -3150,7 +3153,7 @@ function AdminNewsletterArticles() {
   const resetForm = () => {
     setFormTitle(""); setFormSlug(""); setFormExcerpt(""); setFormContent("");
     setFormBlocks([]);
-    setFormCoverImage(""); setFormPoster(""); setFormCategory("ia"); setFormTags("");
+    setFormCoverImage(""); setFormPoster(""); setFormVideo(""); setFormCategory("ia"); setFormTags("");
     setFormAuthor("ProgramBI"); setFormReadingTime(5); setFormStatus("draft");
     setFormFeatured(false); setEditingArticle(null);
     setFormMarkdownText(""); setEditorMode("markdown");
@@ -3186,6 +3189,7 @@ function AdminNewsletterArticles() {
     if (isJson) {
       setEditorMode("visual");
       setFormPoster("");
+      setFormVideo("");
       try {
         const parsed = JSON.parse(article.content || "[]");
         setFormBlocks(parsed);
@@ -3198,6 +3202,7 @@ function AdminNewsletterArticles() {
       
       let contentBody = article.content || "";
       let parsedPoster = "";
+      let parsedVideo = "";
       let parsedTicker = "";
 
       // Extract poster if present in body
@@ -3207,6 +3212,14 @@ function AdminNewsletterArticles() {
         contentBody = contentBody.replace(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido|Imagen|Image)\s*:[^\n\r]*(?:\r?\n|$)/im, "");
       }
       setFormPoster(parsedPoster);
+
+      // Extract video if present in body
+      const videoMatch = contentBody.match(/^(?:Video|Video_Url)\s*:\s*([^\n\r]+)/im);
+      if (videoMatch) {
+        parsedVideo = videoMatch[1].trim();
+        contentBody = contentBody.replace(/^(?:Video|Video_Url)\s*:[^\n\r]*(?:\r?\n|$)/im, "");
+      }
+      setFormVideo(parsedVideo);
 
       // Extract ticker if present in body
       const tickerMatch = contentBody.match(/^(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets)\s*:\s*([^\n\r]+)/im);
@@ -3225,6 +3238,9 @@ function AdminNewsletterArticles() {
       
       if (parsedPoster) {
         fmLines.push(`Poster: ${parsedPoster}`);
+      }
+      if (parsedVideo) {
+        fmLines.push(`Video: ${parsedVideo}`);
       }
       if (parsedTicker) {
         fmLines.push(`Ticker: ${parsedTicker}`);
@@ -3272,6 +3288,13 @@ function AdminNewsletterArticles() {
           const hasPosterInBody = parsed.content.match(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido|Imagen|Image)\s*:/im);
           if (!hasPosterInBody) {
             finalContent = `${finalContent}\n\nPoster: ${posterVal}`;
+          }
+        }
+        const videoVal = formVideo || parsed.video;
+        if (videoVal) {
+          const hasVideoInBody = parsed.content.match(/^(?:Video|Video_Url)\s*:/im);
+          if (!hasVideoInBody) {
+            finalContent = `${finalContent}\n\nVideo: ${videoVal}`;
           }
         }
 
@@ -3417,6 +3440,7 @@ function AdminNewsletterArticles() {
                       if (parsed.reading_time) setFormReadingTime(parseInt(parsed.reading_time) || 5);
                       if (parsed.tags) setFormTags(parsed.tags);
                       if (parsed.poster) setFormPoster(parsed.poster);
+                      if (parsed.video) setFormVideo(parsed.video);
                     }}
                     rows={20}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white font-mono text-sm focus:outline-none focus:border-brand-blue/40 resize-y"
@@ -3514,6 +3538,17 @@ Más texto del artículo...
                     />
                   </div>
                   <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Video (URL)</label>
+                    <input
+                      type="text" value={formVideo} onChange={(e) => setFormVideo(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                      placeholder="https://..."
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
+                  <div>
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Categoría</label>
                     <select value={formCategory} onChange={(e) => setFormCategory(e.target.value)}
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none">
@@ -3526,9 +3561,6 @@ Más texto del artículo...
                       <option value="tecnologia">Tecnología - General</option>
                     </select>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
                   <div>
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Autor</label>
                     <input

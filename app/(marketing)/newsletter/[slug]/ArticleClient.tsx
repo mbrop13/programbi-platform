@@ -10,6 +10,12 @@ import { FadeIn } from "@/components/shared/AnimatedComponents";
 import ArticleBlockRenderer, { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 import { isVideoUrl } from "@/lib/utils";
 
+function getVideoFromContent(content?: string): string | undefined {
+  if (!content) return undefined;
+  const match = content.match(/^(?:#\s*)?(?:video|video_url)\s*:\s*(https?:\/\/[^\s\n]+)/im);
+  return match ? match[1].trim() : undefined;
+}
+
 const categoryColors: Record<string, string> = {
   "power-bi": "#F2C811",
   sql: "#CC2927",
@@ -102,26 +108,32 @@ export default function ArticleClient({ slug }: { slug: string }) {
     <div className="-mt-20 lg:-mt-24 pt-20 lg:pt-24 min-h-screen bg-[#FAFBFC]">
       {article.cover_image && (
         <div className="relative w-full h-[300px] lg:h-[480px] overflow-hidden">
-          {isVideoUrl(article.cover_image) ? (
-            <video
-              src={article.cover_image}
-              poster={posterUrl || undefined}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-          ) : (
-            <Image
-              src={article.cover_image}
-              alt={article.title}
-              fill
-              className="object-cover"
-              unoptimized
-              priority
-            />
-          )}
+          {(() => {
+            const videoUrl = getVideoFromContent(article.content) || (isVideoUrl(article.cover_image) ? article.cover_image : undefined);
+            if (videoUrl) {
+              return (
+                <video
+                  src={videoUrl}
+                  poster={isVideoUrl(article.cover_image) ? (posterUrl || undefined) : article.cover_image}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              );
+            }
+            return (
+              <Image
+                src={article.cover_image}
+                alt={article.title}
+                fill
+                className="object-cover"
+                unoptimized
+                priority
+              />
+            );
+          })()}
           <div className="absolute inset-0 bg-gradient-to-t from-[#0F172A]/80 via-transparent to-[#0F172A]/30" />
         </div>
       )}
