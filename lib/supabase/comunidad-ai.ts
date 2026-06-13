@@ -1064,10 +1064,15 @@ export async function adminCreateArticle(article: {
   const { data, error } = await adminDb
     .from("newsletter_articles")
     .insert(insertData)
-    .select("id")
+    .select("id, slug")
     .single();
 
   if (error) throw new Error(error.message);
+
+  revalidatePath("/blog");
+  if (data?.slug) {
+    revalidatePath(`/blog/${data.slug}`);
+  }
   return data;
 }
 
@@ -1075,6 +1080,8 @@ export async function adminUpdateArticle(articleId: string, updates: Record<stri
   const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
+
+  const { data: oldArticle } = await adminDb.from("newsletter_articles").select("slug").eq("id", articleId).single();
 
   const updateData: any = { ...updates, updated_at: new Date().toISOString() };
   if (updates.status === "published" && !updates.published_at) {
@@ -1087,6 +1094,14 @@ export async function adminUpdateArticle(articleId: string, updates: Record<stri
     .eq("id", articleId);
 
   if (error) throw new Error(error.message);
+
+  revalidatePath("/blog");
+  if (oldArticle?.slug) {
+    revalidatePath(`/blog/${oldArticle.slug}`);
+  }
+  if (updates.slug && updates.slug !== oldArticle?.slug) {
+    revalidatePath(`/blog/${updates.slug}`);
+  }
 }
 
 export async function adminDeleteArticle(articleId: string) {
@@ -1094,8 +1109,15 @@ export async function adminDeleteArticle(articleId: string) {
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
+  const { data: article } = await adminDb.from("newsletter_articles").select("slug").eq("id", articleId).single();
+
   const { error } = await adminDb.from("newsletter_articles").delete().eq("id", articleId);
   if (error) throw new Error(error.message);
+
+  revalidatePath("/blog");
+  if (article?.slug) {
+    revalidatePath(`/blog/${article.slug}`);
+  }
 }
 
 export async function adminToggleArticlePublish(articleId: string) {
@@ -1103,7 +1125,7 @@ export async function adminToggleArticlePublish(articleId: string) {
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { data: current } = await adminDb.from("newsletter_articles").select("status").eq("id", articleId).single();
+  const { data: current } = await adminDb.from("newsletter_articles").select("status, slug").eq("id", articleId).single();
   if (!current) throw new Error("Artículo no encontrado");
 
   const newStatus = current.status === "published" ? "draft" : "published";
@@ -1112,6 +1134,11 @@ export async function adminToggleArticlePublish(articleId: string) {
 
   const { error } = await adminDb.from("newsletter_articles").update(updates).eq("id", articleId);
   if (error) throw new Error(error.message);
+
+  revalidatePath("/blog");
+  if (current.slug) {
+    revalidatePath(`/blog/${current.slug}`);
+  }
 }
 
 export async function adminToggleArticleFeatured(articleId: string) {
