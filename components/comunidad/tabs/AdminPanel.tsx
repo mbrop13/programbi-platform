@@ -3117,6 +3117,7 @@ function AdminNewsletterArticles() {
   const [formContent, setFormContent] = useState("");
   const [formBlocks, setFormBlocks] = useState<any[]>([]);
   const [formCoverImage, setFormCoverImage] = useState("");
+  const [formPoster, setFormPoster] = useState("");
   const [formCategory, setFormCategory] = useState("ia");
   const [formTags, setFormTags] = useState("");
   const [formAuthor, setFormAuthor] = useState("ProgramBI");
@@ -3149,7 +3150,7 @@ function AdminNewsletterArticles() {
   const resetForm = () => {
     setFormTitle(""); setFormSlug(""); setFormExcerpt(""); setFormContent("");
     setFormBlocks([]);
-    setFormCoverImage(""); setFormCategory("ia"); setFormTags("");
+    setFormCoverImage(""); setFormPoster(""); setFormCategory("ia"); setFormTags("");
     setFormAuthor("ProgramBI"); setFormReadingTime(5); setFormStatus("draft");
     setFormFeatured(false); setEditingArticle(null);
     setFormMarkdownText(""); setEditorMode("markdown");
@@ -3184,6 +3185,7 @@ function AdminNewsletterArticles() {
 
     if (isJson) {
       setEditorMode("visual");
+      setFormPoster("");
       try {
         const parsed = JSON.parse(article.content || "[]");
         setFormBlocks(parsed);
@@ -3204,6 +3206,7 @@ function AdminNewsletterArticles() {
         parsedPoster = posterMatch[1].trim();
         contentBody = contentBody.replace(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido|Imagen|Image)\s*:[^\n\r]*(?:\r?\n|$)/im, "");
       }
+      setFormPoster(parsedPoster);
 
       // Extract ticker if present in body
       const tickerMatch = contentBody.match(/^(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets)\s*:\s*([^\n\r]+)/im);
@@ -3264,10 +3267,11 @@ function AdminNewsletterArticles() {
             finalContent = `${parsed.content}\n\nTicker: ${parsed.ticker}`;
           }
         }
-        if (parsed.poster) {
+        const posterVal = formPoster || parsed.poster;
+        if (posterVal) {
           const hasPosterInBody = parsed.content.match(/^(?:Poster|Thumbnail|Thumbnail_Url|Cover_Poster|Imagen_Compartido|Imagen|Image)\s*:/im);
           if (!hasPosterInBody) {
-            finalContent = `${finalContent}\n\nPoster: ${parsed.poster}`;
+            finalContent = `${finalContent}\n\nPoster: ${posterVal}`;
           }
         }
 
@@ -3412,6 +3416,7 @@ function AdminNewsletterArticles() {
                       if (parsed.author_name) setFormAuthor(parsed.author_name);
                       if (parsed.reading_time) setFormReadingTime(parseInt(parsed.reading_time) || 5);
                       if (parsed.tags) setFormTags(parsed.tags);
+                      if (parsed.poster) setFormPoster(parsed.poster);
                     }}
                     rows={20}
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white font-mono text-sm focus:outline-none focus:border-brand-blue/40 resize-y"
@@ -3477,7 +3482,7 @@ Más texto del artículo...
               <div className="border-t border-gray-200 pt-6 mt-6">
                 <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Campos de Metadatos Detectados / Adicionales</h4>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
                   <div>
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Título</label>
                     <input
@@ -3496,6 +3501,14 @@ Más texto del artículo...
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Imagen de Portada (URL)</label>
                     <input
                       type="text" value={formCoverImage} onChange={(e) => setFormCoverImage(e.target.value)}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1 block">Póster / Miniatura (URL)</label>
+                    <input
+                      type="text" value={formPoster} onChange={(e) => setFormPoster(e.target.value)}
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-brand-blue/40"
                       placeholder="https://..."
                     />
