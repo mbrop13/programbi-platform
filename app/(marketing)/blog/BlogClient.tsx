@@ -479,59 +479,56 @@ export default function BlogClient({ articles }: { articles: any[] }) {
         )}
       </main>
 
-      {/* Mobile Bottom Navigation Menu (Fintualist style) */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-slate-200/80 px-4 py-2 flex items-center justify-around shadow-[0_-4px_16px_rgba(0,0,0,0.06)] pb-4">
-        {/* AI tab */}
-        <button
-          onClick={() => handleCategoryClick("ia")}
-          className={`flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer transition-colors ${
-            activeCategory === "ia" ? "text-slate-950 font-bold" : "text-slate-400 hover:text-slate-600"
-          }`}
-        >
-          <Sparkles className="w-5 h-5" />
-          <span className="text-[9px] uppercase tracking-wider font-sans font-bold">AI</span>
-        </button>
-
-        {/* Economía tab */}
-        <button
-          onClick={() => handleCategoryClick("economia")}
-          className={`flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer transition-colors ${
-            activeCategory === "economia" ? "text-slate-950 font-bold" : "text-slate-400 hover:text-slate-600"
-          }`}
-        >
-          <DollarSign className="w-5 h-5" />
-          <span className="text-[9px] uppercase tracking-wider font-sans font-bold">Economía</span>
-        </button>
-
-        {/* Tecnología tab */}
-        <button
-          onClick={() => handleCategoryClick("tecnologia")}
-          className={`flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer transition-colors ${
-            activeCategory === "tecnologia" ? "text-slate-950 font-bold" : "text-slate-400 hover:text-slate-600"
-          }`}
-        >
-          <Cpu className="w-5 h-5" />
-          <span className="text-[9px] uppercase tracking-wider font-sans font-bold">Tecnología</span>
-        </button>
-
-        {/* Cultura tab */}
-        <button
-          onClick={() => handleCategoryClick("cultura")}
-          className={`flex flex-col items-center gap-1 bg-transparent border-none cursor-pointer transition-colors ${
-            activeCategory === "cultura" ? "text-slate-950 font-bold" : "text-slate-400 hover:text-slate-600"
-          }`}
-        >
-          <BookOpen className="w-5 h-5" />
-          <span className="text-[9px] uppercase tracking-wider font-sans font-bold">Cultura</span>
-        </button>
+      {/* Mobile Bottom Navigation Menu (Floating Circular Liquid Glass) */}
+      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-[360px] bg-slate-950/70 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5 flex items-center justify-between shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)] select-none">
+        {[
+          { value: "ia", label: "AI", icon: Sparkles },
+          { value: "economia", label: "Economía", icon: DollarSign },
+          { value: "tecnologia", label: "Tecno", icon: Cpu },
+          { value: "cultura", label: "Cultura", icon: BookOpen },
+        ].map((tab) => {
+          const isActive = activeCategory === tab.value;
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.value}
+              onClick={() => handleCategoryClick(tab.value)}
+              className="relative flex flex-col items-center justify-center flex-1 py-1 px-1.5 rounded-full transition-all duration-300 border-none bg-transparent cursor-pointer"
+            >
+              {isActive && (
+                <motion.div
+                  layoutId="activeMobileTab"
+                  className="absolute inset-0 bg-gradient-to-r from-[#1890FF]/25 to-indigo-500/25 border border-[#1890FF]/35 rounded-full -z-10 shadow-[0_2px_10px_rgba(24,144,255,0.15)]"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                />
+              )}
+              <motion.div
+                whileTap={{ scale: 0.85 }}
+                className="flex flex-col items-center"
+              >
+                <Icon className={`w-4 h-4 transition-colors duration-300 ${isActive ? "text-[#1890FF]" : "text-slate-400"}`} />
+                <span className={`text-[8px] uppercase tracking-wider font-sans font-bold mt-0.5 transition-colors duration-300 ${isActive ? "text-white" : "text-slate-400"}`}>
+                  {tab.label}
+                </span>
+              </motion.div>
+            </button>
+          );
+        })}
 
         {/* Preferencias tab */}
         <button
           onClick={() => setShowPrefs(true)}
-          className="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-950 transition-colors bg-transparent border-none cursor-pointer"
+          className="relative flex flex-col items-center justify-center flex-1 py-1 px-1.5 rounded-full border-none bg-transparent cursor-pointer text-slate-400 hover:text-white"
         >
-          <Sliders className="w-5 h-5" />
-          <span className="text-[9px] uppercase tracking-wider font-sans font-bold">Ajustes</span>
+          <motion.div
+            whileTap={{ scale: 0.85 }}
+            className="flex flex-col items-center"
+          >
+            <Sliders className="w-4 h-4 text-slate-400" />
+            <span className="text-[8px] uppercase tracking-wider font-sans font-bold mt-0.5 text-slate-400">
+              Ajustes
+            </span>
+          </motion.div>
         </button>
       </div>
 
