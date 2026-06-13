@@ -18,7 +18,12 @@ export async function updateProfile(data: { fullName: string }) {
     .eq("id", user.id);
 
   if (error) {
-    return { success: false, error: error.message };
+    console.error("Error updating profile:", error);
+    const isProd = process.env.NODE_ENV === "production";
+    return { 
+      success: false, 
+      error: isProd ? "Ocurrió un error inesperado al actualizar el perfil." : error.message 
+    };
   }
 
   return { success: true };

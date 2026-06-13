@@ -197,8 +197,9 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error("Error creating Flow payment:", error);
+    const isProd = process.env.NODE_ENV === "production";
     return NextResponse.json(
-      { error: error.message || "Error al procesar el pago" },
+      { error: isProd ? "Error al procesar el pago" : (error.message || "Error al procesar el pago") },
       { status: 500 }
     );
   }

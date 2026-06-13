@@ -15,11 +15,20 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      return new Response(JSON.stringify({ error: "No autorizado" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
     const { messages, conversationId } = await req.json();
 
     // Save the latest user message to Supabase if conversationId is provided
     if (conversationId) {
-      const supabase = await createClient();
       const lastUserMsg = messages.filter((m: any) => m.role === 'user').pop();
       if (lastUserMsg) {
         await supabase.from('ai_messages').insert({
@@ -38,7 +47,6 @@ export async function POST(req: Request) {
         // Save the assistant response to Supabase
         if (conversationId && text) {
           try {
-            const supabase = await createClient();
             await supabase.from('ai_messages').insert({
               conversation_id: conversationId,
               role: 'assistant',
@@ -59,9 +67,13 @@ export async function POST(req: Request) {
     return result.toTextStreamResponse();
   } catch (error) {
     console.error("OpenRouter API Error:", error);
-    return new Response(JSON.stringify({ error: "Error comunicando con la IA Asistente." }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
+    const isProd = process.env.NODE_ENV === "production";
+    return new Response(
+      JSON.stringify({ error: isProd ? "Error comunicando con la IA Asistente." : String(error) }), 
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      }
+    );
   }
 }

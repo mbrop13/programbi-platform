@@ -185,8 +185,9 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error("Flow confirm webhook error:", error);
+    const isProd = process.env.NODE_ENV === "production";
     return NextResponse.json(
-      { error: error.message || "Error procesando confirmación" },
+      { error: isProd ? "Error procesando confirmación" : (error.message || "Error procesando confirmación") },
       { status: 500 }
     );
   }

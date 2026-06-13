@@ -118,6 +118,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error("❌ MP Webhook Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const isProd = process.env.NODE_ENV === "production";
+    return NextResponse.json({ error: isProd ? "Ocurrió un error interno." : error.message }, { status: 500 });
   }
 }

@@ -13,6 +13,18 @@ import { createOpenAI } from '@ai-sdk/openai'
 import { streamText } from 'ai'
 import { createAdminClient } from '@/lib/supabase/server'
 import { buildChatbotContext } from './context'
+import { z } from 'zod'
+import { isRateLimited } from '@/lib/security/rate-limiter'
+
+const chatbotSchema = z.object({
+  messages: z.array(z.object({
+    role: z.enum(["user", "assistant", "system", "function", "data", "tool"]),
+    content: z.string(),
+  })),
+  conversationId: z.string().uuid().optional().nullable(),
+  visitorId: z.string().max(120).optional().nullable(),
+  sourcePage: z.string().max(256).optional().nullable(),
+})
 
 // ─── Cliente OpenRouter configurado para el chatbot ───
 const openrouter = createOpenAI({
@@ -29,13 +41,31 @@ export const maxDuration = 120
 
 export async function POST(req: Request) {
   try {
+    // ─── Rate Limiting ───
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "127.0.0.1";
+    const limitRes = isRateLimited(ip, "chatbot", 20, 60 * 1000); // Max 20 requests per minute
+    if (limitRes.limited) {
+      return new Response(
+        'Has superado el límite de mensajes permitidos por minuto. Por favor, espera un momento.',
+        { status: 429, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
+      );
+    }
+
     const body = await req.json()
+    const validation = chatbotSchema.safeParse(body)
+    if (!validation.success) {
+      return new Response(
+        'Mensaje no válido o mal estructurado.',
+        { status: 400, headers: { 'Content-Type': 'text/plain; charset=utf-8' } }
+      );
+    }
+
     const {
       messages,
       conversationId: existingConvId,
       visitorId,
       sourcePage,
-    } = body
+    } = validation.data
 
     // ─── Obtener contexto dinámico (con caché interna de 5min) ───
     let dynamicContext: string
@@ -179,7 +209,7 @@ ${dynamicContext}`
     const result = streamText({
       model: openrouter('deepseek/deepseek-v4-flash'),
       system: systemPrompt,
-      messages,
+      messages: messages as any,
       onFinish: onFinishCallback,
     })
 

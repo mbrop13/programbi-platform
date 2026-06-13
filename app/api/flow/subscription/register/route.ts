@@ -92,6 +92,7 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error("❌ Flow Subscription Error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const isProd = process.env.NODE_ENV === "production";
+    return NextResponse.json({ error: isProd ? "Error al registrar suscripción." : error.message }, { status: 500 });
   }
 }

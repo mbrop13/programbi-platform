@@ -1,19 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { sendNotifyMeConfirmation } from "@/lib/email/mailersend";
+import { z } from "zod";
+import { isRateLimited } from "@/lib/security/rate-limiter";
 
-/**
- * POST /api/leads/notify
- * Registers interest in a course's next available date.
- */
+const notifySchema = z.object({
+  name: z.string().min(2).max(120).optional().nullable(),
+  email: z.string().email(),
+  courseSlug: z.string().min(2).max(100),
+  levelName: z.string().max(50).optional().nullable(),
+  courseName: z.string().max(120).optional().nullable(),
+});
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const { name, email, courseSlug, levelName, courseName } = body;
-
-    if (!email || !courseSlug) {
-      return NextResponse.json({ error: "Email y curso requeridos" }, { status: 400 });
+    // ─── Rate Limiting ───
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "127.0.0.1";
+    const limitRes = isRateLimited(ip, "leads-notify", 5, 60 * 1000); // Max 5 requests per minute
+    if (limitRes.limited) {
+      return NextResponse.json({ error: "Demasiados intentos. Por favor intente más tarde." }, { status: 429 });
     }
+
+    const body = await req.json();
+
+    // ─── Input Validation ───
+    const validation = notifySchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json({ error: "Datos de entrada inválidos" }, { status: 400 });
+    }
+
+    const { name, email, courseSlug, levelName, courseName } = validation.data;
 
     const adminDb = createAdminClient();
 
@@ -37,12 +53,16 @@ export async function POST(req: NextRequest) {
       name: name || "Estudiante",
       email,
       courseName: courseName || courseSlug,
-      levelName,
+      levelName: levelName ?? undefined,
     }).catch(err => console.error("MailerSend notify email error:", err));
 
     return NextResponse.json({ success: true });
   } catch (err: any) {
     console.error("API Error in leads/notify:", err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    const isProd = process.env.NODE_ENV === "production";
+    return NextResponse.json(
+      { error: isProd ? "Ocurrió un error inesperado." : err.message },
+      { status: 500 }
+    );
   }
 }

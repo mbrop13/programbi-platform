@@ -57,6 +57,11 @@ export async function cancelSubscription() {
     
     return { success: true };
   } catch (error: any) {
-    return { success: false, error: error.message };
+    console.error("Subscription cancellation error:", error);
+    const isProd = process.env.NODE_ENV === "production";
+    return { 
+      success: false, 
+      error: isProd ? "Ocurrió un error inesperado al cancelar la suscripción." : error.message 
+    };
   }
 }

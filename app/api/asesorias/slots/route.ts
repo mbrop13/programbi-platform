@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
+import { isCurrentUserAdmin } from "@/lib/supabase/comunidad";
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,6 +13,7 @@ export async function GET(req: NextRequest) {
     }
 
     const adminDb = createAdminClient();
+    const isAdmin = await isCurrentUserAdmin();
     
     const { data, error } = await adminDb
       .from("asesoria_slots")
@@ -21,23 +23,38 @@ export async function GET(req: NextRequest) {
 
     if (error) throw error;
 
-    return NextResponse.json({ slots: data || [] });
+    // Sanitize response to prevent data leaks to non-admin users
+    const sanitizedSlots = (data || []).map((slot: any) => {
+      if (isAdmin) return slot;
+      return {
+        slot_date: slot.slot_date,
+        slot_time: slot.slot_time,
+        status: slot.status,
+      };
+    });
+
+    return NextResponse.json({ slots: sanitizedSlots });
   } catch (err: any) {
     console.error("GET /api/asesorias/slots error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    const isProd = process.env.NODE_ENV === "production";
+    return NextResponse.json(
+      { error: isProd ? "Ocurrió un error al obtener los slots." : err.message },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 403 });
+    }
+
     const body = await req.json();
     const { action, slot_date, slot_time } = body;
     const adminDb = createAdminClient();
 
-    // Requires manual auth check if we want true security here, but since it's an internal admin route, 
-    // ideally we should check if the user is an admin.
-    // For now, we trust the client if it sends proper payload since Supabase RLS also protects it.
-    
     if (action === "block") {
       const { error } = await adminDb.from("asesoria_slots").insert({
         slot_date,
@@ -82,6 +99,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (err: any) {
     console.error("POST /api/asesorias/slots error:", err);
-    return NextResponse.json({ error: err.message }, { status: 500 });
+    const isProd = process.env.NODE_ENV === "production";
+    return NextResponse.json(
+      { error: isProd ? "Ocurrió un error al procesar la acción." : err.message },
+      { status: 500 }
+    );
   }
 }

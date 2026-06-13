@@ -6,6 +6,11 @@ import { Info, Lightbulb, AlertTriangle, Zap, Quote, Copy, Check } from "lucide-
 import { useState } from "react";
 import InteractiveChart from "./InteractiveChart";
 import TradingViewWidget from "./TradingViewWidget";
+import DOMPurify from "dompurify";
+
+const sanitizeHtml = (html: string): string => {
+  return typeof window !== "undefined" ? DOMPurify.sanitize(html) : html;
+};
 
 /* ─── Lightweight Markdown Parser ─── */
 
@@ -267,10 +272,12 @@ function BlockParagraph({ block }: { block: any }) {
   // Links
   parsedText = parsedText.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-[#1890FF] font-semibold underline">$1</a>');
 
+  const sanitized = sanitizeHtml(parsedText);
+
   return (
     <p
       className="text-slate-850 text-[16px] lg:text-[17px] leading-[1.85] serif-body mb-5"
-      dangerouslySetInnerHTML={{ __html: parsedText }}
+      dangerouslySetInnerHTML={{ __html: sanitized }}
     />
   );
 }
@@ -350,13 +357,14 @@ function BlockCallout({ block }: { block: any }) {
 
   const v = variants[block.variant] || variants.info;
   const Icon = v.icon;
+  const sanitized = sanitizeHtml(block.text || "");
 
   return (
     <div className={`flex gap-3 p-5 rounded-xl ${v.bg} border ${v.border} my-6`}>
       <Icon className={`w-5 h-5 ${v.iconColor} flex-shrink-0 mt-0.5`} />
       <div>
         {block.title && <p className={`text-sm font-bold ${v.textColor} mb-1`}>{block.title}</p>}
-        <p className={`text-sm ${v.textColor} leading-relaxed opacity-95`} dangerouslySetInnerHTML={{ __html: block.text || "" }} />
+        <p className={`text-sm ${v.textColor} leading-relaxed opacity-95`} dangerouslySetInnerHTML={{ __html: sanitized }} />
       </div>
     </div>
   );
@@ -366,9 +374,12 @@ function BlockList({ block }: { block: any }) {
   const Tag = block.ordered ? "ol" : "ul";
   return (
     <Tag className={`my-5 space-y-2 pl-5 ${block.ordered ? "list-decimal" : "list-disc"}`}>
-      {(block.items || []).map((item: string, i: number) => (
-        <li key={i} className="text-slate-850 text-[16px] serif-body leading-relaxed" dangerouslySetInnerHTML={{ __html: item }} />
-      ))}
+      {(block.items || []).map((item: string, i: number) => {
+        const sanitized = sanitizeHtml(item);
+        return (
+          <li key={i} className="text-slate-850 text-[16px] serif-body leading-relaxed" dangerouslySetInnerHTML={{ __html: sanitized }} />
+        );
+      })}
     </Tag>
   );
 }
@@ -565,7 +576,7 @@ export default function ArticleBlockRenderer({ content }: { content: string }) {
       return (
         <article
           className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-950 prose-p:text-slate-850 prose-p:leading-[1.85] prose-p:font-serif prose-a:text-[#1890FF] prose-a:font-semibold prose-a:underline hover:prose-a:text-[#0050b3] prose-strong:text-slate-950 prose-img:rounded-xl prose-img:border prose-img:border-slate-100 prose-blockquote:border-l-4 prose-blockquote:border-l-slate-950 prose-blockquote:bg-slate-50 prose-blockquote:py-4 prose-blockquote:pl-5 prose-blockquote:pr-6 prose-blockquote:italic prose-blockquote:font-serif mb-12"
-          dangerouslySetInnerHTML={{ __html: content }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }}
         />
       );
     }
@@ -579,7 +590,7 @@ export default function ArticleBlockRenderer({ content }: { content: string }) {
       return (
         <article
           className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-950 prose-p:text-slate-850 prose-p:leading-[1.85] prose-p:font-serif prose-a:text-[#1890FF] prose-a:font-semibold prose-a:underline hover:prose-a:text-[#0050b3] prose-strong:text-slate-950 prose-img:rounded-xl prose-img:border prose-img:border-slate-100 prose-blockquote:border-l-4 prose-blockquote:border-l-slate-950 prose-blockquote:bg-slate-50 prose-blockquote:py-4 prose-blockquote:pl-5 prose-blockquote:pr-6 prose-blockquote:italic prose-blockquote:font-serif mb-12"
-          dangerouslySetInnerHTML={{ __html: htmlContent }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(htmlContent) }}
         />
       );
     }
@@ -597,7 +608,7 @@ export default function ArticleBlockRenderer({ content }: { content: string }) {
               <div
                 key={`html-${idx}`}
                 className="prose prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-slate-950 prose-p:text-slate-850 prose-p:leading-[1.85] prose-p:font-serif prose-a:text-[#1890FF] prose-a:font-semibold prose-a:underline hover:prose-a:text-[#0050b3] prose-strong:text-slate-950 prose-img:rounded-xl prose-img:border prose-img:border-slate-100 prose-blockquote:border-l-4 prose-blockquote:border-l-slate-950 prose-blockquote:bg-slate-50 prose-blockquote:py-4 prose-blockquote:pl-5 prose-blockquote:pr-6 prose-blockquote:italic prose-blockquote:font-serif mb-6"
-                dangerouslySetInnerHTML={{ __html: htmlContent }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(htmlContent) }}
               />
             );
           }

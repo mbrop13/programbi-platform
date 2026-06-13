@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowRight, Zap, Clock, Shield, Users, Star, TrendingUp } from "lucide-react";
 import { getActivePopups } from "@/lib/supabase/comunidad-ai";
 import { createClient } from "@/lib/supabase/client";
+import DOMPurify from "dompurify";
 
 interface PromoPopupData {
   id: string;
@@ -38,10 +39,12 @@ function CustomHtmlRenderer({ html, onDismiss }: { html: string, onDismiss: () =
     });
   }, [html]);
 
+  const sanitizedHtml = typeof window !== "undefined" ? DOMPurify.sanitize(html) : html;
+
   return (
     <div
       ref={containerRef}
-      dangerouslySetInnerHTML={{ __html: html }}
+      dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
       onClick={(e) => {
         const target = e.target as HTMLElement;
         if (target.tagName === 'A' || target.closest('a')) {

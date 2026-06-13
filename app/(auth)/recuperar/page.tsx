@@ -3,17 +3,37 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Mail, ArrowLeft, Send, CheckCircle2 } from "lucide-react";
+import { Mail, ArrowLeft, Send, CheckCircle2, Loader2 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function RecuperarPage() {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Supabase password reset
-    console.log("Reset password for:", email);
-    setSubmitted(true);
+    setError(null);
+    setLoading(true);
+
+    try {
+      const supabase = createClient();
+      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth/callback?next=/comunidad/actualizar-password`,
+      });
+
+      if (resetError) {
+        setError(resetError.message);
+        return;
+      }
+
+      setSubmitted(true);
+    } catch (err) {
+      setError("Ocurrió un error inesperado al enviar el enlace.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -57,6 +77,12 @@ export default function RecuperarPage() {
                 Te enviaremos un enlace para restablecer tu contraseña
               </p>
 
+              {error && (
+                <div className="bg-red-50 text-red-600 border border-red-100 rounded-xl p-3 text-sm font-semibold mb-5 text-center">
+                  {error}
+                </div>
+              )}
+
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
                   <label className="block text-sm font-bold text-brand-dark mb-1.5">Email</label>
@@ -65,20 +91,22 @@ export default function RecuperarPage() {
                     <input
                       type="email"
                       required
+                      disabled={loading}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="tu@empresa.cl"
-                      className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm"
+                      className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
                     />
                   </div>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full btn-gradient text-white py-3.5 rounded-xl font-bold text-[0.95rem] border-none cursor-pointer flex items-center justify-center gap-2 transition-all"
+                  disabled={loading}
+                  className="w-full btn-gradient text-white py-3.5 rounded-xl font-bold text-[0.95rem] border-none cursor-pointer flex items-center justify-center gap-2 transition-all disabled:opacity-50"
                 >
-                  <Send className="w-5 h-5" />
-                  Enviar enlace
+                  {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+                  {loading ? "Enviando..." : "Enviar enlace"}
                 </button>
               </form>
             </>

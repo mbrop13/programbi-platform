@@ -2,12 +2,16 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, Lock, User, Phone, Building, Eye, EyeOff, UserPlus } from "lucide-react";
+import { Mail, Lock, User, Phone, Building, Eye, EyeOff, UserPlus, Loader2 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function RegistroPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [acceptsPrivacy, setAcceptsPrivacy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -16,11 +20,66 @@ export default function RegistroPage() {
     password: "",
     confirmPassword: "",
   });
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Supabase auth signup
-    console.log("Register:", formData);
+    setError(null);
+
+    if (formData.password !== formData.confirmPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
+    const password = formData.password;
+    if (password.length < 10) {
+      setError("La contraseña debe tener al menos 10 caracteres.");
+      return;
+    }
+
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[^A-Za-z0-9]/.test(password);
+
+    if (!(hasUppercase && hasLowercase && (hasNumber || hasSpecial))) {
+      setError("La contraseña debe incluir mayúsculas, minúsculas y al menos un número o carácter especial.");
+      return;
+    }
+
+    if (!acceptsPrivacy) {
+      setError("Debes aceptar la política de privacidad.");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      const supabase = createClient();
+      const { error: signUpError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.name,
+            whatsapp: formData.phone,
+            company: formData.company,
+          },
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=/comunidad/inicio`,
+        },
+      });
+
+      if (signUpError) {
+        setError(signUpError.message);
+        return;
+      }
+
+      router.push("/login?registered=true");
+    } catch (err) {
+      setError("Ocurrió un error inesperado al registrar su cuenta.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -45,6 +104,12 @@ export default function RegistroPage() {
             Accede a todos nuestros recursos y campus virtual
           </p>
 
+          {error && (
+            <div className="bg-red-50 text-red-600 border border-red-100 rounded-xl p-3 text-sm font-semibold mb-5 text-center">
+              {error}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-bold text-brand-dark mb-1.5">Nombre completo *</label>
@@ -53,10 +118,11 @@ export default function RegistroPage() {
                 <input
                   type="text"
                   required
+                  disabled={loading}
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   placeholder="Tu nombre"
-                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
                 />
               </div>
             </div>
@@ -68,10 +134,11 @@ export default function RegistroPage() {
                 <input
                   type="email"
                   required
+                  disabled={loading}
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="tu@empresa.cl"
-                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
                 />
               </div>
             </div>
@@ -83,10 +150,11 @@ export default function RegistroPage() {
                   <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
                   <input
                     type="tel"
+                    disabled={loading}
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     placeholder="+56 9"
-                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
                   />
                 </div>
               </div>
@@ -96,10 +164,11 @@ export default function RegistroPage() {
                   <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
                   <input
                     type="text"
+                    disabled={loading}
                     value={formData.company}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                     placeholder="Empresa"
-                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
                   />
                 </div>
               </div>
@@ -112,10 +181,11 @@ export default function RegistroPage() {
                 <input
                   type={showPassword ? "text" : "password"}
                   required
+                  disabled={loading}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="Mínimo 8 caracteres"
-                  className="w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm"
+                  placeholder="Mínimo 10 caracteres (mayúsculas y números)"
+                  className="w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
                 />
                 <button
                   type="button"
@@ -127,6 +197,22 @@ export default function RegistroPage() {
               </div>
             </div>
 
+            <div>
+              <label className="block text-sm font-bold text-brand-dark mb-1.5">Confirmar Contraseña *</label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  disabled={loading}
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  placeholder="Repite tu contraseña"
+                  className="w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
+                />
+              </div>
+            </div>
+
             {/* Privacy consent */}
             <div className="flex items-start gap-2.5">
               <input
@@ -135,7 +221,8 @@ export default function RegistroPage() {
                 checked={acceptsPrivacy}
                 onChange={(e) => setAcceptsPrivacy(e.target.checked)}
                 required
-                className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-[#1890FF] cursor-pointer flex-shrink-0"
+                disabled={loading}
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-[#1890FF] cursor-pointer flex-shrink-0 disabled:opacity-50"
               />
               <label htmlFor="privacy-registro" className="text-xs text-gray-500 cursor-pointer leading-relaxed">
                 Acepto la{" "}
@@ -146,10 +233,11 @@ export default function RegistroPage() {
 
             <button
               type="submit"
-              className="w-full btn-gradient text-white py-3.5 rounded-xl font-bold text-[0.95rem] border-none cursor-pointer flex items-center justify-center gap-2 transition-all"
+              disabled={loading}
+              className="w-full btn-gradient text-white py-3.5 rounded-xl font-bold text-[0.95rem] border-none cursor-pointer flex items-center justify-center gap-2 transition-all disabled:opacity-50"
             >
-              <UserPlus className="w-5 h-5" />
-              Crear Cuenta
+              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <UserPlus className="w-5 h-5" />}
+              {loading ? "Creando cuenta..." : "Crear Cuenta"}
             </button>
           </form>
         </div>

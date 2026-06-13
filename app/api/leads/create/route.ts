@@ -1,23 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
+import { z } from "zod";
+import { isRateLimited } from "@/lib/security/rate-limiter";
 import {
   sendQuoteConfirmationToLead,
   sendEnterpriseQuoteToLead,
   sendNewLeadNotificationToAdmin,
 } from "@/lib/email/mailersend";
 
+// ─── Input Validation Schema ───
+const leadSchema = z.object({
+  name: z.string().min(2).max(120),
+  email: z.string().email(),
+  phone: z.string().max(30).optional().nullable(),
+  whatsapp: z.string().max(30).optional().nullable(),
+  message: z.string().max(2000).optional().nullable(),
+  selectedCourses: z.array(z.string()).optional().nullable(),
+  sourceCourse: z.string().max(100).optional().nullable(),
+  leadType: z.string().max(50).optional().nullable(),
+  company: z.string().max(120).optional().nullable(),
+  position: z.string().max(120).optional().nullable(),
+  employeeCount: z.string().max(50).optional().nullable(),
+  _website: z.string().optional().nullable(),
+  _company_url: z.string().optional().nullable(),
+  _fax: z.string().optional().nullable(),
+  _t: z.any().optional(),
+});
+
 // ─── Anti-Bot Helpers ───
 
 /** Honeypot: if a hidden field is filled, it's a bot */
 function isHoneypotFilled(body: any): boolean {
   return !!(body._website || body._company_url || body._fax);
-}
-
-/** Timestamp: reject submissions faster than MIN_SECONDS */
-function isTooFast(body: any, minSeconds = 3): boolean {
-  if (!body._t) return false; // no timestamp sent — skip check (backwards compat)
-  const elapsed = (Date.now() - Number(body._t)) / 1000;
-  return elapsed < minSeconds;
 }
 
 /** Heuristic: detect gibberish names/emails */
@@ -44,27 +58,34 @@ function looksLikeSpam(name: string, email: string, message?: string): boolean {
 
 export async function POST(req: NextRequest) {
   try {
+    // ─── Rate Limiting ───
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "127.0.0.1";
+    const limitRes = isRateLimited(ip, "leads-create", 5, 60 * 1000); // Max 5 requests per minute
+    if (limitRes.limited) {
+      return NextResponse.json({ error: "Demasiados intentos. Por favor intente más tarde." }, { status: 429 });
+    }
+
     const body = await req.json();
 
+    // ─── Input Validation ───
+    const validation = leadSchema.safeParse(body);
+    if (!validation.success) {
+      return NextResponse.json({ error: "Datos de entrada inválidos" }, { status: 400 });
+    }
+
+    const data = validation.data;
+
     // ─── Anti-Bot Checks (silent reject → 200 to avoid bot retries) ───
-    if (isHoneypotFilled(body)) {
-      console.log("🤖 Bot blocked (honeypot):", body.email);
+    if (isHoneypotFilled(data)) {
+      console.log("🤖 Bot blocked (honeypot):", data.email);
       return NextResponse.json({ success: true }); // fake success
     }
-    if (isTooFast(body)) {
-      console.log("🤖 Bot blocked (too fast):", body.email);
-      return NextResponse.json({ success: true });
-    }
 
-    const whatsappClean = body.whatsapp || body.phone;
-    const { name, email, message, selectedCourses, sourceCourse, leadType, company, position, employeeCount } = body;
+    const whatsappClean = data.whatsapp || data.phone;
+    const { name, email, message, selectedCourses, sourceCourse, leadType, company, position, employeeCount } = data;
     const whatsapp = whatsappClean;
 
-    if (!name || !email) {
-      return NextResponse.json({ error: "Nombre y email requeridos" }, { status: 400 });
-    }
-
-    if (looksLikeSpam(name, email, message)) {
+    if (looksLikeSpam(name, email, message || undefined)) {
       console.log("🤖 Bot blocked (spam heuristic):", name, email);
       return NextResponse.json({ success: true });
     }
@@ -104,8 +125,8 @@ export async function POST(req: NextRequest) {
     // 1. Notificación interna al equipo de ventas
     try {
       await sendNewLeadNotificationToAdmin({
-        name, email, phone: whatsapp, courses, message,
-        leadType, company, position, employeeCount,
+        name, email, phone: whatsapp ?? undefined, courses, message: message ?? undefined,
+        leadType: leadType ?? undefined, company: company ?? undefined, position: position ?? undefined, employeeCount: employeeCount ?? undefined,
       });
       console.log("✅ Admin notification sent");
     } catch (err: any) {
@@ -116,9 +137,9 @@ export async function POST(req: NextRequest) {
     if (leadType !== "webinar") {
       try {
         if ((leadType === "empresa" || leadType === "enterprise") && company) {
-          await sendEnterpriseQuoteToLead({ name, email, company, courses, employeeCount });
+          await sendEnterpriseQuoteToLead({ name, email, company, courses, employeeCount: employeeCount ?? undefined });
         } else {
-          await sendQuoteConfirmationToLead({ name, email, courses, message });
+          await sendQuoteConfirmationToLead({ name, email, courses, message: message ?? undefined });
         }
         console.log("✅ Quote email sent to:", email);
       } catch (err: any) {
@@ -130,6 +151,6 @@ export async function POST(req: NextRequest) {
 
   } catch (err: any) {
     console.error("API Error in leads/create:", err);
-    return NextResponse.json({ error: "Server error" }, { status: 500 });
+    return NextResponse.json({ error: "Ocurrió un error inesperado." }, { status: 500 });
   }
 }

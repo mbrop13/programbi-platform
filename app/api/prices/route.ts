@@ -9,6 +9,7 @@ export async function GET() {
     return NextResponse.json(overrides);
   } catch (error: any) {
     console.error("Price overrides endpoint error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    const isProd = process.env.NODE_ENV === "production";
+    return NextResponse.json({ error: isProd ? "Ocurrió un error inesperado." : error.message }, { status: 500 });
   }
 }
