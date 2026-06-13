@@ -259,16 +259,6 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
             }`}>
               {article.title}
             </h1>
-
-            {article.excerpt && (
-              <p 
-                className={`text-lg sm:text-xl leading-relaxed mb-6 font-light ${
-                  prefs.theme === "dark" ? "text-slate-400" : "text-slate-655"
-                }`}
-                dangerouslySetInnerHTML={{ __html: applyInlineMarkdown(article.excerpt) }}
-              />
-            )}
-
             <div className={`flex items-center justify-center gap-3 text-[10px] font-bold uppercase tracking-widest pb-4 max-w-lg mx-auto ${
               prefs.theme === "dark" ? "text-slate-500" : "text-slate-455"
             }`}>
