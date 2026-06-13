@@ -331,7 +331,7 @@ export default function BlogClient({ articles }: { articles: any[] }) {
   }, [articles, activeCategory, searchQuery]);
 
   const sliderArticles = filtered.slice(0, Math.min(5, filtered.length));
-  const gridArticles = filtered.slice(Math.min(5, filtered.length));
+  const gridArticles = filtered;
 
   return (
     <div className="min-h-screen bg-white pb-28">

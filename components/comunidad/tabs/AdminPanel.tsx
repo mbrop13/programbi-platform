@@ -3399,7 +3399,7 @@ function AdminNewsletterArticles() {
                 <div className="mb-6">
                   <div className="flex justify-between items-center mb-2">
                     <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block">Documento Completo (Markdown + Metadatos)</label>
-                    <span className="text-[10px] text-gray-400 font-medium">Usa las etiquetas en la cabecera (entre ---) para configurar todo en un solo bloque.</span>
+                    <span className="text-[10px] text-gray-400 font-medium">Usa las cabeceras (entre ---) para metadatos. Para imágenes secundarias entre los textos, escribe `imagen2: URL [caption]` o `![caption](URL)` en su propia línea.</span>
                   </div>
                   <textarea
                     value={formMarkdownText}
@@ -3424,7 +3424,13 @@ reading_time: 5
 tags: power-bi, ai
 ---
 
-El pasado 9 de junio, Anthropic lanzó...`}
+El pasado 9 de junio, Anthropic lanzó...
+
+imagen2: https://example.com/grafico-analisis.png Gráfico explicativo de rendimiento de datos
+
+Más texto del artículo...
+
+![Captura de pantalla de la interfaz](https://example.com/interfaz.png)`}
                   />
                 </div>
               ) : (

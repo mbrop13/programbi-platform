@@ -18,6 +18,8 @@ export function applyInlineMarkdown(text: string): string {
   let html = text;
   // Inline code: `code`
   html = html.replace(/`(.*?)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-100 font-mono text-[14px] text-slate-900 font-semibold">$1</code>');
+  // Inline images: ![alt](url) -> placed before links to prevent matching
+  html = html.replace(/!\[(.*?)\]\((.*?)\)/g, '<img src="$2" alt="$1" class="inline-block my-2 rounded-lg max-w-full h-auto border border-slate-100 shadow-sm" />');
   // Bold: **text** or __text__
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-slate-950">$1</strong>');
   html = html.replace(/__(.*?)__/g, '<strong class="font-bold text-slate-950">$1</strong>');
@@ -142,6 +144,45 @@ function parseMarkdownToHtml(markdown: string): string {
       if (inList) { parsedLines.push("</ul>"); inList = false; }
       if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
       parsedLines.push('<hr class="border-t border-slate-200 my-8" />');
+      continue;
+    }
+
+    // 3.5. Images / Secondary Images on their own line
+    // Matches standard Markdown image: ![alt](url)
+    const imgMatch = line.match(/^!\[(.*?)\]\((https?:\/\/[^\s\n\)]+)\)$/);
+    if (imgMatch) {
+      if (inList) { parsedLines.push("</ul>"); inList = false; }
+      if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
+      if (inTable) { parsedLines.push("</tbody></table></div>"); inTable = false; }
+      const alt = imgMatch[1] || "";
+      const src = imgMatch[2];
+      parsedLines.push(`
+        <figure class="my-8">
+          <div class="relative w-full h-auto rounded-xl overflow-hidden border border-slate-100 shadow-sm bg-slate-50">
+            <img src="${src}" alt="${alt}" class="w-full h-auto object-cover rounded-xl" loading="lazy" />
+          </div>
+          ${alt ? `<figcaption class="text-center text-xs text-slate-400 mt-3 italic serif-body">${alt}</figcaption>` : ""}
+        </figure>
+      `);
+      continue;
+    }
+
+    // Matches simple image format: imagen2: url, image2: url, imagen3: url, etc. with optional caption after url
+    const inlineImgMatch = line.match(/^(?:imagen[1-9][0-9]*|image[1-9][0-9]*|imagen_adicional)\s*:\s*(https?:\/\/[^\s\n]+)(?:\s+(.+))?$/i);
+    if (inlineImgMatch) {
+      if (inList) { parsedLines.push("</ul>"); inList = false; }
+      if (inOrderList) { parsedLines.push("</ol>"); inOrderList = false; }
+      if (inTable) { parsedLines.push("</tbody></table></div>"); inTable = false; }
+      const src = inlineImgMatch[1];
+      const alt = inlineImgMatch[2] || "";
+      parsedLines.push(`
+        <figure class="my-8">
+          <div class="relative w-full h-auto rounded-xl overflow-hidden border border-slate-100 shadow-sm bg-slate-50">
+            <img src="${src}" alt="${alt}" class="w-full h-auto object-cover rounded-xl" loading="lazy" />
+          </div>
+          ${alt ? `<figcaption class="text-center text-xs text-slate-400 mt-3 italic serif-body">${alt}</figcaption>` : ""}
+        </figure>
+      `);
       continue;
     }
 
@@ -570,7 +611,15 @@ export default function ArticleBlockRenderer({ content }: { content: string }) {
 
   // Fallback to Markdown / HTML render
   if (!blocks) {
-    const isMarkdown = content.trim().startsWith("#") || content.includes("\n## ") || content.includes("\n- ") || content.includes("\n* ") || content.includes("---") || content.match(/Grafico de/i) || content.match(/(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets):/i);
+    const isMarkdown = content.trim().startsWith("#") || 
+      content.includes("\n## ") || 
+      content.includes("\n- ") || 
+      content.includes("\n* ") || 
+      content.includes("---") || 
+      content.match(/Grafico de/i) || 
+      content.match(/(?:Ticker|Tickers|TradingView|Accion|Acción|Ticket|Tickets):/i) ||
+      content.match(/!\[.*?\]\(.*?\)/) ||
+      content.match(/(?:imagen[0-9]|image[0-9]|imagen_adicional):/i);
     
     if (!isMarkdown) {
       return (
