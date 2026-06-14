@@ -29,7 +29,7 @@ export const mentors: Mentor[] = [
     icon: "UserCheck",
     linkedinUrl: "https://www.linkedin.com/in/manuel-oliva-riesgo-inversion/",
     imageUrl:
-      "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/gempages_519842279402243040-8ae05cd1-dc25-44fb-9a7b-f1a78a0f121a.png?v=1720126074",
+      "https://mail.programbi.com/uploads/gempages_519842279402243040-8ae05cd1-dc25-44fb-9a7b-f1a78a0f121a.webp_202606132329.jpeg",
     isFounder: true,
     founderBio:
       "Lidero un equipo dedicado a empoderar empresas con herramientas de datos avanzadas. Con años de experiencia como consultor en análisis y visualización, he desarrollado dashboards personalizados integrando web, servidores y bases de datos. Mi enfoque práctico ha ayudado a compañías líderes en Minería, Finanzas y Retail a optimizar procesos críticos y tomar decisiones informadas.",
@@ -58,6 +58,7 @@ export const mentors: Mentor[] = [
       "Portfolio Manager en Banco Itaú.",
     ],
     icon: "BarChart3",
+    imageUrl: "https://mail.programbi.com/uploads/1579052175153.jpg_202606132330.jpeg",
     isFounder: false,
     sortOrder: 2,
     studentCount: 800,
