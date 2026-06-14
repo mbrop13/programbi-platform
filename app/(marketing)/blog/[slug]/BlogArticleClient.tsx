@@ -443,17 +443,6 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
               <ArticleBlockRenderer content={article.content} />
             </div>
 
-            {/* Like Button Showcase */}
-            <div className={`mt-10 pb-6 border-b flex flex-col items-center justify-center ${
-              prefs.theme === "dark" ? "border-slate-800" : "border-slate-100"
-            }`}>
-              <ArticleLikeButton
-                articleId={article.id}
-                initialLikes={article.likes || 0}
-                theme={prefs.theme}
-              />
-            </div>
-
             {/* Horizontal Share Buttons at the end of content */}
             <div className="py-4 flex items-center justify-between flex-wrap gap-4">
               <span className={`text-[10px] font-bold uppercase tracking-widest ${
@@ -633,6 +622,14 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
       >
         <Sliders className="w-5 h-5" />
       </button>
+
+      {/* Floating Likes Button (FAB) */}
+      <ArticleLikeButton
+        articleId={article.id}
+        initialLikes={article.likes || 0}
+        theme={prefs.theme}
+        className="fixed bottom-6 right-6 md:bottom-24 md:right-8"
+      />
 
       {/* Preferences Modal Panel */}
       <BlogPreferences

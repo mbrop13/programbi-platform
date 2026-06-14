@@ -9,6 +9,7 @@ interface ArticleLikeButtonProps {
   articleId: string;
   initialLikes?: number;
   theme?: "light" | "sepia" | "dark";
+  className?: string;
 }
 
 interface LikeParticle {
@@ -21,12 +22,14 @@ interface LikeParticle {
 export default function ArticleLikeButton({ 
   articleId, 
   initialLikes = 0, 
-  theme = "light" 
+  theme = "light",
+  className = "fixed bottom-6 right-6" 
 }: ArticleLikeButtonProps) {
   const [totalLikes, setTotalLikes] = useState(initialLikes);
   const [userLikes, setUserLikes] = useState(0); // Likes given by this browser (0 to 5)
   const [particles, setParticles] = useState<LikeParticle[]>([]);
   const [animateHeart, setAnimateHeart] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
   
   const accumulatedClicksRef = useRef(0);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -87,11 +90,11 @@ export default function ArticleLikeButton({
 
     // 3. Spawn floating particles
     const id = particleIdRef.current++;
-    const angle = (Math.random() * 40 - 20) * (Math.PI / 180); // random angle between -20 and 20 degrees
-    const x = Math.sin(angle) * -40;
-    const y = -60 - Math.random() * 40;
+    const angle = (Math.random() * 50 - 25) * (Math.PI / 180); // random angle between -25 and 25 degrees
+    const x = Math.sin(angle) * -35;
+    const y = -50 - Math.random() * 30;
     
-    setParticles((prev) => [...prev, { id, x, y, scale: Math.random() * 0.4 + 0.8 }]);
+    setParticles((prev) => [...prev, { id, x, y, scale: Math.random() * 0.3 + 0.75 }]);
     
     // Auto-remove particle after 1s
     setTimeout(() => {
@@ -127,48 +130,92 @@ export default function ArticleLikeButton({
   };
 
   // SVG circular progress calculation
-  // Radius = 28, Circumference = 2 * PI * 28 = 175.93
-  const radius = 28;
-  const strokeWidth = 2.5;
+  // Radius = 20, Center = 24, Circumference = 2 * PI * 20 = 125.66
+  const radius = 20;
+  const strokeWidth = 2;
   const circ = 2 * Math.PI * radius;
   const offset = circ - (userLikes / 5) * circ;
 
-  // Theme styling configurations
-  const themeStyles = {
+  // Resolve RGB values based on theme for inline styles
+  const getThemeRgb = () => {
+    if (theme === "dark") return "239, 68, 68"; // red-500
+    if (theme === "sepia") return "161, 62, 62"; // #A13E3E
+    return "255, 77, 79"; // #FF4D4F
+  };
+
+  // Dynamic progressive styles for the main button container
+  const getProgressiveButtonStyles = () => {
+    const isDark = theme === "dark";
+    const isSepia = theme === "sepia";
+    
+    if (userLikes === 0) {
+      return isDark 
+        ? "bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800" 
+        : isSepia 
+        ? "bg-[#FDFBF7] border-[#DECFA9] text-[#8C6D53] hover:bg-[#F9F5EA]" 
+        : "bg-white border-slate-200 text-slate-450 hover:bg-slate-50";
+    }
+
+    return "";
+  };
+
+  const getButtonInlineStyle = () => {
+    if (userLikes === 0) return {};
+    const rgb = getThemeRgb();
+    const bgOpacity = 0.05 + (userLikes / 5) * 0.15; // 5% to 20% opacity
+    const borderOpacity = 0.3 + (userLikes / 5) * 0.7; // 30% to 100% opacity
+    
+    return {
+      backgroundColor: `rgba(${rgb}, ${bgOpacity})`,
+      borderColor: `rgba(${rgb}, ${borderOpacity})`,
+      boxShadow: userLikes === 5 ? `0 0 15px rgba(${rgb}, 0.4)` : "none"
+    };
+  };
+
+  const getHeartInlineStyle = () => {
+    if (userLikes === 0) return {};
+    const rgb = getThemeRgb();
+    return {
+      color: `rgba(${rgb}, 1.0)`,
+      fill: `rgba(${rgb}, ${userLikes / 5})` // filled progressively
+    };
+  };
+
+  const getRingInlineStyle = () => {
+    const rgb = getThemeRgb();
+    return {
+      stroke: userLikes > 0 ? `rgba(${rgb}, 0.95)` : "transparent"
+    };
+  };
+
+  // Static themes mapping for generic layout elements
+  const themeStaticStyles = {
     light: {
-      buttonBg: "bg-white hover:bg-slate-50 border-slate-200/80 shadow-md",
       progressBg: "stroke-slate-100",
-      progressStroke: "stroke-[#FF4D4F]",
-      heartStroke: "text-[#FF4D4F]",
-      heartFill: "fill-[#FF4D4F]",
-      text: "text-slate-600",
-      count: "text-slate-900",
+      tooltipBg: "bg-slate-950 text-white",
+      badgeBg: "bg-[#FF4D4F] text-white shadow-md shadow-red-500/20",
       particleColor: "text-[#FF4D4F]"
     },
     sepia: {
-      buttonBg: "bg-[#FDFBF7] hover:bg-[#F9F5EA] border-[#DECFA9] shadow-md",
       progressBg: "stroke-[#E8DCBF]",
-      progressStroke: "stroke-[#A13E3E]",
-      heartStroke: "text-[#A13E3E]",
-      heartFill: "fill-[#A13E3E]",
-      text: "text-[#8C6D53]",
-      count: "text-[#5B4636]",
+      tooltipBg: "bg-[#5B4636] text-[#F4ECD8]",
+      badgeBg: "bg-[#A13E3E] text-[#F4ECD8] shadow-md shadow-red-800/20",
       particleColor: "text-[#A13E3E]"
     },
     dark: {
-      buttonBg: "bg-slate-900 hover:bg-slate-800 border-slate-800 shadow-xl shadow-black/30",
-      progressBg: "stroke-slate-850",
-      progressStroke: "stroke-red-500",
-      heartStroke: "text-red-500",
-      heartFill: "fill-red-500",
-      text: "text-slate-400",
-      count: "text-white",
+      progressBg: "stroke-slate-800/60",
+      tooltipBg: "bg-white text-slate-950",
+      badgeBg: "bg-red-500 text-white shadow-md shadow-red-500/40",
       particleColor: "text-red-500"
     }
   }[theme];
 
   return (
-    <div className="flex flex-col items-center select-none py-6">
+    <div 
+      className={`${className} z-40 select-none flex flex-col items-center`}
+      onMouseEnter={() => setShowTooltip(true)}
+      onMouseLeave={() => setShowTooltip(false)}
+    >
       <div className="relative">
         
         {/* Floating Particles */}
@@ -180,77 +227,94 @@ export default function ArticleLikeButton({
               animate={{ opacity: 0, scale: p.scale, x: p.x, y: p.y }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.8, ease: "easeOut" }}
-              className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-30 font-bold text-sm pointer-events-none ${themeStyles.particleColor}`}
+              className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-50 font-bold text-xs pointer-events-none ${themeStaticStyles.particleColor}`}
             >
               ❤️ +1
             </motion.div>
           ))}
         </AnimatePresence>
 
-        {/* Large Circular Button */}
+        {/* Hover/Click Tooltip */}
+        <AnimatePresence>
+          {showTooltip && (
+            <motion.div
+              initial={{ opacity: 0, y: 10, scale: 0.95, x: "-50%" }}
+              animate={{ opacity: 1, y: 0, scale: 1, x: "-50%" }}
+              exit={{ opacity: 0, y: 10, scale: 0.95, x: "-50%" }}
+              className={`absolute bottom-full left-1/2 mb-3 px-2.5 py-1.5 rounded-lg text-[10px] font-bold tracking-wide shadow-md whitespace-nowrap pointer-events-none z-50 text-center ${themeStaticStyles.tooltipBg}`}
+            >
+              Valoración: {userLikes}/5 • Total: {totalLikes}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Total Likes Badge bubble */}
+        {totalLikes > 0 && (
+          <motion.div 
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className={`absolute -top-1.5 -right-1.5 z-30 font-black text-[9px] px-1.5 py-0.5 rounded-full select-none ${themeStaticStyles.badgeBg}`}
+          >
+            {totalLikes}
+          </motion.div>
+        )}
+
+        {/* Circular Floating Button */}
         <motion.button
           onClick={handleLike}
-          whileHover={{ scale: 1.04 }}
+          whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           animate={animateHeart && userLikes >= 5 ? {
-            x: [0, -4, 4, -4, 4, 0],
+            x: [0, -3, 3, -3, 3, 0],
             transition: { duration: 0.4 }
           } : {}}
-          className={`w-[66px] h-[66px] rounded-full border flex items-center justify-center transition-colors cursor-pointer relative z-15 ${themeStyles.buttonBg}`}
+          style={getButtonInlineStyle()}
+          className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all cursor-pointer relative z-25 ${
+            getProgressiveButtonStyles()
+          }`}
         >
-          {/* Progress Circular Ring Wrapper */}
+          {/* Circular SVG Ring */}
           <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none">
-            {/* Background static gray ring */}
+            {/* Background ring */}
             <circle
-              cx="33"
-              cy="33"
+              cx="24"
+              cy="24"
               r={radius}
               strokeWidth={strokeWidth}
               fill="transparent"
-              className={themeStyles.progressBg}
+              className={themeStaticStyles.progressBg}
             />
-            {/* Animated progress ring */}
+            {/* Dynamic progress ring */}
             <motion.circle
-              cx="33"
-              cy="33"
+              cx="24"
+              cy="24"
               r={radius}
               strokeWidth={strokeWidth}
               fill="transparent"
               strokeDasharray={circ}
               animate={{ strokeDashoffset: offset }}
+              style={getRingInlineStyle()}
               transition={{ type: "spring", stiffness: 100, damping: 12 }}
-              className={themeStyles.progressStroke}
               strokeLinecap="round"
             />
           </svg>
 
-          {/* Heart Icon with progressive filled state */}
+          {/* Heart icon */}
           <motion.div
             animate={animateHeart && userLikes < 5 ? {
-              scale: [1, 1.25, 0.95, 1.05, 1],
+              scale: [1, 1.25, 0.92, 1.05, 1],
               transition: { duration: 0.3 }
             } : {}}
           >
             <Heart 
-              className={`w-6 h-6 transition-all duration-300 ${
-                userLikes > 0 
-                  ? `${themeStyles.heartFill} ${themeStyles.heartStroke}` 
-                  : "text-slate-400 group-hover:text-slate-600"
+              className={`w-4.5 h-4.5 transition-all duration-300 ${
+                userLikes > 0 ? "" : "text-slate-400"
               }`}
-              style={{
-                fillOpacity: userLikes > 0 ? userLikes / 5 : 0
-              }}
+              style={getHeartInlineStyle()}
             />
           </motion.div>
         </motion.button>
       </div>
-
-      {/* Dynamic count label */}
-      <span className={`text-[11px] font-extrabold uppercase tracking-widest mt-3.5 transition-colors duration-300 ${themeStyles.text}`}>
-        Likes dados: <span className={themeStyles.count}>{userLikes}/5</span>
-        <span className="mx-2">•</span>
-        Total: <span className={themeStyles.count}>{totalLikes}</span>
-      </span>
     </div>
   );
 }

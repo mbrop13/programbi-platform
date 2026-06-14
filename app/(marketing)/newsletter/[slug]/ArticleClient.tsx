@@ -212,15 +212,6 @@ export default function ArticleClient({ slug }: { slug: string }) {
               </div>
             )}
 
-            {/* Like Button Showcase */}
-            <div className="py-6 border-b border-gray-100 mb-8 flex justify-center">
-              <ArticleLikeButton
-                articleId={article.id}
-                initialLikes={article.likes || 0}
-                theme="light"
-              />
-            </div>
-
             {/* Share */}
             <div className="flex items-center gap-4 mb-16">
               <span className="text-sm font-bold text-gray-900">Compartir:</span>
@@ -301,6 +292,14 @@ export default function ArticleClient({ slug }: { slug: string }) {
             </div>
           </div>
         )}
+
+        {/* Floating Likes Button (FAB) */}
+        <ArticleLikeButton
+          articleId={article.id}
+          initialLikes={article.likes || 0}
+          theme="light"
+          className="fixed bottom-6 right-6 md:bottom-8 md:right-8"
+        />
       </div>
     </div>
   );
