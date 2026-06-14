@@ -143,11 +143,19 @@ export default function ArticleLikeButton({
     return "255, 77, 79"; // #FF4D4F
   };
 
-  // Static button styles (always return to normal color at rest)
+  // Static button styles (always return to normal color at rest, except when fully liked 5/5)
   const getButtonStyles = () => {
     const isDark = theme === "dark";
     const isSepia = theme === "sepia";
     
+    if (userLikes === 5) {
+      return isDark
+        ? "bg-slate-900 border-red-500/50 text-red-500 shadow-xl shadow-black/30"
+        : isSepia
+        ? "bg-[#FDFBF7] border-[#A13E3E]/50 text-[#A13E3E] shadow-md"
+        : "bg-white border-[#FF4D4F]/50 text-[#FF4D4F] shadow-md";
+    }
+
     return isDark 
       ? "bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800 shadow-xl shadow-black/30" 
       : isSepia 
@@ -155,9 +163,17 @@ export default function ArticleLikeButton({
       : "bg-white border-slate-200 text-slate-450 hover:bg-slate-50 shadow-md";
   };
 
-  // Pulse animation styles for the heart icon (temporarily fill with red on click)
+  // Pulse animation styles for the heart icon (temporarily fill with red on click, remain solid red when fully liked 5/5)
   const getHeartStyle = () => {
     const rgb = getThemeRgb();
+    
+    if (userLikes === 5) {
+      return {
+        color: `rgb(${rgb})`,
+        fill: `rgba(${rgb}, 1.0)`
+      };
+    }
+
     if (animateHeart && userLikes < 5) {
       return {
         color: `rgb(${rgb})`,
