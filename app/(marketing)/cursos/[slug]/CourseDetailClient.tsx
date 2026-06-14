@@ -303,7 +303,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
             </h1>
             {(course.slug === "analisis-de-datos" || course.slug === "analitica-mineria" || course.slug === "analitica-financiera") && (
               <p className="text-xs font-black uppercase tracking-wider mb-4 text-[#1890FF]">
-                ★ INCLUYE POWER BI + PYTHON + SQL SERVER EN UN SOLO PROGRAMA
+                {course.slug === "analisis-de-datos"
+                  ? "★ 144 HORAS POR 3 NIVELES (48 HORAS POR NIVEL)"
+                  : "★ INCLUYE POWER BI + PYTHON + SQL SERVER EN UN SOLO PROGRAMA"}
               </p>
             )}
           </div>
@@ -328,7 +330,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                   </h1>
                   {(course.slug === "analisis-de-datos" || course.slug === "analitica-mineria" || course.slug === "analitica-financiera") && (
                     <p className="text-xs sm:text-sm font-black uppercase tracking-wider mb-4 text-[#1890FF]">
-                      ★ INCLUYE POWER BI + PYTHON + SQL SERVER EN UN SOLO PROGRAMA
+                      {course.slug === "analisis-de-datos"
+                        ? "★ 144 HORAS POR 3 NIVELES (48 HORAS POR NIVEL)"
+                        : "★ INCLUYE POWER BI + PYTHON + SQL SERVER EN UN SOLO PROGRAMA"}
                     </p>
                   )}
                 </FadeIn>
