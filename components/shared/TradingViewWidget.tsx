@@ -8,6 +8,7 @@ interface TradingViewWidgetProps {
 
 export default function TradingViewWidget({ tickers }: TradingViewWidgetProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const tickersJSON = JSON.stringify(tickers);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -95,7 +96,7 @@ export default function TradingViewWidget({ tickers }: TradingViewWidgetProps) {
 
     script.innerHTML = JSON.stringify(config);
     containerRef.current.appendChild(script);
-  }, [tickers]);
+  }, [tickersJSON]);
 
   return (
     <div className="my-8 border border-slate-200/50 rounded-2xl overflow-hidden bg-[#0F0F0F] p-4 shadow-sm w-full h-[400px]">
