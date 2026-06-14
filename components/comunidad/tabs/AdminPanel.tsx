@@ -3014,6 +3014,7 @@ const blogCategoryNames: Record<string, string> = {
   "ia": "AI",
   "industria": "Economía",
   "general": "Cultura",
+  "deporte": "Deporte",
   "power-bi": "Tecnología - Power BI",
   "sql": "Tecnología - SQL",
   "python": "Tecnología - Python",
@@ -3591,6 +3592,7 @@ Más texto del artículo...
                       <option value="ia">AI</option>
                       <option value="industria">Economía</option>
                       <option value="general">Cultura</option>
+                      <option value="deporte">Deporte</option>
                       <option value="power-bi">Tecnología - Power BI</option>
                       <option value="sql">Tecnología - SQL</option>
                       <option value="python">Tecnología - Python</option>

@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { BookOpen, ChevronRight, Search, X, Sparkles, DollarSign, Cpu, Sliders, ChevronLeft } from "lucide-react";
+import { BookOpen, ChevronRight, Search, X, Sparkles, DollarSign, Cpu, Sliders, ChevronLeft, Trophy } from "lucide-react";
 import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
 import { createClient } from "@/lib/supabase/client";
 import { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
@@ -29,6 +29,7 @@ const CATEGORIES = [
   { value: "ia", label: "AI" },
   { value: "economia", label: "Economía" },
   { value: "tecnologia", label: "Tecnología" },
+  { value: "deporte", label: "Deporte" },
   { value: "cultura", label: "Cultura" },
 ] as const;
 
@@ -40,6 +41,9 @@ const categoryLabels: Record<string, string> = {
   ia: "AI",
   industria: "Economía",
   economia: "Economía",
+  deporte: "Deporte",
+  futbol: "Deporte",
+  running: "Deporte",
   general: "Cultura",
   cultura: "Cultura",
 };
@@ -326,6 +330,8 @@ export default function BlogClient({ articles }: { articles: any[] }) {
       temp = temp.filter((a) => ["industria", "economia"].includes(a.category));
     } else if (activeCategory === "tecnologia") {
       temp = temp.filter((a) => ["power-bi", "sql", "python", "tecnologia"].includes(a.category));
+    } else if (activeCategory === "deporte") {
+      temp = temp.filter((a) => ["deporte", "futbol", "running", "deportes"].includes(a.category));
     } else if (activeCategory === "cultura") {
       temp = temp.filter((a) => ["general", "cultura"].includes(a.category));
     }
@@ -480,11 +486,12 @@ export default function BlogClient({ articles }: { articles: any[] }) {
       </main>
 
       {/* Mobile Bottom Navigation Menu (Floating Circular Liquid Glass) */}
-      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-[360px] bg-slate-950/70 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5 flex items-center justify-between shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)] select-none">
+      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[95%] max-w-[420px] bg-slate-950/70 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5 flex items-center justify-between shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)] select-none">
         {[
           { value: "ia", label: "AI", icon: Sparkles },
           { value: "economia", label: "Economía", icon: DollarSign },
           { value: "tecnologia", label: "Tecno", icon: Cpu },
+          { value: "deporte", label: "Deporte", icon: Trophy },
           { value: "cultura", label: "Cultura", icon: BookOpen },
         ].map((tab) => {
           const isActive = activeCategory === tab.value;

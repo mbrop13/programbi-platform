@@ -33,6 +33,9 @@ const categoryLabels: Record<string, string> = {
   python: "Tecnología",
   ia: "AI",
   industria: "Economía",
+  deporte: "Deporte",
+  futbol: "Deporte",
+  running: "Deporte",
   general: "Cultura",
 };
 
