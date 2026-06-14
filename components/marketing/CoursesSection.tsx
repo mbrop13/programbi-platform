@@ -159,7 +159,7 @@ export default function CoursesSection() {
   const filteredCourses = getFilteredCourses();
 
   return (
-    <section className="w-full bg-white text-slate-900 py-12 lg:py-18 relative overflow-hidden flex justify-center items-center">
+    <section className="w-full bg-white text-slate-900 py-16 lg:py-24 relative overflow-hidden flex justify-center items-center">
       {/* Glow backdrop points (light/soft accent) */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#1890FF]/3 rounded-full blur-[160px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#6366F1]/2 rounded-full blur-[160px] pointer-events-none" />
@@ -177,23 +177,52 @@ export default function CoursesSection() {
 
       {/* Centering wrapper */}
       <div className="w-full px-6 md:px-12 max-w-[1400px] mx-auto relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
             
             {/* Left Column (Sticky Sidebar on Desktop) */}
-            <div className="lg:col-span-4 lg:sticky lg:top-10 text-left flex flex-col gap-5 z-20">
+            <div className="lg:col-span-4 lg:sticky lg:top-14 text-left flex flex-col gap-6 z-20">
               <div>
-                <span className="inline-flex items-center gap-1.5 bg-blue-50 text-[#1890FF] font-bold text-xs uppercase tracking-widest px-5 py-2.5 rounded-full mb-4 border border-blue-100 shadow-sm">
-                  <Sparkles size={12} className="fill-current text-[#1890FF]" /> Bootcamps de Datos
+                <span className="inline-flex items-center gap-1.5 bg-blue-50/70 border border-blue-100/40 backdrop-blur-sm text-[#1890FF] font-bold text-[10px] uppercase tracking-widest px-4 py-2 rounded-full mb-5 shadow-sm">
+                  <Sparkles size={11} className="fill-current text-[#1890FF]" /> Bootcamps de Datos
                 </span>
-                <h2 className="font-display text-4xl sm:text-5xl font-extrabold text-slate-900 leading-tight mb-4 tracking-tight">
+                
+                <h2 className="font-display text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-950 via-slate-900 to-[#1890FF] leading-tight mb-4 tracking-tight">
                   Explora <br />nuestros <br className="hidden lg:block" />programas.
                 </h2>
-                <p className="text-sm text-slate-500 leading-relaxed max-w-sm mb-6 font-sans">
+                
+                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-sm mb-6 font-sans">
                   Clases en vivo por Zoom, aprendizaje práctico con proyectos reales y apoyo técnico de mentores expertos 24/7.
                 </p>
 
+                {/* Category selector slider (visible on mobile, hidden on desktop) */}
+                <div className="lg:hidden flex overflow-x-auto no-scrollbar gap-2 pb-2 -mx-6 px-6 w-[calc(100%+3rem)] scroll-smooth select-none">
+                  {categories.map((cat) => {
+                    const isActive = selectedCat === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => setSelectedCat(cat.id)}
+                        className={`relative px-4 py-2.5 rounded-full text-xs font-bold whitespace-nowrap border transition-all duration-305 cursor-pointer ${
+                          isActive
+                            ? "border-blue-500/10 text-[#1890FF] shadow-sm bg-white"
+                            : "border-slate-100 hover:border-slate-200 bg-slate-50/50 text-slate-500 hover:text-slate-800"
+                        }`}
+                      >
+                        {isActive && (
+                          <motion.div
+                            layoutId="activeCategoryBgMobile"
+                            className="absolute inset-0 bg-white border border-blue-500/20 rounded-full -z-10 shadow-[0_2px_10px_rgba(24,144,255,0.06)]"
+                            transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                          />
+                        )}
+                        {cat.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
                 {/* Category selector list (hidden on mobile, vertical on desktop) */}
-                <div className="hidden lg:flex flex-col gap-2.5 w-full shrink-0">
+                <div className="hidden lg:flex flex-col gap-3 w-full shrink-0 select-none">
                   {categories.map((cat) => {
                     const IconComponent = cat.id === "destacados" ? Sparkles : cat.id === "datos" ? Database : cat.id === "python" ? Code : Zap;
                     const isActive = selectedCat === cat.id;
@@ -202,36 +231,36 @@ export default function CoursesSection() {
                       <button
                         key={cat.id}
                         onClick={() => setSelectedCat(cat.id)}
-                        className={`relative text-left px-5 py-3.5 rounded-2xl transition-all duration-300 flex items-center justify-between gap-4 outline-none border cursor-pointer w-full select-none ${
+                        className={`relative text-left px-5 py-4 rounded-xl transition-all duration-300 flex items-center justify-between gap-4 outline-none border cursor-pointer w-full ${
                           isActive
-                            ? "border-blue-500/20 text-[#1890FF] shadow-sm"
-                            : "border-slate-200/80 hover:border-slate-350 bg-white text-slate-500 hover:text-slate-800"
+                            ? "border-blue-500/15 text-[#1890FF] shadow-[0_4px_20px_-4px_rgba(24,144,255,0.08)] bg-white"
+                            : "border-slate-100/80 hover:border-slate-200 bg-white/40 hover:bg-slate-50/50 text-slate-500 hover:text-slate-800"
                         }`}
                       >
                         {isActive && (
                           <motion.div
                             layoutId="activeCategoryBg"
-                            className="absolute inset-0 bg-white border border-blue-500/20 rounded-2xl -z-10 shadow-[0_4px_16px_rgba(24,144,255,0.06)]"
+                            className="absolute inset-0 bg-white border border-blue-500/15 rounded-xl -z-10 shadow-[0_4px_16px_rgba(24,144,255,0.04)]"
                             transition={{ type: "spring", stiffness: 380, damping: 30 }}
                           />
                         )}
-                        <div className="flex items-center gap-3">
-                          <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all ${
+                        <div className="flex items-center gap-3.5">
+                          <div className={`w-9 h-9 rounded-lg flex items-center justify-center border transition-all ${
                             isActive
                               ? "bg-blue-500/10 border-blue-500/20 text-[#1890FF]"
-                              : "bg-slate-50 border-slate-200 text-slate-400"
+                              : "bg-slate-50 border-slate-100 text-slate-400"
                           }`}>
-                            <IconComponent size={15} />
+                            <IconComponent size={16} />
                           </div>
                           <div className="flex flex-col text-left">
                             <span className="text-xs font-bold leading-none">{cat.label}</span>
-                            <span className="text-[9px] text-slate-400 font-semibold leading-normal hidden lg:block mt-1">{cat.desc}</span>
+                            <span className="text-[10px] text-slate-400 font-semibold leading-normal mt-1">{cat.desc}</span>
                           </div>
                         </div>
                         <span className={`px-2 py-0.5 rounded-md border text-[9px] font-bold transition-all ${
                           isActive
                             ? "bg-blue-50 border-blue-100 text-[#1890FF]"
-                            : "bg-slate-50 border-slate-200 text-slate-400"
+                            : "bg-slate-50 border-slate-100 text-slate-400"
                         }`}>
                           {count}
                         </span>
@@ -245,31 +274,31 @@ export default function CoursesSection() {
               <div className="w-full">
                 <Link
                   href="/cursos"
-                  className="inline-flex w-full items-center justify-center gap-3 bg-white border border-[#1890FF]/30 text-[#1890FF] font-bold text-[14px] px-6 py-3.5 rounded-xl hover:bg-[#1890FF] hover:text-white hover:border-[#1890FF] transition-all no-underline group shadow-sm hover:shadow-md hover:shadow-blue-500/10"
+                  className="inline-flex w-full items-center justify-center gap-2.5 bg-slate-50 border border-slate-200/80 text-slate-700 font-bold text-[13px] px-6 py-4 rounded-xl hover:bg-[#1890FF] hover:text-white hover:border-[#1890FF] transition-all no-underline group shadow-sm hover:shadow-md hover:shadow-blue-500/10 cursor-pointer"
                 >
                   <span>Ver todos los cursos</span> 
-                  <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform text-[#1890FF] group-hover:text-white" />
+                  <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform text-slate-500 group-hover:text-white" />
                 </Link>
               </div>
 
-              {/* Bottom trust factors below the button (visible on all viewports, layout responsive to save space) */}
-              <div className="flex flex-col sm:flex-row lg:flex-col gap-4 sm:gap-6 lg:gap-4 border-t border-slate-200/80 pt-5 mt-1">
+              {/* Bottom trust factors below the button */}
+              <div className="flex flex-col sm:flex-row lg:flex-col gap-4 sm:gap-6 lg:gap-4 border-t border-slate-100 pt-5 mt-1">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-[#1890FF] border border-blue-500/20 shrink-0">
                     <Check className="w-4 h-4" />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col text-left">
                     <span className="text-xs font-extrabold text-slate-800">Clases en Vivo + Grabaciones</span>
-                    <span className="text-[9px] text-slate-400 font-semibold">Repasa el material a tu ritmo</span>
+                    <span className="text-[10px] text-slate-400 font-semibold">Repasa el material a tu ritmo</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 border border-emerald-500/20 shrink-0">
                     <Check className="w-4 h-4" />
                   </div>
-                  <div className="flex flex-col">
+                  <div className="flex flex-col text-left">
                     <span className="text-xs font-extrabold text-slate-800">Certificación Verificable</span>
-                    <span className="text-[9px] text-slate-400 font-semibold">Acredita tus competencias de datos</span>
+                    <span className="text-[10px] text-slate-400 font-semibold">Acredita tus competencias de datos</span>
                   </div>
                 </div>
               </div>
@@ -295,149 +324,127 @@ export default function CoursesSection() {
 
                     return (
                       <div key={course.slug} className="w-full">
-                        <TiltCard>
-                          <Link href={`/cursos/${course.slug}`} className="group block no-underline h-full relative">
-                            {/* Colorful drop shadow behind the card matching the course accent color */}
-                            <div 
-                              className="absolute -inset-0.5 rounded-[2.2rem] opacity-0 group-hover:opacity-100 transition-all duration-500 blur-[8px] pointer-events-none" 
-                              style={{ 
-                                background: `linear-gradient(135deg, ${course.accentColor || '#1890FF'}15, ${course.accentColor || '#1890FF'}05)` 
-                              }}
-                            />
-                            
-                            <div className="bg-white rounded-[2rem] overflow-hidden relative h-full flex flex-col justify-between transition-all border border-slate-200/80 hover:border-[#1890FF]/30 shadow-[0_12px_30px_-10px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(24,144,255,0.08)] p-5">
-                              
-                              {/* Inner background radial glow */}
-                              <div 
-                                className="absolute -right-16 -top-16 w-36 h-36 rounded-full blur-3xl opacity-0 group-hover:opacity-10 transition-opacity duration-700 pointer-events-none" 
-                                style={{ backgroundColor: course.accentColor || '#1890FF' }}
+                        <motion.div 
+                          layout
+                          className="group bg-white rounded-2xl border border-slate-100 hover:border-blue-500/15 flex flex-col justify-between overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.012)] hover:shadow-[0_24px_50px_rgba(24,144,255,0.06)] transition-all duration-500 h-full p-5 relative"
+                        >
+                          {/* Subtle radial glow matching the course accent color */}
+                          <div 
+                            className="absolute -right-24 -top-24 w-44 h-44 rounded-full blur-3xl opacity-0 group-hover:opacity-[0.07] transition-opacity duration-700 pointer-events-none" 
+                            style={{ backgroundColor: course.accentColor || '#1890FF' }}
+                          />
+
+                          {/* Floating course symbol icon */}
+                          <div className="absolute top-4 right-4 z-20 w-9 h-9 rounded-full bg-white/90 backdrop-blur-md border border-slate-100 flex items-center justify-center text-slate-450 group-hover:text-[#1890FF] group-hover:border-[#1890FF]/30 transition-all shadow-sm">
+                            <CardIcon className="w-4 h-4" />
+                          </div>
+                          
+                          <div>
+                            {/* Image container */}
+                            <div className="relative overflow-hidden aspect-[16/10] rounded-xl mb-5 bg-slate-50">
+                              <div className="absolute inset-0 bg-[#0F172A]/4 z-10 group-hover:bg-[#0F172A]/0 transition-colors duration-500" />
+                              <div
+                                className="absolute top-3.5 left-3.5 z-20 px-3 py-1 rounded-md text-white text-[9px] uppercase tracking-wider font-extrabold flex items-center gap-1.5 backdrop-blur-md shadow-sm border border-white/10"
+                                style={{ background: `${course.badgeColor || course.accentColor}dd` }}
+                              >
+                                <Sparkles size={9} /> {course.badgeLabel || course.categoryLabel}
+                              </div>
+                              <Image
+                                src={course.imageUrl}
+                                alt={course.title}
+                                fill
+                                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                                unoptimized
                               />
+                            </div>
 
-                              {/* Floating course symbol icon */}
-                              <div className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-slate-50/80 backdrop-blur-md border border-slate-200/80 flex items-center justify-center text-slate-400 group-hover:text-[#1890FF] group-hover:border-[#1890FF]/30 transition-all shadow-sm">
-                                <CardIcon className="w-5 h-5" />
-                              </div>
-                              
-                              <div>
-                                {/* Image container */}
-                                <div className="relative overflow-hidden aspect-[16/9.5] rounded-[1.25rem] mb-5 bg-slate-100">
-                                  <div className="absolute inset-0 bg-[#0F172A]/5 z-10 group-hover:bg-transparent transition-colors" />
-                                  <div
-                                    className="absolute top-3.5 left-3.5 z-20 px-3 py-1 rounded-lg text-white text-[9px] uppercase tracking-wider font-extrabold flex items-center gap-1.5 backdrop-blur-md shadow-sm border border-white/10"
-                                    style={{ background: `${course.badgeColor || course.accentColor}cc` }}
-                                  >
-                                    <Sparkles size={10} /> {course.badgeLabel || course.categoryLabel}
-                                  </div>
-                                  <Image
-                                    src={course.imageUrl}
-                                    alt={course.title}
-                                    fill
-                                    className="object-cover transition-transform duration-700 group-hover:scale-105"
-                                    unoptimized
-                                  />
-                                </div>
+                            {/* Tech Stack Pills */}
+                            <div className="flex gap-1.5 flex-wrap mb-4">
+                              {course.techStack.map((tech) => (
+                                <span key={tech} className="bg-slate-50 text-slate-500 px-2 py-0.5 rounded text-[9px] font-mono border border-slate-100">
+                                  {tech}
+                                </span>
+                              ))}
+                            </div>
 
-                                {/* Tech Stack Pills */}
-                                <div className="flex gap-1.5 flex-wrap mb-3.5">
-                                  {course.techStack.map((tech) => (
-                                    <span key={tech} className="bg-slate-50 text-slate-600 px-2 py-0.5 rounded-md text-[9px] font-mono border border-slate-200/80">
-                                      {tech}
-                                    </span>
-                                  ))}
-                                </div>
+                            {/* Header details: Category and Duration */}
+                            <div className="flex items-center justify-between text-[10px] font-bold tracking-wider uppercase text-slate-400 mb-2">
+                              <span>{course.categoryLabel}</span>
+                              <span className="flex items-center gap-1"><Clock size={11} /> {course.durationHours} hrs</span>
+                            </div>
 
-                                {/* Title & Short Description */}
-                                <h3 className="font-display text-lg font-black text-slate-900 mb-2 leading-tight group-hover:text-[#1890FF] transition-colors text-left">
-                                  {course.title}
-                                </h3>
-                                <p className="text-slate-500 text-[11px] leading-relaxed mb-4 text-left line-clamp-2">
-                                  {course.shortDescription}
-                                </p>
+                            {/* Title & Short Description */}
+                            <Link href={`/cursos/${course.slug}`} className="block no-underline">
+                              <h3 className="font-sans text-[17px] font-bold text-slate-900 mb-2 leading-snug group-hover:text-[#1890FF] transition-colors text-left">
+                                {course.title}
+                              </h3>
+                            </Link>
+                            <p className="text-slate-500 text-xs leading-relaxed mb-5 text-left line-clamp-2">
+                              {course.shortDescription}
+                            </p>
+                          </div>
 
-                                {/* Structural learning path / Levels */}
-                                {course.levels && (
-                                  <div className="mb-5 flex flex-col gap-1.5 text-left">
-                                    <span className="text-[9px] uppercase font-bold text-slate-400 tracking-wider">Trayectoria</span>
-                                    <div className="flex items-center gap-1 flex-wrap">
-                                      {course.levels.map((lvl, index) => (
-                                        <React.Fragment key={lvl.name}>
-                                          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[9px] font-bold bg-slate-50 border border-slate-200 text-slate-600">
-                                            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: course.accentColor || '#1890FF' }} />
-                                            {lvl.name}
-                                          </span>
-                                          {index < (course.levels?.length ?? 0) - 1 && (
-                                            <span className="text-slate-300 text-[8px] font-bold">➔</span>
-                                          )}
-                                        </React.Fragment>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
+                          {/* Card Footer */}
+                          <div className="mt-auto">
+                            <div className="pt-4 border-t border-slate-50 flex items-center justify-between">
+                               {/* Duration & Modality */}
+                               <div className="flex flex-col gap-0.5 text-left">
+                                 <span className="flex items-center gap-1.5 text-xs text-slate-700 font-extrabold">
+                                   Online en vivo
+                                 </span>
+                                 <span className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-slate-400 font-semibold">
+                                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Zoom en directo
+                                 </span>
+                               </div>
 
-                              {/* Card Footer */}
-                              <div className="mt-auto">
-                                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                                   {/* Duration & Modality */}
-                                   <div className="flex flex-col gap-1 text-left">
-                                     <span className="flex items-center gap-1.5 text-xs text-slate-600 font-bold">
-                                       <Clock size={13} className="text-[#1890FF]" /> {course.durationHours} hrs
-                                     </span>
-                                     <span className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-slate-400 font-semibold">
-                                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Online en vivo
-                                     </span>
-                                   </div>
-
-                                   {/* CLP price tag & Discount */}
-                                   {isLoggedIn ? (
-                                     price ? (
-                                       <div className="flex flex-col text-right items-end justify-center font-sans">
-                                         <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Inversión</span>
-                                         <div className="flex items-center gap-1.5 mt-0.5">
-                                           {originalPrice && (
-                                             <span className="text-[10px] line-through text-slate-400 font-medium">
-                                               {new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(originalPrice)}
-                                             </span>
-                                           )}
-                                           <span className="text-[13px] font-black text-slate-900">
-                                             {new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(price)}
-                                           </span>
-                                         </div>
-                                         {discountPercent && (
-                                           <span className="mt-0.5 text-[8px] font-extrabold px-1.5 py-0.5 bg-emerald-50 text-emerald-650 rounded border border-emerald-200">
-                                             -{discountPercent}% DCTO
-                                           </span>
-                                         )}
-                                       </div>
-                                     ) : null
-                                   ) : (
-                                     <div className="flex flex-col text-right items-end justify-center font-sans">
-                                       <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Inversión</span>
-                                       <span className="mt-1.5 text-[9px] font-extrabold px-2.5 py-1 bg-blue-50 text-[#1890FF] rounded-lg border border-blue-100/60 flex items-center gap-1 shadow-sm">
-                                         <Lock size={10} /> Registrarse para ver precios
+                               {/* CLP price tag & Discount */}
+                               {isLoggedIn ? (
+                                 price ? (
+                                   <div className="flex flex-col text-right items-end justify-center font-sans">
+                                     <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Inversión</span>
+                                     <div className="flex items-center gap-1.5 mt-0.5">
+                                       {originalPrice && (
+                                         <span className="text-[10px] line-through text-slate-400 font-medium">
+                                           {new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(originalPrice)}
+                                         </span>
+                                       )}
+                                       <span className="text-sm font-black text-slate-900">
+                                         {new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(price)}
                                        </span>
                                      </div>
-                                   )}
+                                     {discountPercent && (
+                                       <span className="mt-0.5 text-[8px] font-extrabold px-1.5 py-0.5 bg-emerald-50 text-emerald-600 rounded border border-emerald-100">
+                                         -{discountPercent}% DCTO
+                                       </span>
+                                     )}
+                                   </div>
+                                 ) : null
+                               ) : (
+                                 <div className="flex flex-col text-right items-end justify-center font-sans">
+                                   <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Inversión</span>
+                                   <span className="mt-1 text-[9px] font-extrabold px-2.5 py-1 bg-blue-50/70 text-[#1890FF] rounded-md border border-blue-100/40 flex items-center gap-1 shadow-sm select-none">
+                                     <Lock size={10} /> Registrarse para ver precios
+                                   </span>
                                  </div>
-                                
-                                <div className="mt-4 w-full flex items-center justify-between font-bold text-slate-800 group-hover:text-[#1890FF] transition-colors text-xs font-sans">
-                                  <span>Ver especialización</span>
-                                  <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-[#1890FF] group-hover:text-white transition-all border border-slate-200 group-hover:border-transparent group-hover:translate-x-1">
-                                     <ArrowRight size={14} className="transition-transform" />
-                                  </div>
+                               )}
+                             </div>
+                            
+                            <Link href={`/cursos/${course.slug}`} className="block no-underline">
+                              <div className="mt-4 w-full flex items-center justify-between font-bold text-slate-800 group-hover:text-[#1890FF] transition-all duration-300 text-xs font-sans">
+                                <span>Ver especialización</span>
+                                <div className="w-7 h-7 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#1890FF] group-hover:text-white group-hover:border-transparent group-hover:translate-x-1 transition-all duration-300 shadow-sm">
+                                   <ArrowRight size={13} className="transition-transform" />
                                 </div>
                               </div>
+                            </Link>
+                          </div>
 
-                            </div>
-                          </Link>
-                        </TiltCard>
+                        </motion.div>
                       </div>
                     );
                   })}
                 </motion.div>
               </AnimatePresence>
-
-
             </div>
 
           </div>
