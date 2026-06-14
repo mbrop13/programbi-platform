@@ -185,7 +185,7 @@ export default function CoursesSection() {
       `}} />
 
       {/* Centering wrapper */}
-      <div className="w-full px-5 md:px-10 max-w-[1400px] mx-auto relative z-10">
+      <div className="w-full px-4 md:px-6 max-w-[1400px] mx-auto relative z-10">
         
         {/* Centered Header */}
         <FadeIn>
@@ -216,7 +216,7 @@ export default function CoursesSection() {
         {/* Centered Category selector pills bar */}
         <FadeIn delay={0.1}>
           <div className="flex justify-center mb-4 w-full select-none">
-            <div className="flex overflow-x-auto no-scrollbar bg-slate-100/80 backdrop-blur-sm p-1.5 rounded-2xl border border-slate-200/40 gap-1.5 max-w-4xl justify-start md:justify-center w-full md:w-auto -mx-5 px-5 md:px-1.5">
+            <div className="flex overflow-x-auto no-scrollbar bg-slate-100/80 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/40 gap-1.5 max-w-4xl justify-start md:justify-center w-full md:w-auto -mx-5 px-5 md:px-1.5">
               {categories.map((cat) => {
                 const isActive = selectedCat === cat.id;
                 const count = getCatCount(cat.id);
@@ -224,11 +224,7 @@ export default function CoursesSection() {
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCat(cat.id)}
-                    className={`relative px-4 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-2 outline-none border-none cursor-pointer whitespace-nowrap text-xs font-bold ${
-                      isActive
-                        ? "text-[#1890FF]"
-                        : "text-slate-500 hover:text-slate-800"
-                    }`}
+                    className="relative px-4 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-2 outline-none border-none cursor-pointer whitespace-nowrap text-xs font-bold text-slate-500 hover:text-slate-800"
                   >
                     {isActive && (
                       <motion.div
@@ -237,7 +233,7 @@ export default function CoursesSection() {
                         transition={{ type: "spring", stiffness: 380, damping: 30 }}
                       />
                     )}
-                    <span className="relative z-10">{cat.label}</span>
+                    <span className={`relative z-10 ${isActive ? "text-[#1890FF]" : "text-slate-500"}`}>{cat.label}</span>
                     <span className={`relative z-10 px-1.5 py-0.5 rounded text-[9px] font-bold ${
                       isActive ? "bg-blue-50 text-[#1890FF]" : "bg-slate-200/50 text-slate-400"
                     }`}>
@@ -275,26 +271,26 @@ export default function CoursesSection() {
                   <div key={course.slug} className="w-full">
                     <motion.div 
                       layout
-                      className="group bg-white rounded-2xl border border-slate-100 hover:border-blue-500/15 flex flex-col justify-between overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.012)] hover:shadow-[0_24px_50px_rgba(24,144,255,0.06)] transition-all duration-500 h-full p-4 relative"
+                      className="group bg-white/60 backdrop-blur-xl rounded-2xl border border-white/60 hover:border-blue-400/35 flex flex-col justify-between overflow-hidden shadow-[0_8px_32px_rgba(31,38,135,0.04)] hover:shadow-[0_24px_50px_rgba(24,144,255,0.09)] hover:-translate-y-1 transition-all duration-500 h-full p-4 relative"
                     >
                       {/* Subtle radial glow matching the course accent color */}
                       <div 
-                        className="absolute -right-24 -top-24 w-44 h-44 rounded-full blur-3xl opacity-0 group-hover:opacity-[0.07] transition-opacity duration-700 pointer-events-none" 
+                        className="absolute -right-24 -top-24 w-44 h-44 rounded-full blur-3xl opacity-0 group-hover:opacity-[0.12] transition-opacity duration-700 pointer-events-none" 
                         style={{ backgroundColor: course.accentColor || '#1890FF' }}
                       />
 
                       {/* Floating course symbol icon */}
-                      <div className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/90 backdrop-blur-md border border-slate-100 flex items-center justify-center text-slate-400 group-hover:text-[#1890FF] group-hover:border-[#1890FF]/30 transition-all shadow-sm">
+                      <div className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/70 backdrop-blur-md border border-white/80 flex items-center justify-center text-slate-400 group-hover:text-[#1890FF] group-hover:border-[#1890FF]/30 transition-all shadow-sm">
                         <CardIcon className="w-3.5 h-3.5" />
                       </div>
                       
                       <div>
                         {/* Image container: aspect-[1.5/1] (larger vertical dimension) */}
-                        <div className="relative overflow-hidden aspect-[1.5/1] rounded-xl mb-4 bg-slate-50">
+                        <div className="relative overflow-hidden aspect-[1.5/1] rounded-xl mb-4 bg-slate-100/30">
                           <div className="absolute inset-0 bg-[#0F172A]/4 z-10 group-hover:bg-[#0F172A]/0 transition-colors duration-500" />
                           <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 items-start">
                             {course.slug === "analisis-de-datos" && (
-                              <div className="bg-amber-500/95 backdrop-blur-md text-white text-[8px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded border border-white/10 shadow-sm flex items-center gap-1 select-none">
+                              <div className="bg-amber-500/90 backdrop-blur-md text-white text-[8px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded border border-white/10 shadow-sm flex items-center gap-1 select-none">
                                 <span>🔥 Más Popular</span>
                               </div>
                             )}
@@ -313,7 +309,7 @@ export default function CoursesSection() {
                           {/* Tech stack badges */}
                           <div className="flex gap-1.5 flex-wrap">
                             {course.techStack.map((tech) => (
-                              <span key={tech} className="bg-slate-50 text-slate-500 px-1.5 py-0.5 rounded text-[8px] font-mono border border-slate-100">
+                              <span key={tech} className="bg-white/80 text-slate-500 px-1.5 py-0.5 rounded text-[8px] font-mono border border-slate-200/50 shadow-sm">
                                 {tech}
                               </span>
                             ))}
@@ -337,7 +333,7 @@ export default function CoursesSection() {
                       </div>
 
                       {/* Card Footer: Combines Price & CTA */}
-                      <div className="mt-auto pt-3 border-t border-slate-50 flex items-center justify-between">
+                      <div className="mt-auto pt-3 border-t border-slate-200/40 flex items-center justify-between">
                         {/* Price Info */}
                         <div className="flex flex-col text-left font-sans">
                           {isLoggedIn ? (
@@ -355,7 +351,7 @@ export default function CoursesSection() {
                                   </span>
                                 </div>
                                 {discountPercent && (
-                                  <span className="mt-1 text-[8px] font-extrabold px-1 py-0.5 bg-emerald-50 text-emerald-600 rounded border border-emerald-100 w-fit leading-none">
+                                  <span className="mt-1 text-[8px] font-extrabold px-1 py-0.5 bg-emerald-50 text-emerald-600 rounded border border-emerald-100/50 w-fit leading-none">
                                     -{discountPercent}% DCTO
                                   </span>
                                 )}
@@ -377,7 +373,7 @@ export default function CoursesSection() {
                           </span>
 
                           <Link href={`/cursos/${course.slug}`} className="block no-underline">
-                            <div className="inline-flex items-center gap-1 bg-slate-50 hover:bg-[#1890FF] hover:text-white border border-slate-150/70 hover:border-transparent rounded-lg px-2.5 py-1.5 transition-all duration-300 text-[10px] font-bold font-sans group/btn">
+                            <div className="inline-flex items-center gap-1 bg-white hover:bg-[#1890FF] hover:text-white border border-slate-200 hover:border-transparent rounded-lg px-2.5 py-1.5 shadow-sm transition-all duration-300 text-[10px] font-bold font-sans group/btn">
                               <span>Ver temario</span>
                               <ArrowRight size={10} className="transition-transform group-hover/btn:translate-x-0.5" />
                             </div>
@@ -398,7 +394,7 @@ export default function CoursesSection() {
           <div className="mt-12 flex justify-center w-full">
             <Link
               href="/cursos"
-              className="inline-flex items-center gap-2.5 bg-slate-50 border border-slate-200/80 text-slate-700 font-bold text-[13px] px-8 py-3.5 rounded-xl hover:bg-[#1890FF] hover:text-white hover:border-[#1890FF] transition-all no-underline group shadow-sm hover:shadow-md hover:shadow-blue-500/10 cursor-pointer"
+              className="inline-flex items-center gap-2.5 bg-white border border-slate-200 text-slate-700 font-bold text-[13px] px-8 py-3.5 rounded-xl hover:bg-[#1890FF] hover:text-white hover:border-[#1890FF] transition-all no-underline group shadow-sm hover:shadow-md hover:shadow-blue-500/10 cursor-pointer"
             >
               <span>Ver todos los cursos</span> 
               <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform text-slate-500 group-hover:text-white" />
