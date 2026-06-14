@@ -135,7 +135,7 @@ export default function MentorsSection() {
                     )}
 
                     {/* Profile Information Panel */}
-                    <div className="absolute inset-x-0 bottom-0 p-5 lg:p-7 z-20 flex flex-col justify-end text-left text-white h-full bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent pointer-events-none">
+                    <div className="absolute inset-x-0 bottom-0 p-5 lg:p-7 z-20 flex flex-col justify-end text-left text-white h-full bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent">
                       
                       {/* Name & LinkedIn */}
                       <div className="flex items-center justify-between w-full mb-1 pointer-events-auto">
