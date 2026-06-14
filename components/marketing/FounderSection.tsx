@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { motion } from "framer-motion";
-import { FadeIn } from "@/components/shared/AnimatedComponents";
+import { FadeIn, CountUp } from "@/components/shared/AnimatedComponents";
 import { founderImage } from "@/lib/data/images";
 import { Award, BookOpen, Briefcase } from "lucide-react";
 
@@ -22,36 +23,38 @@ export default function FounderSection() {
               {/* Subtle mesh glowing background */}
               <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/10 via-indigo-500/5 to-cyan-500/10 rounded-[3rem] blur-2xl opacity-75 pointer-events-none" />
               
-              <div className="relative z-10 rounded-[2rem] overflow-hidden border border-slate-100 group shadow-[0_20px_50px_rgba(15,23,42,0.08)] bg-white">
-                <Image
-                  src={founderImage}
-                  alt="Manuel Oliva - CEO ProgramBI"
-                  width={600}
-                  height={750}
-                  className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.02]"
-                  unoptimized
-                />
-                
-                {/* Floating Badge (Glassmorphic) */}
-                <motion.div
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4, type: "spring", stiffness: 200, damping: 20 }}
-                  viewport={{ once: true }}
-                  className="absolute bottom-6 left-6 right-6 sm:left-auto sm:right-6 bg-white/90 backdrop-blur-md border border-slate-200/60 rounded-2xl p-4 max-w-xs z-20 shadow-lg"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-[#1890FF] shrink-0 border border-blue-500/20">
-                      <Award className="w-5 h-5" />
+              <div className="p-[3px] bg-gradient-to-br from-[#1890FF]/20 via-transparent to-indigo-500/20 rounded-[2rem]">
+                <div className="relative z-10 rounded-[1.85rem] overflow-hidden border border-slate-100 group shadow-[0_20px_50px_rgba(15,23,42,0.08)] bg-white">
+                  <Image
+                    src={founderImage}
+                    alt="Manuel Oliva - CEO ProgramBI"
+                    width={600}
+                    height={750}
+                    className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.02]"
+                    unoptimized
+                  />
+                  
+                  {/* Floating Badge (Glassmorphic) */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 15 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4, type: "spring", stiffness: 200, damping: 20 }}
+                    viewport={{ once: true }}
+                    className="absolute bottom-6 left-6 right-6 sm:left-auto sm:right-6 bg-white/90 backdrop-blur-md border border-slate-200/60 rounded-2xl p-4 max-w-xs z-20 shadow-lg"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-[#1890FF] shrink-0 border border-blue-500/20">
+                        <Award className="w-5 h-5" />
+                      </div>
+                      <div className="text-left">
+                        <p className="text-[#1890FF] font-black text-lg leading-none mb-1 font-sans">15+ Años</p>
+                        <p className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wide font-sans">
+                          Experiencia en Banca, Retail y Minería
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-left">
-                      <p className="text-[#1890FF] font-black text-lg leading-none mb-1 font-sans">15+ Años</p>
-                      <p className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wide font-sans">
-                        Experiencia en Banca, Retail y Minería
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
+                  </motion.div>
+                </div>
               </div>
             </FadeIn>
           </div>
@@ -60,20 +63,30 @@ export default function FounderSection() {
           <div className="lg:col-span-7 text-left">
             <FadeIn>
               <span className="inline-flex items-center bg-blue-50 text-[#1890FF] font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-6 border border-blue-100 shadow-sm">
-                Liderazgo & Visión
+                La Historia Detrás de ProgramBI
               </span>
             </FadeIn>
 
             <FadeIn delay={0.15}>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 mb-2 font-display tracking-tight">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-800 to-[#1890FF] mb-2 font-display tracking-tight leading-tight">
                 Manuel Oliva
               </h2>
               <h3 className="text-base md:text-lg font-bold text-slate-400 mb-8 font-sans">
-                Fundador y Director de ProgramBI
+                De la Banca a la Educación en Datos
               </h3>
             </FadeIn>
 
-            <FadeIn delay={0.25}>
+            {/* Founder Quote Block */}
+            <FadeIn delay={0.2}>
+              <div className="relative pl-6 border-l-4 border-[#1890FF]/30 mb-8">
+                <span className="absolute -left-3 -top-2 text-5xl text-[#1890FF]/15 font-serif leading-none select-none">“</span>
+                <p className="text-lg md:text-xl text-slate-700 font-medium italic leading-relaxed">
+                  La diferencia entre un profesional y un líder es que el líder sabe leer los datos para transformar realidades.
+                </p>
+              </div>
+            </FadeIn>
+
+            <FadeIn delay={0.3}>
               <div className="space-y-5 text-sm md:text-base text-slate-500 leading-relaxed mb-8 max-w-2xl font-sans">
                 <p>
                   Lidero un equipo dedicado a empoderar empresas con herramientas de datos avanzadas. Con años de experiencia como consultor en análisis y visualización, he desarrollado dashboards personalizados integrando web, servidores y bases de datos.
@@ -88,7 +101,7 @@ export default function FounderSection() {
             <FadeIn delay={0.35}>
               <div className="grid md:grid-cols-2 gap-8 pt-4 border-t border-slate-100">
                 {/* Formación Académica */}
-                <div>
+                <div className="border-l-2 border-[#1890FF]/20 pl-4">
                   <h4 className="text-[11px] font-black text-slate-800 uppercase tracking-widest mb-4 font-sans">
                     Formación Académica
                   </h4>
@@ -111,7 +124,7 @@ export default function FounderSection() {
                 </div>
                 
                 {/* Docencia & Trayectoria */}
-                <div>
+                <div className="border-l-2 border-indigo-500/20 pl-4">
                   <h4 className="text-[11px] font-black text-slate-800 uppercase tracking-widest mb-4 font-sans">
                     Docencia & Trayectoria
                   </h4>
@@ -135,20 +148,47 @@ export default function FounderSection() {
               </div>
             </FadeIn>
 
-            {/* LinkedIn Connection Link */}
+            {/* Impact Metrics Grid */}
             <FadeIn delay={0.45}>
-              <div className="mt-10 pt-6 border-t border-slate-100 flex">
+              <div className="grid grid-cols-3 gap-4 pt-6 mt-6 border-t border-slate-100 select-none">
+                {[
+                  { target: 5000, prefix: "+", label: "Estudiantes formados" },
+                  { target: 50, prefix: "+", label: "Empresas asesoradas" },
+                  { target: 15, suffix: "+", label: "Años en la industria" }
+                ].map((stat, i) => (
+                  <div key={i} className="text-left">
+                    <div className="text-2xl md:text-3xl font-black text-slate-900 font-mono tracking-tight leading-none mb-1">
+                      <CountUp target={stat.target} prefix={stat.prefix} suffix={stat.suffix} />
+                    </div>
+                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-sans leading-tight">
+                      {stat.label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+
+            {/* Action CTAs */}
+            <FadeIn delay={0.55}>
+              <div className="mt-10 pt-6 border-t border-slate-100 flex flex-wrap gap-3">
                 <a
                   href="https://www.linkedin.com/in/manuel-oliva-riesgo-inversion/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 bg-slate-50 border border-slate-200 text-slate-700 hover:text-[#1890FF] hover:border-[#1890FF]/30 hover:bg-blue-50/20 font-bold text-sm px-6 py-3 rounded-xl transition-all no-underline group shadow-sm"
+                  className="inline-flex items-center gap-3 bg-slate-50 border border-slate-200 text-slate-700 hover:text-[#1890FF] hover:border-[#1890FF]/30 hover:bg-blue-50/20 font-bold text-sm px-6 py-3 rounded-xl transition-all no-underline group shadow-sm select-none"
                 >
                   <svg className="w-5 h-5 fill-current text-slate-500 group-hover:text-[#1890FF] transition-colors" viewBox="0 0 24 24">
                     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
                   </svg>
                   <span>Conectar en LinkedIn</span>
                 </a>
+                
+                <Link
+                  href="/nosotros"
+                  className="inline-flex items-center bg-slate-50 border border-slate-200 text-slate-600 hover:text-[#1890FF] hover:border-[#1890FF]/30 font-bold text-sm px-6 py-3 rounded-xl transition-all no-underline shadow-sm select-none"
+                >
+                  Conocer más sobre ProgramBI
+                </Link>
               </div>
             </FadeIn>
           </div>

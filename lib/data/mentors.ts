@@ -11,6 +11,9 @@ export interface Mentor {
   founderAcademics?: string[];
   founderCareer?: string[];
   sortOrder: number;
+  studentCount: number;
+  yearsExperience: number;
+  specialtyCourses?: string[];
 }
 
 export const mentors: Mentor[] = [
@@ -41,6 +44,9 @@ export const mentors: Mentor[] = [
       "Ex-Gerente de Riesgos Renta 4",
     ],
     sortOrder: 1,
+    studentCount: 5000,
+    yearsExperience: 15,
+    specialtyCourses: ["analisis-de-datos", "power-bi"],
   },
   {
     name: "Emanuel Berrocal",
@@ -54,6 +60,9 @@ export const mentors: Mentor[] = [
     icon: "BarChart3",
     isFounder: false,
     sortOrder: 2,
+    studentCount: 800,
+    yearsExperience: 10,
+    specialtyCourses: ["analitica-financiera", "python"],
   },
   {
     name: "Joaquin Villagra",
@@ -67,6 +76,9 @@ export const mentors: Mentor[] = [
     icon: "Brain",
     isFounder: false,
     sortOrder: 3,
+    studentCount: 600,
+    yearsExperience: 8,
+    specialtyCourses: ["machine-learning", "ia-productividad"],
   },
   {
     name: "Rodrigo Vega",
@@ -80,6 +92,9 @@ export const mentors: Mentor[] = [
     icon: "Monitor",
     isFounder: false,
     sortOrder: 4,
+    studentCount: 400,
+    yearsExperience: 6,
+    specialtyCourses: ["power-bi", "excel"],
   },
 ];
 

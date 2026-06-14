@@ -1,7 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { UserCheck, BarChart3, Brain, Monitor } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { UserCheck, BarChart3, Brain, Monitor, Users, Briefcase, ArrowRight } from "lucide-react";
 import { FadeIn, StaggerChildren, StaggerItem } from "@/components/shared/AnimatedComponents";
 import { mentors } from "@/lib/data/mentors";
 
@@ -53,6 +55,21 @@ const themeMap: Record<string, { bg: string; text: string; border: string; hover
   },
 };
 
+const avatarGradients: Record<string, string> = {
+  UserCheck: "from-blue-500 to-indigo-600",
+  BarChart3: "from-emerald-400 to-emerald-600",
+  Brain: "from-purple-500 to-indigo-600",
+  Monitor: "from-amber-400 to-amber-600",
+};
+
+const getInitials = (name: string) => {
+  const parts = name.split(" ");
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+};
+
 export default function MentorsSection() {
   return (
     <section className="py-16 lg:py-24 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden">
@@ -72,7 +89,7 @@ export default function MentorsSection() {
         <FadeIn>
           <div className="text-center mb-16">
             <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-50 border border-blue-100 text-[#1890FF] text-xs font-bold uppercase tracking-wider mb-4">
-              Aprende de Líderes
+              Equipo de Expertos
             </span>
             <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-[#0F172A] tracking-tight mb-4 leading-tight">
               Mentores{" "}
@@ -87,14 +104,13 @@ export default function MentorsSection() {
         </FadeIn>
 
         {/* Mentors Grid */}
-        <StaggerChildren className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <StaggerChildren className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {mentors.map((mentor) => {
-            const Icon = iconMap[mentor.icon];
             const theme = themeMap[mentor.icon] || themeMap.UserCheck;
             return (
               <StaggerItem key={mentor.name} className="h-full">
                 <motion.div
-                  className="group bg-white border border-[#E2E8F0] rounded-[2.2rem] p-8 text-center h-full flex flex-col justify-between transition-all duration-300 relative overflow-hidden"
+                  className="group bg-white border border-[#E2E8F0] rounded-[2.2rem] p-8 h-full flex flex-col justify-between transition-all duration-300 relative overflow-hidden"
                   style={{ boxShadow: "0 10px 30px -10px rgba(15,23,42,0.03)" }}
                   whileHover={{
                     y: -12,
@@ -103,56 +119,99 @@ export default function MentorsSection() {
                   }}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
                 >
-                  <div className="flex-1 flex flex-col">
-                    {/* Icon container (Clean, consistent look without photos) */}
-                    <div className="relative w-20 h-20 mx-auto mb-6">
-                      <div className={`w-20 h-20 rounded-[1.6rem] ${theme.bg} border ${theme.border} flex items-center justify-center ${theme.text} ${theme.hoverBg} group-hover:text-white transition-all duration-300 shadow-sm`}>
-                        {Icon ? <Icon className="w-8 h-8" /> : <UserCheck className="w-8 h-8" />}
-                      </div>
+                  <div className="flex flex-col sm:flex-row gap-6 items-start text-left">
+                    {/* Avatar Column */}
+                    <div className="flex-shrink-0 mx-auto sm:mx-0 relative">
+                      {mentor.imageUrl ? (
+                        <div className="w-24 h-24 rounded-full p-[3px] bg-gradient-to-br from-[#1890FF] to-indigo-500 flex items-center justify-center shadow-md">
+                          <div className="w-full h-full rounded-full overflow-hidden border border-white bg-white relative">
+                            <Image
+                              src={mentor.imageUrl}
+                              alt={mentor.name}
+                              fill
+                              sizes="96px"
+                              className="object-cover"
+                              priority
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${avatarGradients[mentor.icon] || avatarGradients.UserCheck} flex items-center justify-center text-white text-2xl font-black shadow-md border-2 border-white select-none`}>
+                          {getInitials(mentor.name)}
+                        </div>
+                      )}
                       
                       {mentor.isFounder && (
-                        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-2.5 py-0.5 bg-[#1890FF] text-white text-[8px] font-black uppercase tracking-wider rounded-full shadow-sm">
+                        <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-2.5 py-0.5 bg-[#1890FF] text-white text-[8px] font-black uppercase tracking-wider rounded-full shadow-sm z-10 whitespace-nowrap">
                           Fundador
                         </span>
                       )}
                     </div>
 
-                    {/* Name & LinkedIn */}
-                    <div className="flex items-center justify-center gap-1.5 mb-1.5">
-                      <h3 className={`font-display text-lg font-black text-[#0F172A] ${theme.hoverText} transition-colors`}>
-                        {mentor.name}
-                      </h3>
-                      {mentor.linkedinUrl && (
-                        <a
-                          href={mentor.linkedinUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-slate-400 hover:text-[#0A66C2] transition-colors"
-                          aria-label={`LinkedIn de ${mentor.name}`}
+                    {/* Content Column */}
+                    <div className="flex-1 w-full">
+                      {/* Name & LinkedIn */}
+                      <div className="flex items-center justify-between sm:justify-start gap-2 mb-1">
+                        <h3 className={`font-display text-lg font-black text-[#0F172A] ${theme.hoverText} transition-colors`}>
+                          {mentor.name}
+                        </h3>
+                        {mentor.linkedinUrl && (
+                          <a
+                            href={mentor.linkedinUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-slate-400 hover:text-[#0A66C2] transition-colors p-1 hover:scale-110 duration-200"
+                            aria-label={`LinkedIn de ${mentor.name}`}
+                          >
+                            <LinkedinIcon className="w-5 h-5" />
+                          </a>
+                        )}
+                      </div>
+
+                      {/* Role / Job Title */}
+                      <p className={`text-xs font-black ${theme.text} uppercase tracking-widest mb-3`}>
+                        {mentor.role}
+                      </p>
+
+                      <div className="w-full h-px bg-[#F1F5F9] mb-4" />
+
+                      {/* Credentials list */}
+                      <ul className="space-y-2.5 mb-4">
+                        {mentor.credentials.map((cred, i) => (
+                          <li key={i} className="flex items-start gap-2.5 text-sm text-[#64748B] leading-relaxed">
+                            <svg className={`w-4 h-4 text-[#10B981] ${theme.hoverText} transition-colors flex-shrink-0 mt-0.5`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                            </svg>
+                            <span>{cred}</span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      {/* Trust Metrics Bar */}
+                      <div className="flex items-center gap-3 mt-4 text-xs font-bold text-slate-500 select-none border-t border-slate-50 pt-4">
+                        <div className="flex items-center gap-1">
+                          <Users className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{mentor.studentCount.toLocaleString()}+ estudiantes</span>
+                        </div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+                        <div className="flex items-center gap-1">
+                          <Briefcase className="w-3.5 h-3.5 text-slate-400" />
+                          <span>{mentor.yearsExperience}+ años exp.</span>
+                        </div>
+                      </div>
+
+                      {/* CTA */}
+                      <div className="mt-5 pt-3 border-t border-slate-50 flex justify-start">
+                        <Link
+                          href={mentor.isFounder ? "/nosotros" : "/cursos"}
+                          className="inline-flex items-center gap-1.5 text-xs font-black text-[#1890FF] hover:text-blue-700 transition-colors group/cta"
                         >
-                          <LinkedinIcon className="w-4 h-4" />
-                        </a>
-                      )}
+                          <span>{mentor.isFounder ? "Ver perfil completo" : `Ver cursos de ${mentor.name.split(" ")[0]}`}</span>
+                          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/cta:translate-x-1" />
+                        </Link>
+                      </div>
+
                     </div>
-
-                    {/* Role / Job Title */}
-                    <p className={`text-xs font-black ${theme.text} uppercase tracking-widest mb-6`}>
-                      {mentor.role}
-                    </p>
-
-                    <div className="w-full h-px bg-[#F1F5F9] mb-6" />
-
-                    {/* Credentials list */}
-                    <ul className="text-left space-y-3.5 mb-6">
-                      {mentor.credentials.map((cred, i) => (
-                        <li key={i} className="flex items-start gap-3 text-sm text-[#64748B] leading-relaxed">
-                          <svg className={`w-4.5 h-4.5 text-[#10B981] ${theme.hoverText} transition-colors flex-shrink-0 mt-0.5`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                          </svg>
-                          <span>{cred}</span>
-                        </li>
-                      ))}
-                    </ul>
                   </div>
                 </motion.div>
               </StaggerItem>

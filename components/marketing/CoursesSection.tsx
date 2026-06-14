@@ -17,7 +17,8 @@ import {
   Brain, 
   HardHat, 
   Zap,
-  Lock
+  Lock,
+  Users
 } from "lucide-react";
 import React from "react";
 import { courses, type Course } from "@/lib/data/courses";
@@ -160,6 +161,14 @@ export default function CoursesSection() {
 
   return (
     <section className="w-full bg-white text-slate-900 py-16 lg:py-24 relative overflow-hidden flex justify-center items-center">
+      {/* Grid Pattern Background */}
+      <div 
+        className="absolute inset-0 opacity-[0.015] pointer-events-none z-0"
+        style={{
+          backgroundImage: "radial-gradient(#CBD5E1 1px, transparent 1px)",
+          backgroundSize: "24px 24px",
+        }}
+      />
       {/* Glow backdrop points (light/soft accent) */}
       <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#1890FF]/3 rounded-full blur-[160px] pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#6366F1]/2 rounded-full blur-[160px] pointer-events-none" />
@@ -190,9 +199,18 @@ export default function CoursesSection() {
                   Explora <br />nuestros <br className="hidden lg:block" />programas.
                 </h2>
                 
-                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-sm mb-6 font-sans">
+                <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-sm mb-3 font-sans">
                   Clases en vivo por Zoom, aprendizaje práctico con proyectos reales y apoyo técnico de mentores expertos 24/7.
                 </p>
+                
+                {/* Stats in Left Column */}
+                <div className="flex flex-wrap items-center gap-2 text-[10px] text-slate-400 font-bold mb-6 select-none">
+                  <span>+5,000 egresados</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+                  <span>10 programas</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
+                  <span>98% satisfacción</span>
+                </div>
 
                 {/* Category selector slider (visible on mobile, hidden on desktop) */}
                 <div className="lg:hidden flex overflow-x-auto no-scrollbar gap-2 pb-2 -mx-6 px-6 w-[calc(100%+3rem)] scroll-smooth select-none">
@@ -343,11 +361,18 @@ export default function CoursesSection() {
                             {/* Image container */}
                             <div className="relative overflow-hidden aspect-[16/10] rounded-xl mb-5 bg-slate-50">
                               <div className="absolute inset-0 bg-[#0F172A]/4 z-10 group-hover:bg-[#0F172A]/0 transition-colors duration-500" />
-                              <div
-                                className="absolute top-3.5 left-3.5 z-20 px-3 py-1 rounded-md text-white text-[9px] uppercase tracking-wider font-extrabold flex items-center gap-1.5 backdrop-blur-md shadow-sm border border-white/10"
-                                style={{ background: `${course.badgeColor || course.accentColor}dd` }}
-                              >
-                                <Sparkles size={9} /> {course.badgeLabel || course.categoryLabel}
+                              <div className="absolute top-3.5 left-3.5 z-20 flex flex-col gap-1.5 items-start">
+                                <div
+                                  className="px-3 py-1 rounded-md text-white text-[9px] uppercase tracking-wider font-extrabold flex items-center gap-1.5 backdrop-blur-md shadow-sm border border-white/10"
+                                  style={{ background: `${course.badgeColor || course.accentColor}dd` }}
+                                >
+                                  <Sparkles size={9} /> {course.badgeLabel || course.categoryLabel}
+                                </div>
+                                {course.isFeatured && (
+                                  <div className="bg-amber-500/95 backdrop-blur-md text-white text-[9px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-md border border-white/10 shadow-sm flex items-center gap-1 select-none">
+                                    <span>🔥 Más Popular</span>
+                                  </div>
+                                )}
                               </div>
                               <Image
                                 src={course.imageUrl}
@@ -379,9 +404,19 @@ export default function CoursesSection() {
                                 {course.title}
                               </h3>
                             </Link>
-                            <p className="text-slate-500 text-xs leading-relaxed mb-5 text-left line-clamp-2">
+                            <p className="text-slate-500 text-xs leading-relaxed mb-4 text-left line-clamp-2">
                               {course.shortDescription}
                             </p>
+
+                            {/* Skills Preview */}
+                            <div className="flex flex-wrap items-center gap-3 text-[10px] text-emerald-600 font-bold mb-5 select-none text-left">
+                              {course.techStack.slice(0, 2).map((skill, index) => (
+                                <div key={index} className="flex items-center gap-1">
+                                  <Check className="w-3 h-3 text-emerald-500 stroke-[3]" />
+                                  <span>Dominarás {skill}</span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
 
                           {/* Card Footer */}
@@ -394,6 +429,10 @@ export default function CoursesSection() {
                                  </span>
                                  <span className="flex items-center gap-1 text-[9px] uppercase tracking-wider text-slate-400 font-semibold">
                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Zoom en directo
+                                 </span>
+                                 <span className="flex items-center gap-1 text-[10px] text-slate-400 font-semibold mt-1.5 select-none">
+                                   <Users className="w-3 h-3 text-slate-400" />
+                                   <span>+500 egresados</span>
                                  </span>
                                </div>
 
@@ -429,12 +468,10 @@ export default function CoursesSection() {
                                )}
                              </div>
                             
-                            <Link href={`/cursos/${course.slug}`} className="block no-underline">
-                              <div className="mt-4 w-full flex items-center justify-between font-bold text-slate-800 group-hover:text-[#1890FF] transition-all duration-300 text-xs font-sans">
+                            <Link href={`/cursos/${course.slug}`} className="block no-underline mt-4">
+                              <div className="w-full flex items-center justify-between font-bold text-slate-700 bg-slate-50 hover:bg-[#1890FF] hover:text-white border border-slate-100/70 hover:border-transparent rounded-xl px-4 py-2.5 transition-all duration-300 text-xs font-sans group/btn">
                                 <span>Ver especialización</span>
-                                <div className="w-7 h-7 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-[#1890FF] group-hover:text-white group-hover:border-transparent group-hover:translate-x-1 transition-all duration-300 shadow-sm">
-                                   <ArrowRight size={13} className="transition-transform" />
-                                </div>
+                                <ArrowRight size={13} className="transition-transform group-hover/btn:translate-x-1" />
                               </div>
                             </Link>
                           </div>

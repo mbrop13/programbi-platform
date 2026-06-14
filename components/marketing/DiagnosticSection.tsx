@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { FileSpreadsheet, PieChart, Bot, Check, ArrowRight, Sparkles, Clock, AlertCircle } from "lucide-react";
-import { FadeIn } from "@/components/shared/AnimatedComponents";
+import { FileSpreadsheet, PieChart, Bot, Check, ArrowRight, Sparkles, Clock, AlertCircle, BarChart2 } from "lucide-react";
+import { FadeIn, CountUp } from "@/components/shared/AnimatedComponents";
 
 const quizSteps = [
   {
@@ -71,26 +71,26 @@ const results: Record<string, { title: string; desc: string; link: string }> = {
 
 /* ─── Premium SVG Circular Gauge ─── */
 function GaugeCircle({ percentage, strokeColor, label }: { percentage: number; strokeColor: string; label: string }) {
-  const radius = 32;
+  const radius = 40;
   const strokeWidth = 5.5;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
     <div className="flex flex-col items-center justify-center shrink-0 select-none">
-      <div className="relative w-20 h-20 flex items-center justify-center">
-        <svg className="w-full h-full transform -rotate-90">
+      <div className="relative w-24 h-24 flex items-center justify-center">
+        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 96 96">
           <circle
-            cx="40"
-            cy="40"
+            cx="48"
+            cy="48"
             r={radius}
             className="stroke-slate-100"
             strokeWidth={strokeWidth}
             fill="transparent"
           />
           <motion.circle
-            cx="40"
-            cy="40"
+            cx="48"
+            cy="48"
             r={radius}
             className={strokeColor}
             strokeWidth={strokeWidth}
@@ -103,8 +103,8 @@ function GaugeCircle({ percentage, strokeColor, label }: { percentage: number; s
           />
         </svg>
         <div className="absolute flex flex-col items-center justify-center text-center">
-          <span className="text-lg font-black text-slate-900 leading-none">{percentage}%</span>
-          <span className="text-[7px] text-slate-400 font-extrabold mt-0.5 uppercase tracking-wider">{label}</span>
+          <span className="text-xl font-black text-slate-900 leading-none">{percentage}%</span>
+          <span className="text-[8px] text-slate-400 font-extrabold mt-0.5 uppercase tracking-wider">{label}</span>
         </div>
       </div>
     </div>
@@ -132,7 +132,7 @@ export default function DiagnosticSection() {
   const progress = step === 0 ? 33 : step === 1 ? 66 : 100;
 
   return (
-    <section className="pt-6 pb-16 lg:pt-8 lg:pb-24 bg-white border-b border-[#F1F5F9] relative overflow-hidden">
+    <section className="pt-6 pb-16 lg:pt-8 lg:pb-24 bg-gradient-to-b from-slate-50/80 to-white border-b border-[#F1F5F9] relative overflow-hidden">
       {/* Background visual lights */}
       <div className="absolute -top-48 -left-48 w-[500px] h-[500px] bg-blue-500/2 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute -bottom-48 -right-48 w-[500px] h-[500px] bg-emerald-500/2 rounded-full blur-[140px] pointer-events-none" />
@@ -144,19 +144,37 @@ export default function DiagnosticSection() {
           <div className="lg:col-span-6 text-center lg:text-left flex flex-col gap-6">
             <FadeIn>
               <span className="inline-flex items-center gap-1.5 bg-blue-50 text-[#1890FF] font-bold text-xs uppercase tracking-widest px-5 py-2.5 rounded-full mb-5 border border-blue-100/50 shadow-sm">
-                <Sparkles size={12} className="fill-current text-[#1890FF]" /> Resultados Reales
+                <BarChart2 size={12} className="text-[#1890FF]" /> La Ventaja de los Datos
               </span>
               <h2 className="text-4xl md:text-5xl lg:text-[44px] font-black text-slate-900 leading-tight mb-4 font-display tracking-tight">
                 ¿Por qué capacitarse <br className="hidden lg:block" />en{" "}
                 <span className="text-[#1890FF]">Datos?</span>
               </h2>
               <p className="text-sm text-slate-500 leading-relaxed max-w-lg mb-2 font-sans">
-                La diferencia entre la intuición y la estrategia es el análisis de datos. Compara la efectividad diaria de tu flujo de trabajo automatizando tus tareas.
+                Las empresas ya no buscan intuición. Buscan profesionales que dominen el lenguaje de los datos y transformen información en decisiones.
               </p>
             </FadeIn>
 
+            {/* Market Urgency Stats Block */}
+            <FadeIn delay={0.12}>
+              <div className="grid grid-cols-3 gap-3 mb-2 text-left">
+                {[
+                  { value: 1.4, suffix: "M", label: "Empleos en datos sin cubrir globalmente", decimals: 1 },
+                  { value: 85, prefix: "+", suffix: "%", label: "Incremento salarial post-certificación" },
+                  { value: 72, suffix: "%", label: "De empresas priorizan talento en datos" }
+                ].map((item, idx) => (
+                  <div key={idx} className="bg-white border border-slate-100 rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="text-xl md:text-2xl font-black font-mono tracking-tight text-slate-900 leading-none mb-1">
+                      <CountUp target={item.value} prefix={item.prefix} suffix={item.suffix} decimals={item.decimals} />
+                    </div>
+                    <div className="text-[9px] text-slate-400 font-bold leading-normal font-sans">{item.label}</div>
+                  </div>
+                ))}
+              </div>
+            </FadeIn>
+
             {/* Premium Workflow Toggle Switcher */}
-            <FadeIn delay={0.15}>
+            <FadeIn delay={0.2}>
               <div className="flex bg-slate-100 p-1.5 rounded-2xl max-w-xs mx-auto lg:mx-0 border border-slate-200/40 select-none">
                 <button
                   onClick={() => setWorkflowMode("tradicional")}
@@ -184,7 +202,7 @@ export default function DiagnosticSection() {
             </FadeIn>
 
             {/* Clean Visual Dashboard Card Mockup */}
-            <FadeIn delay={0.25}>
+            <FadeIn delay={0.3}>
               <div className="bg-slate-50 border border-slate-200/60 rounded-[2rem] p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
                   
@@ -272,18 +290,20 @@ export default function DiagnosticSection() {
             </FadeIn>
 
             {/* Premium Stats Grid */}
-            <FadeIn delay={0.35}>
+            <FadeIn delay={0.45}>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { metric: "+15h", label: "Tiempo liberado semanalmente", border: "hover:border-slate-300" },
-                  { metric: "3.5x", label: "Velocidad de reportabilidad", border: "hover:border-blue-500/20 text-[#1890FF]" },
-                  { metric: "92%", label: "Reducción de errores manuales", border: "hover:border-emerald-500/20 text-emerald-600" }
+                  { target: 15, prefix: "+", suffix: "h", label: "Tiempo liberado semanalmente", textColor: "" },
+                  { target: 3.5, decimals: 1, suffix: "x", label: "Velocidad de reportabilidad", textColor: "text-[#1890FF]" },
+                  { target: 92, suffix: "%", label: "Reducción de errores manuales", textColor: "text-emerald-600" }
                 ].map((stat, i) => (
                   <div 
                     key={i} 
-                    className={`bg-white border border-slate-150/70 p-4 rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.015)] transition-all text-left ${stat.border}`}
+                    className="bg-white border border-slate-150/70 hover:border-blue-200 p-4 rounded-2xl shadow-[0_4px_16px_rgba(0,0,0,0.015)] transition-all duration-300 text-left"
                   >
-                    <div className="text-xl md:text-2xl font-black leading-none mb-1 font-mono tracking-tight">{stat.metric}</div>
+                    <div className={`text-xl md:text-2xl font-black leading-none mb-1 font-mono tracking-tight ${stat.textColor}`}>
+                      <CountUp target={stat.target} prefix={stat.prefix} suffix={stat.suffix} decimals={stat.decimals} />
+                    </div>
                     <div className="text-[9px] text-slate-400 font-bold leading-normal font-sans">{stat.label}</div>
                   </div>
                 ))}
