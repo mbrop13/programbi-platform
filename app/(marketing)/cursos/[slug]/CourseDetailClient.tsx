@@ -370,6 +370,31 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
               {/* Schedules Dropdown container */}
               <div className="w-full space-y-6 max-w-[580px]">
+                {/* Level Selector (Single, in Hero) */}
+                {levels.length > 0 && (
+                  <FadeIn delay={0.25} className="w-full">
+                    <label className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-2 block">
+                      Selecciona el Nivel del Curso
+                    </label>
+                    <div className="flex bg-slate-200/40 p-1 rounded-2xl gap-1 max-w-full overflow-x-auto scrollbar-hide border border-slate-200/50">
+                      {levels.map((level, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setSelectedLevel(idx)}
+                          className={`flex-1 py-2 rounded-xl text-xs font-extrabold transition-all whitespace-nowrap border-none cursor-pointer ${
+                            selectedLevel === idx
+                              ? "bg-white text-slate-900 shadow-sm"
+                              : "text-slate-500 hover:text-slate-800"
+                          }`}
+                        >
+                          {level.name}
+                        </button>
+                      ))}
+                    </div>
+                  </FadeIn>
+                )}
+
                 {/* Schedules Dropdown */}
                 <FadeIn delay={0.3} className="relative z-30 w-full">
                   <label className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-2 block">
@@ -378,8 +403,11 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                   <div className="relative">
                     <button
                       type="button"
+                      disabled={activeSchedulesList.length === 0}
                       onClick={() => setIsScheduleDropdownOpen(!isScheduleDropdownOpen)}
-                      className="w-full flex items-center justify-between p-2.5 sm:p-4 bg-white border border-slate-200/80 rounded-2xl text-left text-[11px] sm:text-sm font-bold hover:border-slate-300 transition-colors shadow-sm cursor-pointer outline-none"
+                      className={`w-full flex items-center justify-between p-2.5 sm:p-4 bg-white border border-slate-200/80 rounded-2xl text-left text-[11px] sm:text-sm font-bold transition-colors shadow-sm outline-none ${
+                        activeSchedulesList.length === 0 ? "opacity-75 cursor-default" : "hover:border-slate-300 cursor-pointer"
+                      }`}
                     >
                       <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                         <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-[#1890FF] flex-shrink-0" />
@@ -511,63 +539,94 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       
                       {/* Pricing block inside the card */}
                       <div>
-                        <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-                          Inversión del Curso
-                        </p>
-                        
-                        {isLoggedIn ? (
-                          <div className="flex flex-col items-start gap-1">
-                            {originalGrandTotal && totalDiscountPercentage > 0 && (
-                              <div className="flex items-center gap-1.5 mb-0.5">
-                                <span className="text-xs sm:text-sm font-bold text-slate-400 line-through">
-                                  {convertAndFormat(originalGrandTotal)}
+                        {activeSchedulesList.length === 0 ? (
+                          <div className="space-y-4">
+                            <div className="bg-amber-50/80 border border-amber-200 rounded-xl p-3.5 sm:p-4 text-left">
+                              <h4 className="text-[11px] sm:text-xs font-black text-amber-800 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                                <span className="relative flex h-2 w-2">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
                                 </span>
-                                <span className="text-[8px] sm:text-[10px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full uppercase tracking-wider">
-                                  {totalDiscountPercentage}% OFF
-                                </span>
-                              </div>
-                            )}
-                            <span className="text-2xl sm:text-3xl font-black text-slate-900 leading-none">
-                              {convertAndFormat(grandTotal)}
-                            </span>
-                            <p className="text-[8px] sm:text-[9px] text-slate-400 mt-1 font-semibold">Precios Cyber extendido válidos hasta el domingo 7 de Junio a las 24:00 horas</p>
+                                Próxima fecha a confirmar
+                              </h4>
+                              <p className="text-[10px] sm:text-[11px] font-semibold text-amber-700 leading-relaxed">
+                                No disponemos de una fecha programada inmediata para este nivel. Puedes contactarnos directamente para consultar la próxima fecha de inicio, reservar tu cupo o solicitar un horario personalizado.
+                              </p>
+                            </div>
                           </div>
                         ) : (
-                          <div 
-                            className="relative overflow-hidden rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50/50 via-white to-white p-3 sm:p-4 cursor-pointer group mb-1 hover:border-blue-300 hover:shadow-md transition-all duration-300"
-                            onClick={() => setShowAuthModal(true)}
-                          >
-                             <div className="flex items-start gap-2.5 sm:gap-3">
-                               <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
-                                 <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                               </div>
-                               <div className="text-left min-w-0 flex-1">
-                                 <h4 className="text-[10px] sm:text-[11px] font-black text-slate-900 uppercase tracking-wider mb-0.5 truncate">
-                                   Precios y Becas Exclusivos
-                                 </h4>
-                                 <p className="text-[9px] sm:text-[10px] font-semibold text-slate-500 leading-relaxed max-w-full">
-                                   Inicia sesión o regístrate gratis para ver precios Cyber Day y opciones de financiamiento.
-                                 </p>
-                                 <div className="flex items-center gap-1 mt-1.5">
-                                   <span className="text-[8px] sm:text-[9px] font-black text-[#1890FF] uppercase tracking-wider group-hover:underline">
-                                     Crear cuenta gratis
-                                   </span>
-                                   <ArrowRight className="w-2.5 h-2.5 text-[#1890FF] transition-transform group-hover:translate-x-0.5" />
+                          <>
+                            <p className="text-[9px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                              Inversión del Curso
+                            </p>
+                            
+                            {isLoggedIn ? (
+                              <div className="flex flex-col items-start gap-1">
+                                {originalGrandTotal && totalDiscountPercentage > 0 && (
+                                  <div className="flex items-center gap-1.5 mb-0.5">
+                                    <span className="text-xs sm:text-sm font-bold text-slate-400 line-through">
+                                      {convertAndFormat(originalGrandTotal)}
+                                    </span>
+                                    <span className="text-[8px] sm:text-[10px] font-black text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                                      {totalDiscountPercentage}% OFF
+                                    </span>
+                                  </div>
+                                )}
+                                <span className="text-2xl sm:text-3xl font-black text-slate-900 leading-none">
+                                  {convertAndFormat(grandTotal)}
+                                </span>
+                                <p className="text-[8px] sm:text-[9px] text-slate-400 mt-1 font-semibold">Precios Cyber extendido válidos hasta el domingo 7 de Junio a las 24:00 horas</p>
+                              </div>
+                            ) : (
+                              <div 
+                                className="relative overflow-hidden rounded-xl border border-blue-100 bg-gradient-to-br from-blue-50/50 via-white to-white p-3 sm:p-4 cursor-pointer group mb-1 hover:border-blue-300 hover:shadow-md transition-all duration-300"
+                                onClick={() => setShowAuthModal(true)}
+                              >
+                                 <div className="flex items-start gap-2.5 sm:gap-3">
+                                   <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 flex-shrink-0 group-hover:scale-105 transition-transform duration-300">
+                                     <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                                   </div>
+                                   <div className="text-left min-w-0 flex-1">
+                                     <h4 className="text-[10px] sm:text-[11px] font-black text-slate-900 uppercase tracking-wider mb-0.5 truncate">
+                                       Precios y Becas Exclusivos
+                                     </h4>
+                                     <p className="text-[9px] sm:text-[10px] font-semibold text-slate-500 leading-relaxed max-w-full">
+                                       Inicia sesión o regístrate gratis para ver precios Cyber Day y opciones de financiamiento.
+                                     </p>
+                                     <div className="flex items-center gap-1 mt-1.5">
+                                       <span className="text-[8px] sm:text-[9px] font-black text-[#1890FF] uppercase tracking-wider group-hover:underline">
+                                         Crear cuenta gratis
+                                       </span>
+                                       <ArrowRight className="w-2.5 h-2.5 text-[#1890FF] transition-transform group-hover:translate-x-0.5" />
+                                     </div>
+                                   </div>
                                  </div>
-                               </div>
-                             </div>
-                          </div>
+                              </div>
+                            )}
+                          </>
                         )}
                       </div>
 
                       {/* Main checkout / registration CTA button */}
-                      <button
-                        onClick={handleCheckoutCTA}
-                        className="w-full py-3 sm:py-4 rounded-xl text-white font-bold text-xs sm:text-sm flex justify-center items-center gap-1.5 sm:gap-2 transition-all cursor-pointer border-none shadow-md hover:shadow-lg hover:-translate-y-0.5"
-                        style={{ background: 'linear-gradient(135deg, #1890FF, #0050b3)' }}
-                      >
-                        {isLoggedIn ? "Inscribirse y pagar" : "Registrarse para cotizar"} <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                      </button>
+                      {activeSchedulesList.length === 0 ? (
+                        <a
+                          href={`https://wa.me/56935409699?text=Hola!%20Me%20gustar%C3%ADa%20consultar%20por%20las%20pr%C3%B3ximas%20fechas%20y%20horarios%20del%20curso%20${encodeURIComponent(course.title)}%20-${encodeURIComponent(activeLevel?.name || "Básico")}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full py-3.5 sm:py-4 rounded-xl text-white font-bold text-xs sm:text-sm flex justify-center items-center gap-1.5 sm:gap-2 transition-all cursor-pointer border-none shadow-md hover:shadow-lg hover:-translate-y-0.5 no-underline bg-[#25D366] hover:bg-[#20ba5a]"
+                        >
+                          <LucideIcons.MessageCircle className="w-4 h-4 text-white flex-shrink-0" />
+                          Consultar fecha de inicio
+                        </a>
+                      ) : (
+                        <button
+                          onClick={handleCheckoutCTA}
+                          className="w-full py-3 sm:py-4 rounded-xl text-white font-bold text-xs sm:text-sm flex justify-center items-center gap-1.5 sm:gap-2 transition-all cursor-pointer border-none shadow-md hover:shadow-lg hover:-translate-y-0.5"
+                          style={{ background: 'linear-gradient(135deg, #1890FF, #0050b3)' }}
+                        >
+                          {isLoggedIn ? "Inscribirse y pagar" : "Registrarse para cotizar"} <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        </button>
+                      )}
 
                       <hr className="border-slate-100 my-0" />
 
@@ -602,206 +661,169 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         </div>
       </section>
 
-      {/* ════ LEVEL SELECTOR + WHAT YOU LEARN + DETAILS ════ */}
-      {(course.whatYouLearn?.length > 0 || levels.length > 0) && (
-        <section className="relative z-10 py-10 lg:py-14 bg-white overflow-hidden">
-          <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
-
-            {/* Level Selector Pills */}
-            {levels.length > 0 && (
-              <FadeIn>
-                <div className="flex justify-center mb-8 max-w-full">
-                  <div className="inline-flex bg-gray-100 rounded-full p-1 sm:p-1.5 gap-0.5 sm:gap-1 max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
-                    {levels.map((level, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => setSelectedLevel(idx)}
-                        className={`px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap shrink-0 border-none bg-transparent cursor-pointer ${
-                          selectedLevel === idx
-                            ? "bg-white text-gray-900 shadow-md"
-                            : "text-gray-500 hover:text-gray-700"
-                        }`}
-                      >
-                        {level.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </FadeIn>
-            )}
-
-            <div className="grid lg:grid-cols-2 gap-12 items-start">
-              {/* What You'll Learn */}
-              <FadeIn>
-                <h2 className="font-display font-black text-3xl sm:text-4xl text-[#0F172A] mb-8">¿Qué aprenderás?</h2>
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={selectedLevel}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.25 }}
-                    className="space-y-4"
-                  >
-                    {currentWhatYouLearn.map((item, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, x: -15 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.08 }}
-                        className="flex items-start gap-4 p-4 rounded-xl hover:bg-[#F8FAFC] transition-colors"
-                      >
-                        <CheckCircle2 className="w-6 h-6 flex-shrink-0 mt-0.5" style={{ color: "#1890FF" }} />
-                        <span className="text-gray-700 text-base leading-relaxed">{item}</span>
-                      </motion.div>
-                    ))}
-                  </motion.div>
-                </AnimatePresence>
-              </FadeIn>
-
-              {/* Interactive IDE Simulator Section */}
-              <FadeIn delay={0.2}>
-                <div className="sticky top-28">
-                  <h3 className="font-display font-bold text-xl text-slate-800 mb-6 flex items-center gap-2">
-                    <span className="w-1.5 h-6 rounded bg-[#1890FF]" />
-                    Laboratorio Interactivo de Datos
-                  </h3>
-                  <CourseIDE course={course} />
-                </div>
-              </FadeIn>
-            </div>
+      {/* ════ UNIFIED TEMARIO Y PLAN DE ESTUDIOS ════ */}
+      <section id="temario" className="relative z-10 py-16 lg:py-24 bg-white overflow-hidden border-t border-gray-150">
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
+          
+          {/* Header */}
+          <div className="text-center mb-16">
+            <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-[#0F172A] mb-4">
+              Temario y Plan de Estudios
+            </h2>
+            <p className="text-gray-600 text-base sm:text-lg max-w-2xl mx-auto font-medium">
+              Explora los objetivos de aprendizaje y el contenido detallado de los módulos prácticos.
+            </p>
           </div>
-        </section>
-      )}
 
-      {/* ════ SYLLABUS ════ */}
-      <div id="temario" className="-mt-16 pt-16">
-      {course.slug === 'analisis-de-datos' ? (
-        <DataAnalyticsSyllabus />
-      ) : course.slug === 'analitica-financiera' ? (
-        <FinanceSyllabus />
-      ) : course.slug === 'analitica-mineria' ? (
-        <MiningSyllabus />
-      ) : course.slug === 'excel' ? (
-        <ExcelSyllabus />
-      ) : course.slug === 'power-bi' ? (
-        <PowerBiSyllabus />
-      ) : course.slug === 'python' ? (
-        <PythonSyllabus />
-      ) : course.slug === 'sql-server' ? (
-        <SqlSyllabus />
-      ) : (
-        <section className="py-10 lg:py-14 bg-[#F8FAFC]">
-          <div className="max-w-3xl mx-auto px-5">
-          <FadeIn>
-            <div className="text-center mb-16">
-              <h2 className="font-display font-black text-3xl sm:text-4xl text-[#0F172A] mb-4">Temario Completo</h2>
-              <p className="text-gray-600">{course.syllabus.length} módulos • {course.durationHours} horas totales</p>
-            </div>
-          </FadeIn>
-
-          {/* Syllabus level selector */}
-          {levels.length > 0 && (
-            <div className="flex justify-center mb-8 max-w-full">
-              <div className="inline-flex bg-white border border-brand-blue/20 rounded-full p-1 sm:p-1.5 gap-0.5 sm:gap-1 shadow-sm max-w-full overflow-x-auto scrollbar-hide flex-nowrap">
-                {levels.map((level, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedLevel(idx)}
-                    className={`px-3.5 sm:px-6 py-1.5 sm:py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all whitespace-nowrap shrink-0 border-none bg-transparent cursor-pointer ${
-                      selectedLevel === idx
-                        ? 'bg-brand-blue text-white shadow-md'
-                        : 'text-gray-500 hover:text-gray-900 hover:bg-blue-50/50'
-                    }`}
-                  >
-                    Temario {level.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Progress line */}
-          <div className="relative">
-            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200 z-0" />
-            <div className="space-y-4 relative z-10">
-              {course.syllabus.map((module, idx) => {
-                if (levels.length > 0 && idx !== selectedLevel) return null;
-                return (
-                <FadeIn key={idx} delay={0.1}>
-                  <motion.div
-                    className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-blue-200 transition-all ml-4"
-                    whileHover={{ boxShadow: "0 10px 30px -10px rgba(24,144,255,0.15)" }}
-                  >
-                    <button
-                      onClick={() => setOpenModule(openModule === idx ? null : idx)}
-                      className="w-full flex items-center justify-between p-6 bg-transparent border-none cursor-pointer text-left"
+          <div className="grid lg:grid-cols-12 gap-12 items-start">
+            
+            {/* Left Column (7/12): Outcomes & Syllabus Details */}
+            <div className="lg:col-span-7 space-y-10">
+              
+              {/* Outcomes block */}
+              {currentWhatYouLearn && currentWhatYouLearn.length > 0 && (
+                <div className="bg-[#F8FAFC]/60 rounded-3xl p-6 sm:p-8 border border-slate-200/80">
+                  <h3 className="font-display font-black text-xl text-[#0F172A] mb-6 flex items-center gap-2">
+                    <CheckCircle2 className="w-5 h-5 text-[#1890FF]" /> ¿Qué aprenderás en este nivel?
+                  </h3>
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={selectedLevel}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.25 }}
+                      className="grid sm:grid-cols-2 gap-4"
                     >
-                      <div className="flex items-center gap-4">
-                        <div
-                          className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-md bg-[#1890FF]"
-                        >
-                          {idx + 1}
-                        </div>
-                        <div>
-                          <h3 className="font-display font-bold text-[#0F172A] text-base">{module.module}</h3>
-                          <p className="text-gray-400 text-xs mt-0.5">{module.hours} horas • {module.topics.length} temas</p>
-                        </div>
-                      </div>
-                      <motion.div animate={{ rotate: openModule === idx ? 180 : 0 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
-                        <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                      </motion.div>
-                    </button>
-
-                    <AnimatePresence>
-                      {openModule === idx && (
+                      {currentWhatYouLearn.map((item, i) => (
                         <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                          className="overflow-hidden"
+                          key={i}
+                          initial={{ opacity: 0, x: -15 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.05 }}
+                          className="flex items-start gap-3"
                         >
-                          <ul className="px-6 pb-6 space-y-3 list-none m-0 border-t border-gray-100 pt-4">
-                            {module.topics.map((topic, ti) => {
-                              const isLocked = isFreeTrial && course.slug === "power-bi" && (idx > 0 || ti > 1);
-                              return (
-                                <motion.li
-                                  key={ti}
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: ti * 0.05 }}
-                                  className={`flex items-center gap-3 text-sm ${isLocked ? 'text-gray-400' : 'text-gray-600'}`}
-                                >
-                                  {isLocked ? (
-                                    <Lock className="w-3.5 h-3.5 flex-shrink-0 text-gray-400" />
-                                  ) : (
-                                    <Play className="w-3.5 h-3.5 flex-shrink-0 text-[#1890FF]" />
-                                  )}
-                                  {isLocked ? (
-                                    <span className="italic flex items-center gap-2">
-                                      Bloqueado por Prueba Gratuita
-                                    </span>
-                                  ) : (
-                                    topic
-                                  )}
-                                </motion.li>
-                              );
-                            })}
-                          </ul>
+                          <Check className="w-4 h-4 text-emerald-500 mt-1 flex-shrink-0" />
+                          <span className="text-gray-700 text-[14px] leading-relaxed font-semibold">{item}</span>
                         </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                </FadeIn>
-                );
-              })}
+                      ))}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
+              )}
+
+              {/* Syllabus Details */}
+              <div>
+                {course.slug === 'analisis-de-datos' ? (
+                  <DataAnalyticsSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
+                ) : course.slug === 'analitica-financiera' ? (
+                  <FinanceSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
+                ) : course.slug === 'analitica-mineria' ? (
+                  <MiningSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
+                ) : course.slug === 'excel' ? (
+                  <ExcelSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
+                ) : course.slug === 'power-bi' ? (
+                  <PowerBiSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
+                ) : course.slug === 'python' ? (
+                  <PythonSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
+                ) : course.slug === 'sql-server' ? (
+                  <SqlSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
+                ) : (
+                  // Generic modules renderer (fallback)
+                  <div className="space-y-4">
+                    <div className="relative">
+                      <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gray-200 z-0" />
+                      <div className="space-y-4 relative z-10">
+                        {course.syllabus.map((module, idx) => {
+                          if (levels.length > 0 && idx !== selectedLevel) return null;
+                          return (
+                            <FadeIn key={idx} delay={0.1}>
+                              <motion.div
+                                className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-blue-200 transition-all ml-4"
+                                whileHover={{ boxShadow: "0 10px 30px -10px rgba(24,144,255,0.15)" }}
+                              >
+                                <button
+                                  type="button"
+                                  onClick={() => setOpenModule(openModule === idx ? null : idx)}
+                                  className="w-full flex items-center justify-between p-6 bg-transparent border-none cursor-pointer text-left"
+                                >
+                                  <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-md bg-[#1890FF]">
+                                      {idx + 1}
+                                    </div>
+                                    <div>
+                                      <h3 className="font-display font-bold text-[#0F172A] text-base">{module.module}</h3>
+                                      <p className="text-gray-400 text-xs mt-0.5">{module.hours} horas • {module.topics.length} temas</p>
+                                    </div>
+                                  </div>
+                                  <motion.div animate={{ rotate: openModule === idx ? 180 : 0 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
+                                    <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                                  </motion.div>
+                                </button>
+
+                                <AnimatePresence>
+                                  {openModule === idx && (
+                                    <motion.div
+                                      initial={{ height: 0, opacity: 0 }}
+                                      animate={{ height: "auto", opacity: 1 }}
+                                      exit={{ height: 0, opacity: 0 }}
+                                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                      className="overflow-hidden"
+                                    >
+                                      <ul className="px-6 pb-6 space-y-3 list-none m-0 border-t border-gray-100 pt-4">
+                                        {module.topics.map((topic, ti) => {
+                                          const isLocked = isFreeTrial && course.slug === "power-bi" && (idx > 0 || ti > 1);
+                                          return (
+                                            <motion.li
+                                              key={ti}
+                                              initial={{ opacity: 0, x: -10 }}
+                                              animate={{ opacity: 1, x: 0 }}
+                                              transition={{ delay: ti * 0.05 }}
+                                              className={`flex items-center gap-3 text-sm ${isLocked ? 'text-gray-400' : 'text-gray-600'}`}
+                                            >
+                                              {isLocked ? (
+                                                <Lock className="w-3.5 h-3.5 flex-shrink-0 text-gray-400" />
+                                              ) : (
+                                                <Play className="w-3.5 h-3.5 flex-shrink-0 text-[#1890FF]" />
+                                              )}
+                                              {isLocked ? (
+                                                <span className="italic flex items-center gap-2">
+                                                  Bloqueado por Prueba Gratuita
+                                                </span>
+                                              ) : (
+                                                topic
+                                              )}
+                                            </motion.li>
+                                          );
+                                        })}
+                                      </ul>
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
+                              </motion.div>
+                            </FadeIn>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
             </div>
+
+            {/* Right Column (5/12): Sticky Interactive IDE */}
+            <div className="lg:col-span-5 lg:sticky lg:top-28">
+              <h3 className="font-display font-bold text-xl text-slate-800 mb-6 flex items-center gap-2">
+                <span className="w-1.5 h-6 rounded bg-[#1890FF]" />
+                Laboratorio Interactivo de Datos
+              </h3>
+              <CourseIDE course={course} />
+            </div>
+
           </div>
         </div>
       </section>
-      )}
-      </div>
 
       {/* ════ INSTRUCTOR ════ */}
       <section className="py-16 lg:py-20 bg-white border-t border-gray-100 overflow-hidden">

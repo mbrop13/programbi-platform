@@ -3,8 +3,12 @@
 import React, { useState } from "react";
 import { ChevronDown, Check, Star, Target, Trophy, Play, BarChart, Database, Code, FileSpreadsheet, Construction, Bot, MessageCircle, Phone, HardHat } from "lucide-react";
 
-export default function MiningSyllabus() {
-  const [activeTab, setActiveTab] = useState("nivel1");
+export default function MiningSyllabus({ selectedLevel, hideSelector = false, cleanLayout = false }: { selectedLevel?: number; hideSelector?: boolean; cleanLayout?: boolean }) {
+  const [localTab, setLocalTab] = useState("nivel1");
+  const activeTab = selectedLevel !== undefined
+    ? (selectedLevel === 0 ? "nivel1" : selectedLevel === 1 ? "nivel2" : "nivel3")
+    : localTab;
+  const setActiveTab = selectedLevel !== undefined ? () => {} : setLocalTab;
   const [openItems, setOpenItems] = useState<string[]>(["n1-pbi"]);
 
   const toggleItem = (id: string) => {
@@ -14,24 +18,28 @@ export default function MiningSyllabus() {
   };
 
   return (
-    <div className="py-12 sm:py-20 bg-stone-50 border-y border-stone-200 relative overflow-hidden font-sans">
+    <div className={cleanLayout ? "font-sans relative z-10 w-full" : "py-12 sm:py-20 bg-stone-50 border-y border-stone-200 relative overflow-hidden font-sans"}>
       {/* Background Decorators */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-amber-50/50 blur-[100px] rounded-full -z-10 pointer-events-none" />
+      {!cleanLayout && (
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-amber-50/50 blur-[100px] rounded-full -z-10 pointer-events-none" />
+      )}
       
-      <div className="container mx-auto max-w-5xl px-4 sm:px-6 relative z-10">
+      <div className={cleanLayout ? "relative z-10 w-full" : "container mx-auto max-w-5xl px-4 sm:px-6 relative z-10"}>
         
         {/* CABECERA */}
-        <div className="text-center mb-10 sm:mb-16 relative">
-          <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-amber-50/80 text-amber-700 font-bold tracking-wide uppercase text-xs mb-4 sm:mb-6 border border-amber-100/50 shadow-sm backdrop-blur-sm">
-            Programa Industrial & Minero 2026
-          </span>
-          <h2 className="text-3xl md:text-5xl lg:text-7xl font-black text-stone-900 tracking-tight mb-4 sm:mb-6 font-display leading-tight">
-            Especialización en <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-amber-800">Datos para la Minería</span>
-          </h2>
-          <p className="text-sm sm:text-base md:text-xl text-stone-600 max-w-4xl mx-auto font-light leading-relaxed">
-            Un trayecto formativo de 48 horas divididas en 3 niveles, combinando el poder de <strong>Power BI, SQL Server y Python</strong> para optimizar procesos y predecir fallas en la operación minera.
-          </p>
-        </div>
+        {!cleanLayout && (
+          <div className="text-center mb-10 sm:mb-16 relative">
+            <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-amber-50/80 text-amber-700 font-bold tracking-wide uppercase text-xs mb-4 sm:mb-6 border border-amber-100/50 shadow-sm backdrop-blur-sm">
+              Programa Industrial & Minero 2026
+            </span>
+            <h2 className="text-3xl md:text-5xl lg:text-7xl font-black text-stone-900 tracking-tight mb-4 sm:mb-6 font-display leading-tight">
+              Especialización en <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-amber-800">Datos para la Minería</span>
+            </h2>
+            <p className="text-sm sm:text-base md:text-xl text-stone-600 max-w-4xl mx-auto font-light leading-relaxed">
+              Un trayecto formativo de 48 horas divididas en 3 niveles, combinando el poder de <strong>Power BI, SQL Server y Python</strong> para optimizar procesos y predecir fallas en la operación minera.
+            </p>
+          </div>
+        )}
 
         {/* INFORMACIÓN GENERAL */}
         <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-12 sm:mb-16">
@@ -77,6 +85,7 @@ export default function MiningSyllabus() {
         </div>
         
         {/* NAVEGACIÓN DE PESTAÑAS (3 Niveles de 16h) */}
+        {!hideSelector && !cleanLayout && (
         <div className="flex justify-center mb-12 sm:mb-16 max-w-full">
           <div className="inline-flex bg-stone-200/50 p-1 rounded-full border border-stone-200 shadow-sm backdrop-blur-md w-full max-w-4xl overflow-x-auto scrollbar-hide flex-nowrap gap-1 sm:p-2 sm:gap-2">
             
@@ -114,6 +123,7 @@ export default function MiningSyllabus() {
             </button>
           </div>
         </div>
+        )}
 
         {/* CONTAINER PANELES */}
         <div className="relative">

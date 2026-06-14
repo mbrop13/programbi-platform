@@ -3,8 +3,12 @@
 import React, { useState } from "react";
 import { ChevronDown, Check, Star, Target, Trophy, Play } from "lucide-react";
 
-export default function ExcelSyllabus() {
-  const [activeTab, setActiveTab] = useState("nivel1");
+export default function ExcelSyllabus({ selectedLevel, hideSelector = false, cleanLayout = false }: { selectedLevel?: number; hideSelector?: boolean; cleanLayout?: boolean }) {
+  const [localTab, setLocalTab] = useState("nivel1");
+  const activeTab = selectedLevel !== undefined
+    ? (selectedLevel === 0 ? "nivel1" : selectedLevel === 1 ? "nivel2" : "nivel3")
+    : localTab;
+  const setActiveTab = selectedLevel !== undefined ? () => {} : setLocalTab;
   const [openItems, setOpenItems] = useState<string[]>([]);
 
   const toggleItem = (id: string) => {
@@ -14,27 +18,32 @@ export default function ExcelSyllabus() {
   };
 
   return (
-    <div className="py-20 bg-white border-y border-gray-100 relative overflow-hidden font-sans">
+    <div className={cleanLayout ? "font-sans relative z-10 w-full" : "py-20 bg-white border-y border-gray-100 relative overflow-hidden font-sans"}>
       {/* Background Decorators */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-green-50/50 blur-[100px] rounded-full -z-10 pointer-events-none" />
+      {!cleanLayout && (
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-green-50/50 blur-[100px] rounded-full -z-10 pointer-events-none" />
+      )}
       
-      <div className="container mx-auto max-w-5xl px-6 relative z-10">
+      <div className={cleanLayout ? "relative z-10 w-full" : "container mx-auto max-w-5xl px-6 relative z-10"}>
         
         {/* CABECERA */}
-        <div className="text-center mb-16 relative">
-          <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-green-50/80 text-green-700 font-bold tracking-wide uppercase text-xs mb-6 border border-green-100/50 shadow-sm backdrop-blur-sm">
-            Programa 2026
-          </span>
-          <h2 className="text-4xl md:text-5xl font-black text-[#0F172A] tracking-tight mb-6 font-display">
-            Plan de Estudios <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-800">Microsoft Excel</span>
-          </h2>
-          <p className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
-            Un recorrido estructurado de 48 horas totales, diseñado para transformar tu trabajo diario desde los fundamentos hasta la automatización total.
-          </p>
-        </div>
+        {!cleanLayout && (
+          <div className="text-center mb-16 relative">
+            <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-green-50/80 text-green-700 font-bold tracking-wide uppercase text-xs mb-6 border border-green-100/50 shadow-sm backdrop-blur-sm">
+              Programa 2026
+            </span>
+            <h2 className="text-4xl md:text-5xl font-black text-[#0F172A] tracking-tight mb-6 font-display">
+              Plan de Estudios <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 to-green-800">Microsoft Excel</span>
+            </h2>
+            <p className="text-base md:text-lg text-gray-500 max-w-2xl mx-auto font-light leading-relaxed">
+              Un recorrido estructurado de 48 horas totales, diseñado para transformar tu trabajo diario desde los fundamentos hasta la automatización total.
+            </p>
+          </div>
+        )}
 
         {/* TABS - Segmented Control */}
-        <div className="flex justify-center mb-12 sm:mb-16 max-w-full">
+        {!hideSelector && !cleanLayout && (
+          <div className="flex justify-center mb-12 sm:mb-16 max-w-full">
           <div className="inline-flex bg-gray-50/80 p-1 rounded-full border border-gray-200/60 shadow-sm backdrop-blur-md w-full max-w-4xl overflow-x-auto scrollbar-hide flex-nowrap gap-1 sm:p-1.5 sm:gap-2 sm:w-auto">
             
             {/* Tab 1 */}
@@ -71,6 +80,7 @@ export default function ExcelSyllabus() {
             </button>
           </div>
         </div>
+        )}
 
         {/* CONTAINER PANELES */}
         <div className="relative">

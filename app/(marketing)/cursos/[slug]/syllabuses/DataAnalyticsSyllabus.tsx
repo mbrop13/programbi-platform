@@ -3,8 +3,12 @@
 import React, { useState } from "react";
 import { ChevronDown, Check, GraduationCap, Trophy, Play, BarChart3, Database, Code2, LineChart, Server, Network, Bolt, Bot, Target, MessageCircle, Phone } from "lucide-react";
 
-export default function DataAnalyticsSyllabus() {
-  const [activeTab, setActiveTab] = useState("nivel1");
+export default function DataAnalyticsSyllabus({ selectedLevel, hideSelector = false, cleanLayout = false }: { selectedLevel?: number; hideSelector?: boolean; cleanLayout?: boolean }) {
+  const [localTab, setLocalTab] = useState("nivel1");
+  const activeTab = selectedLevel !== undefined
+    ? (selectedLevel === 0 ? "nivel1" : selectedLevel === 1 ? "nivel2" : "nivel3")
+    : localTab;
+  const setActiveTab = selectedLevel !== undefined ? () => {} : setLocalTab;
   const [openItems, setOpenItems] = useState<string[]>(["n1-pbi"]);
 
   const toggleItem = (id: string) => {
@@ -14,24 +18,28 @@ export default function DataAnalyticsSyllabus() {
   };
 
   return (
-    <div className="py-20 bg-slate-50 border-y border-slate-200 relative overflow-hidden font-sans">
+    <div className={cleanLayout ? "font-sans relative z-10 w-full" : "py-20 bg-slate-50 border-y border-slate-200 relative overflow-hidden font-sans"}>
       {/* Background Decorators */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-slate-100/50 blur-[100px] rounded-full -z-10 pointer-events-none" />
+      {!cleanLayout && (
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-slate-100/50 blur-[100px] rounded-full -z-10 pointer-events-none" />
+      )}
       
-      <div className="container mx-auto max-w-5xl px-6 relative z-10">
+      <div className={cleanLayout ? "relative z-10 w-full" : "container mx-auto max-w-5xl px-6 relative z-10"}>
         
         {/* CABECERA */}
-        <div className="text-center mb-16 relative">
-          <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-100 text-slate-800 font-bold tracking-wide uppercase text-xs mb-6 border border-slate-200 shadow-sm backdrop-blur-sm">
-            Programa Integral 2026
-          </span>
-          <h2 className="text-4xl md:text-5xl lg:text-7xl font-black text-slate-900 tracking-tight mb-6 font-display leading-tight">
-            Especialización en <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-700 to-slate-900">Análisis de Datos</span>
-          </h2>
-          <p className="text-base md:text-xl text-slate-600 max-w-4xl mx-auto font-light leading-relaxed">
-            Un trayecto formativo de 48 horas, combinando el poder de <strong>Power BI, SQL Server y Python</strong> con integración transversal de Inteligencia Artificial.
-          </p>
-        </div>
+        {!cleanLayout && (
+          <div className="text-center mb-16 relative">
+            <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-slate-100 text-slate-800 font-bold tracking-wide uppercase text-xs mb-6 border border-slate-200 shadow-sm backdrop-blur-sm">
+              Programa Integral 2026
+            </span>
+            <h2 className="text-4xl md:text-5xl lg:text-7xl font-black text-slate-900 tracking-tight mb-6 font-display leading-tight">
+              Especialización en <span className="text-transparent bg-clip-text bg-gradient-to-r from-slate-700 to-slate-900">Análisis de Datos</span>
+            </h2>
+            <p className="text-base md:text-xl text-slate-600 max-w-4xl mx-auto font-light leading-relaxed">
+              Un trayecto formativo de 48 horas, combinando el poder de <strong>Power BI, SQL Server y Python</strong> con integración transversal de Inteligencia Artificial.
+            </p>
+          </div>
+        )}
         <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-12 sm:mb-16">
             <div className="bg-white p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] border border-slate-200 shadow-sm relative overflow-hidden group hover:border-slate-300 transition-colors">
                 <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-slate-50 rounded-full blur-2xl group-hover:bg-slate-100/80 transition-colors pointer-events-none" />
@@ -75,6 +83,7 @@ export default function DataAnalyticsSyllabus() {
         </div>
         
         {/* NAVEGACIÓN DE PESTAÑAS (3 Niveles de 48h) */}
+        {!hideSelector && !cleanLayout && (
         <div className="flex justify-center mb-12 sm:mb-16 max-w-full">
           <div className="inline-flex bg-slate-200/50 p-1 rounded-full border border-slate-200 shadow-sm backdrop-blur-md w-full max-w-4xl overflow-x-auto scrollbar-hide flex-nowrap gap-1 sm:p-2 sm:gap-2">
             
@@ -112,6 +121,7 @@ export default function DataAnalyticsSyllabus() {
             </button>
           </div>
         </div>
+        )}
 
         {/* CONTAINER PANELES */}
         <div className="relative">

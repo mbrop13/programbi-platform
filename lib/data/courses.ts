@@ -37,15 +37,15 @@ export const courses: Course[] = [
     slug: "analisis-de-datos",
     title: "Curso de Análisis de Datos",
     shortDescription:
-      "El programa de 48 horas. Domina el ciclo completo del dato desde la extracción hasta la visualización.",
+      "Programa integral de 144 horas (48 horas por nivel) donde dominarás SQL Server, Power BI y Python.",
     description:
-      "Programa de 48 horas donde dominarás SQL Server, Power BI y Python. Aprende a extraer, transformar y visualizar datos para tomar decisiones estratégicas en cualquier industria.",
+      "Programa integral de 144 horas (3 niveles de 48 horas cada uno) diseñado para dominar SQL Server, Power BI y Python de extremo a extremo. Aprende a extraer, transformar y visualizar datos para tomar decisiones estratégicas.",
     category: "programacion",
     categoryLabel: "MÁS POPULAR",
     badgeLabel: "MÁS POPULAR",
     badgeColor: "#1890FF",
     techStack: ["SQL", "Power BI", "Python"],
-    durationHours: 48,
+    durationHours: 144,
     modality: "online",
     level: "principiante",
     imageUrl:

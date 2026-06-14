@@ -3,8 +3,12 @@
 import React, { useState } from "react";
 import { ChevronDown, Check, Star, Target, Trophy, Play, BarChart, Database, Code, Construction, Bot, MessageCircle, Phone, TrendingUp, HandCoins } from "lucide-react";
 
-export default function FinanceSyllabus() {
-  const [activeTab, setActiveTab] = useState("nivel1");
+export default function FinanceSyllabus({ selectedLevel, hideSelector = false, cleanLayout = false }: { selectedLevel?: number; hideSelector?: boolean; cleanLayout?: boolean }) {
+  const [localTab, setLocalTab] = useState("nivel1");
+  const activeTab = selectedLevel !== undefined
+    ? (selectedLevel === 0 ? "nivel1" : selectedLevel === 1 ? "nivel2" : "nivel3")
+    : localTab;
+  const setActiveTab = selectedLevel !== undefined ? () => {} : setLocalTab;
   const [openItems, setOpenItems] = useState<string[]>(["n1-pbi"]);
 
   const toggleItem = (id: string) => {
@@ -14,24 +18,28 @@ export default function FinanceSyllabus() {
   };
 
   return (
-    <div className="py-20 bg-blue-50/30 border-y border-blue-100 relative overflow-hidden font-sans">
+    <div className={cleanLayout ? "font-sans relative z-10 w-full" : "py-20 bg-blue-50/30 border-y border-blue-100 relative overflow-hidden font-sans"}>
       {/* Background Decorators */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-100/40 blur-[100px] rounded-full -z-10 pointer-events-none" />
+      {!cleanLayout && (
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-blue-100/40 blur-[100px] rounded-full -z-10 pointer-events-none" />
+      )}
       
-      <div className="container mx-auto max-w-5xl px-6 relative z-10">
+      <div className={cleanLayout ? "relative z-10 w-full" : "container mx-auto max-w-5xl px-6 relative z-10"}>
         
         {/* CABECERA */}
-        <div className="text-center mb-16 relative">
-          <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-blue-50/80 text-blue-700 font-bold tracking-wide uppercase text-xs mb-6 border border-blue-100/50 shadow-sm backdrop-blur-sm">
-            Programa Data Analytics 2026
-          </span>
-          <h2 className="text-4xl md:text-5xl lg:text-7xl font-black text-slate-900 tracking-tight mb-6 font-display leading-tight">
-            Análisis de Datos para el <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-800">Sector Financiero</span>
-          </h2>
-          <p className="text-base md:text-xl text-slate-600 max-w-4xl mx-auto font-light leading-relaxed">
-            Un trayecto formativo de 48 horas divididas en 3 niveles, combinando el poder de <strong>Power BI, SQL Server y Python</strong> para optimizar reportes, pronósticos y controles.
-          </p>
-        </div>
+        {!cleanLayout && (
+          <div className="text-center mb-16 relative">
+            <span className="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-blue-50/80 text-blue-700 font-bold tracking-wide uppercase text-xs mb-6 border border-blue-100/50 shadow-sm backdrop-blur-sm">
+              Programa Data Analytics 2026
+            </span>
+            <h2 className="text-4xl md:text-5xl lg:text-7xl font-black text-slate-900 tracking-tight mb-6 font-display leading-tight">
+              Análisis de Datos para el <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-800">Sector Financiero</span>
+            </h2>
+            <p className="text-base md:text-xl text-slate-600 max-w-4xl mx-auto font-light leading-relaxed">
+              Un trayecto formativo de 48 horas divididas en 3 niveles, combinando el poder de <strong>Power BI, SQL Server y Python</strong> para optimizar reportes, pronósticos y controles.
+            </p>
+          </div>
+        )}
 
         {/* INFORMACIÓN GENERAL */}
         <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-12 sm:mb-16">
@@ -74,6 +82,7 @@ export default function FinanceSyllabus() {
         </div>
 
         {/* NAVEGACIÓN DE PESTAÑAS (3 Niveles de 16h) */}
+        {!hideSelector && !cleanLayout && (
         <div className="flex justify-center mb-12 sm:mb-16 max-w-full">
           <div className="inline-flex bg-slate-100/80 p-1 rounded-full border border-slate-200 shadow-sm backdrop-blur-md w-full max-w-4xl overflow-x-auto scrollbar-hide flex-nowrap gap-1 sm:p-1.5 sm:gap-2 sm:w-auto">
             
@@ -111,6 +120,7 @@ export default function FinanceSyllabus() {
             </button>
           </div>
         </div>
+        )}
 
         {/* CONTENIDO DE PESTAÑAS */}
         <div className="relative min-h-[500px]">
