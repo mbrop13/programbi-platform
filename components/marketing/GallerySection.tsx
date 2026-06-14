@@ -198,7 +198,12 @@ export default function GallerySection() {
         </div>
 
         {/* Sliding Deck Layout */}
-        <FadeIn delay={0.25}>
+        <FadeIn delay={0.25} className="relative">
+          {/* Right fade-out gradient */}
+          <div className="absolute top-0 right-0 bottom-8 w-16 md:w-32 bg-gradient-to-l from-white via-white/70 to-transparent z-20 pointer-events-none" />
+          {/* Left fade-out gradient */}
+          <div className="absolute top-0 left-0 bottom-8 w-8 md:w-16 bg-gradient-to-r from-white via-white/70 to-transparent z-20 pointer-events-none" />
+
           <div
             ref={scrollRef}
             className="flex overflow-x-auto gap-6 pb-8 scroll-smooth no-scrollbar snap-x snap-mandatory -mx-5 px-5 md:mx-0 md:px-0"

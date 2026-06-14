@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
@@ -30,6 +30,14 @@ const getInitials = (name: string) => {
 
 export default function MentorsSection() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   return (
     <section className="py-12 lg:py-16 bg-white relative overflow-hidden flex justify-center items-center">
@@ -64,7 +72,7 @@ export default function MentorsSection() {
                   Conoce a nuestro <span className="text-blue-100">equipo.</span>
                 </h2>
                 <p className="text-xs lg:text-sm text-blue-50 leading-relaxed font-medium">
-                  Aprende de profesionales activos de las mejores universidades y empresas que lideran la transformación digital en la industria.
+                  Aprende de profesionales activos de las mejores universidades y empresas que lideran la transformación digital in la industria.
                 </p>
               </div>
 
@@ -85,19 +93,20 @@ export default function MentorsSection() {
 
           {/* Accordion Column (Right) */}
           <div className="lg:col-span-8 w-full">
-            <div className="flex flex-col lg:flex-row gap-4 h-auto lg:h-[480px] w-full">
+            <div className="flex flex-row overflow-x-auto no-scrollbar snap-x snap-mandatory gap-4 h-auto lg:h-[480px] w-full pb-6 -mx-5 px-5 lg:mx-0 lg:px-0 lg:overflow-visible lg:pb-0">
               {mentors.map((mentor, index) => {
                 const isActive = activeIndex === index;
+                const isCardExpanded = isMobile || isActive;
                 return (
                   <motion.div
                     key={mentor.name}
                     onClick={() => setActiveIndex(index)}
                     onMouseEnter={() => setActiveIndex(index)}
-                    className={`relative overflow-hidden rounded-[2.2rem] border transition-all duration-500 cursor-pointer group flex flex-col justify-end ${
-                      isActive 
-                        ? "flex-[3] lg:flex-[3.5] border-[#1890FF]/40 shadow-[0_24px_50px_rgba(24,144,255,0.08)] bg-white" 
-                        : "flex-1 border-[#E2E8F0] bg-slate-50 hover:bg-slate-100/50"
-                    } h-[320px] lg:h-full`}
+                    className={`relative overflow-hidden rounded-[2.2rem] border transition-all duration-500 cursor-pointer group flex flex-col justify-end snap-start shrink-0 ${
+                      isCardExpanded 
+                        ? "border-[#1890FF]/40 shadow-[0_24px_50px_rgba(24,144,255,0.08)] bg-white w-[290px] sm:w-[320px] lg:flex-[3.5]" 
+                        : "border-[#E2E8F0] bg-slate-50 hover:bg-slate-100/50 w-[290px] sm:w-[320px] lg:flex-1"
+                    } h-[380px] sm:h-[410px] lg:h-full`}
                   >
                     
                     {/* Background Visual Container */}
@@ -107,14 +116,14 @@ export default function MentorsSection() {
                           src={mentor.imageUrl}
                           alt={mentor.name}
                           fill
-                          sizes={isActive ? "500px" : "200px"}
+                          sizes={isCardExpanded ? "500px" : "200px"}
                           className={`object-cover transition-all duration-700 ease-in-out ${
-                            isActive ? "grayscale-0 scale-[1.02] opacity-100" : "grayscale opacity-75 group-hover:opacity-90"
+                            isCardExpanded ? "grayscale-0 scale-[1.02] opacity-100" : "grayscale opacity-75 group-hover:opacity-90"
                           } pointer-events-none`}
                         />
                       ) : (
                         <div className={`absolute inset-0 bg-gradient-to-br ${avatarGradients[mentor.icon] || avatarGradients.UserCheck} flex items-center justify-center transition-all duration-550 ${
-                          isActive ? "grayscale-0 opacity-100" : "grayscale opacity-70 group-hover:opacity-85"
+                          isCardExpanded ? "grayscale-0 opacity-100" : "grayscale opacity-70 group-hover:opacity-85"
                         }`}>
                           <span className="text-white text-5xl font-black select-none pointer-events-none opacity-85">
                             {getInitials(mentor.name)}
@@ -139,11 +148,11 @@ export default function MentorsSection() {
                       {/* Name & LinkedIn */}
                       <div className="flex items-center justify-between w-full mb-1 pointer-events-auto min-w-0">
                         <h3 className={`font-display text-lg lg:text-xl font-black tracking-tight truncate ${
-                          isActive ? "text-[#1890FF]" : "text-white"
+                          isCardExpanded ? "text-[#1890FF]" : "text-white"
                         } transition-colors leading-none`}>
                           {mentor.name}
                         </h3>
-                        {isActive && mentor.linkedinUrl && (
+                        {isCardExpanded && mentor.linkedinUrl && (
                           <a
                             href={mentor.linkedinUrl}
                             target="_blank"
@@ -163,7 +172,7 @@ export default function MentorsSection() {
                       </p>
 
                       {/* Collapsed view action indicator */}
-                      {!isActive && (
+                      {!isCardExpanded && (
                         <span className="text-[9px] text-slate-500 font-extrabold uppercase tracking-wide mt-1 leading-none select-none">
                           Ver perfil
                         </span>
@@ -173,14 +182,17 @@ export default function MentorsSection() {
                       <motion.div
                         initial={false}
                         animate={{ 
-                          height: isActive ? "auto" : 0, 
-                          opacity: isActive ? 1 : 0,
-                          marginTop: isActive ? 8 : 0,
-                          paddingTop: isActive ? 14 : 0
+                          height: isCardExpanded ? "auto" : 0, 
+                          opacity: isCardExpanded ? 1 : 0,
+                          marginTop: isCardExpanded ? 8 : 0,
+                          paddingTop: isCardExpanded ? 14 : 0
                         }}
-                        transition={{ duration: 0.35, ease: "easeInOut" }}
+                        transition={{ 
+                          height: { duration: 0.35, ease: "easeInOut" },
+                          opacity: { duration: 0.3, delay: isCardExpanded ? 0.25 : 0 }
+                        }}
                         className={`flex flex-col gap-3.5 w-full border-t ${
-                          isActive ? "border-white/10" : "border-transparent"
+                          isCardExpanded ? "border-white/10" : "border-transparent"
                         } pointer-events-auto overflow-hidden`}
                       >
                         {/* Credentials list */}
