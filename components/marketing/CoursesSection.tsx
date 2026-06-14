@@ -160,7 +160,7 @@ export default function CoursesSection() {
   const filteredCourses = getFilteredCourses();
 
   return (
-    <section className="w-full bg-gradient-to-b from-slate-50/70 via-white to-slate-50/50 text-slate-900 pt-8 pb-16 lg:pt-10 lg:pb-20 relative overflow-hidden flex justify-center items-center">
+    <section className="w-full bg-white text-slate-900 pt-8 pb-16 lg:pt-10 lg:pb-20 relative overflow-hidden flex justify-center items-center">
       {/* Grid Pattern Background */}
       <div 
         className="absolute inset-0 opacity-[0.015] pointer-events-none z-0"
@@ -219,7 +219,6 @@ export default function CoursesSection() {
             <div className="flex overflow-x-auto no-scrollbar bg-slate-100/80 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/40 gap-1.5 max-w-4xl justify-start md:justify-center w-full md:w-auto -mx-5 px-5 md:px-1.5">
               {categories.map((cat) => {
                 const isActive = selectedCat === cat.id;
-                const count = getCatCount(cat.id);
                 return (
                   <button
                     key={cat.id}
@@ -234,11 +233,6 @@ export default function CoursesSection() {
                       />
                     )}
                     <span className={`relative z-10 ${isActive ? "text-[#1890FF]" : "text-slate-500"}`}>{cat.label}</span>
-                    <span className={`relative z-10 px-1.5 py-0.5 rounded text-[9px] font-bold ${
-                      isActive ? "bg-blue-50 text-[#1890FF]" : "bg-slate-200/50 text-slate-400"
-                    }`}>
-                      {count}
-                    </span>
                   </button>
                 );
               })}

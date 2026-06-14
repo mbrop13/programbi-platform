@@ -32,7 +32,7 @@ export default function MentorsSection() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
   return (
-    <section className="py-12 lg:py-16 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden flex justify-center items-center">
+    <section className="py-12 lg:py-16 bg-white relative overflow-hidden flex justify-center items-center">
       {/* Premium background accents */}
       <div
         className="absolute inset-0 opacity-20 pointer-events-none z-0"
@@ -91,7 +91,6 @@ export default function MentorsSection() {
                 return (
                   <motion.div
                     key={mentor.name}
-                    layout
                     onClick={() => setActiveIndex(index)}
                     onMouseEnter={() => setActiveIndex(index)}
                     className={`relative overflow-hidden rounded-[2.2rem] border transition-all duration-500 cursor-pointer group flex flex-col justify-end ${
@@ -138,8 +137,8 @@ export default function MentorsSection() {
                     <div className="absolute inset-x-0 bottom-0 p-5 lg:p-7 z-20 flex flex-col justify-end text-left text-white h-full bg-gradient-to-t from-slate-950 via-slate-950/30 to-transparent">
                       
                       {/* Name & LinkedIn */}
-                      <div className="flex items-center justify-between w-full mb-1 pointer-events-auto">
-                        <h3 className={`font-display text-lg lg:text-xl font-black tracking-tight ${
+                      <div className="flex items-center justify-between w-full mb-1 pointer-events-auto min-w-0">
+                        <h3 className={`font-display text-lg lg:text-xl font-black tracking-tight truncate ${
                           isActive ? "text-[#1890FF]" : "text-white"
                         } transition-colors leading-none`}>
                           {mentor.name}

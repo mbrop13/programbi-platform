@@ -154,7 +154,7 @@ export default function GallerySection() {
   };
 
   return (
-    <section className="pt-4 pb-3 lg:pt-6 lg:pb-4 bg-white relative overflow-hidden border-b border-slate-100">
+    <section className="pt-4 pb-3 lg:pt-6 lg:pb-4 bg-white relative overflow-hidden border-none">
       {/* CSS injection to hide scrollbars on all browsers while keeping horizontal scrolling functional */}
       <style dangerouslySetInnerHTML={{__html: `
         .no-scrollbar::-webkit-scrollbar {

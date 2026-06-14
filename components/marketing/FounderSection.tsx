@@ -8,7 +8,7 @@ import { Award, BookOpen, Briefcase } from "lucide-react";
 
 export default function FounderSection() {
   return (
-    <section className="pt-10 pb-12 lg:pt-14 lg:pb-20 bg-white border-t border-[#F1F5F9] relative overflow-hidden">
+    <section className="pt-10 pb-12 lg:pt-14 lg:pb-20 bg-white border-none relative overflow-hidden">
       {/* Subtle radial backlights */}
       <div className="absolute top-1/4 left-0 w-80 h-80 bg-blue-500/2 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-indigo-500/2 rounded-full blur-[100px] pointer-events-none" />

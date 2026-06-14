@@ -161,7 +161,7 @@ export default function NosotrosPage() {
         </section>
 
         {/* Dynamic Accordion Team Section */}
-        <div className="relative z-10 border-t border-slate-900 pt-2">
+        <div className="relative z-10 pt-2">
           <MentorsSection />
         </div>
       </main>
