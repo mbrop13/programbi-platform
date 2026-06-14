@@ -132,7 +132,7 @@ export default function DiagnosticSection() {
   const progress = step === 0 ? 33 : step === 1 ? 66 : 100;
 
   return (
-    <section className="pt-6 pb-16 lg:pt-8 lg:pb-24 bg-gradient-to-b from-slate-50/80 to-white border-b border-[#F1F5F9] relative overflow-hidden">
+    <section className="pt-6 pb-12 lg:pt-8 lg:pb-20 bg-gradient-to-b from-slate-50/80 to-white border-b border-[#F1F5F9] relative overflow-hidden">
       {/* Background visual lights */}
       <div className="absolute -top-48 -left-48 w-[500px] h-[500px] bg-blue-500/2 rounded-full blur-[140px] pointer-events-none" />
       <div className="absolute -bottom-48 -right-48 w-[500px] h-[500px] bg-emerald-500/2 rounded-full blur-[140px] pointer-events-none" />

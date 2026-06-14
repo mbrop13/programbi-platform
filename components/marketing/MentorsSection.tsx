@@ -32,7 +32,7 @@ export default function MentorsSection() {
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
   return (
-    <section className="py-16 lg:py-20 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden flex justify-center items-center">
+    <section className="py-12 lg:py-16 bg-gradient-to-b from-slate-50 to-white relative overflow-hidden flex justify-center items-center">
       {/* Premium background accents */}
       <div
         className="absolute inset-0 opacity-20 pointer-events-none z-0"

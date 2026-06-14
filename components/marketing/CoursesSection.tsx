@@ -293,13 +293,7 @@ export default function CoursesSection() {
                         <div className="relative overflow-hidden aspect-[1.5/1] rounded-xl mb-4 bg-slate-50">
                           <div className="absolute inset-0 bg-[#0F172A]/4 z-10 group-hover:bg-[#0F172A]/0 transition-colors duration-500" />
                           <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 items-start">
-                            <div
-                              className="px-2.5 py-0.5 rounded text-white text-[8px] uppercase tracking-wider font-extrabold flex items-center gap-1 backdrop-blur-md shadow-sm border border-white/10"
-                              style={{ background: `${course.badgeColor || course.accentColor}dd` }}
-                            >
-                              <Sparkles size={8} /> {course.badgeLabel || course.categoryLabel}
-                            </div>
-                            {course.isFeatured && (
+                            {course.slug === "analisis-de-datos" && (
                               <div className="bg-amber-500/95 backdrop-blur-md text-white text-[8px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded border border-white/10 shadow-sm flex items-center gap-1 select-none">
                                 <span>🔥 Más Popular</span>
                               </div>
