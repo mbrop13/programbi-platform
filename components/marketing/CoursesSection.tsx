@@ -160,7 +160,7 @@ export default function CoursesSection() {
   const filteredCourses = getFilteredCourses();
 
   return (
-    <section className="w-full bg-white text-slate-900 py-16 lg:py-24 relative overflow-hidden flex justify-center items-center">
+    <section className="w-full bg-white text-slate-900 pt-8 pb-16 lg:pt-10 lg:pb-20 relative overflow-hidden flex justify-center items-center">
       {/* Grid Pattern Background */}
       <div 
         className="absolute inset-0 opacity-[0.015] pointer-events-none z-0"
@@ -185,16 +185,16 @@ export default function CoursesSection() {
       `}} />
 
       {/* Centering wrapper */}
-      <div className="w-full px-6 md:px-12 max-w-[1250px] mx-auto relative z-10">
+      <div className="w-full px-5 md:px-10 max-w-[1400px] mx-auto relative z-10">
         
         {/* Centered Header */}
         <FadeIn>
-          <div className="text-center mb-10 flex flex-col items-center">
-            <span className="inline-flex items-center gap-1.5 bg-blue-50/70 border border-blue-100/40 backdrop-blur-sm text-[#1890FF] font-bold text-[10px] uppercase tracking-widest px-4 py-2 rounded-full mb-4 shadow-sm">
+          <div className="text-center mb-8 flex flex-col items-center">
+            <span className="inline-flex items-center gap-1.5 bg-blue-50/70 border border-blue-100/40 backdrop-blur-sm text-[#1890FF] font-bold text-[10px] uppercase tracking-widest px-4 py-2 rounded-full mb-3 shadow-sm">
               <Sparkles size={11} className="fill-current text-[#1890FF]" /> Bootcamps de Datos
             </span>
             
-            <h2 className="font-display text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-950 via-slate-900 to-[#1890FF] leading-tight mb-4 tracking-tight">
+            <h2 className="font-display text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-950 via-slate-900 to-[#1890FF] leading-tight mb-3 tracking-tight">
               Explora nuestros programas.
             </h2>
             
@@ -203,7 +203,7 @@ export default function CoursesSection() {
             </p>
             
             {/* Stats Centered */}
-            <div className="flex flex-wrap items-center justify-center gap-2.5 text-[10px] text-slate-400 font-bold mb-6 select-none">
+            <div className="flex flex-wrap items-center justify-center gap-2.5 text-[10px] text-slate-400 font-bold mb-5 select-none">
               <span>+5,000 egresados</span>
               <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
               <span>10 programas</span>
@@ -216,7 +216,7 @@ export default function CoursesSection() {
         {/* Centered Category selector pills bar */}
         <FadeIn delay={0.1}>
           <div className="flex justify-center mb-4 w-full select-none">
-            <div className="flex overflow-x-auto no-scrollbar bg-slate-100/80 backdrop-blur-sm p-1.5 rounded-2xl border border-slate-200/40 gap-1.5 max-w-4xl justify-start md:justify-center w-full md:w-auto -mx-6 px-6 md:px-1.5">
+            <div className="flex overflow-x-auto no-scrollbar bg-slate-100/80 backdrop-blur-sm p-1.5 rounded-2xl border border-slate-200/40 gap-1.5 max-w-4xl justify-start md:justify-center w-full md:w-auto -mx-5 px-5 md:px-1.5">
               {categories.map((cat) => {
                 const isActive = selectedCat === cat.id;
                 const count = getCatCount(cat.id);
@@ -224,7 +224,7 @@ export default function CoursesSection() {
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCat(cat.id)}
-                    className={`relative px-4 py-2.5 rounded-xl transition-all duration-305 flex items-center gap-2 outline-none border-none cursor-pointer whitespace-nowrap text-xs font-bold ${
+                    className={`relative px-4 py-2.5 rounded-xl transition-all duration-300 flex items-center gap-2 outline-none border-none cursor-pointer whitespace-nowrap text-xs font-bold ${
                       isActive
                         ? "text-[#1890FF]"
                         : "text-slate-500 hover:text-slate-800"
@@ -248,12 +248,12 @@ export default function CoursesSection() {
               })}
             </div>
           </div>
-          <p className="text-center text-xs text-slate-400 font-semibold mb-10 select-none">
+          <p className="text-center text-xs text-slate-400 font-semibold mb-8 select-none">
             {categories.find(c => c.id === selectedCat)?.desc}
           </p>
         </FadeIn>
 
-        {/* Full-width Grid of Compact Cards */}
+        {/* Full-width Grid of Compact Cards (4 Columns on Desktop) */}
         <div className="w-full z-10">
           <AnimatePresence mode="wait">
             <motion.div
@@ -262,7 +262,7 @@ export default function CoursesSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"
             >
               {filteredCourses.map((course) => {
                 const CardIcon = IconMap[course.icon] || Sparkles;
@@ -289,8 +289,8 @@ export default function CoursesSection() {
                       </div>
                       
                       <div>
-                        {/* Image container */}
-                        <div className="relative overflow-hidden aspect-[2.1/1] rounded-xl mb-4 bg-slate-50">
+                        {/* Image container: aspect-[1.5/1] (larger vertical dimension) */}
+                        <div className="relative overflow-hidden aspect-[1.5/1] rounded-xl mb-4 bg-slate-50">
                           <div className="absolute inset-0 bg-[#0F172A]/4 z-10 group-hover:bg-[#0F172A]/0 transition-colors duration-500" />
                           <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 items-start">
                             <div
@@ -401,39 +401,14 @@ export default function CoursesSection() {
 
         {/* Footer of Section */}
         <FadeIn delay={0.2}>
-          <div className="mt-14 pt-8 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6 w-full">
-            {/* Trust Factors */}
-            <div className="flex flex-col sm:flex-row gap-6 select-none">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-[#1890FF] border border-blue-500/20 shrink-0">
-                  <Check className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-xs font-extrabold text-slate-800">Clases en Vivo + Grabaciones</span>
-                  <span className="text-[10px] text-slate-400 font-semibold">Repasa el material a tu ritmo</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600 border border-emerald-500/20 shrink-0">
-                  <Check className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-xs font-extrabold text-slate-800">Certificación Verificable</span>
-                  <span className="text-[10px] text-slate-400 font-semibold">Acredita tus competencias</span>
-                </div>
-              </div>
-            </div>
-
-            {/* View All Button */}
-            <div>
-              <Link
-                href="/cursos"
-                className="inline-flex items-center gap-2.5 bg-slate-50 border border-slate-200/80 text-slate-700 font-bold text-[13px] px-6 py-3.5 rounded-xl hover:bg-[#1890FF] hover:text-white hover:border-[#1890FF] transition-all no-underline group shadow-sm hover:shadow-md hover:shadow-blue-500/10 cursor-pointer"
-              >
-                <span>Ver todos los cursos</span> 
-                <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform text-slate-500 group-hover:text-white" />
-              </Link>
-            </div>
+          <div className="mt-12 flex justify-center w-full">
+            <Link
+              href="/cursos"
+              className="inline-flex items-center gap-2.5 bg-slate-50 border border-slate-200/80 text-slate-700 font-bold text-[13px] px-8 py-3.5 rounded-xl hover:bg-[#1890FF] hover:text-white hover:border-[#1890FF] transition-all no-underline group shadow-sm hover:shadow-md hover:shadow-blue-500/10 cursor-pointer"
+            >
+              <span>Ver todos los cursos</span> 
+              <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform text-slate-500 group-hover:text-white" />
+            </Link>
           </div>
         </FadeIn>
         
