@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FadeIn, CountUp } from "@/components/shared/AnimatedComponents";
-import { founderImage } from "@/lib/data/images";
 import { Award, BookOpen, Briefcase } from "lucide-react";
 
 export default function FounderSection() {
@@ -18,7 +17,7 @@ export default function FounderSection() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
           {/* Image Column */}
-          <div className="lg:col-span-5 relative">
+          <div className="lg:col-span-5 relative flex flex-col gap-6">
             <FadeIn direction="right">
               {/* Subtle mesh glowing background */}
               <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/10 via-indigo-500/5 to-cyan-500/10 rounded-[3rem] blur-2xl opacity-75 pointer-events-none" />
@@ -26,7 +25,7 @@ export default function FounderSection() {
               <div className="p-[3px] bg-gradient-to-br from-[#1890FF]/20 via-transparent to-indigo-500/20 rounded-[2rem]">
                 <div className="relative z-10 rounded-[1.85rem] overflow-hidden border border-slate-100 group shadow-[0_20px_50px_rgba(15,23,42,0.08)] bg-white">
                   <Image
-                    src={founderImage}
+                    src="https://mail.programbi.com/uploads/gempages_519842279402243040-8ae05cd1-dc25-44fb-9a7b-f1a78a0f121a.webp_202606132329.jpeg"
                     alt="Manuel Oliva - CEO ProgramBI"
                     width={600}
                     height={750}
@@ -55,6 +54,30 @@ export default function FounderSection() {
                     </div>
                   </motion.div>
                 </div>
+              </div>
+            </FadeIn>
+
+            {/* Action CTAs debajo de la imagen */}
+            <FadeIn delay={0.2} direction="up">
+              <div className="flex flex-col sm:flex-row lg:flex-col xl:flex-row gap-3 w-full justify-center">
+                <a
+                  href="https://www.linkedin.com/in/manuel-oliva-riesgo-inversion/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-3 bg-slate-50 border border-slate-200 text-slate-700 hover:text-[#1890FF] hover:border-[#1890FF]/30 hover:bg-blue-50/20 font-bold text-xs px-5 py-3.5 rounded-xl transition-all no-underline group shadow-sm select-none w-full"
+                >
+                  <svg className="w-4 h-4 fill-current text-slate-500 group-hover:text-[#1890FF] transition-colors" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                  </svg>
+                  <span>Conectar en LinkedIn</span>
+                </a>
+                
+                <Link
+                  href="/nosotros"
+                  className="inline-flex items-center justify-center bg-slate-50 border border-slate-200 text-slate-600 hover:text-[#1890FF] hover:border-[#1890FF]/30 font-bold text-xs px-5 py-3.5 rounded-xl transition-all no-underline shadow-sm select-none w-full text-center"
+                >
+                  Conocer más sobre ProgramBI
+                </Link>
               </div>
             </FadeIn>
           </div>
@@ -167,32 +190,7 @@ export default function FounderSection() {
                 ))}
               </div>
             </FadeIn>
-
-            {/* Action CTAs */}
-            <FadeIn delay={0.55}>
-              <div className="mt-10 pt-6 border-t border-slate-100 flex flex-wrap gap-3">
-                <a
-                  href="https://www.linkedin.com/in/manuel-oliva-riesgo-inversion/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 bg-slate-50 border border-slate-200 text-slate-700 hover:text-[#1890FF] hover:border-[#1890FF]/30 hover:bg-blue-50/20 font-bold text-sm px-6 py-3 rounded-xl transition-all no-underline group shadow-sm select-none"
-                >
-                  <svg className="w-5 h-5 fill-current text-slate-500 group-hover:text-[#1890FF] transition-colors" viewBox="0 0 24 24">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                  <span>Conectar en LinkedIn</span>
-                </a>
-                
-                <Link
-                  href="/nosotros"
-                  className="inline-flex items-center bg-slate-50 border border-slate-200 text-slate-600 hover:text-[#1890FF] hover:border-[#1890FF]/30 font-bold text-sm px-6 py-3 rounded-xl transition-all no-underline shadow-sm select-none"
-                >
-                  Conocer más sobre ProgramBI
-                </Link>
-              </div>
-            </FadeIn>
           </div>
-
         </div>
       </div>
     </section>

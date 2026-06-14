@@ -3,7 +3,6 @@ import LogoSlider from "@/components/marketing/LogoSlider";
 import CoursesSection from "@/components/marketing/CoursesSection";
 import BlogPromoSection from "@/components/marketing/BlogPromoSection";
 import GallerySection from "@/components/marketing/GallerySection";
-import DiagnosticSection from "@/components/marketing/DiagnosticSection";
 import MentorsSection from "@/components/marketing/MentorsSection";
 import FounderSection from "@/components/marketing/FounderSection";
 import FaqSection from "@/components/marketing/FaqSection";
@@ -66,7 +65,6 @@ export default async function HomePage() {
       <CoursesSection />
       <GallerySection />
       <BlogPromoSection articles={featuredArticles} />
-      <DiagnosticSection />
       <MentorsSection />
       <FounderSection />
       <FaqSection />

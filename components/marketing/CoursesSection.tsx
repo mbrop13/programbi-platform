@@ -194,7 +194,7 @@ export default function CoursesSection() {
               <Sparkles size={11} className="fill-current text-[#1890FF]" /> Bootcamps de Datos
             </span>
             
-            <h2 className="font-display text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-slate-950 via-slate-900 to-[#1890FF] leading-tight mb-3 tracking-tight">
+            <h2 className="font-display text-4xl sm:text-5xl font-extrabold text-slate-950 leading-tight mb-3 tracking-tight">
               Explora nuestros programas.
             </h2>
             
