@@ -612,10 +612,10 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
         </section>
       )}
 
-      {/* Floating Preferences Button (Desktop only, hidden on mobile bottom-nav) */}
+      {/* Floating Preferences Button (Visible on both Mobile and PC) */}
       <button
         onClick={() => setShowPrefs(true)}
-        className={`fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 w-12 h-12 rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer border border-slate-200 hidden md:flex ${
+        className={`fixed bottom-6 right-6 md:bottom-8 md:right-8 z-40 w-12 h-12 rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer border border-slate-200 flex ${
           prefs.theme === "dark" ? "bg-white text-slate-950 hover:bg-slate-100" : "bg-slate-950 text-white hover:bg-slate-800"
         }`}
         title="Preferencias de lectura"
@@ -623,12 +623,12 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
         <Sliders className="w-5 h-5" />
       </button>
 
-      {/* Floating Likes Button (FAB) */}
+      {/* Floating Likes Button (FAB - Stacked above settings button on mobile and desktop) */}
       <ArticleLikeButton
         articleId={article.id}
         initialLikes={article.likes || 0}
         theme={prefs.theme}
-        className="fixed bottom-6 right-6 md:bottom-24 md:right-8"
+        className="fixed bottom-20 right-6 md:bottom-24 md:right-8"
       />
 
       {/* Preferences Modal Panel */}

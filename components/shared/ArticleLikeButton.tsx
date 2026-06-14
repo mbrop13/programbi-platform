@@ -86,7 +86,7 @@ export default function ArticleLikeButton({
 
     // 2. Trigger heart scale pulse
     setAnimateHeart(true);
-    setTimeout(() => setAnimateHeart(false), 300);
+    setTimeout(() => setAnimateHeart(false), 350);
 
     // 3. Spawn floating particles
     const id = particleIdRef.current++;
@@ -143,42 +143,28 @@ export default function ArticleLikeButton({
     return "255, 77, 79"; // #FF4D4F
   };
 
-  // Dynamic progressive styles for the main button container
-  const getProgressiveButtonStyles = () => {
+  // Static button styles (always return to normal color at rest)
+  const getButtonStyles = () => {
     const isDark = theme === "dark";
     const isSepia = theme === "sepia";
     
-    if (userLikes === 0) {
-      return isDark 
-        ? "bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800" 
-        : isSepia 
-        ? "bg-[#FDFBF7] border-[#DECFA9] text-[#8C6D53] hover:bg-[#F9F5EA]" 
-        : "bg-white border-slate-200 text-slate-450 hover:bg-slate-50";
+    return isDark 
+      ? "bg-slate-900 border-slate-800 text-slate-400 hover:bg-slate-800 shadow-xl shadow-black/30" 
+      : isSepia 
+      ? "bg-[#FDFBF7] border-[#DECFA9] text-[#8C6D53] hover:bg-[#F9F5EA] shadow-md" 
+      : "bg-white border-slate-200 text-slate-450 hover:bg-slate-50 shadow-md";
+  };
+
+  // Pulse animation styles for the heart icon (temporarily fill with red on click)
+  const getHeartStyle = () => {
+    const rgb = getThemeRgb();
+    if (animateHeart && userLikes < 5) {
+      return {
+        color: `rgb(${rgb})`,
+        fill: `rgba(${rgb}, 0.85)`
+      };
     }
-
-    return "";
-  };
-
-  const getButtonInlineStyle = () => {
-    if (userLikes === 0) return {};
-    const rgb = getThemeRgb();
-    const bgOpacity = 0.05 + (userLikes / 5) * 0.15; // 5% to 20% opacity
-    const borderOpacity = 0.3 + (userLikes / 5) * 0.7; // 30% to 100% opacity
-    
-    return {
-      backgroundColor: `rgba(${rgb}, ${bgOpacity})`,
-      borderColor: `rgba(${rgb}, ${borderOpacity})`,
-      boxShadow: userLikes === 5 ? `0 0 15px rgba(${rgb}, 0.4)` : "none"
-    };
-  };
-
-  const getHeartInlineStyle = () => {
-    if (userLikes === 0) return {};
-    const rgb = getThemeRgb();
-    return {
-      color: `rgba(${rgb}, 1.0)`,
-      fill: `rgba(${rgb}, ${userLikes / 5})` // filled progressively
-    };
+    return {};
   };
 
   const getRingInlineStyle = () => {
@@ -268,9 +254,8 @@ export default function ArticleLikeButton({
             x: [0, -3, 3, -3, 3, 0],
             transition: { duration: 0.4 }
           } : {}}
-          style={getButtonInlineStyle()}
           className={`w-12 h-12 rounded-full border flex items-center justify-center transition-all cursor-pointer relative z-25 ${
-            getProgressiveButtonStyles()
+            getButtonStyles()
           }`}
         >
           {/* Circular SVG Ring */}
@@ -302,15 +287,13 @@ export default function ArticleLikeButton({
           {/* Heart icon */}
           <motion.div
             animate={animateHeart && userLikes < 5 ? {
-              scale: [1, 1.25, 0.92, 1.05, 1],
-              transition: { duration: 0.3 }
+              scale: [1, 1.35, 0.9, 1.1, 1],
+              transition: { duration: 0.35 }
             } : {}}
           >
             <Heart 
-              className={`w-4.5 h-4.5 transition-all duration-300 ${
-                userLikes > 0 ? "" : "text-slate-400"
-              }`}
-              style={getHeartInlineStyle()}
+              className="w-4.5 h-4.5 transition-all duration-300"
+              style={getHeartStyle()}
             />
           </motion.div>
         </motion.button>
