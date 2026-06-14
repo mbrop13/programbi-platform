@@ -111,7 +111,7 @@ export default function NosotrosPage() {
         </section>
 
         {/* Story Section */}
-        <section className="max-w-6xl mx-auto px-5 mb-24 relative z-10">
+        <section className="max-w-6xl mx-auto px-5 mb-12 relative z-10">
           <div className="grid lg:grid-cols-12 gap-12 items-center">
             <div className="lg:col-span-6 space-y-6">
               <h2 className="font-display font-black text-3xl sm:text-4xl text-white tracking-tight leading-tight">

@@ -32,7 +32,7 @@ export default function FaqSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="py-16 lg:py-24 bg-white relative overflow-hidden">
+    <section className="pt-12 pb-16 lg:pt-16 lg:pb-24 bg-white relative overflow-hidden">
       {/* Soft visual background accents */}
       <div className="absolute top-1/2 left-0 w-72 h-72 bg-blue-500/2 rounded-full blur-[100px] pointer-events-none" />
       
