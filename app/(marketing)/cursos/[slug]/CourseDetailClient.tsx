@@ -495,12 +495,12 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 {/* Secondary actions below schedules dropdown */}
                 <FadeIn delay={0.35} className="w-full">
                   <div className="flex gap-2.5 sm:gap-3">
-                    <Link
+                    <a
                       href="#temario"
                       className="flex-1 flex items-center justify-center gap-1 sm:gap-1.5 px-2 sm:px-3.5 py-3 rounded-xl font-extrabold text-[11px] sm:text-xs no-underline transition-all bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80 shadow-sm"
                     >
                       <BookOpen className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#1890FF] flex-shrink-0" /> Ver Temario
-                    </Link>
+                    </a>
                     <a
                       href="https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link"
                       target="_blank"
@@ -697,7 +697,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
                       transition={{ duration: 0.25 }}
-                      className="grid sm:grid-cols-2 gap-4"
+                      className="grid grid-cols-1 sm:grid-cols-2 gap-4"
                     >
                       {currentWhatYouLearn.map((item, i) => (
                         <motion.div
@@ -1457,7 +1457,7 @@ function IDETabContent({ tech, accentColor }: { tech: string; accentColor: strin
           <span className="text-[10px] font-mono text-gray-400">DB: Enterprise_DWH</span>
           <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="text-[10px] font-bold text-emerald-600">🔒 Connected</motion.span>
         </div>
-        <div className="flex-1 p-4 lg:p-6 font-mono text-xs lg:text-sm leading-relaxed overflow-hidden">
+        <div className="flex-1 p-4 lg:p-6 font-mono text-xs lg:text-sm leading-relaxed overflow-x-auto">
           <div className="flex gap-3">
             <div className="text-gray-300 text-right select-none" style={{ minWidth: 24 }}>
               {sqlLines.map((_, n) => <div key={n}>{n + 1}</div>)}
@@ -1573,7 +1573,7 @@ function IDETabContent({ tech, accentColor }: { tech: string; accentColor: strin
           <span className="text-[10px] font-mono text-[#858585]">{scriptName}</span>
           <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-[10px] font-bold text-[#4ec9b0]">● Running</motion.span>
         </div>
-        <div className="flex-1 p-4 lg:p-6 font-mono text-xs lg:text-sm leading-relaxed text-[#d4d4d4] overflow-hidden">
+        <div className="flex-1 p-4 lg:p-6 font-mono text-xs lg:text-sm leading-relaxed text-[#d4d4d4] overflow-x-auto">
           {codeLines.map((line, i) => (
             <motion.div
               key={i}
@@ -1687,7 +1687,7 @@ function IDETabContent({ tech, accentColor }: { tech: string; accentColor: strin
         <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">~/Cloud_Shell</span>
         <span className="text-[10px] text-slate-500 ml-auto font-mono">Agent: {tech}</span>
       </div>
-      <div className="flex-1 p-5 lg:p-6 font-mono text-xs leading-relaxed text-slate-300 overflow-hidden flex flex-col justify-end relative">
+      <div className="flex-1 p-5 lg:p-6 font-mono text-xs leading-relaxed text-slate-300 overflow-x-auto flex flex-col justify-end relative">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-900/20 via-slate-900/0 to-slate-900/0 pointer-events-none" />
         <div className="relative z-10 flex flex-col justify-end">
           {[

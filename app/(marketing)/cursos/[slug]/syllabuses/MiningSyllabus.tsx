@@ -42,7 +42,7 @@ export default function MiningSyllabus({ selectedLevel, hideSelector = false, cl
         )}
 
         {/* INFORMACIÓN GENERAL */}
-        <div className="grid md:grid-cols-2 gap-6 md:gap-8 mb-12 sm:mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-12 sm:mb-16">
             <div className="bg-white p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] border border-stone-200 shadow-sm relative overflow-hidden group hover:border-amber-200 transition-colors">
                 <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-stone-50 rounded-full blur-2xl group-hover:bg-amber-50/50 transition-colors pointer-events-none" />
                 <h3 className="text-lg sm:text-xl font-bold text-stone-900 mb-4 sm:mb-6 flex items-center gap-3">

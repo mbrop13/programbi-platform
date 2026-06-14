@@ -90,7 +90,7 @@ export default function ExcelSyllabus({ selectedLevel, hideSelector = false, cle
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
               
               {/* Tarjetas Informativas */}
-              <div className="grid md:grid-cols-5 gap-6 mb-10">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-10">
                 <div className="md:col-span-2 bg-white p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] relative overflow-hidden group hover:border-green-100 transition-colors">
                   <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gray-50 rounded-full blur-2xl group-hover:bg-green-50/50 transition-colors pointer-events-none" />
                   <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
@@ -162,7 +162,7 @@ export default function ExcelSyllabus({ selectedLevel, hideSelector = false, cle
           {/* ======================= NIVEL INTERMEDIO ======================= */}
           {activeTab === "nivel2" && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="grid md:grid-cols-5 gap-6 mb-10">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-10">
                 <div className="md:col-span-2 bg-white p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] relative overflow-hidden group hover:border-purple-100 transition-colors">
                   <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gray-50 rounded-full blur-2xl group-hover:bg-purple-50/50 transition-colors pointer-events-none" />
                   <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
@@ -233,7 +233,7 @@ export default function ExcelSyllabus({ selectedLevel, hideSelector = false, cle
           {/* ======================= NIVEL AVANZADO ======================= */}
           {activeTab === "nivel3" && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-               <div className="grid md:grid-cols-5 gap-6 mb-10">
+               <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-10">
                 <div className="md:col-span-2 bg-white p-5 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-gray-100 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] relative overflow-hidden group hover:border-orange-100 transition-colors">
                   <div className="absolute -right-8 -bottom-8 w-32 h-32 bg-gray-50 rounded-full blur-2xl group-hover:bg-orange-50/50 transition-colors pointer-events-none" />
                   <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
