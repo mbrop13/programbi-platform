@@ -493,7 +493,7 @@ export default function BlogClient({ articles }: { articles: any[] }) {
             <button
               key={tab.value}
               onClick={() => handleCategoryClick(tab.value)}
-              className="relative flex flex-col items-center justify-center flex-1 py-1 px-1.5 rounded-full transition-all duration-300 border-none bg-transparent cursor-pointer"
+              className="relative flex flex-col items-center justify-center flex-1 py-1 px-1.5 rounded-full transition-all duration-300 border-none bg-transparent cursor-pointer group"
             >
               {isActive && (
                 <motion.div
@@ -506,8 +506,8 @@ export default function BlogClient({ articles }: { articles: any[] }) {
                 whileTap={{ scale: 0.85 }}
                 className="flex flex-col items-center"
               >
-                <Icon className={`w-4 h-4 transition-colors duration-300 ${isActive ? "text-[#1890FF]" : "text-slate-400"}`} />
-                <span className={`text-[8px] uppercase tracking-wider font-sans font-bold mt-0.5 transition-colors duration-300 ${isActive ? "text-white" : "text-slate-400"}`}>
+                <Icon className={`w-4 h-4 transition-colors duration-300 ${isActive ? "text-blue-400" : "text-white/60 group-hover:text-white"}`} />
+                <span className={`text-[8px] uppercase tracking-wider font-sans font-bold mt-0.5 transition-colors duration-300 ${isActive ? "text-white" : "text-white/50 group-hover:text-white"}`}>
                   {tab.label}
                 </span>
               </motion.div>
@@ -518,14 +518,14 @@ export default function BlogClient({ articles }: { articles: any[] }) {
         {/* Preferencias tab */}
         <button
           onClick={() => setShowPrefs(true)}
-          className="relative flex flex-col items-center justify-center flex-1 py-1 px-1.5 rounded-full border-none bg-transparent cursor-pointer text-slate-400 hover:text-white"
+          className="relative flex flex-col items-center justify-center flex-1 py-1 px-1.5 rounded-full border-none bg-transparent cursor-pointer text-white/50 hover:text-white group"
         >
           <motion.div
             whileTap={{ scale: 0.85 }}
             className="flex flex-col items-center"
           >
-            <Sliders className="w-4 h-4 text-slate-400" />
-            <span className="text-[8px] uppercase tracking-wider font-sans font-bold mt-0.5 text-slate-400">
+            <Sliders className="w-4 h-4 text-white/60 group-hover:text-white transition-colors duration-300" />
+            <span className="text-[8px] uppercase tracking-wider font-sans font-bold mt-0.5 text-white/50 group-hover:text-white transition-colors duration-300">
               Ajustes
             </span>
           </motion.div>
