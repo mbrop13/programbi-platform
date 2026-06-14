@@ -421,7 +421,7 @@ export default function DiagnosticSection() {
                         </Link>
                         
                         <Link
-                          href="https://wa.me/56936776614"
+                          href="https://wa.me/56935409699?text=Hola!%20Me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20los%20cursos%20de%20ProgramBI."
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 font-bold text-sm transition-all no-underline font-sans"

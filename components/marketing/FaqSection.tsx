@@ -121,7 +121,7 @@ export default function FaqSection() {
               ¿Aún tienes dudas?
             </p>
             <a 
-              href="https://wa.me/56936776614" 
+              href="https://wa.me/56935409699?text=Hola!%20Me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20los%20cursos%20de%20ProgramBI." 
               target="_blank" 
               rel="noopener noreferrer" 
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-250/60 hover:border-slate-300 text-xs font-bold text-slate-700 hover:text-slate-900 transition-all shadow-sm hover:shadow no-underline cursor-pointer"
