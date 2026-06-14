@@ -1,7 +1,7 @@
 import HeroSection from "@/components/marketing/HeroSection";
 import LogoSlider from "@/components/marketing/LogoSlider";
 import CoursesSection from "@/components/marketing/CoursesSection";
-import AsesoriasPromoSection from "@/components/marketing/AsesoriasPromoSection";
+import BlogPromoSection from "@/components/marketing/BlogPromoSection";
 import GallerySection from "@/components/marketing/GallerySection";
 import DiagnosticSection from "@/components/marketing/DiagnosticSection";
 import MentorsSection from "@/components/marketing/MentorsSection";
@@ -9,6 +9,7 @@ import FounderSection from "@/components/marketing/FounderSection";
 import FaqSection from "@/components/marketing/FaqSection";
 import ContactSection from "@/components/marketing/ContactSection";
 import CtaBanner from "@/components/marketing/CtaBanner";
+import { getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 
 // FAQ JSON-LD for Google Rich Results (FAQ Snippet)
 const faqJsonLd = {
@@ -50,7 +51,10 @@ const faqJsonLd = {
   ],
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const articles = await getPublishedArticles();
+  const featuredArticles = articles.slice(0, 5);
+
   return (
     <>
       <script
@@ -61,7 +65,7 @@ export default function HomePage() {
       <LogoSlider />
       <CoursesSection />
       <GallerySection />
-      <AsesoriasPromoSection />
+      <BlogPromoSection articles={featuredArticles} />
       <DiagnosticSection />
       <MentorsSection />
       <FounderSection />

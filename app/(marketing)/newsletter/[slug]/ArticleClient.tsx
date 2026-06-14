@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 import { getArticleBySlug, getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import ArticleBlockRenderer, { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
+import ArticleLikeButton from "@/components/shared/ArticleLikeButton";
 import { isVideoUrl } from "@/lib/utils";
 
 function getVideoFromContent(content?: string): string | undefined {
@@ -210,6 +211,15 @@ export default function ArticleClient({ slug }: { slug: string }) {
                 ))}
               </div>
             )}
+
+            {/* Like Button Showcase */}
+            <div className="py-6 border-b border-gray-100 mb-8 flex justify-center">
+              <ArticleLikeButton
+                articleId={article.id}
+                initialLikes={article.likes || 0}
+                theme="light"
+              />
+            </div>
 
             {/* Share */}
             <div className="flex items-center gap-4 mb-16">

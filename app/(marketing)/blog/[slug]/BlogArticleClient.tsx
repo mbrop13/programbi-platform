@@ -18,6 +18,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import ArticleBlockRenderer, { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
+import ArticleLikeButton from "@/components/shared/ArticleLikeButton";
 import { isVideoUrl } from "@/lib/utils";
 
 function getVideoFromContent(content?: string): string | undefined {
@@ -442,10 +443,19 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
               <ArticleBlockRenderer content={article.content} />
             </div>
 
-            {/* Horizontal Share Buttons at the end of content */}
-            <div className={`mt-12 py-4 border-t flex items-center justify-between flex-wrap gap-4 ${
+            {/* Like Button Showcase */}
+            <div className={`mt-10 pb-6 border-b flex flex-col items-center justify-center ${
               prefs.theme === "dark" ? "border-slate-800" : "border-slate-100"
             }`}>
+              <ArticleLikeButton
+                articleId={article.id}
+                initialLikes={article.likes || 0}
+                theme={prefs.theme}
+              />
+            </div>
+
+            {/* Horizontal Share Buttons at the end of content */}
+            <div className="py-4 flex items-center justify-between flex-wrap gap-4">
               <span className={`text-[10px] font-bold uppercase tracking-widest ${
                 prefs.theme === "dark" ? "text-slate-400" : "text-slate-500"
               }`}>¿Te gustó este artículo?</span>
