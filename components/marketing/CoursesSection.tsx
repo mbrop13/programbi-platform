@@ -160,7 +160,7 @@ export default function CoursesSection() {
   const filteredCourses = getFilteredCourses();
 
   return (
-    <section className="w-full bg-white text-slate-900 pt-8 pb-16 lg:pt-10 lg:pb-20 relative overflow-hidden flex justify-center items-center">
+    <section className="w-full bg-gradient-to-b from-slate-50/70 via-white to-slate-50/50 text-slate-900 pt-8 pb-16 lg:pt-10 lg:pb-20 relative overflow-hidden flex justify-center items-center">
       {/* Grid Pattern Background */}
       <div 
         className="absolute inset-0 opacity-[0.015] pointer-events-none z-0"
@@ -185,7 +185,7 @@ export default function CoursesSection() {
       `}} />
 
       {/* Centering wrapper */}
-      <div className="w-full px-4 md:px-6 max-w-[1400px] mx-auto relative z-10">
+      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 max-w-[1400px] mx-auto relative z-10">
         
         {/* Centered Header */}
         <FadeIn>
@@ -258,7 +258,7 @@ export default function CoursesSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5"
             >
               {filteredCourses.map((course) => {
                 const CardIcon = IconMap[course.icon] || Sparkles;
@@ -271,7 +271,7 @@ export default function CoursesSection() {
                   <div key={course.slug} className="w-full">
                     <motion.div 
                       layout
-                      className="group bg-white/60 backdrop-blur-xl rounded-2xl border border-white/60 hover:border-blue-400/35 flex flex-col justify-between overflow-hidden shadow-[0_8px_32px_rgba(31,38,135,0.04)] hover:shadow-[0_24px_50px_rgba(24,144,255,0.09)] hover:-translate-y-1 transition-all duration-500 h-full p-4 relative"
+                      className="group bg-white/70 backdrop-blur-md rounded-3xl border border-white hover:border-[#1890FF]/30 flex flex-col justify-between overflow-hidden shadow-[0_8px_32px_0_rgba(31,38,135,0.03),inset_0_1px_0_0_rgba(255,255,255,0.8)] hover:shadow-[0_20px_40px_rgba(24,144,255,0.08),inset_0_1px_0_0_rgba(255,255,255,0.9)] hover:-translate-y-1 transition-all duration-500 h-full p-4.5 relative"
                     >
                       {/* Subtle radial glow matching the course accent color */}
                       <div 
@@ -280,13 +280,13 @@ export default function CoursesSection() {
                       />
 
                       {/* Floating course symbol icon */}
-                      <div className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white/70 backdrop-blur-md border border-white/80 flex items-center justify-center text-slate-400 group-hover:text-[#1890FF] group-hover:border-[#1890FF]/30 transition-all shadow-sm">
+                      <div className="absolute top-3.5 right-3.5 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md border border-white flex items-center justify-center text-slate-400 group-hover:text-[#1890FF] group-hover:border-[#1890FF]/30 transition-all shadow-sm">
                         <CardIcon className="w-3.5 h-3.5" />
                       </div>
                       
                       <div>
                         {/* Image container: aspect-[1.5/1] (larger vertical dimension) */}
-                        <div className="relative overflow-hidden aspect-[1.5/1] rounded-xl mb-4 bg-slate-100/30">
+                        <div className="relative overflow-hidden aspect-[1.5/1] rounded-2xl mb-4 bg-slate-100/30">
                           <div className="absolute inset-0 bg-[#0F172A]/4 z-10 group-hover:bg-[#0F172A]/0 transition-colors duration-500" />
                           <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 items-start">
                             {course.slug === "analisis-de-datos" && (

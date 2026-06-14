@@ -32,14 +32,15 @@ export default function FaqSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="pt-12 pb-16 lg:pt-16 lg:pb-24 bg-white relative overflow-hidden">
+    <section className="pt-4 pb-16 lg:pt-6 lg:pb-24 bg-white relative overflow-hidden">
       {/* Soft visual background accents */}
-      <div className="absolute top-1/2 left-0 w-72 h-72 bg-blue-500/2 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/4 left-[-10%] w-[350px] h-[350px] bg-blue-100/20 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute bottom-1/4 right-[-10%] w-[350px] h-[350px] bg-indigo-100/20 rounded-full blur-[120px] pointer-events-none z-0" />
       
       <div className="max-w-[1200px] mx-auto px-5 lg:px-10 relative z-10">
         {/* Header */}
         <FadeIn>
-          <div className="text-center mb-16 lg:mb-20">
+          <div className="text-center mb-12 lg:mb-16">
             <h2 className="text-4xl md:text-5xl lg:text-[44px] font-black text-slate-900 tracking-tight font-display mb-4">
               Preguntas{" "}
               <span
@@ -67,13 +68,13 @@ export default function FaqSection() {
                 <div 
                   className={`border rounded-2xl transition-all duration-300 overflow-hidden ${
                     isOpen 
-                      ? "border-[#1890FF]/30 bg-white shadow-[0_12px_30px_-10px_rgba(24,144,255,0.08)]" 
-                      : "border-slate-200/60 bg-slate-50/50 hover:bg-white hover:border-slate-350 hover:shadow-sm"
+                      ? "border-[#1890FF]/25 bg-blue-50/5 shadow-[0_12px_40px_-12px_rgba(24,144,255,0.06),inset_0_1px_1px_rgba(255,255,255,0.8)]" 
+                      : "border-slate-200 bg-slate-50/30 hover:bg-white hover:border-slate-300 hover:shadow-[0_4px_20px_rgba(0,0,0,0.01)]"
                   }`}
                 >
                   <button
                     onClick={() => setOpenIndex(isOpen ? null : i)}
-                    className="flex justify-between items-center w-full text-left bg-transparent border-none cursor-pointer p-6 group outline-none select-none"
+                    className="flex justify-between items-center w-full text-left bg-transparent border-none cursor-pointer p-5 sm:p-6 group outline-none select-none"
                   >
                     <span className={`text-sm md:text-base font-bold pr-4 transition-colors font-sans tracking-tight leading-snug ${
                       isOpen ? "text-[#1890FF]" : "text-slate-800"
@@ -87,7 +88,7 @@ export default function FaqSection() {
                         isOpen ? "bg-[#1890FF] text-white" : "bg-slate-100 text-slate-500 group-hover:bg-slate-200"
                       }`}
                     >
-                      <Plus size={15} className="stroke-[3]" />
+                      <Plus size={14} className="stroke-[3]" />
                     </motion.div>
                   </button>
                   
@@ -99,7 +100,7 @@ export default function FaqSection() {
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.25, ease: "easeInOut" }}
                       >
-                        <div className="px-6 pb-6 pt-0 border-t border-slate-100/50">
+                        <div className="px-5 sm:px-6 pb-5 sm:pb-6 pt-0 border-t border-slate-100/50">
                           <p className="text-xs md:text-sm text-slate-500 leading-relaxed pt-4 font-sans">
                             {faq.answer}
                           </p>
@@ -112,6 +113,23 @@ export default function FaqSection() {
             );
           })}
         </div>
+
+        {/* WhatsApp CTA Footer */}
+        <FadeIn delay={0.25}>
+          <div className="mt-12 text-center relative z-20">
+            <p className="text-[11px] text-slate-400 font-extrabold uppercase tracking-wider mb-3 select-none">
+              ¿Aún tienes dudas?
+            </p>
+            <a 
+              href="https://wa.me/56936776614" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-slate-50 hover:bg-slate-100/80 border border-slate-250/60 hover:border-slate-300 text-xs font-bold text-slate-700 hover:text-slate-900 transition-all shadow-sm hover:shadow no-underline cursor-pointer"
+            >
+              Conversa con nosotros por WhatsApp
+            </a>
+          </div>
+        </FadeIn>
       </div>
 
       <style jsx>{`
