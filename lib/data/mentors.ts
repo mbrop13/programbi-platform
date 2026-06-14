@@ -65,22 +65,6 @@ export const mentors: Mentor[] = [
     specialtyCourses: ["analitica-financiera", "python"],
   },
   {
-    name: "Joaquin Villagra",
-    role: "Especialista IA",
-    title: "MSc. Inteligencia Artificial",
-    credentials: [
-      "MSc. Inteligencia Artificial.",
-      "Magíster Ing. Informática.",
-      "Docente Postgrado UAI.",
-    ],
-    icon: "Brain",
-    isFounder: false,
-    sortOrder: 3,
-    studentCount: 600,
-    yearsExperience: 8,
-    specialtyCourses: ["machine-learning", "ia-productividad"],
-  },
-  {
     name: "Rodrigo Vega",
     role: "Analista BI",
     title: "Ingeniero Comercial",
