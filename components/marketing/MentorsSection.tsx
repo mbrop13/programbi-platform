@@ -171,49 +171,54 @@ export default function MentorsSection() {
                       )}
 
                       {/* Expanded View Profile Info */}
-                      {isActive && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.35, ease: "easeOut" }}
-                          className="flex flex-col gap-3.5 w-full border-t border-white/10 pt-3.5 mt-2 pointer-events-auto"
-                        >
-                          {/* Credentials list */}
-                          <ul className="space-y-1.5 p-0 m-0 select-none">
-                            {mentor.credentials.map((cred, i) => (
-                              <li key={i} className="flex items-start gap-2 text-[11px] text-slate-300 leading-relaxed list-none">
-                                <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5 stroke-[3]" />
-                                <span>{cred}</span>
-                              </li>
-                            ))}
-                          </ul>
+                      <motion.div
+                        initial={false}
+                        animate={{ 
+                          height: isActive ? "auto" : 0, 
+                          opacity: isActive ? 1 : 0,
+                          marginTop: isActive ? 8 : 0,
+                          paddingTop: isActive ? 14 : 0
+                        }}
+                        transition={{ duration: 0.35, ease: "easeInOut" }}
+                        className={`flex flex-col gap-3.5 w-full border-t ${
+                          isActive ? "border-white/10" : "border-transparent"
+                        } pointer-events-auto overflow-hidden`}
+                      >
+                        {/* Credentials list */}
+                        <ul className="space-y-1.5 p-0 m-0 select-none">
+                          {mentor.credentials.map((cred, i) => (
+                            <li key={i} className="flex items-start gap-2 text-[11px] text-slate-300 leading-relaxed list-none">
+                              <Check className="w-3.5 h-3.5 text-emerald-400 flex-shrink-0 mt-0.5 stroke-[3]" />
+                              <span>{cred}</span>
+                            </li>
+                          ))}
+                        </ul>
 
-                          {/* Trust Metrics Bar */}
-                          <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400 select-none">
-                            <div className="flex items-center gap-1">
-                              <Users className="w-3.5 h-3.5 text-slate-500" />
-                              <span>{mentor.studentCount.toLocaleString()}+ alumnos</span>
-                            </div>
-                            <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
-                            <div className="flex items-center gap-1">
-                              <Briefcase className="w-3.5 h-3.5 text-slate-500" />
-                              <span>{mentor.yearsExperience}+ años exp.</span>
-                            </div>
+                        {/* Trust Metrics Bar */}
+                        <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400 select-none">
+                          <div className="flex items-center gap-1">
+                            <Users className="w-3.5 h-3.5 text-slate-500" />
+                            <span>{mentor.studentCount.toLocaleString()}+ alumnos</span>
                           </div>
+                          <div className="w-1.5 h-1.5 rounded-full bg-slate-700" />
+                          <div className="flex items-center gap-1">
+                            <Briefcase className="w-3.5 h-3.5 text-slate-500" />
+                            <span>{mentor.yearsExperience}+ años exp.</span>
+                          </div>
+                        </div>
 
-                          {/* CTA */}
-                          <div className="pt-1 flex justify-start">
-                            <Link
-                              href={mentor.isFounder ? "/nosotros" : "/cursos"}
-                              className="inline-flex items-center gap-1 text-[11px] font-black text-[#1890FF] hover:text-blue-400 transition-colors group/cta leading-none"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <span>{mentor.isFounder ? "Ver perfil completo" : `Ver cursos de ${mentor.name.split(" ")[0]}`}</span>
-                              <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/cta:translate-x-0.5" />
-                            </Link>
-                          </div>
-                        </motion.div>
-                      )}
+                        {/* CTA */}
+                        <div className="pt-1 flex justify-start">
+                          <Link
+                            href={mentor.isFounder ? "/nosotros" : "/cursos"}
+                            className="inline-flex items-center gap-1 text-[11px] font-black text-[#1890FF] hover:text-blue-400 transition-colors group/cta leading-none"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <span>{mentor.isFounder ? "Ver perfil completo" : `Ver cursos de ${mentor.name.split(" ")[0]}`}</span>
+                            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/cta:translate-x-0.5" />
+                          </Link>
+                        </div>
+                      </motion.div>
                     </div>
 
                   </motion.div>
