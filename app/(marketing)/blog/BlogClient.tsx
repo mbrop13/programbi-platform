@@ -486,7 +486,7 @@ export default function BlogClient({ articles }: { articles: any[] }) {
       </main>
 
       {/* Mobile Bottom Navigation Menu (Floating Circular Liquid Glass) */}
-      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[95%] max-w-[420px] bg-slate-950/70 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5 flex items-center justify-between shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)] select-none">
+      <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-[360px] bg-slate-950/70 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5 flex items-center justify-between shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)] select-none">
         {[
           { value: "ia", label: "AI", icon: Sparkles },
           { value: "economia", label: "Economía", icon: DollarSign },
@@ -521,23 +521,18 @@ export default function BlogClient({ articles }: { articles: any[] }) {
             </button>
           );
         })}
-
-        {/* Preferencias tab */}
-        <button
-          onClick={() => setShowPrefs(true)}
-          className="relative flex flex-col items-center justify-center flex-1 py-1 px-1.5 rounded-full border-none bg-transparent cursor-pointer text-white/50 hover:text-white group"
-        >
-          <motion.div
-            whileTap={{ scale: 0.85 }}
-            className="flex flex-col items-center"
-          >
-            <Sliders className="w-4 h-4 text-white/60 group-hover:text-white transition-colors duration-300" />
-            <span className="text-[8px] uppercase tracking-wider font-sans font-bold mt-0.5 text-white/50 group-hover:text-white transition-colors duration-300">
-              Ajustes
-            </span>
-          </motion.div>
-        </button>
       </div>
+
+      {/* Floating Preferences Button */}
+      <button
+        onClick={() => setShowPrefs(true)}
+        className={`fixed bottom-24 right-6 md:bottom-8 md:right-8 z-40 w-12 h-12 rounded-full shadow-xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer border border-slate-200 flex ${
+          prefs.theme === "dark" ? "bg-white text-slate-950 hover:bg-slate-100" : "bg-slate-950 text-white hover:bg-slate-800"
+        }`}
+        title="Preferencias de lectura"
+      >
+        <Sliders className="w-5 h-5" />
+      </button>
 
       {/* Preferences panel (reused, changes will persist and apply on article page) */}
       <BlogPreferences
