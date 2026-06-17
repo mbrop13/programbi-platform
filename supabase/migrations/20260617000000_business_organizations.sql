@@ -19,6 +19,8 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
+ALTER FUNCTION public.is_admin() OWNER TO postgres;
+
 REVOKE EXECUTE ON FUNCTION public.is_admin() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.is_admin() TO authenticated;
 GRANT EXECUTE ON FUNCTION public.is_admin() TO service_role;
@@ -30,6 +32,8 @@ BEGIN
   RETURN (SELECT organization_id FROM public.profiles WHERE id = auth.uid());
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+ALTER FUNCTION public.get_user_organization_id() OWNER TO postgres;
 
 REVOKE EXECUTE ON FUNCTION public.get_user_organization_id() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.get_user_organization_id() TO authenticated;
@@ -68,6 +72,7 @@ ALTER TABLE public.profiles
 ALTER TABLE public.organizations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.organization_managers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.profiles NO FORCE ROW LEVEL SECURITY;
 
 -- ============================================
 -- 5. RLS Policies for Organizations

@@ -173,6 +173,7 @@ CREATE TABLE public.mentors (
 
 -- Profiles: users can read their own, admins can read all
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.profiles NO FORCE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can view own profile" ON public.profiles
   FOR SELECT USING (auth.uid() = id);
