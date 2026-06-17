@@ -32,6 +32,7 @@ import ChatGlobal from "./tabs/ChatGlobal";
 import AIAsistente from "./tabs/AIAsistente";
 import AdminPanel from "./tabs/AdminPanel";
 import BusinessPortal from "./tabs/BusinessPortal";
+import LivePanel from "./tabs/LivePanel";
 import { isCurrentUserAdmin, getCurrentUserProfile, getCurrentUserManagedOrganization } from "@/lib/supabase/comunidad";
 
 interface UserProfile {
@@ -374,20 +375,7 @@ export default function ComunidadPortal() {
                            <button onClick={() => router.push("/comunidad")} className="bg-brand-blue text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all">Ver Planes</button>
                         </div>
                       )}
-                      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-12 text-center max-w-2xl mx-auto mt-8">
-                        <div className="w-20 h-20 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                          <Radio className="w-10 h-10 text-rose-500" />
-                        </div>
-                        <h2 className="font-display font-black text-2xl text-gray-900 mb-3">Masterclasses Live</h2>
-                        <p className="text-gray-500 max-w-md mx-auto mb-8">Sesiones en vivo con expertos en Data Analytics, SQL, Python y Power BI. Próximamente los horarios de la siguiente sesión.</p>
-                        <div className="inline-flex items-center gap-2 bg-rose-50 text-rose-600 font-bold text-sm px-4 py-2 rounded-full">
-                          <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                            <span className="relative rounded-full h-2 w-2 bg-rose-500"></span>
-                          </span>
-                          Próxima sesión: Viernes 8PM CST
-                        </div>
-                      </div>
+                      <LivePanel />
                     </div>
                   )}
                   

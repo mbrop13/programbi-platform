@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/openai": "^3.0.52",
     "@ai-sdk/react": "^3.0.160",
+    "@livekit/components-react": "^2.9.21",
     "@monaco-editor/react": "^4.7.0",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.0",
@@ -24,6 +25,8 @@
     "html2canvas": "^1.4.1",
     "html2canvas-pro": "^2.0.2",
     "jspdf": "^4.2.1",
+    "livekit-client": "^2.19.2",
+    "livekit-server-sdk": "^2.15.4",
     "lucide-react": "^1.8.0",
     "next": "16.2.3",
     "nodemailer": "^8.0.5",
