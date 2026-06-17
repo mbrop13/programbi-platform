@@ -44,8 +44,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Configuración de servidor incompleta." }, { status: 500 });
     }
 
-    // Clean protocol if necessary (EgressClient sometimes expects host without https://)
-    const host = livekitUrl.replace(/^https?:\/\//, "");
+    // Clean protocol if necessary (EgressClient expects https://host)
+    const host = livekitUrl.replace(/^(https?:|wss?:)?\/\//, "");
     const egressClient = new EgressClient(`https://${host}`, apiKey, apiSecret);
 
     if (action === "start") {
