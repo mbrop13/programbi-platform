@@ -20,7 +20,9 @@ import {
   Clock, 
   AlertCircle, 
   Lock,
-  Volume2
+  Volume2,
+  Sun,
+  Moon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -49,6 +51,7 @@ export default function LivePanel() {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   // Form states for creating a class
   const [title, setTitle] = useState("");
@@ -188,7 +191,12 @@ export default function LivePanel() {
     const livekitUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL || "wss://programbi.livekit.cloud";
 
     return (
-      <div className="w-full bg-slate-950 text-white rounded-3xl overflow-hidden border border-slate-800 shadow-2xl p-2 sm:p-4 min-h-[500px]">
+      <div className={`w-full rounded-3xl overflow-hidden shadow-2xl p-2 sm:p-4 min-h-[500px] border transition-colors duration-300
+        ${theme === 'dark' 
+          ? 'bg-slate-950 text-white border-slate-800' 
+          : 'bg-white text-slate-900 border-slate-200'
+        }
+      `}>
         <LiveKitRoom
           token={token}
           serverUrl={livekitUrl}
@@ -202,6 +210,8 @@ export default function LivePanel() {
             isAdmin={isAdmin} 
             activeClass={activeClass} 
             onLeave={handleLeaveRoom}
+            theme={theme}
+            setTheme={setTheme}
           />
         </LiveKitRoom>
       </div>
@@ -374,9 +384,11 @@ interface ClassroomViewProps {
   isAdmin: boolean;
   activeClass: LiveClass;
   onLeave: () => void;
+  theme: 'light' | 'dark';
+  setTheme: (t: 'light' | 'dark') => void;
 }
 
-function ClassroomView({ isAdmin, activeClass, onLeave }: ClassroomViewProps) {
+function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: ClassroomViewProps) {
   const room = useRoomContext();
   const [streamActive, setStreamActive] = useState(!!activeClass.livekit_egress_id);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -591,16 +603,28 @@ function ClassroomView({ isAdmin, activeClass, onLeave }: ClassroomViewProps) {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[600px] w-full relative">
       {/* ─── MAIN STAGE / VIDEO SCREEN (9/12 cols) ─── */}
-      <div className="lg:col-span-9 bg-slate-900 rounded-2xl overflow-hidden flex flex-col justify-between p-4 relative border border-slate-800">
+      <div className={`lg:col-span-9 rounded-2xl overflow-hidden flex flex-col justify-between p-4 relative border transition-colors duration-300
+        ${theme === 'dark'
+          ? 'bg-slate-900 border-slate-800'
+          : 'bg-slate-100 border-slate-200 shadow-inner'
+        }
+      `}>
         
         {/* Host Header bar with Status indicators */}
-        <div className="flex justify-between items-center bg-slate-950/80 backdrop-blur-md px-4 py-2.5 rounded-xl border border-slate-800/50 absolute top-4 left-4 right-4 z-20">
+        <div className={`flex justify-between items-center px-4 py-2.5 rounded-xl border transition-colors duration-300 absolute top-4 left-4 right-4 z-20
+          ${theme === 'dark'
+            ? 'bg-slate-950/80 border-slate-800/50 text-white'
+            : 'bg-white/95 border-slate-200 text-slate-900 shadow-sm'
+          }
+        `}>
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
-            <h4 className="font-bold text-xs truncate max-w-[200px] sm:max-w-md">{activeClass.title}</h4>
+            <h4 className={`font-bold text-xs truncate max-w-[150px] sm:max-w-md ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{activeClass.title}</h4>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-[10px] bg-slate-800 text-slate-400 font-bold px-2 py-0.5 rounded-md flex items-center gap-1">
+            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 transition-colors
+              ${theme === 'dark' ? 'bg-slate-800 text-slate-400' : 'bg-slate-100 text-slate-600'}
+            `}>
               <Users className="w-3 h-3" />
               {participants.length}
             </span>
@@ -609,11 +633,27 @@ function ClassroomView({ isAdmin, activeClass, onLeave }: ClassroomViewProps) {
                 RTMP Transmitiendo
               </span>
             )}
+            
+            {/* Theme Toggle Button */}
+            <button
+              onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+              className={`p-1.5 rounded-lg border transition-all cursor-pointer flex items-center justify-center
+                ${theme === 'dark'
+                  ? 'bg-slate-800 border-slate-700 hover:bg-slate-700 text-amber-400'
+                  : 'bg-slate-50 border-slate-200 hover:bg-slate-100 text-slate-600'
+                }
+              `}
+              title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+            >
+              {theme === 'dark' ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+            </button>
           </div>
         </div>
 
         {/* Video stream container */}
-        <div className="flex-1 flex items-center justify-center relative bg-slate-950 rounded-xl overflow-hidden mt-12 mb-16">
+        <div className={`flex-1 flex items-center justify-center relative rounded-xl overflow-hidden mt-12 mb-16 transition-colors duration-300
+          ${theme === 'dark' ? 'bg-slate-950' : 'bg-slate-200'}
+        `}>
           <AnimatePresence>
             {isBreakActive && (
               <motion.div 
@@ -653,21 +693,27 @@ function ClassroomView({ isAdmin, activeClass, onLeave }: ClassroomViewProps) {
         {/* Controls dock (Bottom center) */}
         <div className="absolute bottom-4 left-4 right-4 z-20 flex justify-between gap-4 flex-wrap">
           {/* Media Toggles */}
-          <div className="flex gap-2 bg-slate-950/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-800">
-            <MicButton room={room} />
-            <CameraButton room={room} />
-            {isAdmin && <ScreenShareButton room={room} />}
+          <div className={`flex gap-2 p-1.5 rounded-xl border transition-colors duration-300
+            ${theme === 'dark' ? 'bg-slate-950/90 border-slate-800' : 'bg-white/95 border-slate-200 shadow-md'}
+          `}>
+            <MicButton room={room} theme={theme} />
+            <CameraButton room={room} theme={theme} />
+            {isAdmin && <ScreenShareButton room={room} theme={theme} />}
           </div>
 
           {/* Host Administration Commands */}
           {isAdmin && (
-            <div className="flex gap-2 bg-slate-950/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-800">
+            <div className={`flex gap-2 p-1.5 rounded-xl border transition-colors duration-300
+              ${theme === 'dark' ? 'bg-slate-950/90 border-slate-800' : 'bg-white/95 border-slate-200 shadow-md'}
+            `}>
               <button 
                 onClick={handleToggleBreak}
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center gap-1.5
                   ${isBreakActive 
                     ? "bg-amber-600 text-white" 
-                    : "bg-slate-800 hover:bg-slate-700 text-slate-200"
+                    : theme === 'dark'
+                      ? "bg-slate-800 hover:bg-slate-700 text-slate-200"
+                      : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                   }
                 `}
                 title="Pausar clase por intermedio"
@@ -682,7 +728,9 @@ function ClassroomView({ isAdmin, activeClass, onLeave }: ClassroomViewProps) {
                 className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center gap-1.5
                   ${streamActive 
                     ? "bg-red-600 text-white" 
-                    : "bg-slate-800 hover:bg-slate-700 text-slate-200"
+                    : theme === 'dark'
+                      ? "bg-slate-800 hover:bg-slate-700 text-slate-200"
+                      : "bg-slate-100 hover:bg-slate-200 text-slate-700"
                   }
                   disabled:opacity-40
                 `}
@@ -701,7 +749,9 @@ function ClassroomView({ isAdmin, activeClass, onLeave }: ClassroomViewProps) {
           )}
 
           {/* Leave/Exit button */}
-          <div className="bg-slate-950/90 backdrop-blur-md p-1.5 rounded-xl border border-slate-800">
+          <div className={`p-1.5 rounded-xl border transition-colors duration-300
+            ${theme === 'dark' ? 'bg-slate-950/90 border-slate-800' : 'bg-white/95 border-slate-200 shadow-md'}
+          `}>
             {isAdmin ? (
               <button 
                 onClick={handleTerminateClass}
@@ -712,7 +762,9 @@ function ClassroomView({ isAdmin, activeClass, onLeave }: ClassroomViewProps) {
             ) : (
               <button 
                 onClick={onLeave}
-                className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-1.5 rounded-lg text-xs font-bold border-none cursor-pointer transition-colors"
+                className={`px-4 py-1.5 rounded-lg text-xs font-bold border-none cursor-pointer transition-colors
+                  ${theme === 'dark' ? 'bg-slate-800 hover:bg-slate-700 text-slate-300' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}
+                `}
               >
                 Salir
               </button>
@@ -722,25 +774,36 @@ function ClassroomView({ isAdmin, activeClass, onLeave }: ClassroomViewProps) {
       </div>
 
       {/* ─── CHAT & ATTENDEES SIDEBAR (3/12 cols) ─── */}
-      <div className="lg:col-span-3 bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 flex flex-col h-full">
+      <div className={`lg:col-span-3 rounded-2xl overflow-hidden border flex flex-col h-full transition-colors duration-300
+        ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-gray-200'}
+      `}>
         {/* Sidebar Header */}
-        <div className="p-4 border-b border-slate-800 flex items-center gap-2 bg-slate-950/40">
+        <div className={`p-4 border-b flex items-center gap-2 transition-colors duration-300
+          ${theme === 'dark' ? 'border-slate-800 bg-slate-950/40 text-slate-300' : 'border-gray-200 bg-gray-105 text-slate-750'}
+        `}>
           <MessageSquare className="w-4 h-4 text-brand-blue" />
-          <h4 className="font-bold text-xs text-slate-300 uppercase tracking-widest">Chat de la Clase</h4>
+          <h4 className="font-bold text-xs uppercase tracking-widest">Chat de la Clase</h4>
         </div>
 
         {/* Message feed */}
         <div className="flex-1 p-4 overflow-y-auto space-y-3 flex flex-col">
           {messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center text-slate-500 p-4">
-              <MessageSquare className="w-8 h-8 text-slate-700 mb-2" />
+              <MessageSquare className={`w-8 h-8 mb-2 ${theme === 'dark' ? 'text-slate-700' : 'text-slate-300'}`} />
               <span className="text-xs">¡Inicia la conversación! Envía un mensaje a la clase.</span>
             </div>
           ) : (
             messages.map(msg => (
               <div key={msg.id} className="text-xs space-y-0.5">
                 <div className="flex items-center gap-1.5">
-                  <span className={`font-bold ${msg.isAdmin ? 'text-amber-400' : 'text-slate-300'}`}>
+                  <span className={`font-bold
+                    ${msg.isAdmin 
+                      ? 'text-amber-400' 
+                      : theme === 'dark' 
+                        ? 'text-slate-300' 
+                        : 'text-slate-700'
+                    }
+                  `}>
                     {msg.sender}
                   </span>
                   {msg.isAdmin && (
@@ -748,7 +811,12 @@ function ClassroomView({ isAdmin, activeClass, onLeave }: ClassroomViewProps) {
                   )}
                   <span className="text-[10px] text-slate-500">{msg.time}</span>
                 </div>
-                <div className="bg-slate-950/40 border border-slate-800/30 p-2 rounded-xl text-slate-200 leading-relaxed break-words">
+                <div className={`border p-2 rounded-xl leading-relaxed break-words transition-colors duration-300
+                  ${theme === 'dark' 
+                    ? 'bg-slate-950/40 border-slate-800/30 text-slate-200' 
+                    : 'bg-white border-gray-200 text-slate-800'
+                  }
+                `}>
                   {msg.text}
                 </div>
               </div>
@@ -758,13 +826,20 @@ function ClassroomView({ isAdmin, activeClass, onLeave }: ClassroomViewProps) {
         </div>
 
         {/* Input message form */}
-        <form onSubmit={handleSendMessage} className="p-3 border-t border-slate-800 bg-slate-950/30 flex gap-2">
+        <form onSubmit={handleSendMessage} className={`p-3 border-t flex gap-2 transition-colors duration-300
+          ${theme === 'dark' ? 'border-slate-800 bg-slate-950/30' : 'border-gray-200 bg-gray-105'}
+        `}>
           <input 
             type="text"
             value={inputMsg}
             onChange={e => setInputMsg(e.target.value)}
             placeholder="Enviar un mensaje..."
-            className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 outline-none focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/30 transition-all"
+            className={`flex-1 rounded-xl px-3 py-2 text-xs placeholder:text-slate-500 outline-none focus:ring-1 focus:ring-brand-blue/30 transition-all
+              ${theme === 'dark' 
+                ? 'bg-slate-950 border-slate-800 text-white focus:border-brand-blue' 
+                : 'bg-white border-gray-300 text-slate-900 focus:border-brand-blue focus:ring-brand-blue/20'
+              }
+            `}
           />
           <button 
             type="submit"
@@ -797,7 +872,7 @@ function VideoRenderer({ trackRef, className }: { trackRef: any; className?: str
 }
 
 // ─── MICROPHONE DOCK TOGGLE BUTTON ───
-function MicButton({ room }: { room: Room }) {
+function MicButton({ room, theme }: { room: Room; theme?: 'light' | 'dark' }) {
   const [enabled, setEnabled] = useState(room.localParticipant.isMicrophoneEnabled);
 
   const toggleMic = async () => {
@@ -811,7 +886,9 @@ function MicButton({ room }: { room: Room }) {
       onClick={toggleMic}
       className={`p-2 rounded-lg transition-all border-none cursor-pointer flex items-center justify-center
         ${enabled 
-          ? "bg-slate-800 hover:bg-slate-700 text-slate-200" 
+          ? theme === 'dark'
+            ? "bg-slate-800 hover:bg-slate-700 text-slate-200" 
+            : "bg-slate-100 hover:bg-slate-200 text-slate-650"
           : "bg-red-500/20 text-red-500 border border-red-500/30"
         }
       `}
@@ -823,7 +900,7 @@ function MicButton({ room }: { room: Room }) {
 }
 
 // ─── CAMERA DOCK TOGGLE BUTTON ───
-function CameraButton({ room }: { room: Room }) {
+function CameraButton({ room, theme }: { room: Room; theme?: 'light' | 'dark' }) {
   const [enabled, setEnabled] = useState(room.localParticipant.isCameraEnabled);
 
   const toggleCamera = async () => {
@@ -837,7 +914,9 @@ function CameraButton({ room }: { room: Room }) {
       onClick={toggleCamera}
       className={`p-2 rounded-lg transition-all border-none cursor-pointer flex items-center justify-center
         ${enabled 
-          ? "bg-slate-800 hover:bg-slate-700 text-slate-200" 
+          ? theme === 'dark'
+            ? "bg-slate-800 hover:bg-slate-700 text-slate-200" 
+            : "bg-slate-100 hover:bg-slate-200 text-slate-650"
           : "bg-red-500/20 text-red-500 border border-red-500/30"
         }
       `}
@@ -849,7 +928,7 @@ function CameraButton({ room }: { room: Room }) {
 }
 
 // ─── SCREEN SHARE DOCK TOGGLE BUTTON ───
-function ScreenShareButton({ room }: { room: Room }) {
+function ScreenShareButton({ room, theme }: { room: Room; theme?: 'light' | 'dark' }) {
   const [enabled, setEnabled] = useState(room.localParticipant.isScreenShareEnabled);
 
   const toggleScreenShare = async () => {
@@ -868,7 +947,9 @@ function ScreenShareButton({ room }: { room: Room }) {
       className={`p-2 rounded-lg transition-all border-none cursor-pointer flex items-center justify-center
         ${enabled 
           ? "bg-brand-blue text-white" 
-          : "bg-slate-800 hover:bg-slate-700 text-slate-200"
+          : theme === 'dark'
+            ? "bg-slate-800 hover:bg-slate-700 text-slate-200"
+            : "bg-slate-100 hover:bg-slate-200 text-slate-650"
         }
       `}
       title={enabled ? "Detener pantalla compartida" : "Compartir pantalla"}
