@@ -10,6 +10,8 @@ import ContactSection from "@/components/marketing/ContactSection";
 import CtaBanner from "@/components/marketing/CtaBanner";
 import { getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 
+export const revalidate = 60;
+
 // FAQ JSON-LD for Google Rich Results (FAQ Snippet)
 const faqJsonLd = {
   "@context": "https://schema.org",

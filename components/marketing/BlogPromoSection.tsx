@@ -39,6 +39,11 @@ export default function BlogPromoSection({ articles }: BlogPromoSectionProps) {
     return () => clearInterval(timer);
   }, [index, isPaused, articles.length]);
 
+  // Reset index if articles length changes to avoid out of bounds
+  useEffect(() => {
+    setIndex(0);
+  }, [articles.length]);
+
   if (!articles || articles.length === 0) return null;
 
   const handleNext = () => {
