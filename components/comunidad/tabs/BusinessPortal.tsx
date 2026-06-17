@@ -27,7 +27,6 @@ interface Member {
   email: string;
   department: string;
   studyStreak: number;
-  xpPoints: number;
   createdAt: string;
   certificatesCount: number;
   avgProgress: number;
@@ -200,12 +199,12 @@ export default function BusinessPortal() {
     if (members.length === 0) return;
 
     let csvContent = "data:text/csv;charset=utf-8,";
-    csvContent += "Nombre Completo,Correo Electronico,Departamento,Puntos XP,Racha (Dias),Cursos Inscritos,Certificados Obtenidos,Progreso Promedio\n";
+    csvContent += "Nombre Completo,Correo Electronico,Departamento,Racha (Dias),Cursos Inscritos,Certificados Obtenidos,Progreso Promedio\n";
 
     members.forEach((m) => {
       const cleanName = m.fullName.replace(/,/g, " ");
       const coursesStr = m.coursesProgress.map(c => c.courseTitle).join(" | ");
-      csvContent += `${cleanName},${m.email},${m.department},${m.xpPoints},${m.studyStreak},"${coursesStr}",${m.certificatesCount},${m.avgProgress}%\n`;
+      csvContent += `${cleanName},${m.email},${m.department},${m.studyStreak},"${coursesStr}",${m.certificatesCount},${m.avgProgress}%\n`;
     });
 
     const encodedUri = encodeURI(csvContent);
@@ -467,7 +466,6 @@ export default function BusinessPortal() {
                 <th className="py-4 px-6">Colaborador</th>
                 <th className="py-4 px-6">Departamento</th>
                 <th className="py-4 px-6 text-center">Racha (Días)</th>
-                <th className="py-4 px-6 text-center">Puntos XP</th>
                 <th className="py-4 px-6 text-center">Certificados</th>
                 <th className="py-4 px-6">Progreso General</th>
                 <th className="py-4 px-6 text-right">Acción</th>
@@ -476,7 +474,7 @@ export default function BusinessPortal() {
             <tbody className="divide-y divide-gray-50 text-xs">
               {filteredMembers.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center text-gray-400 font-medium">No se encontraron colaboradores en esta sección.</td>
+                  <td colSpan={6} className="py-12 text-center text-gray-400 font-medium">No se encontraron colaboradores en esta sección.</td>
                 </tr>
               ) : (
                 filteredMembers.map((m) => (
@@ -487,7 +485,6 @@ export default function BusinessPortal() {
                     </td>
                     <td className="py-4 px-6 font-semibold text-gray-600">{m.department}</td>
                     <td className="py-4 px-6 text-center font-bold text-orange-500">{m.studyStreak} 🔥</td>
-                    <td className="py-4 px-6 text-center font-semibold text-indigo-600">{m.xpPoints.toLocaleString()}</td>
                     <td className="py-4 px-6 text-center font-bold text-brand-blue">{m.certificatesCount} 🏆</td>
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2.5 w-40">

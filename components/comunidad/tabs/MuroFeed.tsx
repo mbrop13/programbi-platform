@@ -93,12 +93,8 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                       ¡Hola, {userProfile.full_name?.split(" ")[0]}! 👋
                     </h2>
                     <p className="text-[13px] text-white/85 font-medium">
-                      Qué bueno tenerte de vuelta. Tienes una racha de estudio de <span className="font-bold text-amber-300">{userProfile.study_streak || 1} días</span> activos.
+                      Qué bueno tenerte de vuelta. Tienes una racha de estudio de <span className="font-bold text-amber-300">{userProfile.study_streak || 1} días</span> activos. Sigue aprendiendo y compartiendo con la comunidad.
                     </p>
-                  </div>
-                  <div className="bg-white/10 px-4 py-2.5 rounded-xl border border-white/10 text-center shrink-0 min-w-[100px]">
-                    <div className="text-sm font-black text-amber-300 tracking-tight leading-none mb-0.5">{userProfile.xp_points || 0}</div>
-                    <div className="text-[9px] text-white/75 font-bold uppercase tracking-wider">XP Totales</div>
                   </div>
                 </div>
               </motion.div>
@@ -244,34 +240,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
         <div className="hidden lg:flex flex-col lg:col-span-4 gap-6 sticky top-24">
             <ContinueLearningCard />
             
-            {/* LEADERBOARD */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-               <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
-                   <Trophy className="w-4 h-4 text-amber-500" />
-                   <h3 className="font-bold text-gray-900 text-sm">Top Estudiantes de la Semana</h3>
-               </div>
-               <div className="p-4 space-y-3">
-                  {[
-                    { name: "Ana Data", points: 3450, rank: 1 },
-                    { name: "Carlos Dev", points: 2890, rank: 2 },
-                    { name: "María SQL", points: 2670, rank: 3 },
-                    ...(userProfile ? [{ name: `${userProfile.full_name?.split(" ")[0]} (Tú)`, points: userProfile.xp_points || 120, rank: 12 }] : [])
-                  ].map((student) => (
-                    <div key={student.rank} className="flex items-center gap-3">
-                       <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs
-                         ${student.rank === 1 ? 'bg-amber-100 text-amber-700' : 
-                           student.rank === 2 ? 'bg-gray-100 text-gray-600' : 
-                           student.rank === 3 ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-brand-blue'}`}>
-                         {student.rank}
-                       </div>
-                       <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-sm text-gray-900 truncate">{student.name}</div>
-                       </div>
-                       <span className="text-xs font-bold text-gray-400">{student.points.toLocaleString()} pts</span>
-                    </div>
-                  ))}
-               </div>
-            </div>
+
 
             {/* QUICK LINKS */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">

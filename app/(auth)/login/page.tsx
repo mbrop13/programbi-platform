@@ -41,6 +41,21 @@ export default function LoginPage() {
         return;
       }
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: managerRecord } = await supabase
+          .from("organization_managers")
+          .select("organization_id")
+          .eq("profile_id", user.id)
+          .maybeSingle();
+
+        if (managerRecord) {
+          router.push("/comunidad/business");
+          router.refresh();
+          return;
+        }
+      }
+
       router.push("/comunidad/inicio");
       router.refresh();
     } catch (err) {

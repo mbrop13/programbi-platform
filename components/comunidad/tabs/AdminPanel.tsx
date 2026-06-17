@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { Users, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Users, Building, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
 import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory } from "@/lib/supabase/comunidad-ai";
@@ -81,6 +81,7 @@ export default function AdminPanel() {
   const sidebarItems = [
     { id: "overview", label: "Estadísticas", icon: BarChart3 },
     { id: "support", label: "Soporte", icon: MessageSquare, badgeCount: unreadSupportCount },
+    { id: "companies", label: "Empresas", icon: Building },
     { id: "members", label: "Miembros", icon: Users, badgeCount: unreadMembersCount },
     { id: "leads", label: "Contactos", icon: Mail, badgeCount: unreadLeadsCount },
     { id: "chatbot", label: "Chatbot IA", icon: Sparkles },
@@ -150,6 +151,7 @@ export default function AdminPanel() {
               transition={{ duration: 0.2 }}
             >
               { activeTab === "overview" && <AdminOverview /> }
+              { activeTab === "companies" && <AdminCompanies /> }
               { activeTab === "members" && <AdminMembers /> }
               { activeTab === "leads" && <AdminLeads /> }
               { activeTab === "cart" && <AdminAbandonedCarts /> }
@@ -4437,3 +4439,571 @@ function AdminDiplomas() {
     </div>
   );
 }
+
+// ─── COMPANIES (EMPRESAS TAB) ───
+function AdminCompanies() {
+  const [orgs, setOrgs] = useState<any[]>([]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [invitations, setInvitations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  // Form states
+  const [name, setName] = useState("");
+  const [domain, setDomain] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
+  const [managerEmail, setManagerEmail] = useState("");
+  const [managerName, setManagerName] = useState("");
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [csvPreview, setCsvPreview] = useState<any[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  
+  // Expanded company ID for showing employees
+  const [expandedOrgId, setExpandedOrgId] = useState<string | null>(null);
+
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+
+      const [orgsRes, usersRes, profilesRes, invitesRes] = await Promise.all([
+        supabase
+          .from("organizations")
+          .select(`
+            *,
+            organization_managers(
+              profile_id,
+              profile:profiles(id, full_name, email, avatar_url)
+            )
+          `)
+          .order("created_at", { ascending: false }),
+        adminGetAllUsers(),
+        supabase
+          .from("profiles")
+          .select("id, full_name, email, department, organization_id, role")
+          .not("organization_id", "is", null),
+        supabase
+          .from("organization_invitations")
+          .select("*")
+      ]);
+
+      if (orgsRes.error) throw orgsRes.error;
+      if (profilesRes.error) throw profilesRes.error;
+      if (invitesRes.error) throw invitesRes.error;
+
+      setOrgs(orgsRes.data || []);
+      setUsers(usersRes || []);
+      setEmployees(profilesRes.data || []);
+      setInvitations(invitesRes.data || []);
+    } catch (err: any) {
+      console.error("Error loading organizations data:", err);
+      setError(err.message || "Error al cargar datos.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      setCsvFile(null);
+      setCsvPreview([]);
+      return;
+    }
+    setCsvFile(file);
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (text) {
+        const parsed = parseCSV(text);
+        setCsvPreview(parsed);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const parseCSV = (text: string) => {
+    const lines = text.split(/\r?\n/);
+    const result: any[] = [];
+    if (lines.length === 0) return result;
+    
+    // Parse headers, support semicolon/comma separator
+    let separator = ",";
+    if (lines[0].includes(";")) separator = ";";
+    
+    const headers = lines[0].split(separator).map(h => h.trim().replace(/^["']|["']$/g, '').toLowerCase());
+    
+    for (let i = 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      const currentline = lines[i].split(separator).map(v => v.trim().replace(/^["']|["']$/g, ''));
+      const obj: any = {};
+      for (let j = 0; j < headers.length; j++) {
+        const key = headers[j];
+        const value = currentline[j];
+        if (key) {
+          // Normalize common headers
+          if (key === 'email' || key === 'correo' || key === 'mail') {
+            obj.email = value;
+          } else if (key === 'full_name' || key === 'nombre' || key === 'name' || key === 'nombre completo') {
+            obj.name = value;
+            obj.full_name = value;
+          } else if (key === 'department' || key === 'departamento' || key === 'area') {
+            obj.department = value;
+          } else {
+            obj[key] = value;
+          }
+        }
+      }
+      if (obj.email) {
+        if (!obj.name) {
+          obj.name = obj.email.split('@')[0];
+        }
+        result.push(obj);
+      }
+    }
+    return result;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+    setSubmitting(true);
+
+    try {
+      if (!name.trim()) throw new Error("El nombre de la empresa es obligatorio.");
+      if (!managerEmail.trim()) throw new Error("El email del manager es obligatorio.");
+      if (!managerName.trim()) throw new Error("El nombre del manager es obligatorio.");
+
+      // Combine manager into the employee list
+      const cleanManagerEmail = managerEmail.trim().toLowerCase();
+      const cleanManagerName = managerName.trim();
+
+      // Ensure employees array contains the manager
+      const listEmployees = [...csvPreview];
+      const managerExists = listEmployees.some(emp => emp.email.toLowerCase() === cleanManagerEmail);
+      if (!managerExists) {
+        listEmployees.unshift({
+          email: cleanManagerEmail,
+          name: cleanManagerName
+        });
+      }
+
+      // Call secure Superadmin B2B API
+      const response = await fetch("/api/admin/companies", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          logoUrl: logoUrl.trim() || null,
+          domain: domain.trim() || null,
+          managerEmail: cleanManagerEmail,
+          employees: listEmployees.map(emp => ({
+            email: emp.email.trim().toLowerCase(),
+            name: emp.name || emp.full_name || emp.email.split("@")[0]
+          }))
+        })
+      });
+
+      const resData = await response.json();
+      if (!response.ok || resData.error) {
+        throw new Error(resData.error || "Error al procesar la solicitud.");
+      }
+
+      const { results } = resData;
+      setSuccess(`Empresa "${name.trim()}" creada con éxito. ` + 
+        `Cuentas creadas: ${results.created}. Cuentas vinculadas: ${results.associated}. ` + 
+        (results.failed > 0 ? `Fallaron: ${results.failed}.` : ""));
+      
+      // Reset form
+      setName("");
+      setDomain("");
+      setLogoUrl("");
+      setManagerEmail("");
+      setManagerName("");
+      setCsvFile(null);
+      setCsvPreview([]);
+      
+      // Fetch updated data
+      await fetchData();
+      
+      // Close modal after brief delay
+      setTimeout(() => {
+        setShowModal(false);
+        setSuccess(null);
+      }, 4000);
+
+    } catch (err: any) {
+      console.error("Error creating organization:", err);
+      setError(err.message || "Ocurrió un error inesperado.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDeleteOrg = async (orgId: string, orgName: string) => {
+    if (!confirm(`¿Estás seguro de eliminar la empresa "${orgName}"? Esto desvinculará a todos sus empleados y eliminará a sus managers.`)) return;
+    
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+
+      const { error: deleteError } = await supabase
+        .from("organizations")
+        .delete()
+        .eq("id", orgId);
+
+      if (deleteError) throw deleteError;
+
+      // Refresh list
+      await fetchData();
+    } catch (err: any) {
+      alert("Error al eliminar empresa: " + err.message);
+    }
+  };
+
+  return (
+    <div className="p-6 sm:p-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div>
+          <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Empresas</h2>
+          <p className="text-sm text-gray-400">Gestiona las organizaciones corporativas y sus miembros.</p>
+        </div>
+        <button 
+          onClick={() => setShowModal(true)}
+          className="flex items-center gap-2 bg-brand-blue hover:bg-blue-600 text-white px-4 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
+        >
+          <Plus className="w-4 h-4" /> Agregar Empresa
+        </button>
+      </div>
+
+      {error && (
+        <div className="bg-red-50 text-red-600 border border-red-100 rounded-xl p-3 text-sm font-semibold mb-5">
+          {error}
+        </div>
+      )}
+
+      {loading ? (
+        <div className="py-20 flex flex-col items-center justify-center gap-3">
+          <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
+          <span className="text-sm text-gray-400 font-medium">Cargando empresas...</span>
+        </div>
+      ) : orgs.length === 0 ? (
+        <div className="text-center py-12 border-2 border-dashed border-gray-100 rounded-2xl bg-gray-50">
+          <Globe className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+          <h3 className="text-gray-900 font-bold mb-1">No hay empresas</h3>
+          <p className="text-gray-400 text-sm">Crea una empresa para habilitar ProgramBI Business.</p>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="overflow-x-auto rounded-xl border border-gray-200 bg-white">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#F8FAFC] border-b border-gray-200">
+                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Empresa</th>
+                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Dominio</th>
+                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Manager</th>
+                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Miembros</th>
+                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {orgs.map(org => {
+                  const orgEmployees = employees.filter(e => e.organization_id === org.id);
+                  const orgInvites = invitations.filter(i => i.organization_id === org.id);
+                  const isExpanded = expandedOrgId === org.id;
+
+                  // Find managers
+                  const managerNames = org.organization_managers && org.organization_managers.length > 0
+                    ? org.organization_managers.map((om: any) => om.profile?.full_name || om.profile?.email).join(", ")
+                    : "Sin manager asignado";
+
+                  return (
+                    <React.Fragment key={org.id}>
+                      <tr className="hover:bg-gray-50/50 transition-colors">
+                        <td className="px-4 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 font-black overflow-hidden border border-gray-200/50">
+                              {org.logo_url ? (
+                                <img src={org.logo_url} alt={org.name} className="w-full h-full object-cover" />
+                              ) : (
+                                org.name.charAt(0).toUpperCase()
+                              )}
+                            </div>
+                            <div>
+                              <div className="font-bold text-gray-900 text-sm">{org.name}</div>
+                              <div className="text-[10px] text-gray-400">Creado el {new Date(org.created_at).toLocaleDateString("es-CL")}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 text-sm text-gray-600 font-medium">
+                          {org.domain ? (
+                            <span className="bg-blue-50 text-brand-blue border border-blue-100/50 px-2 py-0.5 rounded-md text-xs">@{org.domain}</span>
+                          ) : (
+                            <span className="text-gray-300 italic text-xs">Sin dominio</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-4 text-sm text-gray-600 font-medium">
+                          {managerNames}
+                        </td>
+                        <td className="px-4 py-4 text-sm text-gray-900 font-bold">
+                          <button 
+                            onClick={() => setExpandedOrgId(isExpanded ? null : org.id)}
+                            className="bg-transparent hover:underline text-brand-blue font-bold text-sm cursor-pointer p-0 border-none flex items-center gap-1"
+                          >
+                            {orgEmployees.length} activos
+                            {orgInvites.length > 0 && <span className="text-amber-500 font-medium text-xs">({orgInvites.length} inv.)</span>}
+                          </button>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <button 
+                              onClick={() => setExpandedOrgId(isExpanded ? null : org.id)}
+                              className="px-2.5 py-1 text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-lg transition-all"
+                            >
+                              Ver detalles
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteOrg(org.id, org.name)}
+                              className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-all border-none cursor-pointer"
+                              title="Eliminar empresa"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+
+                      {/* Expandable row for employees */}
+                      {isExpanded && (
+                        <tr>
+                          <td colSpan={5} className="bg-gray-50/50 p-6 border-b border-gray-150">
+                            <div className="space-y-4">
+                              <h4 className="font-bold text-gray-800 text-sm flex items-center gap-2">
+                                <Users className="w-4 h-4 text-brand-blue" />
+                                Lista de Miembros Corporativos - {org.name}
+                              </h4>
+                              
+                              <div className="grid md:grid-cols-2 gap-4">
+                                {/* Active Employees */}
+                                <div>
+                                  <h5 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Empleados Activos ({orgEmployees.length})</h5>
+                                  {orgEmployees.length === 0 ? (
+                                    <p className="text-xs text-gray-400 italic">No hay empleados activos en esta empresa.</p>
+                                  ) : (
+                                    <div className="bg-white border border-gray-200 rounded-xl divide-y divide-gray-100 max-h-60 overflow-y-auto">
+                                      {orgEmployees.map(emp => (
+                                        <div key={emp.id} className="p-2.5 flex items-center justify-between text-xs">
+                                          <div>
+                                            <div className="font-bold text-gray-900">{emp.full_name || emp.email}</div>
+                                            <div className="text-gray-400 text-[10px]">{emp.email}</div>
+                                          </div>
+                                          <span className="bg-gray-100 px-2 py-0.5 rounded text-gray-500 text-[10px] font-bold">{emp.department || 'General'}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Pending Invitations */}
+                                <div>
+                                  <h5 className="text-xs font-bold text-amber-500 uppercase tracking-widest mb-2">Invitaciones Pendientes ({orgInvites.length})</h5>
+                                  {orgInvites.length === 0 ? (
+                                    <p className="text-xs text-gray-400 italic">No hay invitaciones pendientes.</p>
+                                  ) : (
+                                    <div className="bg-white border border-gray-200 rounded-xl divide-y divide-gray-100 max-h-60 overflow-y-auto">
+                                      {orgInvites.map(invite => (
+                                        <div key={invite.id} className="p-2.5 flex items-center justify-between text-xs">
+                                          <div>
+                                            <div className="font-bold text-amber-600">{invite.email}</div>
+                                            <div className="text-gray-400 text-[10px]">Esperando registro</div>
+                                          </div>
+                                          <span className="bg-amber-50 border border-amber-100 text-amber-600 px-2 py-0.5 rounded text-[10px] font-bold">{invite.department || 'General'}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* CREATE MODAL */}
+      <AnimatePresence>
+        {showModal && (
+          <div className="fixed inset-0 bg-black/55 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white rounded-3xl p-6 sm:p-8 max-w-xl w-full shadow-2xl border border-gray-200 overflow-y-auto max-h-[90vh]"
+            >
+              <div className="flex items-center justify-between border-b border-gray-100 pb-4 mb-5">
+                <h3 className="font-display font-black text-xl text-gray-900">Agregar Nueva Empresa</h3>
+                <button 
+                  onClick={() => { setShowModal(false); setError(null); setSuccess(null); }}
+                  className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors border-none cursor-pointer bg-transparent"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {success && (
+                <div className="bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-xl p-3 text-sm font-semibold mb-5 text-center">
+                  {success}
+                </div>
+              )}
+
+              {error && (
+                <div className="bg-red-50 text-red-600 border border-red-100 rounded-xl p-3 text-sm font-semibold mb-5 text-center">
+                  {error}
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Nombre de la Empresa *</label>
+                  <input 
+                    type="text" 
+                    required 
+                    value={name} 
+                    onChange={e => setName(e.target.value)} 
+                    placeholder="Ej. Mercado Libre" 
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" 
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Dominio Email (Auto-asociación)</label>
+                    <input 
+                      type="text" 
+                      value={domain} 
+                      onChange={e => setDomain(e.target.value)} 
+                      placeholder="mercadolibre.cl (sin @)" 
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">URL del Logo (Opcional)</label>
+                    <input 
+                      type="text" 
+                      value={logoUrl} 
+                      onChange={e => setLogoUrl(e.target.value)} 
+                      placeholder="https://logo.com/image.png" 
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" 
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Email del Manager *</label>
+                    <input 
+                      type="email" 
+                      required
+                      value={managerEmail} 
+                      onChange={e => setManagerEmail(e.target.value)} 
+                      placeholder="manager@empresa.com" 
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Nombre del Manager *</label>
+                    <input 
+                      type="text" 
+                      required
+                      value={managerName} 
+                      onChange={e => setManagerName(e.target.value)} 
+                      placeholder="Juan Pérez" 
+                      className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="border border-dashed border-gray-200 rounded-xl p-5 bg-gray-50/50">
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Subir CSV de Empleados (Opcional)</label>
+                  <div className="flex items-center gap-3">
+                    <input 
+                      type="file" 
+                      accept=".csv" 
+                      onChange={handleFileChange}
+                      className="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-brand-blue file:cursor-pointer hover:file:bg-blue-100" 
+                    />
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-2">El archivo debe tener las columnas: <code className="bg-gray-150 px-1 py-0.5 rounded text-gray-600">email</code>, <code className="bg-gray-150 px-1 py-0.5 rounded text-gray-600">full_name</code> (opcional) y <code className="bg-gray-150 px-1 py-0.5 rounded text-gray-600">department</code> (opcional).</p>
+                  
+                  {csvPreview.length > 0 && (
+                    <div className="mt-3 bg-white border border-gray-200 rounded-lg p-3 max-h-36 overflow-y-auto text-xs space-y-1.5">
+                      <div className="font-bold text-gray-600 border-b border-gray-100 pb-1 flex justify-between">
+                        <span>Previsualización ({csvPreview.length} filas)</span>
+                        <button 
+                          type="button" 
+                          onClick={() => { setCsvFile(null); setCsvPreview([]); }} 
+                          className="text-red-500 hover:underline p-0 border-none cursor-pointer bg-transparent"
+                        >
+                          Limpiar
+                        </button>
+                      </div>
+                      {csvPreview.slice(0, 5).map((row, idx) => (
+                        <div key={idx} className="flex justify-between text-gray-500">
+                          <span className="truncate max-w-[150px]">{row.email}</span>
+                          <span className="text-[10px] text-gray-400">{row.name || row.full_name || 'Sin nombre'} · {row.department || 'Sin area'}</span>
+                        </div>
+                      ))}
+                      {csvPreview.length > 5 && (
+                        <div className="text-[10px] text-gray-400 italic text-center pt-1 border-t border-gray-50">Y {csvPreview.length - 5} filas más...</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-3">
+                  <button 
+                    type="button" 
+                    onClick={() => { setShowModal(false); setError(null); setSuccess(null); }}
+                    className="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-all cursor-pointer bg-transparent"
+                  >
+                    Cancelar
+                  </button>
+                  <button 
+                    type="submit" 
+                    disabled={submitting}
+                    className="px-6 py-2.5 bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
+                  >
+                    {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                    {submitting ? "Creando..." : "Crear Empresa"}
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+

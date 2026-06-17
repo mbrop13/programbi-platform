@@ -103,6 +103,13 @@ export default function ComunidadPortal() {
     }
   }, [activeTab, isAdmin, isOrgManager, userProfile, router]);
 
+  // Auto-redirect organization managers to /comunidad/business when they land on /comunidad/inicio or /comunidad
+  useEffect(() => {
+    if (isOrgManager && activeTab === "inicio") {
+      router.push("/comunidad/business");
+    }
+  }, [isOrgManager, activeTab, router]);
+
   // User initials for avatar
   const userInitials = userProfile?.full_name
     ? userProfile.full_name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase()

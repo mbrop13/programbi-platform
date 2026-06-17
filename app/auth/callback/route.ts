@@ -15,6 +15,16 @@ export async function GET(request: Request) {
       try {
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
+          const { data: managerRecord } = await supabase
+            .from("organization_managers")
+            .select("organization_id")
+            .eq("profile_id", user.id)
+            .maybeSingle();
+
+          if (managerRecord) {
+            return NextResponse.redirect(`${origin}/comunidad/business`)
+          }
+
           const createdAt = new Date(user.created_at).getTime()
           const now = Date.now()
           const isNewUser = (now - createdAt) < 60_000 // within 60 seconds
