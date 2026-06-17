@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { courses, getCourseBySlug } from "@/lib/data/courses";
 import { getMarketingDescription } from "@/lib/supabase/comunidad-ai";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
+import { getOptimizedShareImage } from "@/lib/utils";
 
 export const revalidate = 60;
 
@@ -21,6 +22,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const dbDescription = await getMarketingDescription(slug);
   const description = dbDescription || course.description;
 
+  const shareImage = getOptimizedShareImage(course.imageUrl);
+
   return {
     title,
     description,
@@ -34,7 +37,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       type: "website",
       images: [
         {
-          url: course.imageUrl,
+          url: shareImage,
           width: 1200,
           height: 630,
           alt: course.title,
@@ -45,7 +48,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       card: "summary_large_image",
       title: `${title} | ProgramBI`,
       description,
-      images: [course.imageUrl],
+      images: [shareImage],
     },
   };
 }

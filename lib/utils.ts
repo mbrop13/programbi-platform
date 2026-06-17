@@ -16,3 +16,12 @@ export function isVideoUrl(url?: string): boolean {
     url.includes("/video/")
   );
 }
+
+export function getOptimizedShareImage(url?: string): string {
+  if (!url) return "/default-og.png";
+  if (url.startsWith("/")) return url;
+  
+  // Use Next.js native image optimization endpoint to compress images to < 100KB
+  return `/_next/image?url=${encodeURIComponent(url)}&w=1200&q=75`;
+}
+

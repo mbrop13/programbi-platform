@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getArticleBySlug, getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 import BlogArticleClient from "./BlogArticleClient";
-import { isVideoUrl } from "@/lib/utils";
+import { isVideoUrl, getOptimizedShareImage } from "@/lib/utils";
 
 export const revalidate = 60;
 
@@ -13,7 +13,7 @@ interface PageProps {
 }
 
 function getArticlePoster(article: any): string {
-  if (!article) return "https://programbi.com/opengraph-image";
+  if (!article) return "/default-og.png";
   
   // 1. Try to find poster/thumbnail/cover_poster in the content markdown first
   if (article.content) {
@@ -29,7 +29,7 @@ function getArticlePoster(article: any): string {
   }
 
   // 3. Fallback
-  return "https://programbi.com/opengraph-image";
+  return "/default-og.png";
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -37,7 +37,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const article = await getArticleBySlug(slug);
   if (!article) return { title: "Artículo no encontrado" };
 
-  const shareImage = getArticlePoster(article);
+  const rawShareImage = getArticlePoster(article);
+  const shareImage = getOptimizedShareImage(rawShareImage);
 
   return {
     title: article.title,
@@ -70,7 +71,8 @@ export default async function BlogArticlePage({ params }: PageProps) {
   const allArticles = await getPublishedArticles(article.category);
   const related = allArticles.filter((a: any) => a.slug !== slug).slice(0, 3);
 
-  const shareImage = getArticlePoster(article);
+  const rawShareImage = getArticlePoster(article);
+  const shareImage = getOptimizedShareImage(rawShareImage);
 
   // JSON-LD for BlogPosting
   const articleJsonLd = {
