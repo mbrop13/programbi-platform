@@ -221,6 +221,18 @@ ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Anyone can submit leads" ON public.leads
   FOR INSERT WITH CHECK (true);
 
+-- Course Leads: only admins can access via public API (inserts are handled securely server-side via service_role)
+ALTER TABLE public.course_leads ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Admins can manage course leads" ON public.course_leads
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+    )
+  );
+
+
 -- Mentors: public read
 ALTER TABLE public.mentors ENABLE ROW LEVEL SECURITY;
 
