@@ -83,7 +83,7 @@ export const metadata: Metadata = {
       "Capacitaciones profesionales en Power BI, Python, SQL, Excel y Big Data. +5000 estudiantes formados. Cursos online y presencial.",
     images: [
       {
-        url: "/opengraph-image",
+        url: "/default-og.png",
         width: 1200,
         height: 630,
         alt: "ProgramBI — Análisis de Datos con Expertos",
@@ -95,7 +95,7 @@ export const metadata: Metadata = {
     title: "ProgramBI — Cursos de Análisis de Datos con Expertos",
     description:
       "Capacitaciones profesionales en Power BI, Python, SQL, Excel y Big Data. +5000 estudiantes.",
-    images: ["/opengraph-image"],
+    images: ["/default-og.png"],
   },
   robots: {
     index: true,
