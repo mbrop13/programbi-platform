@@ -526,3 +526,106 @@ CREATE TABLE public.price_overrides (
 
 ALTER TABLE public.price_overrides ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Price overrides are publicly readable" ON public.price_overrides FOR SELECT USING (true);
+
+-- ============================================
+-- 21. ORGANIZATIONS (ProgramBI Business)
+-- ============================================
+CREATE TABLE public.organizations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  logo_url TEXT,
+  domain TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE public.organization_managers (
+  organization_id UUID REFERENCES public.organizations(id) ON DELETE CASCADE,
+  profile_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+  PRIMARY KEY (organization_id, profile_id)
+);
+
+ALTER TABLE public.profiles 
+  ADD COLUMN IF NOT EXISTS organization_id UUID REFERENCES public.organizations(id) ON DELETE SET NULL,
+  ADD COLUMN IF NOT EXISTS department TEXT,
+  ADD COLUMN IF NOT EXISTS study_streak INTEGER DEFAULT 1,
+  ADD COLUMN IF NOT EXISTS xp_points INTEGER DEFAULT 0;
+
+ALTER TABLE public.organizations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.organization_managers ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Managers can view own organization" ON public.organizations
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM public.organization_managers
+      WHERE organization_managers.organization_id = id AND organization_managers.profile_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Managers can view employee profiles" ON public.profiles
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM public.organization_managers
+      WHERE organization_managers.organization_id = profiles.organization_id AND organization_managers.profile_id = auth.uid()
+    )
+  );
+
+-- ============================================
+-- 22. ORGANIZATION INVITATIONS
+-- ============================================
+CREATE TABLE public.organization_invitations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  organization_id UUID REFERENCES public.organizations(id) ON DELETE CASCADE,
+  email TEXT NOT NULL UNIQUE,
+  department TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE public.organization_invitations ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Managers can manage organization invitations" ON public.organization_invitations
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM public.organization_managers
+      WHERE organization_managers.organization_id = organization_id AND organization_managers.profile_id = auth.uid()
+    )
+  );
+
+-- Re-declare handle_new_user function to automatically associate users with organizations on signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+DECLARE
+  org_id UUID;
+  dept TEXT;
+BEGIN
+  -- 1. Check if there is a specific invitation for this email
+  SELECT organization_id, department INTO org_id, dept
+  FROM public.organization_invitations
+  WHERE email = NEW.email;
+
+  -- 2. If no invitation, check for domain-based auto-association
+  IF org_id IS NULL THEN
+    SELECT id, 'General' INTO org_id, dept
+    FROM public.organizations
+    WHERE domain IS NOT NULL AND NEW.email LIKE '%@' || domain;
+  END IF;
+
+  -- 3. Insert profile with organization details if found
+  INSERT INTO public.profiles (id, full_name, email, organization_id, department)
+  VALUES (
+    NEW.id,
+    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
+    NEW.email,
+    org_id,
+    COALESCE(dept, 'General')
+  );
+
+  -- 4. Delete the invitation if it was used
+  IF org_id IS NOT NULL THEN
+    DELETE FROM public.organization_invitations WHERE email = NEW.email;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
+
+

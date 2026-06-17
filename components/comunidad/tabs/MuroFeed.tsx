@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Play, TrendingUp, Trophy, ArrowRight, Heart, MessageCircle, Send, Loader2, Bookmark, Share2, MoreHorizontal, Smile, ImageIcon, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getPosts, createPost, toggleLike, addComment, isCurrentUserAdmin } from "@/lib/supabase/comunidad";
+import { getPosts, createPost, toggleLike, addComment, isCurrentUserAdmin, getCurrentUserProfile } from "@/lib/supabase/comunidad";
 
 interface MuroFeedProps {
   isRestricted?: boolean;
@@ -12,6 +12,8 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState<any>(null);
+
   
   const [newPostContent, setNewPostContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -20,10 +22,14 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
   useEffect(() => {
      async function init() {
         try {
-           const adminCheck = await isCurrentUserAdmin();
+           const [adminCheck, data, profile] = await Promise.all([
+              isCurrentUserAdmin(),
+              getPosts(),
+              getCurrentUserProfile()
+           ]);
            setIsAdmin(adminCheck);
-           const data = await getPosts();
            setPosts(data);
+           setUserProfile(profile);
         } catch (err) {
            console.error("Failed fetching muro feed", err);
         } finally {
@@ -72,6 +78,31 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start w-full max-w-[1400px] mx-auto">
         {/* ─── MAIN COLUMN ─── */}
         <div className="lg:col-span-8 space-y-6">
+            
+            {/* GORGEOUS GREETING BANNER */}
+            {userProfile && (
+              <motion.div 
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="relative bg-gradient-to-r from-brand-blue via-blue-600 to-indigo-600 rounded-2xl p-6 text-white overflow-hidden shadow-sm border border-blue-500/20"
+              >
+                <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-2xl -mr-12 -mt-12"></div>
+                <div className="relative z-10 flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
+                  <div>
+                    <h2 className="font-display font-black text-xl sm:text-2xl tracking-tight leading-none mb-1.5">
+                      ¡Hola, {userProfile.full_name?.split(" ")[0]}! 👋
+                    </h2>
+                    <p className="text-[13px] text-white/85 font-medium">
+                      Qué bueno tenerte de vuelta. Tienes una racha de estudio de <span className="font-bold text-amber-300">{userProfile.study_streak || 1} días</span> activos.
+                    </p>
+                  </div>
+                  <div className="bg-white/10 px-4 py-2.5 rounded-xl border border-white/10 text-center shrink-0 min-w-[100px]">
+                    <div className="text-sm font-black text-amber-300 tracking-tight leading-none mb-0.5">{userProfile.xp_points || 0}</div>
+                    <div className="text-[9px] text-white/75 font-bold uppercase tracking-wider">XP Totales</div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
             
             {/* WELCOME BANNER (Only on first visit / empty) */}
             {!loading && posts.length === 0 && (
@@ -217,18 +248,20 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                <div className="px-5 py-4 border-b border-gray-100 flex items-center gap-2">
                    <Trophy className="w-4 h-4 text-amber-500" />
-                   <h3 className="font-bold text-gray-900 text-sm">Top Estudiantes</h3>
+                   <h3 className="font-bold text-gray-900 text-sm">Top Estudiantes de la Semana</h3>
                </div>
                <div className="p-4 space-y-3">
                   {[
-                    { name: "Ana Data", points: 2340, rank: 1 },
-                    { name: "Carlos Dev", points: 1890, rank: 2 },
-                    { name: "María SQL", points: 1670, rank: 3 },
+                    { name: "Ana Data", points: 3450, rank: 1 },
+                    { name: "Carlos Dev", points: 2890, rank: 2 },
+                    { name: "María SQL", points: 2670, rank: 3 },
+                    ...(userProfile ? [{ name: `${userProfile.full_name?.split(" ")[0]} (Tú)`, points: userProfile.xp_points || 120, rank: 12 }] : [])
                   ].map((student) => (
                     <div key={student.rank} className="flex items-center gap-3">
                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs
                          ${student.rank === 1 ? 'bg-amber-100 text-amber-700' : 
-                           student.rank === 2 ? 'bg-gray-100 text-gray-600' : 'bg-orange-50 text-orange-600'}`}>
+                           student.rank === 2 ? 'bg-gray-100 text-gray-600' : 
+                           student.rank === 3 ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-brand-blue'}`}>
                          {student.rank}
                        </div>
                        <div className="flex-1 min-w-0">

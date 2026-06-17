@@ -14,7 +14,7 @@ export async function getCurrentUserProfile() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, full_name, email, avatar_url, role, subscription_plan, subscription_expires_at, phone")
+    .select("id, full_name, email, avatar_url, role, subscription_plan, subscription_expires_at, phone, organization_id, department, study_streak, xp_points")
     .eq("id", user.id)
     .single();
 
@@ -222,4 +222,23 @@ export async function getEnrolledCourses() {
       lastClass: "Continuar Lección",
       color: "bg-brand-blue"
    }));
+}
+
+/**
+ * Returns the organization managed by the current logged-in user, if any.
+ */
+export async function getCurrentUserManagedOrganization() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  // Query intermediate table to see if user is a manager
+  const { data: managerRecord, error } = await supabase
+    .from("organization_managers")
+    .select("organization_id, organizations(id, name, logo_url, domain)")
+    .eq("profile_id", user.id)
+    .maybeSingle();
+
+  if (error || !managerRecord) return null;
+  return (managerRecord as any).organizations || null;
 }

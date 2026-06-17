@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
+import {
   Radio, 
   MessageSquare, 
   Sparkles, 
@@ -20,8 +20,10 @@ import {
   User,
   Menu,
   X,
-  Lock
+  Lock,
+  Building2
 } from "lucide-react";
+
 
 import MuroFeed from "./tabs/MuroFeed";
 import MisCursos from "./tabs/MisCursos";
@@ -29,7 +31,8 @@ import AulaVirtual from "./tabs/AulaVirtual";
 import ChatGlobal from "./tabs/ChatGlobal";
 import AIAsistente from "./tabs/AIAsistente";
 import AdminPanel from "./tabs/AdminPanel";
-import { isCurrentUserAdmin, getCurrentUserProfile } from "@/lib/supabase/comunidad";
+import BusinessPortal from "./tabs/BusinessPortal";
+import { isCurrentUserAdmin, getCurrentUserProfile, getCurrentUserManagedOrganization } from "@/lib/supabase/comunidad";
 
 interface UserProfile {
   id: string;
@@ -57,6 +60,7 @@ export default function ComunidadPortal() {
   const activeTab = segments[1] || "inicio";
   
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isOrgManager, setIsOrgManager] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [hasCourses, setHasCourses] = useState<boolean | null>(null);
   const [isCheckingPlan, setIsCheckingPlan] = useState(true);
@@ -70,15 +74,16 @@ export default function ComunidadPortal() {
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        const [adminStatus, profile, enrollmentData] = await Promise.all([
+        const [adminStatus, profile, enrollmentData, orgData] = await Promise.all([
           isCurrentUserAdmin(),
           getCurrentUserProfile(),
           getMyEnrollments(),
+          getCurrentUserManagedOrganization()
         ]);
         setIsAdmin(adminStatus);
-        setUserProfile(profile);
-        const enrollments = Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments;
-        setHasCourses(enrollments.length > 0);
+        setUserProfile(profile as any);
+        setHasCourses((Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments).length > 0);
+        setIsOrgManager(!!orgData);
       } catch (err) {
         console.error("Error loading user data:", err);
       } finally {
@@ -88,12 +93,15 @@ export default function ComunidadPortal() {
     loadUserData();
   }, []);
 
-  // Redirect non-admins away from admin page
+  // Redirect non-admins or non-managers away from restricted pages
   useEffect(() => {
     if (activeTab === "admin" && !isAdmin && userProfile !== null) {
       router.push("/comunidad/inicio");
     }
-  }, [activeTab, isAdmin, userProfile, router]);
+    if (activeTab === "business" && !isOrgManager && userProfile !== null) {
+      router.push("/comunidad/inicio");
+    }
+  }, [activeTab, isAdmin, isOrgManager, userProfile, router]);
 
   // User initials for avatar
   const userInitials = userProfile?.full_name
@@ -106,6 +114,7 @@ export default function ComunidadPortal() {
     { id: "live", label: "Live", icon: Radio, color: "text-rose-500" },
     { id: "chat", label: "Comunidad", icon: MessageSquare, color: "text-emerald-500" },
     { id: "ai", label: "IA", icon: Sparkles, color: "text-purple-500" },
+    ...(isOrgManager ? [{ id: "business", label: "Empresa", icon: Building2, color: "text-slate-500" }] : []),
     ...(isAdmin ? [{ id: "admin", label: "Admin", icon: ShieldAlert, color: "text-amber-500" }] : [])
   ];
 
@@ -376,6 +385,16 @@ export default function ComunidadPortal() {
                   )}
                   
                   {activeTab === "chat" && <ChatGlobal isRestricted={!!restrictedView} />}
+                  {activeTab === "business" && (
+                    isOrgManager ? (
+                      <BusinessPortal />
+                    ) : (
+                      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-12 text-center max-w-2xl mx-auto mt-8">
+                        <h2 className="font-display font-black text-2xl text-gray-900 mb-3">Acceso Restringido</h2>
+                        <p className="text-gray-500 mb-6">Esta sección está disponible únicamente para gestores corporativos.</p>
+                      </div>
+                    )
+                  )}
                 {activeTab === "admin" && (
                   isAdmin ? (
                     <AdminPanel />
