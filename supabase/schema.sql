@@ -33,11 +33,15 @@ BEGIN
   );
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
+
+-- Revoke execute on trigger function from public for security (executed by postgres/system)
+REVOKE EXECUTE ON FUNCTION public.handle_new_user() FROM PUBLIC;
+
 
 -- ============================================
 -- 2. COURSES
