@@ -145,9 +145,7 @@ export async function POST(req: NextRequest) {
       amount: grandTotalClp,
       email,
       optional: {
-        userId: user.id,
-        items: JSON.stringify(validatedItems),
-        scheduling_slots: JSON.stringify(body.scheduling_slots || [])
+        userId: user.id
       },
     });
 
@@ -157,6 +155,12 @@ export async function POST(req: NextRequest) {
     // We try to get the id of the first course for relational data backwards compatibility
     const { data: firstCourseId } = await adminDb.from("courses").select("id").eq("slug", validatedItems[0].slug).maybeSingle();
 
+    // Store cart data temporarily in payment_method so the webhook can retrieve it
+    const tempMetadata = JSON.stringify({
+      items: validatedItems,
+      slots: body.scheduling_slots || []
+    });
+
     await adminDb.from("payments").insert({
       user_id: user.id,
       course_id: firstCourseId?.id || null,
@@ -164,7 +168,8 @@ export async function POST(req: NextRequest) {
       flow_token: flowResult.token,
       amount: grandTotalClp,
       currency: "CLP",
-      status: "pending"
+      status: "pending",
+      payment_method: tempMetadata
     } as any);
 
     // Save scheduling_slots as pending_payment

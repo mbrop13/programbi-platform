@@ -187,7 +187,7 @@ export default function PagoClient() {
           let courseSchedules: CourseSchedule[] = [];
           if (course.slug === "analisis-de-datos") {
              if (lvl.name.includes("Básico") || lvl.name.includes("Completo")) {
-                 const adSchedules = schedules.filter(s => analisisDeDatosSlugs.includes(s.course_slug));
+                 const adSchedules = schedules.filter(s => analisisDeDatosSlugs.includes(s.course_slug) && s.level_name.includes("Básico"));
                  courseSchedules = getAllActiveSchedules(adSchedules);
              }
           } else {
@@ -396,7 +396,7 @@ export default function PagoClient() {
 
       const getHasBaseSchedule = (course: Course) => {
         if (analisisDeDatosSlugs.includes(course.slug) || course.slug === "analisis-de-datos") {
-          const adSchedules = schedules.filter(s => analisisDeDatosSlugs.includes(s.course_slug));
+          const adSchedules = schedules.filter(s => analisisDeDatosSlugs.includes(s.course_slug) && s.level_name.includes("Básico"));
           return !!getNearestSchedule(adSchedules);
         }
         return !!schedules.find(s => s.course_slug === course.slug);
@@ -469,7 +469,7 @@ export default function PagoClient() {
                
                if (course.slug === "analisis-de-datos") {
                   if (activeLevel?.includes("Básico") || activeLevel?.includes("Completo")) {
-                      const adSchedules = schedules.filter(s => analisisDeDatosSlugs.includes(s.course_slug));
+                      const adSchedules = schedules.filter(s => analisisDeDatosSlugs.includes(s.course_slug) && s.level_name.includes("Básico"));
                       courseSchedules = getAllActiveSchedules(adSchedules);
                   }
                } else if (!alwaysAvailable) {

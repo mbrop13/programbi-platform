@@ -24,10 +24,10 @@ export async function POST(req: NextRequest) {
 
     const supabase = createAdminClient();
 
-    // Find our payment record (no invalid columns)
+    // Find our payment record (include payment_method)
     const { data: payment } = await supabase
       .from("payments")
-      .select("id, user_id, course_id, status, amount, flow_order")
+      .select("id, user_id, course_id, status, amount, flow_order, payment_method")
       .eq("flow_order", flowStatus.commerceOrder)
       .single();
 
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
 
     const newStatus = flowStatusToString(flowStatus.status);
 
-    // Update payment record (removed invalid payer_email column)
+    // Update payment record (this overwrites the temporary JSON in payment_method)
     await supabase.from("payments").update({
       status: newStatus,
       flow_status: flowStatus.status,
@@ -55,16 +55,31 @@ export async function POST(req: NextRequest) {
     if (flowStatus.status === FLOW_STATUS.PAID && payment.user_id) {
       let cartItems: any[] = [];
       let schedulingSlots: any[] = [];
+      
+      // Attempt to read cart items from the temporary payment_method JSON
       try {
-        const opt = typeof flowStatus.optional === "string" ? JSON.parse(flowStatus.optional) : flowStatus.optional;
-        if (opt?.items) {
-          cartItems = typeof opt.items === "string" ? JSON.parse(opt.items) : opt.items;
-        }
-        if (opt?.scheduling_slots) {
-          schedulingSlots = typeof opt.scheduling_slots === "string" ? JSON.parse(opt.scheduling_slots) : opt.scheduling_slots;
+        if (payment.payment_method && payment.payment_method.startsWith('{')) {
+          const parsed = JSON.parse(payment.payment_method);
+          if (parsed.items) cartItems = parsed.items;
+          if (parsed.slots) schedulingSlots = parsed.slots;
         }
       } catch (err) {
-        console.error("Error parsing optional data:", err);
+        console.error("Error parsing payment_method cart data:", err);
+      }
+      
+      // Fallback: Check optional param for backwards compatibility
+      if (cartItems.length === 0) {
+        try {
+          const opt = typeof flowStatus.optional === "string" ? JSON.parse(flowStatus.optional) : flowStatus.optional;
+          if (opt?.items) {
+            cartItems = typeof opt.items === "string" ? JSON.parse(opt.items) : opt.items;
+          }
+          if (opt?.scheduling_slots) {
+            schedulingSlots = typeof opt.scheduling_slots === "string" ? JSON.parse(opt.scheduling_slots) : opt.scheduling_slots;
+          }
+        } catch (err) {
+          console.error("Error parsing optional data:", err);
+        }
       }
 
       // 1. Send confirmation email
