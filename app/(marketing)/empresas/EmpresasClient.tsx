@@ -218,66 +218,6 @@ export default function EmpresasClient() {
             </div>
           </FadeIn>
         </div>
-
-        {/* Floating dashboard mockup */}
-        <FadeIn delay={0.6} direction="up">
-          <div className="max-w-[1100px] mx-auto px-5 lg:px-10 relative z-10 mt-16">
-            <motion.div
-              animate={{ y: [0, -12, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-              className="relative mx-auto max-w-4xl"
-            >
-              <div className="absolute -inset-4 bg-gradient-to-r from-blue-400/30 to-indigo-400/30 rounded-[2.5rem] blur-2xl" />
-              <div className="relative bg-white/90 backdrop-blur-xl border border-gray-100 rounded-[1.75rem] p-3 sm:p-4 shadow-[0_30px_80px_-20px_rgba(24,144,255,0.25)]">
-                <div className="bg-[#0F172A] rounded-2xl overflow-hidden">
-                  <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-amber-400/70" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/70" />
-                    <span className="ml-3 text-[10px] sm:text-xs text-slate-500 font-mono">powerbi.programbi.com/executive-dashboard</span>
-                  </div>
-                  <div className="p-4 sm:p-6 grid grid-cols-12 gap-3 sm:gap-4">
-                    {[
-                      { l: "Ventas", v: "$48.2M", c: "text-emerald-400", d: "+18%" },
-                      { l: "Margen", v: "32.4%", c: "text-blue-400", d: "+3.1pp" },
-                      { l: "Churn", v: "1.8%", c: "text-purple-400", d: "-22%" },
-                    ].map((k, i) => (
-                      <div key={i} className="col-span-4 bg-white/[0.03] border border-white/5 rounded-xl p-3">
-                        <p className="text-[9px] sm:text-[10px] text-slate-500 uppercase tracking-wider mb-1">{k.l}</p>
-                        <p className="text-sm sm:text-lg font-black text-white">{k.v}</p>
-                        <p className={`text-[9px] sm:text-[10px] font-bold ${k.c}`}>{k.d}</p>
-                      </div>
-                    ))}
-                    <div className="col-span-8 bg-white/[0.03] border border-white/5 rounded-xl p-4 h-28 sm:h-36 flex items-end gap-1.5 sm:gap-2">
-                      {[40, 65, 50, 80, 60, 90, 72, 95, 68, 85, 78, 100].map((h, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ height: 0 }}
-                          whileInView={{ height: `${h}%` }}
-                          viewport={{ once: true }}
-                          transition={{ duration: 0.8, delay: i * 0.05, ease: "easeOut" }}
-                          className="flex-1 bg-gradient-to-t from-blue-600 to-indigo-400 rounded-t-sm min-h-[2px]"
-                        />
-                      ))}
-                    </div>
-                    <div className="col-span-4 bg-white/[0.03] border border-white/5 rounded-xl p-4 h-28 sm:h-36 flex items-center justify-center">
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-full"
-                        style={{ background: "conic-gradient(#1890FF 0% 60%, #6366F1 60% 80%, #10B981 80% 100%)" }}
-                      >
-                        <div className="w-full h-full flex items-center justify-center">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#0F172A] rounded-full" />
-                        </div>
-                      </motion.div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </FadeIn>
       </section>
 
       {/* ════════════════════════════════════════════════ */}
