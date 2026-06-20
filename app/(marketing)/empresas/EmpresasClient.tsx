@@ -8,7 +8,7 @@ import * as LucideIcons from "lucide-react";
 import React from "react";
 import {
   ArrowRight, BarChart3, Cpu, LineChart, Shield, Building2, Users, Zap,
-  TrendingUp, Lightbulb, Search, Database, CheckCircle2, ChevronDown,
+  TrendingUp, Lightbulb, Search, CheckCircle2, ChevronDown,
   Sparkles, Target, Award, Clock, GraduationCap, Workflow, PlayCircle,
   Quote, ArrowUpRight, Rocket, Brain, Bot, Gauge, X, AlertTriangle,
   TrendingDown, HeartHandshake, BadgeCheck, Layers, Server, Code2,
@@ -20,6 +20,7 @@ import {
 import { courses } from "@/lib/data/courses";
 import { casesOfUse } from "@/lib/data/cases";
 import AsesoriasForm from "@/components/marketing/AsesoriasForm";
+import LogoSlider from "@/components/marketing/LogoSlider";
 
 /* ─────────── Helpers ─────────── */
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
@@ -29,8 +30,6 @@ function DynamicIcon({ name, className }: { name: string; className?: string }) 
 }
 
 /* ─────────── Data ─────────── */
-const clientLogos = ["CAP", "AngloAmerican", "Banco de Chile", "Codelco", "Falabella", "Bci", "Sodimac", "Entel"];
-
 const heroStats = [
   { icon: Building2, value: 50, suffix: "+", label: "Empresas", color: "#1890FF" },
   { icon: Users, value: 5000, suffix: "+", label: "Profesionales formados", color: "#6366F1" },
@@ -112,34 +111,55 @@ export default function EmpresasClient() {
   return (
     <div className="bg-[#FAFAFA] min-h-screen overflow-hidden">
       {/* ════════════════════════════════════════════════ */}
-      {/* 1. HERO B2B ÉPICO                                  */}
+      {/* 1. HERO B2B — MODO CLARO CON FONDO ANIMADO        */}
       {/* ════════════════════════════════════════════════ */}
-      <section className="relative -mt-20 lg:-mt-24 pt-32 lg:pt-48 pb-20 lg:pb-28 overflow-hidden bg-[#0F172A]">
-        {/* Background mesh */}
+      <section className="relative -mt-20 lg:-mt-24 pt-32 lg:pt-44 pb-20 lg:pb-28 overflow-hidden bg-white">
+        {/* ─── Animated background ─── */}
         <div className="absolute inset-0 z-0 pointer-events-none">
-          <svg className="absolute inset-0 w-full h-full opacity-[0.04]" viewBox="0 0 800 600" fill="none">
-            <defs>
-              <pattern id="hero-grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#fff" strokeWidth="0.5" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#hero-grid)" />
-          </svg>
+          {/* Subtle grid */}
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundSize: "60px 60px",
+              backgroundImage:
+                "linear-gradient(to right, rgba(24,144,255,0.04) 1px, transparent 1px), linear-gradient(to bottom, rgba(24,144,255,0.04) 1px, transparent 1px)",
+            }}
+          />
+          {/* Aurora gradient mesh — 3 animated blobs */}
           <motion.div
-            animate={{ scale: [1, 1.2, 1], opacity: [0.25, 0.4, 0.25], rotate: [0, 90, 0] }}
-            transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-            className="absolute -top-[20%] -right-[10%] w-[800px] h-[800px] bg-gradient-to-br from-blue-500 to-indigo-500 rounded-full blur-[150px]"
+            animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.75, 0.5], x: [0, 40, 0], y: [0, -30, 0] }}
+            transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -top-[15%] -right-[5%] w-[700px] h-[700px] bg-gradient-to-br from-blue-200/60 to-indigo-200/50 rounded-full blur-[110px]"
           />
           <motion.div
-            animate={{ scale: [1, 1.3, 1], opacity: [0.15, 0.3, 0.15], y: [0, 100, 0] }}
-            transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
-            className="absolute top-[40%] -left-[10%] w-[700px] h-[700px] bg-gradient-to-tr from-indigo-500 to-blue-400 rounded-full blur-[130px]"
+            animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.65, 0.4], x: [0, -40, 0], y: [0, 30, 0] }}
+            transition={{ duration: 22, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute top-[30%] -left-[10%] w-[650px] h-[650px] bg-gradient-to-tr from-cyan-200/50 to-blue-200/50 rounded-full blur-[120px]"
           />
+          <motion.div
+            animate={{ scale: [1, 1.25, 1], opacity: [0.3, 0.55, 0.3], y: [0, -50, 0] }}
+            transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+            className="absolute -bottom-[10%] left-1/3 w-[550px] h-[550px] bg-gradient-to-tr from-purple-200/40 to-pink-200/30 rounded-full blur-[110px]"
+          />
+
+          {/* Floating particles */}
+          {[...Array(12)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-1.5 h-1.5 rounded-full bg-blue-400/40"
+              style={{ left: `${(i * 37) % 100}%`, top: `${(i * 53) % 100}%` }}
+              animate={{ y: [0, -30, 0], opacity: [0, 1, 0] }}
+              transition={{ duration: 6 + (i % 5), repeat: Infinity, delay: i * 0.4, ease: "easeInOut" }}
+            />
+          ))}
+
+          {/* Bottom fade into page */}
+          <div className="absolute bottom-0 inset-x-0 h-32 bg-gradient-to-b from-transparent to-[#FAFAFA]" />
         </div>
 
         <div className="max-w-[1100px] mx-auto px-5 lg:px-10 relative z-10 text-center">
           <FadeIn>
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md shadow-sm border border-white/15 text-white font-bold text-xs tracking-widest uppercase px-5 py-2.5 rounded-full mb-8">
+            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-md shadow-sm border border-blue-100 text-[#1890FF] font-bold text-xs tracking-widest uppercase px-5 py-2.5 rounded-full mb-8">
               <span className="relative flex h-2.5 w-2.5 mr-1">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500" />
@@ -149,16 +169,16 @@ export default function EmpresasClient() {
           </FadeIn>
 
           <FadeIn delay={0.15}>
-            <h1 className="font-display font-black text-5xl sm:text-6xl lg:text-7xl text-white mb-8 leading-[1.05] tracking-tight">
+            <h1 className="font-display font-black text-5xl sm:text-6xl lg:text-7xl text-[#0F172A] mb-8 leading-[1.05] tracking-tight">
               Capacita a tu equipo.{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#60A5FA] via-[#1890FF] to-[#6366F1]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-[#6366F1]">
                 Domina tus datos.
               </span>
             </h1>
           </FadeIn>
 
           <FadeIn delay={0.3}>
-            <p className="text-slate-300 text-lg sm:text-xl leading-relaxed mb-12 max-w-[720px] mx-auto font-medium">
+            <p className="text-gray-500 text-lg sm:text-xl leading-relaxed mb-12 max-w-[720px] mx-auto font-medium">
               Transformamos a tus colaboradores en analistas autónomos. Dashboards, automatización,
               ciencia de datos y capacitación corporativa de alto impacto para empresas que quieren decidir con datos.
             </p>
@@ -178,23 +198,23 @@ export default function EmpresasClient() {
               </a>
               <a
                 href="#why-capacitar"
-                className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-base text-white bg-white/10 backdrop-blur-md border border-white/20 no-underline transition-all hover:bg-white/15 hover:-translate-y-1"
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-base text-[#0F172A] bg-white border border-gray-200 shadow-sm no-underline transition-all hover:border-blue-300 hover:-translate-y-1"
               >
-                <Sparkles className="w-5 h-5 text-blue-300" /> ¿Por qué capacitar?
+                <Sparkles className="w-5 h-5 text-blue-500" /> ¿Por qué capacitar?
               </a>
             </div>
           </FadeIn>
 
           {/* Credibility badges */}
           <FadeIn delay={0.5}>
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-slate-400 text-xs uppercase tracking-widest font-bold">
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> CAP</span>
-              <span className="hidden sm:block w-1 h-1 rounded-full bg-slate-600" />
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> AngloAmerican</span>
-              <span className="hidden sm:block w-1 h-1 rounded-full bg-slate-600" />
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> +50 empresas</span>
-              <span className="hidden sm:block w-1 h-1 rounded-full bg-slate-600" />
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Chile · Latam</span>
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-gray-400 text-xs uppercase tracking-widest font-bold">
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> CAP</span>
+              <span className="hidden sm:block w-1 h-1 rounded-full bg-gray-300" />
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> AngloAmerican</span>
+              <span className="hidden sm:block w-1 h-1 rounded-full bg-gray-300" />
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> +50 empresas</span>
+              <span className="hidden sm:block w-1 h-1 rounded-full bg-gray-300" />
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> Chile · Latam</span>
             </div>
           </FadeIn>
         </div>
@@ -207,9 +227,9 @@ export default function EmpresasClient() {
               transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
               className="relative mx-auto max-w-4xl"
             >
-              <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-[2.5rem] blur-2xl" />
-              <div className="relative bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-[1.75rem] p-3 sm:p-4 shadow-2xl">
-                <div className="bg-slate-950 rounded-2xl overflow-hidden">
+              <div className="absolute -inset-4 bg-gradient-to-r from-blue-400/30 to-indigo-400/30 rounded-[2.5rem] blur-2xl" />
+              <div className="relative bg-white/90 backdrop-blur-xl border border-gray-100 rounded-[1.75rem] p-3 sm:p-4 shadow-[0_30px_80px_-20px_rgba(24,144,255,0.25)]">
+                <div className="bg-[#0F172A] rounded-2xl overflow-hidden">
                   <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/5">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
                     <div className="w-2.5 h-2.5 rounded-full bg-amber-400/70" />
@@ -248,7 +268,7 @@ export default function EmpresasClient() {
                         style={{ background: "conic-gradient(#1890FF 0% 60%, #6366F1 60% 80%, #10B981 80% 100%)" }}
                       >
                         <div className="w-full h-full flex items-center justify-center">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-slate-950 rounded-full" />
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#0F172A] rounded-full" />
                         </div>
                       </motion.div>
                     </div>
@@ -261,30 +281,9 @@ export default function EmpresasClient() {
       </section>
 
       {/* ════════════════════════════════════════════════ */}
-      {/* 2. TRUST BAR                                      */}
+      {/* 2. TRUST BAR — LOGOS REALES DE EMPRESAS          */}
       {/* ════════════════════════════════════════════════ */}
-      <section className="py-12 bg-white border-y border-gray-100">
-        <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
-          <FadeIn>
-            <p className="text-center text-xs font-black uppercase tracking-[0.25em] text-gray-400 mb-8">
-              Empresas que confían en ProgramBI
-            </p>
-          </FadeIn>
-          <div className="relative overflow-hidden logo-slider-mask">
-            <motion.div
-              animate={{ x: ["0%", "-50%"] }}
-              transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-              className="flex gap-12 sm:gap-16 items-center w-max"
-            >
-              {[...clientLogos, ...clientLogos].map((logo, i) => (
-                <span key={i} className="font-display font-black text-xl sm:text-2xl text-gray-300 hover:text-gray-500 transition-colors whitespace-nowrap tracking-tight">
-                  {logo}
-                </span>
-              ))}
-            </motion.div>
-          </div>
-        </div>
-      </section>
+      <LogoSlider />
 
       {/* ════════════════════════════════════════════════ */}
       {/* 3. STATS GRID                                     */}
@@ -501,26 +500,88 @@ export default function EmpresasClient() {
                 </StaggerChildren>
               </div>
 
-              {/* Orbital visual */}
+              {/* 🎨 Data Architecture Visual — Pipeline animado de extremo a extremo */}
               <FadeIn delay={0.2} className="relative">
-                <div className="bg-gradient-to-br from-[#0F172A] to-[#1E293B] rounded-[3rem] p-8 border border-gray-800 relative overflow-hidden aspect-square flex items-center justify-center shadow-2xl">
-                  <div className="absolute inset-0 opacity-20" style={{ backgroundSize: "20px 20px", backgroundImage: "linear-gradient(to right, #1890FF20 1px, transparent 1px), linear-gradient(to bottom, #1890FF20 1px, transparent 1px)" }} />
-                  <div className="relative z-10 w-full h-full flex items-center justify-center">
-                    <motion.div
-                      animate={{ scale: [1, 1.05, 1], boxShadow: ["0 0 0px #1890FF", "0 0 60px #1890FF", "0 0 0px #1890FF"] }}
-                      transition={{ duration: 4, repeat: Infinity }}
-                      className="w-24 h-24 rounded-full bg-blue-600 flex items-center justify-center relative z-20 border-4 border-blue-400 shadow-[0_0_30px_#1890FF]"
-                    >
-                      <Database className="w-10 h-10 text-white" />
-                    </motion.div>
-                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="absolute w-64 h-64 border border-blue-500/30 rounded-full">
-                      <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-emerald-400 shadow-[0_0_15px_#34d399] flex items-center justify-center"><BarChart3 className="w-3 h-3 text-emerald-900" /></div>
-                      <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-purple-400 shadow-[0_0_15px_#c084fc] flex items-center justify-center"><Bot className="w-3 h-3 text-purple-900" /></div>
-                    </motion.div>
-                    <motion.div animate={{ rotate: -360 }} transition={{ duration: 25, repeat: Infinity, ease: "linear" }} className="absolute w-80 h-80 border border-indigo-500/20 rounded-full">
-                      <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-blue-400 shadow-[0_0_15px_#60a5fa] flex items-center justify-center"><Brain className="w-3 h-3 text-blue-900" /></div>
-                      <div className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-amber-400 shadow-[0_0_15px_#fbbf24] flex items-center justify-center"><Zap className="w-3 h-3 text-amber-900" /></div>
-                    </motion.div>
+                <div className="bg-gradient-to-br from-[#0B1220] via-[#0F172A] to-[#1E293B] rounded-[2.5rem] p-6 lg:p-8 border border-blue-500/20 relative overflow-hidden shadow-2xl">
+                  {/* Ambient glow */}
+                  <div className="absolute -top-20 -right-20 w-60 h-60 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+                  {/* Grid pattern */}
+                  <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundSize: "24px 24px", backgroundImage: "linear-gradient(to right, #1890FF15 1px, transparent 1px), linear-gradient(to bottom, #1890FF15 1px, transparent 1px)" }} />
+
+                  {/* Header */}
+                  <div className="relative z-10 flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="text-[10px] font-mono text-slate-400 uppercase tracking-widest">data_pipeline.live</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-blue-300 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-md">EN VIVO</span>
+                  </div>
+
+                  {/* Pipeline layers */}
+                  <div className="relative z-10 space-y-3">
+                    {[
+                      { label: "Fuentes de Datos", sub: "SQL · ERP · CRM · APIs", icon: Server, color: "#06B6D4", width: "60%", delay: 0 },
+                      { label: "ETL & Power Query", sub: "Extracción · Transformación", icon: Workflow, color: "#1890FF", width: "75%", delay: 0.4 },
+                      { label: "Modelado & DAX", sub: "Esquema estrella · Medidas", icon: Layers, color: "#6366F1", width: "85%", delay: 0.8 },
+                      { label: "Dashboards Power BI", sub: "Visualización interactiva", icon: BarChart3, color: "#10B981", width: "70%", delay: 1.2 },
+                      { label: "IA & Machine Learning", sub: "Predicciones · Agentes", icon: Brain, color: "#7C3AED", width: "55%", delay: 1.6 },
+                    ].map((layer, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: 30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: layer.delay, duration: 0.5 }}
+                        className="relative"
+                      >
+                        {/* Connection line with flowing data */}
+                        {i < 4 && (
+                          <div className="absolute left-6 -bottom-3 w-0.5 h-3 bg-blue-500/20 overflow-hidden">
+                            <motion.div
+                              animate={{ y: [-12, 12] }}
+                              transition={{ duration: 1.5, repeat: Infinity, delay: layer.delay, ease: "linear" }}
+                              className="absolute inset-x-0 h-3 bg-gradient-to-b from-transparent via-blue-400 to-transparent"
+                            />
+                          </div>
+                        )}
+                        <div
+                          className="flex items-center gap-3 bg-white/[0.04] hover:bg-white/[0.07] border border-white/5 rounded-xl px-3 py-2.5 transition-colors"
+                          style={{ marginLeft: `${(100 - parseInt(layer.width)) / 2}%`, marginRight: `${(100 - parseInt(layer.width)) / 2}%` }}
+                        >
+                          <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${layer.color}20`, color: layer.color }}>
+                            <layer.icon className="w-4.5 h-4.5" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs font-black text-white truncate">{layer.label}</p>
+                            <p className="text-[10px] text-slate-400 font-mono truncate">{layer.sub}</p>
+                          </div>
+                          {/* Animated activity bar */}
+                          <div className="w-12 h-1 bg-white/5 rounded-full overflow-hidden hidden sm:block">
+                            <motion.div
+                              animate={{ x: ["-100%", "100%"] }}
+                              transition={{ duration: 2, repeat: Infinity, delay: layer.delay, ease: "linear" }}
+                              className="h-full w-1/2 rounded-full"
+                              style={{ background: layer.color }}
+                            />
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  {/* Floating live KPIs */}
+                  <div className="relative z-10 grid grid-cols-3 gap-2 mt-6 pt-5 border-t border-white/5">
+                    {[
+                      { v: "1.2M", l: "filas/día", c: "text-cyan-400" },
+                      { v: "3 min", l: "refresh", c: "text-blue-400" },
+                      { v: "99.9%", l: "uptime", c: "text-emerald-400" },
+                    ].map((k, i) => (
+                      <div key={i} className="bg-white/[0.03] rounded-lg p-2.5 text-center border border-white/5">
+                        <p className={`text-base font-black ${k.c}`}>{k.v}</p>
+                        <p className="text-[9px] text-slate-500 uppercase tracking-wider mt-0.5">{k.l}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </FadeIn>
