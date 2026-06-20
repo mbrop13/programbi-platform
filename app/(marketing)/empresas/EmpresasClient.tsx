@@ -10,10 +10,12 @@ import {
   ArrowRight, BarChart3, Cpu, LineChart, Shield, Building2, Users, Zap,
   TrendingUp, Lightbulb, Search, Database, CheckCircle2, ChevronDown,
   Sparkles, Target, Award, Clock, GraduationCap, Workflow, PlayCircle,
-  Quote, ArrowUpRight, Rocket, Brain, Bot, Gauge,
+  Quote, ArrowUpRight, Rocket, Brain, Bot, Gauge, X, AlertTriangle,
+  TrendingDown, HeartHandshake, BadgeCheck, Layers, Server, Code2,
+  PiggyBank, Timer, Compass, UserCheck, Crown, Lock, Sparkle,
 } from "lucide-react";
 import {
-  FadeIn, StaggerChildren, StaggerItem, GlowCard, CountUp, TiltCard, ParallaxSection,
+  FadeIn, StaggerChildren, StaggerItem, GlowCard, CountUp, TiltCard, ParallaxSection, AnimatedText,
 } from "@/components/shared/AnimatedComponents";
 import { courses } from "@/lib/data/courses";
 import { casesOfUse } from "@/lib/data/cases";
@@ -30,10 +32,39 @@ function DynamicIcon({ name, className }: { name: string; className?: string }) 
 const clientLogos = ["CAP", "AngloAmerican", "Banco de Chile", "Codelco", "Falabella", "Bci", "Sodimac", "Entel"];
 
 const heroStats = [
-  { icon: Building2, value: 50, suffix: "+", label: "Empresas" },
-  { icon: Users, value: 5000, suffix: "+", label: "Profesionales capacitados" },
-  { icon: Zap, value: 200, suffix: "+", label: "Proyectos entregados" },
-  { icon: Award, value: 98, suffix: "%", label: "Tasa de éxito" },
+  { icon: Building2, value: 50, suffix: "+", label: "Empresas", color: "#1890FF" },
+  { icon: Users, value: 5000, suffix: "+", label: "Profesionales formados", color: "#6366F1" },
+  { icon: Zap, value: 200, suffix: "+", label: "Proyectos entregados", color: "#7C3AED" },
+  { icon: Award, value: 98, suffix: "%", label: "Tasa de éxito", color: "#10B981" },
+];
+
+/* 🆕 El costo de NO capacitar vs. el poder de capacitar */
+const withoutTraining = [
+  { icon: AlertTriangle, text: "Dependencia eterna de consultores externos por cada reporte o cambio" },
+  { icon: Timer, text: "Días perdidos consolidando planillas Excel a mano" },
+  { icon: TrendingDown, text: "Decisiones estratégicas basadas en intuición o datos de hace 30 días" },
+  { icon: Lock, text: "Conocimiento atrapado en una sola persona del equipo" },
+  { icon: X, text: "Rotación de talento por falta de oportunidades de desarrollo" },
+  { icon: AlertTriangle, text: "Errores manuales costosos en reportes financieros y operativos" },
+];
+
+const withTraining = [
+  { icon: BadgeCheck, text: "Equipos autónomos que crean y mantienen sus propios dashboards" },
+  { icon: Rocket, text: "Reportes automatizados: de días a minutos, sin intervención manual" },
+  { icon: TrendingUp, text: "Decisiones en tiempo real con datos vivos y confianza total" },
+  { icon: Layers, text: "Conocimiento distribuido: nadie es cuello de botella" },
+  { icon: HeartHandshake, text: "Retención de talento: +24% en empresas que invierten en formación" },
+  { icon: PiggyBank, text: "Menor costo por análisis y cero dependencia de terceros" },
+];
+
+/* 🆕 ROI de la capacitación — métricas cuantificadas */
+const roiBenefits = [
+  { icon: PiggyBank, value: 243, suffix: "%", label: "ROI promedio", desc: "Retorno sobre la inversión en programas de capacitación en datos dentro del primer año.", color: "#10B981" },
+  { icon: TrendingUp, value: 40, suffix: "%", label: "Más productividad", desc: "Aumento de productividad en equipos que dominan automatización y Power BI.", color: "#1890FF" },
+  { icon: HeartHandshake, value: 24, suffix: "%", label: "Menos rotación", desc: "Reducción de fuga de talento al ofrecer desarrollo profesional tangible.", color: "#7C3AED" },
+  { icon: Timer, value: 80, suffix: "%", label: "Tiempo liberado", desc: "Menos tiempo en tareas manuales, más tiempo en análisis estratégico.", color: "#F59E0B" },
+  { icon: Gauge, value: 5, suffix: "x", label: "Decisiones más rápidas", desc: "Velocidad de toma de decisiones con dashboards en vivo vs. reportes estáticos.", color: "#EC4899" },
+  { icon: Shield, value: 95, suffix: "%", label: "Menos errores", desc: "Reducción de errores manuales al automatizar procesos ETL y reportes.", color: "#06B6D4" },
 ];
 
 const impactPillars = [
@@ -44,38 +75,10 @@ const impactPillars = [
 ];
 
 const bentoSolutions = [
-  {
-    colSpan: "lg:col-span-2",
-    icon: BarChart3,
-    title: "Dashboards de Clase Mundial",
-    description: "Transformamos datos complejos en dashboards de Power BI intuitivos que cuentan una historia. Conectamos ERPs, CRMs y bases de datos para una visualización unificada.",
-    color: "#1890FF",
-    bg: "bg-blue-50",
-  },
-  {
-    colSpan: "lg:col-span-1",
-    icon: Cpu,
-    title: "Automatización con IA",
-    description: "Implementamos agentes de IA, RPA y Power Automate para eliminar tareas repetitivas y errores humanos.",
-    color: "#7C3AED",
-    bg: "bg-purple-50",
-  },
-  {
-    colSpan: "lg:col-span-1",
-    icon: LineChart,
-    title: "Ciencia de Datos",
-    description: "Modelos predictivos que anticipan tendencias, demanda y riesgo para optimizar la toma de decisiones.",
-    color: "#10B981",
-    bg: "bg-emerald-50",
-  },
-  {
-    colSpan: "lg:col-span-2",
-    icon: GraduationCap,
-    title: "Capacitación de Equipos",
-    description: "No solo entregamos software: capacitamos a tu equipo con más de 9 programas corporativos y establecemos una cultura data-driven que perdura.",
-    color: "#F59E0B",
-    bg: "bg-amber-50",
-  },
+  { colSpan: "lg:col-span-2", icon: BarChart3, title: "Dashboards de Clase Mundial", description: "Transformamos datos complejos en dashboards de Power BI intuitivos que cuentan una historia. Conectamos ERPs, CRMs y bases de datos para una visualización unificada.", color: "#1890FF", bg: "bg-blue-50" },
+  { colSpan: "lg:col-span-1", icon: Cpu, title: "Automatización con IA", description: "Implementamos agentes de IA, RPA y Power Automate para eliminar tareas repetitivas y errores humanos.", color: "#7C3AED", bg: "bg-purple-50" },
+  { colSpan: "lg:col-span-1", icon: LineChart, title: "Ciencia de Datos", description: "Modelos predictivos que anticipan tendencias, demanda y riesgo para optimizar la toma de decisiones.", color: "#10B981", bg: "bg-emerald-50" },
+  { colSpan: "lg:col-span-2", icon: GraduationCap, title: "Capacitación de Equipos", description: "No solo entregamos software: capacitamos a tu equipo con más de 9 programas corporativos y establecemos una cultura data-driven que perdura.", color: "#F59E0B", bg: "bg-amber-50" },
 ];
 
 const processSteps = [
@@ -87,51 +90,19 @@ const processSteps = [
 ];
 
 const testimonials = [
-  {
-    quote: "Logramos retener a más del 80% del personal clave identificado con riesgo alto de rotación antes de recibir su carta de renuncia.",
-    author: "Sofía Vergara",
-    role: "Gerente de Gestión de Personas",
-    tag: "People Analytics",
-  },
-  {
-    quote: "Python nos permitió pasar de un enfoque reactivo a anticipar la fuga de clientes de forma inteligente con un modelo predictivo.",
-    author: "Mariana Rojas",
-    role: "Subgerente de Fidelización",
-    tag: "Machine Learning",
-  },
-  {
-    quote: "La automatización liberó a nuestro equipo de tareas repetitivas, permitiéndonos enfocar el 100% del tiempo en análisis estratégico.",
-    author: "Carolina Méndez",
-    role: "Jefa de Finanzas & Control",
-    tag: "Automatización",
-  },
+  { quote: "Logramos retener a más del 80% del personal clave identificado con riesgo alto de rotación antes de recibir su carta de renuncia.", author: "Sofía Vergara", role: "Gerente de Gestión de Personas", tag: "People Analytics" },
+  { quote: "Python nos permitió pasar de un enfoque reactivo a anticipar la fuga de clientes de forma inteligente con un modelo predictivo.", author: "Mariana Rojas", role: "Subgerente de Fidelización", tag: "Machine Learning" },
+  { quote: "La automatización liberó a nuestro equipo de tareas repetitivas, permitiéndonos enfocar el 100% del tiempo en análisis estratégico.", author: "Carolina Méndez", role: "Jefa de Finanzas & Control", tag: "Automatización" },
 ];
 
 const faqs = [
-  {
-    q: "¿Cuánto demora un proyecto típico de Business Intelligence?",
-    a: "Un dashboard ejecutivo en Power BI toma entre 3 y 6 semanas según la complejidad de las fuentes de datos. Programas de capacitación corporativa se adaptan a tu calendario, generalmente entre 4 y 12 semanas distribuidas en sesiones en vivo.",
-  },
-  {
-    q: "¿Ofrecen facturación empresarial?",
-    a: "Sí. Emitimos factura electrónica a nombre de tu empresa en Chile y Latinoamérica, con órdenes de compra, centros de costo y reportes de asistencia para cada colaborador capacitado.",
-  },
-  {
-    q: "¿Trabajan con nuestras fuentes de datos existentes?",
-    a: "Nos conectamos a prácticamente cualquier fuente: SQL Server, Excel, Google Sheets, ERPs (SAP, Dynamics), CRMs, APIs REST, Google Ads, Meta Ads y bases en la nube (Azure, AWS, GCP).",
-  },
-  {
-    q: "¿Las capacitaciones son 100% a medida?",
-    a: "Adaptamos el contenido a los datos y casos reales de tu empresa. Tus colaboradores trabajan con tus propias tablas, KPIs y procesos, no con ejemplos genéricos de laboratorio.",
-  },
-  {
-    q: "¿Qué nivel de soporte entregan post-proyecto?",
-    a: "Incluimos soporte continuo, sesiones de mejora iterativa, actualización de dashboards y gobernanza de datos. También formamos a un referente interno para autonomía total.",
-  },
-  {
-    q: "¿En qué países operan?",
-    a: "Trabajamos de forma remota con empresas en Chile, Colombia, México, Perú y toda Latinoamérica, con horarios flexibles adaptados a cada zona horaria.",
-  },
+  { q: "¿Por qué capacitar a nuestro equipo en lugar de solo contratar consultoría?", a: "La consultoría externa resuelve el problema de hoy, pero te deja dependiente para siempre. Al capacitar a tu equipo, transfieres el conocimiento: ellos crean, mantienen y escalan las soluciones de forma autónoma. El ROI es 243% promedio en el primer año y eliminas la dependencia de terceros en cada reporte o cambio." },
+  { q: "¿Cuánto demora un proyecto típico de Business Intelligence?", a: "Un dashboard ejecutivo en Power BI toma entre 3 y 6 semanas según la complejidad de las fuentes de datos. Programas de capacitación corporativa se adaptan a tu calendario, generalmente entre 4 y 12 semanas distribuidas en sesiones en vivo." },
+  { q: "¿Ofrecen facturación empresarial?", a: "Sí. Emitimos factura electrónica a nombre de tu empresa en Chile y Latinoamérica, con órdenes de compra, centros de costo y reportes de asistencia para cada colaborador capacitado." },
+  { q: "¿Trabajan con nuestras fuentes de datos existentes?", a: "Nos conectamos a prácticamente cualquier fuente: SQL Server, Excel, Google Sheets, ERPs (SAP, Dynamics), CRMs, APIs REST, Google Ads, Meta Ads y bases en la nube (Azure, AWS, GCP)." },
+  { q: "¿Las capacitaciones son 100% a medida?", a: "Adaptamos el contenido a los datos y casos reales de tu empresa. Tus colaboradores trabajan con tus propias tablas, KPIs y procesos, no con ejemplos genéricos de laboratorio." },
+  { q: "¿Qué nivel de soporte entregan post-proyecto?", a: "Incluimos soporte continuo, sesiones de mejora iterativa, actualización de dashboards y gobernanza de datos. También formamos a un referente interno para autonomía total." },
+  { q: "¿En qué países operan?", a: "Trabajamos de forma remota con empresas en Chile, Colombia, México, Perú y toda Latinoamérica, con horarios flexibles adaptados a cada zona horaria." },
 ];
 
 /* ─────────── Component ─────────── */
@@ -179,18 +150,17 @@ export default function EmpresasClient() {
 
           <FadeIn delay={0.15}>
             <h1 className="font-display font-black text-5xl sm:text-6xl lg:text-7xl text-white mb-8 leading-[1.05] tracking-tight">
-              Convierte tus datos en{" "}
+              Capacita a tu equipo.{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#60A5FA] via-[#1890FF] to-[#6366F1]">
-                decisiones que impulsan
-              </span>{" "}
-              tu empresa
+                Domina tus datos.
+              </span>
             </h1>
           </FadeIn>
 
           <FadeIn delay={0.3}>
             <p className="text-slate-300 text-lg sm:text-xl leading-relaxed mb-12 max-w-[720px] mx-auto font-medium">
-              Dashboards, automatización, ciencia de datos y capacitación corporativa de alto impacto.
-              Desde la consultoría hasta transformar a tu equipo en una organización data-driven.
+              Transformamos a tus colaboradores en analistas autónomos. Dashboards, automatización,
+              ciencia de datos y capacitación corporativa de alto impacto para empresas que quieren decidir con datos.
             </p>
           </FadeIn>
 
@@ -198,19 +168,19 @@ export default function EmpresasClient() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
               <a
                 href="#contacto"
-                className="group relative inline-flex items-center gap-3 px-9 py-4.5 rounded-2xl font-black text-base text-white no-underline transition-all hover:-translate-y-1 overflow-hidden"
+                className="group relative inline-flex items-center gap-3 px-9 py-4 rounded-2xl font-black text-base text-white no-underline transition-all hover:-translate-y-1 overflow-hidden"
                 style={{ background: "linear-gradient(135deg, #2563EB 0%, #4F46E5 100%)", boxShadow: "0 20px 40px -12px rgba(37,99,235,0.5)" }}
               >
-                <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent group-hover:animate-[shimmer_1s_ease-in-out]" />
+                <span className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent group-hover:translate-x-full transition-transform duration-1000" />
                 <span className="relative z-10 flex items-center gap-2">
                   Agendar diagnóstico gratuito <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </span>
               </a>
               <a
-                href="#soluciones"
+                href="#why-capacitar"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-2xl font-bold text-base text-white bg-white/10 backdrop-blur-md border border-white/20 no-underline transition-all hover:bg-white/15 hover:-translate-y-1"
               >
-                <Sparkles className="w-5 h-5 text-blue-300" /> Ver soluciones
+                <Sparkles className="w-5 h-5 text-blue-300" /> ¿Por qué capacitar?
               </a>
             </div>
           </FadeIn>
@@ -240,16 +210,13 @@ export default function EmpresasClient() {
               <div className="absolute -inset-4 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-[2.5rem] blur-2xl" />
               <div className="relative bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-[1.75rem] p-3 sm:p-4 shadow-2xl">
                 <div className="bg-slate-950 rounded-2xl overflow-hidden">
-                  {/* Fake dashboard top bar */}
                   <div className="flex items-center gap-1.5 px-4 py-3 border-b border-white/5">
                     <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
                     <div className="w-2.5 h-2.5 rounded-full bg-amber-400/70" />
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-400/70" />
                     <span className="ml-3 text-[10px] sm:text-xs text-slate-500 font-mono">powerbi.programbi.com/executive-dashboard</span>
                   </div>
-                  {/* Fake dashboard body */}
                   <div className="p-4 sm:p-6 grid grid-cols-12 gap-3 sm:gap-4">
-                    {/* KPI cards */}
                     {[
                       { l: "Ventas", v: "$48.2M", c: "text-emerald-400", d: "+18%" },
                       { l: "Margen", v: "32.4%", c: "text-blue-400", d: "+3.1pp" },
@@ -261,7 +228,6 @@ export default function EmpresasClient() {
                         <p className={`text-[9px] sm:text-[10px] font-bold ${k.c}`}>{k.d}</p>
                       </div>
                     ))}
-                    {/* Chart bars */}
                     <div className="col-span-8 bg-white/[0.03] border border-white/5 rounded-xl p-4 h-28 sm:h-36 flex items-end gap-1.5 sm:gap-2">
                       {[40, 65, 50, 80, 60, 90, 72, 95, 68, 85, 78, 100].map((h, i) => (
                         <motion.div
@@ -274,7 +240,6 @@ export default function EmpresasClient() {
                         />
                       ))}
                     </div>
-                    {/* Donut */}
                     <div className="col-span-4 bg-white/[0.03] border border-white/5 rounded-xl p-4 h-28 sm:h-36 flex items-center justify-center">
                       <motion.div
                         animate={{ rotate: 360 }}
@@ -296,7 +261,7 @@ export default function EmpresasClient() {
       </section>
 
       {/* ════════════════════════════════════════════════ */}
-      {/* 2. TRUST BAR / LOGOS                              */}
+      {/* 2. TRUST BAR                                      */}
       {/* ════════════════════════════════════════════════ */}
       <section className="py-12 bg-white border-y border-gray-100">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
@@ -305,23 +270,18 @@ export default function EmpresasClient() {
               Empresas que confían en ProgramBI
             </p>
           </FadeIn>
-          <div className="relative overflow-hidden">
+          <div className="relative overflow-hidden logo-slider-mask">
             <motion.div
               animate={{ x: ["0%", "-50%"] }}
               transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
               className="flex gap-12 sm:gap-16 items-center w-max"
             >
               {[...clientLogos, ...clientLogos].map((logo, i) => (
-                <span
-                  key={i}
-                  className="font-display font-black text-xl sm:text-2xl text-gray-300 hover:text-gray-500 transition-colors whitespace-nowrap tracking-tight"
-                >
+                <span key={i} className="font-display font-black text-xl sm:text-2xl text-gray-300 hover:text-gray-500 transition-colors whitespace-nowrap tracking-tight">
                   {logo}
                 </span>
               ))}
             </motion.div>
-            <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-white to-transparent pointer-events-none" />
-            <div className="absolute inset-y-0 right-0 w-20 bg-gradient-to-l from-white to-transparent pointer-events-none" />
           </div>
         </div>
       </section>
@@ -331,28 +291,177 @@ export default function EmpresasClient() {
       {/* ════════════════════════════════════════════════ */}
       <section className="py-20 lg:py-28 relative">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-            {heroStats.map((stat, i) => (
-              <FadeIn key={i} delay={i * 0.1}>
+          <StaggerChildren className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            {heroStats.map((stat) => (
+              <StaggerItem key={stat.label}>
                 <div className="bg-white border border-gray-100 rounded-3xl p-6 md:p-8 text-center shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group">
-                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4 md:mb-5 text-blue-600 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl flex items-center justify-center mx-auto mb-4 md:mb-5 group-hover:scale-110 transition-transform" style={{ backgroundColor: `${stat.color}15`, color: stat.color }}>
                     <stat.icon className="w-6 h-6" />
                   </div>
                   <div className="text-3xl md:text-5xl font-black text-[#0F172A] tracking-tighter mb-1">
                     <CountUp target={stat.value} duration={2.5} suffix={stat.suffix} />
                   </div>
-                  <p className="text-gray-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.15em]">
-                    {stat.label}
-                  </p>
+                  <p className="text-gray-400 font-bold text-[10px] md:text-xs uppercase tracking-[0.15em]">{stat.label}</p>
                 </div>
-              </FadeIn>
+              </StaggerItem>
             ))}
-          </div>
+          </StaggerChildren>
         </div>
       </section>
 
       {/* ════════════════════════════════════════════════ */}
-      {/* 4. POR QUÉ PROGRAMBI + ORBITAL                    */}
+      {/* 4. 🆕 WHY CAPACITAR — EL CORAZÓN DE LA PÁGINA    */}
+      {/* ════════════════════════════════════════════════ */}
+      <section id="why-capacitar" className="py-12 lg:py-20">
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
+          <FadeIn className="text-center max-w-3xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 font-bold text-xs tracking-widest uppercase px-4 py-2 rounded-lg mb-6">
+              <Brain size={14} /> La gran pregunta
+            </div>
+            <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-6xl text-[#0F172A] mb-6 leading-[1.1]">
+              ¿Por qué tu empresa debería{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-[#6366F1]">
+                capacitar a su equipo
+              </span>
+              ?
+            </h2>
+            <p className="text-gray-500 text-lg lg:text-xl font-medium leading-relaxed">
+              Cada año, las empresas pierden millones en consultores externos y horas improductivas.
+              Capacitar a tu equipo es la inversión con el <strong className="text-[#0F172A]">mayor retorno</strong> que puedes hacer.
+            </p>
+          </FadeIn>
+
+          {/* Comparativa Antes / Después */}
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 relative">
+            {/* Sin capacitación */}
+            <FadeIn direction="right">
+              <div className="bg-white border-2 border-gray-100 rounded-[2rem] p-8 lg:p-10 h-full relative overflow-hidden">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-gray-300 to-gray-200" />
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="w-12 h-12 rounded-2xl bg-red-50 flex items-center justify-center text-red-500">
+                    <AlertTriangle className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-black uppercase tracking-widest text-red-400 block">El problema</span>
+                    <h3 className="font-display font-black text-xl text-gray-700">Sin capacitación</h3>
+                  </div>
+                </div>
+                <ul className="space-y-4">
+                  {withoutTraining.map((item, i) => (
+                    <motion.li
+                      key={i}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.08 }}
+                      className="flex items-start gap-3"
+                    >
+                      <div className="w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center shrink-0 mt-0.5">
+                        <item.icon className="w-4 h-4 text-red-400" />
+                      </div>
+                      <span className="text-gray-500 text-sm lg:text-base leading-snug pt-0.5">{item.text}</span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </div>
+            </FadeIn>
+
+            {/* Con capacitación */}
+            <FadeIn delay={0.2} direction="left">
+              <div className="relative">
+                <div className="absolute -inset-2 bg-gradient-to-br from-blue-400/20 to-indigo-400/20 rounded-[2.25rem] blur-xl" />
+                <div className="relative bg-gradient-to-br from-[#0F172A] to-[#1E293B] border border-blue-500/30 rounded-[2rem] p-8 lg:p-10 h-full overflow-hidden">
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-indigo-500" />
+                  <div className="absolute -top-12 -right-12 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl" />
+                  <div className="flex items-center gap-3 mb-8 relative z-10">
+                    <div className="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-300 border border-blue-400/30">
+                      <BadgeCheck className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-black uppercase tracking-widest text-blue-400 block">La solución</span>
+                      <h3 className="font-display font-black text-xl text-white">Con ProgramBI</h3>
+                    </div>
+                  </div>
+                  <ul className="space-y-4 relative z-10">
+                    {withTraining.map((item, i) => (
+                      <motion.li
+                        key={i}
+                        initial={{ opacity: 0, x: 20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.08 }}
+                        className="flex items-start gap-3"
+                      >
+                        <div className="w-7 h-7 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-400/30">
+                          <item.icon className="w-4 h-4 text-emerald-400" />
+                        </div>
+                        <span className="text-slate-200 text-sm lg:text-base leading-snug pt-0.5 font-medium">{item.text}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+
+          {/* Franja de frase impactante */}
+          <FadeIn delay={0.2}>
+            <div className="mt-12 text-center">
+              <p className="font-serif italic text-2xl lg:text-4xl text-[#0F172A] max-w-3xl mx-auto leading-snug">
+                "No regreses al consultor cada vez que cambia un filtro.
+                <span className="text-blue-600"> Forma a tu equipo.</span>"
+              </p>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════ */}
+      {/* 5. 🆕 ROI DE LA CAPACITACIÓN                     */}
+      {/* ════════════════════════════════════════════════ */}
+      <section className="py-24 bg-white border-y border-gray-100 relative overflow-hidden">
+        <div className="absolute top-0 right-1/4 w-[500px] h-[500px] bg-blue-100/40 rounded-full blur-[120px] pointer-events-none" />
+        <div className="max-w-[1200px] mx-auto px-5 lg:px-10 relative z-10">
+          <FadeIn className="text-center max-w-3xl mx-auto mb-16">
+            <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-600 font-bold text-xs tracking-widest uppercase px-4 py-2 rounded-lg mb-6">
+              <PiggyBank size={14} /> El retorno de invertir en tu gente
+            </div>
+            <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-[#0F172A] mb-4 leading-tight">
+              Los números no mienten
+            </h2>
+            <p className="text-gray-500 text-lg font-medium">
+              Métricas reales del impacto de capacitar a tus equipos en datos, automatización e inteligencia artificial.
+            </p>
+          </FadeIn>
+
+          <StaggerChildren className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {roiBenefits.map((b) => (
+              <StaggerItem key={b.label} className="h-full">
+                <TiltCard className="h-full">
+                  <div className="bg-white border border-gray-100 rounded-[2rem] p-7 lg:p-8 h-full shadow-sm hover:shadow-2xl transition-shadow group relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl opacity-0 group-hover:opacity-20 transition-opacity" style={{ background: b.color }} />
+                    <div className="relative z-10">
+                      <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform" style={{ backgroundColor: `${b.color}15`, color: b.color }}>
+                        <b.icon className="w-7 h-7" />
+                      </div>
+                      <div className="flex items-baseline gap-1 mb-2">
+                        <span className="font-display font-black text-5xl tracking-tighter" style={{ color: b.color }}>
+                          <CountUp target={b.value} duration={2} suffix={b.suffix} />
+                        </span>
+                      </div>
+                      <h3 className="font-display font-black text-lg text-[#0F172A] mb-2">{b.label}</h3>
+                      <p className="text-gray-500 text-sm leading-relaxed">{b.desc}</p>
+                    </div>
+                  </div>
+                </TiltCard>
+              </StaggerItem>
+            ))}
+          </StaggerChildren>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════ */}
+      {/* 6. POR QUÉ PROGRAMBI + ORBITAL                    */}
       {/* ════════════════════════════════════════════════ */}
       <section className="py-12 lg:py-20">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
@@ -395,10 +504,7 @@ export default function EmpresasClient() {
               {/* Orbital visual */}
               <FadeIn delay={0.2} className="relative">
                 <div className="bg-gradient-to-br from-[#0F172A] to-[#1E293B] rounded-[3rem] p-8 border border-gray-800 relative overflow-hidden aspect-square flex items-center justify-center shadow-2xl">
-                  <div className="absolute inset-0 opacity-20" style={{
-                    backgroundSize: "20px 20px",
-                    backgroundImage: "linear-gradient(to right, #1890FF20 1px, transparent 1px), linear-gradient(to bottom, #1890FF20 1px, transparent 1px)",
-                  }} />
+                  <div className="absolute inset-0 opacity-20" style={{ backgroundSize: "20px 20px", backgroundImage: "linear-gradient(to right, #1890FF20 1px, transparent 1px), linear-gradient(to bottom, #1890FF20 1px, transparent 1px)" }} />
                   <div className="relative z-10 w-full h-full flex items-center justify-center">
                     <motion.div
                       animate={{ scale: [1, 1.05, 1], boxShadow: ["0 0 0px #1890FF", "0 0 60px #1890FF", "0 0 0px #1890FF"] }}
@@ -424,7 +530,7 @@ export default function EmpresasClient() {
       </section>
 
       {/* ════════════════════════════════════════════════ */}
-      {/* 5. SOLUCIONES (BENTO GRID)                        */}
+      {/* 7. SOLUCIONES (BENTO GRID)                        */}
       {/* ════════════════════════════════════════════════ */}
       <section id="soluciones" className="py-24">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
@@ -457,13 +563,13 @@ export default function EmpresasClient() {
       </section>
 
       {/* ════════════════════════════════════════════════ */}
-      {/* 6. CATÁLOGO CORPORATIVO COMPLETO                  */}
+      {/* 8. CATÁLOGO CORPORATIVO COMPLETO                  */}
       {/* ════════════════════════════════════════════════ */}
       <section className="py-24 bg-white border-y border-gray-100">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
           <FadeIn className="text-center max-w-3xl mx-auto mb-16">
             <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-600 font-bold text-xs tracking-widest uppercase px-4 py-2 rounded-lg mb-5">
-              <GraduationCap size={14} /> Capacitación de Equipos
+              <GraduationCap size={14} /> Programas de Capacitación
             </div>
             <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-[#0F172A] mb-4 leading-tight">
               9 programas para transformar a tu equipo
@@ -481,7 +587,6 @@ export default function EmpresasClient() {
                     href={`/cursos/${course.slug}`}
                     className="block bg-white border border-gray-200 rounded-[1.75rem] overflow-hidden h-full no-underline group hover:border-blue-200 transition-colors shadow-sm hover:shadow-2xl hover:shadow-blue-500/10"
                   >
-                    {/* Image */}
                     <div className="relative aspect-[16/9] overflow-hidden bg-gray-50">
                       <Image
                         src={course.imageUrl}
@@ -493,10 +598,7 @@ export default function EmpresasClient() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                       {course.badgeLabel && (
-                        <span
-                          className="absolute top-3 left-3 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md"
-                          style={{ background: course.badgeColor || course.accentColor }}
-                        >
+                        <span className="absolute top-3 left-3 text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full text-white shadow-md" style={{ background: course.badgeColor || course.accentColor }}>
                           {course.badgeLabel}
                         </span>
                       )}
@@ -504,7 +606,6 @@ export default function EmpresasClient() {
                         <DynamicIcon name={course.icon} className="w-4 h-4" />
                       </div>
                     </div>
-                    {/* Body */}
                     <div className="p-6 flex flex-col h-[calc(100%-180px)]">
                       <h3 className="font-display font-black text-lg text-[#0F172A] mb-2 leading-tight group-hover:text-blue-600 transition-colors">
                         {course.title}
@@ -512,17 +613,13 @@ export default function EmpresasClient() {
                       <p className="text-gray-500 text-sm leading-relaxed mb-4 line-clamp-2 flex-grow">
                         {course.shortDescription}
                       </p>
-                      {/* Meta */}
                       <div className="flex items-center gap-3 text-[11px] font-bold text-gray-400 mb-4">
                         <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {course.durationHours}h</span>
                         <span className="flex items-center gap-1"><Gauge className="w-3.5 h-3.5" /> {course.level}</span>
                       </div>
-                      {/* Tech badges */}
                       <div className="flex flex-wrap gap-1.5 mb-5">
                         {course.techStack.slice(0, 3).map((tech) => (
-                          <span key={tech} className="text-[10px] font-bold px-2 py-1 rounded-md bg-gray-100 text-gray-600">
-                            {tech}
-                          </span>
+                          <span key={tech} className="text-[10px] font-bold px-2 py-1 rounded-md bg-gray-100 text-gray-600">{tech}</span>
                         ))}
                       </div>
                       <div className="flex items-center justify-between pt-4 border-t border-gray-100 mt-auto">
@@ -530,9 +627,7 @@ export default function EmpresasClient() {
                           Capacitar equipo <ArrowUpRight className="w-3.5 h-3.5" />
                         </span>
                         {course.levels && course.levels.length > 0 && (
-                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                            {course.levels.length} niveles
-                          </span>
+                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{course.levels.length} niveles</span>
                         )}
                       </div>
                     </div>
@@ -543,10 +638,7 @@ export default function EmpresasClient() {
           </StaggerChildren>
 
           <FadeIn className="text-center mt-12">
-            <Link
-              href="/cursos"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 no-underline transition-all hover:-translate-y-0.5"
-            >
+            <Link href="/cursos" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 no-underline transition-all hover:-translate-y-0.5">
               Explorar catálogo completo <ArrowRight className="w-4 h-4" />
             </Link>
           </FadeIn>
@@ -554,7 +646,7 @@ export default function EmpresasClient() {
       </section>
 
       {/* ════════════════════════════════════════════════ */}
-      {/* 7. METODOLOGÍA / PROCESO                          */}
+      {/* 9. METODOLOGÍA / PROCESO                          */}
       {/* ════════════════════════════════════════════════ */}
       <section className="py-24">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
@@ -566,7 +658,6 @@ export default function EmpresasClient() {
           </FadeIn>
 
           <div className="relative">
-            {/* Connecting line */}
             <div className="hidden lg:block absolute top-8 left-0 right-0 h-0.5 bg-gray-100">
               <motion.div
                 initial={{ scaleX: 0 }}
@@ -576,7 +667,6 @@ export default function EmpresasClient() {
                 className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-amber-500 origin-left"
               />
             </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-4 relative">
               {processSteps.map((step, i) => (
                 <FadeIn key={i} delay={i * 0.15} className="text-center lg:text-left">
@@ -602,7 +692,7 @@ export default function EmpresasClient() {
       </section>
 
       {/* ════════════════════════════════════════════════ */}
-      {/* 8. CASOS DE ÉXITO                                 */}
+      {/* 10. CASOS DE ÉXITO                                */}
       {/* ════════════════════════════════════════════════ */}
       <section className="py-24 bg-white border-y border-gray-100">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
@@ -619,19 +709,12 @@ export default function EmpresasClient() {
           <StaggerChildren className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {casesOfUse.slice(0, 3).map((c) => (
               <StaggerItem key={c.slug} className="h-full">
-                <Link
-                  href={`/casos/${c.slug}`}
-                  className="group block bg-gray-50 rounded-[2rem] overflow-hidden border border-gray-200 hover:border-blue-200 hover:shadow-xl transition-all no-underline h-full"
-                >
-                  {/* Video / poster */}
+                <Link href={`/casos/${c.slug}`} className="group block bg-gray-50 rounded-[2rem] overflow-hidden border border-gray-200 hover:border-blue-200 hover:shadow-xl transition-all no-underline h-full">
                   <div className="relative aspect-video overflow-hidden bg-slate-900">
                     {c.videoUrl ? (
                       <video
                         src={c.videoUrl}
-                        muted
-                        loop
-                        playsInline
-                        preload="metadata"
+                        muted loop playsInline preload="metadata"
                         onMouseEnter={(e) => (e.target as HTMLVideoElement).play().catch(() => {})}
                         onMouseLeave={(e) => (e.target as HTMLVideoElement).pause()}
                         className="absolute inset-0 w-full h-full object-cover"
@@ -640,21 +723,15 @@ export default function EmpresasClient() {
                       <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900" />
                     )}
                     <div className="absolute top-3 left-3">
-                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-sm text-[#0F172A]">
-                        {c.techBadge}
-                      </span>
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-sm text-[#0F172A]">{c.techBadge}</span>
                     </div>
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/30">
                       <PlayCircle className="w-12 h-12 text-white" />
                     </div>
                   </div>
-                  {/* Body */}
                   <div className="p-6">
                     <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 mb-2 block">{c.category}</span>
-                    <h3 className="font-display font-black text-lg text-[#0F172A] mb-3 leading-tight group-hover:text-blue-600 transition-colors">
-                      {c.title}
-                    </h3>
-                    {/* Metrics */}
+                    <h3 className="font-display font-black text-lg text-[#0F172A] mb-3 leading-tight group-hover:text-blue-600 transition-colors">{c.title}</h3>
                     <div className="grid grid-cols-2 gap-3 mb-4">
                       {c.metrics.slice(0, 2).map((m, mi) => (
                         <div key={mi} className="bg-white rounded-xl p-3 border border-gray-100">
@@ -673,10 +750,7 @@ export default function EmpresasClient() {
           </StaggerChildren>
 
           <FadeIn className="text-center mt-12">
-            <Link
-              href="/casos"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 no-underline transition-all hover:-translate-y-0.5"
-            >
+            <Link href="/casos" className="inline-flex items-center gap-2 px-7 py-3.5 rounded-xl font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 no-underline transition-all hover:-translate-y-0.5">
               Ver todos los casos <ArrowRight className="w-4 h-4" />
             </Link>
           </FadeIn>
@@ -684,7 +758,7 @@ export default function EmpresasClient() {
       </section>
 
       {/* ════════════════════════════════════════════════ */}
-      {/* 9. TESTIMONIOS                                   */}
+      {/* 11. TESTIMONIOS                                   */}
       {/* ════════════════════════════════════════════════ */}
       <ParallaxSection speed={0.2}>
         <section className="py-24">
@@ -700,17 +774,13 @@ export default function EmpresasClient() {
               {testimonials.map((t, i) => (
                 <StaggerItem key={i} className="h-full">
                   <div className="bg-white border border-gray-100 rounded-[2rem] p-8 h-full flex flex-col shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all relative overflow-hidden">
-                    <div className="absolute -top-6 -right-2 text-blue-100">
-                      <Quote className="w-24 h-24" />
-                    </div>
+                    <div className="absolute -top-6 -right-2 text-blue-100"><Quote className="w-24 h-24" /></div>
                     <div className="relative z-10 flex flex-col h-full">
-                      <span className="inline-flex self-start text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 mb-5">
-                        {t.tag}
-                      </span>
+                      <span className="inline-flex self-start text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-blue-50 text-blue-600 mb-5">{t.tag}</span>
                       <p className="text-gray-700 text-base leading-relaxed mb-6 flex-grow italic">"{t.quote}"</p>
                       <div className="flex items-center gap-3 pt-5 border-t border-gray-100">
                         <div className="w-11 h-11 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-sm shrink-0">
-                          {t.author.split(" ").map(n => n[0]).join("").slice(0, 2)}
+                          {t.author.split(" ").map((n) => n[0]).join("").slice(0, 2)}
                         </div>
                         <div>
                           <p className="font-black text-[#0F172A] text-sm leading-tight">{t.author}</p>
@@ -727,7 +797,7 @@ export default function EmpresasClient() {
       </ParallaxSection>
 
       {/* ════════════════════════════════════════════════ */}
-      {/* 10. CTA + FORMULARIO B2B                          */}
+      {/* 12. CTA + FORMULARIO B2B                          */}
       {/* ════════════════════════════════════════════════ */}
       <section id="contacto" className="py-24">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
@@ -775,7 +845,7 @@ export default function EmpresasClient() {
       </section>
 
       {/* ════════════════════════════════════════════════ */}
-      {/* 11. FAQ                                           */}
+      {/* 13. FAQ                                           */}
       {/* ════════════════════════════════════════════════ */}
       <section className="py-24 bg-white border-y border-gray-100">
         <div className="max-w-[850px] mx-auto px-5 lg:px-10">
@@ -820,25 +890,14 @@ export default function EmpresasClient() {
       </section>
 
       {/* ════════════════════════════════════════════════ */}
-      {/* 12. CTA FINAL                                     */}
+      {/* 14. CTA FINAL                                     */}
       {/* ════════════════════════════════════════════════ */}
       <section className="py-24">
         <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
           <div className="relative overflow-hidden bg-[#0F172A] rounded-[3rem] p-12 lg:p-20 text-center">
-            <div className="absolute inset-0 opacity-10" style={{
-              backgroundSize: "30px 30px",
-              backgroundImage: "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
-            }} />
-            <motion.div
-              animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.3, 0.15] }}
-              transition={{ duration: 8, repeat: Infinity }}
-              className="absolute -top-1/4 -left-1/4 w-[600px] h-[600px] bg-blue-600 rounded-full blur-[150px]"
-            />
-            <motion.div
-              animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1] }}
-              transition={{ duration: 10, repeat: Infinity }}
-              className="absolute -bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-indigo-600 rounded-full blur-[150px]"
-            />
+            <div className="absolute inset-0 opacity-10" style={{ backgroundSize: "30px 30px", backgroundImage: "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)" }} />
+            <motion.div animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.3, 0.15] }} transition={{ duration: 8, repeat: Infinity }} className="absolute -top-1/4 -left-1/4 w-[600px] h-[600px] bg-blue-600 rounded-full blur-[150px]" />
+            <motion.div animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1] }} transition={{ duration: 10, repeat: Infinity }} className="absolute -bottom-1/4 -right-1/4 w-[600px] h-[600px] bg-indigo-600 rounded-full blur-[150px]" />
             <FadeIn className="relative z-10 max-w-[700px] mx-auto">
               <h2 className="font-display font-black text-4xl sm:text-5xl lg:text-6xl text-white mb-6 leading-tight">
                 Tu próxima decisión estratégica empieza con datos
@@ -846,10 +905,7 @@ export default function EmpresasClient() {
               <p className="text-gray-400 text-lg lg:text-xl mb-10">
                 Agenda hoy tu diagnóstico gratuito y descubre cuánto tiempo y dinero estás dejando en la mesa.
               </p>
-              <a
-                href="#contacto"
-                className="inline-flex items-center gap-3 bg-white text-[#0F172A] px-10 py-5 rounded-2xl font-black text-lg no-underline hover:-translate-y-1 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)]"
-              >
+              <a href="#contacto" className="inline-flex items-center gap-3 bg-white text-[#0F172A] px-10 py-5 rounded-2xl font-black text-lg no-underline hover:-translate-y-1 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)]">
                 Agendar diagnóstico <ArrowRight className="w-5 h-5" />
               </a>
             </FadeIn>
