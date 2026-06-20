@@ -119,7 +119,7 @@ Puedes incluir múltiples widgets si recomiendas varios cursos. No incluyas más
 URLS DEL SITIO (https://programbi.com):
 - /cursos → Catálogo completo de cursos
 - /cursos/{slug} → Detalle de un curso específico
-- /asesorias → Asesorías personalizadas
+- /empresas → Soluciones y consultoría para empresas
 - /pago/{slug} → Página de pago de un curso
 
 Fecha de hoy: ${today}${pageContext}

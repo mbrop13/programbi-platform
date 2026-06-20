@@ -66,7 +66,7 @@ const FAQ_DATA = [
   },
   {
     question: "¿Cómo coordinar una asesoría de datos o consultoría a medida?",
-    answer: "Puedes rellenar el formulario en nuestra sección de /asesorias o contactarnos vía WhatsApp. Agendamos una reunión de diagnóstico gratuita de 30 minutos con nuestro CEO Manuel Oliva para evaluar el problema de tu empresa, el estado de tus datos y proponerte una solución.",
+    answer: "Puedes rellenar el formulario en nuestra sección de /empresas o contactarnos vía WhatsApp. Agendamos una reunión de diagnóstico gratuita de 30 minutos con nuestro CEO Manuel Oliva para evaluar el problema de tu empresa, el estado de tus datos y proponerte una solución.",
     category: "empresa"
   }
 ];

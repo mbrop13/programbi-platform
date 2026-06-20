@@ -22,7 +22,7 @@ const LOGO_URL = "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03
 const navLinks = [
   { href: "/", label: "Inicio" },
   { href: "/cursos", label: "Cursos", hasMega: true },
-  { href: "/asesorias", label: "Asesorías" },
+  { href: "/empresas", label: "Empresas" },
   { href: "/webinar", label: "Webinar" },
   { href: "/blog", label: "Blog" },
   // { href: "/comunidad", label: "Comunidad" },

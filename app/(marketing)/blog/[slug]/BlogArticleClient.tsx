@@ -544,8 +544,8 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
             >
               EXPLORAR CURSOS
             </Link>
-            <Link 
-              href="/asesorias" 
+            <Link
+              href="/empresas"
               className={`px-7 py-3 border font-bold text-xs tracking-widest uppercase no-underline transition-all ${
                 prefs.theme === "dark" ? "border-white text-white hover:bg-slate-800" : "border-slate-950 text-slate-950 hover:bg-slate-50"
               }`}

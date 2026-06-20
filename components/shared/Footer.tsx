@@ -166,7 +166,7 @@ export default function Footer() {
               </h3>
               <ul className="space-y-3 list-none p-0 m-0">
                 {[
-                  { label: "Asesorías", href: "/asesorias" },
+                  { label: "Empresas", href: "/empresas" },
                   { label: "Newsletter", href: "/newsletter" },
                   { label: "Campus Virtual", href: "/campus" },
                   { label: "Registrarse", href: "/registro" },

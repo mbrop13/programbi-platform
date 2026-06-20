@@ -110,7 +110,7 @@ export default function VersusPage() {
                 Te ayudamos a elegir e implementar la infraestructura de datos y reportería óptima para tu negocio corporativo en Chile y Latinoamérica.
               </p>
               <Link
-                href="/asesorias"
+                href="/empresas"
                 className="inline-flex items-center gap-2 bg-[#1890FF] hover:bg-blue-600 text-white font-bold text-sm px-6 py-3.5 rounded-xl no-underline transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-500/25"
               >
                 <span>Solicitar Asesoría Corporativa</span>
