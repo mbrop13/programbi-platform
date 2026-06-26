@@ -42,7 +42,8 @@ export async function POST(req: Request) {
     const result = await streamText({
       model: openrouter('meta-llama/llama-3-8b-instruct:free'),
       system: 'Eres el Asistente IA de ProgramBI, experto en Data Science, Python, Power BI, SQL y Excel. Responde de forma clara y didáctica. Usa markdown para formatear tus respuestas. Fomenta las buenas prácticas.',
-      messages,
+      messages: messages.slice(-10),
+      maxOutputTokens: 1024,
       onFinish: async ({ text }) => {
         // Save the assistant response to Supabase
         if (conversationId && text) {

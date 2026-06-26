@@ -10,10 +10,16 @@ import { createClient } from "@/lib/supabase/client";
 import { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 import { isVideoUrl } from "@/lib/utils";
 
-export default function NewsletterClient() {
-  const [articles, setArticles] = useState<any[]>([]);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function NewsletterClient({
+  initialArticles = [],
+  initialCategories = [],
+}: {
+  initialArticles?: any[];
+  initialCategories?: any[];
+}) {
+  const [articles, setArticles] = useState<any[]>(initialArticles);
+  const [categories, setCategories] = useState<any[]>(initialCategories);
+  const [loading, setLoading] = useState(initialArticles.length === 0);
   const [activeCategory, setActiveCategory] = useState("all");
   const [user, setUser] = useState<any>(null);
 
@@ -27,8 +33,10 @@ export default function NewsletterClient() {
 
   // Load categories for label mapping
   useEffect(() => {
-    getNewsletterCategories().then(cats => setCategories(cats)).catch(() => {});
-  }, []);
+    if (initialCategories.length === 0) {
+      getNewsletterCategories().then(cats => setCategories(cats)).catch(() => {});
+    }
+  }, [initialCategories]);
 
   // Listen for category changes from navbar
   useEffect(() => {
@@ -52,9 +60,16 @@ export default function NewsletterClient() {
         setLoading(false);
       }
     }
-    setLoading(true);
-    load();
-  }, [activeCategory]);
+    
+    // Only skip load if it's the initial category "all" and we have initialArticles
+    if (activeCategory === "all" && initialArticles.length > 0) {
+      setArticles(initialArticles);
+      setLoading(false);
+    } else {
+      setLoading(true);
+      load();
+    }
+  }, [activeCategory, initialArticles]);
 
   const featured = articles.find((a) => a.is_featured) || articles[0];
   const secondary = articles.filter((a) => a.id !== featured?.id).slice(0, 3);

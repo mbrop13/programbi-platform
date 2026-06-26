@@ -909,7 +909,7 @@ export async function adminDeletePromotion(promoId: string) {
 }
 
 export async function getActivePromotions() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const now = new Date().toISOString();
 
   // Fetches promotions that are active
@@ -976,7 +976,7 @@ export async function adminUpsertPriceOverride(override: {
 }
 
 export async function getPriceOverrides() {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("price_overrides")

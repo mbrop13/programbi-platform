@@ -4,12 +4,19 @@ import { getArticleBySlug, getPublishedArticles } from "@/lib/supabase/comunidad
 import BlogArticleClient from "./BlogArticleClient";
 import { isVideoUrl, getOptimizedShareImage } from "@/lib/utils";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 type Params = Promise<{ slug: string }>;
 
 interface PageProps {
   params: Params;
+}
+
+export async function generateStaticParams() {
+  const articles = await getPublishedArticles();
+  return articles.map((article) => ({
+    slug: article.slug,
+  }));
 }
 
 function getArticlePoster(article: any): string {

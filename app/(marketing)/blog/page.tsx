@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 import BlogClient from "./BlogClient";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Blog — Recursos y Artículos de Análisis de Datos | ProgramBI",

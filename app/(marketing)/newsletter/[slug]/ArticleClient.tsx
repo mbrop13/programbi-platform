@@ -35,13 +35,30 @@ const categoryLabels: Record<string, string> = {
   general: "General",
 };
 
-export default function ArticleClient({ slug }: { slug: string }) {
-  const [article, setArticle] = useState<any>(null);
-  const [related, setRelated] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function ArticleClient({
+  slug,
+  initialArticle = null,
+  initialRelated = [],
+}: {
+  slug: string;
+  initialArticle?: any;
+  initialRelated?: any[];
+}) {
+  const [article, setArticle] = useState<any>(initialArticle);
+  const [related, setRelated] = useState<any[]>(initialRelated);
+  const [loading, setLoading] = useState(!initialArticle);
 
   useEffect(() => {
+    // If the initial article is already correct for the active slug, skip fetching
+    if (initialArticle && initialArticle.slug === slug) {
+      setArticle(initialArticle);
+      setRelated(initialRelated);
+      setLoading(false);
+      return;
+    }
+
     async function load() {
+      setLoading(true);
       try {
         const data = await getArticleBySlug(slug);
         setArticle(data);
@@ -57,7 +74,7 @@ export default function ArticleClient({ slug }: { slug: string }) {
       }
     }
     load();
-  }, [slug]);
+  }, [slug, initialArticle, initialRelated]);
 
   const formatDate = (d: string) =>
     new Date(d).toLocaleDateString("es-CL", {

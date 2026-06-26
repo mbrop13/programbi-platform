@@ -46,7 +46,7 @@ interface CacheEntry<T> {
   timestamp: number
 }
 
-const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutos
+const CACHE_TTL_MS = 30 * 60 * 1000 // 30 minutos (optimizado para reducir queries a Supabase)
 let dynamicCache: CacheEntry<{
   schedules: CourseSchedule[]
   promotions: Promotion[]

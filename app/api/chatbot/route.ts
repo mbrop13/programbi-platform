@@ -36,8 +36,8 @@ const openrouter = createOpenAI({
   },
 })
 
-// Permitir hasta 120 segundos de ejecución
-export const maxDuration = 120
+// Permitir hasta 30 segundos de ejecución (optimizado para reducir Active CPU en Vercel)
+export const maxDuration = 30
 
 export async function POST(req: Request) {
   try {
@@ -205,11 +205,17 @@ ${dynamicContext}`
       }
     }
 
+    // ─── Truncar historial para reducir Active CPU ───
+    // Solo enviar los últimos 6 mensajes al modelo para reducir tamaño del prompt,
+    // latencia de respuesta y tiempo de Active CPU en Vercel.
+    const recentMessages = messages.slice(-6)
+
     // ─── Stream con el modelo primario ───
     const result = streamText({
       model: openrouter('deepseek/deepseek-v4-flash'),
       system: systemPrompt,
-      messages: messages as any,
+      messages: recentMessages as any,
+      maxOutputTokens: 1024,
       onFinish: onFinishCallback,
     })
 

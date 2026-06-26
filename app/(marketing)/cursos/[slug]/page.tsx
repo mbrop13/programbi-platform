@@ -5,7 +5,7 @@ import { getMarketingDescription } from "@/lib/supabase/comunidad-ai";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
 import { getOptimizedShareImage } from "@/lib/utils";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 type Params = Promise<{ slug: string }>;
 

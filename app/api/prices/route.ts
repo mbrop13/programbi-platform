@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getPriceOverrides } from "@/lib/supabase/comunidad-ai";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 export async function GET() {
   try {
