@@ -187,6 +187,7 @@ export default function PagoClient() {
         const level = course?.levels?.find(l => l.name === levelName);
         if (course && level && level.price) {
           const pricing = getDiscountedPrice(course.slug, level.price, levelName);
+          const isBundle = ["analisis-de-datos", "analitica-mineria", "analitica-financiera"].includes(course.slug);
           setCart({
              [`${course.slug}-${levelName}`]: {
                 slug: course.slug,
@@ -194,8 +195,8 @@ export default function PagoClient() {
                 levelName: level.name,
                 price: pricing.finalPrice,
                 quantity: 1,
-                originalPrice: pricing.originalPrice,
-                hasDiscount: pricing.hasDiscount
+                originalPrice: isBundle ? 747000 : pricing.originalPrice,
+                hasDiscount: isBundle ? true : pricing.hasDiscount
              }
           });
           setEnterpriseToggles(new Set([`${course.slug}-${levelName}`]));
@@ -296,9 +297,14 @@ export default function PagoClient() {
 
       const course = allCourses.find(c => c.slug === slug);
       const level = course?.levels?.find(l => l.name === levelName);
+      const isBundle = ["analisis-de-datos", "analitica-mineria", "analitica-financiera"].includes(slug);
       let itemOriginalPrice = price;
       let itemHasDiscount = false;
-      if (course && level && level.price) {
+      
+      if (isBundle) {
+        itemOriginalPrice = 747000;
+        itemHasDiscount = true;
+      } else if (course && level && level.price) {
         const pricing = getDiscountedPrice(slug, level.price, levelName);
         itemOriginalPrice = pricing.originalPrice;
         itemHasDiscount = pricing.hasDiscount;
@@ -835,13 +841,6 @@ export default function PagoClient() {
                       className="bg-white rounded-3xl border border-zinc-200 overflow-hidden"
                       style={{ boxShadow: "0 20px 50px -15px rgba(0,0,0,0.06)" }}
                     >
-                      <div className="bg-black px-6 py-5 text-white flex items-center justify-between">
-                         <h3 className="font-bold text-lg flex items-center gap-2">
-                            <ShoppingCart className="w-5 h-5 text-zinc-400" /> Resumen
-                         </h3>
-                         {cartItemCount > 0 && <span className="bg-zinc-800 text-white text-xs font-black px-2.5 py-0.5 rounded-full">{cartItemCount} items</span>}
-                      </div>
-
                       <div className="p-6">
                         {cartItems.length === 0 ? (
                            <div className="text-center py-6">
