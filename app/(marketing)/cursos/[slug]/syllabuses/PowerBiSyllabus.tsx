@@ -129,14 +129,14 @@ export default function PowerBiSyllabus({ selectedLevel, hideSelector = false, c
                   const isOpen = openItems.includes(`n1-${module.num}`);
                   return (
                     <div key={module.num} className="bg-white rounded-2xl border border-gray-200/60 overflow-hidden hover:border-blue-300/30 hover:shadow-md transition-all duration-300">
-                      <button onClick={() => toggleItem(`n1-${module.num}`)} className="flex justify-between items-center w-full p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors ${isOpen ? 'bg-brand-blue text-white' : 'bg-blue-50/80 text-brand-blue'}`}>
+                      <button onClick={() => toggleItem(`n1-${module.num}`)} className="flex justify-between items-center w-full p-4 sm:p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left gap-2">
+                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors shrink-0 ${isOpen ? 'bg-brand-blue text-white' : 'bg-blue-50/80 text-brand-blue'}`}>
                             {module.num}
                           </div>
-                          <span className="text-base font-bold text-gray-900">{module.title}</span>
+                          <span className="text-sm sm:text-base font-bold text-gray-900 leading-tight">{module.title}</span>
                         </div>
-                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-brand-blue' : ''}`} />
+                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-brand-blue' : ''}`} />
                       </button>
                       <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
                         <div className="px-6 pb-6 pt-2 border-t border-gray-50">
@@ -200,14 +200,14 @@ export default function PowerBiSyllabus({ selectedLevel, hideSelector = false, c
                   const isOpen = openItems.includes(`n2-${module.num}`);
                   return (
                     <div key={module.num} className="bg-white rounded-2xl border border-gray-200/60 overflow-hidden hover:border-purple-300/30 hover:shadow-md transition-all duration-300">
-                      <button onClick={() => toggleItem(`n2-${module.num}`)} className="flex justify-between items-center w-full p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors ${isOpen ? 'bg-purple-600 text-white' : 'bg-purple-50/80 text-purple-600'}`}>
+                      <button onClick={() => toggleItem(`n2-${module.num}`)} className="flex justify-between items-center w-full p-4 sm:p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left gap-2">
+                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors shrink-0 ${isOpen ? 'bg-purple-600 text-white' : 'bg-purple-50/80 text-purple-600'}`}>
                             {module.num}
                           </div>
-                          <span className="text-base font-bold text-gray-900">{module.title}</span>
+                          <span className="text-sm sm:text-base font-bold text-gray-900 leading-tight">{module.title}</span>
                         </div>
-                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-purple-600' : ''}`} />
+                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-purple-600' : ''}`} />
                       </button>
                       <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
                         <div className="px-6 pb-6 pt-2 border-t border-gray-50">
@@ -271,14 +271,14 @@ export default function PowerBiSyllabus({ selectedLevel, hideSelector = false, c
                   const isOpen = openItems.includes(`n3-${module.num}`);
                   return (
                      <div key={module.num} className="bg-white rounded-2xl border border-gray-200/60 overflow-hidden hover:border-orange-300/30 hover:shadow-md transition-all duration-300">
-                      <button onClick={() => toggleItem(`n3-${module.num}`)} className="flex justify-between items-center w-full p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors ${isOpen ? 'bg-orange-600 text-white' : 'bg-orange-50/80 text-orange-600'}`}>
+                      <button onClick={() => toggleItem(`n3-${module.num}`)} className="flex justify-between items-center w-full p-4 sm:p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left gap-2">
+                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors shrink-0 ${isOpen ? 'bg-orange-600 text-white' : 'bg-orange-50/80 text-orange-600'}`}>
                             {module.num}
                           </div>
-                          <span className="text-base font-bold text-gray-900">{module.title}</span>
+                          <span className="text-sm sm:text-base font-bold text-gray-900 leading-tight">{module.title}</span>
                         </div>
-                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-orange-600' : ''}`} />
+                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-orange-600' : ''}`} />
                       </button>
                       <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
                         <div className="px-6 pb-6 pt-2 border-t border-gray-50">
@@ -301,14 +301,14 @@ export default function PowerBiSyllabus({ selectedLevel, hideSelector = false, c
                 {/* ITEM AI HIGHLIGHT */}
                 <div className="bg-gradient-to-br from-[#1890FF]/10 to-transparent rounded-2xl border border-[#1890FF]/20 overflow-hidden hover:shadow-lg hover:shadow-[#1890FF]/5 transition-all duration-300 relative group">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-[#1890FF]/10 blur-[80px] -z-10 group-hover:bg-[#1890FF]/20 transition-colors" />
-                  <button onClick={() => toggleItem(`n3-5`)} className="flex justify-between items-center w-full p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors ${openItems.includes(`n3-5`) ? 'bg-[#1890FF] text-white' : 'bg-white text-[#1890FF] border border-[#1890FF]/20'}`}>
+                  <button onClick={() => toggleItem(`n3-5`)} className="flex justify-between items-center w-full p-4 sm:p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left gap-2">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors shrink-0 ${openItems.includes(`n3-5`) ? 'bg-[#1890FF] text-white' : 'bg-white text-[#1890FF] border border-[#1890FF]/20'}`}>
                          <Star className="w-5 h-5 fill-current" />
                       </div>
-                      <span className="text-base font-bold text-gray-900">Integración Avanzada de IA en Power BI (3 horas)</span>
+                      <span className="text-sm sm:text-base font-bold text-gray-900 leading-tight">Integración Avanzada de IA en Power BI (3 horas)</span>
                     </div>
-                    <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${openItems.includes(`n3-5`) ? 'rotate-180 text-[#1890FF]' : ''}`} />
+                    <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 shrink-0 ${openItems.includes(`n3-5`) ? 'rotate-180 text-[#1890FF]' : ''}`} />
                   </button>
                   <div className={`transition-all duration-500 ease-in-out ${openItems.includes(`n3-5`) ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
                      <div className="px-6 pb-6 pt-2 border-t border-[#1890FF]/10">

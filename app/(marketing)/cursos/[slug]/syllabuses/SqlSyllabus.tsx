@@ -129,14 +129,14 @@ export default function SqlSyllabus({ selectedLevel, hideSelector = false, clean
                   const isOpen = openItems.includes(`n1-${module.num}`);
                   return (
                     <div key={module.num} className="bg-white rounded-2xl border border-gray-200/60 overflow-hidden hover:border-cyan-300/30 hover:shadow-md transition-all duration-300">
-                      <button onClick={() => toggleItem(`n1-${module.num}`)} className="flex justify-between items-center w-full p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors ${isOpen ? 'bg-cyan-600 text-white' : 'bg-cyan-50/80 text-cyan-600'}`}>
+                      <button onClick={() => toggleItem(`n1-${module.num}`)} className="flex justify-between items-center w-full p-4 sm:p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left gap-2">
+                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors shrink-0 ${isOpen ? 'bg-cyan-600 text-white' : 'bg-cyan-50/80 text-cyan-600'}`}>
                             {module.num}
                           </div>
-                          <span className="text-base font-bold text-gray-900">{module.title}</span>
+                          <span className="text-sm sm:text-base font-bold text-gray-900 leading-tight">{module.title}</span>
                         </div>
-                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-cyan-600' : ''}`} />
+                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-cyan-600' : ''}`} />
                       </button>
                       <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
                         <div className="px-6 pb-6 pt-2 border-t border-gray-50">
@@ -204,14 +204,14 @@ export default function SqlSyllabus({ selectedLevel, hideSelector = false, clean
                   const isOpen = openItems.includes(`n2-${module.num}`);
                   return (
                     <div key={module.num} className="bg-white rounded-2xl border border-gray-200/60 overflow-hidden hover:border-green-300/30 hover:shadow-md transition-all duration-300">
-                      <button onClick={() => toggleItem(`n2-${module.num}`)} className="flex justify-between items-center w-full p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors ${isOpen ? 'bg-green-600 text-white' : 'bg-green-50/80 text-green-600'}`}>
+                      <button onClick={() => toggleItem(`n2-${module.num}`)} className="flex justify-between items-center w-full p-4 sm:p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left gap-2">
+                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors shrink-0 ${isOpen ? 'bg-green-600 text-white' : 'bg-green-50/80 text-green-600'}`}>
                             {module.num}
                           </div>
-                          <span className="text-base font-bold text-gray-900">{module.title}</span>
+                          <span className="text-sm sm:text-base font-bold text-gray-900 leading-tight">{module.title}</span>
                         </div>
-                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-green-600' : ''}`} />
+                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-green-600' : ''}`} />
                       </button>
                       <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
                         <div className="px-6 pb-6 pt-2 border-t border-gray-50">
@@ -279,14 +279,14 @@ export default function SqlSyllabus({ selectedLevel, hideSelector = false, clean
                   const isOpen = openItems.includes(`n3-${module.num}`);
                   return (
                      <div key={module.num} className="bg-white rounded-2xl border border-gray-200/60 overflow-hidden hover:border-orange-300/30 hover:shadow-md transition-all duration-300">
-                      <button onClick={() => toggleItem(`n3-${module.num}`)} className="flex justify-between items-center w-full p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left">
-                        <div className="flex items-center gap-4">
-                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors ${isOpen ? 'bg-orange-600 text-white' : 'bg-orange-50/80 text-orange-600'}`}>
+                      <button onClick={() => toggleItem(`n3-${module.num}`)} className="flex justify-between items-center w-full p-4 sm:p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left gap-2">
+                        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                          <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors shrink-0 ${isOpen ? 'bg-orange-600 text-white' : 'bg-orange-50/80 text-orange-600'}`}>
                             {module.num}
                           </div>
-                          <span className="text-base font-bold text-gray-900">{module.title}</span>
+                          <span className="text-sm sm:text-base font-bold text-gray-900 leading-tight">{module.title}</span>
                         </div>
-                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-orange-600' : ''}`} />
+                        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-orange-600' : ''}`} />
                       </button>
                       <div className={`transition-all duration-500 ease-in-out ${isOpen ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
                         <div className="px-6 pb-6 pt-2 border-t border-gray-50">
@@ -314,14 +314,14 @@ export default function SqlSyllabus({ selectedLevel, hideSelector = false, clean
                 {/* ITEM AI HIGHLIGHT */}
                 <div className="bg-gradient-to-br from-cyan-600/10 to-transparent rounded-2xl border border-cyan-600/20 overflow-hidden hover:shadow-lg hover:shadow-cyan-600/5 transition-all duration-300 relative group">
                   <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-600/10 blur-[80px] -z-10 group-hover:bg-cyan-600/20 transition-colors" />
-                  <button onClick={() => toggleItem(`n3-5`)} className="flex justify-between items-center w-full p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left">
-                    <div className="flex items-center gap-4">
-                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors ${openItems.includes(`n3-5`) ? 'bg-cyan-600 text-white' : 'bg-white text-cyan-700 border border-cyan-600/20'}`}>
+                  <button onClick={() => toggleItem(`n3-5`)} className="flex justify-between items-center w-full p-4 sm:p-5 lg:px-6 cursor-pointer focus:outline-none bg-transparent border-0 text-left gap-2">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm shadow-inner transition-colors shrink-0 ${openItems.includes(`n3-5`) ? 'bg-cyan-600 text-white' : 'bg-white text-cyan-700 border border-cyan-600/20'}`}>
                          <Star className="w-5 h-5 fill-current" />
                       </div>
-                      <span className="text-base font-bold text-gray-900">Integración Avanzada de IA (3 horas)</span>
+                      <span className="text-sm sm:text-base font-bold text-gray-900 leading-tight">Integración Avanzada de IA (3 horas)</span>
                     </div>
-                    <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 ${openItems.includes(`n3-5`) ? 'rotate-180 text-cyan-600' : ''}`} />
+                    <ChevronDown className={`w-5 h-5 text-gray-500 transition-transform duration-300 shrink-0 ${openItems.includes(`n3-5`) ? 'rotate-180 text-cyan-600' : ''}`} />
                   </button>
                   <div className={`transition-all duration-500 ease-in-out ${openItems.includes(`n3-5`) ? 'max-h-[800px] opacity-100' : 'max-h-0 opacity-0'}`}>
                      <div className="px-6 pb-6 pt-2 border-t border-cyan-600/10">
