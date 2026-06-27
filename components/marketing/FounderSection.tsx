@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
-import { Award, BookOpen, Briefcase } from "lucide-react";
+import { Award, BookOpen, Briefcase, Sparkles } from "lucide-react";
 
 export default function FounderSection() {
   return (
@@ -19,17 +19,20 @@ export default function FounderSection() {
           {/* Image Column */}
           <div className="lg:col-span-5 relative flex flex-col gap-6">
             <FadeIn direction="right">
-              {/* Subtle mesh glowing background */}
-              <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/10 via-indigo-500/5 to-cyan-500/10 rounded-[3rem] blur-2xl opacity-75 pointer-events-none" />
+              {/* Glow halo detrás del frame */}
+              <div className="absolute -inset-6 bg-gradient-to-tr from-[#1890FF]/15 via-indigo-500/8 to-cyan-400/15 rounded-[3rem] blur-3xl opacity-80 pointer-events-none" />
               
-              <div className="p-[3px] bg-gradient-to-br from-[#1890FF]/20 via-transparent to-indigo-500/20 rounded-[2rem]">
-                <div className="relative z-10 rounded-[1.85rem] overflow-hidden border border-slate-100 group shadow-[0_20px_50px_rgba(15,23,42,0.08)] bg-white">
+              {/* Marco glass premium */}
+              <div className="relative p-2 rounded-[2rem] bg-white/40 backdrop-blur-xl border border-white/70"
+                style={{ boxShadow: "0 30px 70px -20px rgba(15,23,42,0.18), inset 0 1px 0 0 rgba(255,255,255,0.9)" }}
+              >
+                <div className="relative z-10 rounded-[1.6rem] overflow-hidden border border-slate-100 group bg-white">
                   <Image
                     src="https://mail.programbi.com/uploads/gempages_519842279402243040-8ae05cd1-dc25-44fb-9a7b-f1a78a0f121a.webp_202606132329.jpeg"
                     alt="Manuel Oliva - CEO ProgramBI"
                     width={600}
                     height={750}
-                    className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.02]"
+                    className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.03]"
                     unoptimized
                   />
                   
@@ -39,15 +42,15 @@ export default function FounderSection() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, type: "spring", stiffness: 200, damping: 20 }}
                     viewport={{ once: true }}
-                    className="absolute bottom-6 left-6 right-6 sm:left-auto sm:right-6 bg-white/90 backdrop-blur-md border border-slate-200/60 rounded-2xl p-4 max-w-xs z-20 shadow-lg"
+                    className="absolute bottom-6 left-6 right-6 sm:left-auto sm:right-6 bg-white/85 backdrop-blur-md border border-white/60 rounded-2xl p-4 max-w-xs z-20 shadow-lg"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-[#1890FF] shrink-0 border border-blue-500/20">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#1890FF]/15 to-blue-500/10 flex items-center justify-center text-[#1890FF] shrink-0 border border-[#1890FF]/20">
                         <Award className="w-5 h-5" />
                       </div>
                       <div className="text-left">
                         <p className="text-[#1890FF] font-black text-lg leading-none mb-1 font-sans">15+ Años</p>
-                        <p className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wide font-sans">
+                        <p className="text-[9px] text-slate-500 font-extrabold uppercase tracking-wide font-sans">
                           Experiencia en Banca, Retail y Minería
                         </p>
                       </div>
@@ -85,13 +88,14 @@ export default function FounderSection() {
           {/* Bio Column */}
           <div className="lg:col-span-7 text-left">
             <FadeIn>
-              <span className="inline-flex items-center bg-blue-50 text-[#1890FF] font-bold text-xs uppercase tracking-widest px-4 py-1.5 rounded-full mb-6 border border-blue-100 shadow-sm">
+              <span className="inline-flex items-center gap-2 bg-blue-50 text-[#1890FF] font-bold text-[11px] uppercase tracking-[0.18em] px-3.5 py-1.5 rounded-full mb-6 border border-blue-100/60 shadow-sm backdrop-blur-sm">
+                <Sparkles className="w-3.5 h-3.5" />
                 La Historia Detrás de ProgramBI
               </span>
             </FadeIn>
 
             <FadeIn delay={0.15}>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-800 to-[#1890FF] mb-2 font-display tracking-tight leading-tight">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-800 to-[#1890FF] mb-2 font-display tracking-tight leading-[1.1]">
                 Manuel Oliva
               </h2>
               <h3 className="text-base md:text-lg font-bold text-slate-400 mb-8 font-sans">
@@ -99,13 +103,16 @@ export default function FounderSection() {
               </h3>
             </FadeIn>
 
-            {/* Founder Quote Block */}
+            {/* Founder Quote Block — Glass card */}
             <FadeIn delay={0.2}>
-              <div className="relative pl-6 border-l-4 border-[#1890FF]/30 mb-8">
-                <span className="absolute -left-3 -top-2 text-5xl text-[#1890FF]/15 font-serif leading-none select-none">“</span>
-                <p className="text-lg md:text-xl text-slate-700 font-medium italic leading-relaxed">
-                  La diferencia entre un profesional y un líder es que el líder sabe leer los datos para transformar realidades.
-                </p>
+              <div className="relative rounded-2xl bg-gradient-to-br from-[#1890FF]/8 to-indigo-500/5 backdrop-blur-md border border-white/60 p-6 lg:p-7 mb-8 overflow-hidden">
+                {/* Decorative quote mark */}
+                <span className="absolute top-2 right-4 text-7xl text-[#1890FF]/15 font-serif leading-none select-none pointer-events-none">”</span>
+                <div className="relative z-10">
+                  <p className="text-lg md:text-xl text-slate-700 font-medium italic leading-relaxed">
+                    La diferencia entre un profesional y un líder es que el líder sabe leer los datos para transformar realidades.
+                  </p>
+                </div>
               </div>
             </FadeIn>
 
@@ -122,10 +129,11 @@ export default function FounderSection() {
             </FadeIn>
 
             <FadeIn delay={0.35}>
-              <div className="grid md:grid-cols-2 gap-8 pt-4 border-t border-slate-100">
+              <div className="grid md:grid-cols-2 gap-5 pt-4 border-t border-slate-100">
                 {/* Formación Académica */}
-                <div className="border-l-2 border-[#1890FF]/20 pl-4">
-                  <h4 className="text-[11px] font-black text-slate-800 uppercase tracking-widest mb-4 font-sans">
+                <div className="rounded-2xl bg-white/50 backdrop-blur-md border border-white/70 p-5">
+                  <h4 className="text-[11px] font-black text-slate-800 uppercase tracking-widest mb-4 font-sans flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#1890FF]" />
                     Formación Académica
                   </h4>
                   <ul className="space-y-3 p-0">
@@ -135,7 +143,7 @@ export default function FounderSection() {
                       { text: "Contador Auditor", sub: "(U. de Concepción)" },
                     ].map((item, i) => (
                       <li key={i} className="flex items-start gap-3 group text-slate-500 list-none">
-                        <div className="w-6 h-6 rounded-lg bg-blue-500/5 border border-blue-500/15 flex items-center justify-center text-[#1890FF] shrink-0 mt-0.5 group-hover:bg-[#1890FF] group-hover:text-white transition-colors">
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#1890FF]/12 to-blue-500/8 border border-[#1890FF]/20 flex items-center justify-center text-[#1890FF] shrink-0 mt-0.5 group-hover:from-[#1890FF] group-hover:to-blue-600 group-hover:text-white transition-all">
                           <BookOpen className="w-3.5 h-3.5" />
                         </div>
                         <span className="text-xs md:text-sm leading-relaxed font-sans">
@@ -147,8 +155,9 @@ export default function FounderSection() {
                 </div>
                 
                 {/* Docencia & Trayectoria */}
-                <div className="border-l-2 border-indigo-500/20 pl-4">
-                  <h4 className="text-[11px] font-black text-slate-800 uppercase tracking-widest mb-4 font-sans">
+                <div className="rounded-2xl bg-white/50 backdrop-blur-md border border-white/70 p-5">
+                  <h4 className="text-[11px] font-black text-slate-800 uppercase tracking-widest mb-4 font-sans flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                     Docencia & Trayectoria
                   </h4>
                   <ul className="space-y-3 p-0">
@@ -158,7 +167,7 @@ export default function FounderSection() {
                       "Ex-Gerente de Riesgos Renta 4",
                     ].map((item, i) => (
                       <li key={i} className="flex items-start gap-3 group text-slate-500 list-none">
-                        <div className="w-6 h-6 rounded-lg bg-indigo-500/5 border border-indigo-500/15 flex items-center justify-center text-indigo-500 shrink-0 mt-0.5 group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500/12 to-violet-500/8 border border-indigo-500/20 flex items-center justify-center text-indigo-500 shrink-0 mt-0.5 group-hover:from-indigo-500 group-hover:to-violet-600 group-hover:text-white transition-all">
                           <Briefcase className="w-3.5 h-3.5" />
                         </div>
                         <span className="text-xs md:text-sm leading-relaxed font-sans text-slate-600">

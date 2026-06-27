@@ -4,21 +4,19 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  ArrowRight, 
-  Clock, 
-  Sparkles, 
-  Check, 
-  Database, 
-  PieChart, 
-  Code, 
-  FileSpreadsheet, 
-  TrendingUp, 
-  Brain, 
-  HardHat, 
+import {
+  ArrowRight,
+  Clock,
+  Sparkles,
+  Database,
+  PieChart,
+  Code,
+  FileSpreadsheet,
+  TrendingUp,
+  Brain,
+  HardHat,
   Zap,
   Lock,
-  Users
 } from "lucide-react";
 import React from "react";
 import { courses, type Course } from "@/lib/data/courses";
@@ -229,7 +227,7 @@ export default function CoursesSection() {
           </p>
         </FadeIn>
 
-        {/* Full-width Grid of Compact Cards (4 Columns on Desktop) */}
+        {/* Full-width Grid of Glass Cards (4 Columns on Desktop) */}
         <div className="w-full z-10">
           <AnimatePresence mode="wait">
             <motion.div
@@ -238,131 +236,153 @@ export default function CoursesSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 lg:gap-6"
             >
               {filteredCourses.map((course) => {
                 const CardIcon = IconMap[course.icon] || Sparkles;
                 const { price, originalPrice } = getPriceInfo(course, promotions);
-                const discountPercent = price && originalPrice && originalPrice > price 
-                  ? Math.round(((originalPrice - price) / originalPrice) * 100) 
+                const discountPercent = price && originalPrice && originalPrice > price
+                  ? Math.round(((originalPrice - price) / originalPrice) * 100)
                   : null;
+                const accent = course.accentColor || '#1890FF';
 
                 return (
-                  <div key={course.slug} className="w-full">
-                    <motion.div 
-                      layout
-                      className="group bg-white/70 backdrop-blur-md rounded-3xl border border-white hover:border-[#1890FF]/30 flex flex-col justify-between overflow-hidden shadow-[0_8px_32px_0_rgba(31,38,135,0.03),inset_0_1px_0_0_rgba(255,255,255,0.8)] hover:shadow-[0_20px_40px_rgba(24,144,255,0.08),inset_0_1px_0_0_rgba(255,255,255,0.9)] hover:-translate-y-1 transition-all duration-500 h-full p-4.5 relative"
+                  <motion.div
+                    key={course.slug}
+                    layout
+                    whileHover={{ y: -8 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                    className="group relative h-full"
+                  >
+                    {/* Glow halo detrás de la tarjeta (visible en hover) */}
+                    <div
+                      className="absolute -inset-px rounded-[1.75rem] opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 pointer-events-none -z-10"
+                      style={{ background: `linear-gradient(135deg, ${accent}33, transparent 60%)` }}
+                    />
+
+                    {/* Tarjeta Glassmorphism */}
+                    <div
+                      className="relative h-full rounded-[1.75rem] overflow-hidden border border-white/60 backdrop-blur-xl bg-white/50 flex flex-col transition-all duration-500 group-hover:border-white/90 group-hover:bg-white/70"
+                      style={{ boxShadow: "0 10px 40px -12px rgba(15,23,42,0.10), inset 0 1px 0 0 rgba(255,255,255,0.9)" }}
                     >
-                      {/* Subtle radial glow matching the course accent color */}
-                      <div 
-                        className="absolute -right-24 -top-24 w-44 h-44 rounded-full blur-3xl opacity-0 group-hover:opacity-[0.12] transition-opacity duration-700 pointer-events-none" 
-                        style={{ backgroundColor: course.accentColor || '#1890FF' }}
+                      {/* Franja superior de acento */}
+                      <div
+                        className="h-1 w-full"
+                        style={{ background: `linear-gradient(90deg, ${accent}, ${accent}66)` }}
                       />
 
-                      {/* Floating course symbol icon */}
-                      <div className="absolute top-3.5 right-3.5 z-20 w-8 h-8 rounded-full bg-white/80 backdrop-blur-md border border-white flex items-center justify-center text-slate-400 group-hover:text-[#1890FF] group-hover:border-[#1890FF]/30 transition-all shadow-sm">
-                        <CardIcon className="w-3.5 h-3.5" />
-                      </div>
-                      
-                      <div>
-                        {/* Image container: aspect-[1.5/1] (larger vertical dimension) */}
-                        <div className="relative overflow-hidden aspect-[1.5/1] rounded-2xl mb-4 bg-slate-100/30">
-                          <div className="absolute inset-0 bg-[#0F172A]/4 z-10 group-hover:bg-[#0F172A]/0 transition-colors duration-500" />
-                          <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 items-start">
-                            {course.slug === "analisis-de-datos" && (
-                              <div className="bg-amber-500/90 backdrop-blur-md text-white text-[8px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded border border-white/10 shadow-sm flex items-center gap-1 select-none">
-                                <span>🔥 Más Popular</span>
-                              </div>
-                            )}
-                          </div>
-                          <Image
-                            src={course.imageUrl}
-                            alt={course.title}
-                            fill
-                            className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-                            unoptimized
-                          />
-                        </div>
+                      {/* Imagen con overlay de color del curso */}
+                      <div className="relative aspect-[16/10] overflow-hidden">
+                        <Image
+                          src={course.imageUrl}
+                          alt={course.title}
+                          fill
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.06]"
+                          unoptimized
+                        />
+                        {/* Tinte sutil del color de acento */}
+                        <div
+                          className="absolute inset-0 opacity-20 mix-blend-multiply transition-opacity duration-500 group-hover:opacity-10"
+                          style={{ background: `linear-gradient(135deg, ${accent}, transparent 70%)` }}
+                        />
+                        {/* Degradado hacia abajo para legibilidad */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent" />
 
-                        {/* Tech Stack + Meta Row */}
+                        {/* Badge "Más Popular" */}
+                        {course.slug === "analisis-de-datos" && (
+                          <div className="absolute top-3 left-3 bg-amber-500 text-white text-[9px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full shadow-lg backdrop-blur-sm border border-white/20 flex items-center gap-1 select-none">
+                            🔥 Más Popular
+                          </div>
+                        )}
+
+                        {/* Icono flotante */}
+                        <div
+                          className="absolute top-3 right-3 w-9 h-9 rounded-xl bg-white/85 backdrop-blur-md border border-white flex items-center justify-center shadow-md transition-all duration-300 group-hover:scale-110"
+                          style={{ color: accent }}
+                        >
+                          <CardIcon className="w-4 h-4" />
+                        </div>
+                      </div>
+
+                      {/* Cuerpo */}
+                      <div className="flex flex-col flex-1 p-5">
+                        {/* Tech stack + duración */}
                         <div className="flex items-center justify-between gap-2 mb-3">
-                          {/* Tech stack badges */}
                           <div className="flex gap-1.5 flex-wrap">
                             {course.techStack.map((tech) => (
-                              <span key={tech} className="bg-white/80 text-slate-500 px-1.5 py-0.5 rounded text-[8px] font-mono border border-slate-200/50 shadow-sm">
+                              <span
+                                key={tech}
+                                className="bg-slate-100/80 text-slate-600 px-2 py-0.5 rounded-md text-[9px] font-mono font-medium border border-slate-200/50"
+                              >
                                 {tech}
                               </span>
                             ))}
                           </div>
-                          {/* Duration */}
                           <span className="flex items-center gap-1 text-[9px] uppercase tracking-wider font-bold text-slate-400 shrink-0">
-                            <Clock size={10} /> {course.durationHours} hrs
+                            <Clock size={11} /> {course.durationHours}h
                           </span>
                         </div>
 
-                        {/* Title */}
+                        {/* Título */}
                         <Link href={`/cursos/${course.slug}`} className="block no-underline">
                           <h3 className="font-sans text-[15px] font-bold text-slate-900 mb-1.5 leading-snug group-hover:text-[#1890FF] transition-colors text-left line-clamp-1">
                             {course.title}
                           </h3>
                         </Link>
-                        {/* Description */}
-                        <p className="text-slate-500 text-xs leading-relaxed mb-4 text-left line-clamp-2">
+                        {/* Descripción */}
+                        <p className="text-slate-500 text-xs leading-relaxed mb-5 text-left line-clamp-2">
                           {course.shortDescription}
                         </p>
-                      </div>
 
-                      {/* Card Footer: Combines Price & CTA */}
-                      <div className="mt-auto pt-3 border-t border-slate-200/40 flex items-center justify-between">
-                        {/* Price Info */}
-                        <div className="flex flex-col text-left font-sans">
-                          {isLoggedIn ? (
-                            price ? (
-                              <>
-                                <span className="text-[8px] text-slate-400 font-extrabold uppercase tracking-wider leading-none">Inversión</span>
-                                <div className="flex items-baseline gap-1 mt-1">
-                                  {originalPrice && (
-                                    <span className="text-[9px] line-through text-slate-400 font-medium">
-                                      {new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(originalPrice)}
+                        {/* Footer: Precio + CTA */}
+                        <div className="mt-auto pt-4 border-t border-slate-200/50 flex items-center justify-between gap-2">
+                          <div className="flex flex-col text-left font-sans">
+                            {isLoggedIn ? (
+                              price ? (
+                                <>
+                                  <span className="text-[8px] text-slate-400 font-extrabold uppercase tracking-wider leading-none mb-1">Inversión</span>
+                                  <div className="flex items-baseline gap-1.5">
+                                    {originalPrice && (
+                                      <span className="text-[10px] line-through text-slate-400 font-medium">
+                                        {new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(originalPrice)}
+                                      </span>
+                                    )}
+                                    <span className="text-sm font-black text-slate-900 leading-none">
+                                      {new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(price)}
+                                    </span>
+                                  </div>
+                                  {discountPercent && (
+                                    <span
+                                      className="mt-1 text-[8px] font-extrabold px-1.5 py-0.5 rounded text-white w-fit leading-none"
+                                      style={{ backgroundColor: accent }}
+                                    >
+                                      -{discountPercent}% DCTO
                                     </span>
                                   )}
-                                  <span className="text-xs font-black text-slate-900 leading-none">
-                                    {new Intl.NumberFormat("es-CL", { style: "currency", currency: "CLP", maximumFractionDigits: 0 }).format(price)}
-                                  </span>
-                                </div>
-                                {discountPercent && (
-                                  <span className="mt-1 text-[8px] font-extrabold px-1 py-0.5 bg-emerald-50 text-emerald-600 rounded border border-emerald-100/50 w-fit leading-none">
-                                    -{discountPercent}% DCTO
-                                  </span>
-                                )}
-                              </>
-                            ) : null
-                          ) : (
-                            <div className="flex items-center gap-1 text-[9px] font-extrabold text-blue-500 select-none">
-                              <Lock size={10} /> <span>Ver Precios</span>
-                            </div>
-                          )}
-                        </div>
+                                </>
+                              ) : null
+                            ) : (
+                              <div className="flex items-center gap-1 text-[10px] font-extrabold text-blue-500 select-none">
+                                <Lock size={11} /> <span>Ver Precios</span>
+                              </div>
+                            )}
+                          </div>
 
-                        {/* Right side: Egresados & CTA Button */}
-                        <div className="flex flex-col items-end gap-1.5">
-                          {/* Egresados count */}
-                          <span className="flex items-center gap-1 text-[9px] text-slate-400 font-semibold select-none leading-none">
-                            <Users className="w-2.5 h-2.5 text-slate-400" />
-                            <span>+500 egresados</span>
-                          </span>
-
-                          <Link href={`/cursos/${course.slug}`} className="block no-underline">
-                            <div className="inline-flex items-center gap-1 bg-white hover:bg-[#1890FF] hover:text-white border border-slate-200 hover:border-transparent rounded-lg px-2.5 py-1.5 shadow-sm transition-all duration-300 text-[10px] font-bold font-sans group/btn">
-                              <span>Ver temario</span>
-                              <ArrowRight size={10} className="transition-transform group-hover/btn:translate-x-0.5" />
-                            </div>
+                          <Link
+                            href={`/cursos/${course.slug}`}
+                            className="inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 shadow-sm transition-all duration-300 text-[11px] font-bold font-sans group/btn no-underline"
+                            style={{
+                              backgroundColor: `${accent}14`,
+                              color: accent,
+                            }}
+                          >
+                            <span>Ver temario</span>
+                            <ArrowRight size={12} className="transition-transform group-hover/btn:translate-x-0.5" />
                           </Link>
                         </div>
                       </div>
-
-                    </motion.div>
-                  </div>
+                    </div>
+                  </motion.div>
                 );
               })}
             </motion.div>

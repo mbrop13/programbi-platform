@@ -57,35 +57,46 @@ export default function MentorsSection() {
         {/* Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
-          {/* Header Column (Blue Panel) */}
-          <div className="lg:col-span-4 flex flex-col justify-between bg-gradient-to-br from-blue-600 via-[#1890FF] to-indigo-700 text-white rounded-[2.2rem] p-8 lg:p-10 shadow-lg relative overflow-hidden select-none">
-            {/* Subtle glowing mesh */}
-            <div className="absolute -right-10 -top-10 w-48 h-48 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-            <div className="absolute -left-10 -bottom-10 w-48 h-48 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
+          {/* Header Column (Premium Glass Panel) */}
+          <div className="lg:col-span-4 flex flex-col justify-between text-white rounded-[2rem] p-8 lg:p-10 relative overflow-hidden select-none border border-white/10"
+            style={{
+              background: "linear-gradient(135deg, #1890FF 0%, #0050b3 50%, #1e3a8a 100%)",
+              boxShadow: "0 24px 60px -20px rgba(24,144,255,0.45), inset 0 1px 0 0 rgba(255,255,255,0.15)",
+            }}
+          >
+            {/* Glass mesh overlay */}
+            <div className="absolute inset-0 opacity-30 pointer-events-none"
+              style={{
+                backgroundImage: "linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)",
+                backgroundSize: "32px 32px",
+              }}
+            />
+            {/* Glowing orbs */}
+            <div className="absolute -right-12 -top-12 w-56 h-56 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+            <div className="absolute -left-12 -bottom-12 w-56 h-56 rounded-full bg-indigo-400/20 blur-3xl pointer-events-none" />
 
             <div className="relative z-10 flex flex-col h-full justify-between gap-8">
               <div>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-wider mb-5">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/15 backdrop-blur-sm border border-white/25 text-white text-[10px] font-black uppercase tracking-wider mb-6">
                   Equipo de Expertos
                 </span>
-                <h2 className="font-display text-3xl md:text-4xl lg:text-[40px] font-black tracking-tight leading-tight mb-4">
+                <h2 className="font-display text-3xl md:text-4xl lg:text-[44px] font-black tracking-tight leading-[1.1] mb-5">
                   Conoce a nuestro <span className="text-blue-100">equipo.</span>
                 </h2>
-                <p className="text-xs lg:text-sm text-blue-50 leading-relaxed font-medium">
-                  Aprende de profesionales activos de las mejores universidades y empresas que lideran la transformación digital in la industria.
+                <p className="text-sm lg:text-base text-blue-50/90 leading-relaxed font-medium">
+                  Aprende de profesionales activos de las mejores universidades y empresas que lideran la transformación digital en la industria.
                 </p>
               </div>
 
-              {/* Mini Trust Footer */}
-              <div className="border-t border-white/15 pt-5 flex items-center justify-between text-left">
-                <div>
+              {/* Trust footer con glass cards */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4">
                   <p className="text-2xl font-black font-mono leading-none">100%</p>
-                  <p className="text-[8px] font-extrabold uppercase tracking-wider text-blue-200 mt-1">Práctico y Real</p>
+                  <p className="text-[9px] font-extrabold uppercase tracking-wider text-blue-100 mt-1.5">Práctico y Real</p>
                 </div>
-                <div className="w-px h-8 bg-white/15" />
-                <div>
+                <div className="bg-white/10 backdrop-blur-md border border-white/15 rounded-2xl p-4">
                   <p className="text-2xl font-black font-mono leading-none">24/7</p>
-                  <p className="text-[8px] font-extrabold uppercase tracking-wider text-blue-200 mt-1">Apoyo y Mentoría</p>
+                  <p className="text-[9px] font-extrabold uppercase tracking-wider text-blue-100 mt-1.5">Apoyo y Mentoría</p>
                 </div>
               </div>
             </div>
@@ -93,7 +104,7 @@ export default function MentorsSection() {
 
           {/* Accordion Column (Right) */}
           <div className="lg:col-span-8 w-full">
-            <div className="flex flex-row overflow-x-auto no-scrollbar snap-x snap-mandatory gap-4 h-auto lg:h-[480px] w-full pb-6 -mx-5 px-5 lg:mx-0 lg:px-0 lg:overflow-visible lg:pb-0">
+            <div className="flex flex-row overflow-x-auto no-scrollbar snap-x snap-mandatory gap-4 h-auto lg:h-[500px] w-full pb-6 -mx-5 px-5 lg:mx-0 lg:px-0 lg:overflow-visible lg:pb-0">
               {mentors.map((mentor, index) => {
                 const isActive = activeIndex === index;
                 const isCardExpanded = isMobile || isActive;
@@ -102,11 +113,15 @@ export default function MentorsSection() {
                     key={mentor.name}
                     onClick={() => setActiveIndex(index)}
                     onMouseEnter={() => setActiveIndex(index)}
-                    className={`relative overflow-hidden rounded-[2.2rem] border transition-all duration-500 cursor-pointer group flex flex-col justify-end snap-start shrink-0 ${
-                      isCardExpanded 
-                        ? "border-[#1890FF]/40 shadow-[0_24px_50px_rgba(24,144,255,0.08)] bg-white w-[290px] sm:w-[320px] lg:flex-[3.5]" 
-                        : "border-[#E2E8F0] bg-slate-50 hover:bg-slate-100/50 w-[290px] sm:w-[320px] lg:flex-1"
-                    } h-[380px] sm:h-[410px] lg:h-full`}
+                    className={`relative overflow-hidden rounded-[2rem] border backdrop-blur-md transition-all duration-500 cursor-pointer group flex flex-col justify-end snap-start shrink-0 ${
+                      isCardExpanded
+                        ? "border-[#1890FF]/40 bg-white/10"
+                        : "border-white/50 bg-white/30 hover:bg-white/50"
+                    } w-[290px] sm:w-[320px] lg:flex-[3.5] h-[380px] sm:h-[410px] lg:h-full`}
+                    style={isCardExpanded
+                      ? { boxShadow: "0 24px 50px -12px rgba(24,144,255,0.20), inset 0 1px 0 0 rgba(255,255,255,0.4)" }
+                      : { boxShadow: "0 8px 30px -12px rgba(15,23,42,0.12), inset 0 1px 0 0 rgba(255,255,255,0.7)" }
+                    }
                   >
                     
                     {/* Background Visual Container */}
@@ -132,12 +147,12 @@ export default function MentorsSection() {
                       )}
                       
                       {/* Dark overlay gradient for text contrast */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent z-10 opacity-90 pointer-events-none" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/50 to-slate-950/10 z-10 opacity-95 pointer-events-none" />
                     </div>
 
                     {/* Floating Badge (Glassmorphic) for manual trigger */}
                     {mentor.isFounder && (
-                      <span className="absolute top-4 left-4 px-2.5 py-0.5 bg-[#1890FF] text-white text-[8px] font-black uppercase tracking-wider rounded-full shadow-sm z-20 select-none">
+                      <span className="absolute top-4 left-4 px-2.5 py-1 bg-white/20 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-wider rounded-full border border-white/30 shadow-sm z-20 select-none">
                         Fundador
                       </span>
                     )}

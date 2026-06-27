@@ -64,17 +64,24 @@ const renderCardGraphic = (theme: string) => {
   }
 };
 
-// Sub-component for individual Case Cards
+// Sub-component for individual Case Cards — Glassmorphism premium
 function CaseCard({ item }: { item: CaseStudy }) {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
 
   return (
     <Link
       href={`/casos/${item.slug}`}
-      className="snap-start shrink-0 flex flex-col group w-[280px] hover:w-[350px] transition-all duration-500 ease-out no-underline"
+      className="snap-start shrink-0 flex flex-col group w-[300px] hover:w-[360px] transition-all duration-500 ease-out no-underline"
     >
-      {/* Visual Card Wrapper - Smoothly fades in video once loaded or shows a beautiful placeholder */}
-      <div className="relative w-full aspect-[4/5] rounded-[1.8rem] overflow-hidden mb-6 shadow-md shadow-slate-100/80 border border-slate-150/40 group-hover:shadow-xl group-hover:shadow-blue-500/5 transition-all duration-500 cursor-pointer bg-slate-950">
+      {/* Visual Card Wrapper — Glass frame */}
+      <div className="relative w-full aspect-[4/5] rounded-[1.75rem] overflow-hidden mb-5 border border-white/60 backdrop-blur-md bg-white/30 group-hover:border-white/90 group-hover:bg-white/50 transition-all duration-500 cursor-pointer"
+        style={{ boxShadow: "0 12px 40px -12px rgba(15,23,42,0.15), inset 0 1px 0 0 rgba(255,255,255,0.9)" }}
+      >
+        {/* Glow halo on hover */}
+        <div className="absolute -inset-px rounded-[1.75rem] opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 pointer-events-none -z-10"
+          style={{ background: "linear-gradient(135deg, rgba(24,144,255,0.25), transparent 60%)" }}
+        />
+
         {item.videoUrl ? (
           <div className="absolute inset-0 flex items-center justify-center">
             {/* Themed gradient placeholder visible while video is loading */}
@@ -96,35 +103,39 @@ function CaseCard({ item }: { item: CaseStudy }) {
               preload="auto"
               onPlay={() => setIsVideoLoaded(true)}
               onLoadedData={() => setIsVideoLoaded(true)}
-              className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-1000 ease-out pointer-events-none ${
+              className={`w-full h-full object-cover group-hover:scale-[1.06] transition-all duration-1000 ease-out pointer-events-none ${
                 isVideoLoaded ? "opacity-100" : "opacity-0"
               }`}
             />
-            {/* Subtle dark gradient overlay to ensure text contrast */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-black/20 pointer-events-none" />
+            {/* Glass vignette for text contrast + premium feel */}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-slate-950/25 pointer-events-none" />
           </div>
         ) : (
-          <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-105">
+          <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.06]">
             {renderCardGraphic(item.theme)}
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-transparent to-slate-950/20 pointer-events-none" />
           </div>
         )}
 
-        {/* Technology Overlay tag top right */}
-        <div className="absolute top-5 right-5 font-sans text-[9px] text-white font-bold bg-white/15 backdrop-blur-md py-1 px-2.5 rounded-full border border-white/20 z-10">
+        {/* Technology overlay tag — glass pill */}
+        <div className="absolute top-4 right-4 font-sans text-[9px] text-white font-bold bg-white/20 backdrop-blur-md py-1.5 px-3 rounded-full border border-white/30 z-10 shadow-sm">
           {item.techBadge}
+        </div>
+
+        {/* Category badge — glass pill bottom */}
+        <div className="absolute bottom-4 left-4 right-4 z-10">
+          <span className="inline-block font-sans text-[9px] font-extrabold uppercase tracking-widest text-white bg-[#1890FF]/85 backdrop-blur-md py-1 px-2.5 rounded-full border border-white/20 shadow-sm">
+            {item.category}
+          </span>
         </div>
       </div>
 
-      {/* Text Block beneath visual card - Locked to 280px to completely prevent re-wrapping/reflow */}
-      <div className="text-left px-1 flex flex-col w-[280px] shrink-0 font-sans">
-        <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#1890FF]">
-          {item.category}
-        </span>
-        
-        <h3 className="font-display font-black text-gray-900 mt-2 text-base md:text-lg leading-snug group-hover:text-[#1890FF] transition-colors line-clamp-3">
+      {/* Text Block beneath visual card — Locked to 300px to prevent reflow */}
+      <div className="text-left px-1 flex flex-col w-[300px] shrink-0 font-sans">
+        <h3 className="font-display font-black text-gray-900 text-base md:text-lg leading-snug group-hover:text-[#1890FF] transition-colors line-clamp-3">
           {item.title}
         </h3>
-        
+
         <p className="text-slate-500 text-xs md:text-sm leading-relaxed mt-2.5 line-clamp-3">
           {item.description}
         </p>
