@@ -2687,6 +2687,7 @@ function AdminPrices() {
   const [couponDiscount, setCouponDiscount] = useState<number>(10);
   const [couponMaxUses, setCouponMaxUses] = useState<number | "">("");
   const [couponValidUntil, setCouponValidUntil] = useState("");
+  const [couponAllowStacking, setCouponAllowStacking] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState<any | null>(null);
 
   // Price editing
@@ -2746,7 +2747,8 @@ function AdminPrices() {
             code: couponCode,
             discount_percentage: couponDiscount,
             max_uses: couponMaxUses === "" ? null : couponMaxUses,
-            valid_until: couponValidUntil === "" ? null : new Date(couponValidUntil).toISOString()
+            valid_until: couponValidUntil === "" ? null : new Date(couponValidUntil).toISOString(),
+            allow_stacking: couponAllowStacking
           });
           setEditingCoupon(null);
         } else {
@@ -2755,7 +2757,8 @@ function AdminPrices() {
             discount_percentage: couponDiscount,
             max_uses: couponMaxUses === "" ? undefined : couponMaxUses,
             is_active: true,
-            valid_until: couponValidUntil === "" ? undefined : new Date(couponValidUntil).toISOString()
+            valid_until: couponValidUntil === "" ? undefined : new Date(couponValidUntil).toISOString(),
+            allow_stacking: couponAllowStacking
           });
         }
         setShowAdd(false);
@@ -2763,6 +2766,7 @@ function AdminPrices() {
         setCouponDiscount(10);
         setCouponMaxUses("");
         setCouponValidUntil("");
+        setCouponAllowStacking(false);
         loadData();
       } else {
         await adminCreatePromotion({
@@ -2824,6 +2828,7 @@ function AdminPrices() {
     setCouponDiscount(coupon.discount_percentage);
     setCouponMaxUses(coupon.max_uses === null ? "" : coupon.max_uses);
     setCouponValidUntil(coupon.valid_until ? new Date(coupon.valid_until).toISOString().substring(0, 16) : "");
+    setCouponAllowStacking(!!coupon.allow_stacking);
     setShowAdd(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -2892,6 +2897,18 @@ function AdminPrices() {
                   <div>
                     <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Fecha de Vencimiento (Opcional)</label>
                     <input type="datetime-local" value={couponValidUntil} onChange={e => setCouponValidUntil(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
+                  </div>
+                  <div className="flex items-center gap-2 mt-2 md:col-span-2">
+                    <input
+                      type="checkbox"
+                      id="coupon-allow-stacking"
+                      checked={couponAllowStacking}
+                      onChange={e => setCouponAllowStacking(e.target.checked)}
+                      className="w-4 h-4 rounded border-gray-300 accent-[#0F172A] cursor-pointer"
+                    />
+                    <label htmlFor="coupon-allow-stacking" className="text-xs text-gray-600 font-semibold cursor-pointer select-none">
+                      Permitir descuento sobre descuento (Acumulable con otras promociones de cursos)
+                    </label>
                   </div>
                 </div>
               ) : (
@@ -3145,6 +3162,12 @@ function AdminPrices() {
                              {coupon.valid_until ? new Date(coupon.valid_until).toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Sin vencimiento'}
                            </span>
                          </div>
+                        <div className="mt-2 text-[10px] flex items-center justify-between px-1">
+                          <span className="text-gray-400 font-semibold uppercase tracking-wider">Acumulable con otras ofertas:</span>
+                          <span className={`font-bold ${coupon.allow_stacking ? 'text-blue-600' : 'text-gray-500'}`}>
+                            {coupon.allow_stacking ? 'Sí' : 'No'}
+                          </span>
+                        </div>
                        </div>
                      </div>
                      <div className="flex items-center gap-2 mt-auto p-4 border-t border-gray-50 bg-gray-50/50">

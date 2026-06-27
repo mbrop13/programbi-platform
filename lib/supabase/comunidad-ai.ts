@@ -948,6 +948,7 @@ export async function adminCreateCoupon(coupon: {
   max_uses?: number | null;
   is_active: boolean;
   valid_until?: string | null;
+  allow_stacking?: boolean;
 }) {
   const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
@@ -958,7 +959,8 @@ export async function adminCreateCoupon(coupon: {
     discount_percentage: coupon.discount_percentage,
     max_uses: coupon.max_uses || null,
     is_active: coupon.is_active,
-    valid_until: coupon.valid_until || null
+    valid_until: coupon.valid_until || null,
+    allow_stacking: coupon.allow_stacking ?? false
   };
 
   const { data, error } = await adminDb
@@ -1052,7 +1054,8 @@ export async function validateCouponAction(code: string) {
     valid: true,
     code: coupon.code,
     discount_percentage: coupon.discount_percentage,
-    id: coupon.id
+    id: coupon.id,
+    allow_stacking: coupon.allow_stacking
   };
 }
 

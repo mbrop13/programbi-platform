@@ -77,7 +77,7 @@ export default function PagoClient() {
 
   // Coupon states & handlers
   const [couponCodeInput, setCouponCodeInput] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount_percentage: number } | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount_percentage: number; allow_stacking: boolean } | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
   const [showCouponInput, setShowCouponInput] = useState(false);
@@ -93,7 +93,8 @@ export default function PagoClient() {
       if (res.valid) {
         setAppliedCoupon({
           code: res.code!,
-          discount_percentage: res.discount_percentage!
+          discount_percentage: res.discount_percentage!,
+          allow_stacking: !!res.allow_stacking
         });
         setCouponCodeInput("");
       } else {
@@ -386,7 +387,19 @@ export default function PagoClient() {
   const cartItems = Object.values(cart);
   const cartItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const totalPrice = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
-  const couponDiscountAmount = appliedCoupon ? Math.floor(totalPrice * (appliedCoupon.discount_percentage / 100)) : 0;
+  const couponDiscountAmount = (() => {
+    if (!appliedCoupon) return 0;
+    if (appliedCoupon.allow_stacking) {
+      return Math.floor(totalPrice * (appliedCoupon.discount_percentage / 100));
+    }
+    // No stackable discount: only apply to items that DO NOT have promo discount
+    return cartItems.reduce((acc, item) => {
+      if (!item.hasDiscount) {
+        return acc + Math.floor((item.price * item.quantity) * (appliedCoupon.discount_percentage / 100));
+      }
+      return acc;
+    }, 0);
+  })();
   const finalPriceWithCoupon = totalPrice - couponDiscountAmount;
   const hasExtraLicenses = cartItemCount > Object.keys(cart).length;
 
