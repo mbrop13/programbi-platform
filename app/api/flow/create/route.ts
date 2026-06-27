@@ -64,7 +64,8 @@ export async function POST(req: NextRequest) {
             levelName: "Hora",
             quantity: item.quantity || 1,
             pricePerUnit: finalPriceClp,
-            title: "Mentoría y Asesoría 1 a 1"
+            title: "Mentoría y Asesoría 1 a 1",
+            hasPromoDiscount: false
           });
           continue;
        }
@@ -112,14 +113,18 @@ export async function POST(req: NextRequest) {
        const itemTotal = finalPriceClp * (item.quantity || 1);
        grandTotalClp += itemTotal;
 
-       validatedItems.push({
-          slug: masterCourse.slug,
-          levelName: item.levelName || "Básico",
-          quantity: item.quantity || 1,
-          pricePerUnit: finalPriceClp,
-          title: masterCourse.title,
-          selectedStartDate: item.selectedStartDate || null
-       });
+        const isBundle = ["analisis-de-datos", "analitica-mineria", "analitica-financiera"].includes(masterCourse.slug);
+        const hasPromoDiscount = isBundle || !!promo;
+
+        validatedItems.push({
+           slug: masterCourse.slug,
+           levelName: item.levelName || "Básico",
+           quantity: item.quantity || 1,
+           pricePerUnit: finalPriceClp,
+           title: masterCourse.title,
+           selectedStartDate: item.selectedStartDate || null,
+           hasPromoDiscount
+        });
     }
 
     const email = user.email || "";
@@ -147,8 +152,24 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: couponRes.message || "Cupón inválido" }, { status: 400 });
       }
       
-      const discountMultiplier = 1 - (couponRes.discount_percentage / 100);
-      grandTotalClp = Math.floor(grandTotalClp * discountMultiplier);
+      const allowStacking = !!couponRes.allow_stacking;
+      
+      if (allowStacking) {
+        const discountMultiplier = 1 - (couponRes.discount_percentage / 100);
+        grandTotalClp = Math.floor(grandTotalClp * discountMultiplier);
+      } else {
+        let finalTotalClp = 0;
+        for (const valItem of (validatedItems as any[])) {
+          const itemSubtotal = valItem.pricePerUnit * valItem.quantity;
+          if (!valItem.hasPromoDiscount) {
+            finalTotalClp += Math.floor(itemSubtotal * (1 - (couponRes.discount_percentage / 100)));
+          } else {
+            finalTotalClp += itemSubtotal;
+          }
+        }
+        // Add bump additions flat (they are not discounted if stacking is false)
+        grandTotalClp = finalTotalClp + bumpAddTotal;
+      }
     }
 
     const flowResult = await createFlowPayment({
