@@ -67,9 +67,9 @@ function ModernDataVisual() {
         className="absolute right-10 bottom-0 z-0 w-56 h-56 bg-gradient-to-tr from-cyan-300/15 to-blue-300/15 rounded-full blur-3xl pointer-events-none"
       />
 
-      {/* Wrapper of Video + Controls (Centered relative to each other) */}
+      {/* Wrapper of Video + Controls */}
       <div className="relative z-10 w-full max-w-[680px] flex flex-col items-center gap-5">
-        {/* Video Container (No browser frame, no floating, borderless, shadowless, rounded-3xl, cropped) */}
+        {/* Video Container */}
         <div className="w-full aspect-video rounded-3xl overflow-hidden bg-transparent">
           <div className="w-full h-full relative">
             <AnimatePresence mode="wait">
@@ -95,35 +95,35 @@ function ModernDataVisual() {
           </div>
         </div>
 
-        {/* Liquid Glass Navigation Controls (Light Mode Below) */}
-      <div className="flex gap-1 bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-full p-1 shadow-[0_8px_32px_rgba(31,38,135,0.06)] w-max">
-        {VIDEOS.map((video, idx) => {
-          const Icon = video.icon;
-          const isActive = activeIndex === idx;
-          return (
-            <button
-              key={video.id}
-              type="button"
-              onClick={() => handleTabClick(idx)}
-              className={`relative py-1.5 px-3.5 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap z-10 ${
-                isActive
-                  ? "text-white"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              {isActive && (
-                <motion.div
-                  layoutId="activeTabGlow"
-                  className="absolute inset-0 bg-gradient-to-r from-[#1890FF] to-blue-500 rounded-full -z-10 shadow-[0_4px_12px_rgba(24,144,255,0.25),inset_0_1px_1px_rgba(255,255,255,0.3)]"
-                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                />
-              )}
-              <Icon className="w-3.5 h-3.5" />
-              <span>{video.title}</span>
-            </button>
-          );
-        })}
-      </div>
+        {/* Liquid Glass Navigation Controls */}
+        <div className="flex gap-1 bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-full p-1 shadow-[0_8px_32px_rgba(31,38,135,0.06)] w-max">
+          {VIDEOS.map((video, idx) => {
+            const Icon = video.icon;
+            const isActive = activeIndex === idx;
+            return (
+              <button
+                key={video.id}
+                type="button"
+                onClick={() => handleTabClick(idx)}
+                className={`relative py-1.5 px-3.5 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap z-10 ${
+                  isActive
+                    ? "text-white"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTabGlow"
+                    className="absolute inset-0 bg-gradient-to-r from-[#1890FF] to-blue-500 rounded-full -z-10 shadow-[0_4px_12px_rgba(24,144,255,0.25),inset_0_1px_1px_rgba(255,255,255,0.3)]"
+                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  />
+                )}
+                <Icon className="w-3.5 h-3.5" />
+                <span>{video.title}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -132,10 +132,8 @@ function ModernDataVisual() {
 
 /* ─── MAIN HERO ─── */
 export default function HeroSection() {
-
-
   return (
-    <section className="relative overflow-hidden pt-3 pb-2 lg:pt-6 lg:pb-4">
+    <section className="relative overflow-hidden pt-6 pb-10 lg:pt-12 lg:pb-16">
       {/* Bg decorations */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div
@@ -153,8 +151,8 @@ export default function HeroSection() {
         />
       </div>
 
-      <div className="max-w-[1500px] mx-auto px-4 lg:px-6 relative z-10 pt-1 pb-4">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+      <div className="max-w-7xl mx-auto px-4 lg:px-6 relative z-10">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           {/* ── Left Column (6/12) ── */}
           <div className="lg:col-span-6 text-center lg:text-left relative z-20">
             {/* Pill Badge */}
@@ -170,7 +168,7 @@ export default function HeroSection() {
 
             {/* Main Title */}
             <FadeIn delay={0.15}>
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-gray-900 tracking-tight leading-tight lg:leading-[1.15] mb-6 font-display">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.1] lg:leading-[1.08] mb-6 font-display">
                 Aprende Análisis de <br className="hidden lg:block" />
                 Datos con{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
@@ -181,19 +179,18 @@ export default function HeroSection() {
 
             {/* Subtitle */}
             <FadeIn delay={0.3}>
-              <p className="text-lg lg:text-2xl text-gray-500 mb-8 font-light leading-relaxed max-w-2xl mx-auto lg:mx-0 font-sans">
-                Capacitaciones diseñadas para profesionales que buscan potenciar su carrera con <strong className="text-gray-900 font-semibold">Power BI, Python, SQL, Excel y Big Data</strong>.
+              <p className="text-lg lg:text-xl text-gray-500 mb-8 font-light leading-relaxed max-w-2xl mx-auto lg:mx-0 font-sans">
+                Capacitaciones diseñadas para profesionales que buscan potenciar su carrera con{" "}
+                <strong className="text-gray-900 font-semibold">Power BI, Python, SQL, Excel y Big Data</strong>.
               </p>
             </FadeIn>
 
-
-
             {/* CTAs */}
             <FadeIn delay={0.45}>
-              <div className="flex flex-col sm:flex-row gap-5 justify-center lg:justify-start">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link
                   href="/cursos/analisis-de-datos"
-                  className="group px-8 py-4 sm:px-10 sm:py-5 rounded-xl text-white font-bold text-[16px] sm:text-lg flex items-center justify-center gap-3 no-underline transition-all duration-300 hover:-translate-y-1 shadow-lg"
+                  className="group px-8 py-4 sm:px-10 sm:py-4 rounded-xl text-white font-bold text-base sm:text-lg flex items-center justify-center gap-3 no-underline transition-all duration-300 hover:-translate-y-1 shadow-lg"
                   style={{
                     background: "linear-gradient(135deg, #1890FF 0%, #0050b3 100%)",
                     boxShadow: "0 12px 35px -8px rgba(24,144,255,0.4)",
@@ -204,7 +201,7 @@ export default function HeroSection() {
                 </Link>
                 <Link
                   href="/cursos"
-                  className="px-8 py-4 sm:px-10 sm:py-5 rounded-xl bg-white text-gray-700 font-bold text-[16px] sm:text-lg border border-gray-200 hover:border-[#1890FF] hover:text-[#1890FF] transition-all flex items-center justify-center gap-3 no-underline hover:-translate-y-1 shadow-sm hover:shadow"
+                  className="px-8 py-4 sm:px-10 sm:py-4 rounded-xl bg-white text-gray-700 font-bold text-base sm:text-lg border border-gray-200 hover:border-[#1890FF] hover:text-[#1890FF] transition-all flex items-center justify-center gap-3 no-underline hover:-translate-y-1 shadow-sm hover:shadow"
                 >
                   <span>Ver Cursos</span>
                   <ArrowRight className="w-5 h-5 text-gray-400" />
@@ -212,33 +209,33 @@ export default function HeroSection() {
               </div>
             </FadeIn>
 
-            {/* Stats */}
+            {/* Stats consolidadas (única fuente en la home) */}
             <FadeIn delay={0.6}>
-              <div className="flex flex-wrap gap-8 lg:gap-12 mt-12 justify-center lg:justify-start">
+              <div className="flex flex-wrap gap-8 lg:gap-10 mt-12 justify-center lg:justify-start border-t border-slate-100 pt-8">
                 <div>
-                  <div className="text-3xl lg:text-4xl font-black text-gray-900">
+                  <div className="text-3xl lg:text-4xl font-black text-gray-900 font-mono tracking-tight">
                     +<CountUp target={5000} duration={2.5} />
                   </div>
-                  <p className="text-sm text-gray-500 font-medium mt-1">Estudiantes egresados</p>
+                  <p className="text-xs text-gray-500 font-medium mt-1 uppercase tracking-wider">Estudiantes egresados</p>
                 </div>
                 <div>
-                  <div className="text-3xl lg:text-4xl font-black text-gray-900">
+                  <div className="text-3xl lg:text-4xl font-black text-gray-900 font-mono tracking-tight">
                     <CountUp target={10} duration={1.5} />
                   </div>
-                  <p className="text-sm text-gray-500 font-medium mt-1">Programas activos</p>
+                  <p className="text-xs text-gray-500 font-medium mt-1 uppercase tracking-wider">Programas activos</p>
                 </div>
                 <div>
-                  <div className="text-3xl lg:text-4xl font-black text-gray-900">
+                  <div className="text-3xl lg:text-4xl font-black text-gray-900 font-mono tracking-tight">
                     <CountUp target={98} duration={2} suffix="%" />
                   </div>
-                  <p className="text-sm text-gray-500 font-medium mt-1">Tasa de satisfacción</p>
+                  <p className="text-xs text-gray-500 font-medium mt-1 uppercase tracking-wider">Tasa de satisfacción</p>
                 </div>
               </div>
             </FadeIn>
           </div>
 
           {/* ── Right Column (6/12) ── */}
-          <div className="lg:col-span-6 relative w-full flex justify-center lg:justify-end z-10 lg:pt-16">
+          <div className="lg:col-span-6 relative w-full flex justify-center lg:justify-end z-10">
             <FadeIn delay={0.4} direction="left" className="w-full">
               <ModernDataVisual />
             </FadeIn>

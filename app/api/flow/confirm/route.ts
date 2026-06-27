@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
     if (flowStatus.status === FLOW_STATUS.PAID && payment.user_id) {
       let cartItems: any[] = [];
       let schedulingSlots: any[] = [];
+      let couponCodeToIncrement: string | null = null;
       
       // Attempt to read cart items from the temporary payment_method JSON
       try {
@@ -62,9 +63,21 @@ export async function POST(req: NextRequest) {
           const parsed = JSON.parse(payment.payment_method);
           if (parsed.items) cartItems = parsed.items;
           if (parsed.slots) schedulingSlots = parsed.slots;
+          if (parsed.couponCode) couponCodeToIncrement = parsed.couponCode;
         }
       } catch (err) {
         console.error("Error parsing payment_method cart data:", err);
+      }
+      
+      // Increment coupon used count if a coupon was used
+      if (couponCodeToIncrement) {
+        try {
+          const { adminIncrementCouponUsedCount } = await import("@/lib/supabase/comunidad-ai");
+          await adminIncrementCouponUsedCount(couponCodeToIncrement);
+          console.log(`✅ Coupon ${couponCodeToIncrement} used count incremented successfully.`);
+        } catch (couponErr) {
+          console.error("❌ Error incrementing coupon used count:", couponErr);
+        }
       }
       
       // Fallback: Check optional param for backwards compatibility

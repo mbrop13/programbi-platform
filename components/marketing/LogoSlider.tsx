@@ -9,10 +9,10 @@ export default function LogoSlider() {
   const allLogos = [...companyLogos, ...companyLogos];
 
   return (
-    <section className="bg-white py-6 lg:py-8">
+    <section className="bg-white py-10 lg:py-14 border-y border-slate-100/80">
       <FadeIn>
-        <div className="max-w-[1200px] mx-auto px-5 text-center mb-4">
-          <p className="text-xs sm:text-sm font-bold text-gray-400 uppercase tracking-[0.2em] font-display">
+        <div className="max-w-7xl mx-auto px-5 text-center mb-8">
+          <p className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-[0.25em] font-display">
             Empresas que confían en nosotros
           </p>
         </div>

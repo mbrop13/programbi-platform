@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { items } = body;
+    const { items, couponCode } = body;
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       // Backwards compatibility with old single-course checkout
@@ -139,6 +139,18 @@ export async function POST(req: NextRequest) {
         grandTotalClp += bumpAddTotal;
     }
 
+    // Apply coupon discount if present
+    if (couponCode) {
+      const { validateCouponAction } = await import("@/lib/supabase/comunidad-ai");
+      const couponRes = await validateCouponAction(couponCode);
+      if (!couponRes.valid) {
+        return NextResponse.json({ error: couponRes.message || "Cupón inválido" }, { status: 400 });
+      }
+      
+      const discountMultiplier = 1 - (couponRes.discount_percentage / 100);
+      grandTotalClp = Math.floor(grandTotalClp * discountMultiplier);
+    }
+
     const flowResult = await createFlowPayment({
       commerceOrder,
       subject: subjectStr,
@@ -158,7 +170,8 @@ export async function POST(req: NextRequest) {
     // Store cart data temporarily in payment_method so the webhook can retrieve it
     const tempMetadata = JSON.stringify({
       items: validatedItems,
-      slots: body.scheduling_slots || []
+      slots: body.scheduling_slots || [],
+      couponCode: couponCode || null
     });
 
     await adminDb.from("payments").insert({

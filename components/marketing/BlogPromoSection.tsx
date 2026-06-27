@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Sparkles } from "lucide-react";
+import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
 import { isVideoUrl } from "@/lib/utils";
+import SectionHeader from "@/components/shared/SectionHeader";
 
 // Helper parsers for article content
 function getPosterFromContent(content?: string): string | undefined {
@@ -76,19 +77,19 @@ export default function BlogPromoSection({ articles }: BlogPromoSectionProps) {
   const posterUrl = isVideoUrl(current.cover_image) ? getPosterFromContent(current.content) : current.cover_image;
 
   return (
-    <section className="pt-8 pb-12 lg:pt-12 lg:pb-16 bg-white relative overflow-hidden">
-      <div className="max-w-[1200px] mx-auto px-5 lg:px-6 relative z-10">
+    <section className="py-16 lg:py-24 bg-white relative overflow-hidden">
+      <div className="max-w-6xl mx-auto px-5 lg:px-6 relative z-10">
         
-        {/* Elegant Section Header */}
-        <div className="text-center mb-10">
-          <span className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50/80 border border-blue-100/30 text-blue-600 text-xs font-bold tracking-wide uppercase mb-3.5 shadow-sm">
-            <Sparkles className="w-3.5 h-3.5" />
-            Novedades del Blog
-          </span>
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-gray-900 leading-tight font-sans tracking-tight">
-            Últimas Publicaciones de <span className="text-[#1890FF]">ProgramBI</span>
-          </h2>
-        </div>
+        {/* Unified Section Header */}
+        <SectionHeader
+          eyebrow="Novedades del Blog"
+          icon={BookOpen}
+          title={<>Últimas publicaciones de <span className="text-[#1890FF]">ProgramBI</span></>}
+          subtitle="Insights, análisis y tendencias en datos escritos por nuestros expertos."
+          align="center"
+          maxWidth="md"
+          className="mb-12"
+        />
 
         {/* Slideboard Container (Identical to Blog page BlogSlider) */}
         <div 

@@ -9,12 +9,13 @@ import {
   ArrowRight, ArrowLeft, Clock, Calendar, Building2, User, Users,
   CheckCircle2, Bell, Loader2, ShoppingCart, Check, Plus, Minus,
   X, BadgeCheck, ChevronUp, ChevronDown, FileText, ExternalLink,
-  Info, Globe
+  Info, Globe, Tag
 } from "lucide-react";
 import { courses as allCourses, Course } from "@/lib/data/courses";
 import { type CourseSchedule, analisisDeDatosSlugs, formatScheduleDate, getNearestSchedule, getAllActiveSchedules, convertSchedule, SCHEDULE_COUNTRIES } from "@/lib/data/course-schedules";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { useCountry } from "@/lib/context/CountryContext";
+import { validateCouponAction } from "@/lib/supabase/comunidad-ai";
 
 type Mode = "individual" | "enterprise";
 
@@ -71,6 +72,41 @@ export default function PagoClient() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [isSubmittingEnterprise, setIsSubmittingEnterprise] = useState(false);
   const [enterpriseSuccess, setEnterpriseSuccess] = useState(false);
+
+  // Coupon states & handlers
+  const [couponCodeInput, setCouponCodeInput] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount_percentage: number } | null>(null);
+  const [couponError, setCouponError] = useState<string | null>(null);
+  const [validatingCoupon, setValidatingCoupon] = useState(false);
+
+  const handleApplyCoupon = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!couponCodeInput.trim()) return;
+    
+    setValidatingCoupon(true);
+    setCouponError(null);
+    try {
+      const res = await validateCouponAction(couponCodeInput);
+      if (res.valid) {
+        setAppliedCoupon({
+          code: res.code!,
+          discount_percentage: res.discount_percentage!
+        });
+        setCouponCodeInput("");
+      } else {
+        setCouponError(res.message || "Cupón inválido");
+      }
+    } catch (err) {
+      setCouponError("Error al validar el cupón");
+    } finally {
+      setValidatingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponError(null);
+  };
 
   // Enterprise form fields
   const [entName, setEntName] = useState(initialName);
@@ -325,6 +361,8 @@ export default function PagoClient() {
   const cartItems = Object.values(cart);
   const cartItemCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const totalPrice = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const couponDiscountAmount = appliedCoupon ? Math.floor(totalPrice * (appliedCoupon.discount_percentage / 100)) : 0;
+  const finalPriceWithCoupon = totalPrice - couponDiscountAmount;
   const hasExtraLicenses = cartItemCount > Object.keys(cart).length;
 
   const handleCheckout = async () => {
@@ -337,6 +375,7 @@ export default function PagoClient() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          couponCode: appliedCoupon?.code || null,
           items: cartItems.map(item => ({
             courseSlug: item.slug,
             levelName: item.levelName,
@@ -872,12 +911,79 @@ export default function PagoClient() {
                                  </div>
                               )}
 
+                              {/* Sección de Cupón de Descuento */}
+                              <div className="border-t border-gray-100 pt-5 mb-5">
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 block mb-2">Cupón de Descuento</span>
+                                
+                                {appliedCoupon ? (
+                                  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+                                    className="flex items-center justify-between bg-emerald-50 border border-emerald-100 px-4 py-3 rounded-2xl">
+                                    <div className="flex items-center gap-2">
+                                      <Tag className="w-4 h-4 text-emerald-600 shrink-0" />
+                                      <div>
+                                        <span className="font-mono font-black text-xs text-emerald-800 tracking-wider">{appliedCoupon.code}</span>
+                                        <span className="text-[10px] text-emerald-600 font-bold ml-2">-{appliedCoupon.discount_percentage}% aplicado</span>
+                                      </div>
+                                    </div>
+                                    <button type="button" onClick={handleRemoveCoupon} className="p-1 rounded-full hover:bg-emerald-100 text-emerald-600 hover:text-emerald-800 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center">
+                                      <X className="w-3.5 h-3.5" />
+                                    </button>
+                                  </motion.div>
+                                ) : (
+                                  <form onSubmit={handleApplyCoupon} className="flex gap-2">
+                                    <div className="relative flex-1">
+                                      <input
+                                        type="text"
+                                        placeholder="Ingresa tu código"
+                                        value={couponCodeInput}
+                                        onChange={e => {
+                                          setCouponCodeInput(e.target.value);
+                                          if (couponError) setCouponError(null);
+                                        }}
+                                        className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-[#1890FF] outline-none transition-all font-mono placeholder:font-sans uppercase tracking-wider"
+                                      />
+                                    </div>
+                                    <button
+                                      type="submit"
+                                      disabled={validatingCoupon || !couponCodeInput.trim()}
+                                      className="px-4 py-2.5 bg-gray-900 text-white font-bold text-xs rounded-xl shadow-sm hover:bg-gray-800 disabled:opacity-50 transition-colors border-none cursor-pointer flex items-center gap-1.5"
+                                    >
+                                      {validatingCoupon ? <Loader2 className="w-3 h-3 animate-spin" /> : "Aplicar"}
+                                    </button>
+                                  </form>
+                                )}
+                                
+                                {couponError && (
+                                  <motion.p initial={{ opacity: 0, y: -2 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] text-red-500 font-semibold mt-1.5 px-1">
+                                    {couponError}
+                                  </motion.p>
+                                )}
+                              </div>
+
+                              {appliedCoupon && (
+                                <div className="mb-3 flex justify-between items-center text-xs font-semibold">
+                                  <span className="text-gray-400">Subtotal</span>
+                                  <span className="text-gray-700 font-black">{convertAndFormat(totalPrice)}</span>
+                                </div>
+                              )}
+                              
+                              {appliedCoupon && (
+                                <div className="mb-4 flex justify-between items-center text-xs font-semibold text-emerald-600 bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100/30">
+                                  <span className="flex items-center gap-1"><Tag className="w-3.5 h-3.5"/> Descuento ({appliedCoupon.code})</span>
+                                  <span className="font-black">-{convertAndFormat(couponDiscountAmount)}</span>
+                                </div>
+                              )}
+
                               <div className="border-t-2 border-dashed border-gray-100 pt-4 mb-6 flex justify-between items-end">
                                  <span className="font-bold text-gray-500">Total a pagar</span>
                                  <div className="text-right">
-                                   <span className="font-black text-2xl text-[#1890FF] block">{convertAndFormat(totalPrice)}</span>
+                                   <span className="font-black text-2xl text-[#1890FF] block">
+                                     {convertAndFormat(appliedCoupon ? finalPriceWithCoupon : totalPrice)}
+                                   </span>
                                    {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                     <span className="text-xs font-semibold text-gray-400">≈ ${Math.round(totalPrice / 900)} USD</span>
+                                     <span className="text-xs font-semibold text-gray-400">
+                                       ≈ ${Math.round((appliedCoupon ? finalPriceWithCoupon : totalPrice) / 900)} USD
+                                     </span>
                                    )}
                                  </div>
                               </div>
@@ -892,7 +998,7 @@ export default function PagoClient() {
                                         Información de Conversión
                                       </h4>
                                       <p className="text-xs text-blue-700 leading-snug">
-                                        Se realizará un cobro por el equivalente de <span className="font-bold">{convertAndFormat(totalPrice)}</span>.
+                                        Se realizará un cobro por el equivalente de <span className="font-bold">{convertAndFormat(appliedCoupon ? finalPriceWithCoupon : totalPrice)}</span>.
                                       </p>
                                       <div className="mt-2.5 pt-2 border-t border-blue-100/60 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-blue-600/80 font-bold">
                                         <span>Tasa USD Ref: $1 USD = $900 CLP</span>
@@ -1193,7 +1299,7 @@ export default function PagoClient() {
                     Ver Detalles {isMobileCartOpen ? <ChevronDown style={{ width: 14, height: 14 }} /> : <ChevronUp style={{ width: 14, height: 14 }} />}
                   </span>
                   <span style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", lineHeight: 1, display: "block", marginTop: 4 }}>
-                    {convertAndFormat(totalPrice)} {country.currency.code !== "USD" && country.currency.code !== "CLP" && <span style={{ fontSize: 11, color: "#6b7280", fontWeight: 700 }}>≈ ${Math.round(totalPrice / 900)} USD</span>}
+                    {convertAndFormat(appliedCoupon ? finalPriceWithCoupon : totalPrice)} {country.currency.code !== "USD" && country.currency.code !== "CLP" && <span style={{ fontSize: 11, color: "#6b7280", fontWeight: 700 }}>≈ ${Math.round((appliedCoupon ? finalPriceWithCoupon : totalPrice) / 900)} USD</span>}
                   </span>
                 </div>
               </div>

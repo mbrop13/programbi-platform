@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus } from "lucide-react";
+import { Plus, HelpCircle } from "lucide-react";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
+import SectionHeader from "@/components/shared/SectionHeader";
 
 const faqs = [
   {
@@ -32,32 +33,22 @@ export default function FaqSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section className="pt-4 pb-16 lg:pt-6 lg:pb-24 bg-white relative overflow-hidden">
+    <section className="py-16 lg:py-24 bg-white relative overflow-hidden">
       {/* Soft visual background accents */}
       <div className="absolute top-1/4 left-[-10%] w-[350px] h-[350px] bg-blue-100/20 rounded-full blur-[120px] pointer-events-none z-0" />
       <div className="absolute bottom-1/4 right-[-10%] w-[350px] h-[350px] bg-indigo-100/20 rounded-full blur-[120px] pointer-events-none z-0" />
       
-      <div className="max-w-[1200px] mx-auto px-5 lg:px-10 relative z-10">
-        {/* Header */}
-        <FadeIn>
-          <div className="text-center mb-12 lg:mb-16">
-            <h2 className="text-4xl md:text-5xl lg:text-[44px] font-black text-slate-900 tracking-tight font-display mb-4">
-              Preguntas{" "}
-              <span
-                className="bg-clip-text text-transparent animate-gradient"
-                style={{
-                  backgroundImage: "linear-gradient(to right, #1890FF, #6366F1, #1890FF)",
-                  backgroundSize: "200% 200%",
-                }}
-              >
-                Frecuentes
-              </span>
-            </h2>
-            <p className="max-w-2xl mx-auto text-sm md:text-base text-slate-500 font-sans leading-relaxed">
-              Resolvemos todas tus dudas para que tomes la mejor decisión para tu desarrollo y crecimiento profesional.
-            </p>
-          </div>
-        </FadeIn>
+      <div className="max-w-6xl mx-auto px-5 lg:px-10 relative z-10">
+        {/* Unified Header */}
+        <SectionHeader
+          eyebrow="Resolvemos tus dudas"
+          icon={HelpCircle}
+          title={<>Preguntas <span className="text-[#1890FF]">frecuentes</span></>}
+          subtitle="Resolvemos todas tus dudas para que tomes la mejor decisión para tu desarrollo y crecimiento profesional."
+          align="center"
+          maxWidth="md"
+          className="mb-12 lg:mb-16"
+        />
 
         {/* FAQ Accordion Cards */}
         <div className="space-y-4 max-w-3xl mx-auto">
@@ -131,17 +122,6 @@ export default function FaqSection() {
           </div>
         </FadeIn>
       </div>
-
-      <style jsx>{`
-        @keyframes gradient-anim {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        .animate-gradient {
-          animation: gradient-anim 4s ease infinite;
-        }
-      `}</style>
     </section>
   );
 }

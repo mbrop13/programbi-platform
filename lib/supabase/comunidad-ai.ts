@@ -926,6 +926,161 @@ export async function getActivePromotions() {
   return (data || []).filter((p: any) => !p.valid_until || p.valid_until > now);
 }
 
+// ─── COUPONS ───
+
+export async function adminGetCoupons() {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await adminDb
+    .from("coupons")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) { console.error("Error:", error); return []; }
+  return data || [];
+}
+
+export async function adminCreateCoupon(coupon: {
+  code: string;
+  discount_percentage: number;
+  max_uses?: number | null;
+  is_active: boolean;
+  valid_until?: string | null;
+}) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const cleanCoupon = {
+    code: coupon.code.trim().toUpperCase(),
+    discount_percentage: coupon.discount_percentage,
+    max_uses: coupon.max_uses || null,
+    is_active: coupon.is_active,
+    valid_until: coupon.valid_until || null
+  };
+
+  const { data, error } = await adminDb
+    .from("coupons")
+    .insert(cleanCoupon)
+    .select("id")
+    .single();
+
+  if (error) throw new Error(error.message);
+  return data;
+}
+
+export async function adminUpdateCoupon(couponId: string, updates: Record<string, any>) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const cleanUpdates: any = { ...updates, updated_at: new Date().toISOString() };
+  if (cleanUpdates.code) {
+    cleanUpdates.code = cleanUpdates.code.trim().toUpperCase();
+  }
+
+  const { error } = await adminDb
+    .from("coupons")
+    .update(cleanUpdates)
+    .eq("id", couponId);
+
+  if (error) throw new Error(error.message);
+}
+
+export async function adminToggleCoupon(couponId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data: current } = await adminDb.from("coupons").select("is_active").eq("id", couponId).single();
+  if (!current) throw new Error("Cupón no encontrado");
+
+  const { error } = await adminDb.from("coupons").update({
+    is_active: !current.is_active,
+    updated_at: new Date().toISOString()
+  }).eq("id", couponId);
+  
+  if (error) throw new Error(error.message);
+}
+
+export async function adminDeleteCoupon(couponId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await adminDb.from("coupons").delete().eq("id", couponId);
+  if (error) throw new Error(error.message);
+}
+
+export async function validateCouponAction(code: string) {
+  const supabase = createAdminClient();
+  const cleanCode = code.trim().toUpperCase();
+  if (!cleanCode) {
+    return { valid: false, message: "Ingresa un código de descuento" };
+  }
+
+  const { data: coupon, error } = await supabase
+    .from("coupons")
+    .select("*")
+    .eq("code", cleanCode)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error validating coupon:", error);
+    return { valid: false, message: "Error al validar el cupón" };
+  }
+
+  if (!coupon) {
+    return { valid: false, message: "Código de cupón no válido" };
+  }
+
+  if (!coupon.is_active) {
+    return { valid: false, message: "Este cupón está inactivo" };
+  }
+
+  if (coupon.valid_until && new Date(coupon.valid_until) < new Date()) {
+    return { valid: false, message: "Este cupón ha vencido" };
+  }
+
+  if (coupon.max_uses !== null && coupon.used_count >= coupon.max_uses) {
+    return { valid: false, message: "Este cupón ha agotado sus usos disponibles" };
+  }
+
+  return {
+    valid: true,
+    code: coupon.code,
+    discount_percentage: coupon.discount_percentage,
+    id: coupon.id
+  };
+}
+
+export async function adminIncrementCouponUsedCount(code: string) {
+  const adminDb = createAdminClient();
+  const cleanCode = code.trim().toUpperCase();
+  
+  const { data: coupon, error: selectErr } = await adminDb
+    .from("coupons")
+    .select("id, used_count")
+    .eq("code", cleanCode)
+    .single();
+
+  if (selectErr || !coupon) {
+    console.error("Coupon not found for incrementing:", selectErr);
+    return;
+  }
+
+  const { error: updateErr } = await adminDb
+    .from("coupons")
+    .update({ used_count: (coupon.used_count || 0) + 1, updated_at: new Date().toISOString() })
+    .eq("id", coupon.id);
+
+  if (updateErr) {
+    console.error("Error updating coupon used count:", updateErr);
+  }
+}
+
 // ─── PRICE OVERRIDES ───
 
 export async function adminGetPriceOverrides() {

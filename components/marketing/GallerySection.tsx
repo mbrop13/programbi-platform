@@ -2,8 +2,9 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Sparkles, Briefcase } from "lucide-react";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
+import SectionHeader from "@/components/shared/SectionHeader";
 import { casesOfUse, CaseStudy } from "@/lib/data/cases";
 
 // Render vector graphic overlays corresponding to the brand themes
@@ -154,7 +155,7 @@ export default function GallerySection() {
   };
 
   return (
-    <section className="pt-4 pb-3 lg:pt-6 lg:pb-4 bg-white relative overflow-hidden border-none">
+    <section className="py-16 lg:py-24 bg-white relative overflow-hidden border-none">
       {/* CSS injection to hide scrollbars on all browsers while keeping horizontal scrolling functional */}
       <style dangerouslySetInnerHTML={{__html: `
         .no-scrollbar::-webkit-scrollbar {
@@ -165,18 +166,18 @@ export default function GallerySection() {
           scrollbar-width: none;
         }
       `}} />
-      <div className="max-w-[1400px] mx-auto px-5 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-5 lg:px-8 relative z-10">
         
-        {/* Header and Scroll Buttons */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
-          <FadeIn className="max-w-2xl">
-            <h2 className="font-display text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 leading-tight">
-              ¿Cómo pueden ayudarte <br />estos programas?
-            </h2>
-            <p className="text-lg text-gray-500 leading-relaxed mt-4">
-              Proyectos prácticos inspirados en desafíos corporativos reales que aprenderás a automatizar, modelar y predecir.
-            </p>
-          </FadeIn>
+        {/* Unified Header + Navigation Arrows */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+          <SectionHeader
+            eyebrow="Casos prácticos"
+            icon={Briefcase}
+            title={<>Proyectos reales que <span className="text-[#1890FF]">dominarás</span></>}
+            subtitle="Proyectos prácticos inspirados en desafíos corporativos reales que aprenderás a automatizar, modelar y predecir."
+            align="left"
+            maxWidth="md"
+          />
 
           {/* Navigation Arrows */}
           <FadeIn delay={0.15} className="flex gap-3 self-end md:self-auto shrink-0">

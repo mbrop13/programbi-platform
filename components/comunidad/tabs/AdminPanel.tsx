@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Users, Building, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon } from "@/lib/supabase/comunidad-ai";
 import { Calendar } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -2668,11 +2668,12 @@ function AdminPopups() {
 function AdminPrices() {
   const [promos, setPromos] = useState<any[]>([]);
   const [priceOverrides, setPriceOverrides] = useState<any[]>([]);
+  const [coupons, setCoupons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errorObj, setErrorObj] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<"prices" | "promos">("prices");
+  const [viewMode, setViewMode] = useState<"prices" | "promos" | "coupons">("prices");
 
   // Promo form
   const [name, setName] = useState("");
@@ -2680,6 +2681,13 @@ function AdminPrices() {
   const [targetId, setTargetId] = useState("");
   const [discountPercent, setDiscountPercent] = useState<number>(20);
   const [promoPrice, setPromoPrice] = useState<number | "">("");
+
+  // Coupon form
+  const [couponCode, setCouponCode] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState<number>(10);
+  const [couponMaxUses, setCouponMaxUses] = useState<number | "">("");
+  const [couponValidUntil, setCouponValidUntil] = useState("");
+  const [editingCoupon, setEditingCoupon] = useState<any | null>(null);
 
   // Price editing
   const [editingPrice, setEditingPrice] = useState<string | null>(null);
@@ -2692,12 +2700,14 @@ function AdminPrices() {
 
   async function loadData() {
     try {
-      const [promosData, overridesData] = await Promise.all([
+      const [promosData, overridesData, couponsData] = await Promise.all([
         adminGetPromotions(),
-        adminGetPriceOverrides()
+        adminGetPriceOverrides(),
+        adminGetCoupons()
       ]);
       setPromos(promosData);
       setPriceOverrides(overridesData);
+      setCoupons(couponsData);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   }
@@ -2730,21 +2740,47 @@ function AdminPrices() {
     setSubmitting(true);
     setErrorObj(null);
     try {
-      await adminCreatePromotion({
-        name,
-        target_type: targetType,
-        target_id: targetType === 'specific_course' || targetType === 'specific_plan' ? targetId : undefined,
-        discount_percentage: discountPercent,
-        promo_price: promoPrice === "" ? undefined : promoPrice,
-        is_active: true
-      });
-      setShowAdd(false);
-      setName("");
-      setTargetId("");
-      setDiscountPercent(20);
-      setPromoPrice("");
-      setViewMode("promos");
-      loadData();
+      if (viewMode === "coupons") {
+        if (editingCoupon) {
+          await adminUpdateCoupon(editingCoupon.id, {
+            code: couponCode,
+            discount_percentage: couponDiscount,
+            max_uses: couponMaxUses === "" ? null : couponMaxUses,
+            valid_until: couponValidUntil === "" ? null : new Date(couponValidUntil).toISOString()
+          });
+          setEditingCoupon(null);
+        } else {
+          await adminCreateCoupon({
+            code: couponCode,
+            discount_percentage: couponDiscount,
+            max_uses: couponMaxUses === "" ? undefined : couponMaxUses,
+            is_active: true,
+            valid_until: couponValidUntil === "" ? undefined : new Date(couponValidUntil).toISOString()
+          });
+        }
+        setShowAdd(false);
+        setCouponCode("");
+        setCouponDiscount(10);
+        setCouponMaxUses("");
+        setCouponValidUntil("");
+        loadData();
+      } else {
+        await adminCreatePromotion({
+          name,
+          target_type: targetType,
+          target_id: targetType === 'specific_course' || targetType === 'specific_plan' ? targetId : undefined,
+          discount_percentage: discountPercent,
+          promo_price: promoPrice === "" ? undefined : promoPrice,
+          is_active: true
+        });
+        setShowAdd(false);
+        setName("");
+        setTargetId("");
+        setDiscountPercent(20);
+        setPromoPrice("");
+        setViewMode("promos");
+        loadData();
+      }
     } catch (err: any) {
       setErrorObj(err.message);
     } finally {
@@ -2765,6 +2801,31 @@ function AdminPrices() {
       await adminDeletePromotion(id);
       loadData();
     } catch (err) { console.error(err); }
+  };
+
+  const handleToggleCoupon = async (id: string) => {
+    try {
+      await adminToggleCoupon(id);
+      loadData();
+    } catch (err) { console.error(err); }
+  };
+
+  const handleDeleteCoupon = async (id: string) => {
+    if (!confirm("¿Seguro que deseas eliminar este cupón?")) return;
+    try {
+      await adminDeleteCoupon(id);
+      loadData();
+    } catch (err) { console.error(err); }
+  };
+
+  const startEditCoupon = (coupon: any) => {
+    setEditingCoupon(coupon);
+    setCouponCode(coupon.code);
+    setCouponDiscount(coupon.discount_percentage);
+    setCouponMaxUses(coupon.max_uses === null ? "" : coupon.max_uses);
+    setCouponValidUntil(coupon.valid_until ? new Date(coupon.valid_until).toISOString().substring(0, 16) : "");
+    setShowAdd(true);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const startPromo = (type: "specific_course" | "specific_plan", id: string) => {
@@ -2789,15 +2850,21 @@ function AdminPrices() {
            <p className="text-sm text-gray-400">Control maestro de precios y ofertas dinámicas</p>
          </div>
          <div className="flex bg-gray-100 p-1 rounded-xl self-start">
-            <button onClick={() => setViewMode("prices")} className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all ${viewMode === "prices" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"} border-none cursor-pointer`}>
-              Precios Base
-            </button>
-            <button onClick={() => setViewMode("promos")} className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all ${viewMode === "promos" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"} border-none cursor-pointer flex items-center gap-2`}>
-              Promos Activas
-              {promos.filter(p => p.is_active).length > 0 && (
-                <span className="bg-brand-blue text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{promos.filter(p => p.is_active).length}</span>
-              )}
-            </button>
+             <button onClick={() => { setViewMode("prices"); setShowAdd(false); setEditingCoupon(null); }} className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all ${viewMode === "prices" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"} border-none cursor-pointer`}>
+               Precios Base
+             </button>
+             <button onClick={() => { setViewMode("promos"); setShowAdd(false); setEditingCoupon(null); }} className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all ${viewMode === "promos" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"} border-none cursor-pointer flex items-center gap-2`}>
+               Promos Activas
+               {promos.filter(p => p.is_active).length > 0 && (
+                 <span className="bg-brand-blue text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{promos.filter(p => p.is_active).length}</span>
+               )}
+             </button>
+             <button onClick={() => { setViewMode("coupons"); setShowAdd(false); setEditingCoupon(null); }} className={`px-4 py-2 rounded-lg text-[13px] font-bold transition-all ${viewMode === "coupons" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-700"} border-none cursor-pointer flex items-center gap-2`}>
+               Cupones
+               {coupons.filter(c => c.is_active).length > 0 && (
+                 <span className="bg-emerald-500 text-white text-[10px] w-4 h-4 flex items-center justify-center rounded-full">{coupons.filter(c => c.is_active).length}</span>
+               )}
+             </button>
          </div>
        </div>
 
@@ -2808,42 +2875,63 @@ function AdminPrices() {
              
              {errorObj && <div className="p-3 mb-4 bg-red-50 text-red-600 text-sm rounded-xl font-medium">{errorObj}</div>}
              
-             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-               <div>
-                 <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nombre (Ej: Black Friday)</label>
-                 <input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
-               </div>
-               <div>
-                 <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Descuento Referencial (%)</label>
-                 <input type="number" min="1" max="100" required value={discountPercent} onChange={e => setDiscountPercent(Number(e.target.value))} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
-               </div>
-               <div>
-                 <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Precio Fijo Promocional ($ Opcional)</label>
-                 <input type="number" min="0" placeholder="Ej: 129000" value={promoPrice} onChange={e => setPromoPrice(e.target.value === "" ? "" : Number(e.target.value))} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
-               </div>
-               <div>
-                 <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Aplica a</label>
-                 <select value={targetType} onChange={e => setTargetType(e.target.value as any)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none cursor-pointer">
-                   <option value="courses">Todos los Cursos</option>
-                   <option value="plans">Todas las Membresías</option>
-                   <option value="all">Toda la Tienda (Cursos y Planes)</option>
-                   <option value="specific_course">Curso Específico (Slug)</option>
-                   <option value="specific_plan">Plan Específico (ID)</option>
-                 </select>
-               </div>
-               {(targetType === 'specific_course' || targetType === 'specific_plan') && (
-                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                   <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">ID del Objetivo</label>
-                   <input type="text" required value={targetId} onChange={e => setTargetId(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
-                 </motion.div>
-               )}
-             </div>
+             {viewMode === "coupons" ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Código del Cupón (Ej: PROMO50)</label>
+                    <input type="text" required value={couponCode} onChange={e => setCouponCode(e.target.value)} placeholder="Ej: PROMO50" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none font-mono tracking-wide" />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Descuento (%)</label>
+                    <input type="number" min="1" max="100" required value={couponDiscount} onChange={e => setCouponDiscount(Number(e.target.value))} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Límite de Usos (Opcional - Vacío para ilimitado)</label>
+                    <input type="number" min="1" placeholder="Ej: 100" value={couponMaxUses} onChange={e => setCouponMaxUses(e.target.value === "" ? "" : Number(e.target.value))} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Fecha de Vencimiento (Opcional)</label>
+                    <input type="datetime-local" value={couponValidUntil} onChange={e => setCouponValidUntil(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Nombre (Ej: Black Friday)</label>
+                    <input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Descuento Referencial (%)</label>
+                    <input type="number" min="1" max="100" required value={discountPercent} onChange={e => setDiscountPercent(Number(e.target.value))} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Precio Fijo Promocional ($ Opcional)</label>
+                    <input type="number" min="0" placeholder="Ej: 129000" value={promoPrice} onChange={e => setPromoPrice(e.target.value === "" ? "" : Number(e.target.value))} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Aplica a</label>
+                    <select value={targetType} onChange={e => setTargetType(e.target.value as any)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none cursor-pointer">
+                      <option value="courses">Todos los Cursos</option>
+                      <option value="plans">Todas las Membresías</option>
+                      <option value="all">Toda la Tienda (Cursos y Planes)</option>
+                      <option value="specific_course">Curso Específico (Slug)</option>
+                      <option value="specific_plan">Plan Específico (ID)</option>
+                    </select>
+                  </div>
+                  {(targetType === 'specific_course' || targetType === 'specific_plan') && (
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                      <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">ID del Objetivo</label>
+                      <input type="text" required value={targetId} onChange={e => setTargetId(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
+                    </motion.div>
+                  )}
+                </div>
+              )}
 
              <div className="flex justify-end gap-3">
-               <button type="button" onClick={() => setShowAdd(false)} className="px-5 py-2.5 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-200 transition-colors border-none cursor-pointer">Cancelar</button>
+               <button type="button" onClick={() => { setShowAdd(false); setEditingCoupon(null); }} className="px-5 py-2.5 rounded-xl text-sm font-bold text-gray-500 hover:bg-gray-200 transition-colors border-none cursor-pointer">Cancelar</button>
                <button type="submit" disabled={submitting} className="flex items-center gap-2 bg-[#0F172A] text-white px-6 py-2.5 rounded-xl text-sm font-bold shadow-sm hover:bg-gray-800 transition-colors disabled:opacity-50 border-none cursor-pointer">
                  {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
-                 Publicar Promoción
+                 {viewMode === "coupons" ? (editingCoupon ? "Guardar Cambios" : "Crear Cupón") : "Publicar Promoción"}
                </button>
              </div>
            </motion.form>
@@ -2944,7 +3032,7 @@ function AdminPrices() {
               </div>
             </div>
           </motion.div>
-       ) : (
+       ) : viewMode === "promos" ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             {promos.length === 0 ? (
                <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50">
@@ -2996,6 +3084,83 @@ function AdminPrices() {
                        <button onClick={() => handleDelete(promo.id)}
                          className="py-2 px-3 rounded-xl text-[11px] font-bold bg-red-50 text-red-500 hover:bg-red-100 transition-colors cursor-pointer border-none">
                          <Trash2 className="w-4 h-4" />
+                       </button>
+                     </div>
+                   </div>
+                 ))}
+               </div>
+             )}
+          </motion.div>
+       ) : (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-lg font-black text-gray-900 flex items-center gap-2">
+                <Tag className="w-5 h-5 text-gray-400"/> Cupones de Descuento
+              </h3>
+              {!showAdd && (
+                <button onClick={() => { setEditingCoupon(null); setCouponCode(""); setCouponDiscount(10); setCouponMaxUses(""); setCouponValidUntil(""); setShowAdd(true); }} className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-sm transition-all cursor-pointer border-none flex items-center gap-1.5">
+                  <Plus className="w-3.5 h-3.5"/> Nuevo Cupón
+                </button>
+              )}
+            </div>
+
+            {coupons.length === 0 ? (
+               <div className="text-center py-16 border-2 border-dashed border-gray-200 rounded-2xl bg-gray-50">
+                 <Tag className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                 <h3 className="text-lg font-black text-gray-900 mb-1">Sin Cupones Configurados</h3>
+                 <p className="text-gray-500 text-sm max-w-sm mx-auto mb-6">No has configurado ningún cupón de descuento promocional.</p>
+                 <button onClick={() => { setEditingCoupon(null); setCouponCode(""); setCouponDiscount(10); setCouponMaxUses(""); setCouponValidUntil(""); setShowAdd(true); }} className="px-5 py-2.5 bg-[#0F172A] text-white rounded-xl text-sm font-bold shadow-sm hover:bg-gray-800 transition-all cursor-pointer border-none flex items-center gap-2 mx-auto"><Plus className="w-4 h-4"/> Crear Cupón</button>
+               </div>
+             ) : (
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                 {coupons.map(coupon => (
+                   <div key={coupon.id} className={`relative bg-white rounded-2xl border ${coupon.is_active ? 'border-emerald-500 ring-1 ring-emerald-500/20 shadow-md' : 'border-gray-200 shadow-sm opacity-70'} overflow-hidden flex flex-col`}>
+                     {coupon.is_active && (
+                       <div className="absolute top-0 right-0 py-1 px-3 bg-emerald-600 text-white text-[10px] font-bold rounded-bl-xl shadow-sm z-10">Activo</div>
+                     )}
+                     <div className="p-5 flex-1">
+                       <div className="flex items-start gap-3">
+                         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${coupon.is_active ? 'bg-emerald-50 text-emerald-600' : 'bg-gray-100 text-gray-400'}`}>
+                           <Tag className="w-5 h-5" />
+                         </div>
+                         <div>
+                           <h3 className="font-mono font-black text-lg text-gray-900 leading-tight tracking-wider">{coupon.code}</h3>
+                           <p className="text-xs text-gray-500 mt-1 flex items-center gap-1.5">
+                             <span>Usos: <strong>{coupon.used_count}</strong> / {coupon.max_uses === null ? '∞' : coupon.max_uses}</span>
+                             {coupon.max_uses !== null && coupon.used_count >= coupon.max_uses && (
+                               <span className="text-red-500 font-bold bg-red-50 px-1.5 py-0.5 rounded text-[9px] uppercase">Agotado</span>
+                             )}
+                           </p>
+                         </div>
+                       </div>
+                       
+                       <div className="mt-4 p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between">
+                         <div className="flex flex-col gap-0.5">
+                           <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Descuento</span>
+                           <span className="font-black text-xl text-emerald-600">{coupon.discount_percentage}%</span>
+                         </div>
+                         <div className="text-right">
+                           <span className="block text-[9px] text-gray-400 font-bold uppercase tracking-wider">Vence</span>
+                           <span className="text-xs font-semibold text-gray-600">
+                             {coupon.valid_until ? new Date(coupon.valid_until).toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Sin vencimiento'}
+                           </span>
+                         </div>
+                       </div>
+                     </div>
+                     <div className="flex items-center gap-2 mt-auto p-4 border-t border-gray-50 bg-gray-50/50">
+                       <button onClick={() => handleToggleCoupon(coupon.id)}
+                         className={`flex-1 py-2 rounded-xl text-[11px] font-bold transition-colors cursor-pointer border-none ${
+                           coupon.is_active ? 'bg-gray-200 text-gray-600 hover:bg-gray-300' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
+                         }`}>
+                         {coupon.is_active ? 'Pausar' : 'Reactivar'}
+                       </button>
+                       <button onClick={() => startEditCoupon(coupon)}
+                         className="py-2 px-3 rounded-xl text-[11px] font-bold bg-blue-50 text-brand-blue hover:bg-blue-100 transition-colors cursor-pointer border-none flex items-center justify-center" title="Editar">
+                         <Edit3 className="w-3.5 h-3.5" />
+                       </button>
+                       <button onClick={() => handleDeleteCoupon(coupon.id)}
+                         className="py-2 px-3 rounded-xl text-[11px] font-bold bg-red-50 text-red-500 hover:bg-red-100 transition-colors cursor-pointer border-none flex items-center justify-center" title="Eliminar">
+                         <Trash2 className="w-3.5 h-3.5" />
                        </button>
                      </div>
                    </div>

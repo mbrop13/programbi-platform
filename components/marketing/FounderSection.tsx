@@ -3,17 +3,17 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FadeIn, CountUp } from "@/components/shared/AnimatedComponents";
+import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { Award, BookOpen, Briefcase } from "lucide-react";
 
 export default function FounderSection() {
   return (
-    <section className="pt-10 pb-12 lg:pt-14 lg:pb-20 bg-white border-none relative overflow-hidden">
+    <section className="py-16 lg:py-24 bg-white border-none relative overflow-hidden">
       {/* Subtle radial backlights */}
       <div className="absolute top-1/4 left-0 w-80 h-80 bg-blue-500/2 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-0 w-80 h-80 bg-indigo-500/2 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="max-w-[1200px] mx-auto px-5 lg:px-10 relative z-10">
+      <div className="max-w-6xl mx-auto px-5 lg:px-10 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
           
           {/* Image Column */}
@@ -171,23 +171,23 @@ export default function FounderSection() {
               </div>
             </FadeIn>
 
-            {/* Impact Metrics Grid */}
+            {/* Trust metrics consolidadas (refuerzo sutil, sin duplicar el Hero) */}
             <FadeIn delay={0.45}>
-              <div className="grid grid-cols-3 gap-4 pt-6 mt-6 border-t border-slate-100 select-none">
-                {[
-                  { target: 5000, prefix: "+", label: "Estudiantes formados" },
-                  { target: 50, prefix: "+", label: "Empresas asesoradas" },
-                  { target: 15, suffix: "+", label: "Años en la industria" }
-                ].map((stat, i) => (
-                  <div key={i} className="text-left">
-                    <div className="text-2xl md:text-3xl font-black text-slate-900 font-mono tracking-tight leading-none mb-1">
-                      <CountUp target={stat.target} prefix={stat.prefix} suffix={stat.suffix} />
-                    </div>
-                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider font-sans leading-tight">
-                      {stat.label}
-                    </div>
-                  </div>
-                ))}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-6 mt-6 border-t border-slate-100 select-none">
+                <div className="flex items-center gap-2">
+                  <Award className="w-4 h-4 text-[#1890FF]" />
+                  <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider font-sans">
+                    Magíster en Data Science (UAI)
+                  </span>
+                </div>
+                <div className="w-1 h-1 rounded-full bg-slate-300" />
+                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider font-sans">
+                  Profesor MBA & Magíster TI (UGM)
+                </span>
+                <div className="w-1 h-1 rounded-full bg-slate-300" />
+                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider font-sans">
+                  Ex-Banco Itaú · Renta 4
+                </span>
               </div>
             </FadeIn>
           </div>

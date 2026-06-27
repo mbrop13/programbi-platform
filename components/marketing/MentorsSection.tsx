@@ -40,7 +40,7 @@ export default function MentorsSection() {
   }, []);
 
   return (
-    <section className="py-12 lg:py-16 bg-white relative overflow-hidden flex justify-center items-center">
+    <section className="py-16 lg:py-24 bg-white relative overflow-hidden flex justify-center items-center">
       {/* Premium background accents */}
       <div
         className="absolute inset-0 opacity-20 pointer-events-none z-0"
@@ -52,7 +52,7 @@ export default function MentorsSection() {
       <div className="absolute top-1/4 left-[-10%] w-[400px] h-[400px] bg-blue-100/30 rounded-full blur-[100px] pointer-events-none z-0" />
       <div className="absolute bottom-1/4 right-[-10%] w-[400px] h-[400px] bg-indigo-100/30 rounded-full blur-[100px] pointer-events-none z-0" />
 
-      <div className="max-w-[1300px] mx-auto px-5 lg:px-10 relative z-10 w-full">
+      <div className="max-w-7xl mx-auto px-5 lg:px-10 relative z-10 w-full">
         
         {/* Layout Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">

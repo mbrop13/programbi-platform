@@ -23,6 +23,7 @@ import {
 import React from "react";
 import { courses, type Course } from "@/lib/data/courses";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
+import SectionHeader from "@/components/shared/SectionHeader";
 import { createClient } from "@/lib/supabase/client";
 
 const categories = [
@@ -160,7 +161,7 @@ export default function CoursesSection() {
   const filteredCourses = getFilteredCourses();
 
   return (
-    <section className="w-full bg-white text-slate-900 pt-8 pb-16 lg:pt-10 lg:pb-20 relative overflow-hidden flex justify-center items-center">
+    <section className="w-full bg-white text-slate-900 py-16 lg:py-24 relative overflow-hidden flex justify-center items-center">
       {/* Grid Pattern Background */}
       <div 
         className="absolute inset-0 opacity-[0.015] pointer-events-none z-0"
@@ -185,33 +186,18 @@ export default function CoursesSection() {
       `}} />
 
       {/* Centering wrapper */}
-      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 max-w-[1400px] mx-auto relative z-10">
+      <div className="w-full px-2 sm:px-4 md:px-6 lg:px-8 max-w-7xl mx-auto relative z-10">
         
-        {/* Centered Header */}
-        <FadeIn>
-          <div className="text-center mb-8 flex flex-col items-center">
-            <span className="inline-flex items-center gap-1.5 bg-blue-50/70 border border-blue-100/40 backdrop-blur-sm text-[#1890FF] font-bold text-[10px] uppercase tracking-widest px-4 py-2 rounded-full mb-3 shadow-sm">
-              <Sparkles size={11} className="fill-current text-[#1890FF]" /> Bootcamps de Datos
-            </span>
-            
-            <h2 className="font-display text-4xl sm:text-5xl font-extrabold text-slate-950 leading-tight mb-3 tracking-tight">
-              Explora nuestros programas.
-            </h2>
-            
-            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-xl mb-4 font-sans">
-              Clases en vivo por Zoom, aprendizaje práctico con proyectos reales y apoyo técnico de mentores expertos 24/7.
-            </p>
-            
-            {/* Stats Centered */}
-            <div className="flex flex-wrap items-center justify-center gap-2.5 text-[10px] text-slate-400 font-bold mb-5 select-none">
-              <span>+5,000 egresados</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
-              <span>10 programas</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-slate-200" />
-              <span>98% satisfacción</span>
-            </div>
-          </div>
-        </FadeIn>
+        {/* Unified Header */}
+        <SectionHeader
+          eyebrow="Bootcamps de Datos"
+          icon={Sparkles}
+          title={<>Programas diseñados para tu <span className="text-[#1890FF]">crecimiento profesional</span></>}
+          subtitle="Clases en vivo por Zoom, aprendizaje práctico con proyectos reales y apoyo técnico de mentores expertos 24/7."
+          align="center"
+          maxWidth="md"
+          className="mb-10"
+        />
 
         {/* Centered Category selector pills bar */}
         <FadeIn delay={0.1}>

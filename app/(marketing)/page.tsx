@@ -66,9 +66,9 @@ export default async function HomePage() {
       <LogoSlider />
       <CoursesSection />
       <GallerySection />
-      <BlogPromoSection articles={featuredArticles} />
       <MentorsSection />
       <FounderSection />
+      <BlogPromoSection articles={featuredArticles} />
       <FaqSection />
       <CtaBanner />
       <ContactSection />

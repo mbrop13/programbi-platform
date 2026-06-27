@@ -7,7 +7,7 @@ import { FadeIn } from "@/components/shared/AnimatedComponents";
 
 export default function CtaBanner() {
   return (
-    <section className="py-16 lg:py-20 relative overflow-hidden">
+    <section className="py-16 lg:py-24 relative overflow-hidden">
       <div
         className="absolute inset-0 z-0 animate-gradient-bg"
         style={{
@@ -27,7 +27,7 @@ export default function CtaBanner() {
         className="absolute bottom-10 right-[15%] w-48 h-48 bg-white/5 rounded-full blur-3xl"
       />
 
-      <div className="max-w-[1200px] mx-auto px-5 lg:px-10 relative z-10 text-center">
+      <div className="max-w-5xl mx-auto px-5 lg:px-10 relative z-10 text-center">
         <FadeIn>
           <motion.div
             className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white/90 px-5 py-2 rounded-full text-sm font-bold mb-8"
