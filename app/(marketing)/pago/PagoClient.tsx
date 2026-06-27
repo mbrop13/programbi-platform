@@ -28,6 +28,8 @@ interface CartItem {
   selectedStartDate?: string;
   selectedScheduleDays?: string;
   selectedScheduleTime?: string;
+  originalPrice?: number;
+  hasDiscount?: boolean;
 }
 
 export default function PagoClient() {
@@ -78,6 +80,7 @@ export default function PagoClient() {
   const [appliedCoupon, setAppliedCoupon] = useState<{ code: string; discount_percentage: number } | null>(null);
   const [couponError, setCouponError] = useState<string | null>(null);
   const [validatingCoupon, setValidatingCoupon] = useState(false);
+  const [showCouponInput, setShowCouponInput] = useState(false);
 
   const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -190,7 +193,9 @@ export default function PagoClient() {
                 title: course.title,
                 levelName: level.name,
                 price: pricing.finalPrice,
-                quantity: 1
+                quantity: 1,
+                originalPrice: pricing.originalPrice,
+                hasDiscount: pricing.hasDiscount
              }
           });
           setEnterpriseToggles(new Set([`${course.slug}-${levelName}`]));
@@ -202,7 +207,9 @@ export default function PagoClient() {
               title: "Mentoría y Asesoría 1 a 1",
               levelName: "Hora",
               price: 60000,
-              quantity: 1
+              quantity: 1,
+              originalPrice: 60000,
+              hasDiscount: false
            }
         });
       }
@@ -287,6 +294,16 @@ export default function PagoClient() {
         return next;
       }
 
+      const course = allCourses.find(c => c.slug === slug);
+      const level = course?.levels?.find(l => l.name === levelName);
+      let itemOriginalPrice = price;
+      let itemHasDiscount = false;
+      if (course && level && level.price) {
+        const pricing = getDiscountedPrice(slug, level.price, levelName);
+        itemOriginalPrice = pricing.originalPrice;
+        itemHasDiscount = pricing.hasDiscount;
+      }
+
       return {
         ...prev,
         [key]: {
@@ -297,7 +314,9 @@ export default function PagoClient() {
           quantity: newQty,
           selectedStartDate: selectedStartDate || current?.selectedStartDate,
           selectedScheduleDays: selectedScheduleDays || current?.selectedScheduleDays,
-          selectedScheduleTime: selectedScheduleTime || current?.selectedScheduleTime
+          selectedScheduleTime: selectedScheduleTime || current?.selectedScheduleTime,
+          originalPrice: itemOriginalPrice,
+          hasDiscount: itemHasDiscount
         }
       };
     });
@@ -457,15 +476,10 @@ export default function PagoClient() {
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-400/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-[1400px] mx-auto px-5 lg:px-10 relative z-10">
-        <Link href="/cursos" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 font-medium mb-6 no-underline transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Volver al catálogo
-        </Link>
+        <div className="pt-4" />
 
         <FadeIn>
           <div className="text-center mb-10">
-            <span className="inline-flex items-center gap-2 bg-blue-50 text-[#1890FF] font-black text-xs tracking-widest uppercase px-5 py-2.5 rounded-full border border-blue-100 mb-4">
-              <ShoppingCart size={14} /> Inscripción
-            </span>
             <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-[#0F172A] mb-4 tracking-tight">
               Selecciona tus <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">Cursos</span>
             </h1>
@@ -818,14 +832,14 @@ export default function PagoClient() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="bg-white rounded-3xl border border-gray-200 overflow-hidden"
-                      style={{ boxShadow: "0 20px 50px -15px rgba(0,0,0,0.08)" }}
+                      className="bg-white rounded-3xl border border-zinc-200 overflow-hidden"
+                      style={{ boxShadow: "0 20px 50px -15px rgba(0,0,0,0.06)" }}
                     >
-                      <div className="bg-[#0F172A] px-6 py-5 text-white flex items-center justify-between">
+                      <div className="bg-black px-6 py-5 text-white flex items-center justify-between">
                          <h3 className="font-bold text-lg flex items-center gap-2">
-                            <ShoppingCart className="w-5 h-5 text-[#1890FF]" /> Resumen
+                            <ShoppingCart className="w-5 h-5 text-zinc-400" /> Resumen
                          </h3>
-                         {cartItemCount > 0 && <span className="bg-[#1890FF] text-white text-xs font-black px-2 py-0.5 rounded-full">{cartItemCount} items</span>}
+                         {cartItemCount > 0 && <span className="bg-zinc-800 text-white text-xs font-black px-2.5 py-0.5 rounded-full">{cartItemCount} items</span>}
                       </div>
 
                       <div className="p-6">
@@ -843,9 +857,9 @@ export default function PagoClient() {
                                     <div key={`${item.slug}-${item.levelName}`} className="flex justify-between items-start gap-4">
                                        <div className="flex-1 min-w-0">
                                           <div className="flex items-center gap-2">
-                                             <span className="font-semibold text-sm text-[#0F172A] leading-tight line-clamp-2">{item.quantity}x {item.title}</span>
+                                             <span className="font-semibold text-sm text-zinc-900 leading-tight line-clamp-2">{item.quantity}x {item.title}</span>
                                           </div>
-                                          <span className="text-[11px] text-gray-500 mt-0.5 block">{item.levelName}</span>
+                                          <span className="text-[11px] text-zinc-500 mt-0.5 block">{item.levelName}</span>
                                           {item.slug !== "asesoria" && item.selectedStartDate && (() => {
                                             const converted = convertSchedule(
                                               item.selectedStartDate,
@@ -854,22 +868,22 @@ export default function PagoClient() {
                                               scheduleCountry.timeZone
                                             );
                                             return (
-                                              <div className="mt-2 rounded-xl border border-blue-100 overflow-hidden">
-                                                <div className="grid grid-cols-2 divide-x divide-blue-100">
-                                                  <div className="flex items-center gap-2 px-3 py-2 bg-blue-50/60">
-                                                    <Calendar className="w-3.5 h-3.5 text-[#1890FF] shrink-0" />
-                                                    <div>
-                                                      <p className="text-[8px] font-bold text-blue-400 uppercase tracking-wider">Inicio</p>
-                                                      <p className="text-[11px] font-black text-blue-900 capitalize leading-tight">{converted.dateFormatted}</p>
-                                                    </div>
+                                              <div className="mt-2.5 rounded-xl border border-zinc-150 bg-zinc-50/50 p-2.5 space-y-2">
+                                                <div className="flex items-center gap-2">
+                                                  <Calendar className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                                                  <div className="flex flex-wrap items-baseline gap-1">
+                                                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Inicio:</span>
+                                                    <span className="text-[11px] font-bold text-zinc-800 capitalize leading-tight">{converted.dateFormatted}</span>
                                                   </div>
-                                                  <div className="flex items-center gap-2 px-3 py-2 bg-blue-50/40">
-                                                    <Clock className="w-3.5 h-3.5 text-[#1890FF] shrink-0" />
-                                                    <div>
-                                                      <p className="text-[8px] font-bold text-blue-400 uppercase tracking-wider">Horario</p>
-                                                      <p className="text-[11px] font-black text-blue-900 leading-tight">{converted.days}</p>
-                                                      <p className="text-[10px] font-bold text-blue-600/70">{converted.time}</p>
+                                                </div>
+                                                <div className="flex items-start gap-2">
+                                                  <Clock className="w-3.5 h-3.5 text-zinc-500 shrink-0 mt-0.5" />
+                                                  <div className="flex flex-col">
+                                                    <div className="flex flex-wrap items-baseline gap-1">
+                                                      <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Horario:</span>
+                                                      <span className="text-[11px] font-bold text-zinc-800 leading-tight">{converted.days}</span>
                                                     </div>
+                                                    <span className="text-[10px] font-semibold text-zinc-500 mt-0.5">{converted.time}</span>
                                                   </div>
                                                 </div>
                                               </div>
@@ -877,24 +891,36 @@ export default function PagoClient() {
                                           })()}
                                        </div>
                                        <div className="flex flex-col items-end shrink-0">
-                                          <span className="font-black text-[#0F172A] text-sm">{convertAndFormat(item.price * item.quantity)}</span>
+                                          {item.hasDiscount && item.originalPrice && item.originalPrice > item.price && (
+                                            <div className="flex items-center gap-1.5 mb-1">
+                                              <span className="text-[11px] text-zinc-450 line-through font-semibold">
+                                                {convertAndFormat(item.originalPrice * item.quantity)}
+                                              </span>
+                                              <span className="text-[9px] font-extrabold bg-black text-white px-1.5 py-0.5 rounded uppercase tracking-wider">
+                                                -{Math.round((1 - item.price / item.originalPrice) * 100)}%
+                                              </span>
+                                            </div>
+                                          )}
+                                          <span className="font-black text-zinc-950 text-sm">{convertAndFormat(item.price * item.quantity)}</span>
                                           {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                            <span className="text-[10px] font-semibold text-gray-400 mt-0.5">
+                                            <span className="text-[10px] font-semibold text-zinc-400 mt-0.5">
                                               ≈ ${Math.round((item.price * item.quantity) / 900)} USD
                                             </span>
                                           )}
                                           {item.slug === "asesoria" ? (
-                                            <div className="flex items-center gap-2 mt-1.5 bg-gray-50 rounded-lg border border-gray-200">
-                                              <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -1)} className="p-1 text-gray-500 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer">
+                                            <div className="flex items-center gap-2 mt-2 bg-zinc-50 rounded-lg border border-zinc-205">
+                                              <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -1)} className="p-1 text-zinc-500 hover:text-black transition-colors bg-transparent border-none cursor-pointer">
                                                 <Minus className="w-3 h-3" />
                                               </button>
-                                              <span className="text-[10px] font-bold min-w-[12px] text-center">{item.quantity}</span>
-                                              <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, 1)} className="p-1 text-gray-500 hover:text-blue-500 transition-colors bg-transparent border-none cursor-pointer">
+                                              <span className="text-[10px] font-bold min-w-[12px] text-center text-zinc-805">{item.quantity}</span>
+                                              <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, 1)} className="p-1 text-zinc-500 hover:text-black transition-colors bg-transparent border-none cursor-pointer">
                                                 <Plus className="w-3 h-3" />
                                               </button>
                                             </div>
                                           ) : (
-                                            <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} className="text-[10px] text-red-400 hover:text-red-600 mt-1.5 uppercase font-bold tracking-widest bg-transparent border-none cursor-pointer">Eliminar</button>
+                                            <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} className="text-[10px] text-zinc-400 hover:text-red-500 mt-1.5 uppercase font-bold tracking-widest bg-transparent border-none cursor-pointer transition-colors">
+                                              Eliminar
+                                            </button>
                                           )}
                                        </div>
                                     </div>
@@ -911,59 +937,78 @@ export default function PagoClient() {
                                  </div>
                               )}
 
-                              {/* Sección de Cupón de Descuento */}
-                              <div className="border-t border-gray-100 pt-5 mb-5">
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1 block mb-2">Cupón de Descuento</span>
+                              {/* Sección de Cupón de Descuento Colapsable */}
+                              <div className="border-t border-zinc-100 pt-4 mb-4">
+                                <button
+                                  type="button"
+                                  onClick={() => setShowCouponInput(!showCouponInput)}
+                                  className="flex items-center justify-between w-full py-1 text-xs font-bold text-zinc-500 hover:text-zinc-800 transition-colors bg-transparent border-none cursor-pointer"
+                                >
+                                  <span className="flex items-center gap-1.5 uppercase tracking-wider text-[10px]">
+                                    <Tag className="w-3.5 h-3.5" /> ¿Tienes un cupón de descuento?
+                                  </span>
+                                  {showCouponInput ? <ChevronUp className="w-3.5 h-3.5 text-zinc-400" /> : <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />}
+                                </button>
                                 
-                                {appliedCoupon ? (
-                                  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-                                    className="flex items-center justify-between bg-emerald-50 border border-emerald-100 px-4 py-3 rounded-2xl">
-                                    <div className="flex items-center gap-2">
-                                      <Tag className="w-4 h-4 text-emerald-600 shrink-0" />
-                                      <div>
-                                        <span className="font-mono font-black text-xs text-emerald-800 tracking-wider">{appliedCoupon.code}</span>
-                                        <span className="text-[10px] text-emerald-600 font-bold ml-2">-{appliedCoupon.discount_percentage}% aplicado</span>
-                                      </div>
-                                    </div>
-                                    <button type="button" onClick={handleRemoveCoupon} className="p-1 rounded-full hover:bg-emerald-100 text-emerald-600 hover:text-emerald-800 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center">
-                                      <X className="w-3.5 h-3.5" />
-                                    </button>
-                                  </motion.div>
-                                ) : (
-                                  <form onSubmit={handleApplyCoupon} className="flex gap-2">
-                                    <div className="relative flex-1">
-                                      <input
-                                        type="text"
-                                        placeholder="Ingresa tu código"
-                                        value={couponCodeInput}
-                                        onChange={e => {
-                                          setCouponCodeInput(e.target.value);
-                                          if (couponError) setCouponError(null);
-                                        }}
-                                        className="w-full bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-blue-100 focus:border-[#1890FF] outline-none transition-all font-mono placeholder:font-sans uppercase tracking-wider"
-                                      />
-                                    </div>
-                                    <button
-                                      type="submit"
-                                      disabled={validatingCoupon || !couponCodeInput.trim()}
-                                      className="px-4 py-2.5 bg-gray-900 text-white font-bold text-xs rounded-xl shadow-sm hover:bg-gray-800 disabled:opacity-50 transition-colors border-none cursor-pointer flex items-center gap-1.5"
+                                <AnimatePresence initial={false}>
+                                  {(showCouponInput || appliedCoupon) && (
+                                    <motion.div
+                                      initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                                      animate={{ height: "auto", opacity: 1, marginTop: 12 }}
+                                      exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                                      className="overflow-hidden"
                                     >
-                                      {validatingCoupon ? <Loader2 className="w-3 h-3 animate-spin" /> : "Aplicar"}
-                                    </button>
-                                  </form>
-                                )}
-                                
-                                {couponError && (
-                                  <motion.p initial={{ opacity: 0, y: -2 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] text-red-500 font-semibold mt-1.5 px-1">
-                                    {couponError}
-                                  </motion.p>
-                                )}
+                                      {appliedCoupon ? (
+                                        <div className="flex items-center justify-between bg-emerald-50 border border-emerald-100 px-4 py-3 rounded-xl">
+                                          <div className="flex items-center gap-2">
+                                            <Tag className="w-4 h-4 text-emerald-650 shrink-0" />
+                                            <div>
+                                              <span className="font-mono font-black text-xs text-emerald-800 tracking-wider">{appliedCoupon.code}</span>
+                                              <span className="text-[10px] text-emerald-600 font-bold ml-2">-{appliedCoupon.discount_percentage}% aplicado</span>
+                                            </div>
+                                          </div>
+                                          <button type="button" onClick={handleRemoveCoupon} className="p-1 rounded-full hover:bg-emerald-100 text-emerald-600 hover:text-emerald-800 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center">
+                                            <X className="w-3.5 h-3.5" />
+                                          </button>
+                                        </div>
+                                      ) : (
+                                        <form onSubmit={handleApplyCoupon} className="flex gap-2">
+                                          <div className="relative flex-1">
+                                            <input
+                                              type="text"
+                                              placeholder="Ingresa tu código"
+                                              value={couponCodeInput}
+                                              onChange={e => {
+                                                setCouponCodeInput(e.target.value);
+                                                if (couponError) setCouponError(null);
+                                              }}
+                                              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-zinc-100 focus:border-zinc-950 outline-none transition-all font-mono placeholder:font-sans uppercase tracking-wider"
+                                            />
+                                          </div>
+                                          <button
+                                            type="submit"
+                                            disabled={validatingCoupon || !couponCodeInput.trim()}
+                                            className="px-4 py-2.5 bg-zinc-950 hover:bg-zinc-900 text-white font-bold text-xs rounded-xl shadow-sm disabled:opacity-50 transition-colors border-none cursor-pointer flex items-center gap-1.5"
+                                          >
+                                            {validatingCoupon ? <Loader2 className="w-3 h-3 animate-spin" /> : "Aplicar"}
+                                          </button>
+                                        </form>
+                                      )}
+                                      
+                                      {couponError && (
+                                        <motion.p initial={{ opacity: 0, y: -2 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] text-red-500 font-semibold mt-1.5 px-1">
+                                          {couponError}
+                                        </motion.p>
+                                      )}
+                                    </motion.div>
+                                  )}
+                                </AnimatePresence>
                               </div>
 
                               {appliedCoupon && (
                                 <div className="mb-3 flex justify-between items-center text-xs font-semibold">
-                                  <span className="text-gray-400">Subtotal</span>
-                                  <span className="text-gray-700 font-black">{convertAndFormat(totalPrice)}</span>
+                                  <span className="text-zinc-400">Subtotal</span>
+                                  <span className="text-zinc-700 font-black">{convertAndFormat(totalPrice)}</span>
                                 </div>
                               )}
                               
@@ -974,14 +1019,14 @@ export default function PagoClient() {
                                 </div>
                               )}
 
-                              <div className="border-t-2 border-dashed border-gray-100 pt-4 mb-6 flex justify-between items-end">
-                                 <span className="font-bold text-gray-500">Total a pagar</span>
+                              <div className="border-t border-zinc-200 border-dashed pt-4 mb-6 flex justify-between items-end">
+                                 <span className="font-bold text-zinc-500">Total a pagar</span>
                                  <div className="text-right">
-                                   <span className="font-black text-2xl text-[#1890FF] block">
+                                   <span className="font-black text-2xl text-zinc-950 block">
                                      {convertAndFormat(appliedCoupon ? finalPriceWithCoupon : totalPrice)}
                                    </span>
                                    {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                     <span className="text-xs font-semibold text-gray-400">
+                                     <span className="text-xs font-semibold text-zinc-400">
                                        ≈ ${Math.round((appliedCoupon ? finalPriceWithCoupon : totalPrice) / 900)} USD
                                      </span>
                                    )}
@@ -990,17 +1035,17 @@ export default function PagoClient() {
 
                               {/* Exchange Rate Reference Card */}
                               {country.currency.code !== "CLP" && (
-                                <div className="bg-blue-50/40 border border-blue-100 rounded-2xl p-4 mb-6 text-left">
+                                <div className="bg-zinc-50 border border-zinc-150 rounded-2xl p-4 mb-6 text-left">
                                   <div className="flex gap-2.5 items-start">
-                                    <Info className="w-4 h-4 text-[#1890FF] shrink-0 mt-0.5" />
+                                    <Info className="w-4 h-4 text-zinc-500 shrink-0 mt-0.5" />
                                     <div>
-                                      <h4 className="text-[11px] font-black text-blue-950 uppercase tracking-wider mb-1">
+                                      <h4 className="text-[11px] font-black text-zinc-800 uppercase tracking-wider mb-1">
                                         Información de Conversión
                                       </h4>
-                                      <p className="text-xs text-blue-700 leading-snug">
+                                      <p className="text-xs text-zinc-600 leading-snug">
                                         Se realizará un cobro por el equivalente de <span className="font-bold">{convertAndFormat(appliedCoupon ? finalPriceWithCoupon : totalPrice)}</span>.
                                       </p>
-                                      <div className="mt-2.5 pt-2 border-t border-blue-100/60 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-blue-600/80 font-bold">
+                                      <div className="mt-2.5 pt-2 border-t border-zinc-200/60 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-zinc-450 font-bold">
                                         <span>Tasa USD Ref: $1 USD = $900 CLP</span>
                                         {country.currency.code !== "USD" && (
                                           <span>Tasa de Cambio: $1 USD ≈ {(country.currency.rate * 900).toFixed(2)} {country.currency.code}</span>
@@ -1014,8 +1059,7 @@ export default function PagoClient() {
                               <motion.button
                                 onClick={handleCheckout}
                                 disabled={isCheckingOut}
-                                className="w-full py-4 rounded-xl text-white font-bold text-sm flex justify-center items-center gap-2 transition-all disabled:opacity-60 border-none cursor-pointer shadow-lg shadow-blue-500/20"
-                                style={{ background: "linear-gradient(135deg, #1890FF, #0050b3)" }}
+                                className="w-full py-4 rounded-xl bg-zinc-950 hover:bg-zinc-900 text-white font-bold text-sm flex justify-center items-center gap-2 transition-all disabled:opacity-60 border-none cursor-pointer shadow-md shadow-zinc-200 hover:shadow-lg hover:shadow-zinc-300"
                                 whileHover={{ y: -2 }}
                                 whileTap={{ scale: 0.98 }}
                               >
@@ -1026,34 +1070,11 @@ export default function PagoClient() {
                                 )}
                               </motion.button>
                               
-                              <div className="flex items-center justify-center gap-2 mt-4 text-[10px] text-gray-400 font-medium">
+                              <div className="flex items-center justify-center gap-2 mt-4 text-[10px] text-zinc-400 font-medium">
                                 <BadgeCheck className="w-3.5 h-3.5 text-emerald-500" />
                                 <span>Pago cifrado y seguro vía Flow</span>
                               </div>
-
-                              {/* Documentos Descargables */}
-                              <div className="flex flex-col gap-2 mt-6 pt-6 border-t border-gray-100">
-                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Documentos de interés</span>
-                                <a href="https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100 transition-colors no-underline group">
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-red-100 text-red-500 flex items-center justify-center shrink-0">
-                                      <FileText className="w-4 h-4" />
-                                    </div>
-                                    <span className="text-xs font-bold text-gray-700 group-hover:text-gray-900">PDF de Temarios</span>
-                                  </div>
-                                  <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
-                                </a>
-                                <a href="https://drive.google.com/file/d/1524q4Zz5TiVaGS-IBAqRc10au9yXP1WK/view?usp=drive_link" target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-100 transition-colors no-underline group">
-                                  <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-blue-100 text-[#1890FF] flex items-center justify-center shrink-0">
-                                      <FileText className="w-4 h-4" />
-                                    </div>
-                                    <span className="text-xs font-bold text-gray-700 group-hover:text-gray-900">Presentación ProgramBI</span>
-                                  </div>
-                                  <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
-                                </a>
-                              </div>
-                           </>
+                            </>
                         )}
                       </div>
                     </motion.div>
@@ -1239,7 +1260,7 @@ export default function PagoClient() {
                   <div style={{ padding: 20, maxHeight: "50vh", overflowY: "auto" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
                       <h4 style={{ fontWeight: 700, color: "#0F172A", display: "flex", alignItems: "center", gap: 8, margin: 0, fontSize: 15 }}>
-                        <ShoppingCart style={{ width: 16, height: 16, color: "#1890FF" }} /> Tu Carrito
+                        <ShoppingCart style={{ width: 16, height: 16, color: "#000" }} /> Tu Carrito
                       </h4>
                       <button onClick={() => setIsMobileCartOpen(false)} style={{ padding: 6, borderRadius: "50%", background: "#e5e7eb", color: "#6b7280", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}>
                         <X style={{ width: 14, height: 14 }} />
@@ -1254,6 +1275,16 @@ export default function PagoClient() {
                             <span style={{ fontSize: 11, color: "#6b7280", display: "block", marginTop: 4, fontWeight: 500 }}>{item.levelName}</span>
                           </div>
                           <div className="flex flex-col items-end flex-shrink-0">
+                            {item.hasDiscount && item.originalPrice && item.originalPrice > item.price && (
+                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
+                                <span style={{ fontSize: 11, textDecoration: "line-through", color: "#9ca3af", fontWeight: 650 }}>
+                                  {convertAndFormat(item.originalPrice * item.quantity)}
+                                </span>
+                                <span style={{ fontSize: 9, fontWeight: 900, backgroundColor: "#000", color: "#fff", padding: "1px 4px", borderRadius: 4, textTransform: "uppercase" }}>
+                                  -{Math.round((1 - item.price / item.originalPrice) * 100)}%
+                                </span>
+                              </div>
+                            )}
                             <span style={{ fontWeight: 900, color: "#0F172A", fontSize: 15 }}>{convertAndFormat(item.price * item.quantity)}</span>
                             {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                               <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 700, marginTop: 2 }}>
@@ -1287,7 +1318,7 @@ export default function PagoClient() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: 12, userSelect: "none" }}>
                 <div style={{ position: "relative", flexShrink: 0 }}>
-                  <div style={{ width: 44, height: 44, backgroundColor: "#eff6ff", color: "#1890FF", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <div style={{ width: 44, height: 44, backgroundColor: "#000", color: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <ShoppingCart style={{ width: 20, height: 20 }} />
                   </div>
                   <span style={{ position: "absolute", top: -4, right: -4, backgroundColor: "#22C55E", color: "#fff", fontSize: 10, fontWeight: 900, width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", border: "2px solid #fff", lineHeight: 1 }}>
@@ -1319,8 +1350,8 @@ export default function PagoClient() {
                   gap: 8,
                   border: "none",
                   cursor: "pointer",
-                  background: "linear-gradient(135deg, #1890FF, #0050b3)",
-                  boxShadow: "0 8px 20px rgba(24,144,255,0.3)",
+                  background: "#000",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                   textTransform: "uppercase",
                   letterSpacing: 1,
                   flexShrink: 0,
