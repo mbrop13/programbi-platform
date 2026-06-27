@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 /**
  * GET /api/schedules

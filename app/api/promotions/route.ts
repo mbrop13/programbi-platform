@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getActivePromotions } from "@/lib/supabase/comunidad-ai";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {

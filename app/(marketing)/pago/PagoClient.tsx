@@ -91,6 +91,13 @@ export default function PagoClient() {
     try {
       const res = await validateCouponAction(couponCodeInput);
       if (res.valid) {
+        const items = Object.values(cart);
+        if (!res.allow_stacking && items.length > 0 && items.every(item => item.hasDiscount)) {
+          setCouponError("Este cupón no se puede aplicar a productos que ya tienen descuento");
+          setValidatingCoupon(false);
+          return;
+        }
+
         setAppliedCoupon({
           code: res.code!,
           discount_percentage: res.discount_percentage!,
@@ -106,6 +113,17 @@ export default function PagoClient() {
       setValidatingCoupon(false);
     }
   };
+
+  // Automatically remove non-stackable coupons if the cart changes and ends up containing only discounted products
+  useEffect(() => {
+    if (appliedCoupon && !appliedCoupon.allow_stacking) {
+      const items = Object.values(cart);
+      if (items.length > 0 && items.every(item => item.hasDiscount)) {
+        setAppliedCoupon(null);
+        setCouponError("Se eliminó el cupón porque no es acumulable con productos en promoción.");
+      }
+    }
+  }, [cart, appliedCoupon]);
 
   const handleRemoveCoupon = () => {
     setAppliedCoupon(null);
