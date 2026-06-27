@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCourseDescriptions } from "@/lib/supabase/comunidad-ai";
 
-export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 
 /**
  * GET /api/courses/descriptions
