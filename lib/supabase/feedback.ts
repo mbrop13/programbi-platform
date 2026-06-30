@@ -1,3 +1,5 @@
+"use server";
+
 import { createClient, createAdminClient } from "./server";
 import { isCurrentUserAdmin } from "./comunidad";
 import { z } from "zod";
