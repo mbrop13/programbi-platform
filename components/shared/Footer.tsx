@@ -170,6 +170,7 @@ export default function Footer() {
                   { label: "Newsletter", href: "/newsletter" },
                   { label: "Campus Virtual", href: "/campus" },
                   { label: "Registrarse", href: "/registro" },
+                  { label: "Encuesta de satisfacción", href: "/feedback" },
                   { label: "Política de Privacidad", href: "/privacidad" },
                 ].map((item) => (
                   <li key={item.href}>
