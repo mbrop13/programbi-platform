@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Briefcase, Database, Code, CheckCircle, BarChart2, Sparkles, Terminal, Play, Server, FileText } from "lucide-react";
-import { FadeIn, CountUp } from "@/components/shared/AnimatedComponents";
+import { FadeIn } from "@/components/shared/AnimatedComponents";
 
 /* ─── Modern Widescreen Data Visual (Video Pipeline) ─── */
 const VIDEOS = [
@@ -214,19 +214,19 @@ export default function HeroSection() {
               <div className="flex flex-wrap gap-8 lg:gap-10 mt-12 justify-center lg:justify-start border-t border-slate-100 pt-8">
                 <div>
                   <div className="text-3xl lg:text-4xl font-black text-gray-900 font-mono tracking-tight">
-                    +<CountUp target={5000} duration={2.5} />
+                    +5000
                   </div>
                   <p className="text-xs text-gray-500 font-medium mt-1 uppercase tracking-wider">Estudiantes egresados</p>
                 </div>
                 <div>
                   <div className="text-3xl lg:text-4xl font-black text-gray-900 font-mono tracking-tight">
-                    <CountUp target={10} duration={1.5} />
+                    +10
                   </div>
                   <p className="text-xs text-gray-500 font-medium mt-1 uppercase tracking-wider">Programas activos</p>
                 </div>
                 <div>
                   <div className="text-3xl lg:text-4xl font-black text-gray-900 font-mono tracking-tight">
-                    <CountUp target={98} duration={2} suffix="%" />
+                    98%
                   </div>
                   <p className="text-xs text-gray-500 font-medium mt-1 uppercase tracking-wider">Tasa de satisfacción</p>
                 </div>
