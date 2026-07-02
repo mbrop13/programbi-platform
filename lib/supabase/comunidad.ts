@@ -280,6 +280,105 @@ export async function getCurrentUserManagedOrganization() {
 }
 
 // ------------------------------------------
+// DASHBOARD STATS
+// ------------------------------------------
+
+export async function getDashboardStats() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { createAdminClient } = await import("./server");
+  const adminDb = createAdminClient();
+
+  const [profile, enrollments, progress, liveClasses, topMembers] = await Promise.all([
+    // Profile (streak + XP)
+    adminDb.from("profiles").select("study_streak, xp_points, full_name").eq("id", user.id).single(),
+
+    // Enrolled courses with details
+    adminDb
+      .from("enrollments")
+      .select("course_id, courses(id, title, short_description)")
+      .eq("user_id", user.id)
+      .eq("status", "active"),
+
+    // User progress (completed lessons)
+    adminDb
+      .from("user_progress")
+      .select("lesson_id, completed_at")
+      .eq("user_id", user.id)
+      .eq("completed", true),
+
+    // Upcoming live classes
+    adminDb
+      .from("live_classes")
+      .select("id, title, scheduled_at, status")
+      .eq("status", "scheduled")
+      .gte("scheduled_at", new Date().toISOString())
+      .order("scheduled_at", { ascending: true })
+      .limit(3),
+
+    // Top members by XP
+    adminDb
+      .from("profiles")
+      .select("id, full_name, xp_points, avatar_url")
+      .order("xp_points", { ascending: false })
+      .limit(5),
+  ]);
+
+  const enrolledCount = enrollments.data?.length || 0;
+  const completedLessons = progress.data?.length || 0;
+  const studyHours = Math.round(completedLessons * 0.5 * 10) / 10; // ~30min per lesson
+
+  // Calculate progress for each enrolled course
+  let courseProgress: { title: string; progress: number; courseId: string }[] = [];
+  if (enrollments.data?.length) {
+    for (const enr of enrollments.data as any[]) {
+      const { data: lessons } = await adminDb
+        .from("lessons")
+        .select("id")
+        .eq("course_id", enr.course_id);
+      
+      if (!lessons?.length) continue;
+
+      const lessonIds = lessons.map((l: any) => l.id);
+      const completedInCourse = (progress.data || []).filter(
+        (p: any) => lessonIds.includes(p.lesson_id)
+      ).length;
+
+      courseProgress.push({
+        title: enr.courses?.title || "Curso",
+        courseId: enr.course_id,
+        progress: Math.round((completedInCourse / lessons.length) * 100),
+      });
+    }
+  }
+
+  // Sort by progress descending, take the most advanced
+  courseProgress.sort((a, b) => b.progress - a.progress);
+
+  return {
+    enrolledCourses: enrolledCount,
+    completedLessons,
+    studyHours,
+    streak: profile.data?.study_streak || 0,
+    xp: profile.data?.xp_points || 0,
+    userName: profile.data?.full_name || "Estudiante",
+    courseProgress: courseProgress.slice(0, 3),
+    upcomingLives: liveClasses.data || [],
+    topMembers: (topMembers.data || []).map((m: any) => ({
+      id: m.id,
+      name: m.full_name,
+      xp: m.xp_points || 0,
+      avatar: m.avatar_url,
+      initials: m.full_name
+        ? m.full_name.split(" ").map((n: string) => n[0]).join("").substring(0, 2).toUpperCase()
+        : "??",
+    })),
+  };
+}
+
+// ------------------------------------------
 // CHAT GLOBAL ACTIONS
 // ------------------------------------------
 

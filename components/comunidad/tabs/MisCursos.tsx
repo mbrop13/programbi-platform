@@ -255,30 +255,73 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
            { id: 'active' as const, label: 'Mis Cursos', count: activeCourses.length },
            { id: 'locked' as const, label: 'Bloqueados', count: lockedCourses.length },
          ].map(tab => (
-           <button key={tab.id} onClick={() => setFilter(tab.id)}
-             className={`px-4 py-2 rounded-xl text-sm font-bold transition-all ${
+           <motion.button 
+             key={tab.id} 
+             onClick={() => setFilter(tab.id)}
+             whileTap={{ scale: 0.97 }}
+             className={`relative px-4 py-2.5 rounded-xl text-sm font-bold transition-all overflow-hidden ${
                filter === tab.id
-                 ? 'bg-brand-blue text-white shadow-sm'
-                 : 'bg-gray-50 text-gray-500 hover:bg-gray-100 border border-gray-100'}`}>
-             {tab.label} <span className="ml-1 text-xs opacity-70">({tab.count})</span>
-           </button>
+                 ? 'bg-brand-blue text-white shadow-md shadow-brand-blue/20'
+                 : 'bg-gray-50 text-gray-500 hover:bg-gray-100 border border-gray-100 hover:border-gray-200'}`}>
+             {filter === tab.id && (
+               <motion.div
+                 layoutId="activeFilter"
+                 className="absolute inset-0 bg-brand-blue rounded-xl"
+                 transition={{ type: "spring", stiffness: 400, damping: 30 }}
+               />
+             )}
+             <span className="relative z-10">{tab.label}</span>
+             <span className={`relative z-10 ml-1.5 text-xs px-1.5 py-0.5 rounded-md font-black ${
+               filter === tab.id ? 'bg-white/20 text-white' : 'bg-gray-200/60 text-gray-400'}`}>
+               {tab.count}
+             </span>
+           </motion.button>
          ))}
        </div>
 
        {/* ─── CONTENT ─── */}
        {loading ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-3">
-            <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
-            <span className="text-sm text-gray-400 font-medium">Cargando cursos...</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-pulse">
+                <div className="aspect-video bg-gray-200" />
+                <div className="p-5 space-y-3">
+                  <div className="h-4 bg-gray-200 rounded-lg w-3/4" />
+                  <div className="h-3 bg-gray-100 rounded-lg w-1/2" />
+                  <div className="h-2 bg-gray-100 rounded-full w-full" />
+                </div>
+              </div>
+            ))}
           </div>
        ) : (filteredPrograms.length === 0 && filteredStandalone.length === 0) ? (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+          <motion.div 
+            initial={{ opacity: 0, y: 12 }} 
+            animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm max-w-lg mx-auto">
-             <div className="w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                <GraduationCap className="w-10 h-10 text-gray-300" />
+             <div className="relative w-24 h-24 mx-auto mb-6">
+               <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl rotate-3" />
+               <div className="absolute inset-0 bg-white rounded-2xl border border-gray-100 flex items-center justify-center">
+                 <GraduationCap className="w-12 h-12 text-brand-blue/60" />
+               </div>
+               <div className="absolute -top-2 -right-2 w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
+                 <Sparkles className="w-4 h-4 text-amber-500" />
+               </div>
              </div>
-             <h3 className="font-black text-xl text-gray-900 mb-2">Sin resultados</h3>
-             <p className="text-gray-400 text-sm">No se encontraron cursos con ese filtro.</p>
+             <h3 className="font-display font-black text-xl text-gray-900 mb-2">
+               {searchQuery ? "Sin resultados" : "Comienza tu aprendizaje"}
+             </h3>
+             <p className="text-gray-500 text-sm mb-5 max-w-sm mx-auto">
+               {searchQuery 
+                 ? `No encontramos cursos que coincidan con "${searchQuery}". Intenta con otros términos.`
+                 : "Aún no tienes cursos activos. Explora el catálogo y comienza tu viaje en datos."}
+             </p>
+             {searchQuery && (
+               <button 
+                 onClick={() => setSearchQuery("")}
+                 className="px-5 py-2.5 bg-brand-blue text-white rounded-xl text-sm font-bold shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
+                 Limpiar búsqueda
+               </button>
+             )}
           </motion.div>
        ) : (
        <div className="space-y-8">

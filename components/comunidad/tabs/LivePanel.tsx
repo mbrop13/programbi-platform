@@ -32,7 +32,9 @@ import {
   useTracks, 
   useRoomContext,
   useParticipants,
-  useConnectionState
+  useConnectionState,
+  VideoTrack,
+  isTrackReference
 } from "@livekit/components-react";
 import { RoomEvent, Track, Room, ConnectionState } from "livekit-client";
 
@@ -485,9 +487,9 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
   const [inputMsg, setInputMsg] = useState("");
   const chatBottomRef = useRef<HTMLDivElement>(null);
 
-  // Custom Tracks rendering (Spotlight on host)
+  // Tracks — only real published tracks (no placeholders)
   const tracks = useTracks([
-    { source: Track.Source.Camera, withPlaceholder: true },
+    { source: Track.Source.Camera, withPlaceholder: false },
     { source: Track.Source.ScreenShare, withPlaceholder: false }
   ]);
 
@@ -676,9 +678,9 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
     return `${mins.toString().padStart(2, "0")}:${remainder.toString().padStart(2, "0")}`;
   };
 
-  // Identify Host/Teacher tracks
-  const screenShareTrack = tracks.find(t => t.source === Track.Source.ScreenShare);
-  const cameraTrack = tracks.find(t => t.source === Track.Source.Camera);
+  // Identify real published tracks (filter out placeholders)
+  const screenShareTrack = tracks.find(t => t.source === Track.Source.ScreenShare && isTrackReference(t));
+  const cameraTrack = tracks.find(t => t.source === Track.Source.Camera && isTrackReference(t));
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[600px] w-full relative">
@@ -766,14 +768,14 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
 
           {/* Render Active WebRTC Tracks */}
           <div className="w-full h-full flex items-center justify-center">
-            {screenShareTrack ? (
-              <VideoRenderer trackRef={screenShareTrack} className="w-full h-full object-contain" />
-            ) : cameraTrack ? (
-              <VideoRenderer trackRef={cameraTrack} className="w-full h-full object-cover" />
+            {screenShareTrack && isTrackReference(screenShareTrack) ? (
+              <VideoTrack trackRef={screenShareTrack} className="w-full h-full object-contain" />
+            ) : cameraTrack && isTrackReference(cameraTrack) ? (
+              <VideoTrack trackRef={cameraTrack} className="w-full h-full object-cover" />
             ) : (
               <div className="text-center text-slate-500 flex flex-col items-center gap-2">
                 <VideoOff className="w-10 h-10" />
-                <span className="text-sm font-medium">CÃ¡mara del profesor inactiva</span>
+                <span className="text-sm font-medium">Cámara del profesor inactiva</span>
               </div>
             )}
           </div>
@@ -944,32 +946,27 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
   );
 }
 
-// â”€â”€â”€ HELPER CLIENT RENDERER FOR VIDEO TRACK â”€â”€â”€
-function VideoRenderer({ trackRef, className }: { trackRef: any; className?: string }) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (trackRef.publication && videoRef.current) {
-      trackRef.publication.track?.attach(videoRef.current);
-    }
-    return () => {
-      if (trackRef.publication && videoRef.current) {
-        trackRef.publication.track?.detach(videoRef.current);
-      }
-    };
-  }, [trackRef]);
-
-  return <video ref={videoRef} autoPlay playsInline className={className} />;
-}
-
-// â”€â”€â”€ MICROPHONE DOCK TOGGLE BUTTON (Host only) â”€â”€â”€
+// ─── MICROPHONE DOCK TOGGLE BUTTON (Host only) ───
 function MicButton({ room, theme }: { room: Room; theme?: 'light' | 'dark' }) {
   const [enabled, setEnabled] = useState(room.localParticipant.isMicrophoneEnabled);
+
+  useEffect(() => {
+    const sync = () => setEnabled(room.localParticipant.isMicrophoneEnabled);
+    room.on(RoomEvent.LocalTrackPublished, sync);
+    room.on(RoomEvent.LocalTrackUnpublished, sync);
+    room.on(RoomEvent.TrackMuted, sync);
+    room.on(RoomEvent.TrackUnmuted, sync);
+    return () => {
+      room.off(RoomEvent.LocalTrackPublished, sync);
+      room.off(RoomEvent.LocalTrackUnpublished, sync);
+      room.off(RoomEvent.TrackMuted, sync);
+      room.off(RoomEvent.TrackUnmuted, sync);
+    };
+  }, [room]);
 
   const toggleMic = async () => {
     const nextState = !enabled;
     await room.localParticipant.setMicrophoneEnabled(nextState);
-    setEnabled(nextState);
   };
 
   return (
@@ -983,21 +980,34 @@ function MicButton({ room, theme }: { room: Room; theme?: 'light' | 'dark' }) {
           : "bg-red-500/20 text-red-500 border border-red-500/30"
         }
       `}
-      title={enabled ? "Silenciar micrÃ³fono" : "Activar micrÃ³fono"}
+      title={enabled ? "Silenciar micrófono" : "Activar micrófono"}
     >
       {enabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
     </button>
   );
 }
 
-// â”€â”€â”€ CAMERA DOCK TOGGLE BUTTON (Host only) â”€â”€â”€
+// ─── CAMERA DOCK TOGGLE BUTTON (Host only) ───
 function CameraButton({ room, theme }: { room: Room; theme?: 'light' | 'dark' }) {
   const [enabled, setEnabled] = useState(room.localParticipant.isCameraEnabled);
+
+  useEffect(() => {
+    const sync = () => setEnabled(room.localParticipant.isCameraEnabled);
+    room.on(RoomEvent.LocalTrackPublished, sync);
+    room.on(RoomEvent.LocalTrackUnpublished, sync);
+    room.on(RoomEvent.TrackMuted, sync);
+    room.on(RoomEvent.TrackUnmuted, sync);
+    return () => {
+      room.off(RoomEvent.LocalTrackPublished, sync);
+      room.off(RoomEvent.LocalTrackUnpublished, sync);
+      room.off(RoomEvent.TrackMuted, sync);
+      room.off(RoomEvent.TrackUnmuted, sync);
+    };
+  }, [room]);
 
   const toggleCamera = async () => {
     const nextState = !enabled;
     await room.localParticipant.setCameraEnabled(nextState);
-    setEnabled(nextState);
   };
 
   return (
@@ -1011,22 +1021,35 @@ function CameraButton({ room, theme }: { room: Room; theme?: 'light' | 'dark' })
           : "bg-red-500/20 text-red-500 border border-red-500/30"
         }
       `}
-      title={enabled ? "Apagar cÃ¡mara" : "Encender cÃ¡mara"}
+      title={enabled ? "Apagar cámara" : "Encender cámara"}
     >
       {enabled ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
     </button>
   );
 }
 
-// â”€â”€â”€ SCREEN SHARE DOCK TOGGLE BUTTON (Host only) â”€â”€â”€
+// ─── SCREEN SHARE DOCK TOGGLE BUTTON (Host only) ───
 function ScreenShareButton({ room, theme }: { room: Room; theme?: 'light' | 'dark' }) {
   const [enabled, setEnabled] = useState(room.localParticipant.isScreenShareEnabled);
+
+  useEffect(() => {
+    const sync = () => setEnabled(room.localParticipant.isScreenShareEnabled);
+    room.on(RoomEvent.LocalTrackPublished, sync);
+    room.on(RoomEvent.LocalTrackUnpublished, sync);
+    room.on(RoomEvent.TrackMuted, sync);
+    room.on(RoomEvent.TrackUnmuted, sync);
+    return () => {
+      room.off(RoomEvent.LocalTrackPublished, sync);
+      room.off(RoomEvent.LocalTrackUnpublished, sync);
+      room.off(RoomEvent.TrackMuted, sync);
+      room.off(RoomEvent.TrackUnmuted, sync);
+    };
+  }, [room]);
 
   const toggleScreenShare = async () => {
     try {
       const nextState = !enabled;
       await room.localParticipant.setScreenShareEnabled(nextState);
-      setEnabled(nextState);
     } catch (err) {
       console.error("Screen sharing cancelled or failed:", err);
     }
