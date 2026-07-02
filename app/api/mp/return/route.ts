@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
   const collectionId = url.searchParams.get("collection_id"); // MP payment ID
 
   if (!externalReference) {
-    return NextResponse.redirect(new URL("/comunidad/cursos?payment=error", req.url));
+    return NextResponse.redirect(new URL("/comunidad/inicio?payment=error", req.url));
   }
 
   // If status is not approved, redirect with appropriate label
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
       "null": "cancelled",
     };
     const label = statusMap[collectionStatus || "null"] || "pending";
-    return NextResponse.redirect(new URL(`/comunidad/cursos?payment=${label}`, req.url));
+    return NextResponse.redirect(new URL(`/comunidad/inicio?payment=${label}`, req.url));
   }
 
   try {
@@ -43,12 +43,12 @@ export async function GET(req: NextRequest) {
 
     if (!payment) {
       console.error("MP Return: Payment not found for order:", externalReference);
-      return NextResponse.redirect(new URL("/comunidad/cursos?payment=error", req.url));
+      return NextResponse.redirect(new URL("/comunidad/inicio?payment=error", req.url));
     }
 
     // Already processed by webhook?
     if (payment.status === "paid") {
-      return NextResponse.redirect(new URL("/comunidad/cursos?payment=success", req.url));
+      return NextResponse.redirect(new URL("/comunidad/inicio?payment=success", req.url));
     }
 
     // Get full payment details from MercadoPago
@@ -208,10 +208,10 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.redirect(new URL("/comunidad/cursos?payment=success", req.url));
+    return NextResponse.redirect(new URL("/comunidad/inicio?payment=success", req.url));
 
   } catch (error: any) {
     console.error("❌ MP return error:", error.message);
-    return NextResponse.redirect(new URL("/comunidad/cursos?payment=error", req.url));
+    return NextResponse.redirect(new URL("/comunidad/inicio?payment=error", req.url));
   }
 }

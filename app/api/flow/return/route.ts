@@ -16,7 +16,7 @@ import { sendPaymentConfirmation, sendNewPurchaseNotificationToAdmin } from "@/l
  */
 async function handleReturn(req: NextRequest, token: string | null) {
   if (!token) {
-    return NextResponse.redirect(new URL("/comunidad/cursos?payment=error", req.url));
+    return NextResponse.redirect(new URL("/comunidad/inicio?payment=error", req.url));
   }
 
   try {
@@ -30,7 +30,7 @@ async function handleReturn(req: NextRequest, token: string | null) {
         [FLOW_STATUS.CANCELLED]: "cancelled",
       };
       const label = statusMap[flowStatus.status] || "pending";
-      return NextResponse.redirect(new URL(`/comunidad/cursos?payment=${label}`, req.url));
+      return NextResponse.redirect(new URL(`/comunidad/inicio?payment=${label}`, req.url));
     }
 
     // 2. Payment is PAID — create enrollment
@@ -202,11 +202,11 @@ async function handleReturn(req: NextRequest, token: string | null) {
       console.error("❌ Cannot enroll — missing userId");
     }
 
-    return NextResponse.redirect(new URL("/comunidad/cursos?payment=success", req.url));
+    return NextResponse.redirect(new URL("/comunidad/inicio?payment=success", req.url));
 
   } catch (error: any) {
     console.error("❌ Flow return error:", error.message);
-    return NextResponse.redirect(new URL("/comunidad/cursos?payment=error", req.url));
+    return NextResponse.redirect(new URL("/comunidad/inicio?payment=error", req.url));
   }
 }
 
