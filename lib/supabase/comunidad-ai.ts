@@ -545,7 +545,7 @@ export async function getMyEnrollments() {
 export async function getCourseLessons(courseId: string) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return { lessons: [], access: null };
+  if (!user) return { lessons: [], access: null, completedLessonIds: [] };
 
   const { data: profile } = await supabase.from("profiles").select("is_on_trial, subscription_plan").eq("id", user.id).single();
   const isOnTrial = profile?.is_on_trial === true;
@@ -567,6 +567,16 @@ export async function getCourseLessons(courseId: string) {
     .order("module_order", { ascending: true })
     .order("lesson_order", { ascending: true });
 
+  // Fetch user completed lessons for this course
+  const { data: progressData } = await supabase
+    .from("user_progress")
+    .select("lesson_id")
+    .eq("user_id", user.id)
+    .eq("course_id", courseId)
+    .eq("completed", true);
+
+  const completedLessonIds = (progressData || []).map((p: any) => p.lesson_id);
+
   let finalAccess = enrollment?.access_type || null;
   if (!finalAccess && profile?.subscription_plan) finalAccess = "full"; // Subscriptions grant full access
   if (isOnTrial) finalAccess = "trial";
@@ -575,6 +585,7 @@ export async function getCourseLessons(courseId: string) {
     lessons: lessons || [],
     access: finalAccess,
     isOnTrial,
+    completedLessonIds,
   };
 }
 
@@ -1722,4 +1733,79 @@ export async function getChatbotStats() {
     avgMessagesPerConversation,
     topPages,
   };
+}
+
+/**
+ * Guarda o actualiza el progreso de lección del usuario.
+ */
+export async function toggleLessonProgress(courseId: string, lessonId: string, completed: boolean) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("No autorizado");
+
+  const { error } = await supabase
+    .from("user_progress")
+    .upsert({
+      user_id: user.id,
+      lesson_id: lessonId,
+      course_id: courseId,
+      completed,
+      completed_at: completed ? new Date().toISOString() : null,
+      updated_at: new Date().toISOString()
+    }, { onConflict: "user_id,lesson_id" });
+
+  if (error) {
+    console.error("Error updating lesson progress:", error);
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/comunidad/cursos", "layout");
+}
+
+/**
+ * Obtiene la nota guardada de código de una clase (Super Clase).
+ */
+export async function getLessonNote(courseId: string, lessonId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return "";
+
+  const { data, error } = await supabase
+    .from("super_class_notes")
+    .select("content")
+    .eq("profile_id", user.id)
+    .eq("course_id", courseId)
+    .eq("lesson_id", lessonId)
+    .maybeSingle();
+
+  if (error) {
+    console.error("Error fetching lesson note:", error);
+    return "";
+  }
+
+  return data?.content || "";
+}
+
+/**
+ * Guarda o actualiza la nota de código de una clase (Super Clase).
+ */
+export async function saveLessonNote(courseId: string, lessonId: string, content: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("No autorizado");
+
+  const { error } = await supabase
+    .from("super_class_notes")
+    .upsert({
+      profile_id: user.id,
+      course_id: courseId,
+      lesson_id: lessonId,
+      content,
+      updated_at: new Date().toISOString()
+    }, { onConflict: "profile_id,lesson_id" });
+
+  if (error) {
+    console.error("Error saving lesson note:", error);
+    throw new Error(error.message);
+  }
 }

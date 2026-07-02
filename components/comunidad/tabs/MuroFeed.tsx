@@ -56,11 +56,36 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
   };
 
   const handleLike = async (postId: string) => {
-      setPosts(prev => prev.map(p => p.id === postId ? { ...p, likes_count: (p.likes_count || 0) + 1 } : p));
+      setPosts(prev => prev.map(p => {
+        if (p.id === postId) {
+          const currentlyLiked = p.is_liked_by_user;
+          return {
+            ...p,
+            is_liked_by_user: !currentlyLiked,
+            likes_count: currentlyLiked 
+              ? Math.max((p.likes_count || 0) - 1, 0)
+              : (p.likes_count || 0) + 1
+          };
+        }
+        return p;
+      }));
       try {
          await toggleLike(postId);
       } catch (err) {
-         setPosts(prev => prev.map(p => p.id === postId ? { ...p, likes_count: (p.likes_count || 1) - 1 } : p));
+         // Revert on error
+         setPosts(prev => prev.map(p => {
+           if (p.id === postId) {
+             const currentlyLiked = p.is_liked_by_user;
+             return {
+               ...p,
+               is_liked_by_user: !currentlyLiked,
+               likes_count: currentlyLiked 
+                 ? Math.max((p.likes_count || 0) - 1, 0)
+                 : (p.likes_count || 0) + 1
+             };
+           }
+           return p;
+         }));
       }
   };
 
@@ -305,7 +330,11 @@ function PostCard({ post, onLike, onSubmitComment }: any) {
   const timeStr = getRelativeTime(post.created_at);
   const [commentOpen, setCommentOpen] = useState(false);
   const [newComment, setNewComment] = useState("");
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(post.is_liked_by_user || false);
+
+  useEffect(() => {
+    setIsLiked(post.is_liked_by_user || false);
+  }, [post.is_liked_by_user]);
 
   const handleCommentSubmit = () => {
       if(!newComment.trim()) return;

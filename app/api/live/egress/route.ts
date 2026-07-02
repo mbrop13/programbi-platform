@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { EgressClient, StreamOutput } from "livekit-server-sdk";
 
 export async function POST(req: NextRequest) {
@@ -23,19 +23,33 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    // ─── 2. VERIFY ADMIN STATUS ───
-    const { data: profile, error: profileError } = await supabase
+    // ─── 2. VERIFY ADMIN STATUS (bypass RLS) ───
+    const adminDb = createAdminClient();
+
+    const { data: profile } = await adminDb
       .from("profiles")
       .select("role")
       .eq("id", user.id)
       .single();
 
-    if (profileError || profile?.role !== "admin") {
+    let isAdmin = profile?.role === "admin";
+    if (!isAdmin) {
+      const { data: communityAdmin } = await adminDb
+        .from("community_members")
+        .select("role")
+        .eq("profile_id", user.id)
+        .eq("role", "admin")
+        .limit(1)
+        .maybeSingle();
+      if (communityAdmin) isAdmin = true;
+    }
+
+    if (!isAdmin) {
       return NextResponse.json({ error: "No autorizado. Se requiere rol de administrador." }, { status: 403 });
     }
 
     // ─── 3. INITIALIZE LIVEKIT EGRESS CLIENT ───
-    const livekitUrl = process.env.LIVEKIT_URL;
+    const livekitUrl = process.env.LIVEKIT_URL || process.env.NEXT_PUBLIC_LIVEKIT_URL;
     const apiKey = process.env.LIVEKIT_API_KEY;
     const apiSecret = process.env.LIVEKIT_API_SECRET;
 
@@ -44,7 +58,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Configuración de servidor incompleta." }, { status: 500 });
     }
 
-    // Clean protocol if necessary (EgressClient expects https://host)
+    // Clean protocol (EgressClient expects https://host)
     const host = livekitUrl.replace(/^(https?:|wss?:)?\/\//, "");
     const egressClient = new EgressClient(`https://${host}`, apiKey, apiSecret);
 
@@ -53,14 +67,18 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: "El streamKey de YouTube es obligatorio para iniciar." }, { status: 400 });
       }
 
-      // Check if there is already an active egress
-      const { data: currentClass } = await supabase
+      // Check if there is already an active egress for this class
+      const { data: currentClass } = await adminDb
         .from("live_classes")
-        .select("livekit_egress_id")
+        .select("livekit_egress_id, status")
         .eq("id", classId)
         .single();
 
-      if (currentClass?.livekit_egress_id) {
+      if (!currentClass) {
+        return NextResponse.json({ error: "Clase no encontrada." }, { status: 404 });
+      }
+
+      if (currentClass.livekit_egress_id) {
         return NextResponse.json({ error: "La transmisión ya está activa para esta clase." }, { status: 400 });
       }
 
@@ -81,8 +99,8 @@ export async function POST(req: NextRequest) {
 
       const egressId = egressInfo.egressId;
 
-      // Update database state
-      const { error: dbError } = await supabase
+      // Update database: store egress ID, ensure status is active
+      const { error: dbError } = await adminDb
         .from("live_classes")
         .update({
           livekit_egress_id: egressId,
@@ -102,7 +120,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true, egressId });
     } else {
       // action === "stop"
-      const { data: currentClass, error: classError } = await supabase
+      const { data: currentClass, error: classError } = await adminDb
         .from("live_classes")
         .select("livekit_egress_id")
         .eq("id", classId)
@@ -115,30 +133,22 @@ export async function POST(req: NextRequest) {
       const egressId = currentClass.livekit_egress_id;
 
       if (!egressId) {
-        // The class might be marked inactive but egress is already stopped
-        await supabase
-          .from("live_classes")
-          .update({
-            status: "completed",
-            ended_at: new Date().toISOString()
-          })
-          .eq("id", classId);
-        return NextResponse.json({ success: true, message: "La clase ya estaba detenida." });
+        // Egress already stopped or never started — just clear the field
+        return NextResponse.json({ success: true, message: "La transmisión ya estaba detenida." });
       }
 
       try {
         await egressClient.stopEgress(egressId);
       } catch (err: any) {
-        console.warn("Egress stop command failed, proceeding to clean database anyway:", err);
+        console.warn("Egress stop command failed, proceeding to clean database anyway:", err?.message);
       }
 
-      // Update database state
-      await supabase
+      // Only clear the egress ID — do NOT change class status here
+      // (class status should only change when admin explicitly terminates the class)
+      await adminDb
         .from("live_classes")
         .update({
-          livekit_egress_id: null,
-          status: "completed",
-          ended_at: new Date().toISOString()
+          livekit_egress_id: null
         })
         .eq("id", classId);
 

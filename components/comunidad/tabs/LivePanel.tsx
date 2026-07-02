@@ -1,6 +1,6 @@
-"use client";
+﻿"use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { 
   Radio, 
   Video, 
@@ -19,19 +19,22 @@ import {
   Calendar, 
   Clock, 
   AlertCircle, 
-  Lock,
   Volume2,
   Sun,
-  Moon
+  Moon,
+  RefreshCw,
+  Wifi,
+  WifiOff
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   LiveKitRoom, 
   useTracks, 
   useRoomContext,
-  useParticipants
+  useParticipants,
+  useConnectionState
 } from "@livekit/components-react";
-import { RoomEvent, Track, Room } from "livekit-client";
+import { RoomEvent, Track, Room, ConnectionState } from "livekit-client";
 
 interface LiveClass {
   id: string;
@@ -45,13 +48,19 @@ interface LiveClass {
   scheduled_at: string;
 }
 
+// Polling interval when there's a scheduled class (check more often for status changes)
+const POLL_INTERVAL_ACTIVE = 10_000;   // 10s â€” detect when admin starts class
+const POLL_INTERVAL_IDLE = 30_000;     // 30s â€” idle background refresh
+
 export default function LivePanel() {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminChecked, setAdminChecked] = useState(false);
   const [activeClass, setActiveClass] = useState<LiveClass | null>(null);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [error, setError] = useState<string | null>(null);
 
   // Form states for creating a class
   const [title, setTitle] = useState("");
@@ -61,53 +70,88 @@ export default function LivePanel() {
   const [scheduledAt, setScheduledAt] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchClassInfo = async () => {
+  const pollRef = useRef<NodeJS.Timeout | null>(null);
+
+  // â”€â”€â”€ Reliable admin check via server API (bypasses RLS) â”€â”€â”€
+  const checkAdmin = useCallback(async () => {
+    try {
+      const res = await fetch("/api/live/check-admin");
+      const data = await res.json();
+      setIsAdmin(!!data.isAdmin);
+      setAdminChecked(true);
+      return !!data.isAdmin;
+    } catch (err) {
+      console.error("Error checking admin status:", err);
+      setAdminChecked(true);
+      return false;
+    }
+  }, []);
+
+  // â”€â”€â”€ Fetch active/scheduled live classes â”€â”€â”€
+  const fetchClassInfo = useCallback(async () => {
     try {
       const { createClient } = await import("@/lib/supabase/client");
       const supabase = createClient();
 
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", user.id)
-          .single();
-        setIsAdmin(profile?.role === "admin");
-      }
-
-      // Fetch active classes or the next scheduled one
-      const { data: classes, error } = await supabase
+      const { data: classes, error: classError } = await supabase
         .from("live_classes")
         .select("*")
         .in("status", ["active", "scheduled"])
-        .order("status", { ascending: false }) // 'active' first
+        .order("status", { ascending: false })
         .order("scheduled_at", { ascending: true })
         .limit(1);
 
-      if (error) throw error;
+      if (classError) throw classError;
       setActiveClass(classes && classes.length > 0 ? classes[0] : null);
-    } catch (err) {
-      console.error("Error fetching live classes data:", err);
-    } finally {
-      setLoading(false);
+      setError(null);
+    } catch (err: any) {
+      console.error("Error fetching live classes:", err);
+      setError("No se pudieron cargar las clases en vivo.");
     }
-  };
-
-  useEffect(() => {
-    fetchClassInfo();
   }, []);
+
+  // â”€â”€â”€ Initial load: check admin + fetch classes â”€â”€â”€
+  useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+      await Promise.all([checkAdmin(), fetchClassInfo()]);
+      setLoading(false);
+    };
+    init();
+  }, [checkAdmin, fetchClassInfo]);
+
+  // â”€â”€â”€ Auto-polling to detect class status changes â”€â”€â”€
+  useEffect(() => {
+    if (token) return; // Don't poll while connected to a room
+
+    const interval = activeClass?.status === "scheduled" ? POLL_INTERVAL_ACTIVE : POLL_INTERVAL_IDLE;
+
+    pollRef.current = setInterval(() => {
+      fetchClassInfo();
+    }, interval);
+
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current);
+    };
+  }, [token, activeClass?.status, fetchClassInfo]);
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    await Promise.all([checkAdmin(), fetchClassInfo()]);
+    setLoading(false);
+  };
 
   const handleCreateClass = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !roomName.trim() || !scheduledAt) return;
     setSubmitting(true);
+    setError(null);
 
     try {
       const { createClient } = await import("@/lib/supabase/client");
       const supabase = createClient();
 
-      const { data, error } = await supabase
+      const { data, error: insertError } = await supabase
         .from("live_classes")
         .insert({
           title: title.trim(),
@@ -120,17 +164,16 @@ export default function LivePanel() {
         .select()
         .single();
 
-      if (error) throw error;
+      if (insertError) throw insertError;
 
       setActiveClass(data);
-      // Reset form
       setTitle("");
       setDescription("");
       setRoomName("");
       setYoutubeKey("");
       setScheduledAt("");
     } catch (err: any) {
-      alert("Error al agendar clase: " + err.message);
+      setError("Error al agendar clase: " + err.message);
     } finally {
       setSubmitting(false);
     }
@@ -139,19 +182,20 @@ export default function LivePanel() {
   const handleStartClass = async () => {
     if (!activeClass) return;
     setLoading(true);
+    setError(null);
     try {
       const { createClient } = await import("@/lib/supabase/client");
       const supabase = createClient();
 
-      const { error } = await supabase
+      const { error: startError } = await supabase
         .from("live_classes")
         .update({ status: "active", started_at: new Date().toISOString() })
         .eq("id", activeClass.id);
 
-      if (error) throw error;
+      if (startError) throw startError;
       await fetchClassInfo();
     } catch (err: any) {
-      alert("Error al iniciar clase: " + err.message);
+      setError("Error al iniciar clase: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -160,13 +204,14 @@ export default function LivePanel() {
   const handleJoinClass = async () => {
     if (!activeClass) return;
     setIsConnecting(true);
+    setError(null);
     try {
       const response = await fetch(`/api/live/token?roomName=${activeClass.room_name}`);
       const data = await response.json();
       if (data.error) throw new Error(data.error);
       setToken(data.token);
     } catch (err: any) {
-      alert("Error al conectar a la clase: " + err.message);
+      setError("Error al conectar: " + err.message);
     } finally {
       setIsConnecting(false);
     }
@@ -177,16 +222,17 @@ export default function LivePanel() {
     fetchClassInfo();
   };
 
-  if (loading) {
+  // â”€â”€â”€ Loading state â”€â”€â”€
+  if (loading && !adminChecked) {
     return (
       <div className="py-24 flex flex-col items-center justify-center gap-3">
         <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
-        <span className="text-sm text-gray-400 font-medium">Cargando transmisión...</span>
+        <span className="text-sm text-gray-400 font-medium">Cargando transmisiÃ³n...</span>
       </div>
     );
   }
 
-  // ─── CASE 1: ACTIVE ROOM (LiveKit Session) ───
+  // â”€â”€â”€ CASE 1: ACTIVE ROOM (LiveKit Session) â”€â”€â”€
   if (token && activeClass) {
     const livekitUrl = process.env.NEXT_PUBLIC_LIVEKIT_URL || "wss://programbi.livekit.cloud";
 
@@ -201,7 +247,7 @@ export default function LivePanel() {
           token={token}
           serverUrl={livekitUrl}
           connect={true}
-          audio={true}
+          audio={isAdmin}
           video={false}
           onDisconnected={handleLeaveRoom}
           className="flex flex-col h-full gap-4"
@@ -219,7 +265,42 @@ export default function LivePanel() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Error banner */}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 flex items-start gap-3"
+          >
+            <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-medium">{error}</p>
+            </div>
+            <button
+              onClick={() => setError(null)}
+              className="text-red-400 hover:text-red-600 text-xs font-bold shrink-0 cursor-pointer"
+            >
+              Cerrar
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Refresh button (top right) */}
+      <div className="flex justify-end">
+        <button
+          onClick={handleRefresh}
+          disabled={loading}
+          className="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-40 cursor-pointer bg-transparent border-none"
+        >
+          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+          Actualizar
+        </button>
+      </div>
+
       {/* Active or Scheduled class banner */}
       {activeClass ? (
         <motion.div 
@@ -286,7 +367,7 @@ export default function LivePanel() {
             <Radio className="w-8 h-8" />
           </div>
           <h2 className="font-display font-black text-xl text-gray-900 mb-1">No hay clases en vivo</h2>
-          <p className="text-gray-400 text-sm max-w-sm mx-auto">Vuelve cuando esté programada una clase para unirte a la transmisión en directo.</p>
+          <p className="text-gray-400 text-sm max-w-sm mx-auto">Vuelve cuando estÃ© programada una clase para unirte a la transmisiÃ³n en directo.</p>
         </div>
       )}
 
@@ -299,13 +380,13 @@ export default function LivePanel() {
         >
           <div>
             <h3 className="font-display font-black text-lg text-gray-900 mb-1">Agendar Nueva Masterclass</h3>
-            <p className="text-sm text-gray-400">Programa una sesión en vivo para los alumnos.</p>
+            <p className="text-sm text-gray-400">Programa una sesiÃ³n en vivo para los alumnos.</p>
           </div>
 
           <form onSubmit={handleCreateClass} className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Título de la Clase *</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">TÃ­tulo de la Clase *</label>
                 <input 
                   type="text" 
                   required 
@@ -316,7 +397,7 @@ export default function LivePanel() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Nombre de Sala de LiveKit (Única) *</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Nombre de Sala de LiveKit (Ãšnica) *</label>
                 <input 
                   type="text" 
                   required 
@@ -329,11 +410,11 @@ export default function LivePanel() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">DescripciÃ³n (Opcional)</label>
               <textarea 
                 value={description} 
                 onChange={e => setDescription(e.target.value)} 
-                placeholder="Indica de qué tratará la clase..." 
+                placeholder="Indica de quÃ© tratarÃ¡ la clase..." 
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all resize-none min-h-[60px]" 
                 rows={2}
               />
@@ -341,7 +422,7 @@ export default function LivePanel() {
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Clave de Transmisión de YouTube Live (Opcional)</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Clave de TransmisiÃ³n de YouTube Live (Opcional)</label>
                 <input 
                   type="password" 
                   value={youtubeKey} 
@@ -379,7 +460,7 @@ export default function LivePanel() {
   );
 }
 
-// ─── CLASSROOM INTERNAL VIEW COMPONENT ───
+// â”€â”€â”€ CLASSROOM INTERNAL VIEW COMPONENT â”€â”€â”€
 interface ClassroomViewProps {
   isAdmin: boolean;
   activeClass: LiveClass;
@@ -390,6 +471,7 @@ interface ClassroomViewProps {
 
 function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: ClassroomViewProps) {
   const room = useRoomContext();
+  const connectionState = useConnectionState();
   const [streamActive, setStreamActive] = useState(!!activeClass.livekit_egress_id);
   const [isStreaming, setIsStreaming] = useState(false);
   
@@ -411,7 +493,11 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
 
   const participants = useParticipants();
 
-  // Listen for data channel messages (e.g. break start/stop, chat messages)
+  // Connection status indicator
+  const isConnected = connectionState === ConnectionState.Connected;
+  const isReconnecting = connectionState === ConnectionState.Reconnecting;
+
+  // Listen for data channel messages (break start/stop, chat messages)
   useEffect(() => {
     const handleDataReceived = (payload: Uint8Array, participant: any) => {
       try {
@@ -469,15 +555,14 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
     chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Host Action: Start streaming room layout to YouTube Live
+  // Host Action: Start/stop streaming room layout to YouTube Live
   const handleToggleStream = async () => {
     if (isStreaming) return;
     setIsStreaming(true);
     try {
-      const endpoint = "/api/live/egress";
       const actionType = streamActive ? "stop" : "start";
 
-      const res = await fetch(endpoint, {
+      const res = await fetch("/api/live/egress", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -490,12 +575,12 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
 
       const resData = await res.json();
       if (!res.ok || resData.error) {
-        throw new Error(resData.error || "Error al configurar transmisión.");
+        throw new Error(resData.error || "Error al configurar transmisiÃ³n.");
       }
 
       setStreamActive(!streamActive);
     } catch (err: any) {
-      alert("Error de transmisión: " + err.message);
+      alert("Error de transmisiÃ³n: " + err.message);
     } finally {
       setIsStreaming(false);
     }
@@ -506,7 +591,6 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
     const nextState = !isBreakActive;
     setIsBreakActive(nextState);
 
-    // Send payload over data channel to sync other attendees
     const encoder = new TextEncoder();
     const payload = encoder.encode(JSON.stringify({
       type: nextState ? "break_start" : "break_stop",
@@ -517,7 +601,6 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
 
     if (nextState) {
       setBreakTimer(600);
-      // Mute local microphone/video automatically for host
       room.localParticipant.setMicrophoneEnabled(false);
       room.localParticipant.setCameraEnabled(false);
     } else {
@@ -540,13 +623,11 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
     const encoder = new TextEncoder();
     const payload = encoder.encode(JSON.stringify(messagePayload));
     
-    // Broadcast message to all room participants
     room.localParticipant.publishData(payload, { reliable: true });
 
-    // Insert locally
     setMessages(prev => [...prev, {
       id: Math.random().toString(),
-      sender: "Tú",
+      sender: "TÃº",
       text: inputMsg.trim(),
       time: new Date().toLocaleTimeString("es-CL", { hour: '2-digit', minute: '2-digit' }),
       isAdmin
@@ -557,7 +638,7 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
 
   // Host Action: Terminate entire class session
   const handleTerminateClass = async () => {
-    if (!confirm("¿Estás seguro de terminar la clase para todos? Esto detendrá la grabación y cerrará la sala.")) return;
+    if (!confirm("Â¿EstÃ¡s seguro de terminar la clase para todos? Esto detendrÃ¡ la grabaciÃ³n y cerrarÃ¡ la sala.")) return;
     
     try {
       const { createClient } = await import("@/lib/supabase/client");
@@ -589,7 +670,6 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
     }
   };
 
-  // Format break countdown: 600s -> "10:00"
   const formatTime = (secs: number) => {
     const mins = Math.floor(secs / 60);
     const remainder = secs % 60;
@@ -602,7 +682,7 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[600px] w-full relative">
-      {/* ─── MAIN STAGE / VIDEO SCREEN (9/12 cols) ─── */}
+      {/* â”€â”€â”€ MAIN STAGE / VIDEO SCREEN (9/12 cols) â”€â”€â”€ */}
       <div className={`lg:col-span-9 rounded-2xl overflow-hidden flex flex-col justify-between p-4 relative border transition-colors duration-300
         ${theme === 'dark'
           ? 'bg-slate-900 border-slate-800'
@@ -618,8 +698,17 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
           }
         `}>
           <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
-            <h4 className={`font-bold text-xs truncate max-w-[150px] sm:max-w-md ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>{activeClass.title}</h4>
+            {isReconnecting ? (
+              <WifiOff className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
+            ) : (
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
+            )}
+            <h4 className={`font-bold text-xs truncate max-w-[150px] sm:max-w-md ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+              {activeClass.title}
+            </h4>
+            {isReconnecting && (
+              <span className="text-[10px] text-amber-400 font-bold">Reconectando...</span>
+            )}
           </div>
           <div className="flex items-center gap-3">
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md flex items-center gap-1 transition-colors
@@ -666,7 +755,7 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
                   <Coffee className="w-8 h-8" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Clase en Pausa (Break)</h3>
-                <p className="text-sm text-slate-400 max-w-sm mb-6">Estamos en un breve intermedio. La clase se reanudará pronto.</p>
+                <p className="text-sm text-slate-400 max-w-sm mb-6">Estamos en un breve intermedio. La clase se reanudarÃ¡ pronto.</p>
                 <div className="text-4xl font-mono font-black text-brand-blue bg-slate-900 border border-slate-800 px-6 py-3 rounded-2xl shadow-inner tracking-widest flex items-center gap-2.5">
                   <Clock className="w-6 h-6 animate-pulse text-slate-500" />
                   {formatTime(breakTimer)}
@@ -684,7 +773,7 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
             ) : (
               <div className="text-center text-slate-500 flex flex-col items-center gap-2">
                 <VideoOff className="w-10 h-10" />
-                <span className="text-sm font-medium">Cámara del profesor inactiva</span>
+                <span className="text-sm font-medium">CÃ¡mara del profesor inactiva</span>
               </div>
             )}
           </div>
@@ -692,14 +781,16 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
 
         {/* Controls dock (Bottom center) */}
         <div className="absolute bottom-4 left-4 right-4 z-20 flex justify-between gap-4 flex-wrap">
-          {/* Media Toggles */}
-          <div className={`flex gap-2 p-1.5 rounded-xl border transition-colors duration-300
-            ${theme === 'dark' ? 'bg-slate-950/90 border-slate-800' : 'bg-white/95 border-slate-200 shadow-md'}
-          `}>
-            <MicButton room={room} theme={theme} />
-            <CameraButton room={room} theme={theme} />
-            {isAdmin && <ScreenShareButton room={room} theme={theme} />}
-          </div>
+          {/* Media Toggles â€” only for admin/host (students have canPublish: false) */}
+          {isAdmin && (
+            <div className={`flex gap-2 p-1.5 rounded-xl border transition-colors duration-300
+              ${theme === 'dark' ? 'bg-slate-950/90 border-slate-800' : 'bg-white/95 border-slate-200 shadow-md'}
+            `}>
+              <MicButton room={room} theme={theme} />
+              <CameraButton room={room} theme={theme} />
+              <ScreenShareButton room={room} theme={theme} />
+            </div>
+          )}
 
           {/* Host Administration Commands */}
           {isAdmin && (
@@ -773,7 +864,7 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
         </div>
       </div>
 
-      {/* ─── CHAT & ATTENDEES SIDEBAR (3/12 cols) ─── */}
+      {/* â”€â”€â”€ CHAT & ATTENDEES SIDEBAR (3/12 cols) â”€â”€â”€ */}
       <div className={`lg:col-span-3 rounded-2xl overflow-hidden border flex flex-col h-full transition-colors duration-300
         ${theme === 'dark' ? 'bg-slate-900 border-slate-800' : 'bg-slate-50 border-gray-200'}
       `}>
@@ -790,7 +881,7 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
           {messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center text-slate-500 p-4">
               <MessageSquare className={`w-8 h-8 mb-2 ${theme === 'dark' ? 'text-slate-700' : 'text-slate-300'}`} />
-              <span className="text-xs">¡Inicia la conversación! Envía un mensaje a la clase.</span>
+              <span className="text-xs">Â¡Inicia la conversaciÃ³n! EnvÃ­a un mensaje a la clase.</span>
             </div>
           ) : (
             messages.map(msg => (
@@ -853,7 +944,7 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
   );
 }
 
-// ─── HELPER CLIENT RENDERER FOR VIDEO TRACK ───
+// â”€â”€â”€ HELPER CLIENT RENDERER FOR VIDEO TRACK â”€â”€â”€
 function VideoRenderer({ trackRef, className }: { trackRef: any; className?: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -871,7 +962,7 @@ function VideoRenderer({ trackRef, className }: { trackRef: any; className?: str
   return <video ref={videoRef} autoPlay playsInline className={className} />;
 }
 
-// ─── MICROPHONE DOCK TOGGLE BUTTON ───
+// â”€â”€â”€ MICROPHONE DOCK TOGGLE BUTTON (Host only) â”€â”€â”€
 function MicButton({ room, theme }: { room: Room; theme?: 'light' | 'dark' }) {
   const [enabled, setEnabled] = useState(room.localParticipant.isMicrophoneEnabled);
 
@@ -892,14 +983,14 @@ function MicButton({ room, theme }: { room: Room; theme?: 'light' | 'dark' }) {
           : "bg-red-500/20 text-red-500 border border-red-500/30"
         }
       `}
-      title={enabled ? "Silenciar micrófono" : "Activar micrófono"}
+      title={enabled ? "Silenciar micrÃ³fono" : "Activar micrÃ³fono"}
     >
       {enabled ? <Mic className="w-4 h-4" /> : <MicOff className="w-4 h-4" />}
     </button>
   );
 }
 
-// ─── CAMERA DOCK TOGGLE BUTTON ───
+// â”€â”€â”€ CAMERA DOCK TOGGLE BUTTON (Host only) â”€â”€â”€
 function CameraButton({ room, theme }: { room: Room; theme?: 'light' | 'dark' }) {
   const [enabled, setEnabled] = useState(room.localParticipant.isCameraEnabled);
 
@@ -920,14 +1011,14 @@ function CameraButton({ room, theme }: { room: Room; theme?: 'light' | 'dark' })
           : "bg-red-500/20 text-red-500 border border-red-500/30"
         }
       `}
-      title={enabled ? "Apagar cámara" : "Encender cámara"}
+      title={enabled ? "Apagar cÃ¡mara" : "Encender cÃ¡mara"}
     >
       {enabled ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
     </button>
   );
 }
 
-// ─── SCREEN SHARE DOCK TOGGLE BUTTON ───
+// â”€â”€â”€ SCREEN SHARE DOCK TOGGLE BUTTON (Host only) â”€â”€â”€
 function ScreenShareButton({ room, theme }: { room: Room; theme?: 'light' | 'dark' }) {
   const [enabled, setEnabled] = useState(room.localParticipant.isScreenShareEnabled);
 

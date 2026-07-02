@@ -78,6 +78,7 @@ export async function isCurrentUserAdmin() {
  */
 export async function getPosts(communityId: string = "default") {
   const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
   
   // Realiza inner join a profiles para el autor
   const { data: posts, error } = await supabase
@@ -98,7 +99,23 @@ export async function getPosts(communityId: string = "default") {
     return [];
   }
 
-  return posts || [];
+  let likedPostIds: string[] = [];
+  if (user) {
+    const { data: likes } = await supabase
+      .from("post_likes")
+      .select("post_id")
+      .eq("user_id", user.id);
+    if (likes) {
+      likedPostIds = likes.map((l: any) => l.post_id);
+    }
+  }
+
+  const postsWithLiked = (posts || []).map((p: any) => ({
+    ...p,
+    is_liked_by_user: likedPostIds.includes(p.id)
+  }));
+
+  return postsWithLiked;
 }
 
 export async function createPost(content: string, isQuestion: boolean = false, communityId: string = "default") {
@@ -140,14 +157,33 @@ export async function toggleLike(postId: string) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("Debes autenticarte");
 
-  // Nota: implementaremos algo sencillo iterando count.
-  // En producción real, requeriría tabla de posts_likes(post_id, user_id)
-  const { data: post } = await supabase.from("posts").select("likes_count").eq("id", postId).single();
-  let count = post?.likes_count || 0;
+  // Check if user already liked this post
+  const { data: existingLike } = await supabase
+    .from("post_likes")
+    .select("post_id")
+    .eq("post_id", postId)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  if (existingLike) {
+    // Unlike
+    const { error } = await supabase
+      .from("post_likes")
+      .delete()
+      .eq("post_id", postId)
+      .eq("user_id", user.id);
+    if (error) throw new Error(error.message);
+  } else {
+    // Like
+    const { error } = await supabase
+      .from("post_likes")
+      .insert({
+        post_id: postId,
+        user_id: user.id
+      });
+    if (error) throw new Error(error.message);
+  }
   
-  const { error } = await supabase.from("posts").update({ likes_count: count + 1 }).eq("id", postId);
-  
-  if (error) throw new Error(error.message);
   revalidatePath("/(comunidad)", "layout");
 }
 
@@ -241,4 +277,112 @@ export async function getCurrentUserManagedOrganization() {
 
   if (error || !managerRecord) return null;
   return (managerRecord as any).organizations || null;
+}
+
+// ------------------------------------------
+// CHAT GLOBAL ACTIONS
+// ------------------------------------------
+
+export async function getChatChannels() {
+  const supabase = await createClient();
+  
+  // Get first community ID
+  const { data: comm } = await supabase.from("communities").select("id").limit(1).single();
+  if (!comm) return [];
+
+  const { data: channels, error } = await supabase
+    .from("chat_channels")
+    .select("id, name, type, category")
+    .eq("community_id", comm.id)
+    .order("name", { ascending: true });
+
+  if (error) {
+    console.error("Error fetching channels:", error);
+    return [];
+  }
+
+  // Seed default channels if empty
+  if (!channels || channels.length === 0) {
+    const defaultChannels = [
+      { community_id: comm.id, name: "anuncios", type: "announcement", category: "General" },
+      { community_id: comm.id, name: "general", type: "text", category: "General" },
+      { community_id: comm.id, name: "python-help", type: "support", category: "Ayuda" },
+      { community_id: comm.id, name: "sql-queries", type: "support", category: "Ayuda" },
+      { community_id: comm.id, name: "power-bi", type: "support", category: "Ayuda" }
+    ];
+    const { data: seeded, error: seedError } = await supabase
+      .from("chat_channels")
+      .insert(defaultChannels)
+      .select("id, name, type, category");
+    if (!seedError && seeded) return seeded;
+  }
+
+  return channels || [];
+}
+
+export async function getChatMessages(channelId: string) {
+  const supabase = await createClient();
+  const { data: messages, error } = await supabase
+    .from("chat_messages")
+    .select(`
+      id,
+      content,
+      created_at,
+      author:profiles(id, full_name, role, avatar_url)
+    `)
+    .eq("channel_id", channelId)
+    .order("created_at", { ascending: true })
+    .limit(100);
+
+  if (error) {
+    console.error("Error fetching chat messages:", error);
+    return [];
+  }
+  return messages || [];
+}
+
+export async function sendChatMessage(channelId: string, content: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Debes autenticarte");
+
+  const { data, error } = await supabase
+    .from("chat_messages")
+    .insert({
+      channel_id: channelId,
+      author_id: user.id,
+      content
+    })
+    .select(`
+      id,
+      content,
+      created_at,
+      author:profiles(id, full_name, role, avatar_url)
+    `)
+    .single();
+
+  if (error) {
+    console.error("Error sending message:", error);
+    throw new Error(error.message);
+  }
+  return data;
+}
+
+export async function getActiveUsers() {
+  const supabase = await createClient();
+  const { data: profiles, error } = await supabase
+    .from("profiles")
+    .select("id, full_name, role, avatar_url")
+    .limit(20);
+  
+  if (error) return [];
+  
+  return (profiles || []).map((p, i) => ({
+    id: p.id,
+    name: p.full_name,
+    initials: p.full_name ? p.full_name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase() : "??",
+    role: p.role,
+    color: p.role === "admin" ? "bg-gradient-to-br from-brand-blue to-indigo-600" : "bg-emerald-500",
+    status: i % 3 === 0 ? "online" : i % 3 === 1 ? "idle" : "offline"
+  }));
 }

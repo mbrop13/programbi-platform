@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getCourseLessons } from "@/lib/supabase/comunidad-ai";
+import { getCourseLessons, toggleLessonProgress, getLessonNote, saveLessonNote } from "@/lib/supabase/comunidad-ai";
 
 interface Lesson {
   id: string;
@@ -59,8 +59,12 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
   useEffect(() => {
     async function load() {
       try {
-        const { lessons, access } = await getCourseLessons(courseId);
+        const { lessons, access, completedLessonIds } = await getCourseLessons(courseId);
         setAccessType(access);
+
+        if (completedLessonIds && completedLessonIds.length > 0) {
+          setCompletedLessons(new Set(completedLessonIds));
+        }
 
         // Group lessons into modules
         const moduleMap: Record<string, Module> = {};
@@ -87,18 +91,48 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     load();
   }, [courseId]);
 
-  // When Super Clase activates, set language from lesson
+  // When Super Clase activates, set language from lesson and load saved note
   useEffect(() => {
-    if (selectedLesson?.superclass_language) {
-      setLanguage(selectedLesson.superclass_language);
-      const defaultCode: Record<string, string> = {
-        python: "# Escribe tu código Python aquí\nprint('¡Hola ProgramBI!')",
-        sql: "-- Escribe tu consulta SQL aquí\nSELECT 'Hola ProgramBI' AS mensaje;",
-        javascript: "// Escribe tu código JavaScript aquí\nconsole.log('¡Hola ProgramBI!');",
-      };
-      setCode(defaultCode[selectedLesson.superclass_language] || defaultCode.python);
+    async function loadNoteAndSetLanguage() {
+      if (!selectedLesson) return;
+      if (selectedLesson.superclass_language) {
+        setLanguage(selectedLesson.superclass_language);
+        const defaultCode: Record<string, string> = {
+          python: "# Escribe tu código Python aquí\nprint('¡Hola ProgramBI!')",
+          sql: "-- Escribe tu consulta SQL aquí\nSELECT 'Hola ProgramBI' AS mensaje;",
+          javascript: "// Escribe tu código JavaScript aquí\nconsole.log('¡Hola ProgramBI!');",
+        };
+
+        try {
+          const savedNote = await getLessonNote(courseId, selectedLesson.id);
+          if (savedNote) {
+            setCode(savedNote);
+          } else {
+            setCode(defaultCode[selectedLesson.superclass_language] || defaultCode.python);
+          }
+        } catch (err) {
+          console.error("Error loading lesson note:", err);
+          setCode(defaultCode[selectedLesson.superclass_language] || defaultCode.python);
+        }
+      }
     }
-  }, [selectedLesson]);
+    loadNoteAndSetLanguage();
+  }, [selectedLesson, courseId]);
+
+  // Auto-save playground code note with debounce
+  useEffect(() => {
+    if (!selectedLesson || !superClaseActive || !selectedLesson.superclass_language) return;
+
+    const timer = setTimeout(async () => {
+      try {
+        await saveLessonNote(courseId, selectedLesson.id, code);
+      } catch (err) {
+        console.error("Error auto-saving lesson note:", err);
+      }
+    }, 1500); // 1.5 seconds debounce
+
+    return () => clearTimeout(timer);
+  }, [code, selectedLesson, courseId, superClaseActive]);
 
   const executeCode = async () => {
     setIsExecuting(true);
@@ -136,13 +170,33 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     }
   };
 
-  const toggleComplete = (lessonId: string) => {
+  const toggleComplete = async (lessonId: string) => {
+    const isCurrentlyCompleted = completedLessons.has(lessonId);
+    const nextState = !isCurrentlyCompleted;
+
+    // Optimistic UI update
     setCompletedLessons((prev) => {
       const next = new Set(prev);
       if (next.has(lessonId)) next.delete(lessonId);
       else next.add(lessonId);
       return next;
     });
+
+    try {
+      await toggleLessonProgress(courseId, lessonId, nextState);
+    } catch (err) {
+      console.error("Error updating lesson progress on database:", err);
+      // Revert UI update on failure
+      setCompletedLessons((prev) => {
+        const next = new Set(prev);
+        if (isCurrentlyCompleted) {
+          next.add(lessonId);
+        } else {
+          next.delete(lessonId);
+        }
+        return next;
+      });
+    }
   };
 
   const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);

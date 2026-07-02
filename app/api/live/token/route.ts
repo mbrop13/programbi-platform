@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createAdminClient } from "@/lib/supabase/server";
 import { AccessToken } from "livekit-server-sdk";
 
 export async function GET(req: NextRequest) {
@@ -19,21 +19,43 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "No autenticado" }, { status: 401 });
     }
 
-    // ─── 2. FETCH PROFILE TO CHECK ROLE ───
-    const { data: profile, error: profileError } = await supabase
+    // ─── 2. VERIFY THE ROOM EXISTS AND IS ACTIVE ───
+    const adminDb = createAdminClient();
+
+    const { data: liveClass } = await adminDb
+      .from("live_classes")
+      .select("id, room_name, status")
+      .eq("room_name", roomName)
+      .in("status", ["active", "scheduled"])
+      .maybeSingle();
+
+    if (!liveClass) {
+      return NextResponse.json({ error: "La sala no existe o la clase no está activa/programada." }, { status: 404 });
+    }
+
+    // ─── 3. FETCH PROFILE (BYPASS RLS) TO CHECK ROLE ───
+    const { data: profile } = await adminDb
       .from("profiles")
       .select("full_name, role")
       .eq("id", user.id)
       .single();
 
-    if (profileError || !profile) {
-      return NextResponse.json({ error: "Perfil de usuario no encontrado" }, { status: 404 });
+    // Secondary admin check via community_members
+    let isHost = profile?.role === "admin";
+    if (!isHost) {
+      const { data: communityAdmin } = await adminDb
+        .from("community_members")
+        .select("role")
+        .eq("profile_id", user.id)
+        .eq("role", "admin")
+        .limit(1)
+        .maybeSingle();
+      if (communityAdmin) isHost = true;
     }
 
-    const isHost = profile.role === "admin";
-    const displayName = profile.full_name || user.email?.split("@")[0] || "Estudiante";
+    const displayName = profile?.full_name || user.email?.split("@")[0] || "Estudiante";
 
-    // ─── 3. GENERATE LIVEKIT TOKEN ───
+    // ─── 4. GENERATE LIVEKIT TOKEN ───
     const apiKey = process.env.LIVEKIT_API_KEY;
     const apiSecret = process.env.LIVEKIT_API_SECRET;
 
@@ -46,7 +68,7 @@ export async function GET(req: NextRequest) {
       identity: user.id,
       name: displayName,
       metadata: JSON.stringify({
-        role: profile.role,
+        role: isHost ? "admin" : "student",
         email: user.email
       })
     });
@@ -54,10 +76,11 @@ export async function GET(req: NextRequest) {
     at.addGrant({
       roomJoin: true,
       room: roomName,
-      canPublish: true, // Allow students to unmute/participate if allowed client-side
-      canPublishData: true, // Allow chat usage
+      // Hosts get full publish; students only data (chat) + audio (mic)
+      canPublish: isHost,
+      canPublishData: true, // Everyone can use chat
       canSubscribe: true,
-      roomAdmin: isHost // Grants admin power only to hosts
+      roomAdmin: isHost // Admin powers (mute others, remove, etc.) only for hosts
     });
 
     const token = await at.toJwt();
