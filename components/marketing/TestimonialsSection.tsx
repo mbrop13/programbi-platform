@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import { Star, MessageSquareText } from "lucide-react";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import SectionHeader from "@/components/shared/SectionHeader";
@@ -139,10 +139,11 @@ const accents = [
   { ring: "ring-rose-400/20", gradient: "from-rose-400/10", dot: "bg-rose-500" },
 ];
 
-// Distribute testimonials into columns (round-robin)
-const NUM_COLS = 7;
+// Distribute testimonials into columns — 2 per column
+const PER_COL = 2;
+const NUM_COLS = Math.ceil(testimonials.length / PER_COL);
 const columns: (typeof testimonials)[] = Array.from({ length: NUM_COLS }, () => []);
-testimonials.forEach((t, i) => columns[i % NUM_COLS].push(t));
+testimonials.forEach((t, i) => columns[Math.floor(i / PER_COL)].push(t));
 
 // ── Card Component ──
 function TestimonialCard({
@@ -171,11 +172,6 @@ function TestimonialCard({
         group
       `}
     >
-      {/* Top accent bar */}
-      <div
-        className={`absolute inset-x-0 top-0 h-0.5 rounded-t-2xl bg-gradient-to-r ${accent.gradient} via-transparent to-transparent opacity-70 group-hover:opacity-100 transition-opacity`}
-      />
-
       {/* ── Name + Role (TOP) ── */}
       <div className="flex items-center gap-3 mb-4">
         <div
@@ -209,25 +205,103 @@ function TestimonialCard({
 
 // ── Main Section ──
 export default function TestimonialsSection() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef<number>(0);
+  const isPausedRef = useRef(false);
   const [paused, setPaused] = useState(false);
   const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  function handleClick() {
-    setPaused((p) => {
-      const next = !p;
-      if (clickTimer.current) clearTimeout(clickTimer.current);
-      if (next) {
-        // Auto-resume after 8 seconds
-        clickTimer.current = setTimeout(() => setPaused(false), 8000);
+  // Drag state
+  const dragRef = useRef({ active: false, dragging: false, startX: 0, startY: 0, scrollStart: 0 });
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    isPausedRef.current = paused;
+  }, [paused]);
+
+  // ── Auto-scroll via JS ──
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    const SPEED = 0.6; // px per frame (~36px/s at 60fps)
+
+    function tick() {
+      if (track && !isPausedRef.current && !dragRef.current.dragging) {
+        track.scrollLeft += SPEED;
+        // Seamless loop: reset when scrolled past half (the duplicate set)
+        const half = track.scrollWidth / 2;
+        if (track.scrollLeft >= half) {
+          track.scrollLeft -= half;
+        }
       }
-      return next;
-    });
+      rafRef.current = requestAnimationFrame(tick);
+    }
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  // ── Drag-to-scroll handlers (safe for vertical page scroll) ──
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    const track = trackRef.current;
+    if (!track) return;
+    dragRef.current = { active: true, dragging: false, startX: e.clientX, startY: e.clientY, scrollStart: track.scrollLeft };
+  }, []);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    if (!dragRef.current.active) return;
+    const track = trackRef.current;
+    if (!track) return;
+    const dx = e.clientX - dragRef.current.startX;
+    const dy = e.clientY - dragRef.current.startY;
+
+    if (!dragRef.current.dragging) {
+      // Wait for clear direction before starting drag
+      if (Math.abs(dy) > 8) {
+        // Vertical scroll → cancel drag, let page scroll
+        dragRef.current.active = false;
+        return;
+      }
+      if (Math.abs(dx) > 5) {
+        dragRef.current.dragging = true;
+        track.style.cursor = "grabbing";
+        setPaused(true);
+        e.preventDefault();
+      }
+      return;
+    }
+
+    e.preventDefault();
+    track.scrollLeft = dragRef.current.scrollStart - dx;
+  }, []);
+
+  const onPointerUp = useCallback(() => {
+    const wasDragging = dragRef.current.dragging;
+    dragRef.current = { active: false, dragging: false, startX: 0, startY: 0, scrollStart: 0 };
+    if (trackRef.current) trackRef.current.style.cursor = "";
+    if (wasDragging) {
+      // Auto-resume after 3s
+      if (clickTimer.current) clearTimeout(clickTimer.current);
+      clickTimer.current = setTimeout(() => setPaused(false), 3000);
+    }
+  }, []);
+
+  function handleMouseEnter() {
+    setPaused(true);
+  }
+
+  function handleMouseLeave() {
+    setPaused(false);
+    dragRef.current.active = false;
+    if (trackRef.current) trackRef.current.style.cursor = "";
+    if (clickTimer.current) clearTimeout(clickTimer.current);
   }
 
   // Render one set of columns
   const renderColumnSet = (keyPrefix: string) =>
     columns.map((col, ci) => (
-      <div key={`${keyPrefix}-${ci}`} className="flex flex-col gap-4 shrink-0 w-[300px] md:w-[340px]">
+      <div key={`${keyPrefix}-${ci}`} className="flex flex-col gap-4 shrink-0 w-[280px] sm:w-[300px] md:w-[340px]">
         {col.map((t, ti) => (
           <TestimonialCard key={ti} t={t} accentIdx={ci * 3 + ti} />
         ))}
@@ -240,17 +314,29 @@ export default function TestimonialsSection() {
       <div className="absolute inset-0 dot-pattern opacity-25 pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-b from-[#1890FF]/4 to-transparent rounded-full blur-[150px] pointer-events-none" />
 
-      {/* Inline keyframes for marquee */}
+      {/* Inline styles — horizontal scrollable track */}
       <style jsx>{`
-        @keyframes testimonial-scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
         .testimonial-track {
-          animation: testimonial-scroll 70s linear infinite;
+          display: flex;
+          gap: 1rem;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          padding: 0.5rem 1.25rem 1rem;
+          scrollbar-width: none;
+          cursor: grab;
+          user-select: none;
+          touch-action: pan-y;
         }
-        .testimonial-track.paused {
-          animation-play-state: paused;
+        .testimonial-track::-webkit-scrollbar {
+          display: none;
+        }
+        .testimonial-track > * {
+          flex-shrink: 0;
+        }
+        @media (min-width: 640px) {
+          .testimonial-track {
+            padding: 0.5rem 0 1rem;
+          }
         }
       `}</style>
 
@@ -273,34 +359,40 @@ export default function TestimonialsSection() {
           />
         </div>
 
-        {/* ── Marquee Container ── */}
+        {/* ── Scrollable Container ── */}
         <div
-          className="relative w-full cursor-default select-none"
-          onMouseEnter={() => setPaused(true)}
-          onMouseLeave={() => {
-            setPaused(false);
-            if (clickTimer.current) clearTimeout(clickTimer.current);
-          }}
-          onClick={handleClick}
+          className="relative w-full select-none"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
         >
-          {/* Left fade mask */}
-          <div className="absolute left-0 top-0 bottom-0 w-20 sm:w-32 md:w-44 bg-gradient-to-r from-surface-1 via-surface-1/80 to-transparent z-20 pointer-events-none" />
-          {/* Right fade mask */}
-          <div className="absolute right-0 top-0 bottom-0 w-20 sm:w-32 md:w-44 bg-gradient-to-l from-surface-1 via-surface-1/80 to-transparent z-20 pointer-events-none" />
+          {/* Left fade mask — hidden on mobile */}
+          <div className="hidden sm:block absolute left-0 top-0 bottom-0 w-28 md:w-44 bg-gradient-to-r from-surface-1 via-surface-1/80 to-transparent z-20 pointer-events-none" />
+          {/* Right fade mask — hidden on mobile */}
+          <div className="hidden sm:block absolute right-0 top-0 bottom-0 w-28 md:w-44 bg-gradient-to-l from-surface-1 via-surface-1/80 to-transparent z-20 pointer-events-none" />
 
-          {/* Scrolling track (CSS animation) */}
-          <div className={`testimonial-track flex gap-5 will-change-transform ${paused ? "paused" : ""}`}>
+          {/* Scrolling track — JS auto-scroll + drag-to-scroll */}
+          <div
+            ref={trackRef}
+            className={`testimonial-track ${paused ? "paused" : ""}`}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+          >
             {renderColumnSet("a")}
+            {/* Duplicate set for seamless infinite loop */}
             {renderColumnSet("b")}
           </div>
         </div>
 
-        {/* ── Pause hint ── */}
+        {/* ── Hint ── */}
         <FadeIn delay={0.3}>
           <div className="mt-10 text-center max-w-6xl mx-auto px-5">
             <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest select-none flex items-center justify-center gap-3">
               <span className="inline-block w-8 h-px bg-slate-300" />
-              Pasa el cursor para detener · Clic para pausar
+              {/* Different hint per breakpoint */}
+              <span className="sm:hidden">Desliza para ver más testimonios</span>
+              <span className="hidden sm:inline">Arrastra con el trackpad o mouse · Hover para pausar</span>
               <span className="inline-block w-8 h-px bg-slate-300" />
             </p>
           </div>
