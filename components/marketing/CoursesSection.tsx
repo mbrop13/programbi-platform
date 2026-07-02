@@ -265,12 +265,6 @@ export default function CoursesSection() {
                       className="relative h-full rounded-[1.75rem] overflow-hidden border border-white/60 backdrop-blur-xl bg-white/50 flex flex-col transition-all duration-500 group-hover:border-white/90 group-hover:bg-white/70"
                       style={{ boxShadow: "0 10px 40px -12px rgba(15,23,42,0.10), inset 0 1px 0 0 rgba(255,255,255,0.9)" }}
                     >
-                      {/* Franja superior de acento */}
-                      <div
-                        className="h-1 w-full"
-                        style={{ background: `linear-gradient(90deg, ${accent}, ${accent}66)` }}
-                      />
-
                       {/* Imagen con overlay de color del curso */}
                       <div className="relative aspect-[16/10] overflow-hidden">
                         <Image
