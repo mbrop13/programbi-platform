@@ -380,7 +380,7 @@ export async function getActiveUsers() {
   return (profiles || []).map((p, i) => ({
     id: p.id,
     name: p.full_name,
-    initials: p.full_name ? p.full_name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase() : "??",
+    initials: p.full_name ? p.full_name.split(" ").map((n: string) => n[0]).join("").substring(0, 2).toUpperCase() : "??",
     role: p.role,
     color: p.role === "admin" ? "bg-gradient-to-br from-brand-blue to-indigo-600" : "bg-emerald-500",
     status: i % 3 === 0 ? "online" : i % 3 === 1 ? "idle" : "offline"
