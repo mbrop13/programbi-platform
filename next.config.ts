@@ -31,12 +31,12 @@ const nextConfig: NextConfig = {
             value: [
               "default-src 'self';",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://s3.tradingview.com https://*.tradingview.com;",
-              "style-src 'self' 'unsafe-inline';",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;",
               "img-src 'self' data: blob: https://images.unsplash.com https://cdn.shopify.com https://img.youtube.com https://mail.programbi.com https://flagcdn.com https://i.pravatar.cc https://www.svgrepo.com https://*.tradingview.com;",
-              "connect-src 'self' https://*.supabase.co https://api.mercadopago.com https://*.tradingview.com;",
+              "connect-src 'self' https://*.supabase.co https://api.mercadopago.com https://*.tradingview.com https://*.livekit.cloud wss://*.livekit.cloud;",
               "frame-src 'self' https://*.youtube.com https://*.youtube-nocookie.com https://*.tradingview.com;",
               "media-src 'self' blob: https://mail.programbi.com;",
-              "font-src 'self' data:;",
+              "font-src 'self' data: https://fonts.gstatic.com;",
               "object-src 'none';",
               "base-uri 'self';",
               "form-action 'self';",
@@ -57,7 +57,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: "Permissions-Policy",
-            value: "camera=(), microphone=(), geolocation=()",
+            value: "camera=(self), microphone=(self), geolocation=()",
           },
           {
             key: "Strict-Transport-Security",
