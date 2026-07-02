@@ -5,6 +5,7 @@ import BlogPromoSection from "@/components/marketing/BlogPromoSection";
 import GallerySection from "@/components/marketing/GallerySection";
 import MentorsSection from "@/components/marketing/MentorsSection";
 import FounderSection from "@/components/marketing/FounderSection";
+import TestimonialsSection from "@/components/marketing/TestimonialsSection";
 import FaqSection from "@/components/marketing/FaqSection";
 import ContactSection from "@/components/marketing/ContactSection";
 import CtaBanner from "@/components/marketing/CtaBanner";
@@ -68,6 +69,7 @@ export default async function HomePage() {
       <GallerySection />
       <MentorsSection />
       <FounderSection />
+      <TestimonialsSection />
       <BlogPromoSection articles={featuredArticles} />
       <FaqSection />
       <CtaBanner />
