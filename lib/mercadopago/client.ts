@@ -172,37 +172,40 @@ export interface MPPreference {
 }
 
 export async function createMPPreference(data: {
-  title: string;
-  price: number;
+  items: Array<{
+    title: string;
+    quantity: number;
+    unitPrice: number;
+    currencyId?: string;
+  }>;
   payerEmail: string;
   externalReference: string;
-  planId: string;
-  backUrl: string;
+  backUrls: {
+    success: string;
+    failure: string;
+    pending: string;
+  };
+  notificationUrl?: string;
+  metadata?: Record<string, any>;
+  autoReturn?: "approved" | "all";
 }): Promise<MPPreference> {
   return mpFetch<MPPreference>("/checkout/preferences", {
     method: "POST",
     body: JSON.stringify({
-      items: [
-        {
-          title: data.title,
-          quantity: 1,
-          unit_price: data.price,
-          currency_id: "CLP",
-        }
-      ],
+      items: data.items.map(item => ({
+        title: item.title,
+        quantity: item.quantity,
+        unit_price: item.unitPrice,
+        currency_id: item.currencyId || "CLP",
+      })),
       payer: {
         email: data.payerEmail,
       },
       external_reference: data.externalReference,
-      metadata: {
-        plan_id: data.planId,
-      },
-      back_urls: {
-        success: data.backUrl,
-        failure: data.backUrl,
-        pending: data.backUrl,
-      },
-      auto_return: "approved",
+      metadata: data.metadata || {},
+      back_urls: data.backUrls,
+      auto_return: data.autoReturn || "approved",
+      ...(data.notificationUrl ? { notification_url: data.notificationUrl } : {}),
     }),
   });
 }

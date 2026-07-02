@@ -81,10 +81,148 @@ export async function POST(req: NextRequest) {
          const payment = await getMPPayment(paymentId);
          
          if (payment.status === "approved") {
-           const planId = payment.metadata?.plan_id; // Solo existe en Preferences (Pago Único)
-           const userId = payment.external_reference;
+           const isCourse = payment.metadata?.type === "course_purchase";
+           const planId = payment.metadata?.plan_id; // Solo existe en Preferences (Pago Único de suscripción)
+           const userId = payment.external_reference; // For subscriptions this is the userId
 
-           if (planId && userId) {
+           // ── Course Purchase handling ──
+           if (isCourse) {
+             const commerceOrder = payment.metadata?.commerce_order || payment.external_reference;
+             const courseUserId = payment.metadata?.user_id;
+
+             if (commerceOrder) {
+               const adminDb = createAdminClient();
+
+               // Find the payment record by commerce order
+               const { data: paymentRecord } = await adminDb
+                 .from("payments")
+                 .select("id, user_id, course_id, status, amount, flow_order, payment_method")
+                 .eq("flow_order", commerceOrder)
+                 .maybeSingle();
+
+               if (paymentRecord && paymentRecord.status !== "paid") {
+                 // Parse cart items from temporary payment_method JSON
+                 let cartItems: any[] = [];
+                 let schedulingSlots: any[] = [];
+                 let couponCodeToIncrement: string | null = null;
+
+                 try {
+                   if (paymentRecord.payment_method && paymentRecord.payment_method.startsWith('{')) {
+                     const parsed = JSON.parse(paymentRecord.payment_method);
+                     if (parsed.items) cartItems = parsed.items;
+                     if (parsed.slots) schedulingSlots = parsed.slots;
+                     if (parsed.couponCode) couponCodeToIncrement = parsed.couponCode;
+                   }
+                 } catch (parseErr) {
+                   console.error("MP Webhook: Error parsing cart data:", parseErr);
+                 }
+
+                 // Update payment status
+                 await adminDb.from("payments").update({
+                   status: "paid",
+                   flow_status: 2,
+                   payment_method: payment.payment_method_id || "mercadopago",
+                   paid_at: new Date().toISOString(),
+                 }).eq("id", paymentRecord.id);
+
+                 // Increment coupon used count
+                 if (couponCodeToIncrement) {
+                   try {
+                     const { adminIncrementCouponUsedCount } = await import("@/lib/supabase/comunidad-ai");
+                     await adminIncrementCouponUsedCount(couponCodeToIncrement);
+                     console.log(`✅ Coupon ${couponCodeToIncrement} used count incremented via webhook.`);
+                   } catch (couponErr) {
+                     console.error("❌ Error incrementing coupon:", couponErr);
+                   }
+                 }
+
+                 const uid = courseUserId || paymentRecord.user_id;
+                 if (uid) {
+                   // Send confirmation email
+                   try {
+                     const { sendPaymentConfirmation, sendNewPurchaseNotificationToAdmin } = await import("@/lib/email/mailersend");
+                     const { data: profile } = await adminDb
+                       .from("profiles")
+                       .select("full_name, email, phone")
+                       .eq("id", uid)
+                       .single();
+
+                     const name = profile?.full_name || "Estudiante";
+                     const email = profile?.email || "";
+
+                     const coursesToSend = cartItems.map((item: any) => ({
+                       slug: item.slug,
+                       title: item.title,
+                       levelName: item.levelName,
+                       price: item.pricePerUnit * item.quantity,
+                       selectedStartDate: item.selectedStartDate || null
+                     }));
+
+                     if (email && coursesToSend.length > 0) {
+                       await sendPaymentConfirmation({
+                         name,
+                         email,
+                         courses: coursesToSend,
+                         orderId: commerceOrder,
+                         totalPaid: paymentRecord.amount,
+                         paymentMethod: payment.payment_method_id || "MercadoPago",
+                       });
+                       console.log(`📧 Course purchase confirmation sent to ${email} via webhook`);
+
+                       await sendNewPurchaseNotificationToAdmin({
+                         name,
+                         email,
+                         phone: profile?.phone || "",
+                         courses: coursesToSend,
+                         orderId: commerceOrder,
+                         totalPaid: paymentRecord.amount,
+                         paymentMethod: payment.payment_method_id || "MercadoPago"
+                       });
+                       console.log("📧 Admin purchase notification sent via webhook");
+                     }
+                   } catch (emailErr) {
+                     console.error("❌ Error sending course purchase email via webhook:", emailErr);
+                   }
+
+                   // Auto-enroll user in all courses
+                   if (cartItems.length > 0) {
+                     const enrollmentsToCreate = cartItems
+                       .filter((item: any) => item.slug)
+                       .map((item: any) => ({
+                         user_id: uid,
+                         course_slug: item.slug,
+                         status: "active",
+                         access_type: "full"
+                       }));
+
+                     if (enrollmentsToCreate.length > 0) {
+                       const { error: enrollErr } = await adminDb
+                         .from("enrollments")
+                         .upsert(enrollmentsToCreate, { onConflict: "user_id,course_slug" });
+                       if (enrollErr) {
+                         console.error("❌ Course enrollment error via webhook:", enrollErr);
+                       } else {
+                         console.log(`✅ Enrolled user ${uid} in ${enrollmentsToCreate.length} courses via webhook`);
+                       }
+                     }
+                   }
+
+                   // Confirm scheduling slots
+                   if (schedulingSlots && schedulingSlots.length > 0) {
+                     await adminDb.from("asesoria_slots")
+                       .update({ status: "booked" })
+                       .eq("flow_order", commerceOrder);
+                   }
+                 }
+
+                 console.log(`✅ MP Webhook: Course purchase processed for order ${commerceOrder}`);
+               } else if (paymentRecord?.status === "paid") {
+                 console.log(`ℹ️ MP Webhook: Order ${commerceOrder} already processed, skipping.`);
+               }
+             }
+           }
+           // ── Subscription One-Time Payment handling (existing logic) ──
+           else if (planId && userId) {
              const basePlanId = planId.split("_")[0];
              let months = 1;
              if (planId.endsWith("_semestral")) months = 6;
@@ -96,14 +234,14 @@ export async function POST(req: NextRequest) {
              const adminDb = createAdminClient();
              await adminDb.from("profiles").update({
                subscription_plan: basePlanId,
-               mp_subscription_id: payment.id.toString(), // Using payment ID as fallback token
+               mp_subscription_id: payment.id.toString(),
                subscription_start_at: payment.date_created,
                subscription_expires_at: expiresAt.toISOString(),
                is_on_trial: false,
              }).eq("id", userId);
 
              console.log(`✅ MP Webhook: Updated user ${userId} to plan ${basePlanId} (One-Time Payment, ${months} months)`);
-           } else if (userId) {
+           } else if (userId && !isCourse) {
              // Es un pago de una suscripción recurrente (probablemente terminó el trial y se le cobró)
              const adminDb = createAdminClient();
              await adminDb.from("profiles").update({

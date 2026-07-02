@@ -244,7 +244,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
     }
     
     try {
-      const res = await fetch("/api/flow/create", {
+      const res = await fetch("/api/mp/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 

@@ -54,12 +54,19 @@ export async function POST(req: NextRequest) {
       }
 
       const preference = await createMPPreference({
-        title: `ProgramBI Community - ${planId.replace("_", " ").toUpperCase()}`,
-        price: Math.round(price),
+        items: [{
+          title: `ProgramBI Community - ${planId.replace("_", " ").toUpperCase()}`,
+          quantity: 1,
+          unitPrice: Math.round(price),
+        }],
         payerEmail: userEmail,
         externalReference: user.id,
-        planId: planId,
-        backUrl: backUrl,
+        metadata: { plan_id: planId },
+        backUrls: {
+          success: backUrl,
+          failure: backUrl,
+          pending: backUrl,
+        },
       });
 
       return NextResponse.json({ url: preference.init_point });

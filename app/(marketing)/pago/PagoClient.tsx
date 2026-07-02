@@ -427,7 +427,7 @@ export default function PagoClient() {
     try {
       // In a real multi-item implementation, we modify backend to accept `items` array.
       // Below is the mapped array to pass to the updated Flow creation logic.
-      const res = await fetch("/api/flow/create", {
+      const res = await fetch("/api/mp/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
