@@ -2,7 +2,6 @@
 
 import { useRef, useState, useEffect, useCallback } from "react";
 import { Star, MessageSquareText } from "lucide-react";
-import { FadeIn } from "@/components/shared/AnimatedComponents";
 import SectionHeader from "@/components/shared/SectionHeader";
 
 // ── Real student testimonials ──
@@ -309,7 +308,7 @@ export default function TestimonialsSection() {
     ));
 
   return (
-    <section className="py-20 lg:py-28 bg-surface-1 relative overflow-hidden">
+    <section className="py-10 lg:py-14 bg-surface-1 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 dot-pattern opacity-25 pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-b from-[#1890FF]/4 to-transparent rounded-full blur-[150px] pointer-events-none" />
@@ -355,7 +354,7 @@ export default function TestimonialsSection() {
             subtitle="Historias reales de profesionales que transformaron su carrera con ProgramBI."
             align="center"
             maxWidth="md"
-            className="mb-12 lg:mb-16"
+            className="mb-6 lg:mb-10"
           />
         </div>
 
@@ -384,40 +383,6 @@ export default function TestimonialsSection() {
             {renderColumnSet("b")}
           </div>
         </div>
-
-        {/* ── Hint ── */}
-        <FadeIn delay={0.3}>
-          <div className="mt-10 text-center max-w-6xl mx-auto px-5">
-            <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest select-none flex items-center justify-center gap-3">
-              <span className="inline-block w-8 h-px bg-slate-300" />
-              {/* Different hint per breakpoint */}
-              <span className="sm:hidden">Desliza para ver más testimonios</span>
-              <span className="hidden sm:inline">Arrastra con el trackpad o mouse · Hover para pausar</span>
-              <span className="inline-block w-8 h-px bg-slate-300" />
-            </p>
-          </div>
-        </FadeIn>
-
-        {/* ── Bottom social proof ── */}
-        <FadeIn delay={0.4}>
-          <div className="mt-8 text-center max-w-6xl mx-auto px-5">
-            <div className="flex items-center justify-center gap-3">
-              <div className="flex -space-x-2">
-                {accents.slice(0, 5).map((a, i) => (
-                  <div
-                    key={i}
-                    className={`w-8 h-8 rounded-full bg-gradient-to-br ${a.gradient} to-white ring-2 ring-white shadow-sm flex items-center justify-center`}
-                  >
-                    <Star className="w-3 h-3 text-amber-400 fill-amber-400" strokeWidth={0} />
-                  </div>
-                ))}
-              </div>
-              <span className="text-xs text-slate-500 font-semibold">
-                +100 profesionales capacitados
-              </span>
-            </div>
-          </div>
-        </FadeIn>
       </div>
     </section>
   );
