@@ -13,7 +13,6 @@ import MisCursos from "./tabs/MisCursos";
 import AulaVirtual from "./tabs/AulaVirtual";
 import ChatGlobal from "./tabs/ChatGlobal";
 import AIAsistente from "./tabs/AIAsistente";
-import AdminPanel from "./tabs/AdminPanel";
 import BusinessPortal from "./tabs/BusinessPortal";
 import LivePanel from "./tabs/LivePanel";
 import UserProfile from "./tabs/UserProfile";
@@ -21,6 +20,7 @@ import Certificates from "./tabs/Certificates";
 import MembersDirectory from "./tabs/MembersDirectory";
 import SettingsModal from "./SettingsModal";
 import { ToastProvider } from "./ui/Toast";
+
 import {
   isCurrentUserAdmin,
   getCurrentUserProfile,
@@ -41,7 +41,6 @@ export default function ComunidadPortal() {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Derive active tab from URL: /comunidad/ai → "ai"
   const segments = pathname.split("/").filter(Boolean);
   const activeTab = segments[1] || "inicio";
 
@@ -51,30 +50,23 @@ export default function ComunidadPortal() {
   const [hasCourses, setHasCourses] = useState<boolean | null>(null);
   const [isCheckingPlan, setIsCheckingPlan] = useState(true);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
-
-  // New sidebar state
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
-  // Fetch admin status and user profile on mount
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        const [adminStatus, profile, enrollmentData, orgData] =
-          await Promise.all([
-            isCurrentUserAdmin(),
-            getCurrentUserProfile(),
-            getMyEnrollments(),
-            getCurrentUserManagedOrganization(),
-          ]);
+        const [adminStatus, profile, enrollmentData, orgData] = await Promise.all([
+          isCurrentUserAdmin(),
+          getCurrentUserProfile(),
+          getMyEnrollments(),
+          getCurrentUserManagedOrganization(),
+        ]);
         setIsAdmin(adminStatus);
         setUserProfile(profile as any);
         setHasCourses(
-          (Array.isArray(enrollmentData)
-            ? enrollmentData
-            : enrollmentData.enrollments
-          ).length > 0
+          (Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments).length > 0
         );
         setIsOrgManager(!!orgData);
       } catch (err) {
@@ -86,44 +78,37 @@ export default function ComunidadPortal() {
     loadUserData();
   }, []);
 
-  // Redirect non-admins or non-managers away from restricted pages
+  // Redirect non-admins/non-managers
   useEffect(() => {
-    if (activeTab === "admin" && !isAdmin && userProfile !== null) {
-      router.push("/comunidad/inicio");
-    }
     if (activeTab === "business" && !isOrgManager && userProfile !== null) {
       router.push("/comunidad/inicio");
     }
-  }, [activeTab, isAdmin, isOrgManager, userProfile, router]);
+  }, [activeTab, isOrgManager, userProfile, router]);
 
-  // Auto-redirect organization managers to /comunidad/business
+  // Auto-redirect org managers
   useEffect(() => {
     if (isOrgManager && activeTab === "inicio") {
       router.push("/comunidad/business");
     }
   }, [isOrgManager, activeTab, router]);
 
+  // Open settings modal when navigating to /comunidad/configuracion
+  useEffect(() => {
+    if (activeTab === "configuracion") {
+      setShowSettingsModal(true);
+    }
+  }, [activeTab]);
+
   const hasSubscription = !!userProfile?.subscription_plan;
   const canAccessFull = isAdmin || hasSubscription;
 
-  // Redirect if no access at all
   useEffect(() => {
     if (!isCheckingPlan && !canAccessFull && !hasCourses) {
       router.push("/comunidad");
     }
   }, [isCheckingPlan, canAccessFull, hasCourses, router]);
 
-  if (isCheckingPlan || (!canAccessFull && !hasCourses)) {
-    return (
-      <div className="w-full min-h-screen flex items-center justify-center bg-[#f8f9fb]">
-        <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
-      </div>
-    );
-  }
-
-  // LOGIC: No plan but has courses → restricted view except on 'cursos' tab
-  const restrictedView =
-    !canAccessFull && hasCourses && activeTab !== "cursos";
+  const restrictedView = !canAccessFull && hasCourses && activeTab !== "cursos";
 
   const handleTabChange = (tabId: string) => {
     setSelectedCourseId(null);
@@ -132,192 +117,159 @@ export default function ComunidadPortal() {
 
   return (
     <ToastProvider>
-    <div className="flex min-h-screen bg-[#f8f9fb]">
-      {/* ─── SIDEBAR ─── */}
-      <Sidebar
-        activeTab={activeTab}
-        onTabChange={handleTabChange}
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
-        isAdmin={isAdmin}
-        isOrgManager={isOrgManager}
-        userProfile={userProfile}
-        mobileOpen={mobileNavOpen}
-        onMobileClose={() => setMobileNavOpen(false)}
-      />
-
-      {/* ─── MAIN AREA ─── */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
-        {/* TopBar */}
-        <TopBar
+      <div className="flex min-h-screen bg-[#f8f9fb]">
+        {/* ─── SIDEBAR (always visible, even during content loading) ─── */}
+        <Sidebar
           activeTab={activeTab}
-          onMobileMenuOpen={() => setMobileNavOpen(true)}
+          onTabChange={handleTabChange}
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
+          isAdmin={isAdmin}
+          isOrgManager={isOrgManager}
           userProfile={userProfile}
+          mobileOpen={mobileNavOpen}
+          onMobileClose={() => setMobileNavOpen(false)}
           onOpenSettings={() => setShowSettingsModal(true)}
         />
 
-        {/* Content */}
-        <main className="flex-1 w-full flex flex-col min-h-0">
-          {activeTab === "ai" ? (
-            /* AI tab gets full width, no padding wrapper */
-            <AnimatePresence mode="wait">
-              <motion.div
-                key="ai"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-                className="flex-1 flex flex-col min-h-0"
-              >
-                <AIAsistente isRestricted={!!restrictedView} />
-              </motion.div>
-            </AnimatePresence>
-          ) : (
-            <div className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto">
+        {/* ─── MAIN AREA ─── */}
+        <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+          <TopBar
+            activeTab={activeTab}
+            onMobileMenuOpen={() => setMobileNavOpen(true)}
+          />
+
+          <main className="flex-1 w-full flex flex-col min-h-0">
+            {/* ─── LOADING STATE (sidebar visible, content loading) ─── */}
+            {isCheckingPlan || (!canAccessFull && !hasCourses) ? (
+              <div className="flex-1 flex items-center justify-center">
+                <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
+              </div>
+            ) : activeTab === "ai" ? (
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={activeTab + (selectedCourseId || "")}
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  key="ai"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex-1 flex flex-col min-h-0"
                 >
-                  {/* Inicio */}
-                  {activeTab === "inicio" && (
-                    <MuroFeed isRestricted={!!restrictedView} />
-                  )}
-
-                  {/* Cursos / Aula Virtual */}
-                  {activeTab === "cursos" &&
-                    (selectedCourseId ? (
-                      <AulaVirtual
-                        courseId={selectedCourseId}
-                        onBack={() => setSelectedCourseId(null)}
-                      />
-                    ) : (
-                      <MisCursos
-                        onSelectCourse={(id) => setSelectedCourseId(id)}
-                      />
-                    ))}
-
-                  {/* En Vivo */}
-                  {activeTab === "live" && (
-                    <div className="relative">
-                      {restrictedView && (
-                        <div className="absolute inset-0 z-50 rounded-3xl bg-white/40 backdrop-blur-[6px] flex flex-col items-center justify-center p-6 border border-white/20">
-                          <div className="w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center mb-4 text-brand-blue">
-                            <Lock className="w-8 h-8" />
-                          </div>
-                          <h3 className="text-xl font-bold text-gray-900 mb-2">
-                            Sección Premium
-                          </h3>
-                          <p className="text-gray-600 text-center max-w-sm mb-6">
-                            Suscríbete a un plan de la comunidad para asistir a
-                            las Masterclasses semanales en vivo.
-                          </p>
-                          <button
-                            onClick={() => router.push("/comunidad")}
-                            className="bg-brand-blue text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
-                          >
-                            Ver Planes
-                          </button>
-                        </div>
-                      )}
-                      <LivePanel />
-                    </div>
-                  )}
-
-                  {/* Chat / Comunidad */}
-                  {activeTab === "chat" && (
-                    <ChatGlobal isRestricted={!!restrictedView} />
-                  )}
-
-                  {/* Business */}
-                  {activeTab === "business" &&
-                    (isOrgManager ? (
-                      <BusinessPortal />
-                    ) : (
-                      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-12 text-center max-w-2xl mx-auto mt-8">
-                        <h2 className="font-display font-black text-2xl text-gray-900 mb-3">
-                          Acceso Restringido
-                        </h2>
-                        <p className="text-gray-500 mb-6">
-                          Esta sección está disponible únicamente para gestores
-                          corporativos.
-                        </p>
-                      </div>
-                    ))}
-
-                  {/* Admin */}
-                  {activeTab === "admin" &&
-                    (isAdmin ? (
-                      <AdminPanel />
-                    ) : (
-                      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-12 text-center max-w-2xl mx-auto mt-8">
-                        <div className="w-20 h-20 bg-amber-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                          <ShieldAlert className="w-10 h-10 text-amber-500" />
-                        </div>
-                        <h2 className="font-display font-black text-2xl text-gray-900 mb-3">
-                          Acceso Restringido
-                        </h2>
-                        <p className="text-gray-500 max-w-md mx-auto mb-6">
-                          Esta sección está disponible solo para
-                          administradores de la plataforma.
-                        </p>
-                        <button
-                          onClick={() =>
-                            router.push("/comunidad/inicio")
-                          }
-                          className="bg-brand-blue text-white font-semibold px-6 py-2.5 rounded-xl hover:bg-blue-600 transition-colors shadow-sm"
-                        >
-                          Volver al Inicio
-                        </button>
-                      </div>
-                    ))}
-
-                  {/* Perfil */}
-                  {activeTab === "perfil" && <UserProfile />}
-
-                  {/* Certificados */}
-                  {activeTab === "certificados" && <Certificates />}
-
-                  {/* Miembros */}
-                  {activeTab === "miembros" && <MembersDirectory />}
-
-                  {/* Configuración */}
-                  {activeTab === "configuracion" && (
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center max-w-md mx-auto">
-                      <h2 className="font-display font-bold text-xl text-gray-900 mb-2">
-                        Configuración
-                      </h2>
-                      <p className="text-gray-500 mb-4">
-                        Gestiona tu cuenta, suscripción y preferencias.
-                      </p>
-                      <button
-                        onClick={() => setShowSettingsModal(true)}
-                        className="bg-brand-blue text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-600 transition-colors shadow-sm"
-                      >
-                        Abrir Configuración
-                      </button>
-                    </div>
-                  )}
+                  <AIAsistente isRestricted={!!restrictedView} />
                 </motion.div>
               </AnimatePresence>
-            </div>
-          )}
-        </main>
-      </div>
+            ) : (
+              <div className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto">
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeTab + (selectedCourseId || "")}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -8 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                  >
+                    {activeTab === "inicio" && (
+                      <MuroFeed isRestricted={!!restrictedView} />
+                    )}
 
-      {/* ─── MODALS ─── */}
-      <AnimatePresence>
-        {showSettingsModal && (
-          <SettingsModal
-            onClose={() => setShowSettingsModal(false)}
-            userProfile={userProfile}
-          />
-        )}
-      </AnimatePresence>
-    </div>
+                    {activeTab === "cursos" &&
+                      (selectedCourseId ? (
+                        <AulaVirtual
+                          courseId={selectedCourseId}
+                          onBack={() => setSelectedCourseId(null)}
+                        />
+                      ) : (
+                        <MisCursos onSelectCourse={(id) => setSelectedCourseId(id)} />
+                      ))}
+
+                    {activeTab === "live" && (
+                      <div className="relative">
+                        {restrictedView && (
+                          <div className="absolute inset-0 z-50 rounded-3xl bg-white/40 backdrop-blur-[6px] flex flex-col items-center justify-center p-6 border border-white/20">
+                            <div className="w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center mb-4 text-brand-blue">
+                              <Lock className="w-8 h-8" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                              Sección Premium
+                            </h3>
+                            <p className="text-gray-600 text-center max-w-sm mb-6">
+                              Suscríbete a un plan de la comunidad para asistir a las Masterclasses semanales en vivo.
+                            </p>
+                            <button
+                              onClick={() => router.push("/comunidad")}
+                              className="bg-brand-blue text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+                            >
+                              Ver Planes
+                            </button>
+                          </div>
+                        )}
+                        <LivePanel />
+                      </div>
+                    )}
+
+                    {activeTab === "chat" && (
+                      <ChatGlobal isRestricted={!!restrictedView} />
+                    )}
+
+                    {activeTab === "miembros" && <MembersDirectory />}
+
+                    {activeTab === "business" &&
+                      (isOrgManager ? (
+                        <BusinessPortal />
+                      ) : (
+                        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-12 text-center max-w-2xl mx-auto mt-8">
+                          <h2 className="font-display font-black text-2xl text-gray-900 mb-3">
+                            Acceso Restringido
+                          </h2>
+                          <p className="text-gray-500 mb-6">
+                            Esta sección está disponible únicamente para gestores corporativos.
+                          </p>
+                        </div>
+                      ))}
+
+                    {activeTab === "perfil" && <UserProfile />}
+
+                    {activeTab === "certificados" && <Certificates />}
+
+                    {activeTab === "configuracion" && (
+                      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center max-w-md mx-auto">
+                        <h2 className="font-display font-bold text-xl text-gray-900 mb-2">
+                          Configuración
+                        </h2>
+                        <p className="text-gray-500 mb-4">
+                          Gestiona tu cuenta, suscripción y preferencias.
+                        </p>
+                        <button
+                          onClick={() => setShowSettingsModal(true)}
+                          className="bg-brand-blue text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-600 transition-colors shadow-sm"
+                        >
+                          Abrir Configuración
+                        </button>
+                      </div>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            )}
+          </main>
+        </div>
+
+        {/* ─── MODALS ─── */}
+        <AnimatePresence>
+          {showSettingsModal && (
+            <SettingsModal
+              onClose={() => {
+                setShowSettingsModal(false);
+                // If user was on /configuracion, go back to inicio
+                if (activeTab === "configuracion") {
+                  router.push("/comunidad/inicio");
+                }
+              }}
+              userProfile={userProfile}
+            />
+          )}
+        </AnimatePresence>
+      </div>
     </ToastProvider>
   );
 }
