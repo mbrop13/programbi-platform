@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useCallback, useState, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -8,7 +8,6 @@ import {
   LayoutDashboard,
   GraduationCap,
   Radio,
-  MessageSquare,
   Sparkles,
   Building2,
   ShieldAlert,
@@ -19,9 +18,11 @@ import {
   LogOut,
   X,
   CreditCard,
-  Users,
   ExternalLink,
+  Search,
+  Bell,
 } from "lucide-react";
+import NotificationCenter from "./NotificationCenter";
 
 export interface SidebarTab {
   id: string;
@@ -63,6 +64,10 @@ export default function Sidebar({
   onOpenSettings,
 }: SidebarProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -89,9 +94,7 @@ export default function Sidebar({
     { id: "inicio", label: "Inicio", icon: LayoutDashboard, color: "text-blue-500", group: "Principal" },
     { id: "cursos", label: "Cursos", icon: GraduationCap, color: "text-indigo-500", group: "Principal" },
     { id: "live", label: "En Vivo", icon: Radio, color: "text-rose-500", group: "Principal", showPing: true },
-    { id: "chat", label: "Comunidad", icon: MessageSquare, color: "text-emerald-500", group: "Principal" },
     { id: "ai", label: "IA", icon: Sparkles, color: "text-purple-500", group: "Principal" },
-    { id: "miembros", label: "Miembros", icon: Users, color: "text-teal-500", group: "Principal" },
     { id: "perfil", label: "Mi Perfil", icon: User, color: "text-cyan-500", group: "Personal" },
     { id: "certificados", label: "Certificados", icon: Award, color: "text-amber-500", group: "Personal" },
     ...(isOrgManager
@@ -162,6 +165,69 @@ export default function Sidebar({
           >
             <ChevronLeft className="w-4 h-4 rotate-180" />
           </button>
+        )}
+      </div>
+
+      {/* ─── SEARCH + NOTIFICATIONS ─── */}
+      <div className={`shrink-0 border-b border-gray-100 ${collapsed ? "px-2 py-3 flex flex-col items-center gap-2" : "px-3 py-3"}`}>
+        {collapsed ? (
+          <>
+            <button
+              onClick={() => searchRef.current?.focus()}
+              className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+              title="Buscar"
+            >
+              <Search className="w-[18px] h-[18px]" />
+            </button>
+            <div className="relative">
+              <button
+                onClick={() => setNotifOpen(!notifOpen)}
+                className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors relative"
+                title="Notificaciones"
+              >
+                <Bell className="w-[18px] h-[18px]" />
+              </button>
+              <NotificationCenter open={notifOpen} onClose={() => setNotifOpen(false)} />
+            </div>
+          </>
+        ) : (
+          <div className="flex items-center gap-2">
+            {/* Search input */}
+            <div className={`relative flex-1 transition-all duration-200 ${searchFocused ? "ring-2 ring-brand-blue/20" : ""} rounded-xl`}>
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <input
+                ref={searchRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                placeholder="Buscar..."
+                className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:bg-white focus:border-brand-blue/30 transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => { setSearchQuery(""); searchRef.current?.focus(); }}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center rounded-full bg-gray-300 text-white hover:bg-gray-400 transition-colors"
+                >
+                  <X className="w-2.5 h-2.5" />
+                </button>
+              )}
+            </div>
+
+            {/* Notification bell */}
+            <div className="relative">
+              <button
+                onClick={() => setNotifOpen(!notifOpen)}
+                className={`w-9 h-9 flex items-center justify-center rounded-xl transition-colors relative
+                  ${notifOpen ? "bg-brand-blue/10 text-brand-blue" : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"}`}
+                title="Notificaciones"
+              >
+                <Bell className="w-[18px] h-[18px]" />
+              </button>
+              <NotificationCenter open={notifOpen} onClose={() => setNotifOpen(false)} />
+            </div>
+          </div>
         )}
       </div>
 

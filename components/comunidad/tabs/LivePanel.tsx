@@ -10,6 +10,7 @@ import {
   Monitor, 
   Tv, 
   Play, 
+  PlayCircle,
   Square, 
   Coffee, 
   MessageSquare, 
@@ -24,7 +25,10 @@ import {
   Moon,
   RefreshCw,
   Wifi,
-  WifiOff
+  WifiOff,
+  ExternalLink,
+  Film,
+  Plus
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -369,69 +373,100 @@ export default function LivePanel() {
         <motion.div 
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl border border-gray-150 p-6 sm:p-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6"
+          className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden"
         >
-          <div className="flex gap-4 items-start">
-            <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-brand-blue shrink-0">
-              <Radio className="w-6 h-6 animate-pulse" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1.5">
-                {activeClass.status === "active" ? (
-                  <span className="bg-red-500 text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-ping" />
-                    En Vivo
-                  </span>
-                ) : (
-                  <span className="bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full flex items-center gap-1">
-                    Programado
-                  </span>
-                )}
-                <span className="text-xs text-gray-400 font-bold flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5" />
-                  {new Date(activeClass.scheduled_at).toLocaleDateString("es-CL")}
-                </span>
-                <span className="text-xs text-gray-400 font-bold flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" />
-                  {new Date(activeClass.scheduled_at).toLocaleTimeString("es-CL", { hour: '2-digit', minute: '2-digit' })}
-                </span>
-              </div>
-              <h2 className="text-xl font-black text-gray-900 leading-tight">{activeClass.title}</h2>
-              {activeClass.description && (
-                <p className="text-sm text-gray-500 mt-1.5">{activeClass.description}</p>
-              )}
-            </div>
-          </div>
+          {/* Hero area with gradient background */}
+          <div className={`relative px-6 sm:px-8 py-8 overflow-hidden ${
+            activeClass.status === "active" 
+              ? "bg-gradient-to-br from-red-500/5 via-rose-50 to-orange-50/50" 
+              : "bg-gradient-to-br from-blue-500/5 via-indigo-50 to-violet-50/50"
+          }`}>
+            {/* Decorative blur circle */}
+            <div className={`absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-[0.08] blur-3xl ${
+              activeClass.status === "active" ? "bg-red-500" : "bg-blue-500"
+            }`} />
 
-          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto shrink-0">
-            {isAdmin && activeClass.status === "scheduled" && (
-              <button 
-                onClick={handleStartClass}
-                className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 border-none cursor-pointer"
-              >
-                <Play className="w-4 h-4" /> Iniciar Clase
-              </button>
-            )}
-            {activeClass.status === "active" && (
-              <button 
-                onClick={handleJoinClass}
-                disabled={isConnecting}
-                className="w-full sm:w-auto px-8 py-3 bg-brand-blue hover:bg-blue-600 text-white font-black text-sm rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer disabled:opacity-50"
-              >
-                {isConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Tv className="w-4 h-4" />}
-                {isConnecting ? "Conectando..." : "Unirse a la Clase"}
-              </button>
-            )}
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="flex-1 min-w-0">
+                {/* Status + meta */}
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  {activeClass.status === "active" ? (
+                    <span className="bg-red-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+                      </span>
+                      En Vivo Ahora
+                    </span>
+                  ) : (
+                    <span className="bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                      <Clock className="w-3 h-3" />
+                      Programada
+                    </span>
+                  )}
+                  <span className="text-xs text-gray-500 font-bold flex items-center gap-1 bg-white/80 px-2.5 py-1 rounded-full">
+                    <Calendar className="w-3.5 h-3.5" />
+                    {new Date(activeClass.scheduled_at).toLocaleDateString("es-CL", { weekday: 'short', day: 'numeric', month: 'short' })}
+                  </span>
+                  <span className="text-xs text-gray-500 font-bold flex items-center gap-1 bg-white/80 px-2.5 py-1 rounded-full">
+                    <Clock className="w-3.5 h-3.5" />
+                    {new Date(activeClass.scheduled_at).toLocaleTimeString("es-CL", { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+
+                {/* Title */}
+                <h2 className="font-display font-black text-xl sm:text-2xl text-gray-900 leading-tight mb-2">{activeClass.title}</h2>
+                {activeClass.description && (
+                  <p className="text-sm text-gray-500 max-w-lg leading-relaxed">{activeClass.description}</p>
+                )}
+              </div>
+
+              {/* Action buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+                {isAdmin && activeClass.status === "scheduled" && (
+                  <button 
+                    onClick={handleStartClass}
+                    className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 border-none cursor-pointer"
+                  >
+                    <Play className="w-4 h-4" /> Iniciar Clase
+                  </button>
+                )}
+                {activeClass.status === "active" && (
+                  <button 
+                    onClick={handleJoinClass}
+                    disabled={isConnecting}
+                    className="w-full sm:w-auto px-8 py-3.5 bg-brand-blue hover:bg-blue-600 text-white font-black text-sm rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer disabled:opacity-50"
+                  >
+                    {isConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Tv className="w-4 h-4" />}
+                    {isConnecting ? "Conectando..." : "Unirse a la Clase"}
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
         </motion.div>
       ) : (
-        <div className="bg-white rounded-3xl border border-gray-150 p-12 text-center shadow-sm">
-          <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-gray-300">
-            <Radio className="w-8 h-8" />
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden"
+        >
+          <div className="relative px-6 sm:px-8 py-14 text-center overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-white to-indigo-50/30" />
+            <div className="absolute top-6 left-8 w-24 h-24 bg-blue-200 rounded-full opacity-[0.07] blur-2xl" />
+            <div className="absolute bottom-6 right-8 w-32 h-32 bg-indigo-200 rounded-full opacity-[0.07] blur-2xl" />
+            
+            <div className="relative z-10">
+              <div className="w-18 h-18 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm w-[72px] h-[72px]">
+                <Radio className="w-9 h-9 text-brand-blue" />
+              </div>
+              <h2 className="font-display font-black text-xl text-gray-900 mb-2">No hay clases en vivo</h2>
+              <p className="text-gray-400 text-sm max-w-sm mx-auto leading-relaxed">
+                Cuando haya una clase programada, podrás unirte a la transmisión en directo desde aquí.
+              </p>
+            </div>
           </div>
-          <h2 className="font-display font-black text-xl text-gray-900 mb-1">No hay clases en vivo</h2>
-          <p className="text-gray-400 text-sm max-w-sm mx-auto">Vuelve cuando esté programada una clase para unirte a la transmisión en directo.</p>
-        </div>
+        </motion.div>
       )}
 
       {/* Admin Panel to schedule live class */}
@@ -614,41 +649,31 @@ export default function LivePanel() {
 
         {/* Recordings grid */}
         {completedClasses.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {completedClasses.map((recording) => (
-              <motion.a
-                key={recording.id}
-                href={recording.youtube_video_id ? `https://www.youtube.com/watch?v=${recording.youtube_video_id}` : "#"}
-                target={recording.youtube_video_id ? "_blank" : undefined}
-                rel={recording.youtube_video_id ? "noopener noreferrer" : undefined}
-                whileHover={{ scale: 1.02 }}
-                className="group bg-gray-50 hover:bg-gray-100 rounded-2xl p-4 border border-gray-200 transition-all cursor-pointer"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-red-500 shrink-0 group-hover:bg-red-100 transition-colors">
-                    <Play className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-sm text-gray-900 mb-1 line-clamp-2">{recording.title}</h4>
-                    {recording.description && (
-                      <p className="text-xs text-gray-500 mb-2 line-clamp-2">{recording.description}</p>
-                    )}
-                    <div className="flex items-center gap-2 text-xs text-gray-400">
-                      <Calendar className="w-3 h-3" />
-                      <span>{new Date(recording.scheduled_at).toLocaleDateString("es-CL")}</span>
-                    </div>
-                  </div>
-                </div>
-              </motion.a>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {completedClasses.map((recording, index) => (
+              <RecordingCard key={recording.id} recording={recording} index={index} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-gray-300">
-              <Video className="w-8 h-8" />
+          <div className="text-center py-16">
+            <div className="relative mx-auto mb-5 w-[72px] h-[72px]">
+              <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-50 rounded-2xl" />
+              <div className="relative z-10 w-full h-full flex items-center justify-center">
+                <Film className="w-8 h-8 text-gray-300" />
+              </div>
             </div>
-            <h4 className="font-bold text-gray-900 mb-1">No hay grabaciones disponibles</h4>
-            <p className="text-sm text-gray-400">Las clases grabadas aparecerán aquí.</p>
+            <h4 className="font-display font-black text-lg text-gray-900 mb-1.5">Sin grabaciones aún</h4>
+            <p className="text-sm text-gray-400 max-w-xs mx-auto leading-relaxed">
+              Las masterclasses grabadas aparecerán aquí para que las revises cuando quieras.
+            </p>
+            {isAdmin && (
+              <button
+                onClick={() => setShowAddRecording(true)}
+                className="mt-5 px-5 py-2.5 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm hover:shadow-md transition-all mx-auto border-none cursor-pointer"
+              >
+                <Plus className="w-4 h-4" /> Agregar primera grabación
+              </button>
+            )}
           </div>
         )}
       </motion.div>
@@ -1264,5 +1289,106 @@ function ScreenShareButton({ room, theme }: { room: Room; theme?: 'light' | 'dar
     >
       <Monitor className="w-4 h-4" />
     </button>
+  );
+}
+
+// ─── RECORDING CARD ───
+function RecordingCard({ recording, index }: { recording: LiveClass; index: number }) {
+  const hasVideo = !!recording.youtube_video_id;
+  const [imgSrc, setImgSrc] = useState(
+    recording.youtube_video_id 
+      ? `https://img.youtube.com/vi/${recording.youtube_video_id}/maxresdefault.jpg`
+      : null
+  );
+  const [imgError, setImgError] = useState(false);
+
+  const handleImgError = () => {
+    if (!imgError && recording.youtube_video_id) {
+      setImgError(true);
+      setImgSrc(`https://img.youtube.com/vi/${recording.youtube_video_id}/hqdefault.jpg`);
+    }
+  };
+
+  return (
+    <motion.a
+      href={hasVideo ? `https://www.youtube.com/watch?v=${recording.youtube_video_id}` : "#"}
+      target={hasVideo ? "_blank" : undefined}
+      rel={hasVideo ? "noopener noreferrer" : undefined}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.06 }}
+      className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:border-brand-blue/15 transition-all duration-300 flex flex-col h-full cursor-pointer"
+    >
+      {/* Thumbnail */}
+      <div className="relative aspect-video w-full overflow-hidden shrink-0 bg-gray-100">
+        {imgSrc ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img 
+              src={imgSrc}
+              alt={recording.title}
+              onError={handleImgError}
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10 group-hover:from-black/20 transition-colors" />
+          </>
+        ) : (
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center">
+            <Film className="w-12 h-12 text-gray-300" />
+          </div>
+        )}
+
+        {/* Play overlay */}
+        {hasVideo && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="w-14 h-14 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+              <PlayCircle className="w-7 h-7 text-red-600" />
+            </div>
+          </div>
+        )}
+
+        {/* Badge */}
+        <div className="absolute top-3 left-3 z-20">
+          <span className="bg-black/70 backdrop-blur-sm text-white text-[10px] font-black px-2.5 py-1 rounded-lg flex items-center gap-1">
+            <Video className="w-3 h-3" />
+            Grabación
+          </span>
+        </div>
+      </div>
+
+      {/* Info */}
+      <div className="p-5 flex flex-col flex-1">
+        <h4 className="font-bold text-[15px] text-gray-900 leading-snug mb-2 line-clamp-2 group-hover:text-brand-blue transition-colors">
+          {recording.title}
+        </h4>
+        
+        {recording.description && (
+          <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-3">
+            {recording.description}
+          </p>
+        )}
+
+        <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-gray-400 font-medium">
+            <Calendar className="w-3.5 h-3.5" />
+            <span>{new Date(recording.scheduled_at).toLocaleDateString("es-CL", { 
+              day: 'numeric', 
+              month: 'short', 
+              year: 'numeric' 
+            })}</span>
+          </div>
+          
+          {hasVideo ? (
+            <span className="text-[10px] font-bold text-brand-blue flex items-center gap-0.5 group-hover:gap-1.5 transition-all bg-blue-50 px-2.5 py-1 rounded-full">
+              Ver ahora <ExternalLink className="w-3 h-3" />
+            </span>
+          ) : (
+            <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
+              Sin video
+            </span>
+          )}
+        </div>
+      </div>
+    </motion.a>
   );
 }

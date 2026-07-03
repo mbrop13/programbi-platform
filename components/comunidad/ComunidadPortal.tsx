@@ -11,13 +11,11 @@ import TopBar from "./TopBar";
 import MuroFeed from "./tabs/MuroFeed";
 import MisCursos from "./tabs/MisCursos";
 import AulaVirtual from "./tabs/AulaVirtual";
-import ChatGlobal from "./tabs/ChatGlobal";
 import AIAsistente from "./tabs/AIAsistente";
 import BusinessPortal from "./tabs/BusinessPortal";
 import LivePanel from "./tabs/LivePanel";
 import UserProfile from "./tabs/UserProfile";
 import Certificates from "./tabs/Certificates";
-import MembersDirectory from "./tabs/MembersDirectory";
 import SettingsModal from "./SettingsModal";
 import { ToastProvider } from "./ui/Toast";
 
@@ -206,12 +204,6 @@ export default function ComunidadPortal() {
                         <LivePanel />
                       </div>
                     )}
-
-                    {activeTab === "chat" && (
-                      <ChatGlobal isRestricted={!!restrictedView} />
-                    )}
-
-                    {activeTab === "miembros" && <MembersDirectory />}
 
                     {activeTab === "business" &&
                       (isOrgManager ? (

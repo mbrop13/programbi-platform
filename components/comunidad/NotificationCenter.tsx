@@ -123,7 +123,7 @@ export default function NotificationCenter({ open, onClose }: NotificationCenter
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 8, scale: 0.96 }}
           transition={{ duration: 0.15 }}
-          className="absolute top-12 right-0 w-[360px] max-h-[500px] bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100 overflow-hidden z-[60] flex flex-col"
+          className="fixed top-4 right-4 w-[360px] max-h-[500px] bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100 overflow-hidden z-[100] flex flex-col"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
