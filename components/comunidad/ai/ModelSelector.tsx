@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Check, Cpu, Zap, Sparkles, Brain } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -9,42 +9,42 @@ export interface Model {
   name: string;
   desc: string;
   badge: string;
-  icon: React.ElementType;
   badgeColor: string;
+  icon: React.ElementType;
 }
 
 export const MODELS: Model[] = [
   {
     id: "llama-3-8b",
-    name: "Meta Llama 3 8B",
+    name: "Llama 3 8B",
     desc: "Gratuito y veloz",
     badge: "Free",
+    badgeColor: "bg-zinc-100 text-zinc-600",
     icon: Cpu,
-    badgeColor: "bg-gray-100 text-gray-600",
   },
   {
     id: "gemini-1.5-flash",
-    name: "Google Gemini 1.5 Flash",
+    name: "Gemini 1.5 Flash",
     desc: "Multimodal y analítico",
     badge: "Flash",
+    badgeColor: "bg-amber-100 text-amber-700",
     icon: Zap,
-    badgeColor: "bg-yellow-100 text-yellow-700",
   },
   {
     id: "gpt-4o-mini",
-    name: "OpenAI GPT-4o Mini",
+    name: "GPT-4o Mini",
     desc: "Alta precisión y eficiente",
-    badge: "Precise",
+    badge: "Preciso",
+    badgeColor: "bg-emerald-100 text-emerald-700",
     icon: Sparkles,
-    badgeColor: "bg-green-100 text-green-700",
   },
   {
     id: "claude-3.5-sonnet",
     name: "Claude 3.5 Sonnet",
     desc: "Máximo nivel de programación",
     badge: "Premium",
-    icon: Brain,
     badgeColor: "bg-purple-100 text-purple-700",
+    icon: Brain,
   },
 ];
 
@@ -52,26 +52,44 @@ interface ModelSelectorProps {
   selectedModel: string;
   onSelect: (modelId: string) => void;
   className?: string;
+  compact?: boolean;
 }
 
-export function ModelSelector({ selectedModel, onSelect, className }: ModelSelectorProps) {
+export function ModelSelector({ selectedModel, onSelect, className, compact = true }: ModelSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
   const currentModel = MODELS.find((m) => m.id === selectedModel) || MODELS[0];
   const CurrentIcon = currentModel.icon;
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+
   return (
-    <div className={cn("relative", className)}>
+    <div ref={ref} className={cn("relative", className)}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all text-sm"
+        className={cn(
+          "flex items-center gap-2 rounded-xl border border-transparent hover:border-zinc-200 hover:bg-zinc-50 transition-all",
+          compact ? "px-2 py-1.5" : "px-3 py-2"
+        )}
       >
         <CurrentIcon className="w-4 h-4 text-brand-blue" />
-        <span className="font-medium text-gray-900 hidden sm:inline">
-          {currentModel.name}
-        </span>
+        {!compact && (
+          <span className="text-sm font-medium text-zinc-900 hidden sm:inline">
+            {currentModel.name}
+          </span>
+        )}
         <ChevronDown
           className={cn(
-            "w-4 h-4 text-gray-400 transition-transform",
+            "w-3.5 h-3.5 text-zinc-400 transition-transform",
             isOpen && "rotate-180"
           )}
         />
@@ -79,12 +97,9 @@ export function ModelSelector({ selectedModel, onSelect, className }: ModelSelec
 
       {isOpen && (
         <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
-          />
-          <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-2xl border border-gray-200 shadow-xl z-50 overflow-hidden">
-            <div className="p-2">
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div className="absolute bottom-full left-0 mb-2 w-80 bg-white rounded-2xl border border-zinc-200 shadow-xl z-50 overflow-hidden">
+            <div className="p-1.5">
               {MODELS.map((model) => {
                 const Icon = model.icon;
                 const isSelected = model.id === selectedModel;
@@ -96,21 +111,26 @@ export function ModelSelector({ selectedModel, onSelect, className }: ModelSelec
                       setIsOpen(false);
                     }}
                     className={cn(
-                      "w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all text-left",
+                      "w-full flex items-center gap-3 rounded-xl transition-all text-left",
                       isSelected
-                        ? "bg-brand-blue/10 text-brand-blue"
-                        : "hover:bg-gray-50 text-gray-700"
+                        ? "bg-zinc-50 text-zinc-900"
+                        : "hover:bg-zinc-50 text-zinc-700"
                     )}
                   >
                     <div
                       className={cn(
                         "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
-                        isSelected ? "bg-brand-blue/20" : "bg-gray-100"
+                        isSelected ? "bg-brand-blue/10" : "bg-zinc-100"
                       )}
                     >
-                      <Icon className={cn("w-5 h-5", isSelected ? "text-brand-blue" : "text-gray-500")} />
+                      <Icon
+                        className={cn(
+                          "w-5 h-5",
+                          isSelected ? "text-brand-blue" : "text-zinc-500"
+                        )}
+                      />
                     </div>
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 py-2">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-sm">{model.name}</span>
                         <span
@@ -122,11 +142,9 @@ export function ModelSelector({ selectedModel, onSelect, className }: ModelSelec
                           {model.badge}
                         </span>
                       </div>
-                      <p className="text-xs text-gray-500 mt-0.5">{model.desc}</p>
+                      <p className="text-xs text-zinc-500 truncate">{model.desc}</p>
                     </div>
-                    {isSelected && (
-                      <Check className="w-4 h-4 text-brand-blue shrink-0" />
-                    )}
+                    {isSelected && <Check className="w-4 h-4 text-brand-blue shrink-0 mr-2" />}
                   </button>
                 );
               })}

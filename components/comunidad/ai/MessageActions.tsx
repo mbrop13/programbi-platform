@@ -29,63 +29,62 @@ export function MessageActions({ content, onRegenerate, className }: MessageActi
   };
 
   return (
-    <div className={cn("flex items-center gap-1 mt-2", className)}>
-      {/* Copy button */}
+    <div
+      className={cn(
+        "flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200",
+        className
+      )}
+    >
       <button
         onClick={copyToClipboard}
-        className="flex items-center gap-1.5 px-2 py-1 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+        className="flex items-center justify-center w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
         title={isCopied ? "Copiado" : "Copiar respuesta"}
+        aria-label={isCopied ? "Copiado" : "Copiar respuesta"}
       >
         {isCopied ? (
-          <>
-            <Check className="w-3.5 h-3.5 text-green-500" />
-            <span className="text-green-600">Copiado</span>
-          </>
+          <Check className="w-4 h-4 text-green-600" />
         ) : (
-          <>
-            <Copy className="w-3.5 h-3.5" />
-            <span>Copiar</span>
-          </>
+          <Copy className="w-4 h-4" />
         )}
       </button>
 
-      {/* Regenerate button */}
       {onRegenerate && (
         <button
           onClick={onRegenerate}
-          className="flex items-center gap-1.5 px-2 py-1 text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+          className="flex items-center justify-center w-8 h-8 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100 transition-colors"
           title="Regenerar respuesta"
+          aria-label="Regenerar respuesta"
         >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span>Regenerar</span>
+          <RefreshCw className="w-4 h-4" />
         </button>
       )}
 
-      {/* Feedback buttons */}
       <button
         onClick={() => handleFeedback("up")}
         className={cn(
-          "p-1.5 rounded-md transition-colors",
+          "flex items-center justify-center w-8 h-8 rounded-lg transition-colors",
           feedback === "up"
             ? "text-green-600 bg-green-50"
-            : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+            : "text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
         )}
         title="Buena respuesta"
+        aria-label="Buena respuesta"
       >
-        <ThumbsUp className="w-3.5 h-3.5" />
+        <ThumbsUp className="w-4 h-4" />
       </button>
 
       <button
         onClick={() => handleFeedback("down")}
         className={cn(
-          "p-1.5 rounded-md transition-colors",
+          "flex items-center justify-center w-8 h-8 rounded-lg transition-colors",
           feedback === "down"
             ? "text-red-600 bg-red-50"
-            : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+            : "text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
         )}
         title="Mala respuesta"
+        aria-label="Mala respuesta"
       >
-        <ThumbsDown className="w-3.5 h-3.5" />
+        <ThumbsDown className="w-4 h-4" />
       </button>
     </div>
   );

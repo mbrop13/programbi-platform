@@ -13,7 +13,6 @@ interface ReasoningBlockProps {
 export function ReasoningBlock({ content, isStreaming = false, className }: ReasoningBlockProps) {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Auto-abrir durante streaming, auto-cerrar al terminar
   useEffect(() => {
     if (isStreaming) {
       setIsOpen(true);
@@ -23,36 +22,41 @@ export function ReasoningBlock({ content, isStreaming = false, className }: Reas
   }, [isStreaming]);
 
   return (
-    <div className={cn("mb-3 rounded-lg border border-gray-200 bg-gray-50 overflow-hidden", className)}>
+    <div
+      className={cn(
+        "rounded-xl border border-zinc-200 bg-zinc-50 overflow-hidden",
+        className
+      )}
+    >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+        className="flex items-center gap-2 w-full px-3 py-2.5 text-sm text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
       >
         <Brain className="w-4 h-4 text-purple-500" />
         <span className="font-medium">
           {isStreaming ? "Pensando..." : "Razonamiento"}
         </span>
         {isStreaming && (
-          <span className="inline-flex gap-0.5">
-            <span className="w-1 h-1 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-            <span className="w-1 h-1 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-            <span className="w-1 h-1 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+          <span className="inline-flex gap-0.5 ml-1">
+            <span className="w-1 h-1 bg-purple-400 rounded-full animate-bounce [animation-delay:0ms]" />
+            <span className="w-1 h-1 bg-purple-400 rounded-full animate-bounce [animation-delay:150ms]" />
+            <span className="w-1 h-1 bg-purple-400 rounded-full animate-bounce [animation-delay:300ms]" />
           </span>
         )}
         <ChevronDown
           className={cn(
-            "w-4 h-4 ml-auto transition-transform",
+            "w-4 h-4 ml-auto text-zinc-400 transition-transform duration-200",
             isOpen ? "rotate-180" : ""
           )}
         />
       </button>
 
       {isOpen && (
-        <div className="px-3 pb-3 border-t border-gray-200">
+        <div className="px-3 pb-3 border-t border-zinc-200">
           <div
             className={cn(
-              "text-xs text-gray-500 font-mono whitespace-pre-wrap leading-relaxed mt-2",
-              isStreaming && "max-h-36 overflow-y-auto"
+              "text-xs text-zinc-500 font-mono whitespace-pre-wrap leading-relaxed mt-2",
+              isStreaming && "max-h-40 overflow-y-auto pr-1"
             )}
           >
             {content}
