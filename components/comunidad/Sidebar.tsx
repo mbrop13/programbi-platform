@@ -114,9 +114,9 @@ export default function Sidebar({
 
   const sidebarContent = (
     <div className="flex flex-col h-full relative">
-      {/* Logo */}
-      <div className={`flex items-center shrink-0 ${collapsed ? "justify-center px-2" : "px-5"} h-[68px] border-b border-gray-100`}>
-        <Link href="/" className="flex items-center gap-3 no-underline group">
+      {/* Logo + Collapse button */}
+      <div className={`flex items-center shrink-0 ${collapsed ? "justify-center px-2" : "px-4"} h-[68px] border-b border-gray-100`}>
+        <Link href="/" className="flex items-center gap-2.5 no-underline group shrink-0">
           <div className="relative w-9 h-9 shrink-0 overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100 flex items-center justify-center">
             <Image
               src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
@@ -138,6 +138,31 @@ export default function Sidebar({
             )}
           </AnimatePresence>
         </Link>
+        {/* Collapse toggle button next to logo */}
+        <AnimatePresence>
+          {!collapsed && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              onClick={onToggleCollapse}
+              className="ml-auto w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+              title="Colapsar sidebar"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </motion.button>
+          )}
+        </AnimatePresence>
+        {/* When collapsed, show expand button below logo */}
+        {collapsed && (
+          <button
+            onClick={onToggleCollapse}
+            className="absolute top-[72px] left-1/2 -translate-x-1/2 w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            title="Expandir sidebar"
+          >
+            <ChevronLeft className="w-4 h-4 rotate-180" />
+          </button>
+        )}
       </div>
 
       {/* Nav Items */}
@@ -369,16 +394,6 @@ export default function Sidebar({
       >
         {sidebarContent}
       </motion.aside>
-
-      {/* Collapse toggle */}
-      <button
-        onClick={onToggleCollapse}
-        className="hidden lg:flex absolute top-1/2 -translate-y-1/2 z-40 w-6 h-6 items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm text-gray-400 hover:text-gray-700 hover:shadow-md transition-all"
-        style={{ left: sidebarWidth - 12 }}
-        title={collapsed ? "Expandir sidebar" : "Colapsar sidebar"}
-      >
-        <ChevronLeft className={`w-3.5 h-3.5 transition-transform duration-200 ${collapsed ? "rotate-180" : ""}`} />
-      </button>
 
       {/* MOBILE DRAWER */}
       <AnimatePresence>

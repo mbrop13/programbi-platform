@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { 
@@ -58,6 +58,7 @@ export default function LivePanel() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminChecked, setAdminChecked] = useState(false);
   const [activeClass, setActiveClass] = useState<LiveClass | null>(null);
+  const [completedClasses, setCompletedClasses] = useState<LiveClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState<string | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -71,6 +72,14 @@ export default function LivePanel() {
   const [youtubeKey, setYoutubeKey] = useState("");
   const [scheduledAt, setScheduledAt] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  // Form for adding completed class recording
+  const [showAddRecording, setShowAddRecording] = useState(false);
+  const [recordingTitle, setRecordingTitle] = useState("");
+  const [recordingDescription, setRecordingDescription] = useState("");
+  const [recordingVideoId, setRecordingVideoId] = useState("");
+  const [recordingDate, setRecordingDate] = useState("");
+  const [submittingRecording, setSubmittingRecording] = useState(false);
 
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -105,6 +114,18 @@ export default function LivePanel() {
 
       if (classError) throw classError;
       setActiveClass(classes && classes.length > 0 ? classes[0] : null);
+
+      // Fetch completed classes (recordings)
+      const { data: completed, error: completedError } = await supabase
+        .from("live_classes")
+        .select("*")
+        .eq("status", "completed")
+        .order("scheduled_at", { ascending: false })
+        .limit(10);
+
+      if (completedError) throw completedError;
+      setCompletedClasses(completed || []);
+
       setError(null);
     } catch (err: any) {
       console.error("Error fetching live classes:", err);
@@ -224,12 +245,52 @@ export default function LivePanel() {
     fetchClassInfo();
   };
 
+  // â”€â”€â”€ Add completed class recording (admin only) â”€â”€â”€
+  const handleAddRecording = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!recordingTitle.trim() || !recordingVideoId.trim() || !recordingDate) return;
+    setSubmittingRecording(true);
+    setError(null);
+
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+
+      const { error: insertError } = await supabase
+        .from("live_classes")
+        .insert({
+          title: recordingTitle.trim(),
+          description: recordingDescription.trim() || null,
+          room_name: `recording-${Date.now()}`,
+          youtube_video_id: recordingVideoId.trim(),
+          scheduled_at: new Date(recordingDate).toISOString(),
+          status: "completed"
+        });
+
+      if (insertError) throw insertError;
+
+      // Refresh completed classes list
+      await fetchClassInfo();
+      
+      // Reset form
+      setRecordingTitle("");
+      setRecordingDescription("");
+      setRecordingVideoId("");
+      setRecordingDate("");
+      setShowAddRecording(false);
+    } catch (err: any) {
+      setError("Error al agregar grabación: " + err.message);
+    } finally {
+      setSubmittingRecording(false);
+    }
+  };
+
   // â”€â”€â”€ Loading state â”€â”€â”€
   if (loading && !adminChecked) {
     return (
       <div className="py-24 flex flex-col items-center justify-center gap-3">
         <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
-        <span className="text-sm text-gray-400 font-medium">Cargando transmisiÃ³n...</span>
+        <span className="text-sm text-gray-400 font-medium">Cargando transmisión...</span>
       </div>
     );
   }
@@ -369,7 +430,7 @@ export default function LivePanel() {
             <Radio className="w-8 h-8" />
           </div>
           <h2 className="font-display font-black text-xl text-gray-900 mb-1">No hay clases en vivo</h2>
-          <p className="text-gray-400 text-sm max-w-sm mx-auto">Vuelve cuando estÃ© programada una clase para unirte a la transmisiÃ³n en directo.</p>
+          <p className="text-gray-400 text-sm max-w-sm mx-auto">Vuelve cuando esté programada una clase para unirte a la transmisión en directo.</p>
         </div>
       )}
 
@@ -382,13 +443,13 @@ export default function LivePanel() {
         >
           <div>
             <h3 className="font-display font-black text-lg text-gray-900 mb-1">Agendar Nueva Masterclass</h3>
-            <p className="text-sm text-gray-400">Programa una sesiÃ³n en vivo para los alumnos.</p>
+            <p className="text-sm text-gray-400">Programa una sesión en vivo para los alumnos.</p>
           </div>
 
           <form onSubmit={handleCreateClass} className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">TÃ­tulo de la Clase *</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Título de la Clase *</label>
                 <input 
                   type="text" 
                   required 
@@ -399,7 +460,7 @@ export default function LivePanel() {
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Nombre de Sala de LiveKit (Ãšnica) *</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Nombre de Sala de LiveKit (Única) *</label>
                 <input 
                   type="text" 
                   required 
@@ -412,11 +473,11 @@ export default function LivePanel() {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">DescripciÃ³n (Opcional)</label>
+              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
               <textarea 
                 value={description} 
                 onChange={e => setDescription(e.target.value)} 
-                placeholder="Indica de quÃ© tratarÃ¡ la clase..." 
+                placeholder="Indica de qué tratará la clase..." 
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all resize-none min-h-[60px]" 
                 rows={2}
               />
@@ -424,7 +485,7 @@ export default function LivePanel() {
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Clave de TransmisiÃ³n de YouTube Live (Opcional)</label>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Clave de Transmisión de YouTube Live (Opcional)</label>
                 <input 
                   type="password" 
                   value={youtubeKey} 
@@ -458,6 +519,139 @@ export default function LivePanel() {
           </form>
         </motion.div>
       )}
+
+      {/* â”€â”€â”€ COMPLETED CLASSES (RECORDINGS) SECTION â”€â”€â”€ */}
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-3xl border border-gray-150 p-6 sm:p-8 shadow-sm"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h3 className="font-display font-black text-lg text-gray-900 mb-1">Clases Grabadas</h3>
+            <p className="text-sm text-gray-400">Revisa las masterclasses anteriores cuando quieras.</p>
+          </div>
+          {isAdmin && (
+            <button
+              onClick={() => setShowAddRecording(!showAddRecording)}
+              className="px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
+            >
+              {showAddRecording ? "Cancelar" : "Agregar Grabación"}
+            </button>
+          )}
+        </div>
+
+        {/* Admin form to add recording */}
+        <AnimatePresence>
+          {isAdmin && showAddRecording && (
+            <motion.form
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              onSubmit={handleAddRecording}
+              className="mb-6 p-5 bg-gray-50 rounded-2xl border border-gray-200 space-y-4 overflow-hidden"
+            >
+              <div className="grid md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Título de la Grabación *</label>
+                  <input 
+                    type="text" 
+                    required 
+                    value={recordingTitle} 
+                    onChange={e => setRecordingTitle(e.target.value)} 
+                    placeholder="Ej. Masterclass SQL Server - Sesión 1" 
+                    className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" 
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">ID de Video de YouTube *</label>
+                  <input 
+                    type="text" 
+                    required 
+                    value={recordingVideoId} 
+                    onChange={e => setRecordingVideoId(e.target.value)} 
+                    placeholder="Ej. dQw4w9WgXcQ" 
+                    className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" 
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
+                <textarea 
+                  value={recordingDescription} 
+                  onChange={e => setRecordingDescription(e.target.value)} 
+                  placeholder="Breve descripción del contenido de la clase..." 
+                  className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all resize-none min-h-[60px]" 
+                  rows={2}
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Fecha de la Clase *</label>
+                <input 
+                  type="datetime-local" 
+                  required 
+                  value={recordingDate} 
+                  onChange={e => setRecordingDate(e.target.value)} 
+                  className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" 
+                />
+              </div>
+
+              <div className="flex justify-end pt-2">
+                <button 
+                  type="submit" 
+                  disabled={submittingRecording}
+                  className="px-6 py-3 bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
+                >
+                  {submittingRecording ? <Loader2 className="w-4 h-4 animate-spin" /> : <Video className="w-4 h-4" />}
+                  {submittingRecording ? "Agregando..." : "Agregar Grabación"}
+                </button>
+              </div>
+            </motion.form>
+          )}
+        </AnimatePresence>
+
+        {/* Recordings grid */}
+        {completedClasses.length > 0 ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {completedClasses.map((recording) => (
+              <motion.a
+                key={recording.id}
+                href={recording.youtube_video_id ? `https://www.youtube.com/watch?v=${recording.youtube_video_id}` : "#"}
+                target={recording.youtube_video_id ? "_blank" : undefined}
+                rel={recording.youtube_video_id ? "noopener noreferrer" : undefined}
+                whileHover={{ scale: 1.02 }}
+                className="group bg-gray-50 hover:bg-gray-100 rounded-2xl p-4 border border-gray-200 transition-all cursor-pointer"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-red-500 shrink-0 group-hover:bg-red-100 transition-colors">
+                    <Play className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-sm text-gray-900 mb-1 line-clamp-2">{recording.title}</h4>
+                    {recording.description && (
+                      <p className="text-xs text-gray-500 mb-2 line-clamp-2">{recording.description}</p>
+                    )}
+                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                      <Calendar className="w-3 h-3" />
+                      <span>{new Date(recording.scheduled_at).toLocaleDateString("es-CL")}</span>
+                    </div>
+                  </div>
+                </div>
+              </motion.a>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-gray-300">
+              <Video className="w-8 h-8" />
+            </div>
+            <h4 className="font-bold text-gray-900 mb-1">No hay grabaciones disponibles</h4>
+            <p className="text-sm text-gray-400">Las clases grabadas aparecerán aquí.</p>
+          </div>
+        )}
+      </motion.div>
     </div>
   );
 }
@@ -577,12 +771,12 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
 
       const resData = await res.json();
       if (!res.ok || resData.error) {
-        throw new Error(resData.error || "Error al configurar transmisiÃ³n.");
+        throw new Error(resData.error || "Error al configurar transmisión.");
       }
 
       setStreamActive(!streamActive);
     } catch (err: any) {
-      alert("Error de transmisiÃ³n: " + err.message);
+      alert("Error de transmisión: " + err.message);
     } finally {
       setIsStreaming(false);
     }
@@ -629,7 +823,7 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
 
     setMessages(prev => [...prev, {
       id: Math.random().toString(),
-      sender: "TÃº",
+      sender: "Tú",
       text: inputMsg.trim(),
       time: new Date().toLocaleTimeString("es-CL", { hour: '2-digit', minute: '2-digit' }),
       isAdmin
@@ -640,7 +834,7 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
 
   // Host Action: Terminate entire class session
   const handleTerminateClass = async () => {
-    if (!confirm("Â¿EstÃ¡s seguro de terminar la clase para todos? Esto detendrÃ¡ la grabaciÃ³n y cerrarÃ¡ la sala.")) return;
+    if (!confirm("¿Estás seguro de terminar la clase para todos? Esto detendrá la grabación y cerrará la sala.")) return;
     
     try {
       const { createClient } = await import("@/lib/supabase/client");
@@ -757,7 +951,7 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
                   <Coffee className="w-8 h-8" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-2">Clase en Pausa (Break)</h3>
-                <p className="text-sm text-slate-400 max-w-sm mb-6">Estamos en un breve intermedio. La clase se reanudarÃ¡ pronto.</p>
+                <p className="text-sm text-slate-400 max-w-sm mb-6">Estamos en un breve intermedio. La clase se reanudará pronto.</p>
                 <div className="text-4xl font-mono font-black text-brand-blue bg-slate-900 border border-slate-800 px-6 py-3 rounded-2xl shadow-inner tracking-widest flex items-center gap-2.5">
                   <Clock className="w-6 h-6 animate-pulse text-slate-500" />
                   {formatTime(breakTimer)}
@@ -883,7 +1077,7 @@ function ClassroomView({ isAdmin, activeClass, onLeave, theme, setTheme }: Class
           {messages.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center text-slate-500 p-4">
               <MessageSquare className={`w-8 h-8 mb-2 ${theme === 'dark' ? 'text-slate-700' : 'text-slate-300'}`} />
-              <span className="text-xs">Â¡Inicia la conversaciÃ³n! EnvÃ­a un mensaje a la clase.</span>
+              <span className="text-xs">¡Inicia la conversación! Envía un mensaje a la clase.</span>
             </div>
           ) : (
             messages.map(msg => (
