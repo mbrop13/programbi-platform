@@ -193,6 +193,20 @@ export default function LivePanel() {
 
       if (insertError) throw insertError;
 
+      // Broadcast notification to all enrolled users
+      const { broadcastNotification } = await import("@/lib/supabase/comunidad");
+      const scheduledDate = new Date(scheduledAt).toLocaleDateString("es-CL", { 
+        weekday: 'long', 
+        day: 'numeric', 
+        month: 'long' 
+      });
+      await broadcastNotification(
+        "live",
+        "Nueva clase en vivo programada",
+        `"${title.trim()}" - ${scheduledDate}`,
+        "/comunidad/live"
+      );
+
       setActiveClass(data);
       setTitle("");
       setDescription("");

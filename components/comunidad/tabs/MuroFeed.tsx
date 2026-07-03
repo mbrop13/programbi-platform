@@ -127,6 +127,19 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
       await addComment(postId, content);
       const data = await getPosts();
       setPosts(data);
+
+      // Notify post author (if not self-commenting)
+      const post = data.find((p: any) => p.id === postId);
+      if (post?.author && post.author.id !== userProfile?.id) {
+        const { createNotification } = await import("@/lib/supabase/comunidad");
+        await createNotification(
+          post.author.id,
+          "comment",
+          `${userProfile?.full_name || "Alguien"} comentó en tu publicación`,
+          content.length > 100 ? content.substring(0, 100) + "..." : content,
+          "/comunidad/inicio"
+        );
+      }
     } catch (err: any) {
       console.error(err);
     }

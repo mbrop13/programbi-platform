@@ -21,8 +21,10 @@ import {
   ExternalLink,
   Search,
   Bell,
+  FolderKanban,
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
+import { getUnreadNotificationCount } from "@/lib/supabase/comunidad";
 
 export interface SidebarTab {
   id: string;
@@ -67,7 +69,13 @@ export default function Sidebar({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  // Fetch unread count on mount
+  useEffect(() => {
+    getUnreadNotificationCount().then(setUnreadCount);
+  }, []);
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -94,6 +102,7 @@ export default function Sidebar({
     { id: "inicio", label: "Inicio", icon: LayoutDashboard, color: "text-blue-500", group: "Principal" },
     { id: "cursos", label: "Cursos", icon: GraduationCap, color: "text-indigo-500", group: "Principal" },
     { id: "live", label: "En Vivo", icon: Radio, color: "text-rose-500", group: "Principal", showPing: true },
+    { id: "proyectos", label: "Proyectos", icon: FolderKanban, color: "text-orange-500", group: "Principal" },
     { id: "ai", label: "IA", icon: Sparkles, color: "text-purple-500", group: "Principal" },
     { id: "perfil", label: "Mi Perfil", icon: User, color: "text-cyan-500", group: "Personal" },
     { id: "certificados", label: "Certificados", icon: Award, color: "text-amber-500", group: "Personal" },
@@ -186,8 +195,13 @@ export default function Sidebar({
                 title="Notificaciones"
               >
                 <Bell className="w-[18px] h-[18px]" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[9px] font-bold px-1 ring-2 ring-white">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
               </button>
-              <NotificationCenter open={notifOpen} onClose={() => setNotifOpen(false)} />
+              <NotificationCenter open={notifOpen} onClose={() => setNotifOpen(false)} onUnreadChange={setUnreadCount} />
             </div>
           </>
         ) : (
@@ -224,8 +238,13 @@ export default function Sidebar({
                 title="Notificaciones"
               >
                 <Bell className="w-[18px] h-[18px]" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[9px] font-bold px-1 ring-2 ring-white">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
               </button>
-              <NotificationCenter open={notifOpen} onClose={() => setNotifOpen(false)} />
+              <NotificationCenter open={notifOpen} onClose={() => setNotifOpen(false)} onUnreadChange={setUnreadCount} />
             </div>
           </div>
         )}

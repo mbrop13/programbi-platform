@@ -1,0 +1,283 @@
+name: Auto Version & Changelog
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    types: [ opened, reopened, ready_for_review, synchronize ]
+
+permissions:
+  contents: write
+  pull-requests: write
+  models: read
+
+jobs:
+  update-pr:
+    if: github.event.pull_request.draft == false && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.base.ref == 'main' && github.event.pull_request.head.ref != 'main' && !startsWith(github.event.pull_request.title, 'Merge pull request') && !startsWith(github.event.pull_request.title, 'Merge branch') && github.actor != 'github-actions[bot]' && github.actor != 'web-flow'
+    runs-on: ubuntu-latest
+    env:
+      REPO: ${{ github.repository }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      PR_TITLE: ${{ github.event.pull_request.title }}
+    steps:
+      - name: Generate GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: ${{ github.event.repository.name }}
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ steps.app-token.outputs.token }}
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Check if last commit was by bot
+        id: bot-check
+        run: |
+          LAST_COMMIT_AUTHOR=$(git log -1 --format='%an')
+          if [ "$LAST_COMMIT_AUTHOR" = "github-actions[bot]" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "Last commit was by bot, skipping workflow"
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Ensure jq is available
+        if: steps.bot-check.outputs.skip != 'true'
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y jq
+
+      - name: Set base/head SHAs
+        if: steps.bot-check.outputs.skip != 'true'
+        id: shas
+        run: |
+          echo "base=${{ github.event.pull_request.base.sha }}" >> $GITHUB_OUTPUT
+          echo "head=${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
+
+      - name: Detect user-provided CHANGELOG version
+        if: steps.bot-check.outputs.skip != 'true'
+        id: changelog
+        run: |
+          set -euo pipefail
+          BASE_SHA="${{ steps.shas.outputs.base }}"
+          HEAD_SHA="${{ steps.shas.outputs.head }}"
+          if git ls-tree -r "$HEAD_SHA" --name-only | grep -qx "CHANGELOG.md"; then
+            ver=$(git diff --unified=0 "$BASE_SHA" "$HEAD_SHA" -- CHANGELOG.md | grep -E '^\+## \[[0-9]+\.[0-9]+\.[0-9]+\]' | head -n1 | sed -E 's/^\+## \[([0-9]+\.[0-9]+\.[0-9]+)\].*$/\1/' || true)
+            if [ -n "$ver" ]; then
+              echo "has_new_changelog=true" >> $GITHUB_OUTPUT
+              echo "version=$ver" >> $GITHUB_OUTPUT
+            else
+              echo "has_new_changelog=false" >> $GITHUB_OUTPUT
+              echo "version=" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "has_new_changelog=false" >> $GITHUB_OUTPUT
+            echo "version=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Compute next version and update package.json
+        if: steps.bot-check.outputs.skip != 'true'
+        id: version
+        run: |
+          set -euo pipefail
+          BASE_SHA="${{ steps.shas.outputs.base }}"
+          # Read versions
+          BASE_VERSION=$(git show "$BASE_SHA:package.json" | jq -r '.version')
+          HEAD_VERSION=$(jq -r '.version' package.json)
+          CL_HAS="${{ steps.changelog.outputs.has_new_changelog }}"
+          CL_VERSION="${{ steps.changelog.outputs.version }}"
+          # Parse functions
+          parse_semver() { IFS='.' read -r MAJ MIN PAT <<<"$1"; echo "$MAJ $MIN $PAT"; }
+          cmp_versions() {
+            read -r aM aj ak <<<"$(parse_semver "$1")"
+            read -r bM bj bk <<<"$(parse_semver "$2")"
+            if [ "$aM" -lt "$bM" ]; then echo -1; elif [ "$aM" -gt "$bM" ]; then echo 1;
+            elif [ "$aj" -lt "$bj" ]; then echo -1; elif [ "$aj" -gt "$bj" ]; then echo 1;
+            elif [ "$ak" -lt "$bk" ]; then echo -1; elif [ "$ak" -gt "$bk" ]; then echo 1; else echo 0; fi
+          }
+          bump_patch() { read -r M m p <<<"$(parse_semver "$1")"; echo "$M.$m.$((p+1))"; }
+          # Decide target version and whether to generate changelog
+          if [ "$CL_HAS" = "true" ] && [ -n "$CL_VERSION" ]; then
+            TARGET_VERSION="$CL_VERSION"
+            SHOULD_GENERATE=false
+          else
+            cmp=$(cmp_versions "$HEAD_VERSION" "$BASE_VERSION")
+            if [ "$cmp" = "1" ]; then
+              TARGET_VERSION="$HEAD_VERSION"
+              SHOULD_GENERATE=true
+            else
+              TARGET_VERSION="$(bump_patch "$BASE_VERSION")"
+              SHOULD_GENERATE=true
+            fi
+          fi
+          # Update package.json if needed
+          if [ "$HEAD_VERSION" != "$TARGET_VERSION" ]; then
+            tmp=$(mktemp)
+            jq --arg v "$TARGET_VERSION" '.version=$v' package.json > "$tmp" && mv "$tmp" package.json
+            echo "updated_package_json=true" >> $GITHUB_OUTPUT
+          else
+            echo "updated_package_json=false" >> $GITHUB_OUTPUT
+          fi
+          echo "new_version=$TARGET_VERSION" >> $GITHUB_OUTPUT
+          echo "should_generate_changelog=$SHOULD_GENERATE" >> $GITHUB_OUTPUT
+
+      - name: Collect PR commits metadata
+        if: steps.bot-check.outputs.skip != 'true' && steps.version.outputs.should_generate_changelog == 'true'
+        id: commits
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/$REPO/pulls/$PR_NUMBER/commits > commits.json
+          # Build a compact JSON with sha,title(url-safe truncated),url and LIMIT to 50 commits
+          jq -r '[.[]
+            | {sha: .sha,
+               title: (.commit.message | split("\n")[0] | .[:140]),
+               url: ("https://github.com/'"$REPO"'/commit/" + .sha)}]
+            | .[:50]' commits.json > commits_compact.json
+          echo "count=$(jq 'length' commits_compact.json)" >> $GITHUB_OUTPUT
+
+      - name: Collect PR files (overview)
+        if: steps.bot-check.outputs.skip != 'true' && steps.version.outputs.should_generate_changelog == 'true'
+        id: files
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/$REPO/pulls/$PR_NUMBER/files > files.json
+          # Always include filenames; include a heavily truncated patch (first 40 lines, max 4000 chars)
+          jq '[.[] | {filename, status, additions, deletions, changes, patch: ((.patch//"") | split("\n")[0:40] | join("\n") | .[:4000])}]' files.json > files_compact.json
+
+      - name: Prepare model input
+        if: steps.bot-check.outputs.skip != 'true' && steps.version.outputs.should_generate_changelog == 'true'
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.new_version }}"
+          DATE=$(date -u +%F)
+          PR_URL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
+          jq -n --arg version "$VERSION" \
+                --arg date "$DATE" \
+                --arg pr_title "$PR_TITLE" \
+                --arg pr_url "$PR_URL" \
+                --slurpfile commits commits_compact.json \
+                --slurpfile files files_compact.json \
+                '{version:$version,date:$date,pr:{title:$pr_title,url:$pr_url},commits:$commits[0],files:$files[0]}' > model_context.json
+
+      - name: Generate categorized changelog via OpenAI
+        if: steps.bot-check.outputs.skip != 'true' && steps.version.outputs.should_generate_changelog == 'true'
+        id: ai
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          INSTRUCTIONS=$(cat <<'EOF'
+          You are a release notes assistant. Produce ONLY compact JSON with keys: version, date, added, fixed, changed.
+          Rules:
+          - version: semantic version provided in context
+          - date: YYYY-MM-DD provided in context
+          - added/fixed/changed: arrays of objects { summary, commit }.
+          - Each summary must be 1-2 sentences, clear and non-redundant.
+          - commit must be the best single commit URL representing the change (use the commits list; if unsure, use the PR URL from context).
+          - Categorize conservatively: features/docs -> added, bugfixes -> fixed, refactors/perf/infra -> changed.
+          - DO NOT include any other keys or prose. Output must be valid JSON.
+          EOF
+          )
+          CONTEXT=$(cat model_context.json)
+          # Build OpenAI Chat Completions payload
+          jq -n \
+            --arg model "gpt-5" \
+            --arg system "$INSTRUCTIONS" \
+            --arg user "$CONTEXT" \
+            --argjson max_completion_tokens 4000 \
+            '{model:$model, response_format:{type:"json_object"}, messages:[{role:"system", content:$system},{role:"user", content:$user}], max_completion_tokens:$max_completion_tokens}' > payload.json
+          # Call OpenAI Chat Completions API
+          http_status=$(curl -sS -o response.json -w "%{http_code}" \
+            -X POST "https://api.openai.com/v1/chat/completions" \
+            -H "Authorization: Bearer ${OPENAI_API_KEY}" \
+            -H "Content-Type: application/json" \
+            --data-binary @payload.json)
+          if [ "$http_status" -lt 200 ] || [ "$http_status" -ge 300 ]; then
+            echo "OpenAI API returned HTTP $http_status" >&2
+            cat response.json >&2 || true
+            exit 1
+          fi
+          # Extract content
+          TEXT=$(jq -r '(.choices[0].message.content // empty)' response.json)
+          if [ -z "$TEXT" ]; then
+            echo "Could not extract text from response; dumping for diagnostics" >&2
+            cat response.json >&2
+            exit 1
+          fi
+          # If model returned fenced code block, strip leading/trailing ``` (with optional language tag)
+          if printf '%s' "$TEXT" | head -n1 | grep -Eq '^```([A-Za-z]+)?\s*$'; then
+            TEXT=$(printf '%s' "$TEXT" | sed -E '1s/^```[A-Za-z]*[[:space:]]*//; $s/[[:space:]]*```$//')
+          fi
+          # Save and validate JSON
+          printf '%s' "$TEXT" > changelog.json
+          jq . changelog.json > /dev/null
+
+      - name: Render CHANGELOG entry and update file
+        if: steps.bot-check.outputs.skip != 'true' && steps.version.outputs.should_generate_changelog == 'true'
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.new_version }}"
+          DATE=$(jq -r '.date' changelog.json)
+          PR_URL="https://github.com/${{ github.repository }}/pull/${{ github.event.pull_request.number }}"
+          PR_TITLE="${{ env.PR_TITLE }}"
+          md=$(mktemp)
+          {
+            echo "## [$VERSION] - $DATE"
+            echo ""
+            echo "### PR: [$PR_TITLE]($PR_URL)"
+            for section in added fixed changed; do
+              count=$(jq -r --arg s "$section" '.[ $s ] | length' changelog.json)
+              if [ "$count" -gt 0 ]; then
+                echo ""
+                header=$(printf "%s" "$section" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')
+                echo "### $header"
+                jq -r --arg s "$section" '.[$s][] | "- " + .summary + " (" + .commit + ")"' changelog.json
+              fi
+            done
+            echo ""
+          } > "$md"
+          # Prepare existing content without the current version section (to avoid duplicates on multiple PR updates)
+          existing=$(mktemp)
+          if [ -f CHANGELOG.md ]; then
+            awk -v ver="$VERSION" '
+              BEGIN { skipping=0 }
+              {
+                header = "## [" ver "]"
+                if (index($0, header) == 1) { skipping=1; next }
+                if (skipping==1 && index($0, "## [") == 1) { skipping=0 }
+                if (skipping==0) { print }
+              }
+            ' CHANGELOG.md > "$existing"
+          else
+            printf "# Changelog\n\n" > "$existing"
+          fi
+          tmp=$(mktemp)
+          cat "$md" "$existing" > "$tmp" && mv "$tmp" CHANGELOG.md
+
+      - name: Commit and push changes to PR branch
+        if: steps.bot-check.outputs.skip != 'true'
+        env:
+          GIT_AUTHOR_NAME: github-actions[bot]
+          GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+          GIT_COMMITTER_NAME: github-actions[bot]
+          GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
+        run: |
+          set -euo pipefail
+          git add package.json CHANGELOG.md
+          if ! git diff --cached --quiet; then
+            git commit -m "RELEASE: Update v${{ steps.version.outputs.new_version }} CHANGELOG"
+            git push origin HEAD:refs/heads/${{ github.event.pull_request.head.ref }}
+          else
+            echo "No changes to commit"
+          fi
+
+

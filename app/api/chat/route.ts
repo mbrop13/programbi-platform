@@ -25,7 +25,19 @@ export async function POST(req: Request) {
       });
     }
 
-    const { messages, conversationId } = await req.json();
+    const { messages, conversationId, model: requestedModel } = await req.json();
+
+    // Map model names to OpenRouter model IDs
+    let modelId = 'meta-llama/llama-3-8b-instruct:free'; // default
+    if (requestedModel === 'claude-3.5-sonnet') {
+      modelId = 'anthropic/claude-3.5-sonnet';
+    } else if (requestedModel === 'gpt-4o-mini') {
+      modelId = 'openai/gpt-4o-mini';
+    } else if (requestedModel === 'gemini-1.5-flash') {
+      modelId = 'google/gemini-flash-1.5';
+    } else if (requestedModel === 'llama-3-8b') {
+      modelId = 'meta-llama/llama-3-8b-instruct:free';
+    }
 
     // Save the latest user message to Supabase if conversationId is provided
     if (conversationId) {
@@ -40,7 +52,7 @@ export async function POST(req: Request) {
     }
 
     const result = await streamText({
-      model: openrouter('meta-llama/llama-3-8b-instruct:free'),
+      model: openrouter(modelId),
       system: 'Eres el Asistente IA de ProgramBI, experto en Data Science, Python, Power BI, SQL y Excel. Responde de forma clara y didáctica. Usa markdown para formatear tus respuestas. Fomenta las buenas prácticas.',
       messages: messages.slice(-10),
       maxOutputTokens: 1024,

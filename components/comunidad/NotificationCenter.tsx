@@ -9,11 +9,17 @@ import {
   Trophy,
   BookOpen,
   Star,
-  Check,
   CheckCheck,
   Loader2,
   Inbox,
+  GraduationCap,
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
+import {
+  getNotifications,
+  markNotificationRead,
+  markAllNotificationsRead,
+} from "@/lib/supabase/comunidad";
 
 /* ── Notification type config ── */
 const NOTIF_CONFIG: Record<string, { icon: React.ElementType; color: string; bg: string }> = {
@@ -22,6 +28,7 @@ const NOTIF_CONFIG: Record<string, { icon: React.ElementType; color: string; bg:
   lesson: { icon: BookOpen, color: "text-blue-500", bg: "bg-blue-50" },
   achievement: { icon: Trophy, color: "text-purple-500", bg: "bg-purple-50" },
   comment: { icon: MessageCircle, color: "text-emerald-500", bg: "bg-emerald-50" },
+  course: { icon: GraduationCap, color: "text-indigo-500", bg: "bg-indigo-50" },
   default: { icon: Bell, color: "text-gray-500", bg: "bg-gray-50" },
 };
 
@@ -33,61 +40,92 @@ interface Notification {
   read: boolean;
   created_at: string;
   link?: string;
+  user_id?: string;
 }
 
 interface NotificationCenterProps {
   open: boolean;
   onClose: () => void;
+  onUnreadChange?: (count: number | ((prev: number) => number)) => void;
 }
 
-export default function NotificationCenter({ open, onClose }: NotificationCenterProps) {
+export default function NotificationCenter({ open, onClose, onUnreadChange }: NotificationCenterProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  /* ── Mock data (will be replaced with server action) ── */
-  useEffect(() => {
-    if (!open) return;
+  /* ── Load notifications from server ── */
+  const loadNotifications = async () => {
     setLoading(true);
-    // Simulated fetch — replace with getNotifications()
-    setTimeout(() => {
-      setNotifications([
-        {
-          id: "1",
-          type: "announcement",
-          title: "Nuevo anuncio en el muro",
-          body: "El administrador publicó un nuevo anuncio sobre la masterclass de esta semana.",
-          read: false,
-          created_at: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
-        },
-        {
-          id: "2",
-          type: "live",
-          title: "Masterclass en vivo pronto",
-          body: "Tu próxima clase 'Python Avanzado' comienza en 30 minutos.",
-          read: false,
-          created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-        },
-        {
-          id: "3",
-          type: "achievement",
-          title: "¡Logro desbloqueado!",
-          body: "Has completado 10 lecciones. ¡Sigue así!",
-          read: true,
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 3).toISOString(),
-        },
-        {
-          id: "4",
-          type: "comment",
-          title: "Nueva respuesta",
-          body: "María respondió a tu pregunta en el muro de la comunidad.",
-          read: true,
-          created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-        },
-      ]);
+    try {
+      const data = await getNotifications();
+      setNotifications(data as Notification[]);
+      const unread = (data as Notification[]).filter((n) => !n.read).length;
+      onUnreadChange?.(unread);
+    } catch (err) {
+      console.error("Error loading notifications:", err);
+    } finally {
       setLoading(false);
-    }, 300);
+    }
+  };
+
+  useEffect(() => {
+    if (open) {
+      loadNotifications();
+    }
   }, [open]);
+
+  /* ── Supabase Realtime subscription ── */
+  useEffect(() => {
+    const supabase = createClient();
+
+    const channel = supabase
+      .channel("notifications_realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "notifications",
+        },
+        async (payload) => {
+          // Get current user to filter
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) return;
+
+          const newNotif = payload.new as Notification;
+          if (newNotif.user_id !== user.id) return;
+
+          // Add to state if panel is open
+          setNotifications((prev) => [newNotif, ...prev]);
+          onUnreadChange?.((prev: number) => prev + (newNotif.read ? 0 : 1));
+        }
+      )
+      .on(
+        "postgres_changes",
+        {
+          event: "UPDATE",
+          schema: "public",
+          table: "notifications",
+        },
+        async (payload) => {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (!user) return;
+
+          const updated = payload.new as Notification;
+          if (updated.user_id !== user.id) return;
+
+          setNotifications((prev) =>
+            prev.map((n) => (n.id === updated.id ? updated : n))
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
 
   /* ── Close on outside click ── */
   useEffect(() => {
@@ -104,14 +142,25 @@ export default function NotificationCenter({ open, onClose }: NotificationCenter
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
-  const markAllRead = () => {
+  const handleMarkAllRead = async () => {
     setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    onUnreadChange?.(0);
+    await markAllNotificationsRead();
   };
 
-  const markRead = (id: string) => {
-    setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
-    );
+  const handleMarkRead = async (notif: Notification) => {
+    if (!notif.read) {
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notif.id ? { ...n, read: true } : n))
+      );
+      onUnreadChange?.((prev: number) => Math.max(0, prev - 1));
+      await markNotificationRead(notif.id);
+    }
+    // Navigate if link exists
+    if (notif.link) {
+      window.location.href = notif.link;
+      onClose();
+    }
   };
 
   return (
@@ -138,7 +187,7 @@ export default function NotificationCenter({ open, onClose }: NotificationCenter
             </h3>
             {unreadCount > 0 && (
               <button
-                onClick={markAllRead}
+                onClick={handleMarkAllRead}
                 className="flex items-center gap-1 text-xs font-semibold text-brand-blue hover:text-blue-600 transition-colors"
               >
                 <CheckCheck className="w-3.5 h-3.5" />
@@ -166,7 +215,7 @@ export default function NotificationCenter({ open, onClose }: NotificationCenter
                   return (
                     <button
                       key={notif.id}
-                      onClick={() => markRead(notif.id)}
+                      onClick={() => handleMarkRead(notif)}
                       className={`w-full text-left px-5 py-4 hover:bg-gray-50 transition-colors flex gap-3.5
                         ${!notif.read ? "bg-blue-50/30" : ""}`}
                     >

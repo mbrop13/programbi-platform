@@ -485,3 +485,237 @@ export async function getActiveUsers() {
     status: i % 3 === 0 ? "online" : i % 3 === 1 ? "idle" : "offline"
   }));
 }
+
+// ------------------------------------------
+// NOTIFICATIONS
+// ------------------------------------------
+
+export async function getNotifications() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data, error } = await supabase
+    .from("notifications")
+    .select("id, type, title, body, link, read, created_at")
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(30);
+
+  if (error) {
+    console.error("Error fetching notifications:", error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function getUnreadNotificationCount() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return 0;
+
+  const { count, error } = await supabase
+    .from("notifications")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .eq("read", false);
+
+  if (error) return 0;
+  return count || 0;
+}
+
+export async function markNotificationRead(id: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase
+    .from("notifications")
+    .update({ read: true })
+    .eq("id", id)
+    .eq("user_id", user.id);
+}
+
+export async function markAllNotificationsRead() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase
+    .from("notifications")
+    .update({ read: true })
+    .eq("user_id", user.id)
+    .eq("read", false);
+}
+
+/**
+ * Create a notification for a specific user (admin-only, uses admin client to bypass RLS).
+ */
+export async function createNotification(
+  userId: string,
+  type: string,
+  title: string,
+  body: string,
+  link?: string
+) {
+  const { createAdminClient } = await import("./server");
+  const adminDb = createAdminClient();
+
+  const { error } = await adminDb
+    .from("notifications")
+    .insert({
+      user_id: userId,
+      type,
+      title,
+      body,
+      link: link || null,
+    });
+
+  if (error) {
+    console.error("Error creating notification:", error);
+  }
+}
+
+/**
+ * Broadcast a notification to all enrolled users (admin action).
+ */
+export async function broadcastNotification(
+  type: string,
+  title: string,
+  body: string,
+  link?: string
+) {
+  const { createAdminClient } = await import("./server");
+  const adminDb = createAdminClient();
+
+  // Get all users with active enrollments
+  const { data: enrollments } = await adminDb
+    .from("enrollments")
+    .select("user_id")
+    .eq("status", "active");
+
+  if (!enrollments?.length) return;
+
+  const uniqueUserIds = [...new Set(enrollments.map((e: any) => e.user_id))];
+
+  // Batch insert notifications
+  const notifications = uniqueUserIds.map((uid: string) => ({
+    user_id: uid,
+    type,
+    title,
+    body,
+    link: link || null,
+  }));
+
+  // Insert in batches of 100
+  for (let i = 0; i < notifications.length; i += 100) {
+    const batch = notifications.slice(i, i + 100);
+    const { error } = await adminDb.from("notifications").insert(batch);
+    if (error) {
+      console.error(`Error broadcasting notifications batch ${i}:`, error);
+    }
+  }
+}
+
+// ------------------------------------------
+// COURSE PROGRESS (real data)
+// ------------------------------------------
+
+/**
+ * Get real course progress for a specific course.
+ */
+export async function getCourseProgress(courseId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { completedLessons: 0, totalLessons: 0, progress: 0 };
+
+  const { createAdminClient } = await import("./server");
+  const adminDb = createAdminClient();
+
+  const [lessons, completed] = await Promise.all([
+    adminDb.from("lessons").select("id").eq("course_id", courseId),
+    adminDb
+      .from("user_progress")
+      .select("lesson_id")
+      .eq("user_id", user.id)
+      .eq("course_id", courseId)
+      .eq("completed", true),
+  ]);
+
+  const totalLessons = lessons.data?.length || 0;
+  const completedLessons = completed.data?.length || 0;
+  const progress = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+
+  return { completedLessons, totalLessons, progress };
+}
+
+/**
+ * Get real enrolled courses with progress for the current user.
+ * Replaces the old mock getEnrolledCourses.
+ */
+export async function getEnrolledCoursesReal() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { createAdminClient } = await import("./server");
+  const adminDb = createAdminClient();
+
+  // Get active enrollments with course details
+  const { data: enrollments, error } = await adminDb
+    .from("enrollments")
+    .select("course_id, access_type, enrolled_at, courses(id, title, short_description, image_url, accent_color, level)")
+    .eq("user_id", user.id)
+    .eq("status", "active");
+
+  if (error || !enrollments?.length) return [];
+
+  // Get all user progress
+  const { data: allProgress } = await adminDb
+    .from("user_progress")
+    .select("lesson_id, course_id")
+    .eq("user_id", user.id)
+    .eq("completed", true);
+
+  const progressMap = new Map<string, string[]>();
+  (allProgress || []).forEach((p: any) => {
+    if (!progressMap.has(p.course_id)) progressMap.set(p.course_id, []);
+    progressMap.get(p.course_id)!.push(p.lesson_id);
+  });
+
+  const results = [];
+  for (const enr of enrollments as any[]) {
+    const courseId = enr.course_id;
+    const course = enr.courses;
+
+    // Count total lessons
+    const { data: lessons } = await adminDb
+      .from("lessons")
+      .select("id")
+      .eq("course_id", courseId);
+
+    const totalLessons = lessons?.length || 0;
+    const completedIds = progressMap.get(courseId) || [];
+    const completedInCourse = completedIds.filter((lid: string) =>
+      lessons?.some((l: any) => l.id === lid)
+    ).length;
+
+    const progress = totalLessons > 0 ? Math.round((completedInCourse / totalLessons) * 100) : 0;
+
+    results.push({
+      id: courseId,
+      title: course?.title || "Curso",
+      shortDescription: course?.short_description || "",
+      imageUrl: course?.image_url || "",
+      accentColor: course?.accent_color || "#1890FF",
+      level: course?.level || "principiante",
+      accessType: enr.access_type,
+      progress,
+      completedLessons: completedInCourse,
+      totalLessons,
+      enrolledAt: enr.enrolled_at,
+    });
+  }
+
+  return results;
+}

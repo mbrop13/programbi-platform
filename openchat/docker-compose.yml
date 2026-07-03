@@ -1,0 +1,28 @@
+services:
+  openchat:
+    #image: ghcr.io/openchatui/openchatui:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      HOSTNAME: "0.0.0.0"
+      AUTH_URL: "http://localhost:3000"
+      AUTH_SECRET: "UgtF847HMAq+HqcOz0LDntb/uLYB74ybFu2t0jXwBXU="
+      AUTH_TRUST_HOST: "true"
+      AUTH: "true"
+      DEBUG_AUTH: "true"                                     
+      #  DB: "sqlite"                                
+      #  SQLITE_URL: "file:/app/data/openchat.db"           
+      #  DATABASE_URL: "postgresql://user:pass@host/db"
+      #  NODE_ENV: "production"                        
+      #  OPENAI_API_KEY: "sk-..."
+      #  ANTHROPIC_API_KEY: "sk-ant-..."
+      #  OLLAMA_URL: "http://localhost:11434"
+      #  DRIVE_CLIENT_ID: "your-google-client-id"
+      #  DRIVE_CLIENT_SECRET: "your-google-client-secret"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

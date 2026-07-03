@@ -16,6 +16,7 @@ import BusinessPortal from "./tabs/BusinessPortal";
 import LivePanel from "./tabs/LivePanel";
 import UserProfile from "./tabs/UserProfile";
 import Certificates from "./tabs/Certificates";
+import ProjectsView from "./tabs/ProjectsView";
 import SettingsModal from "./SettingsModal";
 import { ToastProvider } from "./ui/Toast";
 
@@ -204,6 +205,8 @@ export default function ComunidadPortal() {
                         <LivePanel />
                       </div>
                     )}
+
+                    {activeTab === "proyectos" && <ProjectsView />}
 
                     {activeTab === "business" &&
                       (isOrgManager ? (
