@@ -469,7 +469,7 @@ export default function AIAsistente({ isRestricted = false }: AIAsistenteProps) 
         <div className="shrink-0 bg-white/80 backdrop-blur-sm border-t border-zinc-100 p-4">
           <div className="max-w-3xl mx-auto w-full">
             <ChatInput
-              value={input}
+              value={input || ""}
               onChange={(value) => handleInputChange({ target: { value } } as any)}
               onSubmit={() => handleFormSubmit({ preventDefault: () => {} } as any)}
               onStop={() => chatHook.stop?.()}

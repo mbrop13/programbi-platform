@@ -42,7 +42,8 @@ export function ChatInput({
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey && !isLoading) {
       e.preventDefault();
-      if (value.trim()) onSubmit();
+      const text = value || "";
+      if (text.trim()) onSubmit();
     }
   };
 
@@ -86,10 +87,10 @@ export function ChatInput({
         ) : (
           <button
             onClick={onSubmit}
-            disabled={!value.trim() || disabled}
+            disabled={!(value || "").trim() || disabled}
             className={cn(
               "flex items-center justify-center w-10 h-10 mb-1.5 mr-1.5 rounded-full transition-colors shrink-0",
-              value.trim()
+              (value || "").trim()
                 ? "bg-brand-blue text-white hover:bg-brand-blue-dark shadow-md"
                 : "bg-zinc-100 text-zinc-400"
             )}
