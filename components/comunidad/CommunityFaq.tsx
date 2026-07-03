@@ -32,10 +32,13 @@ export default function CommunityFaq() {
 
   return (
     <section className="pt-24 pb-40 bg-white relative">
+      {/* Background grid overlay */}
+      <div className="absolute inset-0 bg-[radial-gradient(#f1f5f9_1.5px,transparent_1.5px)] [background-size:24px_24px] opacity-60 pointer-events-none" />
+
       <div className="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         <div className="flex flex-col items-center mb-16 text-center">
-          <div className="w-16 h-16 bg-blue-50 text-brand-blue rounded-2xl flex items-center justify-center mb-6 border border-blue-100 shadow-sm">
+          <div className="w-16 h-16 bg-gradient-to-tr from-blue-500 to-indigo-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-500/20 border border-blue-400/20">
             <HelpCircle className="w-8 h-8" />
           </div>
           <motion.h2 
@@ -44,14 +47,14 @@ export default function CommunityFaq() {
             viewport={{ once: true }}
             className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight"
           >
-            Preguntas Frecuentes
+            Preguntas <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">Frecuentes</span>
           </motion.h2>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="mt-6 text-lg text-slate-500 max-w-2xl"
+            className="mt-5 text-lg text-slate-500 max-w-2xl font-medium"
           >
             Aclara tus dudas antes de unirte a la mejor comunidad hispana de analistas de datos. Si tienes más consultas, nuestro equipo de soporte te ayudará.
           </motion.p>
@@ -66,17 +69,17 @@ export default function CommunityFaq() {
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className={`border rounded-2xl overflow-hidden transition-all duration-300 ${isOpen ? 'bg-white border-blue-200 shadow-lg shadow-blue-500/5' : 'bg-gray-50/50 border-gray-100 hover:border-gray-200 hover:bg-gray-50'}`}
+                transition={{ delay: index * 0.08 }}
+                className={`border rounded-3xl overflow-hidden transition-all duration-500 ${isOpen ? 'bg-white border-blue-500/30 shadow-[0_15px_30px_-10px_rgba(59,130,246,0.1)]' : 'bg-slate-50/50 border-slate-100 hover:border-slate-200 hover:bg-slate-50'}`}
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                   className="w-full px-6 md:px-8 py-6 flex items-center justify-between text-left focus:outline-none"
                 >
-                  <span className={`text-lg md:text-xl font-bold pr-8 transition-colors ${isOpen ? 'text-brand-blue' : 'text-slate-800'}`}>
+                  <span className={`text-lg md:text-xl font-bold pr-8 transition-colors duration-300 ${isOpen ? 'text-blue-600' : 'text-slate-800'}`}>
                     {faq.question}
                   </span>
-                  <div className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-colors ${isOpen ? 'bg-brand-blue text-white shadow-sm' : 'bg-white border border-gray-200 text-gray-500 shadow-sm'}`}>
+                  <div className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${isOpen ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-white border border-slate-200 text-slate-500 shadow-sm'}`}>
                     {isOpen ? <Minus className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
                   </div>
                 </button>
@@ -89,7 +92,7 @@ export default function CommunityFaq() {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3, ease: "easeInOut" }}
                     >
-                      <div className="px-6 md:px-8 pb-6 text-slate-500 text-base md:text-lg leading-relaxed border-t border-gray-100 pt-5 mt-2">
+                      <div className="px-6 md:px-8 pb-6 text-slate-500 text-base md:text-lg leading-relaxed border-t border-slate-100 pt-5 mt-2 font-medium">
                         {faq.answer}
                       </div>
                     </motion.div>

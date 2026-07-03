@@ -74,27 +74,28 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
   };
 
   return (
-    <div className={`w-full relative flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-4 pb-8' : 'pt-4 pb-20'}`} style={{ background: 'linear-gradient(to bottom, #ffffff, #f0f7ff)'}}>
+    <div className={`w-full relative flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-6 pb-12' : 'pt-6 pb-28'} bg-slate-50`}>
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         defaultTab="register"
       />
 
-      {/* Decorative Orbs - Light Theme */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-400/10 rounded-full blur-[100px] -z-10 pointer-events-none translate-x-1/3 -translate-y-1/3" />
-      <div className="absolute top-1/4 left-0 w-[400px] h-[400px] bg-purple-400/10 rounded-full blur-[100px] -z-10 pointer-events-none -translate-x-1/2" />
+      {/* Modern Engineering Grid & Glow Orbs background */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35 pointer-events-none -z-10" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-b from-blue-400/20 to-indigo-500/10 rounded-full blur-[80px] -z-10 pointer-events-none" />
+      <div className="absolute top-[20%] right-[-10%] w-[350px] h-[350px] bg-purple-300/15 rounded-full blur-[90px] -z-10 pointer-events-none" />
       <div className="absolute bottom-0 left-1/2 w-[600px] h-[300px] bg-indigo-500/5 rounded-full blur-[120px] -z-10 pointer-events-none -translate-x-1/2" />
 
-      <div className="max-w-4xl text-center mb-10 relative z-10">
+      <div className="max-w-4xl text-center mb-12 relative z-10">
         {!heroOnly && (
           <motion.div
              initial={{ opacity: 0, scale: 0.9 }}
              animate={{ opacity: 1, scale: 1 }}
-             className="inline-flex items-center gap-2 bg-white border border-blue-100 shadow-[0_2px_10px_rgba(59,130,246,0.1)] px-5 py-2.5 rounded-full mb-4 backdrop-blur-md"
+             className="inline-flex items-center gap-2 bg-white/95 border border-blue-100 shadow-[0_4px_15px_rgba(59,130,246,0.08)] px-5 py-2.5 rounded-full mb-6 backdrop-blur-md"
           >
-            <Sparkles className="w-4 h-4 text-brand-blue" />
-            <span className="text-sm font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 uppercase tracking-widest">
+            <Sparkles className="w-4 h-4 text-brand-blue animate-pulse" />
+            <span className="text-xs font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 uppercase tracking-[0.2em]">
               Comunidad Premium
             </span>
           </motion.div>
@@ -104,15 +105,19 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-4xl md:text-6xl lg:text-7xl tracking-tight mb-4 leading-[1.1] text-slate-900"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] font-black tracking-tight mb-6 leading-[1.08] text-slate-900"
         >
           {message ? (
-             <span className="font-black">{message}</span>
+             <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900">{message}</span>
           ) : (
-             <>
-               <span className="font-[family-name:var(--font-caveat)] text-5xl md:text-7xl lg:text-[5.5rem] tracking-tight font-medium text-slate-800" style={{lineHeight: '1.2'}}>Desbloquea el poder de la Comunidad </span>
-               <span className="font-display font-light text-brand-blue drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">ProgramBI</span>
-             </>
+             <div className="flex flex-col gap-2">
+               <span className="font-[family-name:var(--font-caveat)] text-4xl sm:text-5xl md:text-6xl text-slate-700 tracking-normal font-medium leading-none block">
+                 Desbloquea el poder de la
+               </span>
+               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 font-extrabold pb-2">
+                 Comunidad ProgramBI
+               </span>
+             </div>
           )}
         </motion.h1>
         
@@ -121,7 +126,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
              initial={{ opacity: 0, y: 10 }}
              animate={{ opacity: 1, y: 0 }}
              transition={{ delay: 0.15 }}
-             className="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm px-4 py-1.5 rounded-full mb-6 mx-auto shadow-lg tracking-widest uppercase shadow-blue-500/25"
+             className="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-[11px] sm:text-xs px-4 py-2 rounded-full mb-8 shadow-lg shadow-blue-500/25 tracking-[0.15em] uppercase"
           >
             Pruébalo 7 días GRATIS
           </motion.div>
@@ -136,37 +141,32 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
           Elige el plan que mejor se adapte a tus objetivos. Obtén acceso a nuestra plataforma interactiva, Asistente IA especializado y una red de profesionales de élite.
         </motion.p>
 
-        {/* Frecuencia de Facturación (Pill Selector) */}
+        {/* Billing Selector */}
         {!heroOnly && (
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="bg-white/80 backdrop-blur-md border border-slate-200 p-1.5 rounded-full inline-flex items-center mx-auto shadow-sm relative z-20"
+            className="bg-white/90 backdrop-blur-md border border-slate-200/80 p-1.5 rounded-full inline-flex items-center mx-auto shadow-md relative z-20"
           >
             <button 
               onClick={() => setBillingPeriod('mensual')}
-              className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all ${billingPeriod === 'mensual' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+              className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-black tracking-wider uppercase transition-all duration-300 ${billingPeriod === 'mensual' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
             >
               Mensual
             </button>
-            <div className="relative group">
-              <button 
-                onClick={() => setBillingPeriod('semestral')}
-                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${billingPeriod === 'semestral' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
-              >
-                Semestral <span className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-widest hidden sm:inline-block">-10%</span>
-              </button>
-            </div>
-            <div className="relative group">
-              <button 
-                onClick={() => setBillingPeriod('anual')}
-                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${billingPeriod === 'anual' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
-              >
-                Anual <span className="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-widest hidden sm:inline-block">-30%</span>
-              </button>
-              {/* Absolute badge for mobile if needed, but flex gap is fine */}
-            </div>
+            <button 
+              onClick={() => setBillingPeriod('semestral')}
+              className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-black tracking-wider uppercase transition-all duration-300 flex items-center gap-1.5 ${billingPeriod === 'semestral' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+            >
+              Semestral <span className="bg-emerald-500/10 text-emerald-600 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-normal">-10%</span>
+            </button>
+            <button 
+              onClick={() => setBillingPeriod('anual')}
+              className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-black tracking-wider uppercase transition-all duration-300 flex items-center gap-1.5 ${billingPeriod === 'anual' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+            >
+              Anual <span className="bg-blue-500/10 text-blue-600 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-normal">-30%</span>
+            </button>
           </motion.div>
         )}
       </div>
@@ -178,7 +178,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
           const compositePlanId = `${plan.id}_${billingPeriod}`;
           const isProcessing = loadingPlan === compositePlanId;
 
-          // Calcular Descuentos Exclusivos Manuales
+          // Billing discount logic
           let periodName = "mes";
           let monthsCount = 1;
           let totalBilledPrice = plan.price;
@@ -201,7 +201,6 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
           if (promo) {
              if (promo.promo_price) {
                 totalBilledPrice = promo.promo_price;
-                // Reverse-calculate a percentage for the UI badge if promo_price is used
                 adminDiscountPercent = promo.discount_percentage || Math.round((1 - (promo.promo_price / (plan.price * monthsCount))) * 100);
              } else if (promo.discount_percentage > 0) {
                 adminDiscountPercent = promo.discount_percentage;
@@ -221,8 +220,8 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
               onClick={() => setSelectedPlanId(plan.id)}
               className={`relative rounded-[2.5rem] cursor-pointer transition-all duration-500 flex flex-col h-full bg-white border ${
                 isActive 
-                  ? 'scale-105 z-20 shadow-[0_0_40px_-10px_rgba(59,130,246,0.5)] border-blue-500 ring-2 ring-blue-500/20' 
-                  : 'scale-95 hover:scale-100 z-10 border-slate-200 hover:border-slate-300 shadow-sm opacity-80 hover:opacity-100'
+                  ? 'scale-[1.03] z-20 shadow-[0_30px_60px_-15px_rgba(59,130,246,0.25)] border-blue-500/80 ring-1 ring-blue-500/30' 
+                  : 'scale-[0.97] hover:scale-[0.99] z-10 border-slate-200/80 hover:border-slate-300/80 shadow-sm opacity-90 hover:opacity-100'
               }`}
             >
               
@@ -231,24 +230,24 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
                 {/* Highlight Badge */}
                 {plan.highlight && adminDiscountPercent === 0 && (
                   <div 
-                    className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest text-white uppercase shadow-lg shadow-blue-500/30 flex items-center gap-1.5 bg-blue-600 whitespace-nowrap"
+                    className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest text-white uppercase shadow-lg shadow-blue-500/30 flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 whitespace-nowrap"
                   >
-                    <Star className="w-3.5 h-3.5 fill-white text-white" />
+                    <Star className="w-3 h-3 fill-white text-white" />
                     {plan.highlight}
                   </div>
                 )}
                 {adminDiscountPercent > 0 && (
                   <div 
-                    className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest text-[#1890FF] uppercase shadow-md shadow-brand-blue/10 flex items-center gap-1.5 bg-blue-50 border border-blue-100 whitespace-nowrap"
+                    className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest text-blue-600 uppercase shadow-md shadow-blue-500/10 flex items-center gap-1.5 bg-blue-50 border border-blue-100 whitespace-nowrap"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-brand-blue" />
+                    <Sparkles className="w-3 h-3 text-brand-blue" />
                     Oferta -{adminDiscountPercent}%
                   </div>
                 )}
 
                 {/* Header */}
-                <div className="mb-4 flex-grow-0">
-                  <h3 className="text-xl lg:text-2xl font-black text-slate-900 mb-2 tracking-tight">{plan.name}</h3>
+                <div className="mb-5 flex-grow-0">
+                  <h3 className="text-xl lg:text-2xl font-black text-slate-900 mb-2.5 tracking-tight">{plan.name}</h3>
                   <p className="text-slate-500 leading-snug text-xs md:text-sm font-medium">
                     {plan.description}
                   </p>
@@ -268,12 +267,12 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
                     <span className="text-slate-400 font-bold mb-1.5 text-sm">/mes</span>
                   </div>
                   {billingPeriod !== 'mensual' && (
-                    <div className="mt-2 text-[11px] font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-lg inline-block self-start">
+                    <div className="mt-2 text-[10px] font-black uppercase tracking-wider text-slate-500 bg-slate-100 px-3 py-1.5 rounded-xl inline-block self-start">
                       Facturado {formatGeoPrice(totalBilledPrice)} cada {periodName}
                     </div>
                   )}
                   {billingPeriod === 'mensual' && (
-                    <div className="mt-2 text-[11px] font-bold text-slate-400 bg-slate-50 px-3 py-1.5 rounded-lg inline-block self-start opacity-0">Spacer</div>
+                    <div className="mt-2 text-[10px] font-black uppercase tracking-wider text-slate-500 bg-slate-100 px-3 py-1.5 rounded-xl inline-block self-start opacity-0 select-none">Spacer</div>
                   )}
                 </div>
 
@@ -286,19 +285,19 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
                     const isLive = feature.startsWith("🎓");
                     const cleanFeature = feature.replace(/^✓\s*|^💬\s*|^🎓\s*/, "");
                     return (
-                      <div key={idx} className="flex gap-3 items-start">
+                      <div key={idx} className="flex gap-3 items-start group/item">
                         {isCheck || isChat || isLive ? (
-                           <div className="mt-0.5 w-5 h-5 rounded-full flex items-center justify-center shrink-0 bg-amber-50">
+                           <div className="mt-0.5 w-5 h-5 rounded-full flex items-center justify-center shrink-0 bg-amber-50 group-hover/item:scale-110 transition-transform duration-300">
                              {isCheck && <Check className="w-3 h-3 font-bold text-amber-500" />}
                              {isChat && <span className="text-[11px]">💬</span>}
                              {isLive && <span className="text-[11px]">🎓</span>}
                            </div>
                         ) : (
-                          <div className="mt-0.5 w-5 h-5 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${plan.color}15` }}>
+                          <div className="mt-0.5 w-5 h-5 rounded-full flex items-center justify-center shrink-0 group-hover/item:scale-110 transition-transform duration-300" style={{ backgroundColor: `${plan.color}15` }}>
                             <Check className="w-3 h-3 font-bold" style={{ color: plan.color }} />
                           </div>
                         )}
-                        <span className={`text-[13px] md:text-sm leading-snug ${isCheck || isChat || isLive ? 'text-[#0F172A] font-bold' : 'text-slate-600 font-medium'}`}>{cleanFeature}</span>
+                        <span className={`text-[13px] md:text-sm leading-snug transition-colors duration-300 group-hover/item:text-slate-900 ${isCheck || isChat || isLive ? 'text-[#0F172A] font-bold' : 'text-slate-600 font-medium'}`}>{cleanFeature}</span>
                       </div>
                     );
                   })}
@@ -312,10 +311,10 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
                         e.stopPropagation();
                         handleAction(compositePlanId);
                     }}
-                    className={`w-full py-3.5 rounded-2xl font-black transition-all flex items-center justify-center gap-2 group relative overflow-hidden text-sm shadow-sm hover:shadow-md`}
+                    className={`w-full py-4 rounded-2xl font-black transition-all flex items-center justify-center gap-2 group relative overflow-hidden text-sm shadow-sm hover:shadow-md`}
                     style={{ 
-                        backgroundColor: isActive ? '#3b82f6' : '#f1f5f9', // Blue-500 when active
-                        color: isActive ? '#ffffff' : '#475569',
+                        backgroundColor: isActive ? '#2563eb' : '#f8fafc',
+                        color: isActive ? '#ffffff' : '#334155',
                         opacity: (isLoading || isProcessing) ? 0.7 : undefined,
                     }}
                     >
@@ -325,10 +324,10 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
                         <div className="flex flex-col items-center justify-center relative z-10 w-full">
                           <div className="flex items-center gap-2 justify-center w-full">
                             {plan.id === 'ultraplus' ? "Suscribirse Ahora" : "Iniciar Prueba Gratis"}
-                            <ArrowRight className={`w-4 h-4 group-hover:translate-x-1 transition-transform ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                            <ArrowRight className={`w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
                           </div>
                           {plan.id !== 'ultraplus' && (
-                            <span className="text-[9px] font-medium opacity-80 mt-1 uppercase tracking-wider block text-center">7 días de acceso y sin cargos</span>
+                            <span className="text-[9px] font-bold opacity-80 mt-1 uppercase tracking-wider block text-center">7 días de acceso y sin cargos</span>
                           )}
                         </div>
                     )}
