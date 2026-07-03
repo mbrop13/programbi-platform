@@ -21,7 +21,6 @@ import {
   ExternalLink,
   Search,
   Bell,
-  FolderKanban,
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
 import { getUnreadNotificationCount } from "@/lib/supabase/comunidad";
@@ -41,6 +40,7 @@ interface SidebarProps {
   onTabChange: (tabId: string) => void;
   collapsed: boolean;
   onToggleCollapse: () => void;
+  onExpand: () => void;
   isAdmin: boolean;
   isOrgManager: boolean;
   userProfile: {
@@ -48,6 +48,7 @@ interface SidebarProps {
     email: string;
     subscription_plan?: string | null;
   } | null;
+  authLoading?: boolean;
   mobileOpen: boolean;
   onMobileClose: () => void;
   onOpenSettings: () => void;
@@ -58,9 +59,11 @@ export default function Sidebar({
   onTabChange,
   collapsed,
   onToggleCollapse,
+  onExpand,
   isAdmin,
   isOrgManager,
   userProfile,
+  authLoading = false,
   mobileOpen,
   onMobileClose,
   onOpenSettings,
@@ -79,13 +82,24 @@ export default function Sidebar({
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
-      if (e.key === "[" && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        const tag = (e.target as HTMLElement).tagName;
-        if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+      const tag = (e.target as HTMLElement).tagName;
+      const typing = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+
+      // "[" toggles collapse (unless typing)
+      if (e.key === "[" && !e.ctrlKey && !e.metaKey && !e.altKey && !typing) {
         onToggleCollapse();
+        return;
+      }
+
+      // "/" focuses the search input (expand sidebar first if collapsed)
+      if (e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey && !typing) {
+        e.preventDefault();
+        if (collapsed) onExpand();
+        // wait a tick for the sidebar to expand before focusing
+        setTimeout(() => searchRef.current?.focus(), 60);
       }
     },
-    [onToggleCollapse]
+    [onToggleCollapse, collapsed, onExpand]
   );
 
   useEffect(() => {
@@ -102,7 +116,6 @@ export default function Sidebar({
     { id: "inicio", label: "Inicio", icon: LayoutDashboard, color: "text-blue-500", group: "Principal" },
     { id: "cursos", label: "Cursos", icon: GraduationCap, color: "text-indigo-500", group: "Principal" },
     { id: "live", label: "En Vivo", icon: Radio, color: "text-rose-500", group: "Principal", showPing: true },
-    { id: "proyectos", label: "Proyectos", icon: FolderKanban, color: "text-orange-500", group: "Principal" },
     { id: "ai", label: "IA", icon: Sparkles, color: "text-purple-500", group: "Principal" },
     { id: "perfil", label: "Mi Perfil", icon: User, color: "text-cyan-500", group: "Personal" },
     { id: "certificados", label: "Certificados", icon: Award, color: "text-amber-500", group: "Personal" },
@@ -117,9 +130,16 @@ export default function Sidebar({
     return acc;
   }, {});
 
-  const initials = userProfile?.full_name
-    ? userProfile.full_name.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase()
-    : "??";
+  const displayName =
+    userProfile?.full_name || userProfile?.email || "";
+  const initials = displayName
+    ? displayName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .substring(0, 2)
+        .toUpperCase()
+    : "?";
 
   const planLabel = userProfile?.subscription_plan?.replace("plan_", "").toUpperCase() || null;
   const sidebarWidth = collapsed ? 72 : 260;
@@ -182,9 +202,9 @@ export default function Sidebar({
         {collapsed ? (
           <>
             <button
-              onClick={() => searchRef.current?.focus()}
+              onClick={() => { onExpand(); setTimeout(() => searchRef.current?.focus(), 60); }}
               className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-              title="Buscar"
+              title="Buscar (expande la barra)"
             >
               <Search className="w-[18px] h-[18px]" />
             </button>
@@ -207,8 +227,8 @@ export default function Sidebar({
         ) : (
           <div className="flex items-center gap-2">
             {/* Search input */}
-            <div className={`relative flex-1 transition-all duration-200 ${searchFocused ? "ring-2 ring-brand-blue/20" : ""} rounded-xl`}>
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <div className={`relative flex-1 transition-all duration-200 ${searchFocused ? "ring-2 ring-brand-blue/20 bg-white" : "bg-gray-50"} rounded-xl`}>
+              <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${searchFocused ? "text-brand-blue" : "text-gray-400"}`} />
               <input
                 ref={searchRef}
                 type="text"
@@ -217,15 +237,19 @@ export default function Sidebar({
                 onFocus={() => setSearchFocused(true)}
                 onBlur={() => setSearchFocused(false)}
                 placeholder="Buscar..."
-                className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:bg-white focus:border-brand-blue/30 transition-all"
+                className="w-full pl-9 pr-7 py-2 bg-transparent border border-transparent rounded-xl text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none transition-all"
               />
-              {searchQuery && (
+              {searchQuery ? (
                 <button
                   onClick={() => { setSearchQuery(""); searchRef.current?.focus(); }}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 flex items-center justify-center rounded-full bg-gray-300 text-white hover:bg-gray-400 transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-gray-300 text-white hover:bg-gray-400 transition-colors"
                 >
                   <X className="w-2.5 h-2.5" />
                 </button>
+              ) : (
+                <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex items-center justify-center h-5 min-w-[18px] px-1 rounded-md bg-white border border-gray-200 text-[10px] font-semibold text-gray-400 select-none">
+                  /
+                </kbd>
               )}
             </div>
 
@@ -269,7 +293,7 @@ export default function Sidebar({
               )}
             </AnimatePresence>
 
-            <div className="space-y-0.5">
+            <div className="space-y-1">
               {groupTabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -281,10 +305,10 @@ export default function Sidebar({
                       onMobileClose();
                     }}
                     title={collapsed ? tab.label : undefined}
-                    className={`relative w-full flex items-center gap-3 font-medium text-[13px] transition-all duration-150
+                    className={`relative w-full flex items-center gap-3 font-medium text-[13px] transition-all duration-200
                       ${collapsed ? "justify-center px-2 py-2.5 rounded-xl" : "px-3 py-2.5 rounded-xl"}
                       ${isActive
-                        ? "bg-brand-blue/10 text-brand-blue"
+                        ? "bg-gradient-to-r from-brand-blue/10 to-brand-blue/[0.02] text-brand-blue"
                         : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
                       }
                     `}
@@ -292,13 +316,13 @@ export default function Sidebar({
                     {isActive && (
                       <motion.div
                         layoutId="sidebarActive"
-                        className={`absolute top-1 bottom-1 rounded-r-full bg-brand-blue ${collapsed ? "left-0 w-[3px]" : "-left-3 w-[3px]"}`}
+                        className={`absolute top-1.5 bottom-1.5 rounded-full bg-brand-blue ${collapsed ? "left-0 w-[3px]" : "-left-3 w-[3px]"}`}
                         transition={{ type: "spring", stiffness: 500, damping: 35 }}
                       />
                     )}
 
                     <span className="relative shrink-0">
-                      <Icon className={`w-[18px] h-[18px] transition-colors ${isActive ? "text-brand-blue" : "text-gray-400"}`} />
+                      <Icon className={`w-[18px] h-[18px] transition-colors ${isActive ? "text-brand-blue" : collapsed ? "text-gray-400" : tab.color}`} />
                       {tab.showPing && (
                         <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
@@ -313,7 +337,7 @@ export default function Sidebar({
                           initial={{ opacity: 0, width: 0 }}
                           animate={{ opacity: 1, width: "auto" }}
                           exit={{ opacity: 0, width: 0 }}
-                          className="whitespace-nowrap overflow-hidden"
+                          className={`whitespace-nowrap overflow-hidden ${isActive ? "font-semibold" : ""}`}
                         >
                           {tab.label}
                         </motion.span>
@@ -337,13 +361,28 @@ export default function Sidebar({
 
       {/* ─── USER SECTION (bottom) ─── */}
       <div className={`shrink-0 border-t border-gray-100 ${collapsed ? "p-2 flex justify-center" : "p-3"}`}>
-        {collapsed ? (
+        {authLoading && !userProfile ? (
+          // Loading skeleton (avoids the "??" / empty flash while the session
+          // is being resolved from local storage).
+          collapsed ? (
+            <div className="w-10 h-10 rounded-xl bg-gray-100 animate-pulse" />
+          ) : (
+            <div className="w-full flex items-center gap-3 p-2.5 rounded-xl">
+              <div className="w-9 h-9 rounded-xl bg-gray-100 animate-pulse shrink-0" />
+              <div className="flex-1 min-w-0 space-y-1.5">
+                <div className="h-3 w-24 bg-gray-100 rounded animate-pulse" />
+                <div className="h-2.5 w-32 bg-gray-100 rounded animate-pulse" />
+              </div>
+            </div>
+          )
+        ) : collapsed ? (
           <button
             onClick={() => setUserMenuOpen(!userMenuOpen)}
-            className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md transition-all"
+            className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all"
             title={userProfile?.full_name || "Usuario"}
           >
             {initials}
+            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white" />
           </button>
         ) : (
           <button
@@ -351,12 +390,22 @@ export default function Sidebar({
             className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all duration-200 text-left
               ${userMenuOpen ? "bg-brand-blue/5 ring-1 ring-brand-blue/20" : "hover:bg-gray-50"}`}
           >
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm shrink-0">
-              {initials}
+            <div className="relative shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+                {initials}
+              </div>
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white" />
             </div>
             <div className="min-w-0 flex-1">
-              <div className="font-semibold text-sm text-gray-900 truncate leading-tight">
-                {userProfile?.full_name || "Usuario"}
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-sm text-gray-900 truncate leading-tight">
+                  {userProfile?.full_name || "Usuario"}
+                </span>
+                {planLabel && (
+                  <span className="shrink-0 text-[9px] font-black px-1.5 py-0.5 rounded-md bg-brand-blue/10 text-brand-blue leading-none">
+                    {planLabel}
+                  </span>
+                )}
               </div>
               <div className="text-[11px] text-gray-400 truncate leading-tight">
                 {userProfile?.email || ""}

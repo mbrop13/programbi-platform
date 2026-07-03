@@ -5,12 +5,11 @@ import {
   Bot, User, Sparkles, AlertCircle, Copy, Check, 
   RotateCcw, Plus, Search, MessageSquare, Trash2, 
   PanelLeftClose, PanelLeft, Zap, Code, BookOpen, 
-  ArrowUp, Paperclip, X, FileText, FileSpreadsheet, 
-  FileCode, Image as ImageIcon, File, Loader2, Lock,
-  ChevronDown, Edit3, Globe, Terminal, Mic
+  ArrowUp, Paperclip, X, Loader2, Lock,
+  ChevronDown, Edit3, Globe, Terminal, Mic, Sun, Moon
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { 
   getAIConversations, 
   getAIMessages, 
@@ -18,14 +17,6 @@ import {
   deleteAIConversation, 
   updateAIConversationTitle 
 } from "@/lib/supabase/comunidad-ai";
-
-interface UploadedFile {
-  id: string;
-  name: string;
-  size: number;
-  type: string;
-  preview?: string;
-}
 
 interface Conversation {
   id: string;
@@ -50,6 +41,7 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loadingConversations, setLoadingConversations] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [selectedModel, setSelectedModel] = useState(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("programbi_chat_model") || "llama-3-8b";
@@ -60,7 +52,7 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState("");
 
-  // Feature indicators (mock OpenChat capability toggles)
+  // Capabilities toggles (OpenChat Style)
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
   const [codeInterpreterEnabled, setCodeInterpreterEnabled] = useState(false);
 
@@ -75,13 +67,11 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [isFirstMessage, setIsFirstMessage] = useState(true);
 
   // Close dropdown on click outside
@@ -163,7 +153,6 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
   const handleNewChat = () => {
     setMessages([]);
     setActiveConversationId(null);
-    setUploadedFiles([]);
     setIsFirstMessage(true);
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
       setSidebarOpen(false);
@@ -203,7 +192,7 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const currentInput = (input || '').trim();
-    if (!currentInput && uploadedFiles.length === 0) return;
+    if (!currentInput) return;
 
     if (!activeConversationId) {
       try {
@@ -230,60 +219,6 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
         body: { conversationId: activeConversationId, model: selectedModel },
       });
     }
-
-    setUploadedFiles([]);
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-    const remainingSlots = 10 - uploadedFiles.length;
-    let filesToAdd = Array.from(files);
-    if (filesToAdd.length > remainingSlots) {
-      alert(`Máximo 10 archivos. Se añadirán los ${remainingSlots} primeros.`);
-      filesToAdd = filesToAdd.slice(0, remainingSlots);
-    }
-    if (filesToAdd.length === 0) { e.target.value = ''; return; }
-    const newFiles: UploadedFile[] = filesToAdd.map(f => {
-      const uf: UploadedFile = {
-        id: Math.random().toString(36).slice(2, 9),
-        name: f.name, size: f.size, type: f.type,
-      };
-      if (f.type.startsWith('image/')) uf.preview = URL.createObjectURL(f);
-      return uf;
-    });
-    setUploadedFiles(prev => [...prev, ...newFiles]);
-    e.target.value = '';
-  };
-
-  const removeFile = (id: string) => {
-    setUploadedFiles(prev => {
-      const file = prev.find(f => f.id === id);
-      if (file?.preview) URL.revokeObjectURL(file.preview);
-      return prev.filter(f => f.id !== id);
-    });
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
-
-  const getFileIcon = (type: string, name: string) => {
-    if (type.startsWith('image/')) return ImageIcon;
-    if (type.includes('spreadsheet') || name.endsWith('.csv') || name.endsWith('.xlsx')) return FileSpreadsheet;
-    if (type.includes('javascript') || type.includes('python') || name.endsWith('.py') || name.endsWith('.js') || name.endsWith('.ts') || name.endsWith('.sql')) return FileCode;
-    if (type.includes('pdf') || type.includes('document')) return FileText;
-    return File;
-  };
-
-  const getFileColor = (type: string, name: string) => {
-    if (type.startsWith('image/')) return 'bg-pink-50 text-pink-500 border-pink-100';
-    if (type.includes('spreadsheet') || name.endsWith('.csv') || name.endsWith('.xlsx')) return 'bg-emerald-50 text-emerald-600 border-emerald-100';
-    if (type.includes('javascript') || type.includes('python') || name.endsWith('.py') || name.endsWith('.js') || name.endsWith('.sql')) return 'bg-amber-50 text-amber-600 border-amber-100';
-    if (type.includes('pdf')) return 'bg-red-50 text-red-500 border-red-100';
-    return 'bg-gray-50 text-gray-500 border-gray-200';
   };
 
   const getRelativeDate = (dateStr: string) => {
@@ -318,10 +253,34 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
     setModelDropdownOpen(false);
   };
 
+  const toggleTheme = () => {
+    setTheme(prev => prev === "light" ? "dark" : "light");
+  };
+
+  // Color classes mapping based on active Theme (OpenChat styling)
+  const colors = {
+    bgMain: theme === "dark" ? "bg-[#212121]" : "bg-white",
+    bgSidebar: theme === "dark" ? "bg-[#171717] border-zinc-800" : "bg-[#f9f9f9] border-zinc-200/80",
+    textSidebarHeader: theme === "dark" ? "text-zinc-400" : "text-zinc-500",
+    textSidebarItem: theme === "dark" ? "text-zinc-300 hover:text-white" : "text-zinc-700 hover:text-zinc-900",
+    sidebarActive: theme === "dark" ? "bg-zinc-800 text-white" : "bg-zinc-200/60 text-zinc-900 font-semibold",
+    textMain: theme === "dark" ? "text-zinc-100" : "text-zinc-800",
+    borderHeader: theme === "dark" ? "border-zinc-800" : "border-zinc-100",
+    headerBg: theme === "dark" ? "bg-[#212121]/95" : "bg-white/95",
+    btnSecondary: theme === "dark" ? "hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200" : "hover:bg-zinc-100 text-zinc-500 hover:text-zinc-800",
+    pillBg: theme === "dark" ? "bg-[#2f2f2f] border-zinc-700/60" : "bg-[#f4f4f4] border-zinc-200/80",
+    messageUserBg: "transparent",
+    messageAssistantBg: theme === "dark" ? "bg-[#2f2f2f]/40 border-y border-zinc-800/40" : "bg-[#f9f9f9] border-y border-zinc-100",
+    inputBg: theme === "dark" ? "bg-[#2f2f2f] border-zinc-700/60 focus-within:border-zinc-600 focus-within:bg-[#2f2f2f]" : "bg-[#f4f4f4] border-zinc-200/80 focus-within:border-zinc-300 focus-within:bg-white",
+    inputText: theme === "dark" ? "text-zinc-100 placeholder-zinc-500" : "text-zinc-800 placeholder-zinc-400",
+    cardBg: theme === "dark" ? "bg-[#2f2f2f]/40 border-zinc-800 hover:border-zinc-700 hover:bg-[#2f2f2f]/80" : "bg-white border-zinc-200/80 hover:border-zinc-300 hover:bg-zinc-50/60",
+    scrollbarThumb: theme === "dark" ? "bg-zinc-800" : "bg-zinc-300",
+  };
+
   return (
-    <div className="flex flex-1 min-h-0 h-full relative text-slate-800">
+    <div className={`flex flex-1 min-h-0 h-full relative font-sans transition-colors duration-200 ${colors.bgMain} ${colors.textMain}`}>
       
-      {/* ─── SIDEBAR BACKDROP (Mobile) ─── */}
+      {/* ─── SIDEBAR BACKDROP (Mobile overlay) ─── */}
       <AnimatePresence>
         {sidebarOpen && (
           <motion.div
@@ -329,38 +288,49 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSidebarOpen(false)}
-            className="md:hidden absolute inset-0 z-40 bg-black/10 backdrop-blur-[2px]"
+            className="md:hidden absolute inset-0 z-40 bg-black/30 backdrop-blur-[2px]"
           />
         )}
       </AnimatePresence>
 
-      {/* ─── SIDEBAR ─── */}
+      {/* ─── SIDEBAR (OpenChat Aesthetics) ─── */}
       <AnimatePresence initial={false}>
         {sidebarOpen && (
           <motion.aside
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 280, opacity: 1 }}
+            animate={{ width: 260, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="h-full bg-slate-50/90 backdrop-blur-md border-r border-slate-200/50 flex flex-col overflow-hidden absolute md:relative z-50 shrink-0 shadow-sm"
+            className={`h-full border-r flex flex-col overflow-hidden absolute md:relative z-50 shrink-0 ${colors.bgSidebar}`}
           >
-            <div className="p-3.5 flex flex-col gap-2 shrink-0">
-              <div className="flex items-center justify-between">
-                <button onClick={() => setSidebarOpen(false)} className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 transition-colors border-none bg-transparent cursor-pointer">
-                  <PanelLeftClose className="w-5 h-5" />
-                </button>
-                <button onClick={handleNewChat} className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 transition-colors border-none bg-transparent cursor-pointer" title="Nuevo chat">
-                  <Plus className="w-5 h-5" />
-                </button>
-              </div>
+            {/* Header Sidebar: Toggle Sidebar & New Chat */}
+            <div className="p-3.5 flex items-center justify-between shrink-0">
+              <button 
+                onClick={() => setSidebarOpen(false)} 
+                className={`p-2 rounded-xl border-none bg-transparent cursor-pointer transition-colors ${colors.btnSecondary}`}
+                title="Cerrar barra lateral"
+              >
+                <PanelLeftClose className="w-5 h-5" />
+              </button>
+              <button 
+                onClick={handleNewChat} 
+                className={`p-2 rounded-xl border-none bg-transparent cursor-pointer transition-colors ${colors.btnSecondary}`}
+                title="Nuevo chat"
+              >
+                <Plus className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Búsqueda en historial */}
+            <div className="px-3.5 mb-2.5 shrink-0">
               <div className="relative">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" />
                 <input
                   type="text"
                   placeholder="Buscar chat..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-white border border-slate-200 rounded-2xl pl-10 pr-3.5 py-2.5 text-xs text-slate-700 placeholder:text-slate-400 focus:outline-none focus:border-brand-blue/40 focus:ring-4 focus:ring-brand-blue/5 transition-all shadow-sm"
+                  className={`w-full border rounded-xl pl-9 pr-3.5 py-2 text-xs focus:outline-none transition-all ${colors.inputBg} ${colors.inputText}`}
                 />
               </div>
             </div>
@@ -368,27 +338,27 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
             <div className="px-3.5 mb-2 shrink-0">
               <button 
                 onClick={handleNewChat} 
-                className="w-full flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl text-xs font-bold text-slate-700 hover:bg-slate-100 transition-all border border-slate-200/80 hover:border-slate-300 bg-white shadow-sm hover:shadow active:scale-[0.98] cursor-pointer"
+                className={`w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all border shadow-sm hover:shadow cursor-pointer bg-white dark:bg-zinc-800 text-zinc-700 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 active:scale-[0.98]`}
               >
-                <Plus className="w-4 h-4 text-brand-blue" />
-                Nuevo Asistente Chat
+                <Plus className="w-4 h-4 text-purple-500" />
+                Nuevo Chat
               </button>
             </div>
 
-            {/* History */}
-            <div className="flex-1 overflow-y-auto px-2 custom-scrollbar space-y-4 pb-4">
+            {/* Listado de Historial */}
+            <div className="flex-1 overflow-y-auto px-2 space-y-4 pb-4 custom-scrollbar">
               {loadingConversations ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-5 h-5 text-slate-400 animate-spin" />
+                  <Loader2 className="w-5 h-5 text-zinc-400 animate-spin" />
                 </div>
               ) : Object.keys(grouped).length === 0 ? (
-                <div className="text-center py-8 text-xs text-slate-400">
+                <div className="text-center py-8 text-xs text-zinc-400 font-medium">
                   Sin historial de chat
                 </div>
               ) : (
                 Object.entries(grouped).map(([date, chats]) => (
                   <div key={date} className="space-y-1">
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-3 mb-1">{date}</div>
+                    <div className={`text-[10px] font-bold uppercase tracking-wider px-3 mb-1 ${colors.textSidebarHeader}`}>{date}</div>
                     <div className="space-y-0.5">
                       {chats.map((chat) => (
                         <div
@@ -402,12 +372,12 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
                             }
                           }}
                           onDoubleClick={(e) => startRenaming(chat.id, chat.title, e)}
-                          className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-xs transition-all relative cursor-pointer border-none bg-transparent outline-none
+                          className={`group w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-xs transition-all relative cursor-pointer border-none bg-transparent outline-none
                             ${activeConversationId === chat.id
-                              ? "bg-white text-slate-900 shadow-sm border border-slate-200/60 font-semibold"
-                              : "text-slate-600 hover:bg-slate-200/30 hover:text-slate-900 border border-transparent"}`}
+                              ? colors.sidebarActive
+                              : `border border-transparent ${colors.textSidebarItem}`}`}
                         >
-                          <MessageSquare className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+                          <MessageSquare className="w-3.5 h-3.5 shrink-0 text-zinc-400" />
                           
                           {editingId === chat.id ? (
                             <input
@@ -420,7 +390,7 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
                                 if (e.key === "Escape") setEditingId(null);
                               }}
                               autoFocus
-                              className="bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 text-xs text-slate-900 w-full focus:outline-none focus:border-brand-blue"
+                              className="bg-zinc-100 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 rounded px-1.5 py-0.5 text-xs text-zinc-900 dark:text-zinc-100 w-full focus:outline-none focus:border-purple-500"
                               onClick={(e) => e.stopPropagation()}
                             />
                           ) : (
@@ -428,16 +398,16 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
                           )}
 
                           {editingId !== chat.id && (
-                            <div className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 flex items-center gap-1">
+                            <div className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 flex items-center gap-1 ml-auto">
                               <button 
-                                className="p-1 rounded-md text-slate-400 hover:text-slate-700 hover:bg-slate-200 transition-colors border-none bg-transparent cursor-pointer" 
+                                className="p-0.5 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors border-none bg-transparent cursor-pointer" 
                                 onClick={(e) => startRenaming(chat.id, chat.title, e)}
                                 title="Renombrar"
                               >
                                 <Edit3 className="w-3 h-3" />
                               </button>
                               <button 
-                                className="p-1 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors border-none bg-transparent cursor-pointer" 
+                                className="p-0.5 rounded text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors border-none bg-transparent cursor-pointer" 
                                 onClick={(e) => handleDeleteConversation(chat.id, e)}
                                 title="Eliminar"
                               >
@@ -453,15 +423,15 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
               )}
             </div>
 
-            {/* Footer */}
-            <div className="p-3.5 shrink-0 mt-auto border-t border-slate-200/50 bg-slate-100/50">
-              <div className="flex items-center gap-3 px-2 py-1.5">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+            {/* Footer de Sidebar */}
+            <div className="p-3.5 shrink-0 mt-auto border-t border-zinc-200/50 dark:border-zinc-800/80 bg-zinc-100/50 dark:bg-zinc-900/30">
+              <div className="flex items-center gap-3 px-2 py-1">
+                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
                   IA
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-xs font-bold text-slate-800 truncate">Asistente OpenChat</div>
-                  <div className="text-[10px] text-slate-400 font-medium">ProgramBI v2.0</div>
+                  <div className="text-xs font-bold truncate">ProgramBI OpenChat</div>
+                  <div className="text-[10px] text-zinc-400 font-medium">Versión Integrada</div>
                 </div>
               </div>
             </div>
@@ -470,39 +440,39 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
       </AnimatePresence>
 
       {/* ─── MAIN CHAT AREA ─── */}
-      <div className="flex-1 flex flex-col min-w-0 bg-white relative">
+      <div className="flex-1 flex flex-col min-w-0 h-full relative">
         {isRestricted && (
-          <div className="absolute inset-0 z-30 border-l border-slate-100 bg-white/50 backdrop-blur-[8px] flex flex-col items-center justify-center p-6">
-             <div className="w-14 h-14 bg-white rounded-2xl shadow-lg flex items-center justify-center mb-4 text-brand-blue border border-slate-100">
-               <Lock className="w-6 h-6" />
+          <div className="absolute inset-0 z-30 bg-white/70 dark:bg-zinc-900/70 backdrop-blur-[8px] flex flex-col items-center justify-center p-6">
+             <div className="w-14 h-14 bg-white dark:bg-zinc-850 rounded-2xl shadow-lg flex items-center justify-center mb-4 text-purple-500 border border-zinc-100 dark:border-zinc-800">
+               <Lock className="w-6 h-6 animate-pulse" />
              </div>
-             <h3 className="text-lg font-black text-slate-900 mb-1">Asistente IA Premium</h3>
-             <p className="text-xs text-slate-500 text-center max-w-xs mb-5">Suscríbete a un plan de la comunidad para hacer preguntas, generar consultas SQL o depurar código.</p>
-             <a href="/comunidad" className="bg-brand-blue hover:bg-blue-600 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md hover:shadow-lg transition-all border-none">Ver Planes de Suscripción</a>
+             <h3 className="text-lg font-black mb-1">Asistente IA Premium</h3>
+             <p className="text-xs text-zinc-500 text-center max-w-xs mb-5">Suscríbete a un plan de la comunidad para hacer preguntas, generar consultas SQL o depurar código.</p>
+             <a href="/comunidad" className="bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs px-5 py-3 rounded-xl shadow-md hover:shadow-lg transition-all border-none no-underline">Ver Planes de Suscripción</a>
           </div>
         )}
 
-        {/* HEADER bar */}
-        <div className="h-14 border-b border-slate-100 flex items-center justify-between px-4 shrink-0 bg-white z-20">
+        {/* HEADER (Barra Superior de Control) */}
+        <div className={`h-14 border-b flex items-center justify-between px-4 shrink-0 z-20 sticky top-0 ${colors.headerBg} ${colors.borderHeader}`}>
           <div className="flex items-center gap-3">
             {!sidebarOpen && (
               <button 
                 onClick={() => setSidebarOpen(true)} 
-                className="w-9 h-9 rounded-xl border border-slate-200/80 flex items-center justify-center text-slate-500 hover:text-slate-800 hover:bg-slate-50 transition-all border-none bg-transparent cursor-pointer"
+                className={`w-9 h-9 rounded-xl flex items-center justify-center border-none bg-transparent cursor-pointer transition-colors ${colors.btnSecondary}`}
               >
-                <PanelLeft className="w-[18px] h-[18px]" />
+                <PanelLeft className="w-5 h-5" />
               </button>
             )}
             
-            {/* Model Selector Dropdown */}
+            {/* Selector de Modelos con estilo Dropdown */}
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setModelDropdownOpen(!modelDropdownOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 hover:border-slate-300 hover:bg-slate-50 transition-all text-xs font-bold text-slate-700 bg-white cursor-pointer"
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-all text-xs font-bold cursor-pointer ${colors.pillBg}`}
               >
-                <Sparkles className="w-3.5 h-3.5 text-brand-blue animate-pulse" />
+                <Sparkles className="w-3.5 h-3.5 text-purple-500" />
                 <span>{currentModelObj.name}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
               </button>
 
               <AnimatePresence>
@@ -511,29 +481,28 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    className="absolute left-0 mt-2 w-64 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 overflow-hidden py-1.5"
+                    className="absolute left-0 mt-2 w-64 bg-white dark:bg-zinc-900 border border-zinc-250 dark:border-zinc-800 rounded-2xl shadow-xl z-50 overflow-hidden py-1.5"
                   >
-                    <div className="px-3.5 py-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider border-b border-slate-100 pb-1.5 mb-1.5">
+                    <div className="px-3.5 py-1.5 text-[10px] font-bold text-zinc-400 uppercase tracking-wider border-b border-zinc-100 dark:border-zinc-800 pb-1.5 mb-1.5">
                       Seleccionar Inteligencia
                     </div>
                     {MODELS.map((m) => (
                       <button
                         key={m.id}
                         onClick={() => handleSelectModel(m.id)}
-                        className={`w-full flex items-start gap-2.5 px-3.5 py-2.5 text-left transition-colors border-none bg-transparent cursor-pointer
-                          ${selectedModel === m.id ? "bg-slate-50" : "hover:bg-slate-50/65"}`}
+                        className="w-full flex items-start gap-2.5 px-3.5 py-2.5 text-left border-none bg-transparent cursor-pointer hover:bg-zinc-100/50 dark:hover:bg-zinc-800/60 transition-colors"
                       >
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-slate-800">{m.name}</span>
+                            <span className="text-xs font-bold text-zinc-800 dark:text-zinc-100">{m.name}</span>
                             <span className={`text-[8px] font-extrabold px-1.5 py-0.5 rounded-md uppercase tracking-wider
                               ${m.id === 'claude-3-5-sonnet' 
-                                ? 'bg-amber-50 text-amber-600 border border-amber-100' 
-                                : 'bg-slate-100 text-slate-500'}`}>
+                                ? 'bg-amber-50 text-amber-600 dark:bg-amber-950/20 dark:text-amber-400 border border-amber-100 dark:border-amber-900/40' 
+                                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'}`}>
                               {m.badge}
                             </span>
                           </div>
-                          <span className="text-[10px] text-slate-400 block mt-0.5">{m.desc}</span>
+                          <span className="text-[10px] text-zinc-400 block mt-0.5">{m.desc}</span>
                         </div>
                       </button>
                     ))}
@@ -543,65 +512,76 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
             </div>
           </div>
 
-          {/* OpenChat Style Capabilities Indicators */}
+          {/* Opciones y Toggles de Cabecera (OpenChat Style) */}
           <div className="flex items-center gap-1.5">
             <button 
               onClick={() => setWebSearchEnabled(!webSearchEnabled)}
               className={`p-2 rounded-xl flex items-center justify-center border-none bg-transparent cursor-pointer transition-colors
-                ${webSearchEnabled ? 'text-brand-blue bg-blue-50' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
-              title="Buscar en la Web (Simulado)"
+                ${webSearchEnabled ? 'text-purple-500 bg-purple-500/10' : colors.btnSecondary}`}
+              title="Buscar en la Web"
             >
               <Globe className="w-4 h-4" />
             </button>
             <button 
               onClick={() => setCodeInterpreterEnabled(!codeInterpreterEnabled)}
               className={`p-2 rounded-xl flex items-center justify-center border-none bg-transparent cursor-pointer transition-colors
-                ${codeInterpreterEnabled ? 'text-emerald-500 bg-emerald-50' : 'text-slate-400 hover:bg-slate-100 hover:text-slate-600'}`}
-              title="Intérprete de Código (Simulado)"
+                ${codeInterpreterEnabled ? 'text-emerald-500 bg-emerald-500/10' : colors.btnSecondary}`}
+              title="Intérprete de Código"
             >
               <Terminal className="w-4 h-4" />
             </button>
             <button 
-              className="p-2 rounded-xl flex items-center justify-center border-none bg-transparent cursor-pointer text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"
-              title="Modo de Voz (Simulado)"
+              className={`p-2 rounded-xl flex items-center justify-center border-none bg-transparent cursor-pointer transition-colors ${colors.btnSecondary}`}
+              title="Modo de Voz"
             >
               <Mic className="w-4 h-4" />
             </button>
             
-            <div className="w-px h-5 bg-slate-200 mx-1.5" />
+            <div className="w-px h-5 bg-zinc-200 dark:bg-zinc-800 mx-1" />
+
+            {/* Toggle Tema (Claro / Oscuro) */}
+            <button 
+              onClick={toggleTheme}
+              className={`p-2 rounded-xl flex items-center justify-center border-none bg-transparent cursor-pointer transition-colors ${colors.btnSecondary}`}
+              title={theme === "light" ? "Cambiar a Modo Oscuro" : "Cambiar a Modo Claro"}
+            >
+              {theme === "light" ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+            </button>
+            
+            <div className="w-px h-5 bg-zinc-200 dark:bg-zinc-800 mx-1" />
 
             <button 
               onClick={handleNewChat}
-              className="px-3 py-1.5 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-all border-none flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1.5 bg-purple-600 hover:bg-purple-700 text-white rounded-xl text-xs font-bold transition-all border-none flex items-center gap-1 cursor-pointer shadow-sm active:scale-95"
             >
               <Plus className="w-3.5 h-3.5" />
-              Nuevo
+              Nuevo Chat
             </button>
           </div>
         </div>
 
-        {/* Messages / Welcome */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar bg-slate-50/30">
+        {/* Historial de Mensajes / Bienvenida */}
+        <div className="flex-1 overflow-y-auto custom-scrollbar">
           {loadingMessages ? (
             <div className="h-full flex items-center justify-center">
-              <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
+              <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
             </div>
           ) : isEmpty ? (
             <div className="h-full flex flex-col items-center justify-center px-4 py-8">
               <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="text-center max-w-2xl w-full">
-                <div className="w-14 h-14 bg-gradient-to-br from-brand-blue to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-md shadow-brand-blue/10">
+                <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-md shadow-purple-500/10">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
-                <h1 className="text-xl sm:text-2xl font-black text-slate-900 mb-1.5">¿En qué te puedo apoyar hoy?</h1>
-                <p className="text-slate-400 mb-8 text-xs max-w-xs mx-auto">
-                  Tu asistente personal especializado en SQL, Python, Power BI, Excel y análisis de datos.
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight mb-2">¿Cómo puedo ayudarte hoy?</h1>
+                <p className="text-zinc-400 mb-8 text-xs max-w-sm mx-auto font-medium">
+                  Tu copiloto IA inteligente integrado en ProgramBI, especializado en SQL, Python, Power BI y análisis de datos.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 max-w-lg mx-auto">
                   {[
-                    { icon: Code, label: "Funciones Ventana en SQL", desc: "Consultas avanzadas con ejemplos" },
-                    { icon: Zap, label: "Optimizar código en Python", desc: "Mejores prácticas de rendimiento" },
-                    { icon: BookOpen, label: "Dashboard financiero PBI", desc: "Consejos de diseño y modelamiento" },
-                    { icon: Sparkles, label: "Esquema estrella vs copo de nieve", desc: "Modelamiento de base de datos" },
+                    { icon: Code, label: "Funciones Ventana en SQL", desc: "Consultas avanzadas con ejemplos detallados" },
+                    { icon: Zap, label: "Optimizar código en Python", desc: "Mejores prácticas para optimizar scripts" },
+                    { icon: BookOpen, label: "Crear dashboard financiero PBI", desc: "Guía de modelamiento estrella y diseño" },
+                    { icon: Sparkles, label: "Normalización de Base de Datos", desc: "Diferencia entre 1NF, 2NF y 3NF" },
                   ].map((s, i) => {
                     const Icon = s.icon;
                     return (
@@ -621,11 +601,11 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
                             }
                           }
                         }}
-                        className="group flex flex-col items-start gap-1 p-3.5 rounded-2xl bg-white border border-slate-200/60 hover:border-slate-300 hover:shadow-md hover:shadow-slate-100 transition-all text-left cursor-pointer"
+                        className={`group flex flex-col items-start gap-1 p-3.5 rounded-2xl text-left cursor-pointer transition-all ${colors.cardBg}`}
                       >
-                        <Icon className="w-4 h-4 text-slate-400 group-hover:text-brand-blue transition-colors" />
-                        <span className="text-xs font-bold text-slate-700 group-hover:text-slate-900 transition-colors">{s.label}</span>
-                        <span className="text-[10px] text-slate-400">{s.desc}</span>
+                        <Icon className="w-4 h-4 text-zinc-450 group-hover:text-purple-500 transition-colors" />
+                        <span className="text-xs font-bold group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">{s.label}</span>
+                        <span className="text-[10px] text-zinc-400">{s.desc}</span>
                       </motion.button>
                     );
                   })}
@@ -633,135 +613,107 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
               </motion.div>
             </div>
           ) : (
-            <div className="max-w-3xl mx-auto w-full px-4 py-6 space-y-6">
+            <div className="w-full flex flex-col">
               {messages.map((m: any) => (
-                <motion.div key={m.id} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="flex gap-4">
-                  <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 shadow-sm
-                    ${m.role === "user"
-                      ? "bg-slate-100 text-slate-600 border border-slate-200/50"
-                      : "bg-gradient-to-br from-brand-blue to-indigo-600 text-white"}`}>
-                    {m.role === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
-                  </div>
-                  <div className="flex-1 min-w-0 group">
-                    <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">{m.role === "user" ? "Tú" : "Asistente IA"}</div>
-                    
-                    {/* Rich Markdown Parser rendering Native React Components */}
-                    <div className="text-[14px] text-slate-700 leading-relaxed font-normal whitespace-pre-wrap">
-                      {m.role === "user" ? (
-                        <p className="text-slate-800 font-medium">{m.content}</p>
-                      ) : (
-                        renderMessageContent(m.content)
+                <div key={m.id} className={`w-full py-6 flex justify-center border-b transition-colors border-zinc-100 dark:border-zinc-800/40 ${m.role === "assistant" ? colors.messageAssistantBg : colors.messageUserBg}`}>
+                  <div className="max-w-3xl w-full px-4 flex gap-4">
+                    {/* Avatar */}
+                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 shadow-sm
+                      ${m.role === "user"
+                        ? "bg-zinc-150 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700"
+                        : "bg-gradient-to-br from-purple-500 to-indigo-600 text-white"}`}>
+                      {m.role === "user" ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                    </div>
+
+                    {/* Contenido */}
+                    <div className="flex-1 min-w-0 group">
+                      <div className="text-[10px] font-bold text-zinc-400 mb-1.5 uppercase tracking-wider">{m.role === "user" ? "Tú" : "Asistente IA"}</div>
+                      
+                      <div className="text-[13.5px] leading-relaxed font-normal whitespace-pre-wrap">
+                        {m.role === "user" ? (
+                          <p className="font-semibold text-zinc-850 dark:text-zinc-100">{m.content}</p>
+                        ) : (
+                          renderMessageContent(m.content)
+                        )}
+                      </div>
+
+                      {/* Botones de acción del mensaje */}
+                      {m.role === "assistant" && (
+                        <div className="flex items-center gap-1.5 mt-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button 
+                            onClick={() => copyToClipboard(m.content, m.id)} 
+                            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold border-none bg-transparent cursor-pointer transition-colors ${colors.btnSecondary}`}
+                          >
+                            {copiedId === m.id ? (
+                              <>
+                                <Check className="w-3.5 h-3.5 text-emerald-500" />
+                                <span className="text-emerald-500">Copiado</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3.5 h-3.5" />
+                                <span>Copiar</span>
+                              </>
+                            )}
+                          </button>
+                          <button 
+                            onClick={() => reload()} 
+                            className={`flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold border-none bg-transparent cursor-pointer transition-colors ${colors.btnSecondary}`}
+                          >
+                            <RotateCcw className="w-3.5 h-3.5" /> 
+                            <span>Regenerar</span>
+                          </button>
+                        </div>
                       )}
                     </div>
-
-                    {m.role === "assistant" && (
-                      <div className="flex items-center gap-1 mt-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => copyToClipboard(m.content, m.id)} className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors border-none bg-transparent cursor-pointer">
-                          {copiedId === m.id ? <><Check className="w-3.5 h-3.5 text-emerald-500" /> Copiado</> : <><Copy className="w-3.5 h-3.5" /> Copiar</>}
-                        </button>
-                        <button onClick={() => reload()} className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-bold text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors border-none bg-transparent cursor-pointer">
-                          <RotateCcw className="w-3.5 h-3.5" /> Regenerar
-                        </button>
-                      </div>
-                    )}
                   </div>
-                </motion.div>
+                </div>
               ))}
 
+              {/* Loader de streaming */}
               {isLoading && (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex gap-4">
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm"><Bot className="w-4 h-4" /></div>
-                  <div>
-                    <div className="text-[10px] font-bold text-slate-400 mb-1 uppercase tracking-wider">Asistente IA</div>
-                    <div className="flex items-center gap-1 py-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-brand-blue/60 animate-bounce"></div>
-                      <div className="w-1.5 h-1.5 rounded-full bg-brand-blue/60 animate-bounce" style={{ animationDelay: "150ms" }}></div>
-                      <div className="w-1.5 h-1.5 rounded-full bg-brand-blue/60 animate-bounce" style={{ animationDelay: "300ms" }}></div>
+                <div className={`w-full py-6 flex justify-center border-b border-zinc-100 dark:border-zinc-800/40 ${colors.messageAssistantBg}`}>
+                  <div className="max-w-3xl w-full px-4 flex gap-4">
+                    <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm"><Bot className="w-4 h-4" /></div>
+                    <div>
+                      <div className="text-[10px] font-bold text-zinc-400 mb-1.5 uppercase tracking-wider font-semibold">Asistente IA</div>
+                      <div className="flex items-center gap-1 py-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: "0ms" }}></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: "150ms" }}></div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-bounce" style={{ animationDelay: "300ms" }}></div>
+                      </div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               )}
 
+              {/* Errores */}
               {error && (
-                <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="flex justify-center my-4">
-                  <div className="bg-red-50 text-red-600 border border-red-200/60 px-4 py-3 rounded-2xl text-xs flex items-center gap-3 max-w-md shadow-sm">
+                <div className="w-full flex justify-center py-4">
+                  <div className="bg-red-50 dark:bg-red-950/20 text-red-650 dark:text-red-400 border border-red-200/50 dark:border-red-900/30 px-4 py-3 rounded-2xl text-xs flex items-center gap-3 max-w-md shadow-sm">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     <div>
                       <div className="font-bold">Error de conexión</div>
-                      <div className="text-[10px] text-red-400 mt-0.5">Ocurrió un error al contactar al modelo. Reintenta.</div>
+                      <div className="text-[10px] text-red-400 dark:text-red-300 mt-0.5">Ocurrió un error al contactar al modelo. Intenta nuevamente.</div>
                     </div>
                   </div>
-                </motion.div>
+                </div>
               )}
 
-              <div ref={messagesEndRef} className="h-4" />
+              <div ref={messagesEndRef} className="h-6" />
             </div>
           )}
         </div>
 
-        {/* ─── INPUT (Floating Pill OpenChat style) ─── */}
-        <div className="shrink-0 pb-5 pt-2 px-4 bg-white border-t border-slate-100">
+        {/* ─── INPUT (Píldora Flotante OpenChat style) ─── */}
+        <div className="shrink-0 pb-5 pt-2 px-4 border-t border-zinc-100 dark:border-zinc-800/40">
           <div className="max-w-3xl mx-auto w-full">
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept=".py,.js,.ts,.sql,.csv,.xlsx,.pdf,.png,.jpg,.jpeg,.gif,.txt,.json,.md"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
-
-            <div className="bg-slate-50 border border-slate-200/80 rounded-2xl focus-within:border-brand-blue/30 focus-within:ring-4 focus-within:ring-brand-blue/5 focus-within:bg-white focus-within:shadow-lg transition-all overflow-hidden shadow-sm">
-              {/* File Previews */}
-              <AnimatePresence>
-                {uploadedFiles.length > 0 && (
-                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.15 }} className="overflow-hidden">
-                    <div className="px-4 pt-4 pb-1 flex flex-wrap gap-2">
-                      {uploadedFiles.map((file) => {
-                        const Icon = getFileIcon(file.type, file.name);
-                        const colorClass = getFileColor(file.type, file.name);
-                        return (
-                          <motion.div key={file.id} initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} layout className="group relative">
-                            {file.preview ? (
-                              <div className="relative w-16 h-16 rounded-xl overflow-hidden border border-slate-200 shadow-sm">
-                                <img src={file.preview} alt={file.name} className="w-full h-full object-cover" />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                                <button onClick={() => removeFile(file.id)} className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-slate-800 hover:bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-md z-10 border-none cursor-pointer">
-                                  <X className="w-3 h-3" />
-                                </button>
-                                <div className="absolute bottom-0 left-0 right-0 bg-black/60 backdrop-blur-sm px-1 py-0.5">
-                                  <div className="text-[8px] text-white font-medium truncate">{file.name}</div>
-                                </div>
-                              </div>
-                            ) : (
-                              <div className={`flex items-center gap-2 pl-2 pr-1 py-1.5 rounded-xl border shadow-sm ${colorClass} bg-opacity-50`}>
-                                <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${colorClass}`}>
-                                  <Icon className="w-3.5 h-3.5" />
-                                </div>
-                                <div className="min-w-0 max-w-[100px]">
-                                  <div className="text-[10px] font-bold text-slate-800 truncate">{file.name}</div>
-                                  <div className="text-[8px] text-slate-400 font-medium">{formatFileSize(file.size)}</div>
-                                </div>
-                                <button onClick={() => removeFile(file.id)} className="p-1 rounded-md text-slate-400 hover:text-red-500 hover:bg-red-50 transition-colors shrink-0 border-none bg-transparent cursor-pointer">
-                                  <X className="w-3 h-3" />
-                                </button>
-                              </div>
-                            )}
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Textarea + Buttons */}
-              <form onSubmit={handleFormSubmit} className="relative flex items-end">
+            <div className={`border rounded-2xl transition-all overflow-hidden shadow-sm flex items-end ${colors.inputBg}`}>
+              <form onSubmit={handleFormSubmit} className="relative flex items-end w-full">
                 <button
                   type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="p-2 ml-2.5 mb-2 rounded-xl text-slate-400 hover:text-brand-blue hover:bg-blue-50 transition-colors shrink-0 border-none bg-transparent cursor-pointer"
-                  title="Adjuntar archivos"
+                  className={`p-2 ml-2.5 mb-2.5 rounded-xl border-none bg-transparent cursor-pointer transition-colors ${colors.btnSecondary}`}
+                  title="Adjuntar archivos (Simulado)"
                 >
                   <Paperclip className="w-4 h-4" />
                 </button>
@@ -773,28 +725,27 @@ export default function AIAsistente({ isRestricted }: AIAsistenteProps = {}) {
                   onChange={handleInputChange}
                   onKeyDown={onKeyDown}
                   placeholder={`Escribe una pregunta para ${currentModelObj.name}...`}
-                  className="w-full bg-transparent border-none focus:ring-0 focus:outline-none resize-none py-3.5 px-2 pr-16 text-xs custom-scrollbar text-slate-700 placeholder:text-slate-400 max-h-[160px] min-h-[46px] border-none"
+                  className={`w-full bg-transparent border-none focus:ring-0 focus:outline-none resize-none py-3.5 px-2.5 pr-20 text-xs custom-scrollbar max-h-[160px] min-h-[46px] border-none ${colors.inputText}`}
                   rows={1}
                 />
                 
                 <div className="absolute right-3.5 bottom-2.5 flex items-center gap-2">
-                  {/* Selected Model Pill indicator inside input */}
-                  <span className="text-[9px] font-extrabold text-slate-400 px-2 py-1 bg-slate-200/60 rounded-lg select-none">
+                  <span className="text-[8px] font-extrabold text-zinc-400 px-2 py-1 bg-zinc-200/50 dark:bg-zinc-800 rounded-lg select-none">
                     {currentModelObj.badge}
                   </span>
                   
                   <button
                     type="submit"
-                    disabled={isLoading || (!(input || '').trim() && uploadedFiles.length === 0)}
-                    className="p-1.5 bg-brand-blue text-white rounded-xl hover:bg-blue-600 transition-all disabled:opacity-20 disabled:cursor-not-allowed shadow-sm active:scale-95 border-none cursor-pointer"
+                    disabled={isLoading || !(input || '').trim()}
+                    className="p-1.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-all disabled:opacity-20 disabled:cursor-not-allowed shadow-sm active:scale-95 border-none cursor-pointer"
                   >
                     <ArrowUp className="w-4 h-4" strokeWidth={2.5} />
                   </button>
                 </div>
               </form>
             </div>
-            <div className="mt-2 text-center text-[9px] text-slate-400">
-              El Asistente IA puede cometer errores. Verifica el código e información importante.
+            <div className="mt-2 text-center text-[9px] text-zinc-400">
+              El Asistente IA puede cometer errores. Verifica la información importante.
             </div>
           </div>
         </div>
@@ -832,28 +783,28 @@ function CodeBlock({ language, code }: { language: string; code: string }) {
   };
 
   return (
-    <div className="relative rounded-2xl overflow-hidden my-4 border border-slate-200/80 shadow-sm">
-      <div className="flex items-center justify-between px-5 py-2 bg-slate-900 border-b border-slate-800 text-slate-400 text-[10px]">
-        <span className="font-mono font-semibold uppercase tracking-wider text-[9px] text-slate-400">{language}</span>
+    <div className="relative rounded-2xl overflow-hidden my-4 border border-zinc-200/50 dark:border-zinc-800 shadow-sm max-w-full">
+      <div className="flex items-center justify-between px-5 py-2.5 bg-zinc-900 border-b border-zinc-800 text-zinc-450 text-[10px]">
+        <span className="font-mono font-semibold uppercase tracking-wider text-[9px] text-zinc-400">{language}</span>
         <button
           onClick={handleCopy}
           className="flex items-center gap-1 hover:text-white transition-colors cursor-pointer border-none bg-transparent"
         >
           {copied ? (
             <>
-              <Check className="w-3 h-3 text-emerald-400" />
+              <Check className="w-3.5 h-3.5 text-emerald-400" />
               <span className="text-emerald-400 font-bold">Copiado</span>
             </>
           ) : (
             <>
-              <Copy className="w-3 h-3" />
+              <Copy className="w-3.5 h-3.5" />
               <span>Copiar</span>
             </>
           )}
         </button>
       </div>
-      <div className="p-4 bg-slate-950 overflow-x-auto text-xs leading-relaxed">
-        <pre className="font-mono text-slate-200 whitespace-pre">{code}</pre>
+      <div className="p-4 bg-zinc-950 overflow-x-auto text-xs leading-relaxed max-w-full">
+        <pre className="font-mono text-zinc-200 whitespace-pre">{code}</pre>
       </div>
     </div>
   );
@@ -870,7 +821,7 @@ function TextBlock({ text }: { text: string }) {
       const ListTag = currentList.type;
       const listStyle = currentList.type === 'ul' ? 'list-disc' : 'list-decimal';
       elements.push(
-        <ListTag key={elements.length} className={`${listStyle} list-inside pl-4 my-2 space-y-1 text-slate-700`}>
+        <ListTag key={elements.length} className={`${listStyle} list-inside pl-4 my-2.5 space-y-1.5 text-zinc-650 dark:text-zinc-300`}>
           {currentList.items.map((item, idx) => (
             <li key={idx} className="leading-relaxed">
               {renderInlineStyles(item)}
@@ -890,21 +841,21 @@ function TextBlock({ text }: { text: string }) {
     if (trimmed.startsWith("### ")) {
       pushList();
       elements.push(
-        <h3 key={elements.length} className="text-sm font-bold text-slate-900 mt-4 mb-2">
+        <h3 key={elements.length} className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mt-4 mb-2">
           {renderInlineStyles(trimmed.slice(4))}
         </h3>
       );
     } else if (trimmed.startsWith("## ")) {
       pushList();
       elements.push(
-        <h2 key={elements.length} className="text-base font-black text-slate-900 mt-5 mb-2">
+        <h2 key={elements.length} className="text-base font-black text-zinc-900 dark:text-zinc-50 mt-5 mb-2">
           {renderInlineStyles(trimmed.slice(3))}
         </h2>
       );
     } else if (trimmed.startsWith("# ")) {
       pushList();
       elements.push(
-        <h1 key={elements.length} className="text-lg font-black text-slate-900 mt-6 mb-3">
+        <h1 key={elements.length} className="text-lg font-black text-zinc-900 dark:text-zinc-50 mt-6 mb-3">
           {renderInlineStyles(trimmed.slice(2))}
         </h1>
       );
@@ -938,7 +889,7 @@ function TextBlock({ text }: { text: string }) {
           pushList();
         }
         elements.push(
-          <p key={elements.length} className="mb-2 leading-relaxed text-xs text-slate-700">
+          <p key={elements.length} className="mb-2 leading-relaxed text-zinc-650 dark:text-zinc-300">
             {renderInlineStyles(line)}
           </p>
         );
@@ -950,14 +901,13 @@ function TextBlock({ text }: { text: string }) {
 }
 
 function renderInlineStyles(text: string): React.ReactNode[] {
-  // Split on bold (**bold**) and inline code (`code`)
   const regex = /(\*\*.*?\*\*|`.*?`)/g;
   const parts = text.split(regex);
   return parts.map((part, idx) => {
     if (part.startsWith("**") && part.endsWith("**")) {
-      return <strong key={idx} className="font-bold text-slate-950">{part.slice(2, -2)}</strong>;
+      return <strong key={idx} className="font-bold text-zinc-900 dark:text-zinc-105">{part.slice(2, -2)}</strong>;
     } else if (part.startsWith("`") && part.endsWith("`")) {
-      return <code key={idx} className="px-1.5 py-0.5 rounded bg-slate-100 font-mono text-[11px] text-indigo-600 font-semibold">{part.slice(1, -1)}</code>;
+      return <code key={idx} className="px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 font-mono text-[11px] text-purple-600 dark:text-purple-400 font-semibold">{part.slice(1, -1)}</code>;
     }
     return part;
   });

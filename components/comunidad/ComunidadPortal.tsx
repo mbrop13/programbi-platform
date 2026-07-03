@@ -3,11 +3,10 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, ShieldAlert } from "lucide-react";
+import { Lock, ShieldAlert, Menu } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
 import Sidebar from "./Sidebar";
-import TopBar from "./TopBar";
 import MuroFeed from "./tabs/MuroFeed";
 import MisCursos from "./tabs/MisCursos";
 import AulaVirtual from "./tabs/AulaVirtual";
@@ -16,7 +15,6 @@ import BusinessPortal from "./tabs/BusinessPortal";
 import LivePanel from "./tabs/LivePanel";
 import UserProfile from "./tabs/UserProfile";
 import Certificates from "./tabs/Certificates";
-import ProjectsView from "./tabs/ProjectsView";
 import SettingsModal from "./SettingsModal";
 import { ToastProvider } from "./ui/Toast";
 
@@ -26,6 +24,7 @@ import {
   getCurrentUserManagedOrganization,
 } from "@/lib/supabase/comunidad";
 import { getMyEnrollments } from "@/lib/supabase/comunidad-ai";
+import { createClient as createBrowserClient } from "@/lib/supabase/client";
 
 interface UserProfile {
   id: string;
@@ -46,6 +45,7 @@ export default function ComunidadPortal() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [isOrgManager, setIsOrgManager] = useState(false);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [hasCourses, setHasCourses] = useState<boolean | null>(null);
   const [isCheckingPlan, setIsCheckingPlan] = useState(true);
   const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
@@ -55,6 +55,33 @@ export default function ComunidadPortal() {
 
   useEffect(() => {
     const loadUserData = async () => {
+      // 1. Read the session synchronously from the browser storage (no network
+      //    roundtrip). This lets us populate the sidebar (email/name) almost
+      //    instantly instead of showing "??" while the server actions resolve.
+      try {
+        const browser = createBrowserClient();
+        const { data: { session } } = await browser.auth.getSession();
+        if (session?.user) {
+          setUserProfile({
+            id: session.user.id,
+            full_name:
+              (session.user.user_metadata?.full_name as string | undefined) ||
+              session.user.email ||
+              "Usuario",
+            email: session.user.email || "",
+            avatar_url: null,
+            role: "student",
+            subscription_plan: null,
+          });
+        }
+      } catch (err) {
+        console.error("Error reading local session:", err);
+      } finally {
+        setAuthLoading(false);
+      }
+
+      // 2. Full server-side load: validates the session with Supabase and
+      //    fetches the complete profile (plan, role, avatar, etc.).
       try {
         const [adminStatus, profile, enrollmentData, orgData] = await Promise.all([
           isCurrentUserAdmin(),
@@ -63,7 +90,7 @@ export default function ComunidadPortal() {
           getCurrentUserManagedOrganization(),
         ]);
         setIsAdmin(adminStatus);
-        setUserProfile(profile as any);
+        if (profile) setUserProfile(profile as any);
         setHasCourses(
           (Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments).length > 0
         );
@@ -123,20 +150,25 @@ export default function ComunidadPortal() {
           onTabChange={handleTabChange}
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
+          onExpand={() => setSidebarCollapsed(false)}
           isAdmin={isAdmin}
           isOrgManager={isOrgManager}
           userProfile={userProfile}
+          authLoading={authLoading}
           mobileOpen={mobileNavOpen}
           onMobileClose={() => setMobileNavOpen(false)}
           onOpenSettings={() => setShowSettingsModal(true)}
         />
 
         {/* ─── MAIN AREA ─── */}
-        <div className="flex-1 flex flex-col min-w-0 min-h-screen">
-          <TopBar
-            activeTab={activeTab}
-            onMobileMenuOpen={() => setMobileNavOpen(true)}
-          />
+        <div className="flex-1 flex flex-col min-w-0 min-h-screen relative">
+          {/* Mobile menu button (floating, top-left) */}
+          <button
+            onClick={() => setMobileNavOpen(true)}
+            className="lg:hidden fixed top-4 left-4 z-30 w-10 h-10 flex items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-600 shadow-sm hover:shadow-md transition-all"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
 
           <main className="flex-1 w-full flex flex-col min-h-0">
             {/* ─── LOADING STATE (sidebar visible, content loading) ─── */}
@@ -205,8 +237,6 @@ export default function ComunidadPortal() {
                         <LivePanel />
                       </div>
                     )}
-
-                    {activeTab === "proyectos" && <ProjectsView />}
 
                     {activeTab === "business" &&
                       (isOrgManager ? (
