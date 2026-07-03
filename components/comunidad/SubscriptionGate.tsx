@@ -74,7 +74,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
   };
 
   return (
-    <div className={`w-full relative flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-6 pb-12' : 'pt-6 pb-28'} bg-slate-50`}>
+    <div id={heroOnly ? "hero" : "pricing"} className={`w-full relative flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-6 pb-12' : 'pt-6 pb-28'} bg-slate-50`}>
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
@@ -110,13 +110,16 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
           {message ? (
              <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900">{message}</span>
           ) : (
-             <div className="flex flex-col gap-2">
-               <span className="font-[family-name:var(--font-caveat)] text-4xl sm:text-5xl md:text-6xl text-slate-700 tracking-normal font-medium leading-none block">
+             <div className="flex flex-col gap-3">
+               <span className="font-[family-name:var(--font-caveat)] text-4xl sm:text-5xl md:text-6xl text-slate-600 tracking-normal font-medium leading-none block">
                  Desbloquea el poder de la
                </span>
-               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 font-extrabold pb-2">
-                 Comunidad ProgramBI
-               </span>
+               <div className="relative inline-block pb-3 mt-1 w-fit mx-auto">
+                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-500 to-violet-600 font-black tracking-tight drop-shadow-[0_2px_15px_rgba(99,102,241,0.25)]">
+                   Comunidad ProgramBI
+                 </span>
+                 <span className="absolute bottom-0 left-0 right-0 h-[4px] rounded-full bg-gradient-to-r from-transparent via-blue-500/80 to-transparent blur-[0.5px]" />
+               </div>
              </div>
           )}
         </motion.h1>
@@ -140,6 +143,34 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
         >
           Elige el plan que mejor se adapte a tus objetivos. Obtén acceso a nuestra plataforma interactiva, Asistente IA especializado y una red de profesionales de élite.
         </motion.p>
+
+        {/* Hero Actions (Ver Planes & Contactar) */}
+        {heroOnly && (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="flex flex-wrap items-center justify-center gap-4 mb-10 relative z-20"
+          >
+            <a
+              href="#pricing"
+              onClick={(e) => {
+                e.preventDefault();
+                document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm px-8 py-4 rounded-2xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+            >
+              Ver Planes
+              <ArrowRight className="w-4 h-4" />
+            </a>
+            <a
+              href="/#contacto"
+              className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-black text-sm px-8 py-4 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+            >
+              Contactar
+            </a>
+          </motion.div>
+        )}
 
         {/* Billing Selector */}
         {!heroOnly && (
