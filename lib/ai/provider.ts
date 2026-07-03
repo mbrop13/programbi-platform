@@ -2,24 +2,26 @@ import { createOpenAI } from "@ai-sdk/openai";
 import type { ChatModel } from "./models";
 
 /**
- * Proveedor OpenRouter (OpenAI-compatible). SERVER-ONLY.
+ * Proveedor Alibaba Cloud (DashScope), endpoint OpenAI-compatible. SERVER-ONLY.
  * No importar este archivo en componentes de cliente (contiene la API key).
+ *
+ * Docs: https://help.aliyun.com/zh/model-studio/developer-reference/use-qwen-by-calling-api
+ * Modelo compatible con el AI SDK vía createOpenAI apuntando al compatible-mode.
  */
-const openrouter = createOpenAI({
-  baseURL: "https://openrouter.ai/api/v1",
-  apiKey: process.env.OPENROUTER_API_KEY || "",
+const dashscope = createOpenAI({
+  baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
+  apiKey: process.env.DASHSCOPE_API_KEY || "",
   headers: {
-    "HTTP-Referer": "https://programbi.com",
-    "X-Title": "ProgramBI LMS",
+    "X-DashScope-WorkSpace": "programbi",
   },
 });
 
 /** Devuelve el LanguageModel del SDK listo para streamText. */
 export function getLanguageModel(model: ChatModel) {
-  if (!process.env.OPENROUTER_API_KEY) {
+  if (!process.env.DASHSCOPE_API_KEY) {
     throw new Error(
-      "Falta OPENROUTER_API_KEY. Configúrala en las variables de entorno."
+      "Falta DASHSCOPE_API_KEY. Configúrala en las variables de entorno."
     );
   }
-  return openrouter(model.providerId);
+  return dashscope(model.providerId);
 }

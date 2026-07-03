@@ -190,7 +190,11 @@ export default function ComunidadPortal() {
                   transition={{ duration: 0.15 }}
                   className="flex-1 flex flex-col min-h-0"
                 >
-                  <ChatShell isRestricted={!!restrictedView} userName={userProfile?.full_name} />
+                  <ChatShell
+                    isRestricted={!!restrictedView}
+                    userName={userProfile?.full_name}
+                    avatarUrl={userProfile?.avatar_url ?? null}
+                  />
                 </motion.div>
               </AnimatePresence>
             ) : (

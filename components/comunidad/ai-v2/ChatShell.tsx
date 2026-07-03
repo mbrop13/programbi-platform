@@ -3,13 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { Bot, PanelLeft, PanelLeftClose, Sparkles } from "lucide-react";
+import { Bot, PanelLeft, PanelLeftClose } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConversationSidebar } from "./ConversationSidebar";
 import { ChatList } from "./ChatList";
 import { ComposerInput, type Attachment } from "./ComposerInput";
-import { ModelBar } from "./ModelBar";
 import { Landing } from "./Landing";
 import { ChatError } from "./ChatError";
 import { CanvasProvider, useCanvas } from "./canvas/CanvasStore";
@@ -29,11 +28,12 @@ import { cn } from "@/lib/utils";
 interface ChatShellProps {
   isRestricted?: boolean;
   userName?: string;
+  avatarUrl?: string | null;
 }
 
 const MODEL_KEY = "programbi_chat_model";
 
-export default function ChatShell({ isRestricted = false, userName }: ChatShellProps) {
+export default function ChatShell({ isRestricted = false, userName, avatarUrl }: ChatShellProps) {
   const isPremium = !isRestricted;
 
   // Vista restringida (freemium upsell) — no necesita Canvas
@@ -48,9 +48,8 @@ export default function ChatShell({ isRestricted = false, userName }: ChatShellP
             Mentor IA Premium
           </h2>
           <p className="mt-3 leading-relaxed text-text-secondary">
-            Accede a tu mentor IA con múltiples modelos (Llama, Gemini, GPT-4o y
-            Claude), razonamiento paso a paso, búsqueda web y dictado por voz.
-            Resuelve tus dudas de Data Science, Python, SQL y Power BI.
+            Accede a tu mentor IA con múltiples modelos, razonamiento paso a paso
+            y dictado por voz. Resuelve tus dudas de Data Science, Python, SQL y Power BI.
           </p>
           <Link
             href="/comunidad/planes"
@@ -65,12 +64,20 @@ export default function ChatShell({ isRestricted = false, userName }: ChatShellP
 
   return (
     <CanvasProvider>
-      <ChatShellInner isPremium={isPremium} userName={userName} />
+      <ChatShellInner isPremium={isPremium} userName={userName} avatarUrl={avatarUrl ?? null} />
     </CanvasProvider>
   );
 }
 
-function ChatShellInner({ isPremium, userName }: { isPremium: boolean; userName?: string }) {
+function ChatShellInner({
+  isPremium,
+  userName,
+  avatarUrl,
+}: {
+  isPremium: boolean;
+  userName?: string;
+  avatarUrl: string | null;
+}) {
   const canvas = useCanvas();
 
   // ─── Estado ───
@@ -84,7 +91,6 @@ function ChatShellInner({ isPremium, userName }: { isPremium: boolean; userName?
     }
     return DEFAULT_MODEL_ID;
   });
-  const [webSearch, setWebSearch] = useState(false);
   const [input, setInput] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -99,11 +105,9 @@ function ChatShellInner({ isPremium, userName }: { isPremium: boolean; userName?
   // Refs para que prepareSendMessagesRequest lea valores actuales al enviar
   const chatIdRef = useRef<string | null>(null);
   const modelRef = useRef(selectedModel);
-  const webSearchRef = useRef(webSearch);
 
   useEffect(() => { chatIdRef.current = activeChatId; }, [activeChatId]);
   useEffect(() => { modelRef.current = selectedModel; localStorage.setItem(MODEL_KEY, selectedModel); }, [selectedModel]);
-  useEffect(() => { webSearchRef.current = webSearch; }, [webSearch]);
 
   // Detectar móvil para el sheet vs split
   useEffect(() => {
@@ -124,7 +128,6 @@ function ChatShellInner({ isPremium, userName }: { isPremium: boolean; userName?
             messages,
             chatId: chatIdRef.current,
             model: modelRef.current,
-            webSearch: webSearchRef.current,
           },
         }),
       }),
@@ -358,12 +361,12 @@ function ChatShellInner({ isPremium, userName }: { isPremium: boolean; userName?
         )}
       </AnimatePresence>
 
-      {/* Sidebar de historial */}
+      {/* Sidebar de historial (más estrecho) */}
       <AnimatePresence initial={false}>
         {sidebarOpen && (
           <motion.aside
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 288, opacity: 1 }}
+            animate={{ width: 260, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="absolute z-50 h-full shrink-0 overflow-hidden border-r border-border md:relative"
@@ -378,34 +381,24 @@ function ChatShellInner({ isPremium, userName }: { isPremium: boolean; userName?
               onRename={handleRename}
               onPin={handlePin}
               onArchive={handleArchive}
+              userName={userName}
+              avatarUrl={avatarUrl}
+              onClose={() => setSidebarOpen(false)}
             />
           </motion.aside>
         )}
       </AnimatePresence>
 
-      {/* Main */}
-      <div className="flex min-w-0 flex-1 flex-col">
-        {/* Header (glass) */}
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border bg-surface-0/70 px-3 backdrop-blur-xl">
-          <button
-            onClick={() => setSidebarOpen((o) => !o)}
-            className="rounded-lg p-2 text-text-muted transition-colors hover:bg-surface-2 hover:text-text-primary"
-            title={sidebarOpen ? "Ocultar historial" : "Mostrar historial"}
-          >
-            {sidebarOpen ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeft className="h-5 w-5" />}
-          </button>
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-accent-purple" />
-            <h1 className="font-semibold text-text-primary">Mentor IA</h1>
-          </div>
-          <div className="ml-auto">
-            <ModelBar
-              selectedId={selectedModel}
-              onSelect={setSelectedModel}
-              isPremium={isPremium}
-            />
-          </div>
-        </header>
+      {/* Main (sin barra superior) */}
+      <div className="relative flex min-w-0 flex-1 flex-col">
+        {/* Toggle flotante para abrir/cerrar el sidebar */}
+        <button
+          onClick={() => setSidebarOpen((o) => !o)}
+          className="absolute left-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface-0/80 text-text-muted shadow-premium backdrop-blur-md transition-colors hover:bg-surface-2 hover:text-text-primary"
+          title={sidebarOpen ? "Ocultar historial" : "Mostrar historial"}
+        >
+          {sidebarOpen ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeft className="h-5 w-5" />}
+        </button>
 
         {/* Workspace: chat (resizable) + canvas (split / sheet) */}
         <div ref={workspaceRef} className="flex min-h-0 flex-1">
@@ -422,7 +415,7 @@ function ChatShellInner({ isPremium, userName }: { isPremium: boolean; userName?
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-surface-3 border-t-brand-blue" />
               </div>
             ) : showLanding ? (
-              <Landing userName={userName} onSuggestion={(t) => submit(t)}>
+              <Landing>
                 <ComposerInput
                   value={input}
                   onChange={setInput}
@@ -432,8 +425,8 @@ function ChatShellInner({ isPremium, userName }: { isPremium: boolean; userName?
                   isPremium={isPremium}
                   attachments={attachments}
                   onAttachmentsChange={setAttachments}
-                  webSearch={webSearch}
-                  onWebSearchChange={setWebSearch}
+                  modelId={selectedModel}
+                  onSelectModel={setSelectedModel}
                 />
               </Landing>
             ) : (
@@ -463,8 +456,8 @@ function ChatShellInner({ isPremium, userName }: { isPremium: boolean; userName?
                     isPremium={isPremium}
                     attachments={attachments}
                     onAttachmentsChange={setAttachments}
-                    webSearch={webSearch}
-                    onWebSearchChange={setWebSearch}
+                    modelId={selectedModel}
+                    onSelectModel={setSelectedModel}
                   />
                 </div>
               </>

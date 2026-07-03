@@ -3,16 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowUp,
-  Globe,
+  ChevronDown,
+  FileUp,
+  Image as ImageIcon,
   Loader2,
   Mic,
-  Paperclip,
+  Plus,
   Square,
   X,
-  type LucideIcon,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { getModel, getAvailableModels } from "@/lib/ai/models";
 
 export interface Attachment {
   url: string;
@@ -33,8 +35,8 @@ interface ComposerInputProps {
   isPremium: boolean;
   attachments: Attachment[];
   onAttachmentsChange: (a: Attachment[]) => void;
-  webSearch: boolean;
-  onWebSearchChange: (v: boolean) => void;
+  modelId: string;
+  onSelectModel: (id: string) => void;
   placeholder?: string;
 }
 
@@ -65,38 +67,6 @@ function getRecognitionCtor(): RecognitionCtor | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
-function Pill({
-  icon: Icon,
-  active,
-  onClick,
-  title,
-  disabled,
-}: {
-  icon: LucideIcon;
-  active?: boolean;
-  onClick: () => void;
-  title: string;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      title={title}
-      className={cn(
-        "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
-        active
-          ? "bg-brand-blue/10 text-brand-blue"
-          : "text-text-muted hover:bg-surface-2 hover:text-text-secondary",
-        disabled && "cursor-not-allowed opacity-40"
-      )}
-    >
-      <Icon className="h-4 w-4" />
-    </button>
-  );
-}
-
 export function ComposerInput({
   value,
   onChange,
@@ -106,17 +76,21 @@ export function ComposerInput({
   isPremium,
   attachments,
   onAttachmentsChange,
-  webSearch,
-  onWebSearchChange,
+  modelId,
+  onSelectModel,
   placeholder,
 }: ComposerInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const finalTranscriptRef = useRef("");
+  const attachRef = useRef<HTMLDivElement>(null);
+  const modelRef = useRef<HTMLDivElement>(null);
   const [uploading, setUploading] = useState(false);
   const [recording, setRecording] = useState(false);
   const [voiceSupported] = useState(() => getRecognitionCtor() !== null);
+  const [attachOpen, setAttachOpen] = useState(false);
+  const [modelOpen, setModelOpen] = useState(false);
 
   // Auto-resize del textarea
   useEffect(() => {
@@ -125,6 +99,16 @@ export function ComposerInput({
     el.style.height = "auto";
     el.style.height = Math.min(el.scrollHeight, 256) + "px";
   }, [value]);
+
+  // Cerrar popovers al clic fuera
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (attachRef.current && !attachRef.current.contains(e.target as Node)) setAttachOpen(false);
+      if (modelRef.current && !modelRef.current.contains(e.target as Node)) setModelOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
   // Limpieza al desmontar
   useEffect(() => {
@@ -181,6 +165,14 @@ export function ComposerInput({
     onAttachmentsChange(attachments.filter((_, i) => i !== idx));
   };
 
+  const triggerFile = (accept: string) => {
+    setAttachOpen(false);
+    if (fileInputRef.current) {
+      fileInputRef.current.accept = accept;
+      fileInputRef.current.click();
+    }
+  };
+
   // ─── Voz (Web Speech API) ───
   const startVoice = () => {
     const Ctor = getRecognitionCtor();
@@ -222,11 +214,19 @@ export function ComposerInput({
   };
 
   const canSend = value.trim().length > 0 && !uploading;
+  const selectedModel = getModel(modelId);
+  const availableModels = getAvailableModels(isPremium);
 
   return (
     <div className="mx-auto w-full max-w-2xl">
-      {/* Contenedor rectangular con bordes levemente redondeados */}
-      <div className="overflow-hidden rounded-2xl border border-border bg-surface-0/85 shadow-premium backdrop-blur-xl transition-shadow focus-within:border-brand-blue/30 focus-within:shadow-float">
+      {/* Contenedor: glow azul suave al escribir (focus) y al responder (streaming) */}
+      <div
+        className={cn(
+          "overflow-hidden rounded-2xl border border-border bg-surface-0/85 shadow-premium backdrop-blur-xl transition-shadow",
+          "focus-within:border-brand-blue/40 focus-within:shadow-[0_0_0_1px_rgba(24,144,255,0.20),0_0_18px_-6px_rgba(24,144,255,0.25)]",
+          isStreaming && "composer-glow"
+        )}
+      >
         {/* Chips de adjuntos */}
         {attachments.length > 0 && (
           <div className="flex flex-wrap gap-1.5 border-b border-border px-3 py-2">
@@ -238,7 +238,7 @@ export function ComposerInput({
                 {a.isImage && a.url ? (
                   <img src={a.url} alt={a.name} className="h-5 w-5 rounded object-cover" />
                 ) : (
-                  <Paperclip className="h-3 w-3 text-text-muted" />
+                  <ImageIcon className="h-3 w-3 text-text-muted" />
                 )}
                 <span className="max-w-[120px] truncate">{a.name}</span>
                 <button
@@ -263,28 +263,90 @@ export function ComposerInput({
           className="max-h-64 w-full resize-none bg-transparent px-4 pt-3.5 text-[0.95rem] leading-relaxed text-text-primary outline-none placeholder:text-text-faint"
         />
 
-        {/* Barra inferior: adjuntar (izq) + voz/enviar (der) */}
+        {/* Barra inferior: adjuntar (izq) + modelo + voz/enviar (der) */}
         <div className="flex items-center justify-between gap-2 px-2.5 pb-2.5 pt-1">
+          {/* Botón "+" con menú de adjuntos (hacia arriba) */}
           <div className="flex items-center gap-0.5">
-            <Pill
-              icon={Paperclip}
-              onClick={() => fileInputRef.current?.click()}
-              title="Adjuntar archivo o imagen"
-              disabled={uploading || isStreaming}
-            />
+            <div ref={attachRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setAttachOpen((o) => !o)}
+                disabled={uploading || isStreaming}
+                title="Adjuntar"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-surface-2 hover:text-text-secondary disabled:cursor-not-allowed disabled:opacity-40"
+              >
+                <Plus className="h-5 w-5" />
+              </button>
+              {attachOpen && (
+                <div className="absolute bottom-full left-0 mb-1.5 w-44 overflow-hidden rounded-xl border border-border bg-surface-0/95 shadow-lift backdrop-blur-xl">
+                  <button
+                    onClick={() => triggerFile("image/*")}
+                    className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary"
+                  >
+                    <ImageIcon className="h-4 w-4 text-text-muted" />
+                    Subir imagen
+                  </button>
+                  <div className="h-px bg-border" />
+                  <button
+                    onClick={() =>
+                      triggerFile(
+                        ".txt,.csv,.md,.json,.py,.js,.ts,.tsx,.sql,.html,.css,.yaml,.yml,.pdf"
+                      )
+                    }
+                    className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary"
+                  >
+                    <FileUp className="h-4 w-4 text-text-muted" />
+                    Subir archivo
+                  </button>
+                </div>
+              )}
+            </div>
             {uploading && <Loader2 className="h-3.5 w-3.5 animate-spin text-text-muted" />}
-            {isPremium && (
-              <Pill
-                icon={Globe}
-                active={webSearch}
-                onClick={() => onWebSearchChange(!webSearch)}
-                title="Búsqueda web en vivo"
-              />
-            )}
           </div>
 
-          {/* Botón dual: micrófono (vacío) / enviar (con texto) / detener (streaming) */}
-          <div className="flex items-center">
+          {/* Modelo + voz/enviar (der) */}
+          <div className="flex items-center gap-1.5">
+            {/* Selector de modelo: solo nombre + flecha, sin icono */}
+            <div ref={modelRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setModelOpen((o) => !o)}
+                className="flex items-center gap-1 rounded-lg px-2 py-1.5 text-[13px] font-medium text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary"
+                title="Cambiar modelo"
+              >
+                {selectedModel.label}
+                <ChevronDown
+                  className={cn(
+                    "h-3.5 w-3.5 text-text-muted transition-transform",
+                    modelOpen && "rotate-180"
+                  )}
+                />
+              </button>
+              {modelOpen && (
+                <div className="absolute bottom-full right-0 mb-1.5 w-60 overflow-hidden rounded-xl border border-border bg-surface-0/95 shadow-lift backdrop-blur-xl">
+                  <div className="py-1">
+                    {availableModels.map((m) => (
+                      <button
+                        key={m.id}
+                        onClick={() => {
+                          onSelectModel(m.id);
+                          setModelOpen(false);
+                        }}
+                        className={cn(
+                          "flex w-full flex-col items-start px-3 py-2 text-left transition-colors hover:bg-surface-2",
+                          m.id === modelId ? "bg-surface-2" : ""
+                        )}
+                      >
+                        <span className="text-sm font-medium text-text-primary">{m.label}</span>
+                        <span className="text-[11px] text-text-muted">{m.description}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Botón dual: micrófono (vacío) / enviar (con texto) / detener (streaming) */}
             {isStreaming ? (
               <button
                 onClick={onStop}
@@ -304,29 +366,22 @@ export function ComposerInput({
             ) : recording ? (
               <button
                 onClick={stopVoice}
-                className="flex items-center gap-2 rounded-full bg-red-500/10 px-3 py-2 text-xs font-medium text-red-500 transition-colors hover:bg-red-500/20"
+                className="flex h-9 w-12 items-center justify-center gap-0.5 rounded-full bg-red-500/10 transition-colors hover:bg-red-500/20"
                 title="Detener"
               >
-                <span className="flex h-4 items-end gap-0.5">
-                  {[0, 1, 2, 3].map((i) => (
-                    <motion.span
-                      key={i}
-                      className="w-0.5 rounded-full bg-red-500"
-                      animate={{ height: [4, 16, 4] }}
-                      transition={{
-                        duration: 0.6,
-                        repeat: Infinity,
-                        delay: i * 0.12,
-                        ease: "easeInOut",
-                      }}
-                    />
-                  ))}
-                </span>
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
-                </span>
-                Escuchando
+                {[0, 1, 2, 3].map((i) => (
+                  <motion.span
+                    key={i}
+                    className="w-0.5 rounded-full bg-red-500"
+                    animate={{ height: [4, 16, 4] }}
+                    transition={{
+                      duration: 0.6,
+                      repeat: Infinity,
+                      delay: i * 0.12,
+                      ease: "easeInOut",
+                    }}
+                  />
+                ))}
               </button>
             ) : (
               <button
@@ -352,7 +407,6 @@ export function ComposerInput({
         type="file"
         multiple
         className="hidden"
-        accept="image/*,.txt,.csv,.md,.json,.py,.js,.ts,.tsx,.sql,.html,.css,.yaml,.yml,.pdf"
         onChange={(e) => handleFiles(e.target.files)}
       />
     </div>

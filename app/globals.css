@@ -406,3 +406,27 @@ img {
   opacity: 1;
 }
 
+/* Composer — glow azul suave (#1890FF) al escribir / responder */
+@keyframes composer-glow-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 0 1px rgba(24, 144, 255, 0.30),
+      0 0 20px -4px rgba(24, 144, 255, 0.28);
+  }
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(24, 144, 255, 0.45),
+      0 0 30px -2px rgba(24, 144, 255, 0.40);
+  }
+}
+.composer-glow {
+  border-color: rgba(24, 144, 255, 0.45) !important;
+  animation: composer-glow-pulse 2.6s ease-in-out infinite;
+}
+.composer-glow-static {
+  border-color: rgba(24, 144, 255, 0.35) !important;
+  box-shadow:
+    0 0 0 1px rgba(24, 144, 255, 0.20),
+    0 0 18px -6px rgba(24, 144, 255, 0.22);
+}
+

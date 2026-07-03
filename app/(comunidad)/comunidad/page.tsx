@@ -6,6 +6,8 @@ import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import CommunityBenefits from "@/components/comunidad/CommunityBenefits";
 import CommunityFaq from "@/components/comunidad/CommunityFaq";
+import LogoSlider from "@/components/marketing/LogoSlider";
+import TestimonialsSection from "@/components/marketing/TestimonialsSection";
 
 export default async function ComunidadPage() {
   const profile = await getCurrentUserProfile();
@@ -30,7 +32,9 @@ export default async function ComunidadPage() {
         <SubscriptionGate 
           isLoggedIn={!!profile}
         />
+        <LogoSlider />
         <CommunityBenefits />
+        <TestimonialsSection />
         <CommunityFaq />
       </main>
       <Footer />

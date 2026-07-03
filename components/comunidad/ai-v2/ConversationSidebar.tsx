@@ -12,6 +12,7 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import type { AiChat } from "@/lib/supabase/ai";
 import { cn } from "@/lib/utils";
 
@@ -25,6 +26,9 @@ interface ConversationSidebarProps {
   onRename: (id: string, title: string) => void;
   onPin: (id: string) => void;
   onArchive: (id: string) => void;
+  userName?: string;
+  avatarUrl?: string | null;
+  onClose?: () => void;
 }
 
 function groupKey(updatedAt: string): string {
@@ -62,6 +66,9 @@ export function ConversationSidebar({
   onRename,
   onPin,
   onArchive,
+  userName,
+  avatarUrl,
+  onClose,
 }: ConversationSidebarProps) {
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -98,14 +105,29 @@ export function ConversationSidebar({
     if (t) onRename(id, t);
   };
 
+  const displayName = userName || "Usuario";
+  const initials =
+    displayName
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .substring(0, 2)
+      .toUpperCase() || "?";
+
   const renderRow = (c: AiChat) => {
     const isActive = c.id === activeChatId;
     const isEditing = editingId === c.id;
     return (
       <div
         key={c.id}
-        onClick={() => !isEditing && onSelect(c.id)}
-        onDoubleClick={() => startRename(c)}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (!isEditing) onSelect(c.id);
+        }}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
+          startRename(c);
+        }}
         className={cn(
           "group flex items-center gap-2 rounded-lg px-2 py-2 text-sm transition-colors duration-150 cursor-pointer",
           isActive
@@ -134,7 +156,7 @@ export function ConversationSidebar({
             style={{
               WebkitMaskImage:
                 "linear-gradient(to right, black calc(100% - 20px), transparent)",
-                maskImage:
+              maskImage:
                 "linear-gradient(to right, black calc(100% - 20px), transparent)",
             }}
           >
@@ -177,7 +199,25 @@ export function ConversationSidebar({
 
   return (
     <div className="flex h-full flex-col bg-surface-1">
-      {/* Cabecera: volver + Nuevo chat + búsqueda */}
+      {/* Esquina superior: logo favicon (clic para cerrar) */}
+      <button
+        onClick={onClose}
+        className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border px-3 transition-colors hover:bg-surface-2/50"
+        title="Cerrar historial"
+      >
+        <div className="relative h-8 w-8 overflow-hidden rounded-lg">
+          <Image
+            src="/icon.png"
+            alt="ProgramBI"
+            fill
+            className="object-contain"
+            sizes="32px"
+          />
+        </div>
+        <span className="font-display text-sm font-bold text-text-primary">ProgramBI</span>
+      </button>
+
+      {/* Volver + Nuevo chat + búsqueda */}
       <div className="space-y-2.5 border-b border-border px-3 py-3">
         <Link
           href="/comunidad/inicio"
@@ -207,8 +247,11 @@ export function ConversationSidebar({
         </div>
       </div>
 
-      {/* List */}
-      <div className="scrollbar-hide flex-1 overflow-y-auto px-2 pb-3">
+      {/* Lista (clic en espacio vacío cierra el sidebar) */}
+      <div
+        className="scrollbar-hide flex-1 overflow-y-auto px-2 pb-3"
+        onClick={onClose}
+      >
         {loading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-4 w-4 animate-spin text-text-faint" />
@@ -237,6 +280,29 @@ export function ConversationSidebar({
             ))}
           </>
         )}
+      </div>
+
+      {/* Footer: avatar + nombre "Miembro" */}
+      <div className="shrink-0 border-t border-border px-3 py-3">
+        <div className="flex items-center gap-2.5">
+          <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-brand-blue to-blue-600 flex items-center justify-center text-white font-bold text-xs">
+            {avatarUrl ? (
+              <img
+                src={avatarUrl}
+                alt={displayName}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <span>{initials}</span>
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-sm font-semibold text-text-primary">
+              {displayName}
+            </div>
+            <div className="text-[11px] text-text-muted">Miembro</div>
+          </div>
+        </div>
       </div>
     </div>
   );
