@@ -4,51 +4,6 @@ import { createClient, createAdminClient } from "./server";
 import { revalidatePath } from "next/cache";
 import { isCurrentUserAdmin } from "./comunidad";
 
-// ─── AI CONVERSATIONS ───
-
-export async function getAIConversations() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
-
-  const { data, error } = await supabase
-    .from("ai_conversations")
-    .select("id, title, created_at, updated_at")
-    .eq("profile_id", user.id)
-    .order("updated_at", { ascending: false });
-
-  if (error) { console.error("Error fetching AI conversations:", error); return []; }
-  return data || [];
-}
-
-export async function getAIMessages(conversationId: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return [];
-
-  const { data: conv } = await supabase
-    .from("ai_conversations").select("id").eq("id", conversationId).eq("profile_id", user.id).single();
-  if (!conv) return [];
-
-  const { data, error } = await supabase
-    .from("ai_messages").select("id, role, content, created_at")
-    .eq("conversation_id", conversationId).order("created_at", { ascending: true });
-
-  if (error) { console.error("Error fetching AI messages:", error); return []; }
-  return data || [];
-}
-
-export async function createAIConversation(title: string = "Nueva Conversación") {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Debes autenticarte");
-
-  const { data, error } = await supabase
-    .from("ai_conversations").insert({ profile_id: user.id, title }).select("id").single();
-  if (error) throw new Error(error.message);
-  return data.id;
-}
-
 // ─── ADMIN: LEADS / CONTACTS ───
 
 export async function adminGetLeads() {
@@ -63,26 +18,6 @@ export async function adminGetLeads() {
 
   if (error) { console.error("Error fetching leads:", error); return []; }
   return data || [];
-}
-
-export async function deleteAIConversation(conversationId: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Debes autenticarte");
-
-  const { error } = await supabase
-    .from("ai_conversations").delete().eq("id", conversationId).eq("profile_id", user.id);
-  if (error) throw new Error(error.message);
-}
-
-export async function updateAIConversationTitle(conversationId: string, title: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) throw new Error("Debes autenticarte");
-
-  await supabase
-    .from("ai_conversations").update({ title: title.substring(0, 80) })
-    .eq("id", conversationId).eq("profile_id", user.id);
 }
 
 // ─── ADMIN: COURSE MANAGEMENT ───

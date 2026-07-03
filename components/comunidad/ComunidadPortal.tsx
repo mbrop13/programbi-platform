@@ -10,7 +10,7 @@ import Sidebar from "./Sidebar";
 import MuroFeed from "./tabs/MuroFeed";
 import MisCursos from "./tabs/MisCursos";
 import AulaVirtual from "./tabs/AulaVirtual";
-import AIAsistente from "./tabs/AIAsistente";
+import ChatShell from "./ai-v2/ChatShell";
 import BusinessPortal from "./tabs/BusinessPortal";
 import LivePanel from "./tabs/LivePanel";
 import UserProfile from "./tabs/UserProfile";
@@ -186,7 +186,7 @@ export default function ComunidadPortal() {
                   transition={{ duration: 0.15 }}
                   className="flex-1 flex flex-col min-h-0"
                 >
-                  <AIAsistente isRestricted={!!restrictedView} />
+                  <ChatShell isRestricted={!!restrictedView} userName={userProfile?.full_name} />
                 </motion.div>
               </AnimatePresence>
             ) : (

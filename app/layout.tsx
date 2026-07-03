@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Poppins, Caveat, Playfair_Display } from "next/font/google";
+import { Inter, Poppins, Caveat, Playfair_Display, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import { Analytics } from "@vercel/analytics/react";
@@ -30,6 +30,13 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
   display: "swap",
   weight: ["400", "500", "600", "700", "800", "900"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -203,7 +210,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} ${poppins.variable} ${caveat.variable} ${playfair.variable}`}>
+    <html lang="es" className={`${inter.variable} ${poppins.variable} ${caveat.variable} ${playfair.variable} ${jetbrainsMono.variable}`}>
       <head>
         <script
           type="application/ld+json"
