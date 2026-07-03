@@ -12,6 +12,8 @@ import { ComposerInput, type Attachment } from "./ComposerInput";
 import { ModelBar } from "./ModelBar";
 import { Landing } from "./Landing";
 import { ChatError } from "./ChatError";
+import { CanvasProvider, useCanvas } from "./canvas/CanvasStore";
+import { CanvasPanel } from "./canvas/CanvasPanel";
 import { getModel, DEFAULT_MODEL_ID } from "@/lib/ai/models";
 import {
   getChats,
@@ -22,6 +24,7 @@ import {
   archiveChat,
   type AiChat,
 } from "@/lib/supabase/ai";
+import { cn } from "@/lib/utils";
 
 interface ChatShellProps {
   isRestricted?: boolean;
@@ -32,6 +35,43 @@ const MODEL_KEY = "programbi_chat_model";
 
 export default function ChatShell({ isRestricted = false, userName }: ChatShellProps) {
   const isPremium = !isRestricted;
+
+  // Vista restringida (freemium upsell) — no necesita Canvas
+  if (isRestricted) {
+    return (
+      <div className="flex flex-1 items-center justify-center bg-gradient-to-br from-surface-1 to-brand-blue-light/30 p-8">
+        <div className="w-full max-w-md rounded-3xl border border-border bg-surface-0 p-8 text-center shadow-lift">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-blue to-blue-600 shadow-glow-brand">
+            <Bot className="h-8 w-8 text-white" />
+          </div>
+          <h2 className="font-display text-2xl font-bold text-text-primary">
+            Mentor IA Premium
+          </h2>
+          <p className="mt-3 leading-relaxed text-text-secondary">
+            Accede a tu mentor IA con múltiples modelos (Llama, Gemini, GPT-4o y
+            Claude), razonamiento paso a paso, búsqueda web y dictado por voz.
+            Resuelve tus dudas de Data Science, Python, SQL y Power BI.
+          </p>
+          <Link
+            href="/comunidad/planes"
+            className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-brand-blue px-4 py-3 font-semibold text-white transition-colors hover:bg-brand-blue-dark"
+          >
+            Ver Planes
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <CanvasProvider>
+      <ChatShellInner isPremium={isPremium} userName={userName} />
+    </CanvasProvider>
+  );
+}
+
+function ChatShellInner({ isPremium, userName }: { isPremium: boolean; userName?: string }) {
+  const canvas = useCanvas();
 
   // ─── Estado ───
   const [chats, setChats] = useState<AiChat[]>([]);
@@ -47,9 +87,14 @@ export default function ChatShell({ isRestricted = false, userName }: ChatShellP
   const [webSearch, setWebSearch] = useState(false);
   const [input, setInput] = useState("");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
-  const [voiceActive, setVoiceActive] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Split workspace
+  const [chatWidthPct, setChatWidthPct] = useState(38);
+  const [isDragging, setIsDragging] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const workspaceRef = useRef<HTMLDivElement>(null);
 
   // Refs para que prepareSendMessagesRequest lea valores actuales al enviar
   const chatIdRef = useRef<string | null>(null);
@@ -59,6 +104,15 @@ export default function ChatShell({ isRestricted = false, userName }: ChatShellP
   useEffect(() => { chatIdRef.current = activeChatId; }, [activeChatId]);
   useEffect(() => { modelRef.current = selectedModel; localStorage.setItem(MODEL_KEY, selectedModel); }, [selectedModel]);
   useEffect(() => { webSearchRef.current = webSearch; }, [webSearch]);
+
+  // Detectar móvil para el sheet vs split
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   // ─── Transport estable (lee de refs) ───
   const transport = useMemo(
@@ -110,7 +164,6 @@ export default function ChatShell({ isRestricted = false, userName }: ChatShellP
 
   useEffect(() => {
     refreshChats();
-    // Cerrar sidebar en móvil al iniciar
     if (typeof window !== "undefined" && window.innerWidth < 768) {
       setSidebarOpen(false);
     }
@@ -261,35 +314,34 @@ export default function ChatShell({ isRestricted = false, userName }: ChatShellP
     [input, attachments, isStreaming, sendMessage]
   );
 
-  // ─── Vista restringida (freemium upsell) ───
-  if (isRestricted) {
-    return (
-      <div className="flex flex-1 items-center justify-center bg-gradient-to-br from-surface-1 to-brand-blue-light/30 p-8">
-        <div className="w-full max-w-md rounded-3xl border border-border bg-surface-0 p-8 text-center shadow-xl">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-blue to-blue-600 shadow-lg">
-            <Bot className="h-8 w-8 text-white" />
-          </div>
-          <h2 className="font-display text-2xl font-bold text-text-primary">
-            Mentor IA Premium
-          </h2>
-          <p className="mt-3 leading-relaxed text-text-secondary">
-            Accede a tu mentor IA con múltiples modelos (Llama, Gemini, GPT-4o y
-            Claude), razonamiento paso a paso, búsqueda web y dictado por voz.
-            Resuelve tus dudas de Data Science, Python, SQL y Power BI.
-          </p>
-          <Link
-            href="/comunidad/planes"
-            className="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-brand-blue px-4 py-3 font-semibold text-white transition-colors hover:bg-brand-blue-dark"
-          >
-            Ver Planes
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  // ─── Resizer del split (desktop) ───
+  const startResize = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+    const onMove = (ev: MouseEvent) => {
+      const row = workspaceRef.current;
+      if (!row) return;
+      const rect = row.getBoundingClientRect();
+      const pct = ((ev.clientX - rect.left) / rect.width) * 100;
+      setChatWidthPct(Math.min(55, Math.max(20, pct)));
+    };
+    const onUp = () => {
+      setIsDragging(false);
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+      document.body.style.cursor = "";
+      document.body.style.userSelect = "";
+    };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+  }, []);
 
   const selectedModelMeta = getModel(selectedModel);
   const showLanding = messages.length === 0 && !loadingMessages;
+  const canvasOpenDesktop = canvas.isOpen && !isMobile;
+  const canvasOpenMobile = canvas.isOpen && isMobile;
 
   return (
     <div className="flex h-[100dvh] flex-1 overflow-hidden bg-surface-1">
@@ -333,8 +385,8 @@ export default function ChatShell({ isRestricted = false, userName }: ChatShellP
 
       {/* Main */}
       <div className="flex min-w-0 flex-1 flex-col">
-        {/* Header */}
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border bg-surface-0/80 px-3 backdrop-blur-sm">
+        {/* Header (glass) */}
+        <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border bg-surface-0/70 px-3 backdrop-blur-xl">
           <button
             onClick={() => setSidebarOpen((o) => !o)}
             className="rounded-lg p-2 text-text-muted transition-colors hover:bg-surface-2 hover:text-text-primary"
@@ -355,69 +407,108 @@ export default function ChatShell({ isRestricted = false, userName }: ChatShellP
           </div>
         </header>
 
-        {/* Cuerpo */}
-        {loadingMessages ? (
-          <div className="flex flex-1 items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-surface-3 border-t-brand-blue" />
-          </div>
-        ) : showLanding ? (
-          <div className="flex flex-1 flex-col">
-            <Landing userName={userName} onSuggestion={(t) => submit(t)} />
-            <div className="border-t border-border bg-surface-0/60 p-3 sm:p-4">
-              <ComposerInput
-                value={input}
-                onChange={setInput}
-                onSubmit={() => submit()}
-                onStop={stop}
-                isStreaming={isStreaming}
-                isPremium={isPremium}
-                attachments={attachments}
-                onAttachmentsChange={setAttachments}
-                webSearch={webSearch}
-                onWebSearchChange={setWebSearch}
-                voiceActive={voiceActive}
-                onToggleVoice={() => setVoiceActive((v) => !v)}
-                voiceEnabled={false}
-              />
-            </div>
-          </div>
-        ) : (
-          <>
-            <ChatList
-              messages={messages}
-              status={status}
-              modelName={selectedModelMeta.label}
-              onRegenerate={() => regenerate()}
-            />
-            {errorMsg && (
-              <div className="pb-2">
-                <ChatError
-                  message={errorMsg}
-                  onRetry={() => { setErrorMsg(null); regenerate(); }}
-                  onDismiss={() => setErrorMsg(null)}
-                />
-              </div>
+        {/* Workspace: chat (resizable) + canvas (split / sheet) */}
+        <div ref={workspaceRef} className="flex min-h-0 flex-1">
+          {/* Panel de chat */}
+          <div
+            className={cn(
+              "flex min-w-0 flex-col",
+              canvasOpenDesktop ? "shrink-0" : "flex-1"
             )}
-            <div className="border-t border-border bg-surface-0/60 p-3 sm:p-4">
-              <ComposerInput
-                value={input}
-                onChange={setInput}
-                onSubmit={() => submit()}
-                onStop={stop}
-                isStreaming={isStreaming}
-                isPremium={isPremium}
-                attachments={attachments}
-                onAttachmentsChange={setAttachments}
-                webSearch={webSearch}
-                onWebSearchChange={setWebSearch}
-                voiceActive={voiceActive}
-                onToggleVoice={() => setVoiceActive((v) => !v)}
-                voiceEnabled={false}
+            style={canvasOpenDesktop ? { width: `${chatWidthPct}%` } : undefined}
+          >
+            {loadingMessages ? (
+              <div className="flex flex-1 items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-surface-3 border-t-brand-blue" />
+              </div>
+            ) : showLanding ? (
+              <Landing userName={userName} onSuggestion={(t) => submit(t)}>
+                <ComposerInput
+                  value={input}
+                  onChange={setInput}
+                  onSubmit={() => submit()}
+                  onStop={stop}
+                  isStreaming={isStreaming}
+                  isPremium={isPremium}
+                  attachments={attachments}
+                  onAttachmentsChange={setAttachments}
+                  webSearch={webSearch}
+                  onWebSearchChange={setWebSearch}
+                />
+              </Landing>
+            ) : (
+              <>
+                <ChatList
+                  messages={messages}
+                  status={status}
+                  modelName={selectedModelMeta.label}
+                  onRegenerate={() => regenerate()}
+                />
+                {errorMsg && (
+                  <div className="pb-2">
+                    <ChatError
+                      message={errorMsg}
+                      onRetry={() => { setErrorMsg(null); regenerate(); }}
+                      onDismiss={() => setErrorMsg(null)}
+                    />
+                  </div>
+                )}
+                <div className="border-t border-border bg-surface-0/60 p-3 sm:p-4">
+                  <ComposerInput
+                    value={input}
+                    onChange={setInput}
+                    onSubmit={() => submit()}
+                    onStop={stop}
+                    isStreaming={isStreaming}
+                    isPremium={isPremium}
+                    attachments={attachments}
+                    onAttachmentsChange={setAttachments}
+                    webSearch={webSearch}
+                    onWebSearchChange={setWebSearch}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Manija divisora + Canvas (desktop) */}
+          {canvasOpenDesktop && (
+            <>
+              <div
+                onMouseDown={startResize}
+                className={cn(
+                  "canvas-resizer-handle hidden w-3 shrink-0 md:flex",
+                  isDragging && "is-dragging"
+                )}
               />
-            </div>
-          </>
-        )}
+              <div className="hidden min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-surface-0 shadow-float md:mr-8 md:mt-8 md:mb-4 md:flex">
+                <CanvasPanel key={canvas.activeFile?.id ?? "empty"} />
+              </div>
+            </>
+          )}
+        </div>
       </div>
+
+      {/* Canvas: bottom sheet (móvil) */}
+      <AnimatePresence>
+        {canvasOpenMobile && (
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", stiffness: 360, damping: 36 }}
+            className="fixed inset-x-0 bottom-0 z-50 flex h-[94dvh] flex-col overflow-hidden rounded-t-[1.5rem] border-t border-border bg-surface-0 shadow-lift md:hidden"
+          >
+            {/* Grab handle */}
+            <div className="flex shrink-0 justify-center py-2">
+              <div className="h-1.5 w-10 rounded-full bg-surface-3" />
+            </div>
+            <div className="min-h-0 flex-1">
+              <CanvasPanel key={canvas.activeFile?.id ?? "empty"} />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

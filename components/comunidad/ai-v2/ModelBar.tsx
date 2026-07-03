@@ -112,7 +112,7 @@ export function ModelBar({ selectedId, onSelect, isPremium }: ModelBarProps) {
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-1 w-80 overflow-hidden rounded-xl border border-border bg-surface-0 shadow-lg">
+        <div className="absolute left-0 top-full z-50 mt-1 w-80 overflow-hidden rounded-2xl border border-border bg-surface-0/90 shadow-lift backdrop-blur-xl">
           <div className="max-h-80 overflow-y-auto py-1">
             {pinnedModels.length > 0 && (
               <>

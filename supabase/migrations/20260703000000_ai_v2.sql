@@ -107,23 +107,33 @@ create policy "ai_attachments owner delete" on storage.objects
 -- Migración best-effort de la data vieja.
 -- Convierte content (texto plano) → parts: [{type:'text', text:content}]
 -- Las tablas viejas NO se eliminan (quedan como respaldo).
+-- Defensiva: si las tablas viejas no existen, no rompe el DDL (DO + EXCEPTION).
 -- ════════════════════════════════════════════════════════════════════════
-insert into ai_chats (id, profile_id, title, model, created_at, updated_at)
-select
-  id, profile_id, title, model, created_at, coalesce(updated_at, created_at)
-from ai_conversations
-on conflict (id) do nothing;
+DO $$
+BEGIN
+  INSERT INTO ai_chats (id, profile_id, title, created_at, updated_at)
+  SELECT id, profile_id, title, created_at, coalesce(updated_at, created_at)
+  FROM ai_conversations
+  ON CONFLICT (id) DO NOTHING;
+EXCEPTION
+  WHEN undefined_table THEN NULL; -- tabla vieja no existe: nada que migrar
+END $$;
 
-insert into ai_chat_messages (id, chat_id, role, parts, model, created_at)
-select
-  id,
-  conversation_id,
-  role,
-  case
-    when content is null or content = '' then '[]'::jsonb
-    else jsonb_build_array(jsonb_build_object('type','text','text',content))
-  end,
-  model,
-  created_at
-from ai_messages
-on conflict (id) do nothing;
+DO $$
+BEGIN
+  INSERT INTO ai_chat_messages (id, chat_id, role, parts, model, created_at)
+  SELECT
+    id,
+    conversation_id,
+    role,
+    CASE
+      WHEN content IS NULL OR content = '' THEN '[]'::jsonb
+      ELSE jsonb_build_array(jsonb_build_object('type','text','text',content))
+    END,
+    model,
+    created_at
+  FROM ai_messages
+  ON CONFLICT (id) DO NOTHING;
+EXCEPTION
+  WHEN undefined_table THEN NULL;
+END $$;

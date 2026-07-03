@@ -11,6 +11,7 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export interface Attachment {
@@ -34,10 +35,34 @@ interface ComposerInputProps {
   onAttachmentsChange: (a: Attachment[]) => void;
   webSearch: boolean;
   onWebSearchChange: (v: boolean) => void;
-  voiceActive: boolean;
-  onToggleVoice: () => void;
-  voiceEnabled: boolean;
   placeholder?: string;
+}
+
+// ─── Tipos mínimos para la Web Speech API (no incluidos en lib.dom) ───
+interface SpeechRecognitionEventLike {
+  resultIndex: number;
+  results: ArrayLike<{ isFinal: boolean; 0: { transcript: string } }>;
+}
+interface SpeechRecognitionLike {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onresult: ((event: SpeechRecognitionEventLike) => void) | null;
+  onend: (() => void) | null;
+  onerror: (() => void) | null;
+}
+type RecognitionCtor = new () => SpeechRecognitionLike;
+
+function getRecognitionCtor(): RecognitionCtor | null {
+  if (typeof window === "undefined") return null;
+  const w = window as Window & {
+    SpeechRecognition?: RecognitionCtor;
+    webkitSpeechRecognition?: RecognitionCtor;
+  };
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
 function Pill({
@@ -60,7 +85,7 @@ function Pill({
       disabled={disabled}
       title={title}
       className={cn(
-        "flex h-7 w-7 items-center justify-center rounded-lg transition-colors",
+        "flex h-8 w-8 items-center justify-center rounded-lg transition-colors",
         active
           ? "bg-brand-blue/10 text-brand-blue"
           : "text-text-muted hover:bg-surface-2 hover:text-text-secondary",
@@ -83,22 +108,34 @@ export function ComposerInput({
   onAttachmentsChange,
   webSearch,
   onWebSearchChange,
-  voiceActive,
-  onToggleVoice,
-  voiceEnabled,
   placeholder,
 }: ComposerInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+  const finalTranscriptRef = useRef("");
   const [uploading, setUploading] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [voiceSupported] = useState(() => getRecognitionCtor() !== null);
 
-  // Auto-resize
+  // Auto-resize del textarea
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
     el.style.height = "auto";
     el.style.height = Math.min(el.scrollHeight, 256) + "px";
   }, [value]);
+
+  // Limpieza al desmontar
+  useEffect(() => {
+    return () => {
+      try {
+        recognitionRef.current?.abort();
+      } catch {
+        /* noop */
+      }
+    };
+  }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
@@ -144,14 +181,55 @@ export function ComposerInput({
     onAttachmentsChange(attachments.filter((_, i) => i !== idx));
   };
 
+  // ─── Voz (Web Speech API) ───
+  const startVoice = () => {
+    const Ctor = getRecognitionCtor();
+    if (!Ctor) return;
+    finalTranscriptRef.current = "";
+    const rec = new Ctor();
+    rec.lang = "es-ES";
+    rec.continuous = true;
+    rec.interimResults = true;
+    rec.onresult = (event) => {
+      let finalText = "";
+      let interimText = "";
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const res = event.results[i];
+        if (res.isFinal) finalText += res[0].transcript;
+        else interimText += res[0].transcript;
+      }
+      if (finalText) finalTranscriptRef.current += finalText;
+      onChange((finalTranscriptRef.current + interimText).trim());
+    };
+    rec.onend = () => setRecording(false);
+    rec.onerror = () => setRecording(false);
+    try {
+      rec.start();
+      recognitionRef.current = rec;
+      setRecording(true);
+    } catch {
+      setRecording(false);
+    }
+  };
+
+  const stopVoice = () => {
+    try {
+      recognitionRef.current?.stop();
+    } catch {
+      /* noop */
+    }
+    setRecording(false);
+  };
+
   const canSend = value.trim().length > 0 && !uploading;
 
   return (
-    <div className="mx-auto w-full max-w-3xl">
-      <div className="rounded-2xl border border-border bg-surface-0 shadow-sm transition-shadow focus-within:shadow-md">
-        {/* Pills de adjuntos */}
+    <div className="mx-auto w-full max-w-2xl">
+      {/* Contenedor rectangular con bordes levemente redondeados */}
+      <div className="overflow-hidden rounded-2xl border border-border bg-surface-0/85 shadow-premium backdrop-blur-xl transition-shadow focus-within:border-brand-blue/30 focus-within:shadow-float">
+        {/* Chips de adjuntos */}
         {attachments.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 border-b border-border px-2.5 py-2">
+          <div className="flex flex-wrap gap-1.5 border-b border-border px-3 py-2">
             {attachments.map((a, i) => (
               <span
                 key={i}
@@ -174,8 +252,19 @@ export function ComposerInput({
           </div>
         )}
 
-        {/* Textarea + acciones */}
-        <div className="flex items-end gap-1.5 px-2.5 py-2">
+        {/* Área de escritura (arriba) */}
+        <textarea
+          ref={textareaRef}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onKeyDown={handleKeyDown}
+          rows={1}
+          placeholder={placeholder ?? "Pregúntale a tu mentor IA o usa el micrófono…"}
+          className="max-h-64 w-full resize-none bg-transparent px-4 pt-3.5 text-[0.95rem] leading-relaxed text-text-primary outline-none placeholder:text-text-faint"
+        />
+
+        {/* Barra inferior: adjuntar (izq) + voz/enviar (der) */}
+        <div className="flex items-center justify-between gap-2 px-2.5 pb-2.5 pt-1">
           <div className="flex items-center gap-0.5">
             <Pill
               icon={Paperclip}
@@ -184,19 +273,6 @@ export function ComposerInput({
               disabled={uploading || isStreaming}
             />
             {uploading && <Loader2 className="h-3.5 w-3.5 animate-spin text-text-muted" />}
-          </div>
-
-          <textarea
-            ref={textareaRef}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            onKeyDown={handleKeyDown}
-            rows={1}
-            placeholder={placeholder ?? "Pregúntale a tu mentor IA…"}
-            className="max-h-64 flex-1 resize-none bg-transparent py-1.5 text-[0.95rem] leading-relaxed text-text-primary outline-none placeholder:text-text-faint"
-          />
-
-          <div className="flex items-center gap-0.5">
             {isPremium && (
               <Pill
                 icon={Globe}
@@ -205,36 +281,61 @@ export function ComposerInput({
                 title="Búsqueda web en vivo"
               />
             )}
-            {voiceEnabled && (
-              <Pill
-                icon={Mic}
-                active={voiceActive}
-                onClick={onToggleVoice}
-                title="Dictado por voz"
-              />
-            )}
+          </div>
 
+          {/* Botón dual: micrófono (vacío) / enviar (con texto) / detener (streaming) */}
+          <div className="flex items-center">
             {isStreaming ? (
               <button
                 onClick={onStop}
-                className="flex h-8 w-8 items-center justify-center rounded-lg bg-text-primary text-surface-0 transition-opacity hover:opacity-90"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-text-primary text-surface-0 transition-opacity hover:opacity-90"
                 title="Detener"
               >
-                <Square className="h-3.5 w-3.5 fill-current" />
+                <Square className="h-4 w-4 fill-current" />
+              </button>
+            ) : canSend ? (
+              <button
+                onClick={onSubmit}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-blue text-white shadow-glow-brand transition-all hover:bg-brand-blue-dark"
+                title="Enviar mensaje"
+              >
+                <ArrowUp className="h-5 w-5" />
+              </button>
+            ) : recording ? (
+              <button
+                onClick={stopVoice}
+                className="flex items-center gap-2 rounded-full bg-red-500/10 px-3 py-2 text-xs font-medium text-red-500 transition-colors hover:bg-red-500/20"
+                title="Detener"
+              >
+                <span className="flex h-4 items-end gap-0.5">
+                  {[0, 1, 2, 3].map((i) => (
+                    <motion.span
+                      key={i}
+                      className="w-0.5 rounded-full bg-red-500"
+                      animate={{ height: [4, 16, 4] }}
+                      transition={{
+                        duration: 0.6,
+                        repeat: Infinity,
+                        delay: i * 0.12,
+                        ease: "easeInOut",
+                      }}
+                    />
+                  ))}
+                </span>
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
+                </span>
+                Escuchando
               </button>
             ) : (
               <button
-                onClick={onSubmit}
-                disabled={!canSend}
-                className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-lg transition-all",
-                  canSend
-                    ? "bg-brand-blue text-white hover:bg-brand-blue-dark"
-                    : "bg-surface-2 text-text-faint"
-                )}
-                title="Enviar"
+                onClick={startVoice}
+                disabled={!voiceSupported}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-text-muted transition-colors hover:bg-surface-3 hover:text-text-secondary disabled:cursor-not-allowed disabled:opacity-40"
+                title={voiceSupported ? "Dictado por voz" : "Voz no soportada en este navegador"}
               >
-                <ArrowUp className="h-4 w-4" />
+                <Mic className="h-5 w-5" />
               </button>
             )}
           </div>

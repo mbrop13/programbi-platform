@@ -97,7 +97,7 @@ function MessageRowBase({
             </div>
           )}
           {text && (
-            <div className="rounded-3xl rounded-br-lg bg-brand-blue px-4 py-2.5 text-white shadow-sm">
+            <div className="rounded-3xl rounded-br-lg bg-brand-blue px-4 py-2.5 text-white shadow-premium">
               <div className="whitespace-pre-wrap break-words text-[0.95rem] leading-relaxed">
                 {text}
               </div>
@@ -112,7 +112,7 @@ function MessageRowBase({
   return (
     <div className="group flex gap-3 px-4 py-4 sm:px-6">
       {/* Avatar */}
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-blue to-blue-600 shadow-sm">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-blue to-blue-600 shadow-glow-brand">
         <Bot className="h-4 w-4 text-white" />
       </div>
 
@@ -172,7 +172,7 @@ function MessageRowBase({
           <div className="mt-2 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
             <button
               onClick={handleCopy}
-              className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors hover:bg-surface-2 hover:text-text-secondary"
+              className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text-secondary"
               title="Copiar"
             >
               {copied ? <Check className="h-3 w-3 text-accent-emerald" /> : <Copy className="h-3 w-3" />}
@@ -181,7 +181,7 @@ function MessageRowBase({
             {typeof window !== "undefined" && window.speechSynthesis && (
               <button
                 onClick={handleSpeak}
-                className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors hover:bg-surface-2 hover:text-text-secondary"
+                className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text-secondary"
                 title={speaking ? "Detener" : "Escuchar"}
               >
                 {speaking ? <VolumeX className="h-3 w-3" /> : <Volume2 className="h-3 w-3" />}
@@ -191,7 +191,7 @@ function MessageRowBase({
             {onRegenerate && (
               <button
                 onClick={onRegenerate}
-                className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors hover:bg-surface-2 hover:text-text-secondary"
+                className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text-secondary"
                 title="Regenerar"
               >
                 <RefreshCw className="h-3 w-3" />

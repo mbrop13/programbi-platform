@@ -144,31 +144,35 @@ export default function ComunidadPortal() {
   return (
     <ToastProvider>
       <div className="flex min-h-screen bg-[#f8f9fb]">
-        {/* ─── SIDEBAR (always visible, even during content loading) ─── */}
-        <Sidebar
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-          collapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
-          onExpand={() => setSidebarCollapsed(false)}
-          isAdmin={isAdmin}
-          isOrgManager={isOrgManager}
-          userProfile={userProfile}
-          authLoading={authLoading}
-          mobileOpen={mobileNavOpen}
-          onMobileClose={() => setMobileNavOpen(false)}
-          onOpenSettings={() => setShowSettingsModal(true)}
-        />
+        {/* ─── SIDEBAR (oculta en el chat IA, que es pantalla completa) ─── */}
+        {activeTab !== "ai" && (
+          <Sidebar
+            activeTab={activeTab}
+            onTabChange={handleTabChange}
+            collapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed((c) => !c)}
+            onExpand={() => setSidebarCollapsed(false)}
+            isAdmin={isAdmin}
+            isOrgManager={isOrgManager}
+            userProfile={userProfile}
+            authLoading={authLoading}
+            mobileOpen={mobileNavOpen}
+            onMobileClose={() => setMobileNavOpen(false)}
+            onOpenSettings={() => setShowSettingsModal(true)}
+          />
+        )}
 
         {/* ─── MAIN AREA ─── */}
         <div className="flex-1 flex flex-col min-w-0 min-h-screen relative">
-          {/* Mobile menu button (floating, top-left) */}
-          <button
-            onClick={() => setMobileNavOpen(true)}
-            className="lg:hidden fixed top-4 left-4 z-30 w-10 h-10 flex items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-600 shadow-sm hover:shadow-md transition-all"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
+          {/* Mobile menu button (floating, top-left) — oculto en el chat IA */}
+          {activeTab !== "ai" && (
+            <button
+              onClick={() => setMobileNavOpen(true)}
+              className="lg:hidden fixed top-4 left-4 z-30 w-10 h-10 flex items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-600 shadow-sm hover:shadow-md transition-all"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          )}
 
           <main className="flex-1 w-full flex flex-col min-h-0">
             {/* ─── LOADING STATE (sidebar visible, content loading) ─── */}
