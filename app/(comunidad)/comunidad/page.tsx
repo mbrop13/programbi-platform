@@ -4,7 +4,7 @@ import { getMyEnrollments } from "@/lib/supabase/comunidad-ai";
 import SubscriptionGate from "@/components/comunidad/SubscriptionGate";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
-import CommunityBenefits from "@/components/comunidad/CommunityBenefits";
+import CommunityFeatures from "@/components/comunidad/CommunityFeatures";
 import CommunityFaq from "@/components/comunidad/CommunityFaq";
 import LogoSlider from "@/components/marketing/LogoSlider";
 import TestimonialsSection from "@/components/marketing/TestimonialsSection";
@@ -29,12 +29,22 @@ export default async function ComunidadPage() {
     <div className="bg-white min-h-screen">
       <Navbar />
       <main className="pt-[34px]">
+        {/* ─── HERO (solo título y subtítulo, sin planes) ─── */}
+        <SubscriptionGate 
+          isLoggedIn={!!profile}
+          heroOnly
+        />
+        {/* ─── LOGOS DE EMPRESAS ─── */}
+        <LogoSlider />
+        {/* ─── FEATURES ZIGZAG (clases en vivo, material, IA) ─── */}
+        <CommunityFeatures />
+        {/* ─── TESTIMONIOS ─── */}
+        <TestimonialsSection />
+        {/* ─── PLANES Y PRECIOS ─── */}
         <SubscriptionGate 
           isLoggedIn={!!profile}
         />
-        <LogoSlider />
-        <CommunityBenefits />
-        <TestimonialsSection />
+        {/* ─── FAQ ─── */}
         <CommunityFaq />
       </main>
       <Footer />

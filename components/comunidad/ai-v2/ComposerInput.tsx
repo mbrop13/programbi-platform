@@ -222,8 +222,8 @@ export function ComposerInput({
       {/* Contenedor: glow azul suave al escribir (focus) y al responder (streaming) */}
       <div
         className={cn(
-          "overflow-hidden rounded-2xl border border-border bg-surface-0/85 shadow-premium backdrop-blur-xl transition-shadow",
-          "focus-within:border-brand-blue/40 focus-within:shadow-[0_0_0_1px_rgba(24,144,255,0.20),0_0_18px_-6px_rgba(24,144,255,0.25)]",
+          "rounded-2xl border border-border bg-surface-0/85 shadow-premium backdrop-blur-xl transition-shadow",
+          "focus-within:shadow-[0_0_22px_-6px_rgba(24,144,255,0.30)]",
           isStreaming && "composer-glow"
         )}
       >
@@ -396,11 +396,6 @@ export function ComposerInput({
           </div>
         </div>
       </div>
-
-      {/* Disclaimer */}
-      <p className="mt-1.5 text-center text-[11px] text-text-faint">
-        El mentor IA puede cometer errores. Verifica la información importante.
-      </p>
 
       <input
         ref={fileInputRef}

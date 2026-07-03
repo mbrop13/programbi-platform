@@ -12,11 +12,13 @@ interface SubscriptionGateProps {
   message?: string;
   isLoggedIn: boolean;
   isLoading?: boolean;
+  /** When true, renders only the hero headline/subtitle (no badge, plans, or billing) */
+  heroOnly?: boolean;
 }
 
 type BillingPeriod = 'mensual' | 'semestral' | 'anual';
 
-export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isLoading = false }: SubscriptionGateProps) {
+export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isLoading = false, heroOnly = false }: SubscriptionGateProps) {
   const [selectedPlanId, setSelectedPlanId] = useState<string>("max");
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('mensual');
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -72,7 +74,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
   };
 
   return (
-    <div className="w-full relative flex flex-col items-center px-4 overflow-hidden pt-4 pb-20 top-0" style={{ background: 'linear-gradient(to bottom, #ffffff, #f0f7ff)'}}>
+    <div className={`w-full relative flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-4 pb-8' : 'pt-4 pb-20'}`} style={{ background: 'linear-gradient(to bottom, #ffffff, #f0f7ff)'}}>
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
@@ -85,16 +87,18 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
       <div className="absolute bottom-0 left-1/2 w-[600px] h-[300px] bg-indigo-500/5 rounded-full blur-[120px] -z-10 pointer-events-none -translate-x-1/2" />
 
       <div className="max-w-4xl text-center mb-10 relative z-10">
-        <motion.div
-           initial={{ opacity: 0, scale: 0.9 }}
-           animate={{ opacity: 1, scale: 1 }}
-           className="inline-flex items-center gap-2 bg-white border border-blue-100 shadow-[0_2px_10px_rgba(59,130,246,0.1)] px-5 py-2.5 rounded-full mb-4 backdrop-blur-md"
-        >
-          <Sparkles className="w-4 h-4 text-brand-blue" />
-          <span className="text-sm font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 uppercase tracking-widest">
-            Comunidad Premium
-          </span>
-        </motion.div>
+        {!heroOnly && (
+          <motion.div
+             initial={{ opacity: 0, scale: 0.9 }}
+             animate={{ opacity: 1, scale: 1 }}
+             className="inline-flex items-center gap-2 bg-white border border-blue-100 shadow-[0_2px_10px_rgba(59,130,246,0.1)] px-5 py-2.5 rounded-full mb-4 backdrop-blur-md"
+          >
+            <Sparkles className="w-4 h-4 text-brand-blue" />
+            <span className="text-sm font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 uppercase tracking-widest">
+              Comunidad Premium
+            </span>
+          </motion.div>
+        )}
         
         <motion.h1 
           initial={{ opacity: 0, y: 20 }}
@@ -112,14 +116,16 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
           )}
         </motion.h1>
         
-        <motion.div
-           initial={{ opacity: 0, y: 10 }}
-           animate={{ opacity: 1, y: 0 }}
-           transition={{ delay: 0.15 }}
-           className="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm px-4 py-1.5 rounded-full mb-6 mx-auto shadow-lg tracking-widest uppercase shadow-blue-500/25"
-        >
-          Pruébalo 7 días GRATIS
-        </motion.div>
+        {!heroOnly && (
+          <motion.div
+             initial={{ opacity: 0, y: 10 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ delay: 0.15 }}
+             className="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm px-4 py-1.5 rounded-full mb-6 mx-auto shadow-lg tracking-widest uppercase shadow-blue-500/25"
+          >
+            Pruébalo 7 días GRATIS
+          </motion.div>
+        )}
         
         <motion.p 
           initial={{ opacity: 0, y: 20 }}
@@ -131,39 +137,42 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
         </motion.p>
 
         {/* Frecuencia de Facturación (Pill Selector) */}
-        <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="bg-white/80 backdrop-blur-md border border-slate-200 p-1.5 rounded-full inline-flex items-center mx-auto shadow-sm relative z-20"
-        >
-          <button 
-            onClick={() => setBillingPeriod('mensual')}
-            className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all ${billingPeriod === 'mensual' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+        {!heroOnly && (
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.25 }}
+            className="bg-white/80 backdrop-blur-md border border-slate-200 p-1.5 rounded-full inline-flex items-center mx-auto shadow-sm relative z-20"
           >
-            Mensual
-          </button>
-          <div className="relative group">
             <button 
-              onClick={() => setBillingPeriod('semestral')}
-              className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${billingPeriod === 'semestral' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+              onClick={() => setBillingPeriod('mensual')}
+              className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all ${billingPeriod === 'mensual' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
             >
-              Semestral <span className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-widest hidden sm:inline-block">-10%</span>
+              Mensual
             </button>
-          </div>
-          <div className="relative group">
-            <button 
-              onClick={() => setBillingPeriod('anual')}
-              className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${billingPeriod === 'anual' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
-            >
-              Anual <span className="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-widest hidden sm:inline-block">-30%</span>
-            </button>
-            {/* Absolute badge for mobile if needed, but flex gap is fine */}
-          </div>
-        </motion.div>
+            <div className="relative group">
+              <button 
+                onClick={() => setBillingPeriod('semestral')}
+                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${billingPeriod === 'semestral' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+              >
+                Semestral <span className="bg-emerald-100 text-emerald-700 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-widest hidden sm:inline-block">-10%</span>
+              </button>
+            </div>
+            <div className="relative group">
+              <button 
+                onClick={() => setBillingPeriod('anual')}
+                className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all flex items-center gap-2 ${billingPeriod === 'anual' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-800'}`}
+              >
+                Anual <span className="bg-amber-100 text-amber-700 text-[10px] px-2 py-0.5 rounded-full uppercase tracking-widest hidden sm:inline-block">-30%</span>
+              </button>
+              {/* Absolute badge for mobile if needed, but flex gap is fine */}
+            </div>
+          </motion.div>
+        )}
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-5 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch relative z-10">
+      {!heroOnly && (
+        <div className="max-w-[1400px] mx-auto px-5 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch relative z-10">
         {communityPlans.map((plan, i) => {
           const isActive = selectedPlanId === plan.id;
           const compositePlanId = `${plan.id}_${billingPeriod}`;
@@ -329,21 +338,26 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
             </motion.div>
           );
         })}
-      </div>
-
-      <div className="mt-20 flex flex-col sm:flex-row items-center gap-6 opacity-60 pb-4">
-        <span className="text-sm font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
-          <Shield className="w-4 h-4" /> Pagos Procesados de Forma Segura
-        </span>
-        <div className="hidden sm:block h-4 w-px bg-slate-300" />
-        <span className="text-sm font-medium text-slate-500">Cancela cuando quieras, sin amarras institucionales.</span>
-      </div>
-      {isInternational && (
-        <div className="text-center opacity-60 pb-10">
-          <span className="text-[10px] text-slate-500 font-medium">
-            * Los cobros se procesarán en pesos chilenos (CLP). Tu banco aplicará la conversión a tu moneda local. (Tasa ref: $1 USD = $1000 CLP)
-          </span>
         </div>
+      )}
+
+      {!heroOnly && (
+        <>
+          <div className="mt-20 flex flex-col sm:flex-row items-center gap-6 opacity-60 pb-4">
+            <span className="text-sm font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
+              <Shield className="w-4 h-4" /> Pagos Procesados de Forma Segura
+            </span>
+            <div className="hidden sm:block h-4 w-px bg-slate-300" />
+            <span className="text-sm font-medium text-slate-500">Cancela cuando quieras, sin amarras institucionales.</span>
+          </div>
+          {isInternational && (
+            <div className="text-center opacity-60 pb-10">
+              <span className="text-[10px] text-slate-500 font-medium">
+                * Los cobros se procesarán en pesos chilenos (CLP). Tu banco aplicará la conversión a tu moneda local. (Tasa ref: $1 USD = $1000 CLP)
+              </span>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

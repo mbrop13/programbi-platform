@@ -27,7 +27,7 @@ export function Landing({ children }: LandingProps) {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="relative h-24 w-24"
+        className="relative h-40 w-40"
       >
         <Image
           src={LOGO_URL}

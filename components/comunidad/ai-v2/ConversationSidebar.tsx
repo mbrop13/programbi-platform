@@ -16,6 +16,10 @@ import Image from "next/image";
 import type { AiChat } from "@/lib/supabase/ai";
 import { cn } from "@/lib/utils";
 
+/** Logo de la marca (mismo que usa el Navbar de la página principal). */
+const LOGO_URL =
+  "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974";
+
 interface ConversationSidebarProps {
   chats: AiChat[];
   activeChatId: string | null;
@@ -199,22 +203,21 @@ export function ConversationSidebar({
 
   return (
     <div className="flex h-full flex-col bg-surface-1">
-      {/* Esquina superior: logo favicon (clic para cerrar) */}
+      {/* Esquina superior: logo de la marca (clic para cerrar) */}
       <button
         onClick={onClose}
-        className="flex h-14 shrink-0 items-center gap-2.5 border-b border-border px-3 transition-colors hover:bg-surface-2/50"
+        className="flex h-14 shrink-0 items-center justify-center border-b border-border px-4 transition-colors hover:bg-surface-2/50"
         title="Cerrar historial"
       >
-        <div className="relative h-8 w-8 overflow-hidden rounded-lg">
+        <div className="relative h-9 w-9 overflow-hidden rounded-xl">
           <Image
-            src="/icon.png"
+            src={LOGO_URL}
             alt="ProgramBI"
             fill
-            className="object-contain"
-            sizes="32px"
+            className="object-contain p-0.5"
+            sizes="36px"
           />
         </div>
-        <span className="font-display text-sm font-bold text-text-primary">ProgramBI</span>
       </button>
 
       {/* Volver + Nuevo chat + búsqueda */}
@@ -284,8 +287,8 @@ export function ConversationSidebar({
 
       {/* Footer: avatar + nombre "Miembro" */}
       <div className="shrink-0 border-t border-border px-3 py-3">
-        <div className="flex items-center gap-2.5">
-          <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-brand-blue to-blue-600 flex items-center justify-center text-white font-bold text-xs">
+        <div className="flex items-center gap-2.5 rounded-lg px-1 py-1 transition-colors hover:bg-surface-2/50">
+          <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-brand-blue to-blue-600 ring-2 ring-surface-0 flex items-center justify-center text-white font-bold text-xs">
             {avatarUrl ? (
               <img
                 src={avatarUrl}

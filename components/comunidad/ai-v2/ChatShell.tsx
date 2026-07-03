@@ -366,7 +366,7 @@ function ChatShellInner({
         {sidebarOpen && (
           <motion.aside
             initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 260, opacity: 1 }}
+            animate={{ width: 240, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="absolute z-50 h-full shrink-0 overflow-hidden border-r border-border md:relative"
@@ -405,7 +405,7 @@ function ChatShellInner({
           {/* Panel de chat */}
           <div
             className={cn(
-              "flex min-w-0 flex-col",
+              "relative flex min-w-0 flex-col",
               canvasOpenDesktop ? "shrink-0" : "flex-1"
             )}
             style={canvasOpenDesktop ? { width: `${chatWidthPct}%` } : undefined}
@@ -437,28 +437,31 @@ function ChatShellInner({
                   modelName={selectedModelMeta.label}
                   onRegenerate={() => regenerate()}
                 />
-                {errorMsg && (
-                  <div className="pb-2">
-                    <ChatError
-                      message={errorMsg}
-                      onRetry={() => { setErrorMsg(null); regenerate(); }}
-                      onDismiss={() => setErrorMsg(null)}
+                {/* Composer flotante: se sobrepone sobre el chat */}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-surface-1 via-surface-1/95 to-transparent px-3 pb-3 pt-12 sm:px-4 sm:pb-4">
+                  <div className="pointer-events-auto mx-auto w-full max-w-3xl">
+                    {errorMsg && (
+                      <div className="mb-2">
+                        <ChatError
+                          message={errorMsg}
+                          onRetry={() => { setErrorMsg(null); regenerate(); }}
+                          onDismiss={() => setErrorMsg(null)}
+                        />
+                      </div>
+                    )}
+                    <ComposerInput
+                      value={input}
+                      onChange={setInput}
+                      onSubmit={() => submit()}
+                      onStop={stop}
+                      isStreaming={isStreaming}
+                      isPremium={isPremium}
+                      attachments={attachments}
+                      onAttachmentsChange={setAttachments}
+                      modelId={selectedModel}
+                      onSelectModel={setSelectedModel}
                     />
                   </div>
-                )}
-                <div className="border-t border-border bg-surface-0/60 p-3 sm:p-4">
-                  <ComposerInput
-                    value={input}
-                    onChange={setInput}
-                    onSubmit={() => submit()}
-                    onStop={stop}
-                    isStreaming={isStreaming}
-                    isPremium={isPremium}
-                    attachments={attachments}
-                    onAttachmentsChange={setAttachments}
-                    modelId={selectedModel}
-                    onSelectModel={setSelectedModel}
-                  />
                 </div>
               </>
             )}
