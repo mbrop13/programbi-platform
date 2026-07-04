@@ -25,6 +25,7 @@ interface Lesson {
   duration_minutes: number;
   is_free_preview: boolean;
   superclass_language?: string | null;
+  resources?: any[];
 }
 
 interface Module {
@@ -72,7 +73,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Tabs States
-  const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'faq'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'faq' | 'resources'>('overview');
   const [sidebarTab, setSidebarTab] = useState<'content' | 'ai'>('content');
 
   // Text Notes States (stored in localStorage)
@@ -752,6 +753,9 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                       { id: 'overview', label: 'Descripción general', icon: FileText },
                       { id: 'notes', label: 'Mis apuntes', icon: StickyNote },
                       { id: 'faq', label: 'Preguntas frecuentes', icon: HelpCircle },
+                      ...(selectedLesson?.resources && Array.isArray(selectedLesson.resources) && selectedLesson.resources.length > 0
+                        ? [{ id: 'resources', label: 'Archivos', icon: Download }]
+                        : [])
                     ].map(tab => {
                       const Icon = tab.icon;
                       const isActive = activeTab === tab.id;
@@ -924,6 +928,47 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                               </p>
                             </div>
                           ))}
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Tab 4: RESOURCES (Class resource files) */}
+                    {activeTab === 'resources' && selectedLesson && (
+                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+                        <h3 className="font-bold text-sm text-gray-900 border-b border-gray-100 pb-3">Archivos y Recursos descargables</h3>
+                        <p className="text-xs text-gray-500">Haz clic en los enlaces a continuación para descargar el material complementario para esta clase.</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                          {selectedLesson.resources && Array.isArray(selectedLesson.resources) && selectedLesson.resources.map((res: any, idx: number) => {
+                            const isExcel = res.name.endsWith('.xlsx') || res.name.endsWith('.xls') || res.name.endsWith('.csv');
+                            const isPdf = res.name.endsWith('.pdf');
+                            const isZip = res.name.endsWith('.zip') || res.name.endsWith('.rar');
+                            
+                            return (
+                              <a
+                                key={idx}
+                                href={res.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between p-3.5 bg-gray-50/60 hover:bg-brand-blue/5 rounded-xl border border-gray-200/80 hover:border-brand-blue/30 transition-all text-xs font-semibold text-gray-700 hover:text-brand-blue shadow-sm group"
+                              >
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                                    isExcel ? 'bg-emerald-50 text-emerald-600' :
+                                    isPdf ? 'bg-rose-50 text-rose-600' :
+                                    isZip ? 'bg-amber-50 text-amber-600' :
+                                    'bg-blue-50 text-brand-blue'
+                                  }`}>
+                                    <FileText className="w-4 h-4" />
+                                  </div>
+                                  <div className="text-left min-w-0">
+                                    <span className="block truncate font-bold text-gray-800 group-hover:text-brand-blue">{res.name}</span>
+                                    <span className="block text-[10px] text-gray-400 font-bold mt-0.5">{res.size ? `${(res.size / 1024 / 1024).toFixed(2)} MB` : "Recurso"}</span>
+                                  </div>
+                                </div>
+                                <Download className="w-4 h-4 text-gray-400 group-hover:text-brand-blue shrink-0" />
+                              </a>
+                            );
+                          })}
                         </div>
                       </motion.div>
                     )}

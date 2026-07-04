@@ -1172,9 +1172,10 @@ function AdminCourses() {
   const [lessons, setLessons] = useState<any[]>([]);
   const [loadingLessons, setLoadingLessons] = useState(false);
   const [showAddLesson, setShowAddLesson] = useState(false);
-  const [newLesson, setNewLesson] = useState({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '' });
+  const [newLesson, setNewLesson] = useState({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] as any[] });
   const [editingLesson, setEditingLesson] = useState<any>(null);
   const [showMarketingEdits, setShowMarketingEdits] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
 
   const [editDescription, setEditDescription] = useState("");
   const [savingDescription, setSavingDescription] = useState(false);
@@ -1202,6 +1203,50 @@ function AdminCourses() {
     finally { setLoading(false); setLoadingLessons(false); }
   };
 
+  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !selectedCourse) return;
+
+    setUploadingFile(true);
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+
+      const ext = file.name.split(".").pop() || "bin";
+      const path = `lessons/${crypto.randomUUID()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("course-resources")
+        .upload(path, file, {
+          cacheControl: "3600",
+          upsert: false,
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("course-resources")
+        .getPublicUrl(path);
+
+      const newResource = {
+        name: file.name,
+        url: publicUrl,
+        size: file.size,
+        path: path
+      };
+
+      setNewLesson(prev => ({
+        ...prev,
+        resources: [...(prev.resources || []), newResource]
+      }));
+    } catch (err: any) {
+      console.error("Error uploading file:", err);
+      alert(`Error al subir archivo: ${err.message}`);
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
   const handleAddLesson = async () => {
     if (!selectedCourse || !newLesson.title || !newLesson.video_url) return;
     const lessonPayload = {
@@ -1212,6 +1257,7 @@ function AdminCourses() {
       video_url: newLesson.video_url,
       is_free_preview: newLesson.is_free_preview,
       superclass_language: newLesson.superclass_language || null,
+      resources: newLesson.resources || [],
     };
 
     try {
@@ -1222,7 +1268,7 @@ function AdminCourses() {
       }
       const data = await adminGetLessons(selectedCourse.id);
       setLessons(data);
-      setNewLesson({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '' });
+      setNewLesson({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] });
       setEditingLesson(null);
       setShowAddLesson(false);
     } catch (err) { console.error(err); }
@@ -1245,6 +1291,7 @@ function AdminCourses() {
       lesson_order: lesson.lesson_order || 1,
       is_free_preview: !!lesson.is_free_preview,
       superclass_language: lesson.superclass_language || '',
+      resources: lesson.resources || [],
     });
     setShowAddLesson(true);
   };
@@ -1472,6 +1519,60 @@ function AdminCourses() {
                     </select>
                   </div>
 
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">Archivos / Recursos descargables</label>
+                    <div className="border border-dashed border-gray-300 rounded-xl p-4 bg-white/50 flex flex-col items-center justify-center gap-2">
+                      {uploadingFile ? (
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <Loader2 className="w-5 h-5 animate-spin text-brand-blue" />
+                          Subiendo archivo...
+                        </div>
+                      ) : (
+                        <label className="flex items-center gap-1.5 px-4 py-2 bg-gray-150 hover:bg-gray-200 text-gray-700 font-bold rounded-xl text-xs cursor-pointer active:scale-98 transition-all border border-gray-250">
+                          <Upload className="w-3.5 h-3.5" />
+                          Subir Archivo
+                          <input type="file" onChange={handleUploadFile} className="hidden" />
+                        </label>
+                      )}
+                      <p className="text-[10px] text-gray-400">PDF, Excel, Word, CSV, ZIP, etc. (Máx. 10MB)</p>
+                    </div>
+
+                    {/* Resources list */}
+                    {newLesson.resources && newLesson.resources.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        {newLesson.resources.map((res: any, idx: number) => (
+                          <div key={idx} className="flex items-center justify-between p-2.5 bg-white rounded-lg border border-gray-100 text-xs">
+                            <span className="font-semibold text-gray-700 truncate max-w-[200px]" title={res.name}>{res.name}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] text-gray-450">{res.size ? `${(res.size / 1024 / 1024).toFixed(2)} MB` : ""}</span>
+                              <button
+                                onClick={async () => {
+                                  if (res.path) {
+                                    try {
+                                      const { createClient } = await import("@/lib/supabase/client");
+                                      const supabase = createClient();
+                                      await supabase.storage.from("course-resources").remove([res.path]);
+                                    } catch (err) {
+                                      console.error("Error deleting from storage:", err);
+                                    }
+                                  }
+                                  setNewLesson(prev => ({
+                                    ...prev,
+                                    resources: prev.resources.filter((_, i) => i !== idx)
+                                  }));
+                                }}
+                                className="p-1 text-red-500 hover:bg-red-50 rounded transition-colors cursor-pointer border-0 bg-transparent"
+                                title="Eliminar archivo"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   <div className="flex items-center gap-2">
                     <input type="checkbox" id="free_preview" checked={newLesson.is_free_preview} onChange={e => setNewLesson(p => ({ ...p, is_free_preview: e.target.checked }))}
                       className="w-4 h-4 rounded border-gray-300 text-brand-blue focus:ring-brand-blue" />
@@ -1482,7 +1583,7 @@ function AdminCourses() {
                   <button onClick={() => {
                     setShowAddLesson(false);
                     setEditingLesson(null);
-                    setNewLesson({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '' });
+                    setNewLesson({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] });
                   }} className="px-4 py-2 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors">Cancelar</button>
                   <button onClick={handleAddLesson} disabled={!newLesson.title || !newLesson.video_url}
                     className="px-5 py-2 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-all active:scale-[0.98] disabled:opacity-40">

@@ -56,6 +56,7 @@ export async function adminAddLesson(lessonData: {
   module_order: number; lesson_order: number; video_url: string;
   duration_minutes?: number; is_free_preview?: boolean;
   superclass_language?: string | null;
+  resources?: any[];
 }) {
   const supabase = await createClient();
   const admin = await isCurrentUserAdmin();
@@ -73,6 +74,7 @@ export async function adminAddLesson(lessonData: {
       content_type: "video",
       is_free_preview: lessonData.is_free_preview || false,
       superclass_language: lessonData.superclass_language || null,
+      resources: lessonData.resources || [],
     }).select("id").single();
 
   if (error) throw new Error(error.message);
@@ -85,6 +87,7 @@ export async function adminUpdateLesson(lessonId: string, lessonData: {
   module_order: number; lesson_order: number; video_url: string;
   duration_minutes?: number; is_free_preview?: boolean;
   superclass_language?: string | null;
+  resources?: any[];
 }) {
   const supabase = await createClient();
   const admin = await isCurrentUserAdmin();
@@ -101,6 +104,7 @@ export async function adminUpdateLesson(lessonId: string, lessonData: {
       duration_minutes: lessonData.duration_minutes || 0,
       is_free_preview: lessonData.is_free_preview || false,
       superclass_language: lessonData.superclass_language || null,
+      resources: lessonData.resources || [],
     })
     .eq("id", lessonId);
 
@@ -115,7 +119,7 @@ export async function adminGetLessons(courseId: string) {
 
   const { data, error } = await supabase
     .from("lessons")
-    .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language")
+    .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources")
     .eq("course_id", courseId)
     .order("module_order", { ascending: true })
     .order("lesson_order", { ascending: true });
@@ -525,7 +529,7 @@ export async function getCourseLessons(courseId: string) {
 
   const { data: lessons } = await supabase
     .from("lessons")
-    .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language")
+    .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources")
     .eq("course_id", courseId)
     .order("module_order", { ascending: true })
     .order("lesson_order", { ascending: true });
