@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
   Play, Code, CheckCircle, Terminal, PlayCircle, Loader2,
-  BookOpen, ChevronLeft, ChevronRight, Lock, Sparkles, Monitor, X, Layers,
-  StickyNote,
+  ChevronLeft, ChevronRight, Lock, Sparkles, Monitor, X, Layers,
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -45,12 +44,12 @@ function slugify(text: string): string {
     .toString()
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // remove accents
-    .replace(/\s+/g, "-") // replace spaces with -
-    .replace(/[^\w-]+/g, "") // remove all non-word chars
-    .replace(/--+/g, "-") // replace multiple - with single -
-    .replace(/^-+/, "") // trim - from start
-    .replace(/-+$/, ""); // trim - from end
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^\w-]+/g, "")
+    .replace(/--+/g, "-")
+    .replace(/^-+/, "")
+    .replace(/-+$/, "");
 }
 
 export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
@@ -73,12 +72,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
   const [codeOutput, setCodeOutput] = useState("");
   const [isExecuting, setIsExecuting] = useState(false);
 
-  // Track completed lessons (local state for now)
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
-
-  // Notes state (per lesson, persisted in localStorage)
-  const [notes, setNotes] = useState("");
-  const [notesSaving, setNotesSaving] = useState(false);
 
   const handleSelectLesson = (lesson: Lesson) => {
     setSelectedLesson(lesson);
@@ -103,7 +97,6 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
           setCompletedLessons(new Set(completedLessonIds));
         }
 
-        // Group lessons into modules and deduplicate within each module
         const moduleMap: Record<string, Module> = {};
         lessons.forEach((l: any) => {
           if (!moduleMap[l.module_name]) {
@@ -125,7 +118,6 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
         const sorted = Object.values(moduleMap).sort((a, b) => a.order - b.order);
         setModules(sorted);
 
-        // Auto-select lesson based on URL slug or first lesson if none
         let initialLesson = sorted.length > 0 && sorted[0].lessons.length > 0 ? sorted[0].lessons[0] : null;
         if (selectedLessonSlug) {
           const matched = sorted.flatMap(m => m.lessons).find(l => slugify(l.title) === selectedLessonSlug);
@@ -141,28 +133,6 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     load();
   }, [courseId, courseSlug, selectedLessonSlug]);
 
-  // Load notes from localStorage when the selected lesson changes
-  useEffect(() => {
-    if (!selectedLesson) {
-      setNotes("");
-      return;
-    }
-    const saved = localStorage.getItem(`aula-notes-${courseId}-${selectedLesson.id}`);
-    setNotes(saved || "");
-  }, [selectedLesson, courseId]);
-
-  // Auto-save notes to localStorage with debounce
-  useEffect(() => {
-    if (!selectedLesson) return;
-    setNotesSaving(true);
-    const timer = setTimeout(() => {
-      localStorage.setItem(`aula-notes-${courseId}-${selectedLesson.id}`, notes);
-      setNotesSaving(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, [notes, selectedLesson, courseId]);
-
-  // When Super Clase activates, set language from lesson and load saved note
   useEffect(() => {
     async function loadNoteAndSetLanguage() {
       if (!selectedLesson) return;
@@ -190,7 +160,6 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     loadNoteAndSetLanguage();
   }, [selectedLesson, courseId]);
 
-  // Auto-save playground code note with debounce
   useEffect(() => {
     if (!selectedLesson || !superClaseActive || !selectedLesson.superclass_language) return;
 
@@ -200,7 +169,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
       } catch (err) {
         console.error("Error auto-saving lesson note:", err);
       }
-    }, 1500); // 1.5 seconds debounce
+    }, 1500);
 
     return () => clearTimeout(timer);
   }, [code, selectedLesson, courseId, superClaseActive]);
@@ -245,7 +214,6 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     const isCurrentlyCompleted = completedLessons.has(lessonId);
     const nextState = !isCurrentlyCompleted;
 
-    // Optimistic UI update
     setCompletedLessons((prev) => {
       const next = new Set(prev);
       if (next.has(lessonId)) next.delete(lessonId);
@@ -257,7 +225,6 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
       await toggleLessonProgress(courseId, lessonId, nextState);
     } catch (err) {
       console.error("Error updating lesson progress on database:", err);
-      // Revert UI update on failure
       setCompletedLessons((prev) => {
         const next = new Set(prev);
         if (isCurrentlyCompleted) {
@@ -276,6 +243,8 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
 
   const selectedLessonGlobalIndex = selectedLesson ? modules.flatMap(m => m.lessons).findIndex(l => l.id === selectedLesson.id) : -1;
   const isSelectedLessonLocked = accessType === "trial" && selectedLessonGlobalIndex >= 2;
+
+  const selectedModuleOrder = selectedLesson ? modules.find(m => m.lessons.includes(selectedLesson))?.order || "" : "";
 
   if (loading) {
     return (
@@ -323,10 +292,9 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                   <X className="w-4 h-4 text-gray-500" />
                 </button>
               </div>
-              {/* Progress */}
               <div className="mt-4">
                 <div className="flex items-center justify-between text-[11px] text-gray-500 font-bold mb-1.5 uppercase tracking-wide">
-                  <span>Progreso de estudio</span>
+                  <span>Progreso</span>
                   <span className="text-brand-blue">{progress}%</span>
                 </div>
                 <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
@@ -365,7 +333,6 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                             isSelected ? "bg-blue-50" : ""
                           }`}
                         >
-                          {/* Number / Check / Lock Icon */}
                           <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-none mt-0.5 text-[11px] font-bold transition-colors ${
                             isCompleted
                               ? "bg-emerald-500 text-white"
@@ -414,30 +381,6 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                 </div>
               ))}
             </div>
-
-            {/* Notes */}
-            <div className="flex-none p-4 border-t border-gray-100 bg-gray-50/50">
-              <h4 className="text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                <StickyNote className="w-3.5 h-3.5 text-brand-blue" /> Mis apuntes
-              </h4>
-              {selectedLesson ? (
-                <>
-                  <textarea
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                    placeholder="Escribe tus apuntes de esta clase..."
-                    className="w-full min-h-[80px] max-h-[160px] resize-y rounded-lg border border-gray-200 bg-white p-2.5 text-xs text-gray-700 placeholder:text-gray-400 focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 outline-none transition-all"
-                  />
-                  <div className="mt-1.5 flex items-center justify-between">
-                    <span className="text-[10px] text-gray-400">
-                      {notesSaving ? "Guardando..." : notes ? "Guardado" : ""}
-                    </span>
-                  </div>
-                </>
-              ) : (
-                <p className="text-[11px] text-gray-400">Selecciona una clase para tomar apuntes.</p>
-              )}
-            </div>
           </motion.aside>
         )}
       </AnimatePresence>
@@ -446,8 +389,8 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
       <div className="flex-1 flex flex-col min-w-0 h-full bg-surface-1 relative z-0">
 
         {/* Top Bar */}
-        <div className="flex-none h-16 border-b border-gray-200 flex items-center justify-between px-6 bg-white/80 backdrop-blur-md">
-          <div className="flex items-center gap-3">
+        <div className="flex-none h-14 border-b border-gray-200 flex items-center justify-between px-5 bg-white">
+          <div className="flex items-center gap-3 min-w-0">
             {!sidebarOpen && (
               <button
                 onClick={() => setSidebarOpen(true)}
@@ -458,29 +401,28 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             )}
             <button
               onClick={onBack}
-              className="flex items-center gap-1.5 text-gray-500 hover:text-brand-blue text-xs font-bold transition-colors border-0 bg-transparent cursor-pointer"
+              className="flex items-center gap-1 text-gray-500 hover:text-brand-blue text-xs font-bold transition-colors border-0 bg-transparent cursor-pointer"
             >
               <ChevronLeft className="w-3.5 h-3.5" /> Volver a cursos
             </button>
-            <div className="h-4 w-px bg-gray-200 mx-1" />
-            <div>
+            <div className="h-4 w-px bg-gray-200" />
+            <div className="min-w-0">
               <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                {selectedLesson ? `Módulo ${modules.find(m => m.lessons.includes(selectedLesson))?.order || ''} • Clase ${selectedLesson.lesson_order}` : ''}
+                {selectedLesson ? `Módulo ${selectedModuleOrder} · Clase ${selectedLesson.lesson_order}` : ''}
               </div>
-              <h2 className="text-sm font-bold text-gray-900 line-clamp-1 mt-0.5">
+              <h2 className="text-sm font-bold text-gray-900 line-clamp-1">
                 {selectedLesson?.title || "Selecciona una clase"}
               </h2>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            {/* Super Clase Toggle */}
+          <div className="flex items-center gap-2.5 flex-none">
             {selectedLesson?.superclass_language && (
               <button
                 onClick={() => setSuperClaseActive(!superClaseActive)}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-[0.98] cursor-pointer border-0 ${
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-all active:scale-[0.98] cursor-pointer border ${
                   superClaseActive
-                    ? "bg-violet-600 text-white shadow-lg shadow-violet-600/20"
-                    : "bg-violet-50 text-violet-600 hover:bg-violet-100 border border-violet-100"
+                    ? "bg-violet-600 text-white border-violet-600 shadow-sm"
+                    : "bg-white text-violet-600 hover:bg-violet-50 border-violet-200"
                 }`}
               >
                 <Sparkles className="w-3.5 h-3.5" />
@@ -490,10 +432,10 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             {selectedLesson && (
               <button
                 onClick={() => toggleComplete(selectedLesson.id)}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-[0.98] cursor-pointer border-0 ${
+                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-all active:scale-[0.98] cursor-pointer border ${
                   completedLessons.has(selectedLesson.id)
-                    ? "bg-emerald-500 text-white hover:bg-emerald-600"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    ? "bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600"
+                    : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
                 }`}
               >
                 <CheckCircle className="w-3.5 h-3.5" />
@@ -521,7 +463,6 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
 
               {/* IDE + Terminal (Left side) */}
               <div className="flex-1 flex flex-col h-full bg-white min-h-0 border-r border-gray-200">
-                {/* IDE Header */}
                 <div className="flex-none h-12 bg-white border-b border-gray-200 flex items-center justify-between px-4">
                   <div className="flex items-center gap-2">
                     <Code className="w-4 h-4 text-violet-600" />
@@ -540,14 +481,13 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                     <button
                       onClick={executeCode}
                       disabled={isExecuting}
-                      className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[11px] font-black transition-colors disabled:opacity-50 cursor-pointer border-0 shadow-md shadow-emerald-500/10"
+                      className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[11px] font-black transition-colors disabled:opacity-50 cursor-pointer border-0 shadow-sm"
                     >
                       {isExecuting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <PlayCircle className="w-3.5 h-3.5" />}
                       Ejecutar
                     </button>
                   </div>
                 </div>
-                {/* Editor */}
                 <div className="flex-1 min-h-0">
                   <Editor
                     height="100%"
@@ -564,7 +504,6 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                     }}
                   />
                 </div>
-                {/* Terminal */}
                 <div className="flex-none h-44 bg-slate-900 border-t border-gray-200">
                   <div className="h-8 bg-slate-950 flex items-center px-4 border-b border-slate-800">
                     <Terminal className="w-3.5 h-3.5 text-gray-400 mr-2" />
@@ -584,7 +523,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
               </div>
 
               {/* Video PiP (Right side) */}
-              <div className="flex-none w-[380px] flex flex-col border-l border-gray-200 bg-white">
+              <div className="flex-none w-[400px] flex flex-col border-l border-gray-200 bg-white">
                 <div className="relative w-full pb-[56.25%] flex-none bg-black">
                   {videoId ? (
                     <iframe
@@ -600,56 +539,58 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                   )}
                 </div>
                 <div className="flex-1 overflow-y-auto p-5 bg-surface-0">
-                  <h4 className="text-xs font-bold text-gray-900 mb-3 flex items-center gap-2 border-b border-gray-100 pb-2">
-                    <BookOpen className="w-4 h-4 text-brand-blue" /> Notas de la Clase
+                  <h4 className="text-xs font-bold text-gray-900 mb-2">
+                    {selectedLesson.title}
                   </h4>
-                  <p className="text-xs text-gray-500 leading-relaxed font-medium">
-                    Mira el video de la clase a tu ritmo mientras practicas los conceptos vistos escribiendo código en el editor interactivo de la izquierda. Cualquier código escrito se autoguarda automáticamente.
+                  <p className="text-xs text-gray-500 leading-relaxed">
+                    Practica los conceptos mientras ves la clase. Tu código se guarda automáticamente.
                   </p>
                 </div>
               </div>
             </div>
           ) : (
 
-            /* ── NORMAL MODE: Video full width ── */
-            <div className="flex flex-col h-full overflow-y-auto p-6">
-              {/* Video Player */}
-              <div className="relative w-full aspect-video bg-black shadow-lg rounded-lg overflow-hidden">
-                {isSelectedLessonLocked ? (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 overflow-hidden">
-                    <Lock className="w-16 h-16 text-blue-400 mb-4 relative z-10 animate-bounce" />
-                    <h2 className="text-2xl font-black text-white relative z-10 mb-2">Clase Bloqueada (Periodo de Prueba)</h2>
-                    <p className="text-slate-300 text-sm max-w-md text-center relative z-10 mb-6 font-medium leading-relaxed">
-                      Estás disfrutando de tus 7 días de prueba. Para desbloquear el resto de las clases y todas las herramientas Premium, puedes saltarte el periodo de prueba y acceder al 100% de la plataforma ahora.
-                    </p>
-                    <button
-                      onClick={() => window.location.href = `/api/mercadopago/upgrade-trial?returnTo=/cursos/`}
-                      className="relative z-10 px-6 py-3 bg-gradient-to-r from-brand-blue to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-xl shadow-blue-500/20 flex items-center gap-2 transform transition-all hover:scale-105 cursor-pointer border-0"
-                    >
-                      <Sparkles className="w-4 h-4" /> Desbloquear Curso Completo
-                    </button>
-                  </div>
-                ) : videoId ? (
-                  <iframe
-                    className="absolute inset-0 w-full h-full"
-                    src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 gap-3">
-                    <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center">
-                      <Play className="w-8 h-8 text-gray-500" />
+            /* ── NORMAL MODE: Video fills available height (YouTube-like) ── */
+            <div className="flex flex-col h-full">
+              {/* Video Stage — centers the 16:9 video and maximizes its height */}
+              <div className="flex-none flex justify-center items-center bg-black px-6 pt-6">
+                <div className="relative w-full max-w-[1280px] aspect-video bg-black shadow-xl rounded-lg overflow-hidden">
+                  {isSelectedLessonLocked ? (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 overflow-hidden">
+                      <Lock className="w-16 h-16 text-blue-400 mb-4 relative z-10 animate-bounce" />
+                      <h2 className="text-2xl font-black text-white relative z-10 mb-2 text-center px-6">Clase Bloqueada (Periodo de Prueba)</h2>
+                      <p className="text-slate-300 text-sm max-w-md text-center relative z-10 mb-6 font-medium leading-relaxed px-6">
+                        Estás disfrutando de tus 7 días de prueba. Para desbloquear el resto de las clases y todas las herramientas Premium, puedes saltarte el periodo de prueba y acceder al 100% de la plataforma ahora.
+                      </p>
+                      <button
+                        onClick={() => window.location.href = `/api/mercadopago/upgrade-trial?returnTo=/cursos/`}
+                        className="relative z-10 px-6 py-3 bg-gradient-to-r from-brand-blue to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-lg shadow-xl flex items-center gap-2 transform transition-all hover:scale-105 cursor-pointer border-0"
+                      >
+                        <Sparkles className="w-4 h-4" /> Desbloquear Curso Completo
+                      </button>
                     </div>
-                    <p className="text-gray-400 text-sm font-medium">Video no disponible</p>
-                  </div>
-                )}
+                  ) : videoId ? (
+                    <iframe
+                      className="absolute inset-0 w-full h-full"
+                      src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 gap-3">
+                      <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center">
+                        <Play className="w-8 h-8 text-gray-500" />
+                      </div>
+                      <p className="text-gray-400 text-sm font-medium">Video no disponible</p>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              {/* Lesson Info */}
-              <div className="flex-1">
-                <div className="py-8 max-w-4xl mx-auto">
-                  <div className="flex items-center gap-3 mb-4">
+              {/* Lesson Info — scrollable below the video */}
+              <div className="flex-1 min-h-0 overflow-y-auto">
+                <div className="max-w-[1280px] mx-auto px-6 lg:px-8 py-6">
+                  <div className="flex flex-wrap items-center gap-2.5 mb-3">
                     <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-md bg-blue-50 text-brand-blue uppercase tracking-wider border border-blue-100">
                       Clase {selectedLesson.lesson_order}
                     </span>
@@ -664,10 +605,10 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                     )}
                   </div>
 
-                  <h2 className="font-display font-black text-2xl sm:text-3xl lg:text-4xl tracking-tight text-gray-900 mb-4">
+                  <h1 className="font-display font-black text-2xl sm:text-3xl tracking-tight text-gray-900 mb-3">
                     {selectedLesson.title}
-                  </h2>
-                  <p className="text-base text-gray-600 leading-relaxed font-medium">
+                  </h1>
+                  <p className="text-[15px] text-gray-600 leading-relaxed max-w-3xl">
                     Mira la clase completa y practica los conceptos aprendidos.
                     {selectedLesson.superclass_language && (
                       <> Activa el modo <strong className="text-violet-600">Super Clase</strong> en la barra superior para interactuar con el Playground de código {selectedLesson.superclass_language.toUpperCase()} mientras ves la clase.</>
@@ -675,8 +616,8 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                   </p>
 
                   {/* Next Lessons Preview */}
-                  <div className="mt-10 pt-8 border-t border-gray-100">
-                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Siguientes clases</h3>
+                  <div className="mt-8 pt-6 border-t border-gray-100">
+                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Siguientes clases</h3>
                     <div className="divide-y divide-gray-100">
                       {modules.flatMap(m => m.lessons)
                         .filter(l => {
@@ -689,18 +630,18 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                           <motion.button
                             key={l.id}
                             onClick={() => handleSelectLesson(l)}
-                            whileHover={{ scale: 1.005, backgroundColor: "rgba(249, 250, 251, 1)" }}
+                            whileHover={{ backgroundColor: "rgba(249, 250, 251, 1)" }}
                             whileTap={{ scale: 0.995 }}
-                            className="w-full flex items-center gap-4 p-4 transition-all text-left group cursor-pointer border-0 bg-transparent rounded-xl"
+                            className="w-full flex items-center gap-4 p-3.5 transition-all text-left group cursor-pointer border-0 bg-transparent rounded-xl"
                           >
-                            <div className="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                            <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 group-hover:bg-brand-blue group-hover:text-white transition-colors">
                               {l.lesson_order}
                             </div>
-                            <div className="flex-1">
-                              <div className="text-sm font-bold text-gray-900 group-hover:text-brand-blue transition-colors">{l.title}</div>
+                            <div className="flex-1 min-w-0">
+                              <div className="text-sm font-bold text-gray-900 group-hover:text-brand-blue transition-colors line-clamp-1">{l.title}</div>
                               <div className="text-[11px] text-gray-400 mt-0.5">{l.duration_minutes || 0} min</div>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-brand-blue transition-colors" />
+                            <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-brand-blue transition-colors flex-none" />
                           </motion.button>
                         ))}
                     </div>
