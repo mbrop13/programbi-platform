@@ -3,6 +3,7 @@
 import { useMemo, useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { Check, Copy } from "lucide-react";
 import { useCanvas } from "./CanvasStore";
 
 /**
@@ -113,9 +114,11 @@ function CopyButton({ code }: { code: string }) {
   return (
     <button
       onClick={handle}
-      className="absolute right-3 top-3 rounded-lg border border-border bg-surface-0/90 px-2 py-1 text-[11px] text-text-muted shadow-premium backdrop-blur transition-colors hover:bg-surface-2 hover:text-text-primary"
+      aria-label={copied ? "Código copiado" : "Copiar código"}
+      className="absolute right-3 top-3 flex items-center gap-1 rounded-lg border border-border bg-surface-0/90 px-2 py-1 text-[11px] text-text-muted shadow-float backdrop-blur transition-colors hover:bg-surface-2 hover:text-text-primary"
     >
-      {copied ? "✓ Copiado" : "Copiar"}
+      {copied ? <Check className="h-3 w-3 text-accent-emerald" aria-hidden /> : <Copy className="h-3 w-3" aria-hidden />}
+      {copied ? "Copiado" : "Copiar"}
     </button>
   );
 }

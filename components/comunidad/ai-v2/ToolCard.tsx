@@ -29,6 +29,15 @@ function humanizeToolName(type: string): string {
     .replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
+/** Hostname seguro: no lanza si la URL está malformada. */
+function safeHostname(url: string): string {
+  try {
+    return new URL(url).hostname;
+  } catch {
+    return url;
+  }
+}
+
 function StateBadge({ state }: { state?: string }) {
   const map: Record<
     string,
@@ -42,7 +51,7 @@ function StateBadge({ state }: { state?: string }) {
     "input-available": {
       label: "En curso",
       icon: Clock,
-      className: "text-amber-500",
+      className: "text-accent-yellow",
     },
     "output-available": {
       label: "Completado",
@@ -52,7 +61,7 @@ function StateBadge({ state }: { state?: string }) {
     "output-error": {
       label: "Error",
       icon: XCircle,
-      className: "text-red-500",
+      className: "text-destructive",
     },
   };
   const cfg = map[state ?? "input-streaming"] ?? map["input-streaming"];
@@ -73,7 +82,7 @@ function WebSearchOutput({ output }: { output: unknown }) {
     results?: { title: string; url: string; content: string }[];
   };
   if (o.error) {
-    return <p className="text-[12px] text-red-500">{o.error}</p>;
+    return <p className="text-[12px] text-destructive">{o.error}</p>;
   }
   const results = o.results ?? [];
   return (
@@ -96,7 +105,7 @@ function WebSearchOutput({ output }: { output: unknown }) {
                   <span className="font-medium text-brand-blue hover:underline">
                     {r.title}
                   </span>
-                  <span className="ml-1 text-text-faint">— {new URL(r.url).hostname}</span>
+                  <span className="ml-1 text-text-faint">— {safeHostname(r.url)}</span>
                 </span>
               </a>
             </li>
@@ -117,6 +126,8 @@ export function ToolCard({ part }: ToolCardProps) {
     <div className="my-2 overflow-hidden rounded-lg border border-border bg-surface-2/30">
       <button
         onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls="tool-output"
         className="flex w-full items-center gap-2 px-3 py-1.5 text-left transition-colors hover:bg-surface-2/50"
       >
         {isWebSearch ? (
@@ -150,9 +161,9 @@ export function ToolCard({ part }: ToolCardProps) {
             transition={{ duration: 0.2, ease: "easeInOut" }}
             className="overflow-hidden border-t border-border"
           >
-            <div className="px-3 py-2">
+            <div id="tool-output" className="px-3 py-2">
               {part.errorText && (
-                <p className="text-[12px] text-red-500">{part.errorText}</p>
+                <p className="text-[12px] text-destructive">{part.errorText}</p>
               )}
               {part.output != null &&
                 (isWebSearch ? (

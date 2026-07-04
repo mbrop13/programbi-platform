@@ -25,17 +25,13 @@ import {
   type AiChat,
 } from "@/lib/supabase/ai";
 import { cn } from "@/lib/utils";
+import { FAVICON_URL, MODEL_KEY } from "./constants";
 
 interface ChatShellProps {
   isRestricted?: boolean;
   userName?: string;
   avatarUrl?: string | null;
 }
-
-const MODEL_KEY = "programbi_chat_model";
-
-/** Favicon (logo de la esquina del rail colapsado). */
-const FAVICON_URL = "https://mail.programbi.com/uploads/freepik_2817100557.png";
 
 export default function ChatShell({ isRestricted = false, userName, avatarUrl }: ChatShellProps) {
   const isPremium = !isRestricted;

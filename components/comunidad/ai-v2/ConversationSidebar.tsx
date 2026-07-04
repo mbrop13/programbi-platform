@@ -7,6 +7,7 @@ import {
   Loader2,
   MessageSquare,
   MessageSquarePlus,
+  Pencil,
   Pin,
   Search,
   Trash2,
@@ -15,9 +16,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { AiChat } from "@/lib/supabase/ai";
 import { cn } from "@/lib/utils";
-
-/** Favicon de la página (logo de la esquina superior del sidebar). */
-const FAVICON_URL = "https://mail.programbi.com/uploads/freepik_2817100557.png";
+import { FAVICON_URL } from "./constants";
 
 interface ConversationSidebarProps {
   chats: AiChat[];
@@ -123,24 +122,41 @@ export function ConversationSidebar({
     return (
       <div
         key={c.id}
+        role="button"
+        tabIndex={isEditing ? -1 : 0}
+        aria-current={isActive ? "true" : undefined}
+        aria-label={`Conversación: ${c.title || "Sin título"}`}
         onClick={(e) => {
           e.stopPropagation();
           if (!isEditing) onSelect(c.id);
+        }}
+        onKeyDown={(e) => {
+          if (isEditing) return;
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onSelect(c.id);
+          }
         }}
         onDoubleClick={(e) => {
           e.stopPropagation();
           startRename(c);
         }}
         className={cn(
-          "group flex items-center gap-2 rounded-lg px-2 py-2 text-sm transition-colors duration-150 cursor-pointer",
+          "group flex items-center gap-2 rounded-lg px-2 py-2 text-sm transition-colors duration-150 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/40",
           isActive
             ? "bg-surface-2 text-text-primary"
             : "text-text-secondary hover:bg-surface-2/60 hover:text-text-primary"
         )}
       >
-        <MessageSquare className="h-3.5 w-3.5 shrink-0 text-text-faint" />
+        <MessageSquare className="h-3.5 w-3.5 shrink-0 text-text-faint" aria-hidden />
+        {isEditing ? (
+          <label htmlFor={`rename-${c.id}`} className="sr-only">
+            Renombrar conversación
+          </label>
+        ) : null}
         {isEditing ? (
           <input
+            id={`rename-${c.id}`}
             type="text"
             value={editTitle}
             onChange={(e) => setEditTitle(e.target.value)}
@@ -154,45 +170,48 @@ export function ConversationSidebar({
             className="min-w-0 flex-1 rounded bg-surface-1 px-1 py-0.5 text-sm outline-none ring-1 ring-brand-blue/40"
           />
         ) : (
-          <span
-            className="flex-1 truncate text-sm"
-            style={{
-              WebkitMaskImage:
-                "linear-gradient(to right, black calc(100% - 20px), transparent)",
-              maskImage:
-                "linear-gradient(to right, black calc(100% - 20px), transparent)",
-            }}
-          >
+          <span className="flex-1 truncate text-sm">
             {c.title || "Sin título"}
           </span>
         )}
 
-        {/* Acciones (hover) */}
+        {/* Acciones: visibles en hover, foco y táctil */}
         {!isEditing && (
-          <div className="flex shrink-0 items-center opacity-0 transition-opacity group-hover:opacity-100">
+          <div className="touch-visible flex shrink-0 items-center opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+            <button
+              onClick={(e) => { e.stopPropagation(); startRename(c); }}
+              aria-label="Renombrar conversación"
+              className="rounded p-1 text-text-faint hover:bg-surface-3 hover:text-text-secondary"
+              title="Renombrar"
+            >
+              <Pencil className="h-3 w-3" aria-hidden />
+            </button>
             <button
               onClick={(e) => { e.stopPropagation(); onPin(c.id); }}
+              aria-label={c.pinned ? "Desfijar conversación" : "Fijar conversación"}
               className={cn(
                 "rounded p-1 hover:bg-surface-3",
-                c.pinned ? "text-amber-500" : "text-text-faint hover:text-text-secondary"
+                c.pinned ? "text-accent-yellow" : "text-text-faint hover:text-text-secondary"
               )}
               title={c.pinned ? "Desfijar" : "Fijar"}
             >
-              <Pin className="h-3 w-3" />
+              <Pin className="h-3 w-3" aria-hidden />
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onArchive(c.id); }}
+              aria-label="Archivar conversación"
               className="rounded p-1 text-text-faint hover:bg-surface-3 hover:text-text-secondary"
               title="Archivar"
             >
-              <Archive className="h-3 w-3" />
+              <Archive className="h-3 w-3" aria-hidden />
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(c.id); }}
-              className="rounded p-1 text-text-faint hover:bg-surface-3 hover:text-red-500"
+              aria-label="Eliminar conversación"
+              className="rounded p-1 text-text-faint hover:bg-surface-3 hover:text-destructive"
               title="Eliminar"
             >
-              <Trash2 className="h-3 w-3" />
+              <Trash2 className="h-3 w-3" aria-hidden />
             </button>
           </div>
         )}
@@ -205,6 +224,7 @@ export function ConversationSidebar({
       {/* Esquina superior: logo de la marca (clic para cerrar) */}
       <button
         onClick={onClose}
+        aria-label="Cerrar historial"
         className="flex h-14 shrink-0 items-center justify-center border-b border-border px-4 transition-colors hover:bg-surface-2/50"
         title="Cerrar historial"
       >
@@ -225,21 +245,25 @@ export function ConversationSidebar({
           href="/comunidad/inicio"
           className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text-primary"
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4" aria-hidden />
           Volver a la comunidad
         </Link>
         <button
           onClick={onNew}
-          className="flex w-full items-center gap-2 rounded-xl border border-border bg-surface-0 px-3 py-2 text-sm font-medium text-text-primary shadow-premium transition-all duration-150 hover:border-brand-blue/30 hover:bg-surface-2/40"
+          className="flex w-full items-center gap-2 rounded-xl border border-border bg-surface-0 px-3 py-2 text-sm font-medium text-text-primary shadow-float transition-all duration-150 hover:border-brand-blue/30 hover:bg-surface-2/40"
         >
-          <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-gradient-to-br from-brand-blue to-blue-600 text-white">
-            <MessageSquarePlus className="h-3.5 w-3.5" />
+          <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-gradient-to-br from-brand-blue to-brand-blue-dark text-white">
+            <MessageSquarePlus className="h-3.5 w-3.5" aria-hidden />
           </span>
           Nuevo chat
         </button>
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-faint" />
+          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-faint" aria-hidden />
+          <label htmlFor="chat-search" className="sr-only">
+            Buscar conversaciones
+          </label>
           <input
+            id="chat-search"
             type="text"
             placeholder="Buscar…"
             value={search}
@@ -249,14 +273,11 @@ export function ConversationSidebar({
         </div>
       </div>
 
-      {/* Lista (clic en espacio vacío cierra el sidebar) */}
-      <div
-        className="scrollbar-hide flex-1 overflow-y-auto px-2 pb-3"
-        onClick={onClose}
-      >
+      {/* Lista de conversaciones */}
+      <div className="scrollbar-hide flex-1 overflow-y-auto px-2 pb-3">
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 className="h-4 w-4 animate-spin text-text-faint" />
+            <Loader2 className="h-4 w-4 animate-spin text-text-faint" aria-hidden />
           </div>
         ) : filtered.length === 0 ? (
           <p className="py-8 text-center text-xs text-text-faint">
@@ -284,18 +305,22 @@ export function ConversationSidebar({
         )}
       </div>
 
-      {/* Footer: avatar + nombre "Miembro" */}
+      {/* Footer: avatar + nombre (enlaza al perfil) */}
       <div className="shrink-0 border-t border-border px-3 py-3">
-        <div className="flex items-center gap-2.5 rounded-lg px-1 py-1 transition-colors hover:bg-surface-2/50">
-          <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-brand-blue to-blue-600 ring-2 ring-surface-0 flex items-center justify-center text-white font-bold text-xs">
+        <Link
+          href="/comunidad/perfil"
+          className="flex items-center gap-2.5 rounded-lg px-1 py-1 no-underline transition-colors hover:bg-surface-2/50"
+        >
+          <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-brand-blue to-brand-blue-dark ring-2 ring-surface-0 flex items-center justify-center text-white font-bold text-xs">
             {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={avatarUrl}
                 alt={displayName}
                 className="h-full w-full object-cover"
               />
             ) : (
-              <span>{initials}</span>
+              <span aria-hidden>{initials}</span>
             )}
           </div>
           <div className="min-w-0 flex-1">
@@ -304,7 +329,7 @@ export function ConversationSidebar({
             </div>
             <div className="text-[11px] text-text-muted">Miembro</div>
           </div>
-        </div>
+        </Link>
       </div>
     </div>
   );

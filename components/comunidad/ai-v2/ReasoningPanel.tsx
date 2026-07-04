@@ -29,6 +29,8 @@ export function ReasoningPanel({ text, isStreaming }: ReasoningPanelProps) {
     <div className="my-2 rounded-lg border border-border bg-surface-2/40">
       <button
         onClick={() => setManualOpen(!open)}
+        aria-expanded={open}
+        aria-controls="reasoning-content"
         className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-xs font-medium text-text-muted transition-colors hover:text-text-secondary"
       >
         <Brain className={cn("h-3.5 w-3.5", isStreaming && "text-accent-purple")} />
@@ -61,7 +63,7 @@ export function ReasoningPanel({ text, isStreaming }: ReasoningPanelProps) {
             transition={{ duration: 0.2, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="relative">
+            <div id="reasoning-content" className="relative">
               <div
                 ref={scrollRef}
                 className={cn(
@@ -72,7 +74,7 @@ export function ReasoningPanel({ text, isStreaming }: ReasoningPanelProps) {
                 {text || "…"}
               </div>
               {isStreaming && (
-                <div className="pointer-events-none absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-surface-1 to-transparent dark:from-surface-0" />
+                <div className="pointer-events-none absolute top-0 left-0 right-0 h-6 bg-gradient-to-b from-surface-1 to-transparent" />
               )}
             </div>
           </motion.div>

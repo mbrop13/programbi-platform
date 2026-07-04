@@ -3,14 +3,12 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
+import { LOGO_URL } from "./constants";
 
 interface LandingProps {
   /** Composer (u otro contenido) que se incrusta debajo del logo */
   children?: ReactNode;
 }
-
-const LOGO_URL =
-  "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974";
 
 /**
  * Estado vacío: únicamente el logo de la empresa en grande (sin tarjeta)
@@ -18,37 +16,44 @@ const LOGO_URL =
  */
 export function Landing({ children }: LandingProps) {
   return (
-    <div className="relative flex flex-1 flex-col items-center justify-center gap-8 overflow-y-auto px-4 py-10">
-      {/* Glow de fondo */}
-      <div className="pointer-events-none absolute top-1/3 left-1/2 h-72 w-72 -translate-x-1/2 rounded-full bg-brand-blue/10 blur-3xl" />
+    <div className="relative flex-1 overflow-y-auto">
+      {/* min-h-full + justify-center evita el clipping del topo cuando hay scroll */}
+      <div className="flex min-h-full flex-col items-center justify-center gap-8 px-4 py-10">
+        {/* Glow de fondo trackeando el logo */}
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
+            <div className="h-56 w-56 rounded-full bg-brand-blue/10 blur-3xl" />
+          </div>
 
-      {/* Logo grande */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: "easeOut" }}
-      >
-        <Image
-          src={LOGO_URL}
-          alt="ProgramBI"
-          width={220}
-          height={220}
-          className="h-52 w-52 object-contain"
-          priority
-        />
-      </motion.div>
+          {/* Logo grande */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+          >
+            <Image
+              src={LOGO_URL}
+              alt="ProgramBI"
+              width={220}
+              height={220}
+              className="h-52 w-52 object-contain"
+              priority
+            />
+          </motion.div>
+        </div>
 
-      {/* Composer */}
-      {children && (
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4, delay: 0.08, ease: "easeOut" }}
-          className="relative w-full max-w-2xl"
-        >
-          {children}
-        </motion.div>
-      )}
+        {/* Composer */}
+        {children && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.08, ease: "easeOut" }}
+            className="relative w-full max-w-3xl"
+          >
+            {children}
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 }

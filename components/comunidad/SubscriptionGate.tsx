@@ -74,7 +74,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
     }
   };
   return (
-    <div id={heroOnly ? "hero" : "pricing"} className={`w-full relative isolate flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-24 sm:pt-36 pb-24 sm:pb-36' : 'pt-6 pb-28'}`}>
+    <div id={heroOnly ? "hero" : "pricing"} className={`w-full relative isolate flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-24 sm:pt-36 pb-6 sm:pb-8' : 'pt-6 pb-28'}`}>
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
@@ -107,7 +107,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
         )
       )}
 
-      <div className="max-w-4xl text-center mb-12 relative z-10">
+      <div className={`max-w-4xl text-center relative z-10 ${heroOnly ? 'mb-0' : 'mb-12'}`}>
         {!heroOnly && (
           <motion.div
              initial={{ opacity: 0, scale: 0.9 }}
@@ -170,7 +170,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="flex flex-wrap items-center justify-center gap-4 mb-10 relative z-20"
+            className="flex flex-wrap items-center justify-center gap-4 mb-0 relative z-20"
           >
             <a
               href="#pricing"

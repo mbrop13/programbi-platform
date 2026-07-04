@@ -1,17 +1,16 @@
 "use client";
 
 import { useMemo } from "react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import DOMPurify from "dompurify";
 import { useCanvas } from "./CanvasStore";
+import { MarkdownRenderer } from "../MarkdownRenderer";
 
 /**
  * Vista previa en vivo del archivo activo del Canvas.
  *
  * - HTML: renderizado en <iframe> sandbox (allow-scripts, sin same-origin).
  * - SVG:  HTML sanitizado con DOMPurify en un contenedor centrado.
- * - MD:   ReactMarkdown + clase `prose-chat`.
+ * - MD:   MarkdownRenderer (mismo renderizado que en el chat).
  *
  * Sólo se habilita la pestaña de preview para lenguajes soportados.
  */
@@ -33,12 +32,12 @@ export function CanvasPreview() {
 
   if (language === "html") {
     return (
-      <div className="canvas-preview-bg h-full">
+      <div className="canvas-preview-bg h-full" role="region" aria-label="Vista previa HTML">
         <iframe
-          title="preview"
+          title="Vista previa HTML"
           srcDoc={code}
           sandbox="allow-scripts"
-          className="h-full w-full border-0 bg-white"
+          className="h-full w-full border-0 bg-surface-0"
         />
       </div>
     );
@@ -46,7 +45,11 @@ export function CanvasPreview() {
 
   if (language === "svg") {
     return (
-      <div className="canvas-preview-bg flex h-full items-center justify-center p-6">
+      <div
+        className="canvas-preview-bg flex h-full items-center justify-center p-6"
+        role="region"
+        aria-label="Vista previa SVG"
+      >
         <div
           className="max-h-full max-w-full [&>svg]:max-h-[70vh] [&>svg]:max-w-full"
           dangerouslySetInnerHTML={{ __html: sanitizedSvg }}
@@ -55,11 +58,15 @@ export function CanvasPreview() {
     );
   }
 
-  // markdown
+  // markdown — mismo renderizado que en el chat
   return (
-    <div className="canvas-preview-bg h-full overflow-auto p-6">
-      <div className="prose-chat mx-auto max-w-3xl">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{code}</ReactMarkdown>
+    <div
+      className="canvas-preview-bg h-full overflow-auto p-6"
+      role="region"
+      aria-label="Vista previa Markdown"
+    >
+      <div className="mx-auto max-w-3xl">
+        <MarkdownRenderer content={code} />
       </div>
     </div>
   );

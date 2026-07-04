@@ -2,7 +2,7 @@
 
 import { useState, memo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneLight, oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Check, Copy, Maximize2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useCanvas } from "../canvas/CanvasStore";
@@ -68,6 +68,8 @@ function CodeBlockBase({ code, language, className }: CodeBlockProps) {
 
   return (
     <div
+      role="region"
+      aria-label={`Bloque de código ${label}`}
       className={cn(
         "group relative my-4 overflow-hidden rounded-xl border border-border bg-surface-0 shadow-premium",
         className
@@ -81,65 +83,48 @@ function CodeBlockBase({ code, language, className }: CodeBlockProps) {
         <div className="flex items-center gap-0.5">
           <button
             onClick={handleOpenCanvas}
+            aria-label="Abrir en editor Canvas"
             className="flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] text-text-muted transition-colors hover:bg-surface-3 hover:text-brand-blue"
             title="Abrir en editor Canvas"
           >
-            <Maximize2 className="h-3 w-3" /> Canvas
+            <Maximize2 className="h-3 w-3" aria-hidden /> Abrir en Canvas
           </button>
           <button
             onClick={handleCopy}
+            aria-label={copied ? "Código copiado" : "Copiar código"}
             className="flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] text-text-muted transition-colors hover:bg-surface-3 hover:text-text-primary"
             title="Copiar código"
           >
             {copied ? (
               <>
-                <Check className="h-3 w-3 text-accent-emerald" /> Copiado
+                <Check className="h-3 w-3 text-accent-emerald" aria-hidden /> Copiado
               </>
             ) : (
               <>
-                <Copy className="h-3 w-3" /> Copiar
+                <Copy className="h-3 w-3" aria-hidden /> Copiar
               </>
             )}
           </button>
         </div>
       </div>
 
-      {/* Code: dual light/dark via CSS show/hide */}
-      <div className="relative">
-        <div className="dark:hidden">
-          <SyntaxHighlighter
-            language={lang}
-            style={oneLight}
-            customStyle={{
-              margin: 0,
-              background: "transparent",
-              padding: "0.875rem 1rem",
-              fontSize: "0.8125rem",
-              lineHeight: 1.6,
-            }}
-            codeTagProps={{ style: { fontFamily: "var(--font-mono), monospace" } }}
-            wrapLongLines={false}
-          >
-            {code}
-          </SyntaxHighlighter>
-        </div>
-        <div className="hidden dark:block">
-          <SyntaxHighlighter
-            language={lang}
-            style={oneDark}
-            customStyle={{
-              margin: 0,
-              background: "transparent",
-              padding: "0.875rem 1rem",
-              fontSize: "0.8125rem",
-              lineHeight: 1.6,
-            }}
-            codeTagProps={{ style: { fontFamily: "var(--font-mono), monospace" } }}
-            wrapLongLines={false}
-          >
-            {code}
-          </SyntaxHighlighter>
-        </div>
+      {/* Code: scroll horizontal para líneas largas (light-only, sin dual Prism) */}
+      <div className="overflow-x-auto">
+        <SyntaxHighlighter
+          language={lang}
+          style={oneLight}
+          customStyle={{
+            margin: 0,
+            background: "transparent",
+            padding: "0.875rem 1rem",
+            fontSize: "0.8125rem",
+            lineHeight: 1.6,
+          }}
+          codeTagProps={{ style: { fontFamily: "var(--font-mono), monospace" } }}
+          wrapLongLines={false}
+        >
+          {code}
+        </SyntaxHighlighter>
       </div>
     </div>
   );
