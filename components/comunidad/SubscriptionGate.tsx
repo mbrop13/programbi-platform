@@ -73,35 +73,35 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
     }
   };
   return (
-    <div id={heroOnly ? "hero" : "pricing"} className={`w-full relative flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-6 pb-12' : 'pt-6 pb-28'} bg-slate-50`}>
+    <div id={heroOnly ? "hero" : "pricing"} className={`w-full relative flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-6 pb-12' : 'pt-6 pb-28'}`}>
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         defaultTab="register"
       />
 
-      {/* Background Video (Hero Only) or Engineering Grid & Orbs (Pricing Section) */}
+      {/* Background Video (Hero Only) or Engineering Grid & Orbs (Pricing Section) - Placed at -z-20 behind everything */}
       {heroOnly ? (
-        <div className="absolute inset-0 -z-10 w-full h-full overflow-hidden">
+        <div className="absolute inset-0 -z-20 w-full h-full bg-slate-50 overflow-hidden">
           <video
             autoPlay
             loop
             muted
             playsInline
-            className="w-full h-full object-cover opacity-25 pointer-events-none"
+            className="w-full h-full object-cover opacity-[0.55] pointer-events-none"
           >
             <source src="https://mail.programbi.com/uploads/que_gire_lentamente_1080p_202607032105.mp4" type="video/mp4" />
           </video>
           {/* Smooth overlay for readability and fade into the next section */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/80 to-slate-50 backdrop-blur-[0.5px]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white/80 to-slate-50 backdrop-blur-[0.5px]" />
         </div>
       ) : (
-        <>
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35 pointer-events-none -z-10" />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-b from-blue-400/20 to-indigo-500/10 rounded-full blur-[80px] -z-10 pointer-events-none" />
-          <div className="absolute top-[20%] right-[-10%] w-[350px] h-[350px] bg-purple-300/15 rounded-full blur-[90px] -z-10 pointer-events-none" />
-          <div className="absolute bottom-0 left-1/2 w-[600px] h-[300px] bg-indigo-500/5 rounded-full blur-[120px] -z-10 pointer-events-none -translate-x-1/2" />
-        </>
+        <div className="absolute inset-0 -z-20 w-full h-full bg-slate-50">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35 pointer-events-none" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-b from-blue-400/20 to-indigo-500/10 rounded-full blur-[80px] pointer-events-none" />
+          <div className="absolute top-[20%] right-[-10%] w-[350px] h-[350px] bg-purple-300/15 rounded-full blur-[90px] pointer-events-none" />
+          <div className="absolute bottom-0 left-1/2 w-[600px] h-[300px] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none -translate-x-1/2" />
+        </div>
       )}
 
       <div className="max-w-4xl text-center mb-12 relative z-10">
@@ -127,19 +127,22 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
           {message ? (
              <span className="text-slate-950 font-black">{message}</span>
           ) : (
-             <div className="flex flex-col gap-3">
-               <span className="text-slate-800 text-3xl sm:text-4xl md:text-5xl tracking-tight font-bold block">
+             <div className="flex flex-col gap-1 items-center">
+               <span className="font-[family-name:var(--font-caveat)] text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] tracking-tight font-medium text-slate-800 leading-none block">
                  Desbloquea el poder de la
                </span>
-               <div className="relative inline-block mt-2 w-fit mx-auto">
+               <div className="relative inline-block mt-3 w-fit mx-auto">
                  <motion.div
-                   whileHover={{ scale: 1.02, y: -2 }}
-                   transition={{ duration: 0.3 }}
-                   className="relative z-10 px-6 py-2.5 rounded-2xl border border-slate-300 bg-white/30 backdrop-blur-sm hover:bg-white/80 hover:border-blue-500/30 hover:shadow-[0_10px_30px_rgba(59,130,246,0.15)] transition-all duration-500 group/title cursor-default"
+                   whileHover={{ scale: 1.03, y: -2 }}
+                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                   className="relative z-10 px-8 py-3.5 rounded-2xl border border-slate-200 bg-white/50 backdrop-blur-md hover:bg-white hover:border-blue-500/30 hover:shadow-[0_20px_40px_rgba(59,130,246,0.2)] transition-all duration-300 group/title cursor-default flex items-center justify-center gap-3"
                  >
-                   <span className="text-slate-900 group-hover/title:text-blue-600 transition-colors duration-300 font-black tracking-tight">
+                   <Sparkles className="w-5 h-5 text-blue-500 animate-pulse group-hover/title:text-indigo-500 transition-colors duration-300" />
+                   <span className="text-slate-900 group-hover/title:bg-clip-text group-hover/title:text-transparent group-hover/title:bg-gradient-to-r group-hover/title:from-blue-600 group-hover/title:to-indigo-600 transition-all duration-300 font-black tracking-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
                      Comunidad ProgramBI
                    </span>
+                   <Sparkles className="w-5 h-5 text-blue-500 animate-pulse group-hover/title:text-indigo-500 transition-colors duration-300" />
+                   
                    {/* Glowing layer underneath */}
                    <div className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-r from-blue-500/0 to-indigo-500/0 group-hover/title:from-blue-500/5 group-hover/title:to-indigo-500/5 transition-all duration-500 pointer-events-none" />
                  </motion.div>

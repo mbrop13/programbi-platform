@@ -27,14 +27,14 @@ export function Landing({ children }: LandingProps) {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="relative h-40 w-40"
       >
         <Image
           src={LOGO_URL}
           alt="ProgramBI"
-          fill
-          className="object-contain"
-          sizes="96px"
+          width={220}
+          height={220}
+          className="h-52 w-52 object-contain"
+          priority
         />
       </motion.div>
 

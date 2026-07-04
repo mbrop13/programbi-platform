@@ -223,7 +223,6 @@ export function ComposerInput({
       <div
         className={cn(
           "rounded-2xl border border-border bg-surface-0/85 shadow-premium backdrop-blur-xl transition-shadow",
-          "focus-within:shadow-[0_0_22px_-6px_rgba(24,144,255,0.30)]",
           isStreaming && "composer-glow"
         )}
       >

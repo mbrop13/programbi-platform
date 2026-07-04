@@ -16,9 +16,8 @@ import Image from "next/image";
 import type { AiChat } from "@/lib/supabase/ai";
 import { cn } from "@/lib/utils";
 
-/** Logo de la marca (mismo que usa el Navbar de la página principal). */
-const LOGO_URL =
-  "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974";
+/** Favicon de la página (logo de la esquina superior del sidebar). */
+const FAVICON_URL = "https://mail.programbi.com/uploads/freepik_2817100557.png";
 
 interface ConversationSidebarProps {
   chats: AiChat[];
@@ -209,13 +208,13 @@ export function ConversationSidebar({
         className="flex h-14 shrink-0 items-center justify-center border-b border-border px-4 transition-colors hover:bg-surface-2/50"
         title="Cerrar historial"
       >
-        <div className="relative h-9 w-9 overflow-hidden rounded-xl">
+        <div className="relative h-10 w-10 overflow-hidden rounded-xl">
           <Image
-            src={LOGO_URL}
+            src={FAVICON_URL}
             alt="ProgramBI"
             fill
             className="object-contain p-0.5"
-            sizes="36px"
+            sizes="40px"
           />
         </div>
       </button>

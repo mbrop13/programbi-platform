@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { Bot, PanelLeft, PanelLeftClose } from "lucide-react";
+import { Bot, MessageSquarePlus, PanelLeft, PanelLeftClose } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConversationSidebar } from "./ConversationSidebar";
@@ -32,6 +33,9 @@ interface ChatShellProps {
 }
 
 const MODEL_KEY = "programbi_chat_model";
+
+/** Favicon (logo de la esquina del rail colapsado). */
+const FAVICON_URL = "https://mail.programbi.com/uploads/freepik_2817100557.png";
 
 export default function ChatShell({ isRestricted = false, userName, avatarUrl }: ChatShellProps) {
   const isPremium = !isRestricted;
@@ -361,33 +365,57 @@ function ChatShellInner({
         )}
       </AnimatePresence>
 
-      {/* Sidebar de historial (más estrecho) */}
-      <AnimatePresence initial={false}>
-        {sidebarOpen && (
-          <motion.aside
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 240, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="absolute z-50 h-full shrink-0 overflow-hidden border-r border-border md:relative"
-          >
-            <ConversationSidebar
-              chats={chats}
-              activeChatId={activeChatId}
-              loading={loadingChats}
-              onSelect={selectChat}
-              onNew={newChat}
-              onDelete={handleDelete}
-              onRename={handleRename}
-              onPin={handlePin}
-              onArchive={handleArchive}
-              userName={userName}
-              avatarUrl={avatarUrl}
-              onClose={() => setSidebarOpen(false)}
-            />
-          </motion.aside>
+      {/* Sidebar de historial: se acopla a la izquierda (rail) al cerrar */}
+      <motion.aside
+        initial={false}
+        animate={{
+          width: sidebarOpen ? 240 : isMobile ? 0 : 64,
+          opacity: sidebarOpen || !isMobile ? 1 : 0,
+        }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+        className="absolute z-50 h-full shrink-0 overflow-hidden border-r border-border md:relative"
+      >
+        {sidebarOpen ? (
+          <ConversationSidebar
+            chats={chats}
+            activeChatId={activeChatId}
+            loading={loadingChats}
+            onSelect={selectChat}
+            onNew={newChat}
+            onDelete={handleDelete}
+            onRename={handleRename}
+            onPin={handlePin}
+            onArchive={handleArchive}
+            userName={userName}
+            avatarUrl={avatarUrl}
+            onClose={() => setSidebarOpen(false)}
+          />
+        ) : (
+          /* Rail colapsado (solo desktop; en móvil el ancho es 0) */
+          <div className="hidden h-full w-16 flex-col items-center gap-3 py-3 md:flex">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              title="Abrir historial"
+              className="relative h-10 w-10 overflow-hidden rounded-xl"
+            >
+              <Image
+                src={FAVICON_URL}
+                alt="ProgramBI"
+                fill
+                className="object-contain p-0.5"
+                sizes="40px"
+              />
+            </button>
+            <button
+              onClick={newChat}
+              title="Nuevo chat"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface-0 text-brand-blue shadow-premium transition-colors hover:bg-surface-2"
+            >
+              <MessageSquarePlus className="h-4 w-4" />
+            </button>
+          </div>
         )}
-      </AnimatePresence>
+      </motion.aside>
 
       {/* Main (sin barra superior) */}
       <div className="relative flex min-w-0 flex-1 flex-col">
