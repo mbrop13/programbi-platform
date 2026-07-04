@@ -505,9 +505,23 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
       {/* ─── TOP BAR (Header - Light Theme) ─── */}
       <header className="sticky top-0 z-30 flex-none h-[64px] bg-white border-b border-gray-200 flex items-center justify-between px-6 shadow-sm">
         <div className="flex items-center gap-4 min-w-0">
+          {/* Logo ProgramBI */}
+          <div className="flex items-center shrink-0">
+            <img
+              src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
+              alt="ProgramBI Logo"
+              className="h-7 w-auto object-contain cursor-pointer"
+              onClick={onBack}
+              title="Volver a los cursos"
+            />
+          </div>
+
+          <div className="h-6 w-px bg-gray-200" />
+
+          {/* Back Button */}
           <button
             onClick={onBack}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-650 hover:text-gray-900 transition-all cursor-pointer border-0"
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-650 hover:text-gray-900 transition-all cursor-pointer border-0 shrink-0"
             title="Volver a los cursos"
           >
             <ChevronLeft className="w-5 h-5" />
@@ -515,11 +529,16 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
           
           <div className="h-6 w-px bg-gray-200 hidden sm:block" />
           
-          <div className="min-w-0">
-            <span className="text-[10px] font-black text-brand-blue uppercase tracking-widest block block leading-none mb-1">
+          {/* Clickable Course Info */}
+          <div
+            onClick={onBack}
+            className="min-w-0 cursor-pointer group select-none"
+            title="Volver a los cursos"
+          >
+            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block leading-none mb-1 group-hover:text-brand-blue group-hover:underline transition-all">
               {readableCourseName}
             </span>
-            <h1 className="text-sm md:text-base font-bold text-gray-905 leading-none line-clamp-1">
+            <h1 className="text-sm md:text-base font-black text-gray-900 leading-none line-clamp-1 group-hover:text-brand-blue transition-all">
               {selectedLesson?.title || "Aula Virtual"}
             </h1>
           </div>
