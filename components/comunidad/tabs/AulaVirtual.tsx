@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import {
   Play, Code, CheckCircle, Terminal, PlayCircle, Loader2,
   Maximize2, Minimize2, BookOpen, ChevronLeft, ChevronRight,
@@ -39,7 +40,25 @@ function extractYouTubeId(url: string): string | null {
   return match ? match[1] : null;
 }
 
+function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "") // remove accents
+    .replace(/\s+/g, "-") // replace spaces with -
+    .replace(/[^\w-]+/g, "") // remove all non-word chars
+    .replace(/--+/g, "-") // replace multiple - with single -
+    .replace(/^-+/, "") // trim - from start
+    .replace(/-+$/, ""); // trim - from end
+}
+
 export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const selectedLessonSlug = searchParams.get("clase");
+
   const [modules, setModules] = useState<Module[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
@@ -55,6 +74,21 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
 
   // Track completed lessons (local state for now)
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
+
+  const handleSelectLesson = (lesson: Lesson) => {
+    setSelectedLesson(lesson);
+    const params = new URLSearchParams(window.location.search);
+    params.set("clase", slugify(lesson.title));
+    router.push(`${pathname}?${params.toString()}`);
+  };
+
+  useEffect(() => {
+    if (modules.length === 0 || !selectedLessonSlug) return;
+    const matched = modules.flatMap(m => m.lessons).find(l => slugify(l.title) === selectedLessonSlug);
+    if (matched && matched.id !== selectedLesson?.id) {
+      setSelectedLesson(matched);
+    }
+  }, [selectedLessonSlug, modules, selectedLesson]);
 
   useEffect(() => {
     async function load() {
@@ -78,10 +112,14 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
         const sorted = Object.values(moduleMap).sort((a, b) => a.order - b.order);
         setModules(sorted);
 
-        // Auto-select first lesson
-        if (sorted.length > 0 && sorted[0].lessons.length > 0) {
-          setSelectedLesson(sorted[0].lessons[0]);
+        // Auto-select lesson based on URL slug or first lesson if none
+        let initialLesson = sorted.length > 0 && sorted[0].lessons.length > 0 ? sorted[0].lessons[0] : null;
+        const urlSlug = searchParams.get("clase");
+        if (urlSlug) {
+          const matched = sorted.flatMap(m => m.lessons).find(l => slugify(l.title) === urlSlug);
+          if (matched) initialLesson = matched;
         }
+        setSelectedLesson(initialLesson);
       } catch (e) {
         console.error("Error loading lessons:", e);
       } finally {
@@ -89,7 +127,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
       }
     }
     load();
-  }, [courseId]);
+  }, [courseId, searchParams]);
 
   // When Super Clase activates, set language from lesson and load saved note
   useEffect(() => {
@@ -229,7 +267,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
   }
 
   return (
-    <div className="flex flex-row-reverse w-full h-[calc(100vh-120px)] min-h-[600px] overflow-hidden rounded-2xl border border-gray-200 bg-white -mx-4 sm:-mx-6 lg:-mx-8">
+    <div className="flex flex-row-reverse w-full h-screen overflow-hidden bg-[#0B0F19] text-slate-200">
       
       {/* ─── SIDEBAR: Lessons List ─── */}
       <AnimatePresence>
@@ -238,28 +276,37 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             initial={{ width: 0, opacity: 0 }}
             animate={{ width: 340, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="flex-none h-full border-l border-gray-100 flex flex-col bg-[#FAFBFC] overflow-hidden"
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="flex-none h-full border-l border-slate-800/60 flex flex-col bg-[#0E1322] overflow-hidden relative z-10"
           >
             {/* Header */}
-            <div className="flex-none p-5 border-b border-gray-100">
-              <button onClick={onBack} className="flex items-center gap-1.5 text-gray-400 hover:text-brand-blue text-xs font-bold mb-3 transition-colors">
+            <div className="flex-none p-5 border-b border-slate-800/50">
+              <button 
+                onClick={onBack} 
+                className="flex items-center gap-1.5 text-slate-400 hover:text-blue-400 text-xs font-bold mb-4 transition-colors cursor-pointer border-0 bg-transparent"
+              >
                 <ChevronLeft className="w-3.5 h-3.5" /> Volver a cursos
               </button>
               <div className="flex items-center justify-between">
-                <h3 className="font-display font-black text-sm text-gray-900">Contenido del curso</h3>
-                <button onClick={() => setSidebarOpen(false)} className="p-1 hover:bg-gray-100 rounded-lg transition-colors">
-                  <X className="w-4 h-4 text-gray-400" />
+                <h3 className="font-display font-black text-sm text-slate-100">Contenido del curso</h3>
+                <button 
+                  onClick={() => setSidebarOpen(false)} 
+                  className="p-1 hover:bg-slate-800 rounded-lg transition-colors cursor-pointer border-0 bg-transparent"
+                >
+                  <X className="w-4 h-4 text-slate-400" />
                 </button>
               </div>
               {/* Progress */}
-              <div className="mt-3">
-                <div className="flex items-center justify-between text-[11px] text-gray-400 font-medium mb-1.5">
-                  <span>Progreso</span>
-                  <span className="font-bold text-gray-600">{progress}%</span>
+              <div className="mt-4">
+                <div className="flex items-center justify-between text-[11px] text-slate-400 font-bold mb-1.5 uppercase tracking-wide">
+                  <span>Progreso de estudio</span>
+                  <span className="text-blue-400">{progress}%</span>
                 </div>
-                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                  <div className="h-full bg-gradient-to-r from-brand-blue to-indigo-500 rounded-full transition-all duration-500" style={{ width: `${progress}%` }} />
+                <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full transition-all duration-500" 
+                    style={{ width: `${progress}%` }} 
+                  />
                 </div>
               </div>
             </div>
@@ -267,67 +314,75 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             {/* Module List */}
             <div className="flex-1 overflow-y-auto">
               {modules.map((mod) => (
-                <div key={mod.name} className="border-b border-gray-50">
-                  <div className="px-5 py-3 bg-gray-50/60">
-                    <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-wider">
+                <div key={mod.name} className="border-b border-slate-800/40">
+                  <div className="px-5 py-3.5 bg-slate-900/40 border-b border-slate-800/20">
+                    <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
                       Módulo {mod.order}
                     </span>
-                    <h4 className="text-xs font-bold text-gray-700 mt-0.5">{mod.name}</h4>
+                    <h4 className="text-xs font-bold text-slate-300 mt-0.5">{mod.name}</h4>
                   </div>
-                  <div className="divide-y divide-gray-50/80">
-                    {mod.lessons.map((lesson, lessonIndexInMod) => {
+                  <div className="divide-y divide-slate-800/20">
+                    {mod.lessons.map((lesson) => {
                       const isSelected = selectedLesson?.id === lesson.id;
                       const isCompleted = completedLessons.has(lesson.id);
-                      
-                      // Para calcular el índice global, podríamos sumar las lecciones anteriores.
-                      // Pero el requisito era "las dos primeras clases de cada curso".
-                      // O sea clase 1 y clase 2 globales.
                       const globalIndex = modules.flatMap(m => m.lessons).findIndex(l => l.id === lesson.id);
                       const isLocked = accessType === "trial" && globalIndex >= 2;
                       const hasSuperClase = !!lesson.superclass_language;
 
                       return (
-                        <button
+                        <motion.button
                           key={lesson.id}
-                          onClick={() => setSelectedLesson(lesson)}
-                          className={`w-full text-left px-5 py-3 flex items-start gap-3 transition-all group ${
+                          onClick={() => handleSelectLesson(lesson)}
+                          whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.02)" }}
+                          className={`w-full text-left px-5 py-4 flex items-start gap-3.5 transition-all group border-l-[3px] cursor-pointer border-0 ${
                             isSelected
-                              ? "bg-blue-50/70 border-l-[3px] border-brand-blue"
-                              : "hover:bg-gray-50 border-l-[3px] border-transparent"
+                              ? "bg-blue-500/10 border-blue-500"
+                              : "border-transparent"
                           }`}
                         >
-                          {/* Number / Check */}
-                          <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-none mt-0.5 text-[11px] font-bold ${
+                          {/* Number / Check / Lock Icon */}
+                          <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-none mt-0.5 text-[11px] font-bold transition-colors ${
                             isCompleted
                               ? "bg-emerald-500 text-white"
                               : isSelected
-                              ? "bg-brand-blue text-white"
-                              : "bg-gray-100 text-gray-400"
+                              ? "bg-blue-500 text-white"
+                              : "bg-slate-800 text-slate-400 group-hover:bg-slate-700"
                           }`}>
-                            {isCompleted ? <CheckCircle className="w-3.5 h-3.5" /> : isLocked ? <Lock className="w-3 h-3" /> : lesson.lesson_order}
+                            {isCompleted ? (
+                              <CheckCircle className="w-3.5 h-3.5" />
+                            ) : isLocked ? (
+                              <Lock className="w-3 h-3 text-slate-500" />
+                            ) : (
+                              lesson.lesson_order
+                            )}
                           </div>
+                          
                           <div className="flex-1 min-w-0">
-                            <div className="text-[13px] font-semibold text-gray-800 leading-snug line-clamp-2">
+                            <div className={`text-[13px] leading-snug line-clamp-2 transition-colors ${
+                              isSelected 
+                                ? "text-slate-100 font-bold" 
+                                : "text-slate-300 group-hover:text-slate-100 font-medium"
+                            }`}>
                               {lesson.title}
                             </div>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-[10px] text-gray-400 font-medium">
+                            <div className="flex flex-wrap items-center gap-2 mt-2">
+                              <span className="text-[10px] text-slate-500 font-medium">
                                 {lesson.duration_minutes || 0} min
                               </span>
                               {hasSuperClase && (
-                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-violet-100 text-violet-600 uppercase">
+                                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300 uppercase tracking-wide border border-violet-500/30">
                                   <Code className="w-2.5 h-2.5 inline mr-0.5" />
                                   Super Clase
                                 </span>
                               )}
                               {lesson.is_free_preview && (
-                                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-600 uppercase">
+                                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 uppercase tracking-wide border border-emerald-500/30">
                                   Gratis
                                 </span>
                               )}
                             </div>
                           </div>
-                        </button>
+                        </motion.button>
                       );
                     })}
                   </div>
@@ -339,33 +394,37 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
       </AnimatePresence>
 
       {/* ─── MAIN CONTENT ─── */}
-      <div className="flex-1 flex flex-col min-w-0 h-full bg-white">
+      <div className="flex-1 flex flex-col min-w-0 h-full bg-[#0B0F19] relative z-0">
+        
         {/* Top Bar */}
-        <div className="flex-none h-14 border-b border-gray-100 flex items-center justify-between px-5">
+        <div className="flex-none h-16 border-b border-slate-800/60 flex items-center justify-between px-6 bg-[#0E1322]/80 backdrop-blur-md">
           <div className="flex items-center gap-3">
             {!sidebarOpen && (
-              <button onClick={() => setSidebarOpen(true)} className="p-1.5 hover:bg-gray-50 rounded-lg transition-colors mr-1">
-                <ChevronRight className="w-4 h-4 text-gray-500" />
+              <button 
+                onClick={() => setSidebarOpen(true)} 
+                className="p-1.5 hover:bg-slate-800 rounded-lg transition-colors mr-1 cursor-pointer border-0 bg-transparent"
+              >
+                <ChevronRight className="w-4 h-4 text-slate-400" />
               </button>
             )}
             <div>
-              <div className="text-[11px] text-gray-400 font-medium">
+              <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">
                 {selectedLesson ? `Módulo ${modules.find(m => m.lessons.includes(selectedLesson))?.order || ''} • Clase ${selectedLesson.lesson_order}` : ''}
               </div>
-              <h2 className="text-sm font-bold text-gray-900 line-clamp-1">
+              <h2 className="text-sm font-bold text-slate-100 line-clamp-1 mt-0.5">
                 {selectedLesson?.title || "Selecciona una clase"}
               </h2>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {/* Super Clase Toggle */}
             {selectedLesson?.superclass_language && (
               <button
                 onClick={() => setSuperClaseActive(!superClaseActive)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-[0.98] ${
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-[0.98] cursor-pointer border-0 ${
                   superClaseActive
-                    ? "bg-violet-500 text-white shadow-md shadow-violet-200/60"
-                    : "bg-violet-50 text-violet-600 hover:bg-violet-100"
+                    ? "bg-violet-600 text-white shadow-lg shadow-violet-600/20"
+                    : "bg-violet-500/10 text-violet-300 hover:bg-violet-500/20 border border-violet-500/20"
                 }`}
               >
                 <Sparkles className="w-3.5 h-3.5" />
@@ -375,10 +434,10 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             {selectedLesson && (
               <button
                 onClick={() => toggleComplete(selectedLesson.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-[0.98] ${
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-[0.98] cursor-pointer border-0 ${
                   completedLessons.has(selectedLesson.id)
-                    ? "bg-emerald-500 text-white"
-                    : "bg-gray-50 text-gray-500 hover:bg-emerald-50 hover:text-emerald-600"
+                    ? "bg-emerald-500 text-white hover:bg-emerald-600"
+                    : "bg-slate-800 text-slate-300 hover:bg-slate-700"
                 }`}
               >
                 <CheckCircle className="w-3.5 h-3.5" />
@@ -389,87 +448,88 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
         </div>
 
         {/* Content Area */}
-        <div className="flex-1 min-h-0 overflow-hidden">
+        <div className="flex-1 min-h-0 overflow-hidden relative">
           {!selectedLesson ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
-                <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                  <Monitor className="w-8 h-8 text-gray-300" />
+                <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mx-auto mb-4 border border-slate-800">
+                  <Monitor className="w-8 h-8 text-slate-500" />
                 </div>
-                <p className="text-gray-400 font-medium">Selecciona una clase para comenzar</p>
+                <p className="text-slate-400 font-medium">Selecciona una clase para comenzar</p>
               </div>
             </div>
           ) : superClaseActive && selectedLesson.superclass_language ? (
+            
             /* ── SUPER CLASE MODE ── */
             <div className="flex h-full">
-              {/* Video (top-right corner, small) */}
-              <div className="flex-1 flex flex-col h-full">
-                {/* IDE + Terminal */}
-                <div className="flex-1 flex flex-col bg-[#1e1e1e] min-h-0">
-                  {/* IDE Header */}
-                  <div className="flex-none h-11 bg-[#1a1a1a] border-b border-[#333] flex items-center justify-between px-4">
-                    <div className="flex items-center gap-2">
-                      <Code className="w-4 h-4 text-emerald-400" />
-                      <span className="text-white font-medium text-xs">Playground Interactivo</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <select
-                        value={language}
-                        onChange={(e) => setLanguage(e.target.value)}
-                        className="bg-[#333] text-white text-[11px] border-none rounded px-2 py-1 outline-none font-bold cursor-pointer"
-                      >
-                        <option value="python">Python 3</option>
-                        <option value="sql">SQL (SQLite)</option>
-                        <option value="javascript">JavaScript</option>
-                      </select>
-                      <button
-                        onClick={executeCode}
-                        disabled={isExecuting}
-                        className="flex items-center gap-1.5 px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-white rounded text-[11px] font-bold transition-colors disabled:opacity-50"
-                      >
-                        {isExecuting ? <Loader2 className="w-3 h-3 animate-spin" /> : <PlayCircle className="w-3 h-3" />}
-                        Ejecutar
-                      </button>
-                    </div>
+              
+              {/* IDE + Terminal (Left side) */}
+              <div className="flex-1 flex flex-col h-full bg-[#14161E] min-h-0">
+                {/* IDE Header */}
+                <div className="flex-none h-12 bg-[#0F111A] border-b border-slate-800/60 flex items-center justify-between px-4">
+                  <div className="flex items-center gap-2">
+                    <Code className="w-4 h-4 text-violet-400" />
+                    <span className="text-slate-200 font-semibold text-xs tracking-wide">Playground Interactivo</span>
                   </div>
-                  {/* Editor */}
-                  <div className="flex-1 min-h-0">
-                    <Editor
-                      height="100%"
-                      language={language}
-                      theme="vs-dark"
-                      value={code}
-                      onChange={(val) => setCode(val || "")}
-                      options={{
-                        minimap: { enabled: false },
-                        fontSize: 14,
-                        fontFamily: "'Fira Code', 'JetBrains Mono', monospace",
-                        padding: { top: 12 },
-                        scrollBeyondLastLine: false,
-                      }}
-                    />
+                  <div className="flex items-center gap-3">
+                    <select
+                      value={language}
+                      onChange={(e) => setLanguage(e.target.value)}
+                      className="bg-[#222533] text-slate-200 text-[11px] border border-slate-700 rounded-lg px-2.5 py-1.5 outline-none font-bold cursor-pointer hover:border-slate-600 transition-colors"
+                    >
+                      <option value="python">Python 3</option>
+                      <option value="sql">SQL (SQLite)</option>
+                      <option value="javascript">JavaScript</option>
+                    </select>
+                    <button
+                      onClick={executeCode}
+                      disabled={isExecuting}
+                      className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[11px] font-black transition-colors disabled:opacity-50 cursor-pointer border-0 shadow-md shadow-emerald-500/10"
+                    >
+                      {isExecuting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <PlayCircle className="w-3.5 h-3.5" />}
+                      Ejecutar
+                    </button>
                   </div>
-                  {/* Terminal */}
-                  <div className="flex-none h-36 bg-black border-t border-[#333]">
-                    <div className="h-7 bg-[#252526] flex items-center px-3 border-b border-[#333]">
-                      <Terminal className="w-3 h-3 text-gray-400 mr-2" />
-                      <span className="text-[10px] text-gray-400 font-bold tracking-wide">Terminal</span>
-                    </div>
-                    <div className="p-3 overflow-y-auto h-[calc(100%-28px)] font-mono text-xs leading-relaxed"
-                      style={{ color: (codeOutput.includes("Error") || codeOutput.includes("Traceback")) ? "#ef4444" : "#d1d5db" }}>
-                      {codeOutput ? (
-                        <pre className="whitespace-pre-wrap">{codeOutput}</pre>
-                      ) : (
-                        <span className="text-gray-600">El resultado aparecerá aquí...</span>
-                      )}
-                    </div>
+                </div>
+                {/* Editor */}
+                <div className="flex-1 min-h-0">
+                  <Editor
+                    height="100%"
+                    language={language}
+                    theme="vs-dark"
+                    value={code}
+                    onChange={(val) => setCode(val || "")}
+                    options={{
+                      minimap: { enabled: false },
+                      fontSize: 14,
+                      fontFamily: "'Fira Code', 'JetBrains Mono', monospace",
+                      padding: { top: 12 },
+                      scrollBeyondLastLine: false,
+                    }}
+                  />
+                </div>
+                {/* Terminal */}
+                <div className="flex-none h-44 bg-[#090A0F] border-t border-slate-800/60">
+                  <div className="h-8 bg-[#0F111A] flex items-center px-4 border-b border-slate-800/60">
+                    <Terminal className="w-3.5 h-3.5 text-slate-500 mr-2" />
+                    <span className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">Consola de Salida</span>
+                  </div>
+                  <div 
+                    className="p-4 overflow-y-auto h-[calc(100%-32px)] font-mono text-xs leading-relaxed"
+                    style={{ color: (codeOutput.includes("Error") || codeOutput.includes("Traceback")) ? "#ef4444" : "#a5b4fc" }}
+                  >
+                    {codeOutput ? (
+                      <pre className="whitespace-pre-wrap">{codeOutput}</pre>
+                    ) : (
+                      <span className="text-slate-600">El resultado de la ejecución aparecerá aquí...</span>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* Video PiP (right side) */}
-              <div className="flex-none w-[380px] flex flex-col border-l border-[#333] bg-black">
-                <div className="relative w-full pb-[56.25%] flex-none">
+              {/* Video PiP (Right side) */}
+              <div className="flex-none w-[380px] flex flex-col border-l border-slate-800/60 bg-[#0F111A]">
+                <div className="relative w-full pb-[56.25%] flex-none bg-black">
                   {videoId ? (
                     <iframe
                       className="absolute inset-0 w-full h-full"
@@ -478,37 +538,38 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                       allowFullScreen
                     />
                   ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-                      <p className="text-xs text-gray-500">Sin video</p>
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#0B0F19]">
+                      <p className="text-xs text-slate-600">Sin video</p>
                     </div>
                   )}
                 </div>
-                <div className="flex-1 overflow-y-auto p-4 bg-[#111]">
-                  <h4 className="text-xs font-bold text-white mb-2 flex items-center gap-1.5">
-                    <BookOpen className="w-3.5 h-3.5 text-brand-blue" /> Notas de la Clase
+                <div className="flex-1 overflow-y-auto p-5 bg-[#0E1017]">
+                  <h4 className="text-xs font-bold text-slate-200 mb-3 flex items-center gap-2 border-b border-slate-800/80 pb-2">
+                    <BookOpen className="w-4 h-4 text-blue-400" /> Notas de la Clase
                   </h4>
-                  <p className="text-[11px] text-gray-400 leading-relaxed">
-                    Mira el video mientras escribes código. Practica los conceptos en tiempo real con el editor interactivo.
+                  <p className="text-xs text-slate-400 leading-relaxed font-medium">
+                    Mira el video de la clase a tu ritmo mientras practicas los conceptos vistos escribiendo código en el editor interactivo de la izquierda. Cualquier código escrito se autoguarda automáticamente.
                   </p>
                 </div>
               </div>
             </div>
           ) : (
+            
             /* ── NORMAL MODE: Video full width ── */
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full overflow-y-auto">
               {/* Video Player */}
-              <div className="relative w-full aspect-video bg-black">
+              <div className="relative w-full aspect-video bg-black shadow-lg">
                 {isSelectedLessonLocked ? (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 border-2 border-brand-blue/30 overflow-hidden">
-                    <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
-                    <Lock className="w-16 h-16 text-white mb-4 relative z-10" />
-                    <h2 className="text-2xl font-black text-white relative z-10 mb-2">Clase Bloqueada (Modo Prueba)</h2>
-                    <p className="text-gray-300 text-sm max-w-md text-center relative z-10 mb-6 font-medium">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0B0F19] border border-blue-500/20 overflow-hidden">
+                    <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
+                    <Lock className="w-16 h-16 text-blue-400 mb-4 relative z-10 animate-bounce" />
+                    <h2 className="text-2xl font-black text-white relative z-10 mb-2">Clase Bloqueada (Periodo de Prueba)</h2>
+                    <p className="text-slate-400 text-sm max-w-md text-center relative z-10 mb-6 font-medium leading-relaxed">
                       Estás disfrutando de tus 7 días de prueba. Para desbloquear el resto de las clases y todas las herramientas Premium, puedes saltarte el periodo de prueba y acceder al 100% de la plataforma ahora.
                     </p>
                     <button
-                      onClick={() => window.location.href = `/api/mercadopago/upgrade-trial?returnTo=/cursos/`} // We will create this
-                      className="relative z-10 px-6 py-3 bg-gradient-to-r from-brand-blue to-blue-600 hover:from-blue-500 hover:to-brand-blue text-white font-bold rounded-xl shadow-xl shadow-blue-500/20 flex items-center gap-2 transform transition-all hover:scale-105"
+                      onClick={() => window.location.href = `/api/mercadopago/upgrade-trial?returnTo=/cursos/`}
+                      className="relative z-10 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-xl shadow-xl shadow-blue-500/20 flex items-center gap-2 transform transition-all hover:scale-105 cursor-pointer border-0"
                     >
                       <Sparkles className="w-4 h-4" /> Desbloquear Curso Completo
                     </button>
@@ -521,46 +582,47 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                     allowFullScreen
                   />
                 ) : (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 gap-3">
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 gap-3">
                     <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center">
-                      <Play className="w-8 h-8 text-gray-500" />
+                      <Play className="w-8 h-8 text-slate-500" />
                     </div>
-                    <p className="text-gray-400 text-sm font-medium">Video no disponible</p>
+                    <p className="text-slate-400 text-sm font-medium">Video no disponible</p>
                   </div>
                 )}
               </div>
 
               {/* Lesson Info */}
-              <div className="flex-1 overflow-y-auto">
-                <div className="p-6 lg:p-8">
+              <div className="flex-1">
+                <div className="p-8 max-w-4xl mx-auto">
                   <div className="flex items-center gap-3 mb-4">
-                    <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-blue-50 text-brand-blue uppercase tracking-wider">
+                    <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-md bg-blue-500/10 text-blue-400 uppercase tracking-wider border border-blue-500/20">
                       Clase {selectedLesson.lesson_order}
                     </span>
-                    <span className="text-xs text-gray-400 font-medium">{selectedLesson.duration_minutes || 0} min</span>
+                    <span className="text-xs text-slate-500 font-medium">{selectedLesson.duration_minutes || 0} min</span>
                     {selectedLesson.superclass_language && (
                       <button
                         onClick={() => setSuperClaseActive(true)}
-                        className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-violet-50 text-violet-600 hover:bg-violet-100 transition-colors flex items-center gap-1"
+                        className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-violet-500/10 text-violet-400 hover:bg-violet-500/20 transition-colors flex items-center gap-1 cursor-pointer border border-violet-500/20"
                       >
                         <Sparkles className="w-3 h-3" /> Activar Super Clase ({selectedLesson.superclass_language.toUpperCase()})
                       </button>
                     )}
                   </div>
-                  <h2 className="font-display font-black text-2xl sm:text-3xl tracking-tight text-gray-900 mb-3">
+                  
+                  <h2 className="font-display font-black text-2xl sm:text-3xl lg:text-4xl tracking-tight text-slate-100 mb-4">
                     {selectedLesson.title}
                   </h2>
-                  <p className="text-[15px] text-gray-600 leading-relaxed">
-                    Mira la clase completa y practica los conceptos aprendidos.
+                  <p className="text-base text-slate-400 leading-relaxed font-medium">
+                    Mira la clase completa y practica los conceptos aprendidos. 
                     {selectedLesson.superclass_language && (
-                      <> Activa el modo <strong>Super Clase</strong> para ver el video mientras escribes código en {selectedLesson.superclass_language.toUpperCase()}.</>
+                      <> Activa el modo <strong className="text-violet-400">Super Clase</strong> en la barra superior para interactuar con el Playground de código {selectedLesson.superclass_language.toUpperCase()} mientras ves la clase.</>
                     )}
                   </p>
 
                   {/* Next Lessons Preview */}
-                  <div className="mt-8 pt-6">
-                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Siguientes clases</h3>
-                    <div className="divide-y divide-gray-100">
+                  <div className="mt-10 pt-8 border-t border-slate-800/40">
+                    <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Siguientes clases</h3>
+                    <div className="divide-y divide-slate-800/25">
                       {modules.flatMap(m => m.lessons)
                         .filter(l => {
                           if (!selectedLesson) return false;
@@ -569,20 +631,22 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                           return thisIdx > currentIdx && thisIdx <= currentIdx + 3;
                         })
                         .map(l => (
-                          <button
+                          <motion.button
                             key={l.id}
-                            onClick={() => setSelectedLesson(l)}
-                            className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left group active:scale-[0.99]"
+                            onClick={() => handleSelectLesson(l)}
+                            whileHover={{ scale: 1.005, backgroundColor: "rgba(255, 255, 255, 0.01)" }}
+                            whileTap={{ scale: 0.995 }}
+                            className="w-full flex items-center gap-4 p-4 transition-all text-left group cursor-pointer border-0 bg-transparent rounded-xl"
                           >
-                            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400 group-hover:bg-brand-blue group-hover:text-white transition-colors">
+                            <div className="w-9 h-9 rounded-xl bg-slate-800 flex items-center justify-center text-xs font-bold text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                               {l.lesson_order}
                             </div>
                             <div className="flex-1">
-                              <div className="text-sm font-semibold text-gray-700">{l.title}</div>
-                              <div className="text-[11px] text-gray-400">{l.duration_minutes || 0} min</div>
+                              <div className="text-sm font-bold text-slate-300 group-hover:text-slate-100 transition-colors">{l.title}</div>
+                              <div className="text-[11px] text-slate-500 mt-0.5">{l.duration_minutes || 0} min</div>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-brand-blue transition-colors" />
-                          </button>
+                            <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-blue-400 transition-colors" />
+                          </motion.button>
                         ))}
                     </div>
                   </div>
@@ -590,8 +654,8 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
               </div>
             </div>
           )}
-        </div>
       </div>
     </div>
+  </div>
   );
 }

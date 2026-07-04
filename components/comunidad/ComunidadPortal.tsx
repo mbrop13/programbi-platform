@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, ShieldAlert, Menu } from "lucide-react";
 import { Loader2 } from "lucide-react";
@@ -23,7 +23,7 @@ import {
   getCurrentUserProfile,
   getCurrentUserManagedOrganization,
 } from "@/lib/supabase/comunidad";
-import { getMyEnrollments } from "@/lib/supabase/comunidad-ai";
+import { getMyEnrollments, getAllPublishedCourses } from "@/lib/supabase/comunidad-ai";
 import { createClient as createBrowserClient } from "@/lib/supabase/client";
 
 interface UserProfile {
@@ -48,10 +48,27 @@ export default function ComunidadPortal() {
   const [authLoading, setAuthLoading] = useState(true);
   const [hasCourses, setHasCourses] = useState<boolean | null>(null);
   const [isCheckingPlan, setIsCheckingPlan] = useState(true);
-  const [selectedCourseId, setSelectedCourseId] = useState<string | null>(null);
+  const [courseSlugMap, setCourseSlugMap] = useState<Record<string, string>>({});
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+
+  const searchParams = useSearchParams();
+  const selectedCourseSlug = searchParams.get("curso");
+  const selectedCourseId = selectedCourseSlug ? (courseSlugMap[selectedCourseSlug] || null) : null;
+
+  const handleSelectCourse = (idOrSlug: string | null) => {
+    const params = new URLSearchParams(window.location.search);
+    if (idOrSlug) {
+      const slug = Object.keys(courseSlugMap).find(k => courseSlugMap[k] === idOrSlug) || idOrSlug;
+      params.set("curso", slug);
+      params.delete("clase");
+    } else {
+      params.delete("curso");
+      params.delete("clase");
+    }
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -83,11 +100,12 @@ export default function ComunidadPortal() {
       // 2. Full server-side load: validates the session with Supabase and
       //    fetches the complete profile (plan, role, avatar, etc.).
       try {
-        const [adminStatus, profile, enrollmentData, orgData] = await Promise.all([
+        const [adminStatus, profile, enrollmentData, orgData, allCourses] = await Promise.all([
           isCurrentUserAdmin(),
           getCurrentUserProfile(),
           getMyEnrollments(),
           getCurrentUserManagedOrganization(),
+          getAllPublishedCourses().catch(() => []),
         ]);
         setIsAdmin(adminStatus);
         if (profile) setUserProfile(profile as any);
@@ -95,6 +113,22 @@ export default function ComunidadPortal() {
           (Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments).length > 0
         );
         setIsOrgManager(!!orgData);
+
+        const mapping: Record<string, string> = {};
+        if (Array.isArray(allCourses)) {
+          allCourses.forEach((c: any) => {
+            if (c.slug && c.id) mapping[c.slug] = c.id;
+          });
+        }
+        const enrolls = Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments;
+        if (Array.isArray(enrolls)) {
+          enrolls.forEach((e: any) => {
+            const slug = e.course?.slug || e.course_slug;
+            const id = e.course?.id || e.course_id;
+            if (slug && id) mapping[slug] = id;
+          });
+        }
+        setCourseSlugMap(mapping);
       } catch (err) {
         console.error("Error loading user data:", err);
       } finally {
@@ -137,15 +171,15 @@ export default function ComunidadPortal() {
   const restrictedView = !canAccessFull && hasCourses && activeTab !== "cursos";
 
   const handleTabChange = (tabId: string) => {
-    setSelectedCourseId(null);
+    handleSelectCourse(null);
     router.push(`/comunidad/${tabId}`);
   };
 
   return (
     <ToastProvider>
       <div className="flex min-h-screen bg-[#f8f9fb]">
-        {/* ─── SIDEBAR (oculta en el chat IA, que es pantalla completa) ─── */}
-        {activeTab !== "ai" && (
+        {/* ─── SIDEBAR (oculta en el chat IA y en el aula virtual de un curso) ─── */}
+        {(activeTab !== "ai" && !(activeTab === "cursos" && selectedCourseId)) && (
           <Sidebar
             activeTab={activeTab}
             onTabChange={handleTabChange}
@@ -164,8 +198,8 @@ export default function ComunidadPortal() {
 
         {/* ─── MAIN AREA ─── */}
         <div className="flex-1 flex flex-col min-w-0 min-h-screen relative">
-          {/* Mobile menu button (floating, top-left) — oculto en el chat IA */}
-          {activeTab !== "ai" && (
+          {/* Mobile menu button (floating, top-left) — oculto en el chat IA y en el aula virtual */}
+          {(activeTab !== "ai" && !(activeTab === "cursos" && selectedCourseId)) && (
             <button
               onClick={() => setMobileNavOpen(true)}
               className="lg:hidden fixed top-4 left-4 z-30 w-10 h-10 flex items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-600 shadow-sm hover:shadow-md transition-all"
@@ -197,11 +231,27 @@ export default function ComunidadPortal() {
                   />
                 </motion.div>
               </AnimatePresence>
+            ) : (activeTab === "cursos" && selectedCourseId) ? (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`aula-${selectedCourseId}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="flex-1 flex flex-col min-h-0"
+                >
+                  <AulaVirtual
+                    courseId={selectedCourseId}
+                    onBack={() => handleSelectCourse(null)}
+                  />
+                </motion.div>
+              </AnimatePresence>
             ) : (
               <div className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto">
                 <AnimatePresence mode="wait">
                   <motion.div
-                    key={activeTab + (selectedCourseId || "")}
+                    key={activeTab}
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -8 }}
@@ -215,10 +265,10 @@ export default function ComunidadPortal() {
                       (selectedCourseId ? (
                         <AulaVirtual
                           courseId={selectedCourseId}
-                          onBack={() => setSelectedCourseId(null)}
+                          onBack={() => handleSelectCourse(null)}
                         />
                       ) : (
-                        <MisCursos onSelectCourse={(id) => setSelectedCourseId(id)} />
+                        <MisCursos onSelectCourse={(id) => handleSelectCourse(id)} />
                       ))}
 
                     {activeTab === "live" && (
