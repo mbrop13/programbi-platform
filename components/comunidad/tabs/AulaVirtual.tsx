@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
   Play, Code, CheckCircle, Terminal, PlayCircle, Loader2,
   BookOpen, ChevronLeft, ChevronRight, Lock, Sparkles, Monitor, X, Layers,
+  StickyNote,
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -75,6 +76,10 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
   // Track completed lessons (local state for now)
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
 
+  // Notes state (per lesson, persisted in localStorage)
+  const [notes, setNotes] = useState("");
+  const [notesSaving, setNotesSaving] = useState(false);
+
   const handleSelectLesson = (lesson: Lesson) => {
     setSelectedLesson(lesson);
     router.push(`/comunidad/cursos/${courseSlug}/${slugify(lesson.title)}`);
@@ -98,13 +103,23 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
           setCompletedLessons(new Set(completedLessonIds));
         }
 
-        // Group lessons into modules
+        // Group lessons into modules and deduplicate within each module
         const moduleMap: Record<string, Module> = {};
         lessons.forEach((l: any) => {
           if (!moduleMap[l.module_name]) {
             moduleMap[l.module_name] = { name: l.module_name, order: l.module_order, lessons: [] };
           }
           moduleMap[l.module_name].lessons.push(l);
+        });
+
+        // Deduplicate lessons inside each module by id
+        Object.values(moduleMap).forEach((mod) => {
+          const seen = new Set<string>();
+          mod.lessons = mod.lessons.filter((lesson: Lesson) => {
+            if (seen.has(lesson.id)) return false;
+            seen.add(lesson.id);
+            return true;
+          });
         });
 
         const sorted = Object.values(moduleMap).sort((a, b) => a.order - b.order);
@@ -125,6 +140,27 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     }
     load();
   }, [courseId, courseSlug, selectedLessonSlug]);
+
+  // Load notes from localStorage when the selected lesson changes
+  useEffect(() => {
+    if (!selectedLesson) {
+      setNotes("");
+      return;
+    }
+    const saved = localStorage.getItem(`aula-notes-${courseId}-${selectedLesson.id}`);
+    setNotes(saved || "");
+  }, [selectedLesson, courseId]);
+
+  // Auto-save notes to localStorage with debounce
+  useEffect(() => {
+    if (!selectedLesson) return;
+    setNotesSaving(true);
+    const timer = setTimeout(() => {
+      localStorage.setItem(`aula-notes-${courseId}-${selectedLesson.id}`, notes);
+      setNotesSaving(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [notes, selectedLesson, courseId]);
 
   // When Super Clase activates, set language from lesson and load saved note
   useEffect(() => {
@@ -278,12 +314,6 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
           >
             {/* Header */}
             <div className="flex-none p-5 border-b border-gray-100">
-              <button
-                onClick={onBack}
-                className="flex items-center gap-1.5 text-gray-500 hover:text-brand-blue text-xs font-bold mb-4 transition-colors border-0 bg-transparent cursor-pointer"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" /> Volver a cursos
-              </button>
               <div className="flex items-center justify-between">
                 <h3 className="font-display font-black text-sm text-gray-900">Contenido del curso</h3>
                 <button
@@ -331,10 +361,8 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                           key={lesson.id}
                           onClick={() => handleSelectLesson(lesson)}
                           whileHover={{ backgroundColor: "rgba(249, 250, 251, 1)" }}
-                          className={`w-full text-left px-5 py-4 flex items-start gap-3.5 transition-all group border-l-[3px] border-y-0 border-r-0 cursor-pointer bg-transparent ${
-                            isSelected
-                              ? "bg-blue-50 border-brand-blue"
-                              : "border-transparent"
+                          className={`w-full text-left px-5 py-4 flex items-start gap-3.5 transition-all group cursor-pointer bg-transparent ${
+                            isSelected ? "bg-blue-50" : ""
                           }`}
                         >
                           {/* Number / Check / Lock Icon */}
@@ -386,6 +414,30 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                 </div>
               ))}
             </div>
+
+            {/* Notes */}
+            <div className="flex-none p-4 border-t border-gray-100 bg-gray-50/50">
+              <h4 className="text-[11px] font-bold text-gray-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <StickyNote className="w-3.5 h-3.5 text-brand-blue" /> Mis apuntes
+              </h4>
+              {selectedLesson ? (
+                <>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder="Escribe tus apuntes de esta clase..."
+                    className="w-full min-h-[80px] max-h-[160px] resize-y rounded-lg border border-gray-200 bg-white p-2.5 text-xs text-gray-700 placeholder:text-gray-400 focus:border-brand-blue focus:ring-1 focus:ring-brand-blue/20 outline-none transition-all"
+                  />
+                  <div className="mt-1.5 flex items-center justify-between">
+                    <span className="text-[10px] text-gray-400">
+                      {notesSaving ? "Guardando..." : notes ? "Guardado" : ""}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <p className="text-[11px] text-gray-400">Selecciona una clase para tomar apuntes.</p>
+              )}
+            </div>
           </motion.aside>
         )}
       </AnimatePresence>
@@ -399,11 +451,18 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             {!sidebarOpen && (
               <button
                 onClick={() => setSidebarOpen(true)}
-                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors mr-1 cursor-pointer border-0 bg-transparent"
+                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer border-0 bg-transparent"
               >
                 <ChevronRight className="w-4 h-4 text-gray-500" />
               </button>
             )}
+            <button
+              onClick={onBack}
+              className="flex items-center gap-1.5 text-gray-500 hover:text-brand-blue text-xs font-bold transition-colors border-0 bg-transparent cursor-pointer"
+            >
+              <ChevronLeft className="w-3.5 h-3.5" /> Volver a cursos
+            </button>
+            <div className="h-4 w-px bg-gray-200 mx-1" />
             <div>
               <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
                 {selectedLesson ? `Módulo ${modules.find(m => m.lessons.includes(selectedLesson))?.order || ''} • Clase ${selectedLesson.lesson_order}` : ''}
@@ -553,9 +612,9 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
           ) : (
 
             /* ── NORMAL MODE: Video full width ── */
-            <div className="flex flex-col h-full overflow-y-auto">
+            <div className="flex flex-col h-full overflow-y-auto p-6">
               {/* Video Player */}
-              <div className="relative w-full aspect-video bg-black shadow-lg rounded-b-2xl overflow-hidden">
+              <div className="relative w-full aspect-video bg-black shadow-lg rounded-lg overflow-hidden">
                 {isSelectedLessonLocked ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 overflow-hidden">
                     <Lock className="w-16 h-16 text-blue-400 mb-4 relative z-10 animate-bounce" />
@@ -589,7 +648,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
 
               {/* Lesson Info */}
               <div className="flex-1">
-                <div className="p-8 max-w-4xl mx-auto">
+                <div className="py-8 max-w-4xl mx-auto">
                   <div className="flex items-center gap-3 mb-4">
                     <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-md bg-blue-50 text-brand-blue uppercase tracking-wider border border-blue-100">
                       Clase {selectedLesson.lesson_order}
