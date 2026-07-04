@@ -29,23 +29,8 @@ export default async function ComunidadPage() {
     <div className="bg-white min-h-screen">
       <Navbar />
       <main className="pt-0">
-        {/* ─── HERO & LOGOS CONTAINER (con video de fondo unificado) ─── */}
-        <div className="relative isolate w-full overflow-hidden bg-slate-50">
-          {/* Background Video */}
-          <div className="absolute inset-0 -z-20 w-full h-full overflow-hidden">
-            <video
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="w-full h-full object-cover opacity-[0.55] pointer-events-none"
-            >
-              <source src="/videos/que_gire_lentamente.mp4" type="video/mp4" />
-            </video>
-            {/* Smooth overlay for readability and fade into the next section */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-slate-50" />
-          </div>
-
+        {/* ─── HERO & LOGOS CONTAINER ─── */}
+        <div className="relative isolate w-full overflow-hidden bg-white">
           <SubscriptionGate 
             isLoggedIn={!!profile}
             heroOnly
