@@ -79,8 +79,9 @@ export default function NotificationCenter({ open, onClose, onUnreadChange }: No
   useEffect(() => {
     const supabase = createClient();
 
+    const channelId = `notifications_realtime_${Math.random().toString(36).substring(2, 9)}`;
     const channel = supabase
-      .channel("notifications_realtime")
+      .channel(channelId)
       .on(
         "postgres_changes",
         {

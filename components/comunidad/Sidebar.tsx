@@ -221,7 +221,6 @@ export default function Sidebar({
                   </span>
                 )}
               </button>
-              <NotificationCenter open={notifOpen} onClose={() => setNotifOpen(false)} onUnreadChange={setUnreadCount} />
             </div>
           </>
         ) : (
@@ -268,7 +267,6 @@ export default function Sidebar({
                   </span>
                 )}
               </button>
-              <NotificationCenter open={notifOpen} onClose={() => setNotifOpen(false)} onUnreadChange={setUnreadCount} />
             </div>
           </div>
         )}
@@ -558,6 +556,8 @@ export default function Sidebar({
           </>
         )}
       </AnimatePresence>
+
+      <NotificationCenter open={notifOpen} onClose={() => setNotifOpen(false)} onUnreadChange={setUnreadCount} />
     </>
   );
 }
