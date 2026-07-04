@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, ShieldAlert, Menu } from "lucide-react";
 import { Loader2 } from "lucide-react";
@@ -53,21 +53,16 @@ export default function ComunidadPortal() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
-  const searchParams = useSearchParams();
-  const selectedCourseSlug = searchParams.get("curso");
+  const selectedCourseSlug = activeTab === "cursos" ? (segments[2] || null) : null;
   const selectedCourseId = selectedCourseSlug ? (courseSlugMap[selectedCourseSlug] || null) : null;
 
   const handleSelectCourse = (idOrSlug: string | null) => {
-    const params = new URLSearchParams(window.location.search);
     if (idOrSlug) {
       const slug = Object.keys(courseSlugMap).find(k => courseSlugMap[k] === idOrSlug) || idOrSlug;
-      params.set("curso", slug);
-      params.delete("clase");
+      router.push(`/comunidad/cursos/${slug}`);
     } else {
-      params.delete("curso");
-      params.delete("clase");
+      router.push(`/comunidad/cursos`);
     }
-    router.push(`${pathname}?${params.toString()}`);
   };
 
   useEffect(() => {

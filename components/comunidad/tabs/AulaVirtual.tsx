@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   Play, Code, CheckCircle, Terminal, PlayCircle, Loader2,
   Maximize2, Minimize2, BookOpen, ChevronLeft, ChevronRight,
@@ -56,8 +56,9 @@ function slugify(text: string): string {
 export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const selectedLessonSlug = searchParams.get("clase");
+  const segments = pathname.split("/").filter(Boolean);
+  const courseSlug = segments[2];
+  const selectedLessonSlug = segments[3] || null;
 
   const [modules, setModules] = useState<Module[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
@@ -77,9 +78,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
 
   const handleSelectLesson = (lesson: Lesson) => {
     setSelectedLesson(lesson);
-    const params = new URLSearchParams(window.location.search);
-    params.set("clase", slugify(lesson.title));
-    router.push(`${pathname}?${params.toString()}`);
+    router.push(`/comunidad/cursos/${courseSlug}/${slugify(lesson.title)}`);
   };
 
   useEffect(() => {
@@ -114,9 +113,8 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
 
         // Auto-select lesson based on URL slug or first lesson if none
         let initialLesson = sorted.length > 0 && sorted[0].lessons.length > 0 ? sorted[0].lessons[0] : null;
-        const urlSlug = searchParams.get("clase");
-        if (urlSlug) {
-          const matched = sorted.flatMap(m => m.lessons).find(l => slugify(l.title) === urlSlug);
+        if (selectedLessonSlug) {
+          const matched = sorted.flatMap(m => m.lessons).find(l => slugify(l.title) === selectedLessonSlug);
           if (matched) initialLesson = matched;
         }
         setSelectedLesson(initialLesson);
@@ -127,7 +125,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
       }
     }
     load();
-  }, [courseId, searchParams]);
+  }, [courseId, courseSlug, selectedLessonSlug]);
 
   // When Super Clase activates, set language from lesson and load saved note
   useEffect(() => {
