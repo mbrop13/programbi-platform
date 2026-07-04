@@ -1,4 +1,4 @@
-import { PlayCircle, Clock, CheckCircle, TrendingUp, Search, Layers, Loader2, GraduationCap, Flame, BookOpen, Lock, Sparkles, Eye, ShoppingCart, XCircle, ChevronRight, Zap, Timer } from "lucide-react";
+import { PlayCircle, Clock, CheckCircle, TrendingUp, Search, Layers, Loader2, GraduationCap, BookOpen, Lock, Sparkles, Eye, ShoppingCart, XCircle, ChevronRight, Zap, Timer } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -155,7 +155,6 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
   }, []);
 
   const activeCourses = allCoursesFlat.filter(c => c.access_type !== null);
-  const trialCourses = allCoursesFlat.filter(c => c.access_type === 'trial');
 
   // Filter standalone courses
   const filteredStandalone = standaloneCourses.filter(c => {
@@ -219,30 +218,6 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
             />
             <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
           </div>
-       </div>
-
-       {/* ─── STAT CARDS ─── */}
-       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-           {[
-             { icon: GraduationCap, label: "Mis Cursos", value: String(activeCourses.length), color: "text-brand-blue", bg: "bg-blue-50" },
-             { icon: Layers, label: "Programas", value: String(programs.length), color: "text-violet-500", bg: "bg-violet-50" },
-             { icon: Sparkles, label: "Pruebas", value: String(trialCourses.length), color: "text-amber-500", bg: "bg-amber-50" },
-             { icon: Flame, label: "Total", value: String(allCoursesFlat.length), color: "text-rose-500", bg: "bg-rose-50" },
-           ].map((stat, i) => {
-             const Icon = stat.icon;
-             return (
-               <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                 className="bg-white rounded-2xl p-5 border border-gray-100 flex items-center gap-4 transition-colors hover:border-gray-200">
-                  <div className={`w-11 h-11 rounded-xl ${stat.bg} flex items-center justify-center shrink-0`}>
-                     <Icon className={`w-5 h-5 ${stat.color}`} />
-                  </div>
-                  <div>
-                     <div className="text-2xl font-black text-gray-900 leading-none">{stat.value}</div>
-                     <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mt-1">{stat.label}</div>
-                  </div>
-               </motion.div>
-             )
-           })}
        </div>
 
        {/* ─── FILTER TABS ─── */}
