@@ -353,19 +353,19 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-slate-950 text-white">
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-50 text-gray-900">
         <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
-        <p className="text-sm text-gray-400 mt-4 font-medium">Cargando tu aula virtual...</p>
+        <p className="text-sm text-gray-500 mt-4 font-medium">Cargando tu aula virtual...</p>
       </div>
     );
   }
 
   if (modules.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-slate-950 text-white p-6">
-        <Layers className="w-16 h-16 text-slate-700 mb-4 animate-pulse" />
-        <h3 className="text-xl font-bold text-white mb-2">Aún no hay clases cargadas</h3>
-        <p className="text-sm text-slate-400 max-w-sm text-center mb-6">El instructor se encuentra estructurando el temario del curso en este momento.</p>
+      <div className="flex flex-col items-center justify-center h-screen bg-gray-50 text-gray-900 p-6">
+        <Layers className="w-16 h-16 text-gray-300 mb-4 animate-pulse" />
+        <h3 className="text-xl font-bold text-gray-900 mb-2">Aún no hay clases cargadas</h3>
+        <p className="text-sm text-gray-500 max-w-sm text-center mb-6">El instructor se encuentra estructurando el temario del curso en este momento.</p>
         <button onClick={onBack} className="px-5 py-2.5 bg-brand-blue text-white rounded-xl text-sm font-bold flex items-center gap-1.5 shadow-lg active:scale-98 transition-all hover:bg-blue-600">
           <ChevronLeft className="w-4 h-4" /> Volver a la comunidad
         </button>
@@ -374,26 +374,26 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
   }
 
   return (
-    <div className="flex flex-col w-full h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans">
+    <div className="flex flex-col w-full h-screen overflow-hidden bg-white text-gray-900 font-sans">
 
-      {/* ─── TOP BAR (Header - Dark Slate) ─── */}
-      <header className="flex-none h-[64px] bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 z-20">
+      {/* ─── TOP BAR (Header - Light Theme) ─── */}
+      <header className="flex-none h-[64px] bg-white border-b border-gray-200 flex items-center justify-between px-6 z-20 shadow-sm">
         <div className="flex items-center gap-4 min-w-0">
           <button
             onClick={onBack}
-            className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all cursor-pointer border-0"
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-650 hover:text-gray-900 transition-all cursor-pointer border-0"
             title="Volver a los cursos"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           
-          <div className="h-6 w-px bg-slate-800 hidden sm:block" />
+          <div className="h-6 w-px bg-gray-200 hidden sm:block" />
           
           <div className="min-w-0">
-            <span className="text-[10px] font-black text-brand-blue uppercase tracking-widest block leading-none mb-1">
+            <span className="text-[10px] font-black text-brand-blue uppercase tracking-widest block block leading-none mb-1">
               {readableCourseName}
             </span>
-            <h1 className="text-sm md:text-base font-bold text-white leading-none line-clamp-1">
+            <h1 className="text-sm md:text-base font-bold text-gray-905 leading-none line-clamp-1">
               {selectedLesson?.title || "Aula Virtual"}
             </h1>
           </div>
@@ -405,16 +405,16 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             onClick={handleShare}
             className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer flex items-center gap-1.5 ${
               copiedShare 
-                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
-                : "bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700 hover:border-slate-600"
+                ? "bg-emerald-50 text-emerald-600 border-emerald-200" 
+                : "bg-gray-55 hover:bg-gray-100 text-gray-700 border-gray-200 hover:border-gray-300"
             }`}
           >
             <Share2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{copiedShare ? "Copiado!" : "Compartir"}</span>
+            <span className="hidden sm:inline">{copiedShare ? "¡Copiado!" : "Compartir"}</span>
           </button>
 
           {/* Progress Circular SVG */}
-          <div className="h-6 w-px bg-slate-800" />
+          <div className="h-6 w-px bg-gray-200" />
           <div className="flex items-center gap-2.5">
             <div className="relative w-8 h-8">
               <svg className="w-full h-full transform -rotate-90">
@@ -422,7 +422,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                   cx="16"
                   cy="16"
                   r="13"
-                  className="stroke-slate-800"
+                  className="stroke-gray-100"
                   strokeWidth="2.5"
                   fill="transparent"
                 />
@@ -437,13 +437,13 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                   strokeDashoffset={2 * Math.PI * 13 * (1 - progress / 100)}
                 />
               </svg>
-              <div className="absolute inset-0 flex items-center justify-center text-[9px] font-black text-white">
+              <div className="absolute inset-0 flex items-center justify-center text-[9px] font-black text-gray-900">
                 {progress}%
               </div>
             </div>
             <div className="hidden md:block text-left leading-none">
-              <div className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wide">Tu Progreso</div>
-              <div className="text-[11px] font-bold text-slate-200 mt-1">{completedLessons.size}/{totalLessons} clases</div>
+              <div className="text-[9px] text-gray-400 font-extrabold uppercase tracking-wide">Tu Progreso</div>
+              <div className="text-[11px] font-bold text-gray-700 mt-1">{completedLessons.size}/{totalLessons} clases</div>
             </div>
           </div>
 
@@ -451,7 +451,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
           {!sidebarOpen && (
             <button
               onClick={() => setSidebarOpen(true)}
-              className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all cursor-pointer border-0 ml-2"
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-650 hover:text-gray-900 transition-all cursor-pointer border-0 ml-2"
               title="Mostrar contenido"
             >
               <BookOpen className="w-4 h-4" />
@@ -461,7 +461,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
       </header>
 
       {/* ─── BODY LAYOUT ─── */}
-      <div className="flex-1 flex flex-row min-h-0 w-full overflow-hidden bg-slate-950">
+      <div className="flex-1 flex flex-row min-h-0 w-full overflow-hidden bg-gray-50">
 
         {/* ─── LEFT PANE: Video / Tabs / Super Clase ─── */}
         <div className="flex-1 flex flex-col min-w-0 h-full relative z-0">
@@ -469,8 +469,8 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
           {/* Main workspace (depending on Super Clase Mode) */}
           <div className="flex-1 min-h-0 overflow-hidden relative">
             {!selectedLesson ? (
-              <div className="flex flex-col items-center justify-center h-full text-slate-500">
-                <Monitor className="w-16 h-16 text-slate-800 mb-4" />
+              <div className="flex flex-col items-center justify-center h-full text-gray-400 bg-white">
+                <Monitor className="w-16 h-16 text-gray-200 mb-4" />
                 <p className="font-semibold text-sm">Selecciona una clase del panel lateral</p>
               </div>
             ) : superClaseActive && selectedLesson.superclass_language ? (
@@ -523,7 +523,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                   </div>
                   
                   {/* Console output */}
-                  <div className="flex-none h-48 bg-slate-950 border-t border-slate-800 flex flex-col">
+                  <div className="flex-none h-48 bg-slate-955 border-t border-slate-800 flex flex-col">
                     <div className="flex-none h-8 bg-slate-900 flex items-center px-4 border-b border-slate-800">
                       <Terminal className="w-3.5 h-3.5 text-slate-500 mr-2" />
                       <span className="text-[10px] text-slate-400 font-bold tracking-wider uppercase">Resultado Consola</span>
@@ -542,8 +542,8 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                 </div>
 
                 {/* Video PiP (Picture in Picture Container) */}
-                <div className="flex-none w-[380px] bg-slate-950 border-l border-slate-850 flex flex-col h-full">
-                  <div className="relative w-full aspect-video bg-black shrink-0 border-b border-slate-850">
+                <div className="flex-none w-[380px] bg-white border-l border-gray-200 flex flex-col h-full">
+                  <div className="relative w-full aspect-video bg-black shrink-0 border-b border-gray-200">
                     {videoId ? (
                       <iframe
                         className="absolute inset-0 w-full h-full"
@@ -552,14 +552,14 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                         allowFullScreen
                       />
                     ) : (
-                      <div className="absolute inset-0 flex items-center justify-center bg-slate-900">
-                        <p className="text-xs text-slate-500">Video no disponible</p>
+                      <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                        <p className="text-xs text-gray-500">Video no disponible</p>
                       </div>
                     )}
                   </div>
                   <div className="flex-1 overflow-y-auto p-5 space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-[9px] font-extrabold bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded border border-violet-500/20 uppercase tracking-wide">
+                      <span className="text-[9px] font-extrabold bg-violet-50 text-violet-600 px-2 py-0.5 rounded border border-violet-100 uppercase tracking-wide">
                         Modo Coding
                       </span>
                       <button
@@ -570,10 +570,10 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                       </button>
                     </div>
                     <div>
-                      <h4 className="text-sm font-bold text-white mb-2 leading-snug">
+                      <h4 className="text-sm font-bold text-gray-900 mb-2 leading-snug">
                         {selectedLesson.title}
                       </h4>
-                      <p className="text-xs text-slate-400 leading-relaxed">
+                      <p className="text-xs text-gray-500 leading-relaxed">
                         Lee los enunciados de la clase, escribe tus rutinas de código en el panel izquierdo y ejecuta. Tu progreso en código se sincroniza automáticamente.
                       </p>
                     </div>
@@ -582,12 +582,12 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
               </div>
             ) : (
               
-              /* ── UDEMY-LIKE VIEW: Big Video + Tabs Below ── */
-              <div className="flex flex-col h-full bg-slate-950 overflow-y-auto">
+              /* ── UDEMY-LIKE VIEW: Big Video + Tabs Below (Light Theme) ── */
+              <div className="flex flex-col h-full bg-white overflow-y-auto">
                 
                 {/* Cinema Screen Frame for Video */}
-                <div className="flex-none w-full bg-black flex justify-center items-center py-2 px-6">
-                  <div className="relative w-full max-w-[1120px] aspect-video bg-slate-900 rounded-lg overflow-hidden shadow-2xl">
+                <div className="flex-none w-full bg-gray-100 flex justify-center items-center py-2 px-6 border-b border-gray-200">
+                  <div className="relative w-full max-w-[1120px] aspect-video bg-slate-900 rounded-lg overflow-hidden shadow-xl">
                     {isSelectedLessonLocked ? (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 to-slate-900 overflow-hidden">
                         <Lock className="w-12 h-12 text-blue-500 mb-3 animate-bounce" />
@@ -610,7 +610,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                         allowFullScreen
                       />
                     ) : (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-955 gap-2">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 gap-2">
                         <Play className="w-12 h-12 text-slate-800" />
                         <p className="text-slate-600 text-xs font-medium">Video no disponible en este momento</p>
                       </div>
@@ -618,11 +618,11 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                   </div>
                 </div>
 
-                {/* Details & Interactive Tabs (Udemy Style) */}
-                <div className="flex-1 w-full max-w-[1120px] mx-auto px-6 py-4 bg-transparent">
+                {/* Details & Interactive Tabs (Udemy Style - Light Theme) */}
+                <div className="flex-1 w-full max-w-[1120px] mx-auto px-6 py-6 bg-white">
                   
                   {/* Tabs Navbar */}
-                  <div className="flex items-center gap-6 border-b border-slate-800 mb-6 overflow-x-auto scrollbar-hide">
+                  <div className="flex items-center gap-6 border-b border-gray-250 mb-6 overflow-x-auto scrollbar-hide">
                     {[
                       { id: 'overview', label: 'Descripción general', icon: FileText },
                       { id: 'notes', label: 'Mis apuntes', icon: StickyNote },
@@ -635,7 +635,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                           key={tab.id}
                           onClick={() => setActiveTab(tab.id as any)}
                           className={`flex items-center gap-1.5 pb-3.5 text-sm font-semibold transition-all relative border-0 bg-transparent cursor-pointer whitespace-nowrap ${
-                            isActive ? 'text-white font-bold' : 'text-slate-400 hover:text-slate-200'
+                            isActive ? 'text-gray-900 font-bold' : 'text-gray-500 hover:text-gray-700'
                           }`}
                         >
                           <Icon className="w-4 h-4" />
@@ -658,17 +658,17 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                     {/* Tab 1: OVERVIEW */}
                     {activeTab === 'overview' && (
                       <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-850 pb-5">
+                        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-100 pb-5">
                           <div>
                             <div className="flex items-center gap-2 mb-2">
-                              <span className="text-[10px] font-black px-2.5 py-0.5 rounded bg-blue-500/10 text-brand-blue uppercase tracking-wider border border-blue-500/20">
+                              <span className="text-[10px] font-black px-2.5 py-0.5 rounded bg-blue-50 text-brand-blue uppercase tracking-wider border border-blue-100">
                                 Módulo {selectedModuleOrder} • Clase {selectedLesson.lesson_order}
                               </span>
-                              <span className="text-[10px] font-black px-2 py-0.5 rounded bg-slate-800 text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                              <span className="text-[10px] font-black px-2 py-0.5 rounded bg-gray-100 text-gray-600 uppercase tracking-wider flex items-center gap-1 border border-gray-200">
                                 <Clock className="w-2.5 h-2.5" /> {selectedLesson.duration_minutes} min
                               </span>
                             </div>
-                            <h2 className="text-xl md:text-2xl font-black text-white leading-tight">
+                            <h2 className="text-xl md:text-2xl font-black text-gray-900 leading-tight animate-none">
                               {selectedLesson.title}
                             </h2>
                           </div>
@@ -685,46 +685,46 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                         </div>
 
                         {/* Udemy ratings & statistics overview */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-850">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-gray-50 p-4 rounded-xl border border-gray-200/80">
                           <div className="text-left">
-                            <span className="text-[10px] text-slate-400 font-extrabold uppercase block tracking-wider">Calificación</span>
+                            <span className="text-[10px] text-gray-500 font-extrabold uppercase block tracking-wider">Calificación</span>
                             <div className="flex items-center gap-1.5 mt-1">
-                              <span className="text-base font-black text-white">4.8</span>
+                              <span className="text-base font-black text-gray-900">4.8</span>
                               <div className="flex text-amber-500">
                                 {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-3 h-3 fill-amber-500 stroke-none" />)}
                               </div>
                             </div>
                           </div>
                           <div className="text-left">
-                            <span className="text-[10px] text-slate-400 font-extrabold uppercase block tracking-wider">Estudiantes</span>
-                            <span className="text-base font-black text-white mt-1 block">15k+ en el curso</span>
+                            <span className="text-[10px] text-gray-500 font-extrabold uppercase block tracking-wider">Estudiantes</span>
+                            <span className="text-base font-black text-gray-900 mt-1 block">15k+ en el curso</span>
                           </div>
                           <div className="text-left">
-                            <span className="text-[10px] text-slate-400 font-extrabold uppercase block tracking-wider">Duración Total</span>
-                            <span className="text-base font-black text-white mt-1 block">{totalLessons} clases</span>
+                            <span className="text-[10px] text-gray-500 font-extrabold uppercase block tracking-wider">Duración Total</span>
+                            <span className="text-base font-black text-gray-900 mt-1 block">{totalLessons} clases</span>
                           </div>
                           <div className="text-left">
-                            <span className="text-[10px] text-slate-400 font-extrabold uppercase block tracking-wider">Acceso</span>
-                            <span className="text-base font-black text-emerald-400 mt-1 block uppercase">Premium</span>
+                            <span className="text-[10px] text-gray-500 font-extrabold uppercase block tracking-wider">Acceso</span>
+                            <span className="text-base font-black text-emerald-600 mt-1 block uppercase">Premium</span>
                           </div>
                         </div>
 
                         <div>
-                          <h3 className="font-bold text-sm text-slate-200 mb-2">Acerca de esta lección</h3>
-                          <p className="text-sm text-slate-350 leading-relaxed font-medium">
+                          <h3 className="font-bold text-sm text-gray-900 mb-2">Acerca de esta lección</h3>
+                          <p className="text-sm text-gray-650 leading-relaxed font-medium">
                             En esta clase aprenderás los pilares prácticos fundamentales para el desarrollo de tus habilidades. Pon a prueba los conceptos estudiados en el video, toma apuntes clave y completa el cuestionario o práctica correspondiente en el Playground interactivo.
                           </p>
                         </div>
 
                         {/* Instructor Profile Card */}
-                        <div className="pt-4 border-t border-slate-850 flex items-center gap-4">
-                          <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 border border-slate-700">
+                        <div className="pt-4 border-t border-gray-100 flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 border border-gray-200">
                             <User className="w-6 h-6" />
                           </div>
                           <div>
-                            <span className="text-[10px] text-slate-400 font-extrabold uppercase block tracking-wider">Instructor</span>
-                            <span className="text-sm font-bold text-white">ProgramBI Team</span>
-                            <span className="text-xs text-slate-400 block mt-0.5">Especialistas en Business Intelligence y Analítica de Datos</span>
+                            <span className="text-[10px] text-gray-500 font-extrabold uppercase block tracking-wider">Instructor</span>
+                            <span className="text-sm font-bold text-gray-900">ProgramBI Team</span>
+                            <span className="text-xs text-gray-500 block mt-0.5">Especialistas en Business Intelligence y Analítica de Datos</span>
                           </div>
                         </div>
                       </motion.div>
@@ -733,16 +733,16 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                     {/* Tab 2: NOTES (Personal Notepad) */}
                     {activeTab === 'notes' && (
                       <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                        <div className="flex items-center justify-between border-b border-slate-850 pb-3">
+                        <div className="flex items-center justify-between border-b border-gray-100 pb-3">
                           <div>
-                            <h3 className="font-bold text-sm text-white">Mis notas personales</h3>
-                            <p className="text-xs text-slate-400">Tus apuntes se guardan automáticamente en tu navegador.</p>
+                            <h3 className="font-bold text-sm text-gray-900">Mis notas personales</h3>
+                            <p className="text-xs text-gray-500">Tus apuntes se guardan automáticamente en tu navegador.</p>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               onClick={handleDownloadNotes}
                               disabled={!notes.trim()}
-                              className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border-0 cursor-pointer disabled:opacity-40 transition-colors flex items-center gap-1.5 text-xs font-bold"
+                              className="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 hover:text-gray-900 border-0 cursor-pointer disabled:opacity-40 transition-colors flex items-center gap-1.5 text-xs font-bold"
                               title="Descargar apuntes como archivo .txt"
                             >
                               <Download className="w-3.5 h-3.5" />
@@ -751,7 +751,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                             <button
                               onClick={() => { if (confirm("¿Seguro que deseas eliminar tus apuntes de esta clase?")) setNotes(""); }}
                               disabled={!notes.trim()}
-                              className="p-2 rounded-lg bg-red-950/20 hover:bg-red-950/40 text-red-400 border-0 cursor-pointer disabled:opacity-40 transition-colors"
+                              className="p-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-650 border-0 cursor-pointer disabled:opacity-40 transition-colors"
                               title="Limpiar apuntes"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -764,9 +764,9 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             placeholder="Escribe aquí tus ideas, notas clave, apuntes o códigos de esta clase para tenerlos siempre a mano..."
-                            className="w-full min-h-[160px] bg-slate-900 border border-slate-800 rounded-xl p-4 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-blue/30 focus:border-brand-blue/40 leading-relaxed"
+                            className="w-full min-h-[160px] bg-white border border-gray-250 rounded-xl p-4 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-1 focus:ring-brand-blue/20 focus:border-brand-blue/30 leading-relaxed shadow-sm"
                           />
-                          <div className="absolute bottom-3 right-3 text-[10px] text-slate-500 font-bold">
+                          <div className="absolute bottom-3 right-3 text-[10px] text-gray-400 font-bold">
                             {notesSaving ? (
                               <span className="flex items-center gap-1 text-brand-blue"><Loader2 className="w-3 h-3 animate-spin" /> Guardando...</span>
                             ) : notes ? (
@@ -782,19 +782,19 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                     {/* Tab 3: FAQ (Frequently Asked Questions) */}
                     {activeTab === 'faq' && (
                       <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                        <h3 className="font-bold text-sm text-white border-b border-slate-850 pb-3">Preguntas frecuentes del curso</h3>
+                        <h3 className="font-bold text-sm text-gray-900 border-b border-gray-100 pb-3">Preguntas frecuentes del curso</h3>
                         <div className="space-y-3">
                           {[
                             { q: "¿Cómo descargo los archivos y recursos del curso?", a: "Puedes encontrar los recursos descargables en la pestaña general de cada módulo o solicitarlos directamente al Asistente de IA en el panel lateral." },
                             { q: "¿Tengo acceso ilimitado a las clases y Playground?", a: "Sí, todos los usuarios suscritos en planes premium tienen acceso total a todos los videos y herramientas de ejecución de código sin restricciones." },
                             { q: "¿Qué hago si mi código en el Playground arroja error?", a: "Asegúrate de que estás usando el lenguaje adecuado en la pestaña superior (por ejemplo, Python para sintaxis de Python) y lee el mensaje que arroja la Consola de Salida." }
                           ].map((item, idx) => (
-                            <div key={idx} className="bg-slate-900/30 p-4 rounded-xl border border-slate-850/60">
-                              <h4 className="text-xs font-black text-white flex items-center gap-2">
+                            <div key={idx} className="bg-gray-50/50 p-4 rounded-xl border border-gray-200/80">
+                              <h4 className="text-xs font-black text-gray-900 flex items-center gap-2">
                                 <HelpCircle className="w-3.5 h-3.5 text-brand-blue shrink-0" />
                                 {item.q}
                               </h4>
-                              <p className="text-xs text-slate-400 mt-2 leading-relaxed font-medium pl-5">
+                              <p className="text-xs text-gray-500 mt-2 leading-relaxed font-medium pl-5">
                                 {item.a}
                               </p>
                             </div>
@@ -809,7 +809,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
           </div>
         </div>
 
-        {/* ─── RIGHT PANE: Collapsible Sidebar (Udemy Style) ─── */}
+        {/* ─── RIGHT PANE: Collapsible Sidebar (Udemy Style - Light Theme) ─── */}
         <AnimatePresence>
           {sidebarOpen && (
             <motion.aside
@@ -817,10 +817,10 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
               animate={{ width: 340, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="flex-none h-full border-l border-slate-850 flex flex-col bg-slate-900 overflow-hidden relative z-10"
+              className="flex-none h-full border-l border-gray-200 flex flex-col bg-white overflow-hidden relative z-10"
             >
               {/* Sidebar Header & Tabs */}
-              <div className="flex-none border-b border-slate-800">
+              <div className="flex-none border-b border-gray-200 bg-white">
                 <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
                   <div className="flex items-center gap-1.5">
                     {[
@@ -832,18 +832,18 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                         onClick={() => setSidebarTab(tab.id as any)}
                         className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border-0 ${
                           sidebarTab === tab.id
-                            ? 'bg-slate-800 text-white'
-                            : 'bg-transparent text-slate-400 hover:text-slate-200'
+                            ? 'bg-gray-150 text-gray-900'
+                            : 'bg-transparent text-gray-500 hover:text-gray-700'
                         }`}
                       >
-                        {tab.sparkles && <Sparkles className="w-3 h-3 inline mr-1 text-violet-400" />}
+                        {tab.sparkles && <Sparkles className="w-3 h-3 inline mr-1 text-violet-650" />}
                         {tab.label}
                       </button>
                     ))}
                   </div>
                   <button
                     onClick={() => setSidebarOpen(false)}
-                    className="p-1.5 hover:bg-slate-800 rounded-lg transition-colors border-0 bg-transparent cursor-pointer text-slate-400 hover:text-white"
+                    className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors border-0 bg-transparent cursor-pointer text-gray-400 hover:text-gray-900"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -855,16 +855,16 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                 
                 {/* Mode A: COURSE CONTENT */}
                 {sidebarTab === 'content' && (
-                  <div className="divide-y divide-slate-855">
+                  <div className="divide-y divide-gray-100">
                     {modules.map((mod) => (
                       <div key={mod.name} className="bg-transparent">
-                        <div className="px-5 py-3 bg-slate-900 border-b border-slate-850">
+                        <div className="px-5 py-3 bg-gray-50/80 border-b border-gray-100">
                           <span className="text-[9px] font-black text-brand-blue uppercase tracking-widest block">
                             Módulo {mod.order}
                           </span>
-                          <h4 className="text-xs font-extrabold text-white mt-0.5 leading-snug">{mod.name}</h4>
+                          <h4 className="text-xs font-extrabold text-gray-950 mt-0.5 leading-snug">{mod.name}</h4>
                         </div>
-                        <div className="divide-y divide-slate-850/40">
+                        <div className="divide-y divide-gray-100/40">
                           {mod.lessons.map((lesson) => {
                             const isSelected = selectedLesson?.id === lesson.id;
                             const isCompleted = completedLessons.has(lesson.id);
@@ -877,14 +877,14 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                                 key={lesson.id}
                                 className={`w-full flex items-start gap-3.5 px-5 py-4 transition-all group relative border-l-4 ${
                                   isSelected 
-                                    ? 'bg-slate-850/60 border-brand-blue' 
-                                    : 'border-transparent hover:bg-slate-850/20'
+                                    ? 'bg-blue-50/70 border-brand-blue' 
+                                    : 'border-transparent hover:bg-gray-50/60'
                                 }`}
                               >
                                 {/* Checkbox / Lock Selector (Left) */}
                                 <div className="flex-none mt-0.5">
                                   {isLocked ? (
-                                    <div className="w-5 h-5 rounded flex items-center justify-center text-slate-600 bg-slate-950 border border-slate-800">
+                                    <div className="w-5 h-5 rounded flex items-center justify-center text-gray-400 bg-gray-50 border border-gray-200">
                                       <Lock className="w-3 h-3" />
                                     </div>
                                   ) : (
@@ -893,7 +893,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                                       className={`w-5 h-5 rounded flex items-center justify-center cursor-pointer transition-all border outline-none ${
                                         isCompleted
                                           ? 'bg-emerald-500 border-emerald-500 text-white'
-                                          : 'bg-slate-955 border-slate-700 hover:border-slate-500 text-transparent'
+                                          : 'bg-white border-gray-300 hover:border-gray-400 text-transparent'
                                       }`}
                                     >
                                       <Check className="w-3.5 h-3.5 stroke-[3px]" />
@@ -907,22 +907,22 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                                   className="flex-1 min-w-0 cursor-pointer"
                                 >
                                   <h5 className={`text-[12px] leading-snug font-medium line-clamp-2 transition-colors ${
-                                    isSelected ? 'text-white font-bold' : 'text-slate-300 group-hover:text-white'
+                                    isSelected ? 'text-gray-950 font-bold' : 'text-gray-700 group-hover:text-gray-950'
                                   }`}>
                                     {lesson.lesson_order}. {lesson.title}
                                   </h5>
                                   <div className="flex flex-wrap items-center gap-2 mt-1.5">
-                                    <span className="text-[10px] text-slate-500 font-bold flex items-center gap-1 leading-none">
+                                    <span className="text-[10px] text-gray-400 font-bold flex items-center gap-1 leading-none">
                                       <Clock className="w-2.5 h-2.5" />
                                       {lesson.duration_minutes || 0} min
                                     </span>
                                     {hasSuperClase && (
-                                      <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-400 uppercase tracking-wide border border-violet-500/20">
+                                      <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-violet-50 text-violet-650 uppercase tracking-wide border border-violet-100">
                                         Super Clase
                                       </span>
                                     )}
                                     {lesson.is_free_preview && (
-                                      <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 uppercase tracking-wide border border-emerald-500/20">
+                                      <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 uppercase tracking-wide border border-emerald-100">
                                         Gratis
                                       </span>
                                     )}
@@ -939,8 +939,8 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
 
                 {/* Mode B: MOCK AI ASSISTANT CHAT */}
                 {sidebarTab === 'ai' && (
-                  <div className="flex flex-col h-full bg-slate-900">
-                    <div className="flex-1 p-4 overflow-y-auto space-y-4">
+                  <div className="flex flex-col h-full bg-white">
+                    <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50/30">
                       {chatMessages.map((msg, i) => (
                         <div
                           key={i}
@@ -956,10 +956,10 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                           <div className={`p-3 rounded-2xl text-[12px] leading-relaxed ${
                             msg.role === 'user'
                               ? 'bg-brand-blue text-white rounded-tr-none'
-                              : 'bg-slate-850 text-slate-200 rounded-tl-none border border-slate-800'
+                              : 'bg-white text-gray-800 rounded-tl-none border border-gray-250 shadow-sm'
                           }`}>
                             {msg.text.includes("```") ? (
-                              <pre className="font-mono bg-slate-955 p-2.5 rounded-lg text-[10px] overflow-x-auto text-violet-300 mt-2 leading-snug whitespace-pre-wrap">{msg.text.replace(/```(python|javascript|sql)?/g, "")}</pre>
+                              <pre className="font-mono bg-slate-900 p-2.5 rounded-lg text-[10px] overflow-x-auto text-violet-300 mt-2 leading-snug whitespace-pre-wrap">{msg.text.replace(/```(python|javascript|sql)?/g, "")}</pre>
                             ) : (
                               msg.text
                             )}
@@ -970,26 +970,26 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                       {chatLoading && (
                         <div className="flex gap-2.5 mr-auto max-w-[85%] animate-pulse">
                           <div className="w-6 h-6 rounded-full bg-violet-600 flex items-center justify-center text-[10px] font-bold text-white">IA</div>
-                          <div className="p-3 bg-slate-850 text-slate-400 rounded-2xl rounded-tl-none text-[12px] flex items-center gap-1.5 border border-slate-800">
-                            <Loader2 className="w-3.5 h-3.5 animate-spin text-violet-400" /> Analizando...
+                          <div className="p-3 bg-white text-gray-400 rounded-2xl rounded-tl-none text-[12px] flex items-center gap-1.5 border border-gray-200 shadow-sm">
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-violet-500" /> Analizando...
                           </div>
                         </div>
                       )}
                       <div ref={chatEndRef} />
                     </div>
 
-                    <div className="flex-none p-3 border-t border-slate-800 bg-slate-900/60 flex items-center gap-2">
+                    <div className="flex-none p-3 border-t border-gray-150 bg-gray-50 flex items-center gap-2">
                       <input
                         type="text"
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleSendChatMessage(); }}
                         placeholder="Pregúntale al Asistente..."
-                        className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 outline-none focus:border-brand-blue transition-colors"
+                        className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 placeholder:text-gray-450 outline-none focus:border-brand-blue transition-colors shadow-sm"
                       />
                       <button
                         onClick={handleSendChatMessage}
-                        className="w-8 h-8 rounded-xl bg-violet-600 hover:bg-violet-500 text-white flex items-center justify-center cursor-pointer border-0 shrink-0 transition-colors"
+                        className="w-8 h-8 rounded-xl bg-violet-650 hover:bg-violet-600 text-white flex items-center justify-center cursor-pointer border-0 shrink-0 transition-colors"
                       >
                         <Send className="w-3.5 h-3.5" />
                       </button>
