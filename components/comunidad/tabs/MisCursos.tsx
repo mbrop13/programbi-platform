@@ -1,4 +1,4 @@
-import { PlayCircle, Clock, CheckCircle, TrendingUp, Search, Layers, Loader2, GraduationCap, BookOpen, Lock, Sparkles, Eye, ShoppingCart, XCircle, ChevronRight, Zap, Timer } from "lucide-react";
+import { PlayCircle, Clock, CheckCircle, TrendingUp, Layers, Loader2, GraduationCap, BookOpen, Lock, Sparkles, Eye, ShoppingCart, XCircle, ChevronRight, Zap, Timer } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -40,7 +40,6 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
   const [allCoursesFlat, setAllCoursesFlat] = useState<CourseWithAccess[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'active'>('active');
-  const [searchQuery, setSearchQuery] = useState("");
   const [buyingCourseId, setBuyingCourseId] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -158,9 +157,8 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
 
   // Filter standalone courses
   const filteredStandalone = standaloneCourses.filter(c => {
-    const matchSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase());
-    if (filter === 'active') return matchSearch && c.access_type !== null;
-    return matchSearch;
+    if (filter === 'active') return c.access_type !== null;
+    return true;
   }).sort((a, b) => {
     if (a.access_type && !b.access_type) return -1;
     if (!a.access_type && b.access_type) return 1;
@@ -169,10 +167,8 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
 
   // Filter programs
   const filteredPrograms = programs.filter(p => {
-    const matchSearch = p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      p.courses.some(c => c.title.toLowerCase().includes(searchQuery.toLowerCase()));
-    if (filter === 'active') return matchSearch && p.activeCourses > 0;
-    return matchSearch;
+    if (filter === 'active') return p.activeCourses > 0;
+    return true;
   });
 
   const handleBuyCourse = async (courseId: string) => {
@@ -195,28 +191,14 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
   return (
     <div className="w-full">
        {/* ─── HEADER ─── */}
-       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 flex items-center justify-center shadow-sm">
-                <BookOpen className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="font-display font-black text-2xl sm:text-3xl text-gray-900">Mi Aprendizaje</h1>
-              </div>
+       <div className="mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 flex items-center justify-center shadow-sm">
+              <BookOpen className="w-5 h-5 text-white" />
             </div>
-            <p className="text-gray-400 text-sm max-w-xl ml-[52px]">Explora tus cursos y programas. El contenido más reciente aparece primero.</p>
-          </div>
-          
-          <div className="relative w-full md:w-72">
-            <input 
-               type="text" 
-               placeholder="Buscar curso..." 
-               value={searchQuery}
-               onChange={(e) => setSearchQuery(e.target.value)}
-               className="w-full bg-white border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue/40 transition-all shadow-sm"
-            />
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+            <div>
+              <h1 className="font-display font-black text-2xl sm:text-3xl text-gray-900">Mi Aprendizaje</h1>
+            </div>
           </div>
        </div>
 
@@ -278,20 +260,11 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
                </div>
              </div>
              <h3 className="font-display font-black text-xl text-gray-900 mb-2">
-               {searchQuery ? "Sin resultados" : "Comienza tu aprendizaje"}
+               Comienza tu aprendizaje
              </h3>
              <p className="text-gray-500 text-sm mb-5 max-w-sm mx-auto">
-               {searchQuery 
-                 ? `No encontramos cursos que coincidan con "${searchQuery}". Intenta con otros términos.`
-                 : "Aún no tienes cursos activos. Explora el catálogo y comienza tu viaje en datos."}
+               Aún no tienes cursos activos. Explora el catálogo y comienza tu viaje en datos.
              </p>
-             {searchQuery && (
-               <button 
-                 onClick={() => setSearchQuery("")}
-                 className="px-5 py-2.5 bg-brand-blue text-white rounded-xl text-sm font-bold shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
-                 Limpiar búsqueda
-               </button>
-             )}
           </motion.div>
        ) : (
        <div className="space-y-8">
