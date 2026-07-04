@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { motion } from "framer-motion";
 import type { AiChat } from "@/lib/supabase/ai";
 import { cn } from "@/lib/utils";
 import { FAVICON_URL } from "./constants";
@@ -120,7 +121,7 @@ export function ConversationSidebar({
     const isActive = c.id === activeChatId;
     const isEditing = editingId === c.id;
     return (
-      <div
+      <motion.div
         key={c.id}
         role="button"
         tabIndex={isEditing ? -1 : 0}
@@ -141,8 +142,10 @@ export function ConversationSidebar({
           e.stopPropagation();
           startRename(c);
         }}
+        whileHover={{ scale: 1.01 }}
+        whileTap={{ scale: 0.99 }}
         className={cn(
-          "group flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs sm:text-sm transition-all duration-200 cursor-pointer focus:outline-none border",
+          "group flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs sm:text-sm transition-all duration-200 cursor-pointer focus:outline-none border select-none",
           isActive
             ? "bg-brand-blue/5 border-brand-blue/20 text-brand-blue font-semibold shadow-sm"
             : "text-text-secondary hover:bg-slate-50 hover:text-text-primary border-transparent"
@@ -181,7 +184,7 @@ export function ConversationSidebar({
             <button
               onClick={(e) => { e.stopPropagation(); startRename(c); }}
               aria-label="Renombrar conversación"
-              className="rounded p-1 text-text-faint hover:bg-surface-3 hover:text-text-secondary"
+              className="rounded p-1 text-text-faint hover:bg-surface-3 hover:text-text-secondary border-0 bg-transparent cursor-pointer"
               title="Renombrar"
             >
               <Pencil className="h-3 w-3" aria-hidden />
@@ -190,7 +193,7 @@ export function ConversationSidebar({
               onClick={(e) => { e.stopPropagation(); onPin(c.id); }}
               aria-label={c.pinned ? "Desfijar conversación" : "Fijar conversación"}
               className={cn(
-                "rounded p-1 hover:bg-surface-3",
+                "rounded p-1 hover:bg-surface-3 border-0 bg-transparent cursor-pointer",
                 c.pinned ? "text-accent-yellow" : "text-text-faint hover:text-text-secondary"
               )}
               title={c.pinned ? "Desfijar" : "Fijar"}
@@ -200,7 +203,7 @@ export function ConversationSidebar({
             <button
               onClick={(e) => { e.stopPropagation(); onArchive(c.id); }}
               aria-label="Archivar conversación"
-              className="rounded p-1 text-text-faint hover:bg-surface-3 hover:text-text-secondary"
+              className="rounded p-1 text-text-faint hover:bg-surface-3 hover:text-text-secondary border-0 bg-transparent cursor-pointer"
               title="Archivar"
             >
               <Archive className="h-3 w-3" aria-hidden />
@@ -208,14 +211,14 @@ export function ConversationSidebar({
             <button
               onClick={(e) => { e.stopPropagation(); onDelete(c.id); }}
               aria-label="Eliminar conversación"
-              className="rounded p-1 text-text-faint hover:bg-surface-3 hover:text-destructive"
+              className="rounded p-1 text-text-faint hover:bg-surface-3 hover:text-destructive border-0 bg-transparent cursor-pointer"
               title="Eliminar"
             >
               <Trash2 className="h-3 w-3" aria-hidden />
             </button>
           </div>
         )}
-      </div>
+      </motion.div>
     );
   };
 
@@ -241,20 +244,24 @@ export function ConversationSidebar({
 
       {/* Volver + Nuevo chat + búsqueda */}
       <div className="space-y-3.5 border-b border-border px-4 py-4 bg-slate-50/50">
-        <Link
-          href="/comunidad/inicio"
-          className="flex items-center gap-2 rounded-xl border border-slate-200/50 bg-white/50 px-3 py-2 text-xs font-semibold text-text-secondary transition-all hover:bg-slate-50 hover:text-text-primary hover:border-slate-350 no-underline shadow-sm w-fit"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
-          Volver a la comunidad
-        </Link>
-        <button
+        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="w-fit">
+          <Link
+            href="/comunidad/inicio"
+            className="flex items-center gap-2 rounded-xl border border-slate-200/50 bg-white/50 px-3 py-2 text-xs font-semibold text-text-secondary transition-all hover:bg-slate-50 hover:text-text-primary hover:border-slate-350 no-underline shadow-sm w-fit cursor-pointer"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+            Volver a la comunidad
+          </Link>
+        </motion.div>
+        <motion.button
           onClick={onNew}
-          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-blue to-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-[0_4px_12px_rgba(24,144,255,0.15)] hover:shadow-[0_6px_20px_rgba(24,144,255,0.25)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer border-none"
+          whileHover={{ scale: 1.02, y: -0.5, boxShadow: "0 6px 20px rgba(24,144,255,0.25)" }}
+          whileTap={{ scale: 0.98, y: 0 }}
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-blue to-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-[0_4px_12px_rgba(24,144,255,0.15)] transition-all duration-200 cursor-pointer border-none"
         >
           <MessageSquarePlus className="h-4.5 w-4.5" aria-hidden />
           Nuevo chat
-        </button>
+        </motion.button>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-faint" aria-hidden />
           <label htmlFor="chat-search" className="sr-only">

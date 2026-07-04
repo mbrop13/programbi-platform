@@ -2,6 +2,7 @@
 
 import { memo, useState } from "react";
 import { Bot, Check, Copy, RefreshCw, Volume2, VolumeX } from "lucide-react";
+import { motion } from "framer-motion";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ReasoningPanel } from "./ReasoningPanel";
 import { ToolCard } from "./ToolCard";
@@ -212,34 +213,40 @@ function MessageRowBase({
 
         {/* Acciones: visibles en hover, foco y táctil */}
         {!isStreaming && text && (
-          <div className="touch-visible mt-2 flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
-            <button
+          <div className="touch-visible mt-2.5 flex items-center gap-1.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+            <motion.button
               onClick={handleCopy}
               aria-label={copied ? "Copiado" : "Copiar mensaje"}
-              className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text-secondary"
+              whileHover={{ scale: 1.02, backgroundColor: "var(--color-surface-2)" }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors duration-150 hover:text-text-secondary cursor-pointer border-0 bg-transparent"
             >
               {copied ? <Check className="h-3 w-3 text-accent-emerald" aria-hidden /> : <Copy className="h-3 w-3" aria-hidden />}
               {copied ? "Copiado" : "Copiar"}
-            </button>
+            </motion.button>
             {typeof window !== "undefined" && window.speechSynthesis && (
-              <button
+              <motion.button
                 onClick={handleSpeak}
                 aria-label={speaking ? "Detener lectura" : "Escuchar mensaje"}
-                className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text-secondary"
+                whileHover={{ scale: 1.02, backgroundColor: "var(--color-surface-2)" }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors duration-150 hover:text-text-secondary cursor-pointer border-0 bg-transparent"
               >
                 {speaking ? <VolumeX className="h-3 w-3" aria-hidden /> : <Volume2 className="h-3 w-3" aria-hidden />}
                 {speaking ? "Detener" : "Escuchar"}
-              </button>
+              </motion.button>
             )}
             {onRegenerate && (
-              <button
+              <motion.button
                 onClick={onRegenerate}
                 aria-label="Regenerar respuesta"
-                className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text-secondary"
+                whileHover={{ scale: 1.02, backgroundColor: "var(--color-surface-2)" }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors duration-150 hover:text-text-secondary cursor-pointer border-0 bg-transparent"
               >
                 <RefreshCw className="h-3 w-3" aria-hidden />
                 Regenerar
-              </button>
+              </motion.button>
             )}
           </div>
         )}

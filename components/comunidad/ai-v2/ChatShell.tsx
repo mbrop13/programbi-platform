@@ -439,7 +439,7 @@ function ChatShellInner({
                 <div className="h-8 w-8 animate-spin rounded-full border-2 border-surface-3 border-t-brand-blue" />
               </div>
             ) : showLanding ? (
-              <Landing>
+              <Landing onSuggestionClick={(prompt) => submit(prompt)}>
                 <ComposerInput
                   value={input}
                   onChange={setInput}

@@ -1342,7 +1342,7 @@ function AdminCourses() {
         {showMarketingEdits && (
           <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* General Description Card */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between shadow-sm">
+            <div className="bg-gray-50 rounded-2xl p-6 flex flex-col justify-between">
               <div>
                 <h3 className="font-bold text-gray-950 text-base mb-1.5 flex items-center gap-2">
                   <FileText className="w-4.5 h-4.5 text-blue-500" />
@@ -1364,11 +1364,11 @@ function AdminCourses() {
                   </span>
                 </div>
               </div>
-              <div className="mt-4 pt-3 border-t border-gray-50 flex justify-end">
+              <div className="mt-4 pt-3 flex justify-end">
                 <button
                   onClick={handleSaveDescription}
                   disabled={savingDescription}
-                  className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-2 border-none cursor-pointer shadow-sm"
+                  className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2 border-none cursor-pointer shadow-sm"
                 >
                   {savingDescription ? (
                     <>
@@ -1382,7 +1382,7 @@ function AdminCourses() {
             </div>
 
             {/* Short Description Card */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between shadow-sm">
+            <div className="bg-gray-50 rounded-2xl p-6 flex flex-col justify-between">
               <div>
                 <h3 className="font-bold text-gray-950 text-base mb-1.5 flex items-center gap-2">
                   <Edit3 className="w-4.5 h-4.5 text-indigo-500" />
@@ -1404,11 +1404,11 @@ function AdminCourses() {
                   </span>
                 </div>
               </div>
-              <div className="mt-4 pt-3 border-t border-gray-50 flex justify-end">
+              <div className="mt-4 pt-3 flex justify-end">
                 <button
                   onClick={handleSaveShortDescription}
                   disabled={savingShortDescription}
-                  className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-2 border-none cursor-pointer shadow-sm"
+                  className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all active:scale-[0.98] disabled:opacity-50 flex items-center gap-2 border-none cursor-pointer shadow-sm"
                 >
                   {savingShortDescription ? (
                     <>
@@ -1427,17 +1427,26 @@ function AdminCourses() {
         <AnimatePresence>
           {showAddLesson && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mb-6">
-              <div className="bg-blue-50/50 rounded-2xl border border-blue-100 p-6 space-y-4">
+              <div className="bg-blue-50/50 rounded-xl p-6 space-y-4">
                 <h3 className="font-bold text-sm text-gray-900">{editingLesson ? "Editar Lección" : "Nueva Lección"}</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <input type="text" placeholder="Título de la lección" value={newLesson.title} onChange={e => setNewLesson(p => ({ ...p, title: e.target.value }))}
-                    className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none" />
-                  <input type="text" placeholder="Nombre del módulo" value={newLesson.module_name} onChange={e => setNewLesson(p => ({ ...p, module_name: e.target.value }))}
-                    className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none" />
-                  <div className="sm:col-span-2 flex items-center gap-2">
-                    <Video className="w-5 h-5 text-red-500 shrink-0" />
-                    <input type="text" placeholder="URL de YouTube (https://youtube.com/watch?v=...)" value={newLesson.video_url} onChange={e => setNewLesson(p => ({ ...p, video_url: e.target.value }))}
-                      className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">Título</label>
+                    <input type="text" placeholder="Ej. Introducción a las variables" value={newLesson.title} onChange={e => setNewLesson(p => ({ ...p, title: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">Módulo</label>
+                    <input type="text" placeholder="Ej. Módulo 1: Fundamentos" value={newLesson.module_name} onChange={e => setNewLesson(p => ({ ...p, module_name: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">URL del video</label>
+                    <div className="flex items-center gap-2">
+                      <Video className="w-5 h-5 text-red-500 shrink-0" />
+                      <input type="text" placeholder="https://youtube.com/watch?v=..." value={newLesson.video_url} onChange={e => setNewLesson(p => ({ ...p, video_url: e.target.value }))}
+                        className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none" />
+                    </div>
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
@@ -1476,7 +1485,7 @@ function AdminCourses() {
                     setNewLesson({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '' });
                   }} className="px-4 py-2 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors">Cancelar</button>
                   <button onClick={handleAddLesson} disabled={!newLesson.title || !newLesson.video_url}
-                    className="px-5 py-2 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors disabled:opacity-40">
+                    className="px-5 py-2 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-all active:scale-[0.98] disabled:opacity-40">
                     Guardar Lección
                   </button>
                 </div>
@@ -1496,17 +1505,17 @@ function AdminCourses() {
         ) : (
           <div className="space-y-4">
             {Object.entries(modules).map(([moduleName, moduleLessons]) => (
-              <div key={moduleName} className="border border-gray-100 rounded-2xl overflow-hidden">
-                <div className="bg-gray-50 px-5 py-3 font-bold text-sm text-gray-700 flex items-center gap-2">
+              <div key={moduleName} className="rounded-2xl overflow-hidden bg-gray-50/40">
+                <div className="bg-gray-100/60 px-5 py-3 font-bold text-sm text-gray-700 flex items-center gap-2">
                   <FileText className="w-4 h-4 text-gray-400" /> {moduleName || "Sin módulo"}
                 </div>
-                <div className="divide-y divide-gray-50">
+                <div className="divide-y divide-gray-100/60">
                   {moduleLessons.map((lesson: any) => (
-                    <div key={lesson.id} className="flex items-center gap-4 px-5 py-3 hover:bg-gray-50/50 transition-colors">
+                    <div key={lesson.id} className="flex items-center gap-4 px-5 py-3 hover:bg-gray-100/60 transition-colors">
                       <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">{lesson.lesson_order}</div>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-semibold text-gray-800 truncate">{lesson.title}</div>
-                        <div className="text-[11px] text-gray-400 truncate">{lesson.video_url}</div>
+                        <div className="text-[11px] text-gray-400 flex items-center gap-1">{lesson.video_url ? <><Video className="w-3 h-3" /> YouTube</> : "Sin video"}</div>
                       </div>
                       {lesson.is_free_preview && (
                         <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">GRATIS</span>
@@ -1971,7 +1980,7 @@ function AdminSchedules() {
        <AnimatePresence>
          {showAdd && (
            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mb-6">
-             <div className="bg-blue-50/50 rounded-2xl border border-blue-100 p-6 space-y-4">
+             <div className="bg-blue-50/50 rounded-xl p-6 space-y-4">
                <h3 className="font-bold text-sm text-gray-900">Nuevo Horario</h3>
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                  <select value={newSchedule.course_slug} onChange={e => setNewSchedule(p => ({ ...p, course_slug: e.target.value }))}
@@ -2005,7 +2014,7 @@ function AdminSchedules() {
                <div className="flex justify-end gap-2">
                  <button onClick={() => setShowAdd(false)} className="px-4 py-2 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors border-none cursor-pointer bg-transparent">Cancelar</button>
                  <button onClick={handleAdd} disabled={!newSchedule.course_slug || !newSchedule.start_date}
-                   className="px-5 py-2 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors disabled:opacity-40 border-none cursor-pointer">
+                   className="px-5 py-2 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-all active:scale-[0.98] disabled:opacity-40 border-none cursor-pointer">
                    Guardar Horario
                  </button>
                </div>

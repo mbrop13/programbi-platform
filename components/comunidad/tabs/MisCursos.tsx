@@ -197,7 +197,7 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
   };
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto">
+    <div className="w-full">
        {/* ─── HEADER ─── */}
        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
           <div>
@@ -235,7 +235,7 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
              const Icon = stat.icon;
              return (
                <motion.div key={i} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                 className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
+                 className="bg-white rounded-2xl p-5 border border-gray-100 flex items-center gap-4 transition-colors hover:border-gray-200">
                   <div className={`w-11 h-11 rounded-xl ${stat.bg} flex items-center justify-center shrink-0`}>
                      <Icon className={`w-5 h-5 ${stat.color}`} />
                   </div>
@@ -297,11 +297,10 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
           <motion.div 
             initial={{ opacity: 0, y: 12 }} 
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-3xl p-12 text-center border border-gray-100 shadow-sm max-w-lg mx-auto">
-             <div className="relative w-24 h-24 mx-auto mb-6">
-               <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl rotate-3" />
-               <div className="absolute inset-0 bg-white rounded-2xl border border-gray-100 flex items-center justify-center">
-                 <GraduationCap className="w-12 h-12 text-brand-blue/60" />
+            className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm max-w-lg mx-auto">
+             <div className="relative w-20 h-20 mx-auto mb-6">
+               <div className="w-full h-full rounded-2xl bg-blue-50 flex items-center justify-center">
+                 <GraduationCap className="w-10 h-10 text-brand-blue/60" />
                </div>
                <div className="absolute -top-2 -right-2 w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center">
                  <Sparkles className="w-4 h-4 text-amber-500" />
@@ -390,7 +389,7 @@ function ProgramCard({ program, index, onSelectCourse }: { program: ProgramGroup
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.08 }}
-      className="rounded-3xl border border-gray-100 shadow-sm overflow-hidden bg-white hover:shadow-lg transition-all duration-300"
+      className="rounded-2xl border border-gray-100 shadow-sm overflow-hidden bg-white hover:shadow-md transition-all duration-300"
     >
       {/* Program Header */}
       <div 
@@ -458,11 +457,11 @@ function ProgramCard({ program, index, onSelectCourse }: { program: ProgramGroup
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: ci * 0.06 }}
               onClick={() => isActive && hasLessons && onSelectCourse(curso.id)}
-              className={`relative rounded-2xl border p-5 transition-all duration-200 flex flex-col
+              className={`relative rounded-xl border p-5 transition-all duration-200 flex flex-col
                 ${isActive && hasLessons
-                  ? 'border-gray-100 bg-white hover:shadow-lg hover:border-blue-200 cursor-pointer group'
+                  ? 'border-gray-100 bg-gray-50/40 hover:bg-gray-50 hover:border-gray-200 hover:-translate-y-0.5 cursor-pointer group'
                   : isActive && !hasLessons
-                    ? 'border-gray-100 bg-gray-50/50 cursor-default'
+                    ? 'border-gray-100 bg-gray-50/40 cursor-default'
                     : 'border-dashed border-gray-200 bg-gray-50/30 cursor-default opacity-60'
                 }`}
             >
@@ -502,7 +501,7 @@ function ProgramCard({ program, index, onSelectCourse }: { program: ProgramGroup
               )}
 
               {/* Footer */}
-              <div className="mt-auto pt-3 border-t border-gray-100/80 flex items-center justify-between">
+              <div className="mt-auto pt-3 flex items-center justify-between">
                 {isActive && hasLessons ? (
                   <>
                     <div className="flex items-center gap-2 text-[11px] text-gray-400 font-medium">
@@ -569,8 +568,8 @@ function StandaloneCourseCard({ curso, index, onSelectCourse, onBuyCourse, buyin
         ${isLocked 
           ? 'border-gray-200 opacity-70 cursor-default hover:opacity-90' 
           : isTrial
-            ? 'border-amber-200 hover:shadow-xl hover:border-amber-300 cursor-pointer ring-2 ring-amber-100'
-            : 'border-gray-100 hover:shadow-xl hover:border-brand-blue/15 cursor-pointer'}`}
+            ? 'border-amber-200 hover:shadow-xl hover:border-amber-300 cursor-pointer active:scale-[0.99]'
+            : 'border-gray-100 hover:shadow-xl hover:border-brand-blue/15 cursor-pointer active:scale-[0.99]'}`}
     >
        {/* Thumbnail */}
        <div className="relative aspect-[16/9] w-full overflow-hidden shrink-0">

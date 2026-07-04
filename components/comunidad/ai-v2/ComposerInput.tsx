@@ -15,7 +15,7 @@ import {
   Square,
   X,
 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { getModel, getAvailableModels, type ChatModel } from "@/lib/ai/models";
 
@@ -316,7 +316,7 @@ export function ComposerInput({
           {/* Botón "+" con menú de adjuntos (hacia arriba) */}
           <div className="flex items-center gap-0.5">
             <div ref={attachRef} className="relative">
-              <button
+              <motion.button
                 ref={attachBtnRef}
                 type="button"
                 onClick={() => setAttachOpen((o) => !o)}
@@ -325,39 +325,47 @@ export function ComposerInput({
                 aria-expanded={attachOpen}
                 aria-haspopup="menu"
                 title="Adjuntar"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-surface-2 hover:text-text-secondary disabled:cursor-not-allowed disabled:opacity-40"
+                whileHover={{ scale: 1.08, backgroundColor: "rgba(15, 23, 42, 0.05)" }}
+                whileTap={{ scale: 0.95 }}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
               >
                 <Plus className="h-5 w-5" aria-hidden />
-              </button>
-              {attachOpen && (
-                <div
-                  role="menu"
-                  onKeyDown={handleMenuKeyDown("attach")}
-                  className="absolute bottom-full left-0 mb-1.5 w-44 overflow-hidden rounded-xl border border-border bg-surface-0/95 shadow-lift backdrop-blur-xl"
-                >
-                  <button
-                    role="menuitem"
-                    onClick={() => triggerFile("image/*")}
-                    className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary"
+              </motion.button>
+              <AnimatePresence>
+                {attachOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    role="menu"
+                    onKeyDown={handleMenuKeyDown("attach")}
+                    className="absolute bottom-full left-0 mb-1.5 w-44 overflow-hidden rounded-xl border border-border bg-surface-0/95 shadow-lift backdrop-blur-xl z-20"
                   >
-                    <ImageIcon className="h-4 w-4 text-text-muted" aria-hidden />
-                    Subir imagen
-                  </button>
-                  <div className="h-px bg-border" />
-                  <button
-                    role="menuitem"
-                    onClick={() =>
-                      triggerFile(
-                        ".txt,.csv,.md,.json,.py,.js,.ts,.tsx,.sql,.html,.css,.yaml,.yml,.pdf"
-                      )
-                    }
-                    className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary"
-                  >
-                    <FileUp className="h-4 w-4 text-text-muted" aria-hidden />
-                    Subir archivo
-                  </button>
-                </div>
-              )}
+                    <button
+                      role="menuitem"
+                      onClick={() => triggerFile("image/*")}
+                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary cursor-pointer border-0 bg-transparent"
+                    >
+                      <ImageIcon className="h-4 w-4 text-text-muted" aria-hidden />
+                      Subir imagen
+                    </button>
+                    <div className="h-px bg-border" />
+                    <button
+                      role="menuitem"
+                      onClick={() =>
+                        triggerFile(
+                          ".txt,.csv,.md,.json,.py,.js,.ts,.tsx,.sql,.html,.css,.yaml,.yml,.pdf"
+                        )
+                      }
+                      className="flex w-full items-center gap-2.5 px-3 py-2.5 text-left text-sm text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary cursor-pointer border-0 bg-transparent"
+                    >
+                      <FileUp className="h-4 w-4 text-text-muted" aria-hidden />
+                      Subir archivo
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
             {uploading && <Loader2 className="h-3.5 w-3.5 animate-spin text-text-muted" aria-hidden />}
           </div>
@@ -366,14 +374,16 @@ export function ComposerInput({
           <div className="flex items-center gap-1.5">
             {/* Selector de modelo: nombre + badges + flecha, sin icono */}
             <div ref={modelRef} className="relative">
-              <button
+              <motion.button
                 ref={modelBtnRef}
                 type="button"
                 onClick={() => setModelOpen((o) => !o)}
                 aria-label="Cambiar modelo"
                 aria-expanded={modelOpen}
                 aria-haspopup="menu"
-                className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-[13px] font-medium text-text-secondary transition-colors hover:bg-surface-2 hover:text-text-primary"
+                whileHover={{ scale: 1.02, backgroundColor: "rgba(15, 23, 42, 0.05)" }}
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-text-secondary transition-colors cursor-pointer border-0 bg-transparent"
               >
                 {selectedModel.label}
                 <CapBadges model={selectedModel} />
@@ -384,65 +394,88 @@ export function ComposerInput({
                   )}
                   aria-hidden
                 />
-              </button>
-              {modelOpen && (
-                <div
-                  role="menu"
-                  onKeyDown={handleMenuKeyDown("model")}
-                  className="absolute bottom-full right-0 mb-1.5 w-72 overflow-hidden rounded-xl border border-border bg-surface-0/95 shadow-lift backdrop-blur-xl"
-                >
-                  <div className="max-h-80 overflow-y-auto py-1">
-                    {availableModels.map((m) => (
-                      <button
-                        key={m.id}
-                        role="menuitem"
-                        onClick={() => {
-                          onSelectModel(m.id);
-                          setModelOpen(false);
-                        }}
-                        className={cn(
-                          "flex w-full flex-col items-start gap-1 px-3 py-2 text-left transition-colors hover:bg-surface-2",
-                          m.id === modelId ? "bg-surface-2" : ""
-                        )}
-                      >
-                        <span className="flex items-center gap-2">
-                          <span className="text-sm font-medium text-text-primary">{m.label}</span>
-                          <CapBadges model={m} />
-                          {m.id === modelId && <Check className="h-3.5 w-3.5 text-brand-blue" aria-hidden />}
-                        </span>
-                        <span className="text-[11px] text-text-muted">{m.description}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+              </motion.button>
+              <AnimatePresence>
+                {modelOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.15, ease: "easeOut" }}
+                    role="menu"
+                    onKeyDown={handleMenuKeyDown("model")}
+                    className="absolute bottom-full right-0 mb-1.5 w-72 overflow-hidden rounded-xl border border-border bg-surface-0/95 shadow-lift backdrop-blur-xl z-20"
+                  >
+                    <div className="max-h-80 overflow-y-auto py-1">
+                      {availableModels.map((m) => (
+                        <button
+                          key={m.id}
+                          role="menuitem"
+                          onClick={() => {
+                            onSelectModel(m.id);
+                            setModelOpen(false);
+                          }}
+                          className={cn(
+                            "flex w-full flex-col items-start gap-1 px-3 py-2 text-left transition-colors hover:bg-surface-2 cursor-pointer border-0 bg-transparent",
+                            m.id === modelId ? "bg-surface-2" : ""
+                          )}
+                        >
+                          <span className="flex items-center gap-2">
+                            <span className="text-sm font-medium text-text-primary">{m.label}</span>
+                            <CapBadges model={m} />
+                            {m.id === modelId && <Check className="h-3.5 w-3.5 text-brand-blue" aria-hidden />}
+                          </span>
+                          <span className="text-[11px] text-text-muted leading-relaxed">{m.description}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Botón dual: micrófono (vacío) / enviar (con texto) / detener (streaming) */}
             {isStreaming ? (
-              <button
+              <motion.button
                 onClick={onStop}
                 aria-label="Detener respuesta"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-text-primary text-surface-0 transition-opacity hover:opacity-90"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-text-primary text-surface-0 cursor-pointer border-0"
                 title="Detener"
               >
                 <Square className="h-4 w-4 fill-current" aria-hidden />
-              </button>
+              </motion.button>
             ) : canSend ? (
-              <button
+              <motion.button
                 onClick={onSubmit}
                 aria-label="Enviar mensaje"
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-blue text-white shadow-glow-brand transition-all hover:bg-brand-blue-dark"
+                whileHover={{ scale: 1.05, y: -0.5 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-blue text-white shadow-glow-brand cursor-pointer border-0"
                 title="Enviar mensaje"
               >
                 <ArrowUp className="h-5 w-5" aria-hidden />
-              </button>
+              </motion.button>
             ) : recording ? (
-              <button
+              <motion.button
                 onClick={stopVoice}
                 aria-label="Detener dictado"
-                className="flex h-9 w-12 items-center justify-center gap-0.5 rounded-full bg-destructive/10 transition-colors hover:bg-destructive/20"
+                className="relative flex h-9 w-12 items-center justify-center gap-0.5 rounded-full bg-destructive/15 text-destructive cursor-pointer border-0"
                 title="Detener"
+                animate={{
+                  boxShadow: [
+                    "0 0 0 0px rgba(239, 68, 68, 0.2)",
+                    "0 0 0 8px rgba(239, 68, 68, 0)",
+                    "0 0 0 0px rgba(239, 68, 68, 0.2)"
+                  ]
+                }}
+                transition={{
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                whileTap={{ scale: 0.95 }}
               >
                 {[0, 1, 2, 3].map((i) => (
                   <motion.span
@@ -457,17 +490,19 @@ export function ComposerInput({
                     }}
                   />
                 ))}
-              </button>
+              </motion.button>
             ) : (
-              <button
+              <motion.button
                 onClick={startVoice}
                 disabled={!voiceSupported}
                 aria-label={voiceSupported ? "Dictado por voz" : "Voz no soportada en este navegador"}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-text-muted transition-colors hover:bg-surface-3 hover:text-text-secondary disabled:cursor-not-allowed disabled:opacity-40"
+                whileHover={voiceSupported ? { scale: 1.05, backgroundColor: "var(--color-surface-3)", color: "var(--color-text-secondary)" } : {}}
+                whileTap={voiceSupported ? { scale: 0.95 } : {}}
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-2 text-text-muted disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer border-0"
                 title={voiceSupported ? "Dictado por voz" : "Voz no soportada en este navegador"}
               >
                 <Mic className="h-5 w-5" aria-hidden />
-              </button>
+              </motion.button>
             )}
           </div>
         </div>

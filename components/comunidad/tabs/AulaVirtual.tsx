@@ -339,7 +339,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
       </AnimatePresence>
 
       {/* ─── MAIN CONTENT ─── */}
-      <div className="flex-1 flex flex-col min-w-0 h-full bg-white">
+      <div className="flex-1 flex flex-col min-w-0 h-full">
         {/* Top Bar */}
         <div className="flex-none h-14 border-b border-gray-100 flex items-center justify-between px-5">
           <div className="flex items-center gap-3">
@@ -362,9 +362,9 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             {selectedLesson?.superclass_language && (
               <button
                 onClick={() => setSuperClaseActive(!superClaseActive)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-[0.98] ${
                   superClaseActive
-                    ? "bg-violet-500 text-white shadow-lg shadow-violet-200"
+                    ? "bg-violet-500 text-white shadow-md shadow-violet-200/60"
                     : "bg-violet-50 text-violet-600 hover:bg-violet-100"
                 }`}
               >
@@ -375,7 +375,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             {selectedLesson && (
               <button
                 onClick={() => toggleComplete(selectedLesson.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-[0.98] ${
                   completedLessons.has(selectedLesson.id)
                     ? "bg-emerald-500 text-white"
                     : "bg-gray-50 text-gray-500 hover:bg-emerald-50 hover:text-emerald-600"
@@ -393,7 +393,9 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
           {!selectedLesson ? (
             <div className="flex items-center justify-center h-full">
               <div className="text-center">
-                <Monitor className="w-16 h-16 text-gray-200 mx-auto mb-4" />
+                <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                  <Monitor className="w-8 h-8 text-gray-300" />
+                </div>
                 <p className="text-gray-400 font-medium">Selecciona una clase para comenzar</p>
               </div>
             </div>
@@ -495,7 +497,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             /* ── NORMAL MODE: Video full width ── */
             <div className="flex flex-col h-full">
               {/* Video Player */}
-              <div className="relative w-full bg-black" style={{ paddingBottom: "50%" }}>
+              <div className="relative w-full aspect-video bg-black">
                 {isSelectedLessonLocked ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 border-2 border-brand-blue/30 overflow-hidden">
                     <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] pointer-events-none"></div>
@@ -519,16 +521,18 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                     allowFullScreen
                   />
                 ) : (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-                    <Play className="w-16 h-16 text-gray-600" />
-                    <p className="text-gray-500 ml-4">Video no disponible</p>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900 gap-3">
+                    <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center">
+                      <Play className="w-8 h-8 text-gray-500" />
+                    </div>
+                    <p className="text-gray-400 text-sm font-medium">Video no disponible</p>
                   </div>
                 )}
               </div>
 
               {/* Lesson Info */}
               <div className="flex-1 overflow-y-auto">
-                <div className="max-w-4xl mx-auto p-6 lg:p-8">
+                <div className="p-6 lg:p-8">
                   <div className="flex items-center gap-3 mb-4">
                     <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-lg bg-blue-50 text-brand-blue uppercase tracking-wider">
                       Clase {selectedLesson.lesson_order}
@@ -543,10 +547,10 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                       </button>
                     )}
                   </div>
-                  <h2 className="font-display font-black text-2xl text-gray-900 mb-3">
+                  <h2 className="font-display font-black text-2xl sm:text-3xl tracking-tight text-gray-900 mb-3">
                     {selectedLesson.title}
                   </h2>
-                  <p className="text-sm text-gray-500 leading-relaxed">
+                  <p className="text-[15px] text-gray-600 leading-relaxed">
                     Mira la clase completa y practica los conceptos aprendidos.
                     {selectedLesson.superclass_language && (
                       <> Activa el modo <strong>Super Clase</strong> para ver el video mientras escribes código en {selectedLesson.superclass_language.toUpperCase()}.</>
@@ -554,9 +558,9 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                   </p>
 
                   {/* Next Lessons Preview */}
-                  <div className="mt-8 border-t border-gray-50 pt-6">
+                  <div className="mt-8 pt-6">
                     <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Siguientes clases</h3>
-                    <div className="space-y-2">
+                    <div className="divide-y divide-gray-100">
                       {modules.flatMap(m => m.lessons)
                         .filter(l => {
                           if (!selectedLesson) return false;
@@ -568,7 +572,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                           <button
                             key={l.id}
                             onClick={() => setSelectedLesson(l)}
-                            className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors text-left group"
+                            className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left group active:scale-[0.99]"
                           >
                             <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-400 group-hover:bg-brand-blue group-hover:text-white transition-colors">
                               {l.lesson_order}
@@ -577,7 +581,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                               <div className="text-sm font-semibold text-gray-700">{l.title}</div>
                               <div className="text-[11px] text-gray-400">{l.duration_minutes || 0} min</div>
                             </div>
-                            <Play className="w-4 h-4 text-gray-300 group-hover:text-brand-blue transition-colors" />
+                            <ChevronRight className="w-4 h-4 text-gray-300 group-hover:text-brand-blue transition-colors" />
                           </button>
                         ))}
                     </div>
