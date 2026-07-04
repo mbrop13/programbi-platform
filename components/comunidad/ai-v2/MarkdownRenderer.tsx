@@ -53,7 +53,7 @@ function MarkdownRendererBase({ content, className }: MarkdownRendererProps) {
   return (
     <div
       className={cn(
-        "prose-chat max-w-none text-[0.95rem] leading-relaxed text-text-primary",
+        "prose-chat max-w-none text-text-primary",
         className
       )}
     >
@@ -71,7 +71,7 @@ function MarkdownRendererBase({ content, className }: MarkdownRendererProps) {
             }
             return (
               <code
-                className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[0.85em] text-brand-blue-dark dark:text-brand-blue"
+                className="rounded bg-surface-2 px-1.5 py-0.5 font-mono text-[0.85em] text-brand-blue-dark"
                 {...props}
               >
                 {children}

@@ -10,9 +10,11 @@ interface ChatListProps {
   status: "submitted" | "streaming" | "ready" | "error";
   modelName?: string;
   onRegenerate?: () => void;
+  userName?: string;
+  userAvatarUrl?: string | null;
 }
 
-export function ChatList({ messages, status, modelName, onRegenerate }: ChatListProps) {
+export function ChatList({ messages, status, modelName, onRegenerate, userName, userAvatarUrl }: ChatListProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [pinned, setPinned] = useState(true);
   const [showJump, setShowJump] = useState(false);
@@ -51,6 +53,9 @@ export function ChatList({ messages, status, modelName, onRegenerate }: ChatList
       <div
         ref={scrollRef}
         onScroll={onScroll}
+        role="log"
+        aria-live="polite"
+        aria-label="Mensajes de la conversación"
         className="h-full overflow-y-auto scroll-smooth"
       >
         <div className="mx-auto w-full max-w-3xl pb-40 pt-2">
@@ -63,14 +68,20 @@ export function ChatList({ messages, status, modelName, onRegenerate }: ChatList
               }
               modelName={m.role === "assistant" ? modelName : undefined}
               onRegenerate={i === messages.length - 1 && m.role === "assistant" ? onRegenerate : undefined}
+              userName={m.role === "user" ? userName : undefined}
+              userAvatarUrl={m.role === "user" ? userAvatarUrl : undefined}
             />
           ))}
 
           {/* Placeholder "escribiendo…" mientras arranca el stream */}
           {showTypingPlaceholder && (
-            <div className="flex gap-3 px-4 py-4 sm:px-6">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-blue to-blue-600 shadow-sm">
-                <Bot className="h-4 w-4 text-white" />
+            <div
+              className="flex gap-3 px-4 py-4 sm:px-6"
+              role="status"
+              aria-label="Mentor IA escribiendo"
+            >
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-blue to-brand-blue-dark shadow-sm">
+                <Bot className="h-4 w-4 text-white" aria-hidden />
               </div>
               <div className="flex items-center gap-1 pt-2">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-text-muted" />
@@ -86,9 +97,10 @@ export function ChatList({ messages, status, modelName, onRegenerate }: ChatList
       {showJump && (
         <button
           onClick={jumpToBottom}
-          className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full border border-border bg-surface-0 px-3 py-1.5 text-xs font-medium text-text-secondary shadow-md transition-colors hover:bg-surface-2"
+          aria-label="Ir al final de la conversación"
+          className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1 rounded-full border border-border bg-surface-0 px-3 py-1.5 text-xs font-medium text-text-secondary shadow-float transition-colors hover:bg-surface-2"
         >
-          <ArrowDown className="h-3.5 w-3.5" />
+          <ArrowDown className="h-3.5 w-3.5" aria-hidden />
           Ir al final
         </button>
       )}

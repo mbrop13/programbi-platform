@@ -45,6 +45,9 @@
   --color-accent-purple: #7C3AED;
   --color-accent-automate: #0078D4;
 
+  /* Semantic — error / destructivo (usar bg-destructive, bg-destructive-soft) */
+  --color-destructive-soft: #FEF2F2;
+
   /* Surface Colors */
   --color-surface-0: #FFFFFF;
   --color-surface-1: #F8FAFC;
@@ -428,5 +431,27 @@ img {
   box-shadow:
     0 0 0 1px rgba(24, 144, 255, 0.20),
     0 0 18px -6px rgba(24, 144, 255, 0.22);
+}
+
+/* Acciones hover-only: visibles en táctil (sin hover) y al enfocar con teclado.
+   Usar junto a: opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 */
+@media (hover: none) {
+  .touch-visible { opacity: 1 !important; }
+}
+
+/* Cursor de streaming refinado (barra azul con pulso suave) */
+@keyframes stream-caret-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.25; }
+}
+.stream-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1.05em;
+  margin-left: 2px;
+  vertical-align: text-bottom;
+  background: var(--color-brand-blue);
+  border-radius: 1px;
+  animation: stream-caret-pulse 1s ease-in-out infinite;
 }
 

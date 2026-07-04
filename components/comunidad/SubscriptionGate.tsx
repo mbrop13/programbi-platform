@@ -14,11 +14,12 @@ interface SubscriptionGateProps {
   isLoading?: boolean;
   /** When true, renders only the hero headline/subtitle (no badge, plans, or billing) */
   heroOnly?: boolean;
+  transparent?: boolean;
 }
 
 type BillingPeriod = 'mensual' | 'semestral' | 'anual';
 
-export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isLoading = false, heroOnly = false }: SubscriptionGateProps) {
+export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isLoading = false, heroOnly = false, transparent = false }: SubscriptionGateProps) {
   const [selectedPlanId, setSelectedPlanId] = useState<string>("max");
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('mensual');
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -81,27 +82,29 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
       />
 
       {/* Background Video (Hero Only) or Engineering Grid & Orbs (Pricing Section) - Placed at -z-20 behind everything */}
-      {heroOnly ? (
-        <div className="absolute inset-0 -z-20 w-full h-full bg-slate-50 overflow-hidden">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="w-full h-full object-cover opacity-[0.6] pointer-events-none"
-          >
-            <source src="/videos/que_gire_lentamente.mp4" type="video/mp4" />
-          </video>
-          {/* Smooth overlay for readability and fade into the next section */}
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-slate-50/90 backdrop-blur-[0.5px]" />
-        </div>
-      ) : (
-        <div className="absolute inset-0 -z-20 w-full h-full bg-slate-50">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35 pointer-events-none" />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-b from-blue-400/20 to-indigo-500/10 rounded-full blur-[80px] pointer-events-none" />
-          <div className="absolute top-[20%] right-[-10%] w-[350px] h-[350px] bg-purple-300/15 rounded-full blur-[90px] pointer-events-none" />
-          <div className="absolute bottom-0 left-1/2 w-[600px] h-[300px] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none -translate-x-1/2" />
-        </div>
+      {!transparent && (
+        heroOnly ? (
+          <div className="absolute inset-0 -z-20 w-full h-full bg-slate-50 overflow-hidden">
+            <video
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="w-full h-full object-cover opacity-[0.6] pointer-events-none"
+            >
+              <source src="/videos/que_gire_lentamente.mp4" type="video/mp4" />
+            </video>
+            {/* Smooth overlay for readability and fade into the next section */}
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-slate-50/90 backdrop-blur-[0.5px]" />
+          </div>
+        ) : (
+          <div className="absolute inset-0 -z-20 w-full h-full bg-slate-50">
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35 pointer-events-none" />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-b from-blue-400/20 to-indigo-500/10 rounded-full blur-[80px] pointer-events-none" />
+            <div className="absolute top-[20%] right-[-10%] w-[350px] h-[350px] bg-purple-300/15 rounded-full blur-[90px] pointer-events-none" />
+            <div className="absolute bottom-0 left-1/2 w-[600px] h-[300px] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none -translate-x-1/2" />
+          </div>
+        )
       )}
 
       <div className="max-w-4xl text-center mb-12 relative z-10">

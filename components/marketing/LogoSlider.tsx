@@ -4,12 +4,12 @@ import Image from "next/image";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { companyLogos } from "@/lib/data/images";
 
-export default function LogoSlider() {
+export default function LogoSlider({ transparent = false }: { transparent?: boolean }) {
   // Double the logos for infinite scroll
   const allLogos = [...companyLogos, ...companyLogos];
 
   return (
-    <section className="bg-white py-10 lg:py-14 border-y border-slate-100/80">
+    <section className={`${transparent ? 'bg-transparent' : 'bg-white'} py-10 lg:py-14 border-y border-slate-100/80`}>
       <FadeIn>
         <div className="max-w-7xl mx-auto px-5 text-center mb-8">
           <p className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-[0.25em] font-display">
