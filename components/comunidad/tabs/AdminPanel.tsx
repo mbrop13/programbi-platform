@@ -1174,6 +1174,7 @@ function AdminCourses() {
   const [showAddLesson, setShowAddLesson] = useState(false);
   const [newLesson, setNewLesson] = useState({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '' });
   const [editingLesson, setEditingLesson] = useState<any>(null);
+  const [showMarketingEdits, setShowMarketingEdits] = useState(false);
 
   const [editDescription, setEditDescription] = useState("");
   const [savingDescription, setSavingDescription] = useState(false);
@@ -1314,99 +1315,113 @@ function AdminCourses() {
         <button onClick={() => setSelectedCourse(null)} className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 font-medium mb-4 transition-colors">
           ← Volver a cursos
         </button>
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <h2 className="font-display font-black text-2xl text-gray-900 mb-1">{selectedCourse.title}</h2>
             <p className="text-sm text-gray-400">{lessons.length} lecciones · {selectedCourse.duration_hours || selectedCourse.duration_hours === 0 ? selectedCourse.duration_hours : 0}h</p>
           </div>
-          <button onClick={() => setShowAddLesson(!showAddLesson)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
-            <Plus className="w-4 h-4" /> Agregar Lección
-          </button>
+          <div className="flex items-center gap-3">
+            <button onClick={() => setShowMarketingEdits(!showMarketingEdits)}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-colors cursor-pointer ${
+                showMarketingEdits 
+                  ? 'bg-slate-100 border-slate-200 text-slate-700 hover:bg-slate-200' 
+                  : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+              }`}
+            >
+              <Settings className="w-4 h-4" />
+              {showMarketingEdits ? "Ocultar Descripciones" : "Configurar Descripciones"}
+            </button>
+            <button onClick={() => { setShowAddLesson(!showAddLesson); setEditingLesson(null); }}
+              className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
+              <Plus className="w-4 h-4" /> Agregar Lección
+            </button>
+          </div>
         </div>
 
         {/* Marketing Description Editors */}
-        <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* General Description Card */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between shadow-sm">
-            <div>
-              <h3 className="font-bold text-gray-950 text-base mb-1.5 flex items-center gap-2">
-                <FileText className="w-4.5 h-4.5 text-blue-500" />
-                Descripción General (Sección Hero)
-              </h3>
-              <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-                Esta descripción detallada se muestra en la sección Hero de la página de detalles de este curso. Utiliza un estilo persuasivo y enfocado a ventas.
-              </p>
-              <div className="relative">
-                <textarea
-                  value={editDescription}
-                  onChange={(e) => setEditDescription(e.target.value)}
-                  rows={5}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all resize-none"
-                  placeholder="Escribe la descripción general del curso..."
-                />
-                <span className="absolute bottom-3 right-3 text-[10px] font-bold text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">
-                  {editDescription.length} caracteres
-                </span>
+        {showMarketingEdits && (
+          <div className="mb-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* General Description Card */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between shadow-sm">
+              <div>
+                <h3 className="font-bold text-gray-950 text-base mb-1.5 flex items-center gap-2">
+                  <FileText className="w-4.5 h-4.5 text-blue-500" />
+                  Descripción General (Sección Hero)
+                </h3>
+                <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+                  Esta descripción detallada se muestra en la sección Hero de la página de detalles de este curso. Utiliza un estilo persuasivo y enfocado a ventas.
+                </p>
+                <div className="relative">
+                  <textarea
+                    value={editDescription}
+                    onChange={(e) => setEditDescription(e.target.value)}
+                    rows={5}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 outline-none transition-all resize-none"
+                    placeholder="Escribe la descripción general del curso..."
+                  />
+                  <span className="absolute bottom-3 right-3 text-[10px] font-bold text-gray-400 bg-gray-50 px-1.5 py-0.5 rounded border border-gray-100">
+                    {editDescription.length} caracteres
+                  </span>
+                </div>
+              </div>
+              <div className="mt-4 pt-3 border-t border-gray-50 flex justify-end">
+                <button
+                  onClick={handleSaveDescription}
+                  disabled={savingDescription}
+                  className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-2 border-none cursor-pointer shadow-sm"
+                >
+                  {savingDescription ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Guardando...
+                    </>
+                  ) : (
+                    "Guardar Descripción General"
+                  )}
+                </button>
               </div>
             </div>
-            <div className="mt-4 pt-3 border-t border-gray-50 flex justify-end">
-              <button
-                onClick={handleSaveDescription}
-                disabled={savingDescription}
-                className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-2 border-none cursor-pointer shadow-sm"
-              >
-                {savingDescription ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" /> Guardando...
-                  </>
-                ) : (
-                  "Guardar Descripción General"
-                )}
-              </button>
-            </div>
-          </div>
 
-          {/* Short Description Card */}
-          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between shadow-sm">
-            <div>
-              <h3 className="font-bold text-gray-950 text-base mb-1.5 flex items-center gap-2">
-                <Edit3 className="w-4.5 h-4.5 text-indigo-500" />
-                Descripción Corta (Checkout / Tarjetas)
-              </h3>
-              <p className="text-xs text-gray-500 mb-4 leading-relaxed">
-                Esta descripción breve aparece en las tarjetas de selección y el carrito de la pantalla de pago. Recomendado menor a 150 caracteres para un diseño limpio.
-              </p>
-              <div className="relative">
-                <textarea
-                  value={editShortDescription}
-                  onChange={(e) => setEditShortDescription(e.target.value)}
-                  rows={5}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition-all resize-none"
-                  placeholder="Escribe una descripción corta e impactante..."
-                />
-                <span className={`absolute bottom-3 right-3 text-[10px] font-bold px-1.5 py-0.5 rounded border ${editShortDescription.length > 150 ? 'text-amber-600 bg-amber-50 border-amber-100' : 'text-gray-400 bg-gray-50 border-gray-100'}`}>
-                  {editShortDescription.length} caracteres
-                </span>
+            {/* Short Description Card */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col justify-between shadow-sm">
+              <div>
+                <h3 className="font-bold text-gray-950 text-base mb-1.5 flex items-center gap-2">
+                  <Edit3 className="w-4.5 h-4.5 text-indigo-500" />
+                  Descripción Corta (Checkout / Tarjetas)
+                </h3>
+                <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+                  Esta descripción breve aparece en las tarjetas de selección y el carrito de la pantalla de pago. Recomendado menor a 150 caracteres para un diseño limpio.
+                </p>
+                <div className="relative">
+                  <textarea
+                    value={editShortDescription}
+                    onChange={(e) => setEditShortDescription(e.target.value)}
+                    rows={5}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 outline-none transition-all resize-none"
+                    placeholder="Escribe una descripción corta e impactante..."
+                  />
+                  <span className={`absolute bottom-3 right-3 text-[10px] font-bold px-1.5 py-0.5 rounded border ${editShortDescription.length > 150 ? 'text-amber-600 bg-amber-50 border-amber-100' : 'text-gray-400 bg-gray-50 border-gray-100'}`}>
+                    {editShortDescription.length} caracteres
+                  </span>
+                </div>
+              </div>
+              <div className="mt-4 pt-3 border-t border-gray-50 flex justify-end">
+                <button
+                  onClick={handleSaveShortDescription}
+                  disabled={savingShortDescription}
+                  className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-2 border-none cursor-pointer shadow-sm"
+                >
+                  {savingShortDescription ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" /> Guardando...
+                    </>
+                  ) : (
+                    "Guardar Descripción Corta"
+                  )}
+                </button>
               </div>
             </div>
-            <div className="mt-4 pt-3 border-t border-gray-50 flex justify-end">
-              <button
-                onClick={handleSaveShortDescription}
-                disabled={savingShortDescription}
-                className="px-5 py-2.5 bg-slate-900 hover:bg-black text-white rounded-xl text-xs font-bold transition-all disabled:opacity-50 flex items-center gap-2 border-none cursor-pointer shadow-sm"
-              >
-                {savingShortDescription ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" /> Guardando...
-                  </>
-                ) : (
-                  "Guardar Descripción Corta"
-                )}
-              </button>
-            </div>
           </div>
-        </div>
+        )}
 
         {/* Add Lesson Form */}
         <AnimatePresence>

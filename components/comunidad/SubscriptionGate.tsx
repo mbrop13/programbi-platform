@@ -74,7 +74,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
     }
   };
   return (
-    <div id={heroOnly ? "hero" : "pricing"} className={`w-full relative isolate flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-24 sm:pt-36 pb-6 sm:pb-8' : 'pt-6 pb-28'}`}>
+    <div id={heroOnly ? "hero" : "pricing"} className={`w-full relative isolate flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-14 sm:pt-18 pb-6 sm:pb-8' : 'pt-6 pb-28'}`}>
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
