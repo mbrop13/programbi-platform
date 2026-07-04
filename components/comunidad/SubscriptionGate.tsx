@@ -131,10 +131,15 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
              <span className="text-slate-950 font-black">{message}</span>
           ) : (
              <div className="flex flex-col gap-1 items-center">
-               <span className="font-[family-name:var(--font-caveat)] text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] tracking-tight font-medium text-slate-800 leading-none block">
+               {heroOnly && (
+                 <span className="text-[11px] uppercase tracking-[0.22em] font-mono text-brand-blue mb-4 block font-bold">
+                   Membresía Premium
+                 </span>
+               )}
+               <span className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-slate-800 tracking-tight leading-none block">
                  Desbloquea el poder de la
                </span>
-               <span className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.1] font-display mt-4 block">
+               <span className="text-4xl sm:text-5xl lg:text-[4rem] font-black text-slate-900 tracking-tight leading-[1.1] font-display mt-2 block">
                  Comunidad{" "}
                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
                    ProgramBI
@@ -159,9 +164,9 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-lg md:text-xl text-slate-500 max-w-2xl mx-auto font-medium leading-relaxed mb-10"
+          className="text-base md:text-lg text-slate-500 max-w-2xl mx-auto font-medium leading-relaxed mb-10"
         >
-          Elige el plan que mejor se adapte a tus objetivos. Obtén acceso a nuestra plataforma interactiva, Asistente IA especializado y una red de profesionales de élite.
+          Elige tu plan. Accede a clases prácticas en vivo, mentoría de datos por IA y una comunidad de profesionales de élite.
         </motion.p>
 
         {/* Hero Actions (Ver Planes & Contactar) */}
@@ -172,23 +177,27 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
             transition={{ delay: 0.25 }}
             className="flex flex-wrap items-center justify-center gap-4 mb-0 relative z-20"
           >
-            <a
+            <motion.a
               href="#pricing"
               onClick={(e) => {
                 e.preventDefault();
                 document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm px-8 py-4 rounded-2xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm px-8 py-4 rounded-2xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 transition-all duration-300 cursor-pointer"
             >
               Ver Planes
               <ArrowRight className="w-4 h-4" />
-            </a>
-            <a
+            </motion.a>
+            <motion.a
               href="/#contacto"
-              className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 font-black text-sm px-8 py-4 rounded-2xl shadow-sm hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-300"
+              whileHover={{ scale: 1.02, y: -1, backgroundColor: "var(--color-surface-1)" }}
+              whileTap={{ scale: 0.98 }}
+              className="inline-flex items-center gap-2 bg-white text-slate-800 border border-slate-200 font-black text-sm px-8 py-4 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
             >
               Contactar
-            </a>
+            </motion.a>
           </motion.div>
         )}
 

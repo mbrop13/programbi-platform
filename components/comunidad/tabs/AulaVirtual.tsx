@@ -229,7 +229,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
   }
 
   return (
-    <div className="w-full h-[calc(100vh-120px)] min-h-[600px] flex overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm">
+    <div className="flex flex-row-reverse w-full h-[calc(100vh-120px)] min-h-[600px] overflow-hidden rounded-2xl border border-gray-200 bg-white -mx-4 sm:-mx-6 lg:-mx-8">
       
       {/* ─── SIDEBAR: Lessons List ─── */}
       <AnimatePresence>
@@ -239,7 +239,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             animate={{ width: 340, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="flex-none h-full border-r border-gray-100 flex flex-col bg-[#FAFBFC] overflow-hidden"
+            className="flex-none h-full border-l border-gray-100 flex flex-col bg-[#FAFBFC] overflow-hidden"
           >
             {/* Header */}
             <div className="flex-none p-5 border-b border-gray-100">
@@ -339,7 +339,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
       </AnimatePresence>
 
       {/* ─── MAIN CONTENT ─── */}
-      <div className="flex-1 flex flex-col min-w-0 h-full">
+      <div className="flex-1 flex flex-col min-w-0 h-full bg-white">
         {/* Top Bar */}
         <div className="flex-none h-14 border-b border-gray-100 flex items-center justify-between px-5">
           <div className="flex items-center gap-3">

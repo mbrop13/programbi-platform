@@ -134,6 +134,105 @@ export default function CommunityFeatures() {
             const Icon = f.icon;
             const isReversed = i % 2 === 1; // odd = image left, text right
 
+            if (i === 2) {
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 40 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.7, ease: "easeOut" }}
+                  className="w-full bg-gradient-to-tr from-slate-900 via-indigo-950 to-purple-950 text-white rounded-[2.5rem] p-8 md:p-12 border border-slate-800 shadow-[0_24px_70px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden"
+                >
+                  {/* Grid de fondo punteado */}
+                  <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.1)_1.5px,transparent_1.5px)] [background-size:20px_20px] pointer-events-none opacity-40" />
+
+                  {/* Resplandor radial de fondo */}
+                  <div className="absolute -right-16 -top-16 w-80 h-80 bg-violet-500/10 rounded-full blur-[100px] pointer-events-none" />
+                  <div className="absolute -left-16 -bottom-16 w-80 h-80 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
+
+                  <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+                    {/* Contenido de texto (Col 1) */}
+                    <div className="max-w-xl">
+                      {/* Badge */}
+                      <div className="inline-flex items-center gap-2 bg-violet-500/10 border border-violet-500/20 font-bold text-[11px] tracking-[0.15em] uppercase px-3.5 py-1.5 rounded-full mb-6 text-violet-300">
+                        <Icon size={14} />
+                        {f.badge}
+                      </div>
+
+                      {/* Title */}
+                      <h3 className="font-display font-black text-2xl sm:text-3xl lg:text-[2.25rem] text-white leading-tight mb-4 tracking-tight">
+                        {f.title}
+                      </h3>
+
+                      {/* Subtitle */}
+                      <p className="text-slate-300 text-base lg:text-lg leading-relaxed mb-8 font-medium">
+                        {f.subtitle}
+                      </p>
+
+                      {/* Bullet list */}
+                      <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                        {f.bullets.map((b, bi) => (
+                          <li key={bi} className="flex items-start gap-3 group/item">
+                            <div className="mt-0.5 w-5 h-5 rounded-full bg-violet-500/15 flex items-center justify-center shrink-0 border border-transparent group-hover/item:scale-110 transition-transform duration-300">
+                              <Check className="w-3 h-3 text-violet-300" />
+                            </div>
+                            <span className="text-slate-200 text-sm leading-snug font-medium transition-colors duration-300 group-hover/item:text-white">
+                              {b}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      {/* Elegant CTA Link */}
+                      <div className="pt-2">
+                        <a
+                          href="#pricing"
+                          className="group inline-flex items-center gap-2 text-[15px] font-black text-white hover:text-violet-300 transition-colors duration-300"
+                        >
+                          <span>{f.actionText}</span>
+                          <ArrowRight
+                            size={16}
+                            className="text-slate-500 group-hover:text-violet-300 group-hover:translate-x-1.5 transition-all duration-300"
+                          />
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Image Composition (Col 2) */}
+                    <div className="w-full flex justify-center">
+                      <div className="w-full max-w-[440px] aspect-[4/3] p-[2px] rounded-[2rem] bg-gradient-to-br from-violet-500/30 via-cyan-400/20 to-purple-600/30 shadow-[0_0_50px_rgba(139,92,246,0.25)] overflow-hidden">
+                        {/* Contenedor interior del viewport */}
+                        <div className="w-full h-full rounded-[1.9rem] bg-slate-950 overflow-hidden relative flex flex-col">
+                          
+                          {/* Barra estilo MacOS superior */}
+                          <div className="w-full bg-slate-900/60 px-4 py-2 flex items-center gap-1.5 border-b border-white/5 shrink-0">
+                            <span className="w-2 h-2 rounded-full bg-rose-500/80" />
+                            <span className="w-2 h-2 rounded-full bg-amber-500/80" />
+                            <span className="w-2 h-2 rounded-full bg-emerald-500/80" />
+                          </div>
+
+                          {/* Imagen del Dashboard / Captura */}
+                          <div className="flex-1 relative overflow-hidden flex items-center justify-center p-3">
+                            <Image
+                              src={f.image}
+                              alt={f.imageLabel}
+                              width={600}
+                              height={400}
+                              className="w-full h-full object-cover rounded-xl border border-white/10 transition-transform duration-700"
+                              unoptimized
+                            />
+                            {/* Brillo glass sobre la captura */}
+                            <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent pointer-events-none" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            }
+
             return (
               <motion.div
                 key={i}

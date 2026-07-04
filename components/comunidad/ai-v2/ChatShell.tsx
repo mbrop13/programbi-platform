@@ -389,19 +389,15 @@ function ChatShellInner({
         ) : (
           /* Rail colapsado (solo desktop; en móvil el ancho es 0) */
           <div className="hidden h-full w-16 flex-col items-center gap-3 py-3 md:flex">
-            <button
+            <motion.button
               onClick={() => setSidebarOpen(true)}
               title="Abrir historial"
-              className="relative h-10 w-10 overflow-hidden rounded-xl"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface-0 text-text-muted shadow-premium transition-colors hover:bg-surface-2 hover:text-text-primary cursor-pointer"
             >
-              <Image
-                src={FAVICON_URL}
-                alt="ProgramBI"
-                fill
-                className="object-contain p-0.5"
-                sizes="40px"
-              />
-            </button>
+              <PanelLeft className="h-5 w-5" />
+            </motion.button>
             <button
               onClick={newChat}
               title="Nuevo chat"

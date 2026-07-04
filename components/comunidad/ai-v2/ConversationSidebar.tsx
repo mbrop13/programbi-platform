@@ -1,21 +1,32 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   Archive,
   ArrowLeft,
+  ArrowUpCircle,
+  ChevronRight,
+  Download,
+  Globe,
+  HelpCircle,
   Loader2,
+  LogOut,
   MessageSquare,
   MessageSquarePlus,
   Pencil,
   Pin,
   Search,
+  Settings,
+  Sun,
   Trash2,
+  User,
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import type { AiChat } from "@/lib/supabase/ai";
+import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { FAVICON_URL } from "./constants";
 
@@ -76,6 +87,25 @@ export function ConversationSidebar({
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      if (data?.user?.email) {
+        setUserEmail(data.user.email);
+      }
+    });
+  }, []);
+
+  // Cerrar el menú al hacer clic fuera
+  useEffect(() => {
+    if (!profileMenuOpen) return;
+    const handler = () => setProfileMenuOpen(false);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [profileMenuOpen]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -223,24 +253,21 @@ export function ConversationSidebar({
   };
 
   return (
-    <div className="flex h-full flex-col bg-surface-1">
-      {/* Esquina superior: logo de la marca (clic para cerrar) */}
-      <button
-        onClick={onClose}
-        aria-label="Cerrar historial"
-        className="flex h-14 shrink-0 items-center justify-center border-b border-border px-4 transition-colors hover:bg-surface-2/50"
-        title="Cerrar historial"
-      >
-        <div className="relative h-10 w-10 overflow-hidden rounded-xl">
-          <Image
-            src={FAVICON_URL}
-            alt="ProgramBI"
-            fill
-            className="object-contain p-0.5"
-            sizes="40px"
-          />
-        </div>
-      </button>
+    <div className="flex h-full flex-col bg-surface-1 relative">
+      {/* Barra superior de la barra lateral */}
+      <div className="flex h-14 shrink-0 items-center justify-between border-b border-border px-4 bg-slate-50/10">
+        <span className="text-xs font-bold uppercase tracking-wider text-text-muted">Historial de chats</span>
+        {onClose && (
+          <button
+            onClick={onClose}
+            aria-label="Cerrar historial"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-surface-2 hover:text-text-secondary md:hidden cursor-pointer border-0 bg-transparent"
+            title="Cerrar"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        )}
+      </div>
 
       {/* Volver + Nuevo chat + búsqueda */}
       <div className="space-y-3.5 border-b border-border px-4 py-4 bg-slate-50/50">
@@ -310,11 +337,108 @@ export function ConversationSidebar({
         )}
       </div>
 
-      {/* Footer: avatar + nombre (enlaza al perfil) */}
-      <div className="shrink-0 border-t border-border px-4 py-4 bg-slate-50/50">
-        <Link
-          href="/comunidad/perfil"
-          className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white p-2.5 no-underline shadow-sm transition-all hover:bg-slate-50 hover:border-slate-200"
+      {/* Footer: avatar + nombre (con menú desplegable premium) */}
+      <div className="shrink-0 border-t border-border px-4 py-4 bg-slate-50/50 relative">
+        {/* Menú Desplegable Premium */}
+        <AnimatePresence>
+          {profileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 15, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 15, scale: 0.95 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
+              className="absolute bottom-full left-4 right-4 mb-2 z-30 rounded-2xl border border-border bg-surface-0 shadow-float p-1.5 flex flex-col gap-0.5"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Encabezado: Email */}
+              <div className="flex items-center gap-2.5 px-3 py-2 text-text-secondary select-none font-medium truncate">
+                <User className="h-4 w-4 text-text-muted shrink-0 animate-pulse" />
+                <span className="truncate text-xs">{userEmail || displayName}</span>
+              </div>
+              
+              <div className="h-px bg-border my-1" />
+
+              {/* Todos los ajustes */}
+              <Link
+                href="/comunidad/perfil"
+                className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-text-secondary hover:bg-slate-50 hover:text-text-primary no-underline transition-colors cursor-pointer"
+              >
+                <Settings className="h-4 w-4 text-text-muted shrink-0" />
+                <span className="flex-1 font-medium">Todos los ajustes</span>
+                <span className="text-[10px] text-text-faint font-mono font-semibold tracking-wider">↑^,</span>
+              </Link>
+
+              {/* Actualizar plan */}
+              <Link
+                href="/comunidad/planes"
+                className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-text-secondary hover:bg-slate-50 hover:text-text-primary no-underline transition-colors cursor-pointer"
+              >
+                <ArrowUpCircle className="h-4 w-4 text-text-muted shrink-0" />
+                <span className="font-medium">Actualizar plan</span>
+              </Link>
+
+              {/* Instalar apps */}
+              <button
+                onClick={() => alert("La aplicación de escritorio se encuentra en desarrollo.")}
+                className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-text-secondary hover:bg-slate-50 hover:text-text-primary transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
+              >
+                <Download className="h-4 w-4 text-text-muted shrink-0" />
+                <span className="font-medium">Instalar apps</span>
+              </button>
+
+              <div className="h-px bg-border my-1" />
+
+              {/* Apariencia */}
+              <div className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-text-secondary hover:bg-slate-50 hover:text-text-primary transition-colors cursor-pointer">
+                <Sun className="h-4 w-4 text-text-muted shrink-0" />
+                <span className="flex-1 font-medium">Apariencia</span>
+                <span className="text-[11px] text-text-faint">Claro</span>
+                <ChevronRight className="h-3 w-3 text-text-faint" />
+              </div>
+
+              {/* Idioma */}
+              <div className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-text-secondary hover:bg-slate-50 hover:text-text-primary transition-colors cursor-pointer">
+                <Globe className="h-4 w-4 text-text-muted shrink-0" />
+                <span className="flex-1 font-medium">Idioma</span>
+                <span className="text-[11px] text-text-faint">Por defecto</span>
+                <ChevronRight className="h-3 w-3 text-text-faint" />
+              </div>
+
+              {/* Ayuda */}
+              <Link
+                href="/faq"
+                className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-text-secondary hover:bg-slate-50 hover:text-text-primary no-underline transition-colors cursor-pointer"
+              >
+                <HelpCircle className="h-4 w-4 text-text-muted shrink-0" />
+                <span className="flex-1 font-medium">Ayuda</span>
+                <ChevronRight className="h-3 w-3 text-text-faint" />
+              </Link>
+
+              <div className="h-px bg-border my-1" />
+
+              {/* Cerrar sesión */}
+              <button
+                onClick={async () => {
+                  const supabase = createClient();
+                  await supabase.auth.signOut();
+                  window.location.reload();
+                }}
+                className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs text-text-secondary hover:bg-red-50 hover:text-red-600 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
+              >
+                <LogOut className="h-4 w-4 text-text-muted shrink-0" />
+                <span className="font-semibold">Cerrar sesión</span>
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Botón de Perfil Trigger */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            setProfileMenuOpen((o) => !o);
+          }}
+          className="w-full flex items-center gap-3 rounded-xl border border-slate-100 bg-white p-2.5 text-left transition-all hover:bg-slate-50 hover:border-slate-200 cursor-pointer shadow-sm active:scale-[0.98]"
         >
           <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-brand-blue to-brand-blue-dark ring-2 ring-white flex items-center justify-center text-white font-bold text-xs shadow-sm">
             {avatarUrl ? (
@@ -334,7 +458,7 @@ export function ConversationSidebar({
             </div>
             <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Miembro</div>
           </div>
-        </Link>
+        </button>
       </div>
     </div>
   );

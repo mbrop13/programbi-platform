@@ -340,7 +340,7 @@ export function ComposerInput({
                     transition={{ duration: 0.15, ease: "easeOut" }}
                     role="menu"
                     onKeyDown={handleMenuKeyDown("attach")}
-                    className="absolute bottom-full left-0 mb-1.5 w-44 overflow-hidden rounded-xl border border-border bg-surface-0/95 shadow-lift backdrop-blur-xl z-20"
+                    className="absolute bottom-full left-0 mb-1.5 w-44 overflow-hidden rounded-xl border border-border bg-surface-0 shadow-lift z-20"
                   >
                     <button
                       role="menuitem"
@@ -404,7 +404,7 @@ export function ComposerInput({
                     transition={{ duration: 0.15, ease: "easeOut" }}
                     role="menu"
                     onKeyDown={handleMenuKeyDown("model")}
-                    className="absolute bottom-full right-0 mb-1.5 w-72 overflow-hidden rounded-xl border border-border bg-surface-0/95 shadow-lift backdrop-blur-xl z-20"
+                    className="absolute bottom-full right-0 mb-1.5 w-72 overflow-hidden rounded-xl border border-border bg-surface-0 shadow-lift z-20"
                   >
                     <div className="max-h-80 overflow-y-auto py-1">
                       {availableModels.map((m) => (
