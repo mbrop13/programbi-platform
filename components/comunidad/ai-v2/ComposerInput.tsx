@@ -265,7 +265,7 @@ export function ComposerInput({
       {/* Contenedor: glow azul suave al responder (streaming) */}
       <div
         className={cn(
-          "rounded-2xl border border-border bg-surface-0/85 shadow-premium backdrop-blur-xl transition-shadow",
+          "rounded-2xl border border-border bg-surface-0/85 shadow-premium backdrop-blur-xl transition-all duration-300 focus-within:border-brand-blue/35 focus-within:shadow-[0_0_20px_rgba(24,144,255,0.06)] focus-within:ring-1 focus-within:ring-brand-blue/30",
           isStreaming && "composer-glow"
         )}
       >
@@ -308,7 +308,7 @@ export function ComposerInput({
           onKeyDown={handleKeyDown}
           rows={1}
           placeholder={placeholder ?? "Pregúntale a tu mentor IA o usa el micrófono…"}
-          className="max-h-64 w-full resize-none bg-transparent px-4 pt-3.5 text-[0.95rem] leading-relaxed text-text-primary outline-none placeholder:text-text-faint"
+          className="max-h-64 w-full resize-none bg-transparent px-4 pt-3.5 text-[0.95rem] leading-relaxed text-text-primary outline-none focus:outline-none focus:ring-0 focus-visible:ring-0 border-0 focus:border-transparent focus-visible:outline-none placeholder:text-text-faint"
         />
 
         {/* Barra inferior: adjuntar (izq) + modelo + voz/enviar (der) */}

@@ -18,11 +18,11 @@ export function Landing({ children }: LandingProps) {
   return (
     <div className="relative flex-1 overflow-y-auto">
       {/* min-h-full + justify-center evita el clipping del topo cuando hay scroll */}
-      <div className="flex min-h-full flex-col items-center justify-center gap-8 px-4 py-10">
+      <div className="flex min-h-full flex-col items-center justify-center gap-4 px-4 py-10">
         {/* Glow de fondo trackeando el logo */}
         <div className="relative">
           <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
-            <div className="h-56 w-56 rounded-full bg-brand-blue/10 blur-3xl" />
+            <div className="h-64 w-64 rounded-full bg-brand-blue/10 blur-3xl" />
           </div>
 
           {/* Logo grande */}
@@ -34,9 +34,9 @@ export function Landing({ children }: LandingProps) {
             <Image
               src={LOGO_URL}
               alt="ProgramBI"
-              width={220}
-              height={220}
-              className="h-52 w-52 object-contain"
+              width={320}
+              height={320}
+              className="h-64 w-64 object-contain"
               priority
             />
           </motion.div>

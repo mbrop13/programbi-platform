@@ -142,10 +142,10 @@ export function ConversationSidebar({
           startRename(c);
         }}
         className={cn(
-          "group flex items-center gap-2 rounded-lg px-2 py-2 text-sm transition-colors duration-150 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/40",
+          "group flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs sm:text-sm transition-all duration-200 cursor-pointer focus:outline-none border",
           isActive
-            ? "bg-surface-2 text-text-primary"
-            : "text-text-secondary hover:bg-surface-2/60 hover:text-text-primary"
+            ? "bg-brand-blue/5 border-brand-blue/20 text-brand-blue font-semibold shadow-sm"
+            : "text-text-secondary hover:bg-slate-50 hover:text-text-primary border-transparent"
         )}
       >
         <MessageSquare className="h-3.5 w-3.5 shrink-0 text-text-faint" aria-hidden />
@@ -240,35 +240,33 @@ export function ConversationSidebar({
       </button>
 
       {/* Volver + Nuevo chat + búsqueda */}
-      <div className="space-y-2.5 border-b border-border px-3 py-3">
+      <div className="space-y-3.5 border-b border-border px-4 py-4 bg-slate-50/50">
         <Link
           href="/comunidad/inicio"
-          className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-text-muted transition-colors duration-150 hover:bg-surface-2 hover:text-text-primary"
+          className="flex items-center gap-2 rounded-xl border border-slate-200/50 bg-white/50 px-3 py-2 text-xs font-semibold text-text-secondary transition-all hover:bg-slate-50 hover:text-text-primary hover:border-slate-350 no-underline shadow-sm w-fit"
         >
-          <ArrowLeft className="h-4 w-4" aria-hidden />
+          <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
           Volver a la comunidad
         </Link>
         <button
           onClick={onNew}
-          className="flex w-full items-center gap-2 rounded-xl border border-border bg-surface-0 px-3 py-2 text-sm font-medium text-text-primary shadow-float transition-all duration-150 hover:border-brand-blue/30 hover:bg-surface-2/40"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-brand-blue to-blue-600 px-4 py-2.5 text-sm font-bold text-white shadow-[0_4px_12px_rgba(24,144,255,0.15)] hover:shadow-[0_6px_20px_rgba(24,144,255,0.25)] hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 cursor-pointer border-none"
         >
-          <span className="flex h-5 w-5 items-center justify-center rounded-lg bg-gradient-to-br from-brand-blue to-brand-blue-dark text-white">
-            <MessageSquarePlus className="h-3.5 w-3.5" aria-hidden />
-          </span>
+          <MessageSquarePlus className="h-4.5 w-4.5" aria-hidden />
           Nuevo chat
         </button>
         <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-faint" aria-hidden />
+          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-text-faint" aria-hidden />
           <label htmlFor="chat-search" className="sr-only">
             Buscar conversaciones
           </label>
           <input
             id="chat-search"
             type="text"
-            placeholder="Buscar…"
+            placeholder="Buscar conversaciones…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-lg bg-surface-2 py-1.5 pl-8 pr-3 text-sm text-text-primary outline-none placeholder:text-text-faint focus:ring-1 focus:ring-brand-blue/40"
+            className="w-full rounded-xl border border-slate-200 bg-white py-2 pl-9 pr-3 text-xs text-text-primary outline-none transition-all placeholder:text-text-faint focus:border-brand-blue/40 focus:ring-4 focus:ring-brand-blue/5"
           />
         </div>
       </div>
@@ -306,12 +304,12 @@ export function ConversationSidebar({
       </div>
 
       {/* Footer: avatar + nombre (enlaza al perfil) */}
-      <div className="shrink-0 border-t border-border px-3 py-3">
+      <div className="shrink-0 border-t border-border px-4 py-4 bg-slate-50/50">
         <Link
           href="/comunidad/perfil"
-          className="flex items-center gap-2.5 rounded-lg px-1 py-1 no-underline transition-colors hover:bg-surface-2/50"
+          className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white p-2.5 no-underline shadow-sm transition-all hover:bg-slate-50 hover:border-slate-200"
         >
-          <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-brand-blue to-brand-blue-dark ring-2 ring-surface-0 flex items-center justify-center text-white font-bold text-xs">
+          <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-brand-blue to-brand-blue-dark ring-2 ring-white flex items-center justify-center text-white font-bold text-xs shadow-sm">
             {avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
@@ -324,10 +322,10 @@ export function ConversationSidebar({
             )}
           </div>
           <div className="min-w-0 flex-1">
-            <div className="truncate text-sm font-semibold text-text-primary">
+            <div className="truncate text-sm font-bold text-slate-800">
               {displayName}
             </div>
-            <div className="text-[11px] text-text-muted">Miembro</div>
+            <div className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Miembro</div>
           </div>
         </Link>
       </div>
