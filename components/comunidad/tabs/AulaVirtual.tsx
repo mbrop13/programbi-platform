@@ -129,12 +129,13 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
           moduleMap[l.module_name].lessons.push(l);
         });
 
-        // Deduplicate lessons inside each module by id
+        // Deduplicate lessons inside each module by title
         Object.values(moduleMap).forEach((mod) => {
           const seen = new Set<string>();
           mod.lessons = mod.lessons.filter((lesson: Lesson) => {
-            if (seen.has(lesson.id)) return false;
-            seen.add(lesson.id);
+            const uniqueKey = lesson.title.trim().toLowerCase();
+            if (seen.has(uniqueKey)) return false;
+            seen.add(uniqueKey);
             return true;
           });
         });
