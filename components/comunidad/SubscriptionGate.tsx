@@ -72,7 +72,6 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
       setLoadingPlan(null);
     }
   };
-
   return (
     <div id={heroOnly ? "hero" : "pricing"} className={`w-full relative flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-6 pb-12' : 'pt-6 pb-28'} bg-slate-50`}>
       <AuthModal
@@ -81,11 +80,29 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
         defaultTab="register"
       />
 
-      {/* Modern Engineering Grid & Glow Orbs background */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35 pointer-events-none -z-10" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-b from-blue-400/20 to-indigo-500/10 rounded-full blur-[80px] -z-10 pointer-events-none" />
-      <div className="absolute top-[20%] right-[-10%] w-[350px] h-[350px] bg-purple-300/15 rounded-full blur-[90px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-0 left-1/2 w-[600px] h-[300px] bg-indigo-500/5 rounded-full blur-[120px] -z-10 pointer-events-none -translate-x-1/2" />
+      {/* Background Video (Hero Only) or Engineering Grid & Orbs (Pricing Section) */}
+      {heroOnly ? (
+        <div className="absolute inset-0 -z-10 w-full h-full overflow-hidden">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="w-full h-full object-cover opacity-25 pointer-events-none"
+          >
+            <source src="https://mail.programbi.com/uploads/que_gire_lentamente_1080p_202607032105.mp4" type="video/mp4" />
+          </video>
+          {/* Smooth overlay for readability and fade into the next section */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/80 to-slate-50 backdrop-blur-[0.5px]" />
+        </div>
+      ) : (
+        <>
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35 pointer-events-none -z-10" />
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-b from-blue-400/20 to-indigo-500/10 rounded-full blur-[80px] -z-10 pointer-events-none" />
+          <div className="absolute top-[20%] right-[-10%] w-[350px] h-[350px] bg-purple-300/15 rounded-full blur-[90px] -z-10 pointer-events-none" />
+          <div className="absolute bottom-0 left-1/2 w-[600px] h-[300px] bg-indigo-500/5 rounded-full blur-[120px] -z-10 pointer-events-none -translate-x-1/2" />
+        </>
+      )}
 
       <div className="max-w-4xl text-center mb-12 relative z-10">
         {!heroOnly && (
@@ -108,17 +125,24 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
           className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] font-black tracking-tight mb-6 leading-[1.08] text-slate-900"
         >
           {message ? (
-             <span className="bg-clip-text text-transparent bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900">{message}</span>
+             <span className="text-slate-950 font-black">{message}</span>
           ) : (
              <div className="flex flex-col gap-3">
-               <span className="font-[family-name:var(--font-caveat)] text-4xl sm:text-5xl md:text-6xl text-slate-600 tracking-normal font-medium leading-none block">
+               <span className="text-slate-800 text-3xl sm:text-4xl md:text-5xl tracking-tight font-bold block">
                  Desbloquea el poder de la
                </span>
-               <div className="relative inline-block pb-3 mt-1 w-fit mx-auto">
-                 <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-500 to-violet-600 font-black tracking-tight drop-shadow-[0_2px_15px_rgba(99,102,241,0.25)]">
-                   Comunidad ProgramBI
-                 </span>
-                 <span className="absolute bottom-0 left-0 right-0 h-[4px] rounded-full bg-gradient-to-r from-transparent via-blue-500/80 to-transparent blur-[0.5px]" />
+               <div className="relative inline-block mt-2 w-fit mx-auto">
+                 <motion.div
+                   whileHover={{ scale: 1.02, y: -2 }}
+                   transition={{ duration: 0.3 }}
+                   className="relative z-10 px-6 py-2.5 rounded-2xl border border-slate-300 bg-white/30 backdrop-blur-sm hover:bg-white/80 hover:border-blue-500/30 hover:shadow-[0_10px_30px_rgba(59,130,246,0.15)] transition-all duration-500 group/title cursor-default"
+                 >
+                   <span className="text-slate-900 group-hover/title:text-blue-600 transition-colors duration-300 font-black tracking-tight">
+                     Comunidad ProgramBI
+                   </span>
+                   {/* Glowing layer underneath */}
+                   <div className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-r from-blue-500/0 to-indigo-500/0 group-hover/title:from-blue-500/5 group-hover/title:to-indigo-500/5 transition-all duration-500 pointer-events-none" />
+                 </motion.div>
                </div>
              </div>
           )}
