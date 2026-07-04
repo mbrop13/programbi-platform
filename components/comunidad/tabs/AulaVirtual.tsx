@@ -587,10 +587,10 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
               <div className="flex flex-col h-full bg-white overflow-y-auto">
                 
                 {/* Cinema Screen Frame for Video */}
-                <div className="flex-none w-full bg-gray-100 flex justify-center items-center py-2 px-6 border-b border-gray-200">
-                  <div className="relative w-full max-w-[1120px] aspect-video bg-slate-900 rounded-lg overflow-hidden shadow-xl">
+                <div className="flex-none w-full bg-white flex justify-center items-center py-2 px-6">
+                  <div className="relative w-full max-w-[1120px] aspect-video bg-slate-900 rounded-lg overflow-hidden">
                     {isSelectedLessonLocked ? (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 to-slate-900 overflow-hidden">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-955 to-slate-900 overflow-hidden">
                         <Lock className="w-12 h-12 text-blue-500 mb-3 animate-bounce" />
                         <h2 className="text-xl font-bold text-white mb-1.5 text-center px-4">Clase Bloqueada (Periodo de Prueba)</h2>
                         <p className="text-slate-400 text-xs max-w-sm text-center mb-5 leading-relaxed px-4">
@@ -623,7 +623,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                 <div className="flex-1 w-full max-w-[1120px] mx-auto px-6 py-6 bg-white">
                   
                   {/* Tabs Navbar */}
-                  <div className="flex items-center gap-6 border-b border-gray-250 mb-6 overflow-x-auto scrollbar-hide">
+                  <div className="flex items-center gap-6 mb-6 overflow-x-auto scrollbar-hide">
                     {[
                       { id: 'overview', label: 'Descripción general', icon: FileText },
                       { id: 'notes', label: 'Mis apuntes', icon: StickyNote },
