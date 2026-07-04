@@ -28,7 +28,7 @@ export default async function ComunidadPage() {
   return (
     <div className="bg-white min-h-screen">
       <Navbar />
-      <main className="pt-[34px]">
+      <main className="pt-0">
         {/* ─── HERO (solo título y subtítulo, sin planes) ─── */}
         <SubscriptionGate 
           isLoggedIn={!!profile}
