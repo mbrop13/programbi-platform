@@ -73,7 +73,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
     }
   };
   return (
-    <div id={heroOnly ? "hero" : "pricing"} className={`w-full relative flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-6 pb-12' : 'pt-6 pb-28'}`}>
+    <div id={heroOnly ? "hero" : "pricing"} className={`w-full relative isolate flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-6 pb-12' : 'pt-6 pb-28'}`}>
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
@@ -88,12 +88,12 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
             loop
             muted
             playsInline
-            className="w-full h-full object-cover opacity-[0.55] pointer-events-none"
+            className="w-full h-full object-cover opacity-[0.6] pointer-events-none"
           >
-            <source src="https://mail.programbi.com/uploads/que_gire_lentamente_1080p_202607032105.mp4" type="video/mp4" />
+            <source src="/videos/que_gire_lentamente.mp4" type="video/mp4" />
           </video>
           {/* Smooth overlay for readability and fade into the next section */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white/80 to-slate-50 backdrop-blur-[0.5px]" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-slate-50/90 backdrop-blur-[0.5px]" />
         </div>
       ) : (
         <div className="absolute inset-0 -z-20 w-full h-full bg-slate-50">

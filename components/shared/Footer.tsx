@@ -168,7 +168,7 @@ export default function Footer() {
                 {[
                   { label: "Empresas", href: "/empresas" },
                   { label: "Newsletter", href: "/newsletter" },
-                  { label: "Campus Virtual", href: "/campus" },
+                  { label: "Campus Virtual", href: "/comunidad" },
                   { label: "Registrarse", href: "/registro" },
                   { label: "Encuesta de satisfacción", href: "/feedback" },
                   { label: "Política de Privacidad", href: "/privacidad" },
