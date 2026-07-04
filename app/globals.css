@@ -345,7 +345,19 @@ img {
 
 /* ============================================ */
 /* Chat Premium — Tipografía y Canvas            */
-/* ============================================ */
+
+/* Quitar borde/outline azul por defecto al enfocar el textarea del chat */
+#composer-textarea:focus,
+#composer-textarea:focus-visible,
+#composer-textarea:active {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  ring: 0 !important;
+  --tw-ring-offset-shadow: 0 0 #0000 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  --tw-shadow: 0 0 #0000 !important;
+}
 
 /* Tipografía base del markdown del chat (referenciada por MarkdownRenderer) */
 .prose-chat {
