@@ -378,7 +378,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     <div className="flex flex-col w-full h-screen overflow-hidden bg-white text-gray-900 font-sans">
 
       {/* ─── TOP BAR (Header - Light Theme) ─── */}
-      <header className="flex-none h-[64px] bg-white border-b border-gray-200 flex items-center justify-between px-6 z-20 shadow-sm">
+      <header className="sticky top-0 z-30 flex-none h-[64px] bg-white border-b border-gray-200 flex items-center justify-between px-6 shadow-sm">
         <div className="flex items-center gap-4 min-w-0">
           <button
             onClick={onBack}
