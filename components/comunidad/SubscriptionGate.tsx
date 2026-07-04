@@ -131,22 +131,12 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
                <span className="font-[family-name:var(--font-caveat)] text-5xl sm:text-6xl md:text-7xl lg:text-[5.5rem] tracking-tight font-medium text-slate-800 leading-none block">
                  Desbloquea el poder de la
                </span>
-               <div className="relative inline-block mt-3 w-fit mx-auto">
-                 <motion.div
-                   whileHover={{ scale: 1.03, y: -2 }}
-                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                   className="relative z-10 px-8 py-3.5 rounded-2xl border border-slate-200 bg-white/50 backdrop-blur-md hover:bg-white hover:border-blue-500/30 hover:shadow-[0_20px_40px_rgba(59,130,246,0.2)] transition-all duration-300 group/title cursor-default flex items-center justify-center gap-3"
-                 >
-                   <Sparkles className="w-5 h-5 text-blue-500 animate-pulse group-hover/title:text-indigo-500 transition-colors duration-300" />
-                   <span className="text-slate-900 group-hover/title:bg-clip-text group-hover/title:text-transparent group-hover/title:bg-gradient-to-r group-hover/title:from-blue-600 group-hover/title:to-indigo-600 transition-all duration-300 font-black tracking-tight text-3xl sm:text-4xl md:text-5xl lg:text-6xl">
-                     Comunidad ProgramBI
-                   </span>
-                   <Sparkles className="w-5 h-5 text-blue-500 animate-pulse group-hover/title:text-indigo-500 transition-colors duration-300" />
-                   
-                   {/* Glowing layer underneath */}
-                   <div className="absolute inset-0 -z-10 rounded-2xl bg-gradient-to-r from-blue-500/0 to-indigo-500/0 group-hover/title:from-blue-500/5 group-hover/title:to-indigo-500/5 transition-all duration-500 pointer-events-none" />
-                 </motion.div>
-               </div>
+               <span className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.1] font-display mt-4 block">
+                 Comunidad{" "}
+                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
+                   ProgramBI
+                 </span>
+               </span>
              </div>
           )}
         </motion.h1>
