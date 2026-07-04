@@ -6,11 +6,14 @@ import {
   Play, Code, CheckCircle, Terminal, PlayCircle, Loader2,
   ChevronLeft, ChevronRight, Lock, Sparkles, Monitor, X, Layers,
   Share2, Star, HelpCircle, StickyNote, Download, Trash2, Send,
-  User, Check, BookOpen, Clock, FileText, ChevronDown, CheckSquare, Square
+  User, Check, BookOpen, Clock, FileText, ChevronDown, CheckSquare, Square,
+  MessageSquarePlus
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCourseLessons, toggleLessonProgress, getLessonNote, saveLessonNote } from "@/lib/supabase/comunidad-ai";
+import { getChatMessages } from "@/lib/supabase/ai";
+import { MarkdownRenderer } from "@/components/comunidad/ai-v2/MarkdownRenderer";
 
 interface Lesson {
   id: string;
@@ -222,6 +225,45 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     return () => clearTimeout(timer);
   }, [notes, selectedLesson, courseId]);
 
+  // Load AI Chat history for selected lesson
+  useEffect(() => {
+    async function loadChatHistory() {
+      if (!selectedLesson) return;
+      const savedChatId = localStorage.getItem(`aula-chat-${courseId}-${selectedLesson.id}`);
+      if (savedChatId) {
+        setChatLoading(true);
+        try {
+          const msgs = await getChatMessages(savedChatId);
+          if (msgs && msgs.length > 0) {
+            setChatMessages(msgs.map(m => {
+              const text = (m.parts as any[])
+                .filter((p: any) => p.type === "text")
+                .map((p: any) => p.text)
+                .join("");
+              return {
+                role: m.role as 'user' | 'assistant',
+                text: text || ""
+              };
+            }));
+          } else {
+            setChatMessages([
+              { role: 'assistant', text: '¡Hola! Soy tu asistente de estudio con IA. ¿Tienes alguna duda sobre la clase de hoy? Pregúntame sobre los conceptos explicados, código o ejercicios.' }
+            ]);
+          }
+        } catch (err) {
+          console.error("Error loading chat history:", err);
+        } finally {
+          setChatLoading(false);
+        }
+      } else {
+        setChatMessages([
+          { role: 'assistant', text: '¡Hola! Soy tu asistente de estudio con IA. ¿Tienes alguna duda sobre la clase de hoy? Pregúntame sobre los conceptos explicados, código o ejercicios.' }
+        ]);
+      }
+    }
+    loadChatHistory();
+  }, [selectedLesson, courseId]);
+
   // Copy Share Link Function
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -229,33 +271,115 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     setTimeout(() => setCopiedShare(false), 2000);
   };
 
-  // Chatbot Send Message Handler
-  const handleSendChatMessage = () => {
-    if (!chatInput.trim()) return;
+  // Chatbot Send Message Handler (connected to real /api/ai/chat streaming endpoint)
+  const handleSendChatMessage = async () => {
+    if (!chatInput.trim() || !selectedLesson) return;
     const userText = chatInput;
-    setChatMessages(prev => [...prev, { role: 'user', text: userText }]);
+    
+    // Add user message to state
+    const updatedMessages = [...chatMessages, { role: 'user' as const, text: userText }];
+    setChatMessages(updatedMessages);
     setChatInput("");
     setChatLoading(true);
 
-    setTimeout(() => {
-      let aiResponse = "Excelente pregunta. En esta clase estamos aprendiendo sobre los conceptos clave de la materia. Te recomiendo repasar la documentación adjunta y practicar en el Playground Interactivo de la Super Clase.";
+    try {
+      const savedChatId = localStorage.getItem(`aula-chat-${courseId}-${selectedLesson.id}`);
       
-      const lower = userText.toLowerCase();
-      if (lower.includes("hola") || lower.includes("buenos") || lower.includes("buenas")) {
-        aiResponse = "¡Hola! ¿En qué te puedo colaborar con respecto a la lección de hoy? Estoy aquí para ayudarte a entender la materia.";
-      } else if (lower.includes("ejemplo") || lower.includes("ejercicio")) {
-        aiResponse = `Aquí tienes un ejemplo práctico relacionado con la clase de **${selectedLesson?.title || 'hoy'}**: \n\n\`\`\`python\n# Ejemplo de código\ndatos = [10, 20, 30, 40]\nresultado = [x / 2 for x in datos]\nprint(resultado) # [5.0, 10.0, 15.0, 20.0]\n\`\`\``;
-      } else if (lower.includes("codigo") || lower.includes("código") || lower.includes("python") || lower.includes("sql") || lower.includes("javascript")) {
-        aiResponse = "Para practicar con código, puedes activar el modo **Super Clase** presionando el botón en la esquina superior derecha. Esto abrirá un editor interactivo en el que podrás probar scripts en tiempo real.";
-      } else if (lower.includes("descargar") || lower.includes("archivo") || lower.includes("recurso")) {
-        aiResponse = "Puedes descargar tus apuntes personales usando el botón 'Descargar' dentro de la pestaña de 'Mis apuntes'. Si necesitas recursos adicionales del curso, consulta los recursos sugeridos en la pestaña de Preguntas Frecuentes.";
-      } else if (selectedLesson) {
-        aiResponse = `Con respecto a **"${selectedLesson.title}"**, recuerda que los puntos principales son:\n1. Comprender la estructura lógica del tema.\n2. Aplicar las buenas prácticas que se demuestran en el video.\n3. Realizar los apuntes correspondientes para fijar el conocimiento.\n\n¿Tienes alguna duda sobre alguna sección específica del video?`;
+      // Inject context system message at the beginning of API payload
+      const contextMessage = {
+        id: "context-msg",
+        role: "system" as const,
+        content: `IMPORTANTE: El usuario está tomando el curso "${readableCourseName}" y se encuentra viendo la clase "${selectedLesson.title}". Responde a sus dudas sobre esta lección de forma clara, instructiva y adaptada a este contexto.`,
+      };
+
+      // Map to UIMessage structure for Vercel AI SDK
+      const apiMessages = [
+        contextMessage,
+        ...updatedMessages.map((msg, index) => ({
+          id: `msg-${index}`,
+          role: msg.role,
+          content: msg.text,
+        }))
+      ];
+
+      const response = await fetch("/api/ai/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: apiMessages,
+          chatId: savedChatId || null,
+          model: "llama-3-8b",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Error en la respuesta de la IA");
       }
+
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      if (!reader) throw new Error("No readable stream");
+
+      // Place a blank AI response message in the queue to update live
+      setChatMessages(prev => [...prev, { role: 'assistant', text: "" }]);
       
-      setChatMessages(prev => [...prev, { role: 'assistant', text: aiResponse }]);
+      let aiText = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
+        for (const line of lines) {
+          if (!line.trim()) continue;
+
+          // 0: Chunk of text streaming
+          if (line.startsWith('0:')) {
+            try {
+              const textVal = JSON.parse(line.substring(2));
+              aiText += textVal;
+              setChatMessages(prev => {
+                const next = [...prev];
+                next[next.length - 1] = { role: 'assistant', text: aiText };
+                return next;
+              });
+            } catch (err) {
+              // fallback
+            }
+          }
+
+          // 2: Metadata containing chatId
+          if (line.startsWith('2:')) {
+            try {
+              const metadataList = JSON.parse(line.substring(2));
+              const meta = Array.isArray(metadataList) ? metadataList[0] : metadataList;
+              if (meta?.chatId) {
+                localStorage.setItem(`aula-chat-${courseId}-${selectedLesson.id}`, meta.chatId);
+              }
+            } catch (err) {
+              console.error("Error parsing stream metadata:", err);
+            }
+          }
+        }
+      }
+    } catch (err: any) {
+      console.error("Error chatting with AI:", err);
+      setChatMessages(prev => [
+        ...prev,
+        { role: 'assistant', text: "Lo siento, ocurrió un error al comunicarme con el asistente de IA. Inténtalo de nuevo." }
+      ]);
+    } finally {
       setChatLoading(false);
-    }, 1000);
+    }
+  };
+
+  // Reset/Clear chat function
+  const handleResetChat = () => {
+    if (selectedLesson) {
+      localStorage.removeItem(`aula-chat-${courseId}-${selectedLesson.id}`);
+      setChatMessages([
+        { role: 'assistant', text: '¡Hola! Soy tu asistente de estudio con IA. ¿Tienes alguna duda sobre la clase de hoy? Pregúntame sobre los conceptos explicados, código o ejercicios.' }
+      ]);
+    }
   };
 
   // Download Notes as text file
@@ -842,12 +966,23 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                       </button>
                     ))}
                   </div>
-                  <button
-                    onClick={() => setSidebarOpen(false)}
-                    className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors border-0 bg-transparent cursor-pointer text-gray-400 hover:text-gray-900"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    {sidebarTab === 'ai' && (
+                      <button
+                        onClick={handleResetChat}
+                        className="p-1.5 hover:bg-gray-105 rounded-lg transition-colors border-0 bg-transparent cursor-pointer text-gray-400 hover:text-gray-900"
+                        title="Nueva conversación"
+                      >
+                        <MessageSquarePlus className="w-4 h-4 text-brand-blue" />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => setSidebarOpen(false)}
+                      className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors border-0 bg-transparent cursor-pointer text-gray-400 hover:text-gray-900"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -938,7 +1073,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                   </div>
                 )}
 
-                {/* Mode B: MOCK AI ASSISTANT CHAT */}
+                {/* Mode B: AI ASSISTANT CHAT */}
                 {sidebarTab === 'ai' && (
                   <div className="flex flex-col h-full bg-white">
                     <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50/30">
@@ -956,13 +1091,13 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                           </div>
                           <div className={`p-3 rounded-2xl text-[12px] leading-relaxed ${
                             msg.role === 'user'
-                              ? 'bg-brand-blue text-white rounded-tr-none'
-                              : 'bg-white text-gray-800 rounded-tl-none border border-gray-250 shadow-sm'
+                              ? 'bg-brand-blue text-white rounded-tr-none shadow-sm'
+                              : 'bg-white text-gray-850 rounded-tl-none border border-gray-200 shadow-sm'
                           }`}>
-                            {msg.text.includes("```") ? (
-                              <pre className="font-mono bg-slate-900 p-2.5 rounded-lg text-[10px] overflow-x-auto text-violet-300 mt-2 leading-snug whitespace-pre-wrap">{msg.text.replace(/```(python|javascript|sql)?/g, "")}</pre>
-                            ) : (
+                            {msg.role === 'user' ? (
                               msg.text
+                            ) : (
+                              <MarkdownRenderer content={msg.text} />
                             )}
                           </div>
                         </div>
