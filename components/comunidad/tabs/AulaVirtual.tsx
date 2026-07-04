@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
   Play, Code, CheckCircle, Terminal, PlayCircle, Loader2,
   ChevronLeft, ChevronRight, Lock, Sparkles, Monitor, X, Layers,
+  Share2, Star, HelpCircle, StickyNote, Download, Trash2, Send,
+  User, Check, BookOpen, Clock, FileText, ChevronDown, CheckSquare, Square
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -59,13 +61,33 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
   const courseSlug = segments[2];
   const selectedLessonSlug = segments[3] || null;
 
+  // Course & Navigation States
   const [modules, setModules] = useState<Module[]>([]);
   const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
   const [accessType, setAccessType] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
-  // Super Clase state
+  // Tabs States
+  const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'faq'>('overview');
+  const [sidebarTab, setSidebarTab] = useState<'content' | 'ai'>('content');
+
+  // Text Notes States (stored in localStorage)
+  const [notes, setNotes] = useState("");
+  const [notesSaving, setNotesSaving] = useState(false);
+
+  // Interactive AI Assistant States
+  const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'assistant', text: string }[]>([
+    { role: 'assistant', text: '¡Hola! Soy tu asistente de estudio con IA. ¿Tienes alguna duda sobre la clase de hoy? Pregúntame sobre los conceptos explicados, código o ejercicios.' }
+  ]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatLoading, setChatLoading] = useState(false);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  // Share Copy Link State
+  const [copiedShare, setCopiedShare] = useState(false);
+
+  // Super Clase states
   const [superClaseActive, setSuperClaseActive] = useState(false);
   const [language, setLanguage] = useState("python");
   const [code, setCode] = useState("# Escribe tu código aquí\nprint('¡Hola ProgramBI!')");
@@ -74,11 +96,12 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
 
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
 
-  const handleSelectLesson = (lesson: Lesson) => {
-    setSelectedLesson(lesson);
-    router.push(`/comunidad/cursos/${courseSlug}/${slugify(lesson.title)}`);
-  };
+  // Auto-scroll chat to bottom
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages, chatLoading]);
 
+  // Sync selected lesson based on slug change in URL
   useEffect(() => {
     if (modules.length === 0 || !selectedLessonSlug) return;
     const matched = modules.flatMap(m => m.lessons).find(l => slugify(l.title) === selectedLessonSlug);
@@ -87,6 +110,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     }
   }, [selectedLessonSlug, modules, selectedLesson]);
 
+  // Initial Load of Course Lessons & Data
   useEffect(() => {
     async function load() {
       try {
@@ -133,6 +157,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     load();
   }, [courseId, courseSlug, selectedLessonSlug]);
 
+  // Load Super Clase notes & set language on lesson change
   useEffect(() => {
     async function loadNoteAndSetLanguage() {
       if (!selectedLesson) return;
@@ -160,6 +185,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     loadNoteAndSetLanguage();
   }, [selectedLesson, courseId]);
 
+  // Auto-save Super Clase Code with debounce
   useEffect(() => {
     if (!selectedLesson || !superClaseActive || !selectedLesson.superclass_language) return;
 
@@ -174,6 +200,76 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     return () => clearTimeout(timer);
   }, [code, selectedLesson, courseId, superClaseActive]);
 
+  // Load Text Notes from localStorage on lesson change
+  useEffect(() => {
+    if (!selectedLesson) {
+      setNotes("");
+      return;
+    }
+    const saved = localStorage.getItem(`aula-notes-${courseId}-${selectedLesson.id}`);
+    setNotes(saved || "");
+  }, [selectedLesson, courseId]);
+
+  // Auto-save Text Notes to localStorage with debounce
+  useEffect(() => {
+    if (!selectedLesson) return;
+    setNotesSaving(true);
+    const timer = setTimeout(() => {
+      localStorage.setItem(`aula-notes-${courseId}-${selectedLesson.id}`, notes);
+      setNotesSaving(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, [notes, selectedLesson, courseId]);
+
+  // Copy Share Link Function
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setCopiedShare(true);
+    setTimeout(() => setCopiedShare(false), 2000);
+  };
+
+  // Chatbot Send Message Handler
+  const handleSendChatMessage = () => {
+    if (!chatInput.trim()) return;
+    const userText = chatInput;
+    setChatMessages(prev => [...prev, { role: 'user', text: userText }]);
+    setChatInput("");
+    setChatLoading(true);
+
+    setTimeout(() => {
+      let aiResponse = "Excelente pregunta. En esta clase estamos aprendiendo sobre los conceptos clave de la materia. Te recomiendo repasar la documentación adjunta y practicar en el Playground Interactivo de la Super Clase.";
+      
+      const lower = userText.toLowerCase();
+      if (lower.includes("hola") || lower.includes("buenos") || lower.includes("buenas")) {
+        aiResponse = "¡Hola! ¿En qué te puedo colaborar con respecto a la lección de hoy? Estoy aquí para ayudarte a entender la materia.";
+      } else if (lower.includes("ejemplo") || lower.includes("ejercicio")) {
+        aiResponse = `Aquí tienes un ejemplo práctico relacionado con la clase de **${selectedLesson?.title || 'hoy'}**: \n\n\`\`\`python\n# Ejemplo de código\ndatos = [10, 20, 30, 40]\nresultado = [x / 2 for x in datos]\nprint(resultado) # [5.0, 10.0, 15.0, 20.0]\n\`\`\``;
+      } else if (lower.includes("codigo") || lower.includes("código") || lower.includes("python") || lower.includes("sql") || lower.includes("javascript")) {
+        aiResponse = "Para practicar con código, puedes activar el modo **Super Clase** presionando el botón en la esquina superior derecha. Esto abrirá un editor interactivo en el que podrás probar scripts en tiempo real.";
+      } else if (lower.includes("descargar") || lower.includes("archivo") || lower.includes("recurso")) {
+        aiResponse = "Puedes descargar tus apuntes personales usando el botón 'Descargar' dentro de la pestaña de 'Mis apuntes'. Si necesitas recursos adicionales del curso, consulta los recursos sugeridos en la pestaña de Preguntas Frecuentes.";
+      } else if (selectedLesson) {
+        aiResponse = `Con respecto a **"${selectedLesson.title}"**, recuerda que los puntos principales son:\n1. Comprender la estructura lógica del tema.\n2. Aplicar las buenas prácticas que se demuestran en el video.\n3. Realizar los apuntes correspondientes para fijar el conocimiento.\n\n¿Tienes alguna duda sobre alguna sección específica del video?`;
+      }
+      
+      setChatMessages(prev => [...prev, { role: 'assistant', text: aiResponse }]);
+      setChatLoading(false);
+    }, 1000);
+  };
+
+  // Download Notes as text file
+  const handleDownloadNotes = () => {
+    if (!notes.trim()) return;
+    const blob = new Blob([notes], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `apuntes-${slugify(selectedLesson?.title || 'clase')}.txt`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Run Code logic for interactive editor
   const executeCode = async () => {
     setIsExecuting(true);
     setCodeOutput("");
@@ -201,7 +297,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
       } else if (result.run) {
         setCodeOutput(result.run.output);
       } else {
-        setCodeOutput("Error desconocido");
+        setCodeOutput("Error de ejecución");
       }
     } catch (err: any) {
       setCodeOutput(`Error: ${err.message}`);
@@ -210,6 +306,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     }
   };
 
+  // Toggle Complete check logic
   const toggleComplete = async (lessonId: string) => {
     const isCurrentlyCompleted = completedLessons.has(lessonId);
     const nextState = !isCurrentlyCompleted;
@@ -225,6 +322,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
       await toggleLessonProgress(courseId, lessonId, nextState);
     } catch (err) {
       console.error("Error updating lesson progress on database:", err);
+      // Revert state if database sync fails
       setCompletedLessons((prev) => {
         const next = new Set(prev);
         if (isCurrentlyCompleted) {
@@ -237,6 +335,12 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     }
   };
 
+  const handleSelectLesson = (lesson: Lesson) => {
+    setSelectedLesson(lesson);
+    router.push(`/comunidad/cursos/${courseSlug}/${slugify(lesson.title)}`);
+  };
+
+  // Metrics calculations
   const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
   const progress = totalLessons > 0 ? Math.round((completedLessons.size / totalLessons) * 100) : 0;
   const videoId = selectedLesson ? extractYouTubeId(selectedLesson.video_url) : null;
@@ -245,412 +349,657 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
   const isSelectedLessonLocked = accessType === "trial" && selectedLessonGlobalIndex >= 2;
 
   const selectedModuleOrder = selectedLesson ? modules.find(m => m.lessons.includes(selectedLesson))?.order || "" : "";
+  const readableCourseName = courseSlug ? courseSlug.replace(/-/g, ' ').toUpperCase() : "CURSO";
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 bg-surface-0">
+      <div className="flex flex-col items-center justify-center h-screen bg-slate-950 text-white">
         <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
-        <p className="text-sm text-gray-500 mt-4 font-medium">Cargando clases...</p>
+        <p className="text-sm text-gray-400 mt-4 font-medium">Cargando tu aula virtual...</p>
       </div>
     );
   }
 
   if (modules.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 bg-surface-0">
-        <Layers className="w-16 h-16 text-gray-200 mb-4" />
-        <h3 className="text-lg font-bold text-gray-900 mb-2">Aún no hay clases</h3>
-        <p className="text-sm text-gray-500 mb-6">El instructor está preparando el contenido.</p>
-        <button onClick={onBack} className="text-sm font-bold text-brand-blue hover:underline flex items-center gap-1">
-          <ChevronLeft className="w-4 h-4" /> Volver a cursos
+      <div className="flex flex-col items-center justify-center h-screen bg-slate-950 text-white p-6">
+        <Layers className="w-16 h-16 text-slate-700 mb-4 animate-pulse" />
+        <h3 className="text-xl font-bold text-white mb-2">Aún no hay clases cargadas</h3>
+        <p className="text-sm text-slate-400 max-w-sm text-center mb-6">El instructor se encuentra estructurando el temario del curso en este momento.</p>
+        <button onClick={onBack} className="px-5 py-2.5 bg-brand-blue text-white rounded-xl text-sm font-bold flex items-center gap-1.5 shadow-lg active:scale-98 transition-all hover:bg-blue-600">
+          <ChevronLeft className="w-4 h-4" /> Volver a la comunidad
         </button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-row-reverse w-full h-screen overflow-hidden bg-surface-1 text-gray-900">
+    <div className="flex flex-col w-full h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans">
 
-      {/* ─── SIDEBAR: Lessons List ─── */}
-      <AnimatePresence>
-        {sidebarOpen && (
-          <motion.aside
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 340, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="flex-none h-full border-l border-gray-200 flex flex-col bg-white overflow-hidden relative z-10"
+      {/* ─── TOP BAR (Header - Dark Slate) ─── */}
+      <header className="flex-none h-[64px] bg-slate-900 border-b border-slate-800 flex items-center justify-between px-6 z-20">
+        <div className="flex items-center gap-4 min-w-0">
+          <button
+            onClick={onBack}
+            className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all cursor-pointer border-0"
+            title="Volver a los cursos"
           >
-            {/* Header */}
-            <div className="flex-none p-5 border-b border-gray-100">
-              <div className="flex items-center justify-between">
-                <h3 className="font-display font-black text-sm text-gray-900">Contenido del curso</h3>
-                <button
-                  onClick={() => setSidebarOpen(false)}
-                  className="p-1 hover:bg-gray-100 rounded-lg transition-colors border-0 bg-transparent cursor-pointer"
-                >
-                  <X className="w-4 h-4 text-gray-500" />
-                </button>
-              </div>
-              <div className="mt-4">
-                <div className="flex items-center justify-between text-[11px] text-gray-500 font-bold mb-1.5 uppercase tracking-wide">
-                  <span>Progreso</span>
-                  <span className="text-brand-blue">{progress}%</span>
-                </div>
-                <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-brand-blue to-indigo-600 rounded-full transition-all duration-500"
-                    style={{ width: `${progress}%` }}
-                  />
-                </div>
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          
+          <div className="h-6 w-px bg-slate-800 hidden sm:block" />
+          
+          <div className="min-w-0">
+            <span className="text-[10px] font-black text-brand-blue uppercase tracking-widest block leading-none mb-1">
+              {readableCourseName}
+            </span>
+            <h1 className="text-sm md:text-base font-bold text-white leading-none line-clamp-1">
+              {selectedLesson?.title || "Aula Virtual"}
+            </h1>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 flex-none">
+          {/* Share Button */}
+          <button
+            onClick={handleShare}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border cursor-pointer flex items-center gap-1.5 ${
+              copiedShare 
+                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20" 
+                : "bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700 hover:border-slate-600"
+            }`}
+          >
+            <Share2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">{copiedShare ? "Copiado!" : "Compartir"}</span>
+          </button>
+
+          {/* Progress Circular SVG */}
+          <div className="h-6 w-px bg-slate-800" />
+          <div className="flex items-center gap-2.5">
+            <div className="relative w-8 h-8">
+              <svg className="w-full h-full transform -rotate-90">
+                <circle
+                  cx="16"
+                  cy="16"
+                  r="13"
+                  className="stroke-slate-800"
+                  strokeWidth="2.5"
+                  fill="transparent"
+                />
+                <circle
+                  cx="16"
+                  cy="16"
+                  r="13"
+                  className="stroke-brand-blue transition-all duration-500"
+                  strokeWidth="2.5"
+                  fill="transparent"
+                  strokeDasharray={2 * Math.PI * 13}
+                  strokeDashoffset={2 * Math.PI * 13 * (1 - progress / 100)}
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center text-[9px] font-black text-white">
+                {progress}%
               </div>
             </div>
+            <div className="hidden md:block text-left leading-none">
+              <div className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wide">Tu Progreso</div>
+              <div className="text-[11px] font-bold text-slate-200 mt-1">{completedLessons.size}/{totalLessons} clases</div>
+            </div>
+          </div>
 
-            {/* Module List */}
-            <div className="flex-1 overflow-y-auto">
-              {modules.map((mod) => (
-                <div key={mod.name} className="border-b border-gray-100 last:border-b-0">
-                  <div className="px-5 py-3.5 bg-gray-50/80 border-b border-gray-100">
-                    <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">
-                      Módulo {mod.order}
-                    </span>
-                    <h4 className="text-xs font-bold text-gray-900 mt-0.5">{mod.name}</h4>
+          {/* Toggle Sidebar Icon (Hamburger-like) */}
+          {!sidebarOpen && (
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="w-9 h-9 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all cursor-pointer border-0 ml-2"
+              title="Mostrar contenido"
+            >
+              <BookOpen className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* ─── BODY LAYOUT ─── */}
+      <div className="flex-1 flex flex-row min-h-0 w-full overflow-hidden bg-slate-950">
+
+        {/* ─── LEFT PANE: Video / Tabs / Super Clase ─── */}
+        <div className="flex-1 flex flex-col min-w-0 h-full relative z-0">
+          
+          {/* Main workspace (depending on Super Clase Mode) */}
+          <div className="flex-1 min-h-0 overflow-hidden relative">
+            {!selectedLesson ? (
+              <div className="flex flex-col items-center justify-center h-full text-slate-500">
+                <Monitor className="w-16 h-16 text-slate-800 mb-4" />
+                <p className="font-semibold text-sm">Selecciona una clase del panel lateral</p>
+              </div>
+            ) : superClaseActive && selectedLesson.superclass_language ? (
+              
+              /* ── SUPER CLASE WORKSTATION MODE (Side by Side Coding) ── */
+              <div className="flex h-full w-full">
+                
+                {/* Monaco Editor Workspace */}
+                <div className="flex-1 flex flex-col h-full bg-slate-900 border-r border-slate-800">
+                  <div className="flex-none h-12 bg-slate-950 border-b border-slate-800 flex items-center justify-between px-4">
+                    <div className="flex items-center gap-2">
+                      <Code className="w-4 h-4 text-violet-400" />
+                      <span className="text-white font-bold text-xs">Playground Interactivo</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <select
+                        value={language}
+                        onChange={(e) => setLanguage(e.target.value)}
+                        className="bg-slate-800 text-white text-[11px] border border-slate-700 rounded-lg px-2 py-1 outline-none font-bold cursor-pointer hover:border-slate-650"
+                      >
+                        <option value="python">Python 3</option>
+                        <option value="sql">SQL (SQLite)</option>
+                        <option value="javascript">JavaScript</option>
+                      </select>
+                      <button
+                        onClick={executeCode}
+                        disabled={isExecuting}
+                        className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[11px] font-black transition-colors disabled:opacity-50 cursor-pointer border-0 shadow-md shadow-emerald-500/10"
+                      >
+                        {isExecuting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <PlayCircle className="w-3.5 h-3.5" />}
+                        Ejecutar
+                      </button>
+                    </div>
                   </div>
-                  <div className="divide-y divide-gray-100">
-                    {mod.lessons.map((lesson) => {
-                      const isSelected = selectedLesson?.id === lesson.id;
-                      const isCompleted = completedLessons.has(lesson.id);
-                      const globalIndex = modules.flatMap(m => m.lessons).findIndex(l => l.id === lesson.id);
-                      const isLocked = accessType === "trial" && globalIndex >= 2;
-                      const hasSuperClase = !!lesson.superclass_language;
+                  <div className="flex-1 min-h-0">
+                    <Editor
+                      height="100%"
+                      language={language}
+                      theme="vs-dark"
+                      value={code}
+                      onChange={(val) => setCode(val || "")}
+                      options={{
+                        minimap: { enabled: false },
+                        fontSize: 14,
+                        fontFamily: "'Fira Code', 'JetBrains Mono', monospace",
+                        padding: { top: 12 },
+                        scrollBeyondLastLine: false,
+                      }}
+                    />
+                  </div>
+                  
+                  {/* Console output */}
+                  <div className="flex-none h-48 bg-slate-950 border-t border-slate-800 flex flex-col">
+                    <div className="flex-none h-8 bg-slate-900 flex items-center px-4 border-b border-slate-800">
+                      <Terminal className="w-3.5 h-3.5 text-slate-500 mr-2" />
+                      <span className="text-[10px] text-slate-400 font-bold tracking-wider uppercase">Resultado Consola</span>
+                    </div>
+                    <div
+                      className="flex-1 p-4 overflow-y-auto font-mono text-xs leading-relaxed"
+                      style={{ color: (codeOutput.includes("Error") || codeOutput.includes("Traceback")) ? "#f87171" : "#a5b4fc" }}
+                    >
+                      {codeOutput ? (
+                        <pre className="whitespace-pre-wrap">{codeOutput}</pre>
+                      ) : (
+                        <span className="text-slate-600">Haz clic en Ejecutar para correr el script...</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
+                {/* Video PiP (Picture in Picture Container) */}
+                <div className="flex-none w-[380px] bg-slate-950 border-l border-slate-850 flex flex-col h-full">
+                  <div className="relative w-full aspect-video bg-black shrink-0 border-b border-slate-850">
+                    {videoId ? (
+                      <iframe
+                        className="absolute inset-0 w-full h-full"
+                        src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center bg-slate-900">
+                        <p className="text-xs text-slate-500">Video no disponible</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-5 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] font-extrabold bg-violet-500/10 text-violet-400 px-2 py-0.5 rounded border border-violet-500/20 uppercase tracking-wide">
+                        Modo Coding
+                      </span>
+                      <button
+                        onClick={() => setSuperClaseActive(false)}
+                        className="text-xs font-bold text-brand-blue hover:underline cursor-pointer bg-transparent border-0"
+                      >
+                        Salir de Playground
+                      </button>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-white mb-2 leading-snug">
+                        {selectedLesson.title}
+                      </h4>
+                      <p className="text-xs text-slate-400 leading-relaxed">
+                        Lee los enunciados de la clase, escribe tus rutinas de código en el panel izquierdo y ejecuta. Tu progreso en código se sincroniza automáticamente.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              
+              /* ── UDEMY-LIKE VIEW: Big Video + Tabs Below ── */
+              <div className="flex flex-col h-full bg-slate-950 overflow-y-auto">
+                
+                {/* Cinema Screen Frame for Video */}
+                <div className="flex-none w-full bg-black flex justify-center items-center py-2 px-6">
+                  <div className="relative w-full max-w-[1120px] aspect-video bg-slate-900 rounded-lg overflow-hidden shadow-2xl">
+                    {isSelectedLessonLocked ? (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 to-slate-900 overflow-hidden">
+                        <Lock className="w-12 h-12 text-blue-500 mb-3 animate-bounce" />
+                        <h2 className="text-xl font-bold text-white mb-1.5 text-center px-4">Clase Bloqueada (Periodo de Prueba)</h2>
+                        <p className="text-slate-400 text-xs max-w-sm text-center mb-5 leading-relaxed px-4">
+                          Estás en los 7 días de prueba. Para desbloquear todas las clases adicionales, puedes contratar el plan premium de la plataforma ahora.
+                        </p>
+                        <button
+                          onClick={() => window.location.href = `/api/mercadopago/upgrade-trial`}
+                          className="px-5 py-2.5 bg-gradient-to-r from-brand-blue to-indigo-600 text-white text-xs font-bold rounded-xl shadow-lg flex items-center gap-1.5 active:scale-[0.98] transition-all cursor-pointer border-0"
+                        >
+                          <Sparkles className="w-4 h-4" /> Desbloquear Curso Completo
+                        </button>
+                      </div>
+                    ) : videoId ? (
+                      <iframe
+                        className="absolute inset-0 w-full h-full"
+                        src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-955 gap-2">
+                        <Play className="w-12 h-12 text-slate-800" />
+                        <p className="text-slate-600 text-xs font-medium">Video no disponible en este momento</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Details & Interactive Tabs (Udemy Style) */}
+                <div className="flex-1 w-full max-w-[1120px] mx-auto px-6 py-4 bg-transparent">
+                  
+                  {/* Tabs Navbar */}
+                  <div className="flex items-center gap-6 border-b border-slate-800 mb-6 overflow-x-auto scrollbar-hide">
+                    {[
+                      { id: 'overview', label: 'Descripción general', icon: FileText },
+                      { id: 'notes', label: 'Mis apuntes', icon: StickyNote },
+                      { id: 'faq', label: 'Preguntas frecuentes', icon: HelpCircle },
+                    ].map(tab => {
+                      const Icon = tab.icon;
+                      const isActive = activeTab === tab.id;
                       return (
-                        <motion.button
-                          key={lesson.id}
-                          onClick={() => handleSelectLesson(lesson)}
-                          whileHover={{ backgroundColor: "rgba(249, 250, 251, 1)" }}
-                          className={`w-full text-left px-5 py-4 flex items-start gap-3.5 transition-all group cursor-pointer bg-transparent ${
-                            isSelected ? "bg-blue-50" : ""
+                        <button
+                          key={tab.id}
+                          onClick={() => setActiveTab(tab.id as any)}
+                          className={`flex items-center gap-1.5 pb-3.5 text-sm font-semibold transition-all relative border-0 bg-transparent cursor-pointer whitespace-nowrap ${
+                            isActive ? 'text-white font-bold' : 'text-slate-400 hover:text-slate-200'
                           }`}
                         >
-                          <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-none mt-0.5 text-[11px] font-bold transition-colors ${
-                            isCompleted
-                              ? "bg-emerald-500 text-white"
-                              : isSelected
-                              ? "bg-brand-blue text-white"
-                              : "bg-gray-100 text-gray-500 group-hover:bg-gray-200"
-                          }`}>
-                            {isCompleted ? (
-                              <CheckCircle className="w-3.5 h-3.5" />
-                            ) : isLocked ? (
-                              <Lock className="w-3 h-3 text-gray-400" />
-                            ) : (
-                              lesson.lesson_order
-                            )}
-                          </div>
-
-                          <div className="flex-1 min-w-0">
-                            <div className={`text-[13px] leading-snug line-clamp-2 transition-colors ${
-                              isSelected
-                                ? "text-gray-900 font-bold"
-                                : "text-gray-700 group-hover:text-gray-900 font-medium"
-                            }`}>
-                              {lesson.title}
-                            </div>
-                            <div className="flex flex-wrap items-center gap-2 mt-2">
-                              <span className="text-[10px] text-gray-400 font-medium">
-                                {lesson.duration_minutes || 0} min
-                              </span>
-                              {hasSuperClase && (
-                                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-violet-50 text-violet-600 uppercase tracking-wide border border-violet-100">
-                                  <Code className="w-2.5 h-2.5 inline mr-0.5" />
-                                  Super Clase
-                                </span>
-                              )}
-                              {lesson.is_free_preview && (
-                                <span className="text-[9px] font-black px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 uppercase tracking-wide border border-emerald-100">
-                                  Gratis
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </motion.button>
+                          <Icon className="w-4 h-4" />
+                          {tab.label}
+                          {isActive && (
+                            <motion.div
+                              layoutId="activeWorkspaceTab"
+                              className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-blue"
+                              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                            />
+                          )}
+                        </button>
                       );
                     })}
                   </div>
+
+                  {/* Tabs Workspace content */}
+                  <div className="text-left min-h-[300px]">
+                    
+                    {/* Tab 1: OVERVIEW */}
+                    {activeTab === 'overview' && (
+                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-850 pb-5">
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-[10px] font-black px-2.5 py-0.5 rounded bg-blue-500/10 text-brand-blue uppercase tracking-wider border border-blue-500/20">
+                                Módulo {selectedModuleOrder} • Clase {selectedLesson.lesson_order}
+                              </span>
+                              <span className="text-[10px] font-black px-2 py-0.5 rounded bg-slate-800 text-slate-300 uppercase tracking-wider flex items-center gap-1">
+                                <Clock className="w-2.5 h-2.5" /> {selectedLesson.duration_minutes} min
+                              </span>
+                            </div>
+                            <h2 className="text-xl md:text-2xl font-black text-white leading-tight">
+                              {selectedLesson.title}
+                            </h2>
+                          </div>
+                          
+                          {/* Super Clase Button inside Tab */}
+                          {selectedLesson.superclass_language && (
+                            <button
+                              onClick={() => setSuperClaseActive(true)}
+                              className="px-4 py-2 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-bold text-xs flex items-center gap-1.5 shadow-md shadow-violet-600/15 cursor-pointer border-0 active:scale-98 transition-all"
+                            >
+                              <Sparkles className="w-4 h-4" /> Activar Super Clase ({selectedLesson.superclass_language.toUpperCase()})
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Udemy ratings & statistics overview */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-slate-900/40 p-4 rounded-xl border border-slate-850">
+                          <div className="text-left">
+                            <span className="text-[10px] text-slate-400 font-extrabold uppercase block tracking-wider">Calificación</span>
+                            <div className="flex items-center gap-1.5 mt-1">
+                              <span className="text-base font-black text-white">4.8</span>
+                              <div className="flex text-amber-500">
+                                {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-3 h-3 fill-amber-500 stroke-none" />)}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="text-left">
+                            <span className="text-[10px] text-slate-400 font-extrabold uppercase block tracking-wider">Estudiantes</span>
+                            <span className="text-base font-black text-white mt-1 block">15k+ en el curso</span>
+                          </div>
+                          <div className="text-left">
+                            <span className="text-[10px] text-slate-400 font-extrabold uppercase block tracking-wider">Duración Total</span>
+                            <span className="text-base font-black text-white mt-1 block">{totalLessons} clases</span>
+                          </div>
+                          <div className="text-left">
+                            <span className="text-[10px] text-slate-400 font-extrabold uppercase block tracking-wider">Acceso</span>
+                            <span className="text-base font-black text-emerald-400 mt-1 block uppercase">Premium</span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <h3 className="font-bold text-sm text-slate-200 mb-2">Acerca de esta lección</h3>
+                          <p className="text-sm text-slate-350 leading-relaxed font-medium">
+                            En esta clase aprenderás los pilares prácticos fundamentales para el desarrollo de tus habilidades. Pon a prueba los conceptos estudiados en el video, toma apuntes clave y completa el cuestionario o práctica correspondiente en el Playground interactivo.
+                          </p>
+                        </div>
+
+                        {/* Instructor Profile Card */}
+                        <div className="pt-4 border-t border-slate-850 flex items-center gap-4">
+                          <div className="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 border border-slate-700">
+                            <User className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-slate-400 font-extrabold uppercase block tracking-wider">Instructor</span>
+                            <span className="text-sm font-bold text-white">ProgramBI Team</span>
+                            <span className="text-xs text-slate-400 block mt-0.5">Especialistas en Business Intelligence y Analítica de Datos</span>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Tab 2: NOTES (Personal Notepad) */}
+                    {activeTab === 'notes' && (
+                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+                        <div className="flex items-center justify-between border-b border-slate-850 pb-3">
+                          <div>
+                            <h3 className="font-bold text-sm text-white">Mis notas personales</h3>
+                            <p className="text-xs text-slate-400">Tus apuntes se guardan automáticamente en tu navegador.</p>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={handleDownloadNotes}
+                              disabled={!notes.trim()}
+                              className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border-0 cursor-pointer disabled:opacity-40 transition-colors flex items-center gap-1.5 text-xs font-bold"
+                              title="Descargar apuntes como archivo .txt"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                              Descargar
+                            </button>
+                            <button
+                              onClick={() => { if (confirm("¿Seguro que deseas eliminar tus apuntes de esta clase?")) setNotes(""); }}
+                              disabled={!notes.trim()}
+                              className="p-2 rounded-lg bg-red-950/20 hover:bg-red-950/40 text-red-400 border-0 cursor-pointer disabled:opacity-40 transition-colors"
+                              title="Limpiar apuntes"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="relative">
+                          <textarea
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            placeholder="Escribe aquí tus ideas, notas clave, apuntes o códigos de esta clase para tenerlos siempre a mano..."
+                            className="w-full min-h-[160px] bg-slate-900 border border-slate-800 rounded-xl p-4 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-brand-blue/30 focus:border-brand-blue/40 leading-relaxed"
+                          />
+                          <div className="absolute bottom-3 right-3 text-[10px] text-slate-500 font-bold">
+                            {notesSaving ? (
+                              <span className="flex items-center gap-1 text-brand-blue"><Loader2 className="w-3 h-3 animate-spin" /> Guardando...</span>
+                            ) : notes ? (
+                              <span className="text-emerald-500 flex items-center gap-1"><Check className="w-3 h-3" /> Auto-guardado</span>
+                            ) : (
+                              "Vacío"
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Tab 3: FAQ (Frequently Asked Questions) */}
+                    {activeTab === 'faq' && (
+                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+                        <h3 className="font-bold text-sm text-white border-b border-slate-850 pb-3">Preguntas frecuentes del curso</h3>
+                        <div className="space-y-3">
+                          {[
+                            { q: "¿Cómo descargo los archivos y recursos del curso?", a: "Puedes encontrar los recursos descargables en la pestaña general de cada módulo o solicitarlos directamente al Asistente de IA en el panel lateral." },
+                            { q: "¿Tengo acceso ilimitado a las clases y Playground?", a: "Sí, todos los usuarios suscritos en planes premium tienen acceso total a todos los videos y herramientas de ejecución de código sin restricciones." },
+                            { q: "¿Qué hago si mi código en el Playground arroja error?", a: "Asegúrate de que estás usando el lenguaje adecuado en la pestaña superior (por ejemplo, Python para sintaxis de Python) y lee el mensaje que arroja la Consola de Salida." }
+                          ].map((item, idx) => (
+                            <div key={idx} className="bg-slate-900/30 p-4 rounded-xl border border-slate-850/60">
+                              <h4 className="text-xs font-black text-white flex items-center gap-2">
+                                <HelpCircle className="w-3.5 h-3.5 text-brand-blue shrink-0" />
+                                {item.q}
+                              </h4>
+                              <p className="text-xs text-slate-400 mt-2 leading-relaxed font-medium pl-5">
+                                {item.a}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
                 </div>
-              ))}
-            </div>
-          </motion.aside>
-        )}
-      </AnimatePresence>
-
-      {/* ─── MAIN CONTENT ─── */}
-      <div className="flex-1 flex flex-col min-w-0 h-full bg-surface-1 relative z-0">
-
-        {/* Top Bar */}
-        <div className="flex-none h-14 border-b border-gray-200 flex items-center justify-between px-5 bg-white">
-          <div className="flex items-center gap-3 min-w-0">
-            {!sidebarOpen && (
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer border-0 bg-transparent"
-              >
-                <ChevronRight className="w-4 h-4 text-gray-500" />
-              </button>
+              </div>
             )}
-            <button
-              onClick={onBack}
-              className="flex items-center gap-1 text-gray-500 hover:text-brand-blue text-xs font-bold transition-colors border-0 bg-transparent cursor-pointer"
+          </div>
+        </div>
+
+        {/* ─── RIGHT PANE: Collapsible Sidebar (Udemy Style) ─── */}
+        <AnimatePresence>
+          {sidebarOpen && (
+            <motion.aside
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 340, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="flex-none h-full border-l border-slate-850 flex flex-col bg-slate-900 overflow-hidden relative z-10"
             >
-              <ChevronLeft className="w-3.5 h-3.5" /> Volver a cursos
-            </button>
-            <div className="h-4 w-px bg-gray-200" />
-            <div className="min-w-0">
-              <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">
-                {selectedLesson ? `Módulo ${selectedModuleOrder} · Clase ${selectedLesson.lesson_order}` : ''}
-              </div>
-              <h2 className="text-sm font-bold text-gray-900 line-clamp-1">
-                {selectedLesson?.title || "Selecciona una clase"}
-              </h2>
-            </div>
-          </div>
-          <div className="flex items-center gap-2.5 flex-none">
-            {selectedLesson?.superclass_language && (
-              <button
-                onClick={() => setSuperClaseActive(!superClaseActive)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-all active:scale-[0.98] cursor-pointer border ${
-                  superClaseActive
-                    ? "bg-violet-600 text-white border-violet-600 shadow-sm"
-                    : "bg-white text-violet-600 hover:bg-violet-50 border-violet-200"
-                }`}
-              >
-                <Sparkles className="w-3.5 h-3.5" />
-                Super Clase
-              </button>
-            )}
-            {selectedLesson && (
-              <button
-                onClick={() => toggleComplete(selectedLesson.id)}
-                className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-all active:scale-[0.98] cursor-pointer border ${
-                  completedLessons.has(selectedLesson.id)
-                    ? "bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600"
-                    : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
-                }`}
-              >
-                <CheckCircle className="w-3.5 h-3.5" />
-                {completedLessons.has(selectedLesson.id) ? "Completada" : "Completar"}
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Content Area */}
-        <div className="flex-1 min-h-0 overflow-hidden relative">
-          {!selectedLesson ? (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <div className="w-16 h-16 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4 border border-gray-100">
-                  <Monitor className="w-8 h-8 text-gray-400" />
-                </div>
-                <p className="text-gray-500 font-medium">Selecciona una clase para comenzar</p>
-              </div>
-            </div>
-          ) : superClaseActive && selectedLesson.superclass_language ? (
-
-            /* ── SUPER CLASE MODE ── */
-            <div className="flex h-full">
-
-              {/* IDE + Terminal (Left side) */}
-              <div className="flex-1 flex flex-col h-full bg-white min-h-0 border-r border-gray-200">
-                <div className="flex-none h-12 bg-white border-b border-gray-200 flex items-center justify-between px-4">
-                  <div className="flex items-center gap-2">
-                    <Code className="w-4 h-4 text-violet-600" />
-                    <span className="text-gray-900 font-semibold text-xs tracking-wide">Playground Interactivo</span>
+              {/* Sidebar Header & Tabs */}
+              <div className="flex-none border-b border-slate-800">
+                <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
+                  <div className="flex items-center gap-1.5">
+                    {[
+                      { id: 'content', label: 'Contenido del curso' },
+                      { id: 'ai', label: 'Asistente IA', sparkles: true },
+                    ].map(tab => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setSidebarTab(tab.id as any)}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border-0 ${
+                          sidebarTab === tab.id
+                            ? 'bg-slate-800 text-white'
+                            : 'bg-transparent text-slate-400 hover:text-slate-200'
+                        }`}
+                      >
+                        {tab.sparkles && <Sparkles className="w-3 h-3 inline mr-1 text-violet-400" />}
+                        {tab.label}
+                      </button>
+                    ))}
                   </div>
-                  <div className="flex items-center gap-3">
-                    <select
-                      value={language}
-                      onChange={(e) => setLanguage(e.target.value)}
-                      className="bg-gray-50 text-gray-900 text-[11px] border border-gray-200 rounded-lg px-2.5 py-1.5 outline-none font-bold cursor-pointer hover:border-gray-300 transition-colors"
-                    >
-                      <option value="python">Python 3</option>
-                      <option value="sql">SQL (SQLite)</option>
-                      <option value="javascript">JavaScript</option>
-                    </select>
-                    <button
-                      onClick={executeCode}
-                      disabled={isExecuting}
-                      className="flex items-center gap-1.5 px-3.5 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg text-[11px] font-black transition-colors disabled:opacity-50 cursor-pointer border-0 shadow-sm"
-                    >
-                      {isExecuting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <PlayCircle className="w-3.5 h-3.5" />}
-                      Ejecutar
-                    </button>
-                  </div>
-                </div>
-                <div className="flex-1 min-h-0">
-                  <Editor
-                    height="100%"
-                    language={language}
-                    theme="vs-dark"
-                    value={code}
-                    onChange={(val) => setCode(val || "")}
-                    options={{
-                      minimap: { enabled: false },
-                      fontSize: 14,
-                      fontFamily: "'Fira Code', 'JetBrains Mono', monospace",
-                      padding: { top: 12 },
-                      scrollBeyondLastLine: false,
-                    }}
-                  />
-                </div>
-                <div className="flex-none h-44 bg-slate-900 border-t border-gray-200">
-                  <div className="h-8 bg-slate-950 flex items-center px-4 border-b border-slate-800">
-                    <Terminal className="w-3.5 h-3.5 text-gray-400 mr-2" />
-                    <span className="text-[10px] text-gray-400 font-bold tracking-widest uppercase">Consola de Salida</span>
-                  </div>
-                  <div
-                    className="p-4 overflow-y-auto h-[calc(100%-32px)] font-mono text-xs leading-relaxed"
-                    style={{ color: (codeOutput.includes("Error") || codeOutput.includes("Traceback")) ? "#ef4444" : "#a5b4fc" }}
+                  <button
+                    onClick={() => setSidebarOpen(false)}
+                    className="p-1.5 hover:bg-slate-800 rounded-lg transition-colors border-0 bg-transparent cursor-pointer text-slate-400 hover:text-white"
                   >
-                    {codeOutput ? (
-                      <pre className="whitespace-pre-wrap">{codeOutput}</pre>
-                    ) : (
-                      <span className="text-gray-500">El resultado de la ejecución aparecerá aquí...</span>
-                    )}
-                  </div>
+                    <X className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 
-              {/* Video PiP (Right side) */}
-              <div className="flex-none w-[400px] flex flex-col border-l border-gray-200 bg-white">
-                <div className="relative w-full pb-[56.25%] flex-none bg-black">
-                  {videoId ? (
-                    <iframe
-                      className="absolute inset-0 w-full h-full"
-                      src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
-                      <p className="text-xs text-gray-500">Sin video</p>
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1 overflow-y-auto p-5 bg-surface-0">
-                  <h4 className="text-xs font-bold text-gray-900 mb-2">
-                    {selectedLesson.title}
-                  </h4>
-                  <p className="text-xs text-gray-500 leading-relaxed">
-                    Practica los conceptos mientras ves la clase. Tu código se guarda automáticamente.
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : (
+              {/* Sidebar Workspace Area */}
+              <div className="flex-1 overflow-y-auto min-h-0">
+                
+                {/* Mode A: COURSE CONTENT */}
+                {sidebarTab === 'content' && (
+                  <div className="divide-y divide-slate-855">
+                    {modules.map((mod) => (
+                      <div key={mod.name} className="bg-transparent">
+                        <div className="px-5 py-3 bg-slate-900 border-b border-slate-850">
+                          <span className="text-[9px] font-black text-brand-blue uppercase tracking-widest block">
+                            Módulo {mod.order}
+                          </span>
+                          <h4 className="text-xs font-extrabold text-white mt-0.5 leading-snug">{mod.name}</h4>
+                        </div>
+                        <div className="divide-y divide-slate-850/40">
+                          {mod.lessons.map((lesson) => {
+                            const isSelected = selectedLesson?.id === lesson.id;
+                            const isCompleted = completedLessons.has(lesson.id);
+                            const globalIndex = modules.flatMap(m => m.lessons).findIndex(l => l.id === lesson.id);
+                            const isLocked = accessType === "trial" && globalIndex >= 2;
+                            const hasSuperClase = !!lesson.superclass_language;
 
-            /* ── NORMAL MODE: Video fills available height (YouTube-like) ── */
-            <div className="flex flex-col h-full">
-              {/* Video Stage — centers the 16:9 video and maximizes its height */}
-              <div className="flex-none flex justify-center items-center bg-black px-6 pt-6">
-                <div className="relative w-full max-w-[1280px] aspect-video bg-black shadow-xl rounded-lg overflow-hidden">
-                  {isSelectedLessonLocked ? (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800 overflow-hidden">
-                      <Lock className="w-16 h-16 text-blue-400 mb-4 relative z-10 animate-bounce" />
-                      <h2 className="text-2xl font-black text-white relative z-10 mb-2 text-center px-6">Clase Bloqueada (Periodo de Prueba)</h2>
-                      <p className="text-slate-300 text-sm max-w-md text-center relative z-10 mb-6 font-medium leading-relaxed px-6">
-                        Estás disfrutando de tus 7 días de prueba. Para desbloquear el resto de las clases y todas las herramientas Premium, puedes saltarte el periodo de prueba y acceder al 100% de la plataforma ahora.
-                      </p>
-                      <button
-                        onClick={() => window.location.href = `/api/mercadopago/upgrade-trial?returnTo=/cursos/`}
-                        className="relative z-10 px-6 py-3 bg-gradient-to-r from-brand-blue to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold rounded-lg shadow-xl flex items-center gap-2 transform transition-all hover:scale-105 cursor-pointer border-0"
-                      >
-                        <Sparkles className="w-4 h-4" /> Desbloquear Curso Completo
-                      </button>
-                    </div>
-                  ) : videoId ? (
-                    <iframe
-                      className="absolute inset-0 w-full h-full"
-                      src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900 gap-3">
-                      <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center">
-                        <Play className="w-8 h-8 text-gray-500" />
+                            return (
+                              <div
+                                key={lesson.id}
+                                className={`w-full flex items-start gap-3.5 px-5 py-4 transition-all group relative border-l-4 ${
+                                  isSelected 
+                                    ? 'bg-slate-850/60 border-brand-blue' 
+                                    : 'border-transparent hover:bg-slate-850/20'
+                                }`}
+                              >
+                                {/* Checkbox / Lock Selector (Left) */}
+                                <div className="flex-none mt-0.5">
+                                  {isLocked ? (
+                                    <div className="w-5 h-5 rounded flex items-center justify-center text-slate-600 bg-slate-950 border border-slate-800">
+                                      <Lock className="w-3 h-3" />
+                                    </div>
+                                  ) : (
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); toggleComplete(lesson.id); }}
+                                      className={`w-5 h-5 rounded flex items-center justify-center cursor-pointer transition-all border outline-none ${
+                                        isCompleted
+                                          ? 'bg-emerald-500 border-emerald-500 text-white'
+                                          : 'bg-slate-955 border-slate-700 hover:border-slate-500 text-transparent'
+                                      }`}
+                                    >
+                                      <Check className="w-3.5 h-3.5 stroke-[3px]" />
+                                    </button>
+                                  )}
+                                </div>
+
+                                {/* Text & Duration Details (Clickable row area) */}
+                                <div 
+                                  onClick={() => !isLocked && handleSelectLesson(lesson)}
+                                  className="flex-1 min-w-0 cursor-pointer"
+                                >
+                                  <h5 className={`text-[12px] leading-snug font-medium line-clamp-2 transition-colors ${
+                                    isSelected ? 'text-white font-bold' : 'text-slate-300 group-hover:text-white'
+                                  }`}>
+                                    {lesson.lesson_order}. {lesson.title}
+                                  </h5>
+                                  <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                                    <span className="text-[10px] text-slate-500 font-bold flex items-center gap-1 leading-none">
+                                      <Clock className="w-2.5 h-2.5" />
+                                      {lesson.duration_minutes || 0} min
+                                    </span>
+                                    {hasSuperClase && (
+                                      <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-violet-500/10 text-violet-400 uppercase tracking-wide border border-violet-500/20">
+                                        Super Clase
+                                      </span>
+                                    )}
+                                    {lesson.is_free_preview && (
+                                      <span className="text-[8px] font-black px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 uppercase tracking-wide border border-emerald-500/20">
+                                        Gratis
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
-                      <p className="text-gray-400 text-sm font-medium">Video no disponible</p>
-                    </div>
-                  )}
-                </div>
-              </div>
+                    ))}
+                  </div>
+                )}
 
-              {/* Lesson Info — scrollable below the video */}
-              <div className="flex-1 min-h-0 overflow-y-auto">
-                <div className="max-w-[1280px] mx-auto px-6 lg:px-8 py-6">
-                  <div className="flex flex-wrap items-center gap-2.5 mb-3">
-                    <span className="text-[10px] font-extrabold px-2.5 py-1 rounded-md bg-blue-50 text-brand-blue uppercase tracking-wider border border-blue-100">
-                      Clase {selectedLesson.lesson_order}
-                    </span>
-                    <span className="text-xs text-gray-500 font-medium">{selectedLesson.duration_minutes || 0} min</span>
-                    {selectedLesson.superclass_language && (
+                {/* Mode B: MOCK AI ASSISTANT CHAT */}
+                {sidebarTab === 'ai' && (
+                  <div className="flex flex-col h-full bg-slate-900">
+                    <div className="flex-1 p-4 overflow-y-auto space-y-4">
+                      {chatMessages.map((msg, i) => (
+                        <div
+                          key={i}
+                          className={`flex gap-2.5 max-w-[85%] ${
+                            msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
+                          }`}
+                        >
+                          <div className={`w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-[10px] font-bold ${
+                            msg.role === 'user' ? 'bg-brand-blue text-white' : 'bg-violet-600 text-white'
+                          }`}>
+                            {msg.role === 'user' ? 'Tú' : 'IA'}
+                          </div>
+                          <div className={`p-3 rounded-2xl text-[12px] leading-relaxed ${
+                            msg.role === 'user'
+                              ? 'bg-brand-blue text-white rounded-tr-none'
+                              : 'bg-slate-850 text-slate-200 rounded-tl-none border border-slate-800'
+                          }`}>
+                            {msg.text.includes("```") ? (
+                              <pre className="font-mono bg-slate-955 p-2.5 rounded-lg text-[10px] overflow-x-auto text-violet-300 mt-2 leading-snug whitespace-pre-wrap">{msg.text.replace(/```(python|javascript|sql)?/g, "")}</pre>
+                            ) : (
+                              msg.text
+                            )}
+                          </div>
+                        </div>
+                      ))}
+
+                      {chatLoading && (
+                        <div className="flex gap-2.5 mr-auto max-w-[85%] animate-pulse">
+                          <div className="w-6 h-6 rounded-full bg-violet-600 flex items-center justify-center text-[10px] font-bold text-white">IA</div>
+                          <div className="p-3 bg-slate-850 text-slate-400 rounded-2xl rounded-tl-none text-[12px] flex items-center gap-1.5 border border-slate-800">
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-violet-400" /> Analizando...
+                          </div>
+                        </div>
+                      )}
+                      <div ref={chatEndRef} />
+                    </div>
+
+                    <div className="flex-none p-3 border-t border-slate-800 bg-slate-900/60 flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={chatInput}
+                        onChange={(e) => setChatInput(e.target.value)}
+                        onKeyDown={(e) => { if (e.key === 'Enter') handleSendChatMessage(); }}
+                        placeholder="Pregúntale al Asistente..."
+                        className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 outline-none focus:border-brand-blue transition-colors"
+                      />
                       <button
-                        onClick={() => setSuperClaseActive(true)}
-                        className="text-[10px] font-bold px-2.5 py-1 rounded-md bg-violet-50 text-violet-600 hover:bg-violet-100 transition-colors flex items-center gap-1 cursor-pointer border border-violet-100"
+                        onClick={handleSendChatMessage}
+                        className="w-8 h-8 rounded-xl bg-violet-600 hover:bg-violet-500 text-white flex items-center justify-center cursor-pointer border-0 shrink-0 transition-colors"
                       >
-                        <Sparkles className="w-3 h-3" /> Activar Super Clase ({selectedLesson.superclass_language.toUpperCase()})
+                        <Send className="w-3.5 h-3.5" />
                       </button>
-                    )}
-                  </div>
-
-                  <h1 className="font-display font-black text-2xl sm:text-3xl tracking-tight text-gray-900 mb-3">
-                    {selectedLesson.title}
-                  </h1>
-                  <p className="text-[15px] text-gray-600 leading-relaxed max-w-3xl">
-                    Mira la clase completa y practica los conceptos aprendidos.
-                    {selectedLesson.superclass_language && (
-                      <> Activa el modo <strong className="text-violet-600">Super Clase</strong> en la barra superior para interactuar con el Playground de código {selectedLesson.superclass_language.toUpperCase()} mientras ves la clase.</>
-                    )}
-                  </p>
-
-                  {/* Next Lessons Preview */}
-                  <div className="mt-8 pt-6 border-t border-gray-100">
-                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3">Siguientes clases</h3>
-                    <div className="divide-y divide-gray-100">
-                      {modules.flatMap(m => m.lessons)
-                        .filter(l => {
-                          if (!selectedLesson) return false;
-                          const currentIdx = modules.flatMap(m => m.lessons).findIndex(x => x.id === selectedLesson.id);
-                          const thisIdx = modules.flatMap(m => m.lessons).findIndex(x => x.id === l.id);
-                          return thisIdx > currentIdx && thisIdx <= currentIdx + 3;
-                        })
-                        .map(l => (
-                          <motion.button
-                            key={l.id}
-                            onClick={() => handleSelectLesson(l)}
-                            whileHover={{ backgroundColor: "rgba(249, 250, 251, 1)" }}
-                            whileTap={{ scale: 0.995 }}
-                            className="w-full flex items-center gap-4 p-3.5 transition-all text-left group cursor-pointer border-0 bg-transparent rounded-xl"
-                          >
-                            <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 group-hover:bg-brand-blue group-hover:text-white transition-colors">
-                              {l.lesson_order}
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="text-sm font-bold text-gray-900 group-hover:text-brand-blue transition-colors line-clamp-1">{l.title}</div>
-                              <div className="text-[11px] text-gray-400 mt-0.5">{l.duration_minutes || 0} min</div>
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-brand-blue transition-colors flex-none" />
-                          </motion.button>
-                        ))}
                     </div>
                   </div>
-                </div>
+                )}
               </div>
-            </div>
+            </motion.aside>
           )}
-        </div>
+        </AnimatePresence>
       </div>
     </div>
   );
