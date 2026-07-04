@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Users, Building, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminUpdateLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon } from "@/lib/supabase/comunidad-ai";
 import { Calendar } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -1172,7 +1172,8 @@ function AdminCourses() {
   const [lessons, setLessons] = useState<any[]>([]);
   const [loadingLessons, setLoadingLessons] = useState(false);
   const [showAddLesson, setShowAddLesson] = useState(false);
-  const [newLesson, setNewLesson] = useState({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false });
+  const [newLesson, setNewLesson] = useState({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '' });
+  const [editingLesson, setEditingLesson] = useState<any>(null);
 
   const [editDescription, setEditDescription] = useState("");
   const [savingDescription, setSavingDescription] = useState(false);
@@ -1202,11 +1203,26 @@ function AdminCourses() {
 
   const handleAddLesson = async () => {
     if (!selectedCourse || !newLesson.title || !newLesson.video_url) return;
+    const lessonPayload = {
+      title: newLesson.title,
+      module_name: newLesson.module_name,
+      module_order: newLesson.module_order,
+      lesson_order: newLesson.lesson_order,
+      video_url: newLesson.video_url,
+      is_free_preview: newLesson.is_free_preview,
+      superclass_language: newLesson.superclass_language || null,
+    };
+
     try {
-      await adminAddLesson({ ...newLesson, course_id: selectedCourse.id });
+      if (editingLesson) {
+        await adminUpdateLesson(editingLesson.id, lessonPayload);
+      } else {
+        await adminAddLesson({ ...lessonPayload, course_id: selectedCourse.id });
+      }
       const data = await adminGetLessons(selectedCourse.id);
       setLessons(data);
-      setNewLesson({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false });
+      setNewLesson({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '' });
+      setEditingLesson(null);
       setShowAddLesson(false);
     } catch (err) { console.error(err); }
   };
@@ -1216,6 +1232,20 @@ function AdminCourses() {
       await adminDeleteLesson(lessonId);
       setLessons(prev => prev.filter(l => l.id !== lessonId));
     } catch (err) { console.error(err); }
+  };
+
+  const handleStartEditLesson = (lesson: any) => {
+    setEditingLesson(lesson);
+    setNewLesson({
+      title: lesson.title || '',
+      module_name: lesson.module_name || '',
+      video_url: lesson.video_url || '',
+      module_order: lesson.module_order || 1,
+      lesson_order: lesson.lesson_order || 1,
+      is_free_preview: !!lesson.is_free_preview,
+      superclass_language: lesson.superclass_language || '',
+    });
+    setShowAddLesson(true);
   };
 
   const handleTogglePreview = async (lessonId: string) => {
@@ -1383,7 +1413,7 @@ function AdminCourses() {
           {showAddLesson && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mb-6">
               <div className="bg-blue-50/50 rounded-2xl border border-blue-100 p-6 space-y-4">
-                <h3 className="font-bold text-sm text-gray-900">Nueva Lección</h3>
+                <h3 className="font-bold text-sm text-gray-900">{editingLesson ? "Editar Lección" : "Nueva Lección"}</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <input type="text" placeholder="Título de la lección" value={newLesson.title} onChange={e => setNewLesson(p => ({ ...p, title: e.target.value }))}
                     className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none" />
@@ -1406,8 +1436,17 @@ function AdminCourses() {
                         className="w-16 px-3 py-2 rounded-xl border border-gray-200 text-sm text-center outline-none" />
                     </div>
                   </div>
-
-
+                  
+                  <div className="flex items-center gap-2">
+                    <label className="text-xs font-semibold text-gray-500">Super Clase:</label>
+                    <select value={newLesson.superclass_language || ''} onChange={e => setNewLesson(p => ({ ...p, superclass_language: e.target.value }))}
+                      className="px-3 py-2 rounded-xl border border-gray-200 text-sm outline-none bg-white focus:border-brand-blue/40">
+                      <option value="">Ninguno (Solo Video)</option>
+                      <option value="python">Python</option>
+                      <option value="sql">SQL</option>
+                      <option value="javascript">JavaScript</option>
+                    </select>
+                  </div>
 
                   <div className="flex items-center gap-2">
                     <input type="checkbox" id="free_preview" checked={newLesson.is_free_preview} onChange={e => setNewLesson(p => ({ ...p, is_free_preview: e.target.checked }))}
@@ -1416,7 +1455,11 @@ function AdminCourses() {
                   </div>
                 </div>
                 <div className="flex justify-end gap-2">
-                  <button onClick={() => setShowAddLesson(false)} className="px-4 py-2 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors">Cancelar</button>
+                  <button onClick={() => {
+                    setShowAddLesson(false);
+                    setEditingLesson(null);
+                    setNewLesson({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '' });
+                  }} className="px-4 py-2 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors">Cancelar</button>
                   <button onClick={handleAddLesson} disabled={!newLesson.title || !newLesson.video_url}
                     className="px-5 py-2 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors disabled:opacity-40">
                     Guardar Lección
@@ -1456,6 +1499,10 @@ function AdminCourses() {
                       <button onClick={() => handleTogglePreview(lesson.id)} title={lesson.is_free_preview ? "Quitar preview" : "Hacer gratuita"}
                         className={`p-1.5 rounded-lg transition-colors ${lesson.is_free_preview ? 'text-emerald-500 hover:bg-emerald-50' : 'text-gray-300 hover:text-emerald-500 hover:bg-emerald-50'}`}>
                         <Eye className="w-4 h-4" />
+                      </button>
+                      <button onClick={() => handleStartEditLesson(lesson)} title="Editar lección"
+                        className="p-1.5 rounded-lg text-gray-300 hover:text-blue-500 hover:bg-blue-50 transition-colors">
+                        <Edit3 className="w-4 h-4" />
                       </button>
                       <button onClick={() => handleDeleteLesson(lesson.id)} className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors">
                         <Trash2 className="w-4 h-4" />

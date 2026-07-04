@@ -80,6 +80,34 @@ export async function adminAddLesson(lessonData: {
   return data;
 }
 
+export async function adminUpdateLesson(lessonId: string, lessonData: {
+  title: string; module_name: string;
+  module_order: number; lesson_order: number; video_url: string;
+  duration_minutes?: number; is_free_preview?: boolean;
+  superclass_language?: string | null;
+}) {
+  const supabase = await createClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await supabase
+    .from("lessons")
+    .update({
+      title: lessonData.title,
+      module_name: lessonData.module_name,
+      module_order: lessonData.module_order,
+      lesson_order: lessonData.lesson_order,
+      video_url: lessonData.video_url,
+      duration_minutes: lessonData.duration_minutes || 0,
+      is_free_preview: lessonData.is_free_preview || false,
+      superclass_language: lessonData.superclass_language || null,
+    })
+    .eq("id", lessonId);
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/(comunidad)", "layout");
+}
+
 export async function adminGetLessons(courseId: string) {
   const supabase = await createClient();
   const admin = await isCurrentUserAdmin();
