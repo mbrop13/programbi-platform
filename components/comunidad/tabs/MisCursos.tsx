@@ -39,7 +39,7 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
   const [programs, setPrograms] = useState<ProgramGroup[]>([]);
   const [allCoursesFlat, setAllCoursesFlat] = useState<CourseWithAccess[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState<'all' | 'active' | 'locked'>('all');
+  const [filter, setFilter] = useState<'all' | 'active'>('active');
   const [searchQuery, setSearchQuery] = useState("");
   const [buyingCourseId, setBuyingCourseId] = useState<string | null>(null);
   const searchParams = useSearchParams();
@@ -155,14 +155,12 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
   }, []);
 
   const activeCourses = allCoursesFlat.filter(c => c.access_type !== null);
-  const lockedCourses = allCoursesFlat.filter(c => c.access_type === null);
   const trialCourses = allCoursesFlat.filter(c => c.access_type === 'trial');
 
   // Filter standalone courses
   const filteredStandalone = standaloneCourses.filter(c => {
     const matchSearch = c.title.toLowerCase().includes(searchQuery.toLowerCase());
     if (filter === 'active') return matchSearch && c.access_type !== null;
-    if (filter === 'locked') return matchSearch && c.access_type === null;
     return matchSearch;
   }).sort((a, b) => {
     if (a.access_type && !b.access_type) return -1;
@@ -175,7 +173,6 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
     const matchSearch = p.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
       p.courses.some(c => c.title.toLowerCase().includes(searchQuery.toLowerCase()));
     if (filter === 'active') return matchSearch && p.activeCourses > 0;
-    if (filter === 'locked') return matchSearch && p.activeCourses === 0;
     return matchSearch;
   });
 
@@ -251,9 +248,8 @@ export default function MisCursos({ onSelectCourse }: { onSelectCourse: (id: str
        {/* ─── FILTER TABS ─── */}
        <div className="flex items-center gap-2 mb-6">
          {[
-           { id: 'all' as const, label: 'Todos', count: allCoursesFlat.length },
            { id: 'active' as const, label: 'Mis Cursos', count: activeCourses.length },
-           { id: 'locked' as const, label: 'Bloqueados', count: lockedCourses.length },
+           { id: 'all' as const, label: 'Todos los Cursos', count: allCoursesFlat.length },
          ].map(tab => (
            <motion.button 
              key={tab.id} 
