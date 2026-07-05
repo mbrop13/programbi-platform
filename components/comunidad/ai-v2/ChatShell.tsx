@@ -25,9 +25,7 @@ import {
   type AiChat,
 } from "@/lib/supabase/ai";
 import { cn } from "@/lib/utils";
-import { FAVICON_URL, MODEL_KEY } from "./constants";]
-  }
-];
+import { FAVICON_URL, MODEL_KEY } from "./constants";
 
 interface ChatShellProps {
   isRestricted?: boolean;
