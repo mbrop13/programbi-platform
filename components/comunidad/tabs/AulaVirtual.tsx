@@ -620,9 +620,18 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
 
   return (
     <div className="flex flex-col w-full h-screen overflow-hidden bg-white text-gray-900 font-sans">
+      <style>{`
+        .no-scrollbar::-webkit-scrollbar {
+          display: none !important;
+        }
+        .no-scrollbar {
+          -ms-overflow-style: none !important;
+          scrollbar-width: none !important;
+        }
+      `}</style>
 
       {/* ─── TOP BAR (Header - Light Theme) ─── */}
-      <header className="sticky top-0 z-30 flex-none h-[64px] bg-white flex items-center justify-between px-6">
+      <header className="flex-none h-[64px] bg-white flex items-center justify-between px-6">
         <div className="flex items-center gap-4 min-w-0">
           {/* Logo ProgramBI */}
           <div className="flex items-center shrink-0">
@@ -834,7 +843,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             ) : (
               
               /* ── UDEMY-LIKE VIEW: Big Video + Tabs Below (Light Theme) ── */
-              <div className="flex flex-col h-full bg-white overflow-y-auto">
+              <div className="flex flex-col h-full bg-white overflow-y-auto no-scrollbar">
                 
                 {/* Cinema Screen Frame for Video */}
                 <div className="flex-none w-full bg-white flex justify-center items-center py-2 px-6">
@@ -1152,7 +1161,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
               </div>
 
               {/* Sidebar Workspace Area */}
-              <div className="flex-1 overflow-y-auto min-h-0">
+              <div className="flex-1 overflow-y-auto min-h-0 no-scrollbar">
                 
                 {/* Mode A: COURSE CONTENT */}
                 {sidebarTab === 'content' && (
@@ -1185,19 +1194,29 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                                 {/* Checkbox / Lock Selector (Left) */}
                                 <div className="flex-none mt-0.5">
                                   {isLocked ? (
-                                    <div className="w-5 h-5 rounded flex items-center justify-center text-gray-400 bg-gray-50 border border-gray-200">
-                                      <Lock className="w-3 h-3" />
+                                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-gray-400 bg-gray-50 border border-gray-200">
+                                      <Lock className="w-2.5 h-2.5" />
                                     </div>
+                                  ) : isSelected && !isCompleted ? (
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); toggleComplete(lesson.id); }}
+                                      className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition-all border border-brand-blue bg-blue-50 text-brand-blue shadow-sm animate-pulse"
+                                    >
+                                      <Play className="w-2 h-2 text-brand-blue fill-brand-blue" />
+                                    </button>
+                                  ) : isCompleted ? (
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); toggleComplete(lesson.id); }}
+                                      className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition-all border border-emerald-500 bg-emerald-500 text-white shadow-sm shadow-emerald-500/10"
+                                    >
+                                      <Check className="w-3 h-3 stroke-[3px]" />
+                                    </button>
                                   ) : (
                                     <button
                                       onClick={(e) => { e.stopPropagation(); toggleComplete(lesson.id); }}
-                                      className={`w-5 h-5 rounded flex items-center justify-center cursor-pointer transition-all border outline-none ${
-                                        isCompleted
-                                          ? 'bg-emerald-500 border-emerald-500 text-white'
-                                          : 'bg-white border-gray-300 hover:border-gray-400 text-transparent'
-                                      }`}
+                                      className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition-all border border-gray-300 hover:border-brand-blue text-transparent bg-white hover:bg-gray-50 shadow-sm"
                                     >
-                                      <Check className="w-3.5 h-3.5 stroke-[3px]" />
+                                      <Check className="w-3 h-3 stroke-[3px]" />
                                     </button>
                                   )}
                                 </div>
@@ -1241,7 +1260,19 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                 {/* Mode B: AI ASSISTANT CHAT */}
                 {sidebarTab === 'ai' && (
                   <div className="flex flex-col h-full bg-white">
-                    <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-gray-50/30">
+                    <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-slate-50/50 no-scrollbar">
+                      {chatMessages.length === 1 && (
+                        <div className="bg-gradient-to-br from-violet-50/70 to-indigo-50/40 border border-violet-100/50 p-4 rounded-2xl text-center shadow-sm mb-4">
+                          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-blue to-violet-600 flex items-center justify-center text-white mx-auto mb-3 shadow-md shadow-brand-blue/10 animate-none">
+                            <Sparkles className="w-5 h-5" />
+                          </div>
+                          <h4 className="text-xs font-black text-gray-900 leading-snug">Mentor IA de ProgramBI</h4>
+                          <p className="text-[10px] text-gray-500 leading-relaxed mt-1">
+                            Pregúntame sobre los conceptos explicados en el video, ayuda con ejercicios prácticos o aclaraciones sobre el código de esta clase.
+                          </p>
+                        </div>
+                      )}
+
                       {chatMessages.map((msg, i) => (
                         <div
                           key={i}
@@ -1250,14 +1281,14 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                           }`}
                         >
                           <div className={`w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-[10px] font-bold ${
-                            msg.role === 'user' ? 'bg-brand-blue text-white' : 'bg-violet-600 text-white'
+                            msg.role === 'user' ? 'bg-brand-blue text-white shadow-sm' : 'bg-gradient-to-tr from-brand-blue to-violet-650 text-white shadow-sm'
                           }`}>
                             {msg.role === 'user' ? 'Tú' : 'IA'}
                           </div>
                           <div className={`p-3 rounded-2xl text-[12px] leading-relaxed ${
                             msg.role === 'user'
-                              ? 'bg-brand-blue text-white rounded-tr-none shadow-sm'
-                              : 'bg-white text-gray-850 rounded-tl-none border border-gray-200 shadow-sm'
+                              ? 'bg-brand-blue text-white rounded-tr-none shadow-md shadow-brand-blue/10 font-medium'
+                              : 'bg-white text-gray-850 rounded-tl-none border border-gray-150/80 shadow-sm'
                           }`}>
                             {msg.role === 'user' ? (
                               msg.text
@@ -1270,27 +1301,27 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
 
                       {chatLoading && (
                         <div className="flex gap-2.5 mr-auto max-w-[85%] animate-pulse">
-                          <div className="w-6 h-6 rounded-full bg-violet-600 flex items-center justify-center text-[10px] font-bold text-white">IA</div>
-                          <div className="p-3 bg-white text-gray-400 rounded-2xl rounded-tl-none text-[12px] flex items-center gap-1.5 border border-gray-200 shadow-sm">
-                            <Loader2 className="w-3.5 h-3.5 animate-spin text-violet-500" /> Analizando...
+                          <div className="w-6 h-6 rounded-full bg-gradient-to-tr from-brand-blue to-violet-650 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">IA</div>
+                          <div className="p-3 bg-white text-gray-500 rounded-2xl rounded-tl-none text-[12px] flex items-center gap-1.5 border border-gray-200/80 shadow-sm leading-relaxed">
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-brand-blue shrink-0" /> Analizando...
                           </div>
                         </div>
                       )}
                       <div ref={chatEndRef} />
                     </div>
 
-                    <div className="flex-none p-3 border-t border-gray-150 bg-gray-50 flex items-center gap-2">
+                    <div className="flex-none p-3 border-t border-gray-100 bg-white flex items-center gap-2">
                       <input
                         type="text"
                         value={chatInput}
                         onChange={(e) => setChatInput(e.target.value)}
                         onKeyDown={(e) => { if (e.key === 'Enter') handleSendChatMessage(); }}
                         placeholder="Pregúntale al Asistente..."
-                        className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 placeholder:text-gray-450 outline-none focus:border-brand-blue transition-colors shadow-sm"
+                        className="flex-1 bg-gray-50 border border-gray-200/80 rounded-xl px-3 py-2 text-xs text-gray-900 placeholder:text-gray-400 outline-none focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/5 transition-all shadow-inner"
                       />
                       <button
                         onClick={handleSendChatMessage}
-                        className="w-8 h-8 rounded-xl bg-violet-650 hover:bg-violet-600 text-white flex items-center justify-center cursor-pointer border-0 shrink-0 transition-colors"
+                        className="w-8 h-8 rounded-xl bg-gradient-to-r from-brand-blue to-violet-650 hover:opacity-95 text-white flex items-center justify-center cursor-pointer border-0 shrink-0 transition-all shadow-md shadow-brand-blue/10"
                       >
                         <Send className="w-3.5 h-3.5" />
                       </button>
