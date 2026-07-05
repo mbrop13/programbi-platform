@@ -382,12 +382,12 @@ export function ConversationSidebar({
       {/* ═══ Header: Logo + Collapse ═══ */}
       <div className="flex h-14 shrink-0 items-center justify-between px-5">
         <div className="flex items-center">
-          <div className="relative w-20 h-9 flex items-center shrink-0">
+          <div className="relative w-24 h-10 flex items-center shrink-0">
             <Image
               src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
               alt="ProgramBI Logo"
-              width={80}
-              height={36}
+              width={96}
+              height={40}
               className="object-contain"
             />
           </div>

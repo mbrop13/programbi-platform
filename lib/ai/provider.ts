@@ -2,26 +2,34 @@ import { createOpenAI } from "@ai-sdk/openai";
 import type { ChatModel } from "./models";
 
 /**
- * Proveedor Alibaba Cloud (DashScope), endpoint OpenAI-compatible. SERVER-ONLY.
+ * Proveedor OpenRouter, endpoint OpenAI-compatible. SERVER-ONLY.
  * No importar este archivo en componentes de cliente (contiene la API key).
- *
- * Docs: https://help.aliyun.com/zh/model-studio/developer-reference/use-qwen-by-calling-api
- * Modelo compatible con el AI SDK vía createOpenAI apuntando al compatible-mode.
  */
-const dashscope = createOpenAI({
-  baseURL: "https://dashscope.aliyuncs.com/compatible-mode/v1",
-  apiKey: process.env.DASHSCOPE_API_KEY || "",
+const openrouter = createOpenAI({
+  baseURL: "https://openrouter.ai/api/v1",
+  apiKey: process.env.OPENROUTER_API_KEY || "",
   headers: {
-    "X-DashScope-WorkSpace": "programbi",
+    "HTTP-Referer": "https://programbi.com",
+    "X-Title": "ProgramBI",
   },
 });
 
 /** Devuelve el LanguageModel del SDK listo para streamText. */
 export function getLanguageModel(model: ChatModel) {
-  if (!process.env.DASHSCOPE_API_KEY) {
+  if (!process.env.OPENROUTER_API_KEY) {
     throw new Error(
-      "Falta DASHSCOPE_API_KEY. Configúrala en las variables de entorno."
+      "Falta la clave OPENROUTER_API_KEY en las variables de entorno."
     );
   }
-  return dashscope(model.providerId);
+
+  // Mapear dinámicamente según variables de entorno o fallbacks
+  let modelName = model.providerId;
+
+  if (model.id === "rapido") {
+    modelName = process.env.OPENROUTER_MODEL_FAST || "google/gemini-2.5-flash";
+  } else if (model.id === "pro") {
+    modelName = process.env.OPENROUTER_MODEL_PRO || "google/gemini-2.5-pro";
+  }
+
+  return openrouter(modelName);
 }

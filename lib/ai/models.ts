@@ -1,6 +1,6 @@
 /**
  * Registro de modelos del chat de ProgramBI.
- * Todos se sirven a través de Alibaba Cloud (DashScope, endpoint OpenAI-compatible).
+ * Todos se sirven a través de OpenRouter (endpoint OpenAI-compatible).
  *
  * ⚠️ Este archivo NO debe importar el proveedor ni variables de entorno:
  * es cliente-safe (lo usa el selector de modelos en el navegador).
@@ -8,7 +8,7 @@
 export interface ChatModel {
   id: string;
   label: string;
-  providerId: string; // ID en DashScope (Alibaba Cloud)
+  providerId: string; // ID por defecto en el proveedor
   description: string;
   vision: boolean; // acepta imágenes
   reasoning: boolean; // emite partes de razonamiento (thinking)
