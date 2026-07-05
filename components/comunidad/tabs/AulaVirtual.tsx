@@ -140,23 +140,10 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     let progressInterval: any;
 
     const initPlayer = () => {
-      const container = videoContainerRef.current;
-      if (!container) return;
-
-      // Clear container and create player target element
-      container.innerHTML = "";
-      const playerDiv = document.createElement("div");
-      playerDiv.id = "youtube-player-target";
-      playerDiv.className = "absolute inset-0 w-full h-full";
-      container.appendChild(playerDiv);
+      const iframe = document.getElementById('youtube-player-target');
+      if (!iframe) return;
 
       player = new (window as any).YT.Player('youtube-player-target', {
-        videoId: videoId,
-        playerVars: {
-          rel: 0,
-          modestbranding: 1,
-          controls: 1,
-        },
         events: {
           onStateChange: (event: any) => {
             // YT.PlayerState.PLAYING is 1
@@ -282,7 +269,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
       }
     }
     load();
-  }, [courseId, courseSlug, selectedLessonSlug]);
+  }, [courseId, courseSlug]);
 
   // Load Super Clase notes & set language on lesson change
   useEffect(() => {
@@ -609,9 +596,49 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gray-50 text-gray-900">
-        <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
-        <p className="text-sm text-gray-500 mt-4 font-medium">Cargando tu aula virtual...</p>
+      <div className="flex flex-col w-full h-screen overflow-hidden bg-white text-gray-900 font-sans">
+        {/* Skeleton Header */}
+        <div className="flex-none h-[64px] bg-white flex items-center justify-between px-6 border-b border-gray-100 animate-pulse">
+          <div className="flex items-center gap-4">
+            <div className="w-8 h-8 rounded-xl bg-gray-100" />
+            <div className="w-24 h-6 bg-gray-105 rounded-lg" />
+            <div className="h-6 w-px bg-gray-200 hidden sm:block" />
+            <div className="w-32 h-4 bg-gray-100 rounded animate-pulse" />
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-24 h-8 bg-gray-100 rounded-2xl" />
+            <div className="w-12 h-6 bg-gray-100 rounded-full" />
+          </div>
+        </div>
+
+        {/* Skeleton Body */}
+        <div className="flex-1 flex flex-row min-h-0 w-full overflow-hidden">
+          {/* Skeleton Left Workspace */}
+          <div className="flex-1 flex flex-col h-full p-6 space-y-6 overflow-y-auto no-scrollbar">
+            <div className="w-full aspect-video bg-gray-105 rounded-xl animate-pulse" />
+            <div className="space-y-3">
+              <div className="w-2/3 h-6 bg-gray-100 rounded animate-pulse" />
+              <div className="w-full h-4 bg-gray-50 rounded animate-pulse" />
+              <div className="w-5/6 h-4 bg-gray-50 rounded animate-pulse" />
+            </div>
+          </div>
+
+          {/* Skeleton Sidebar */}
+          <div className="flex-none w-[340px] bg-white border-l border-gray-100 hidden lg:flex flex-col h-full p-4 space-y-4">
+            <div className="w-full h-10 bg-gray-100 rounded-xl animate-pulse" />
+            <div className="flex-1 space-y-3">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="flex items-center gap-3 p-2 border border-gray-50 rounded-xl">
+                  <div className="w-5 h-5 rounded-full bg-gray-100 shrink-0 animate-pulse" />
+                  <div className="flex-1 space-y-2">
+                    <div className="w-5/6 h-3 bg-gray-100 rounded animate-pulse" />
+                    <div className="w-1/2 h-2.5 bg-gray-100 rounded animate-pulse" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -1313,7 +1340,15 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                         </button>
                       </div>
                     ) : videoId ? (
-                      <div id="video-container-wrapper" ref={videoContainerRef} className="absolute inset-0 w-full h-full bg-slate-900" />
+                      <div id="video-container-wrapper" className="absolute inset-0 w-full h-full bg-slate-900">
+                        <iframe
+                          id="youtube-player-target"
+                          className="absolute inset-0 w-full h-full"
+                          src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1`}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                        />
+                      </div>
                     ) : (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 gap-2">
                         <Play className="w-12 h-12 text-slate-800" />
