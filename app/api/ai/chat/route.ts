@@ -12,6 +12,8 @@ import { getLanguageModel } from "@/lib/ai/provider";
 import { loadChatContext, buildSystemPrompt } from "@/lib/ai/system-prompt";
 import { webSearchTool } from "@/lib/ai/tools";
 import { saveMessage, maybeAutoTitleChat } from "@/lib/supabase/ai";
+import { checkQuota, recordUsage } from "@/lib/ai/quota-service";
+import { WINDOW_LABELS } from "@/lib/ai/quotas";
 
 export const maxDuration = 60;
 
@@ -65,6 +67,38 @@ export async function POST(req: Request) {
     return json(
       { error: "Este modelo requiere un plan de la comunidad. Usa Llama 3 8B (gratis) o suscríbete." },
       403
+    );
+  }
+
+  // ─── 4b. Cuota de tokens (gate antes de generar) ───
+  // Los admins tienen bypass (no consumen su cuota de pago).
+  const quotaCheck = await checkQuota(user.id, ctx.plan);
+  const isAdmin = ctx.role === "admin";
+  if (!isAdmin && !quotaCheck.allowed) {
+    const windowLabel = quotaCheck.reason
+      ? WINDOW_LABELS[quotaCheck.reason]
+      : "período";
+    const minsLeft = Math.max(
+      1,
+      Math.round((quotaCheck.resetAt.getTime() - Date.now()) / 60_000)
+    );
+    const humanRemaining =
+      minsLeft >= 60
+        ? `${Math.round(minsLeft / 60)}h ${minsLeft % 60}m`
+        : `${minsLeft} min`;
+    return json(
+      {
+        error: `Has alcanzado tu límite de tokens por ${windowLabel}. Se reinicia en ${humanRemaining}. ${
+          (ctx.plan ?? "") === "free" || !ctx.plan
+            ? "Suscríbete para obtener más tokens."
+            : "Espera al reinicio o mejora tu plan."
+        }`,
+        code: "QUOTA_EXCEEDED",
+        limit: quotaCheck.reason,
+        resetAt: quotaCheck.resetAt.toISOString(),
+        plan: quotaCheck.plan,
+      },
+      429
     );
   }
 
@@ -128,6 +162,8 @@ export async function POST(req: Request) {
   const tools = useWebSearch ? { webSearch: webSearchTool } : undefined;
 
   // ─── 9. streamText ───
+  // El callback onFinish aquí (no el del stream response) es el que expone
+  // totalUsage con el conteo real de tokens.
   const result = streamText({
     model: getLanguageModel(model),
     system,
@@ -139,9 +175,47 @@ export async function POST(req: Request) {
     onError: ({ error }) => {
       console.error("streamText error:", error);
     },
+    onFinish: async ({ text, reasoning, totalUsage }) => {
+      if (!effectiveChatId) return;
+      // Reconstruir las parts desde el resultado final del modelo.
+      const parts: { type: string; text?: string }[] = [];
+      if (reasoning && reasoning.length > 0) {
+        for (const r of reasoning) {
+          if (typeof r === "object" && r && "text" in r && r.text) {
+            parts.push({ type: "reasoning", text: String((r as { text: string }).text) });
+          }
+        }
+      }
+      if (text) {
+        parts.push({ type: "text", text });
+      }
+      // Tokens consumidos: totalUsage agrega el uso de todos los steps.
+      const inputTokens = totalUsage?.inputTokens ?? 0;
+      const outputTokens = totalUsage?.outputTokens ?? 0;
+      const totalTokens = inputTokens + outputTokens;
+      await saveMessage({
+        chatId: effectiveChatId,
+        role: "assistant",
+        parts,
+        model: model.id,
+        tokens: totalTokens,
+        attachments: [],
+      }).catch((e) => console.error("saveMessage(assistant):", e));
+
+      // Registrar consumo en las cuotas (ledger + estado).
+      if (totalTokens > 0) {
+        await recordUsage(user.id, {
+          chatId: effectiveChatId,
+          model: model.id,
+          input: inputTokens,
+          output: outputTokens,
+          total: totalTokens,
+        }).catch((e) => console.error("recordUsage:", e));
+      }
+    },
   });
 
-  // ─── 10. Respuesta stream + persistencia del asistente en onFinish ───
+  // ─── 10. Respuesta stream ───
   // messageMetadata envía el chatId (para que el cliente adopte chats nuevos)
   // y el nombre del modelo para mostrarlo en la UI.
   return result.toUIMessageStreamResponse({
@@ -151,19 +225,5 @@ export async function POST(req: Request) {
       chatId: effectiveChatId,
       model: { id: model.id, name: model.label },
     }),
-    onFinish: async ({ responseMessage }) => {
-      if (!effectiveChatId) return;
-      // Filtrar partes que no queremos persistir (ej. step-start)
-      const persistableParts = (responseMessage.parts ?? []).filter(
-        (p) => p.type !== "step-start"
-      );
-      await saveMessage({
-        chatId: effectiveChatId,
-        role: "assistant",
-        parts: persistableParts,
-        model: model.id,
-        attachments: [],
-      }).catch((e) => console.error("saveMessage(assistant):", e));
-    },
   });
 }

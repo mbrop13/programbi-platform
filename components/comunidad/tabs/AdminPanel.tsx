@@ -1817,7 +1817,6 @@ function AdminExportCsv() {
                  <option value="pro">Plan Pro</option>
                  <option value="max">Plan Max</option>
                  <option value="ultra">Plan Ultra</option>
-                 <option value="ultraplus">Plan Ultra+</option>
                </select>
              </motion.div>
            )}

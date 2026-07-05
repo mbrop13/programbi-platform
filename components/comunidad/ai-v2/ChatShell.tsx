@@ -28,6 +28,7 @@ import {
 } from "@/lib/supabase/ai";
 import { cn } from "@/lib/utils";
 import { FAVICON_URL, MODEL_KEY } from "./constants";
+import QuotaIndicator from "./QuotaIndicator";
 
 interface ChatShellProps {
   isRestricted?: boolean;
@@ -129,6 +130,7 @@ function ChatShellInner({
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [quotaRefreshKey, setQuotaRefreshKey] = useState(0);
 
   // Split workspace
   const [chatWidthPct, setChatWidthPct] = useState(38);
@@ -173,6 +175,11 @@ function ChatShellInner({
     transport,
     onError: (err) => {
       setErrorMsg(err.message || "Ocurrió un error.");
+      // Si el error es de cuota (429), ofrecer upgrade
+      const msg = (err.message || "").toLowerCase();
+      if (msg.includes("límite de tokens") || msg.includes("quota")) {
+        setShowUpgradeModal(true);
+      }
     },
     onFinish: ({ message }) => {
       // Adoptar chat nuevo si el servidor lo creó
@@ -182,6 +189,8 @@ function ChatShellInner({
         router.push(`/ai/${meta.chatId}`);
       }
       refreshChats();
+      // Refrescar el indicador de cuota tras cada respuesta
+      setQuotaRefreshKey((k) => k + 1);
     },
   });
 
@@ -489,6 +498,14 @@ function ChatShellInner({
             <PanelLeft className="h-5 w-5" />
           </button>
         )}
+
+        {/* Indicador de cuota de tokens (esquina superior derecha) */}
+        <div className="absolute right-3 top-3 z-20">
+          <QuotaIndicator
+            refreshKey={quotaRefreshKey}
+            onUpgradeClick={() => setShowUpgradeModal(true)}
+          />
+        </div>
 
 
         {/* Workspace: chat (resizable) + canvas (split / sheet) */}

@@ -15,6 +15,7 @@ import {
   Square,
   X,
   LayoutTemplate,
+  Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -97,6 +98,25 @@ function CapBadges({ model }: { model: ChatModel }) {
   );
 }
 
+const PLAN_LABELS: Record<string, string> = {
+  free: "Plan Gratuito",
+  pro: "Plan Pro",
+  max: "Plan Max",
+  ultra: "Plan Ultra",
+};
+
+function formatRemaining(isoDate?: string): string {
+  if (!isoDate) return "ya";
+  const ms = new Date(isoDate).getTime() - Date.now();
+  if (ms <= 0) return "ya";
+  const mins = Math.round(ms / 60_000);
+  if (mins < 60) return `${mins} min`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  if (h < 24) return `${h}h ${m}m`;
+  return `${Math.round(h / 24)}d`;
+}
+
 export function ComposerInput({
   value,
   onChange,
@@ -126,6 +146,36 @@ export function ComposerInput({
   const [voiceSupported] = useState(() => getRecognitionCtor() !== null);
   const [attachOpen, setAttachOpen] = useState(false);
   const [modelOpen, setModelOpen] = useState(false);
+  const [dropdownTab, setDropdownTab] = useState<"models" | "limits">("models");
+  const [quotaData, setQuotaData] = useState<any>(null);
+  const [quotaLoading, setQuotaLoading] = useState(false);
+
+  const fetchQuota = async () => {
+    setQuotaLoading(true);
+    try {
+      const res = await fetch("/api/ai/quota");
+      if (res.ok) {
+        const json = await res.json();
+        setQuotaData(json);
+      }
+    } catch {
+      // silent
+    } finally {
+      setQuotaLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (modelOpen && dropdownTab === "limits" && !quotaData) {
+      fetchQuota();
+    }
+  }, [modelOpen, dropdownTab, quotaData]);
+
+  useEffect(() => {
+    if (!modelOpen) {
+      setDropdownTab("models");
+    }
+  }, [modelOpen]);
 
   // Auto-resize del textarea
   useEffect(() => {
@@ -433,31 +483,142 @@ export function ComposerInput({
                     transition={{ duration: 0.15, ease: "easeOut" }}
                     role="menu"
                     onKeyDown={handleMenuKeyDown("model")}
-                    className="absolute bottom-full right-0 mb-1.5 w-72 overflow-hidden rounded-xl border border-border bg-surface-0 shadow-lift z-20"
+                    className="absolute bottom-full right-0 mb-1.5 w-[340px] overflow-hidden rounded-2xl border border-border bg-surface-0 shadow-lift z-20"
                   >
-                    <div className="max-h-80 overflow-y-auto py-1">
-                      {availableModels.map((m) => (
-                        <button
-                          key={m.id}
-                          role="menuitem"
-                          onClick={() => {
-                            onSelectModel(m.id);
-                            setModelOpen(false);
-                          }}
-                          className={cn(
-                            "flex w-full flex-col items-start gap-1 px-3 py-2 text-left transition-colors hover:bg-surface-2 cursor-pointer border-0 bg-transparent",
-                            m.id === modelId ? "bg-surface-2" : ""
-                          )}
-                        >
-                          <span className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-text-primary">{m.label}</span>
-                            <CapBadges model={m} />
-                            {m.id === modelId && <Check className="h-3.5 w-3.5 text-brand-blue" aria-hidden />}
-                          </span>
-                          <span className="text-[11px] text-text-muted leading-relaxed">{m.description}</span>
-                        </button>
-                      ))}
+                    {/* Segmented Controls for Tabs */}
+                    <div className="flex p-1 bg-gray-100 rounded-lg mx-3 mt-3 mb-2 text-xs font-semibold">
+                      <button
+                        type="button"
+                        onClick={() => setDropdownTab("models")}
+                        className={cn(
+                          "flex-1 py-1.5 rounded-md text-center transition-all cursor-pointer border-0 bg-transparent text-gray-500 font-bold",
+                          dropdownTab === "models" && "bg-white text-gray-900 shadow-sm"
+                        )}
+                      >
+                        Modelos
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDropdownTab("limits")}
+                        className={cn(
+                          "flex-1 py-1.5 rounded-md text-center transition-all cursor-pointer border-0 bg-transparent text-gray-500 font-bold",
+                          dropdownTab === "limits" && "bg-white text-gray-900 shadow-sm"
+                        )}
+                      >
+                        Límites de Uso
+                      </button>
                     </div>
+
+                    <div className="h-px bg-border" />
+
+                    {dropdownTab === "models" ? (
+                      <div className="max-h-80 overflow-y-auto py-1">
+                        {availableModels.map((m) => (
+                          <button
+                            key={m.id}
+                            role="menuitem"
+                            onClick={() => {
+                              onSelectModel(m.id);
+                              setModelOpen(false);
+                            }}
+                            className={cn(
+                              "flex w-full flex-col items-start gap-1 px-3 py-2 text-left transition-colors hover:bg-surface-2 cursor-pointer border-0 bg-transparent",
+                              m.id === modelId ? "bg-surface-2" : ""
+                            )}
+                          >
+                            <span className="flex items-center gap-2">
+                              <span className="text-sm font-medium text-text-primary">{m.label}</span>
+                              <CapBadges model={m} />
+                              {m.id === modelId && <Check className="h-3.5 w-3.5 text-brand-blue" aria-hidden />}
+                            </span>
+                            <span className="text-[11px] text-text-muted leading-relaxed">{m.description}</span>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col">
+                        {quotaLoading && !quotaData ? (
+                          <div className="p-4 space-y-3">
+                            <div className="h-4 bg-gray-100 rounded-md animate-pulse w-1/3" />
+                            <div className="grid grid-cols-3 gap-2">
+                              <div className="h-20 bg-gray-100 rounded-xl animate-pulse" />
+                              <div className="h-20 bg-gray-100 rounded-xl animate-pulse" />
+                              <div className="h-20 bg-gray-100 rounded-xl animate-pulse" />
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            {/* plan active title header */}
+                            <div className="flex items-center justify-between px-3.5 py-2.5 bg-slate-50 border-b border-border">
+                              <span className="text-xs font-bold text-slate-800">
+                                {PLAN_LABELS[quotaData?.plan || "free"] ?? "Plan Gratuito"}
+                              </span>
+                              <span className="text-[10px] font-black bg-brand-blue/10 text-brand-blue px-2 py-0.5 rounded-full uppercase tracking-wider">
+                                {quotaData?.plan === "ultra" ? "10x Cuota" : quotaData?.plan === "max" ? "3x Cuota" : "1x Cuota"}
+                              </span>
+                            </div>
+
+                            {/* 3 cards grid */}
+                            <div className="grid grid-cols-3 gap-2 px-3 py-3">
+                              {/* 5 Hour Card */}
+                              <div className="bg-gray-50 border border-gray-100 rounded-xl p-2.5 flex flex-col justify-between h-[82px]">
+                                <span className="text-[9px] font-black uppercase text-gray-500 tracking-wider leading-none">Últ. 5h</span>
+                                <div className="mt-1 flex flex-col">
+                                  <span className="text-xs font-black text-slate-900 leading-none">{Math.max(0, 100 - (quotaData?.percentages?.five_hour ?? 0))}%</span>
+                                  <span className="text-[7px] text-gray-400 mt-1 truncate">
+                                    En: {formatRemaining(quotaData?.resetAt)}
+                                  </span>
+                                </div>
+                                <div className="h-1 w-full bg-gray-100 rounded-full mt-1.5 overflow-hidden">
+                                  <div className="h-full bg-blue-500 rounded-full transition-all duration-300" style={{ width: `${Math.max(0, 100 - (quotaData?.percentages?.five_hour ?? 0))}%` }} />
+                                </div>
+                              </div>
+
+                              {/* Weekly Card */}
+                              <div className="bg-gray-50 border border-gray-100 rounded-xl p-2.5 flex flex-col justify-between h-[82px]">
+                                <span className="text-[9px] font-black uppercase text-gray-500 tracking-wider leading-none">Semanal</span>
+                                <div className="mt-1 flex flex-col">
+                                  <span className="text-xs font-black text-slate-900 leading-none">{Math.max(0, 100 - (quotaData?.percentages?.weekly ?? 0))}%</span>
+                                  <span className="text-[7px] text-gray-400 mt-1 truncate">
+                                    Restante
+                                  </span>
+                                </div>
+                                <div className="h-1 w-full bg-gray-100 rounded-full mt-1.5 overflow-hidden">
+                                  <div className="h-full bg-emerald-500 rounded-full transition-all duration-300" style={{ width: `${Math.max(0, 100 - (quotaData?.percentages?.weekly ?? 0))}%` }} />
+                                </div>
+                              </div>
+
+                              {/* Monthly Card */}
+                              <div className="bg-gray-50 border border-gray-100 rounded-xl p-2.5 flex flex-col justify-between h-[82px]">
+                                <span className="text-[9px] font-black uppercase text-gray-500 tracking-wider leading-none">Mensual</span>
+                                <div className="mt-1 flex flex-col">
+                                  <span className="text-xs font-black text-slate-900 leading-none">{Math.max(0, 100 - (quotaData?.percentages?.monthly ?? 0))}%</span>
+                                  <span className="text-[7px] text-gray-400 mt-1 truncate">
+                                    Restante
+                                  </span>
+                                </div>
+                                <div className="h-1 w-full bg-gray-100 rounded-full mt-1.5 overflow-hidden">
+                                  <div className="h-full bg-purple-500 rounded-full transition-all duration-300" style={{ width: `${Math.max(0, 100 - (quotaData?.percentages?.monthly ?? 0))}%` }} />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Upgrade CTA button */}
+                            {quotaData?.plan !== "ultra" && (
+                              <div className="px-3 pb-3">
+                                <a
+                                  href="/comunidad/planes"
+                                  className="w-full py-2 bg-slate-950 hover:bg-slate-900 text-white text-[10px] font-black rounded-lg transition-all active:scale-[0.98] cursor-pointer border-0 flex items-center justify-center gap-1.5 no-underline shadow-sm"
+                                >
+                                  <Sparkles className="w-3 h-3 text-amber-400" />
+                                  Mejorar Plan
+                                </a>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>

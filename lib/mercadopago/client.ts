@@ -232,10 +232,7 @@ export const MP_PLAN_MAP: Record<string, string> = {
   "max_anual": "a51caecceceb4af29278f6c665d592a4",
   "ultra_mensual": "5c2ef0a0b35f45f4b78c4f4366433c81",
   "ultra_semestral": "a3caff5fefc04f6a9679a46de48bf2b5",
-  "ultra_anual": "13d9850258a5468f9b7cd4b5101fc9a5",
-  "ultraplus_mensual": "d2c1d575e2f54335a2ff6fc61bc2a267",
-  "ultraplus_semestral": "ab5806b2279b4ab4abe4aae640c19f30",
-  "ultraplus_anual": "23de33023ebe4cbb9d474922fe4a5351"
+  "ultra_anual": "13d9850258a5468f9b7cd4b5101fc5a5"
 };
 
 export function setMPPlanMap(map: Record<string, string>) {

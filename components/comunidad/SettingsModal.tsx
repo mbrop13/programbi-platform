@@ -83,12 +83,11 @@ export default function SettingsModal({ onClose, userProfile }: SettingsModalPro
     }
   };
 
-  const planNames: Record<string, string> = { pro: "Plan Pro", max: "Plan Max", ultra: "Plan Ultra", ultraplus: "Plan Ultra+" };
+  const planNames: Record<string, string> = { pro: "Plan Pro", max: "Plan Max", ultra: "Plan Ultra" };
   const planColors: Record<string, string> = {
     pro: "from-blue-500 to-blue-600",
     max: "from-indigo-500 to-purple-600",
     ultra: "from-violet-500 to-purple-700",
-    ultraplus: "from-amber-500 to-orange-600",
   };
 
   const planName = userProfile?.subscription_plan
