@@ -298,7 +298,7 @@ export async function getDashboardStats() {
     // Enrolled courses with details
     adminDb
       .from("enrollments")
-      .select("course_id, courses(id, title, short_description)")
+      .select("course_id, courses(id, title, short_description, slug)")
       .eq("user_id", user.id)
       .eq("status", "active"),
 
@@ -331,7 +331,7 @@ export async function getDashboardStats() {
   const studyHours = Math.round(completedLessons * 0.5 * 10) / 10; // ~30min per lesson
 
   // Calculate progress for each enrolled course
-  let courseProgress: { title: string; progress: number; courseId: string }[] = [];
+  let courseProgress: { title: string; progress: number; courseId: string; courseSlug: string }[] = [];
   if (enrollments.data?.length) {
     for (const enr of enrollments.data as any[]) {
       const { data: lessons } = await adminDb
@@ -349,6 +349,7 @@ export async function getDashboardStats() {
       courseProgress.push({
         title: enr.courses?.title || "Curso",
         courseId: enr.course_id,
+        courseSlug: enr.courses?.slug || enr.course_id,
         progress: Math.round((completedInCourse / lessons.length) * 100),
       });
     }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -24,6 +25,7 @@ import {
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
 import { getUnreadNotificationCount } from "@/lib/supabase/comunidad";
+import { createClient } from "@/lib/supabase/client";
 
 export interface SidebarTab {
   id: string;
@@ -68,16 +70,39 @@ export default function Sidebar({
   onMobileClose,
   onOpenSettings,
 }: SidebarProps) {
+  const router = useRouter();
+  const searchRef = useRef<HTMLInputElement>(null);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const searchRef = useRef<HTMLInputElement>(null);
+  const [hasUpcomingLives, setHasUpcomingLives] = useState(false);
 
   // Fetch unread count on mount
   useEffect(() => {
     getUnreadNotificationCount().then(setUnreadCount);
+  }, []);
+
+  // Check for upcoming live classes to display the Live tab
+  useEffect(() => {
+    const checkLives = async () => {
+      try {
+        const supabase = createClient();
+        const { data } = await supabase
+          .from("live_classes")
+          .select("id")
+          .eq("status", "scheduled")
+          .gte("scheduled_at", new Date().toISOString())
+          .limit(1);
+        if (data && data.length > 0) {
+          setHasUpcomingLives(true);
+        }
+      } catch (err) {
+        console.error("Error checking upcoming lives:", err);
+      }
+    };
+    checkLives();
   }, []);
 
   const handleKeyDown = useCallback(
@@ -115,7 +140,9 @@ export default function Sidebar({
   const tabs: SidebarTab[] = [
     { id: "inicio", label: "Inicio", icon: LayoutDashboard, color: "text-blue-500", group: "Principal" },
     { id: "cursos", label: "Cursos", icon: GraduationCap, color: "text-indigo-500", group: "Principal" },
-    { id: "live", label: "En Vivo", icon: Radio, color: "text-rose-500", group: "Principal", showPing: true },
+    ...(hasUpcomingLives
+      ? [{ id: "live", label: "En Vivo", icon: Radio, color: "text-rose-500", group: "Principal", showPing: true }]
+      : []),
     { id: "ai", label: "IA", icon: Sparkles, color: "text-purple-500", group: "Principal" },
     { id: "perfil", label: "Mi Perfil", icon: User, color: "text-cyan-500", group: "Personal" },
     { id: "certificados", label: "Certificados", icon: Award, color: "text-amber-500", group: "Personal" },

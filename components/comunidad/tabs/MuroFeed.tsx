@@ -20,7 +20,11 @@ import {
   Calendar,
   ChevronRight,
   Crown,
+  X,
+  Sparkles,
+  HelpCircle,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   getPosts,
@@ -37,11 +41,13 @@ interface MuroFeedProps {
 }
 
 export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
+  const router = useRouter();
   const [isAdmin, setIsAdmin] = useState(false);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
   const [dashStats, setDashStats] = useState<any>(null);
+  const [activeGuide, setActiveGuide] = useState<'primeros-pasos' | 'roadmap' | 'normas' | null>(null);
 
   const [newPostContent, setNewPostContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -174,51 +180,11 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
               {greeting}, {dashStats.userName?.split(" ")[0]}! 👋
             </h2>
             <p className="text-[14px] text-white/80 font-medium max-w-lg">
-              {dashStats.streak > 0
-                ? `Llevas una racha de ${dashStats.streak} días estudiando. ¡Sigue así!`
-                : "¡Es buen momento para retomar tu aprendizaje!"}
+              Nos alegra tenerte de vuelta en ProgramBI. Explora el contenido, interactúa en el foro y continúa tu especialización.
             </p>
           </div>
         </motion.div>
       )}
-
-      {/* ─── STAT CARDS ─── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          icon={BookOpen}
-          label="Cursos activos"
-          value={dashStats?.enrolledCourses || 0}
-          color="text-blue-500"
-          bg="bg-blue-50"
-          delay={0}
-        />
-        <StatCard
-          icon={Clock}
-          label="Horas de estudio"
-          value={dashStats?.studyHours || 0}
-          suffix="h"
-          color="text-emerald-500"
-          bg="bg-emerald-50"
-          delay={0.05}
-        />
-        <StatCard
-          icon={Flame}
-          label="Racha"
-          value={dashStats?.streak || 0}
-          suffix=" días"
-          color="text-amber-500"
-          bg="bg-amber-50"
-          delay={0.1}
-        />
-        <StatCard
-          icon={Zap}
-          label="Puntos XP"
-          value={dashStats?.xp || 0}
-          color="text-purple-500"
-          bg="bg-purple-50"
-          delay={0.15}
-        />
-      </div>
 
       {/* ─── COURSE PROGRESS ─── */}
       {dashStats?.courseProgress?.length > 0 && (
@@ -420,12 +386,70 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
 
         {/* ─── RIGHT SIDEBAR ─── */}
         <div className="hidden lg:flex flex-col lg:col-span-4 gap-5 sticky top-20">
+          {/* Continuar Aprendiendo Card */}
+          {(() => {
+            const activeCourse = dashStats?.courseProgress?.[0];
+            return (
+              <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white rounded-2xl p-5 border border-slate-800 shadow-md relative overflow-hidden">
+                {/* Decorative glow */}
+                <div className="absolute top-0 right-0 w-24 h-24 bg-brand-blue/10 rounded-full filter blur-xl pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-24 h-24 bg-indigo-500/10 rounded-full filter blur-xl pointer-events-none" />
+                
+                <div className="relative z-10">
+                  <span className="text-[9px] font-black uppercase tracking-widest text-brand-blue/90 bg-brand-blue/10 px-2.5 py-0.5 rounded-full border border-brand-blue/20">
+                    Tu aprendizaje
+                  </span>
+                  
+                  {activeCourse ? (
+                    <>
+                      <h4 className="text-sm font-black mt-3 leading-snug truncate">
+                        {activeCourse.title}
+                      </h4>
+                      <div className="mt-4 flex items-center justify-between text-[10px] text-slate-400 font-extrabold uppercase tracking-wider">
+                        <span>Progreso</span>
+                        <span>{activeCourse.progress}%</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden mt-1.5">
+                        <div className="h-full bg-brand-blue rounded-full" style={{ width: `${activeCourse.progress}%` }} />
+                      </div>
+                      
+                      <button
+                        onClick={() => router.push(`/comunidad/cursos/${activeCourse.courseSlug}`)}
+                        className="w-full mt-4 py-2.5 bg-brand-blue hover:bg-blue-600 text-white text-xs font-black rounded-xl shadow-md border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+                      >
+                        Continuar Clase
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <h4 className="text-sm font-black mt-3 leading-snug">
+                        Comienza tu especialización
+                      </h4>
+                      <p className="text-[10px] text-slate-300 mt-2 leading-relaxed">
+                        Explora nuestro plan de estudios completo, asiste a las lecciones de prueba y comienza tu camino profesional en datos.
+                      </p>
+                      
+                      <button
+                        onClick={() => router.push('/comunidad/cursos')}
+                        className="w-full mt-4 py-2.5 bg-brand-blue hover:bg-blue-600 text-white text-xs font-black rounded-xl shadow-md border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+                      >
+                        Explorar Cursos
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })()}
+
           {/* Upcoming Live Classes */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-            <h3 className="font-bold text-gray-900 text-sm mb-4 flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-rose-500" /> Próximas Clases
-            </h3>
-            {dashStats?.upcomingLives?.length > 0 ? (
+          {dashStats?.upcomingLives?.length > 0 && (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+              <h3 className="font-bold text-gray-900 text-sm mb-4 flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-rose-500" /> Próximas Clases
+              </h3>
               <div className="space-y-3">
                 {dashStats.upcomingLives.map((live: any) => (
                   <div
@@ -446,119 +470,192 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                   </div>
                 ))}
               </div>
-            ) : (
-              <p className="text-sm text-gray-500 text-center py-4">
-                No hay clases programadas próximamente
-              </p>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* Top Members */}
+          {/* Improved Resources List */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-            <h3 className="font-bold text-gray-900 text-sm mb-4 flex items-center gap-2">
-              <Crown className="w-4 h-4 text-amber-500" /> Top Miembros
-            </h3>
-            {dashStats?.topMembers?.length > 0 ? (
-              <div className="space-y-2.5">
-                {dashStats.topMembers.map(
-                  (member: any, i: number) => (
-                    <div
-                      key={member.id}
-                      className="flex items-center gap-3"
-                    >
-                      <span
-                        className={`w-5 text-center text-xs font-bold ${
-                          i === 0
-                            ? "text-amber-500"
-                            : i === 1
-                              ? "text-gray-400"
-                              : i === 2
-                                ? "text-amber-700"
-                                : "text-gray-300"
-                        }`}
-                      >
-                        {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}`}
-                      </span>
-                      <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0">
-                        {member.initials}
-                      </div>
-                      <span className="flex-1 text-sm font-medium text-gray-800 truncate">
-                        {member.name}
-                      </span>
-                      <span className="text-xs font-bold text-purple-500">
-                        {member.xp?.toLocaleString() || 0} XP
-                      </span>
-                    </div>
-                  )
-                )}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500 text-center py-4">
-                Aún no hay ranking disponible
-              </p>
-            )}
-          </div>
-
-          {/* Quick Links */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-            <h3 className="font-bold text-gray-900 text-sm mb-4">Recursos</h3>
-            <div className="space-y-1">
-              {[
-                "📘 Guía de inicio rápido",
-                "🎯 Roadmap de Aprendizaje",
-                "💬 Preguntas Frecuentes",
-              ].map((item) => (
-                <button
-                  key={item}
-                  className="w-full text-left px-3 py-2.5 rounded-xl text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium"
-                >
-                  {item}
-                </button>
-              ))}
+            <h3 className="font-bold text-gray-900 text-sm mb-4">Recursos de la Comunidad</h3>
+            <div className="space-y-2">
+              <button
+                onClick={() => setActiveGuide('primeros-pasos')}
+                className="w-full text-left px-3 py-2.5 rounded-xl text-xs text-gray-700 hover:bg-blue-50/50 hover:text-brand-blue transition-colors font-bold border-0 bg-transparent cursor-pointer flex items-center gap-2"
+              >
+                <span>📘</span> Guía de Primeros Pasos
+              </button>
+              <button
+                onClick={() => setActiveGuide('roadmap')}
+                className="w-full text-left px-3 py-2.5 rounded-xl text-xs text-gray-700 hover:bg-amber-50/50 hover:text-amber-600 transition-colors font-bold border-0 bg-transparent cursor-pointer flex items-center gap-2"
+              >
+                <span>🎯</span> Ruta de Aprendizaje
+              </button>
+              <button
+                onClick={() => setActiveGuide('normas')}
+                className="w-full text-left px-3 py-2.5 rounded-xl text-xs text-gray-700 hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold border-0 bg-transparent cursor-pointer flex items-center gap-2"
+              >
+                <span>🤝</span> Código de Convivencia
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* ─── GUIDE MODAL ─── */}
+      <AnimatePresence>
+        {activeGuide && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4 sm:p-6"
+            onClick={() => setActiveGuide(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              className="bg-white border border-gray-150/70 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setActiveGuide(null)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-550 border-0 cursor-pointer transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {activeGuide === 'primeros-pasos' && (
+                <div className="p-6">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50 text-brand-blue flex items-center justify-center mb-4">
+                    <BookOpen className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-black text-gray-950 leading-tight">Guía de Primeros Pasos</h3>
+                  <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                    ¡Bienvenido a la comunidad de ProgramBI! Sigue estas breves instrucciones para sacar el máximo provecho a tu espacio de estudio:
+                  </p>
+                  <div className="mt-5 space-y-4 text-xs text-gray-700">
+                    <div className="flex gap-3">
+                      <div className="w-5 h-5 rounded-full bg-blue-50 text-brand-blue flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">1</div>
+                      <div>
+                        <span className="font-bold text-gray-900 block">Explora tus Cursos</span>
+                        Ve a la pestaña de Cursos en tu panel lateral para ver tus especialidades activas y acceder al aula virtual.
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-5 h-5 rounded-full bg-blue-50 text-brand-blue flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">2</div>
+                      <div>
+                        <span className="font-bold text-gray-900 block">Marca tu Progreso</span>
+                        Los videos se auto-completarán cuando veas el 70% del video, o puedes usar el checkbox lateral para llevar el control manual de lo que has aprendido.
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-5 h-5 rounded-full bg-blue-50 text-brand-blue flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">3</div>
+                      <div>
+                        <span className="font-bold text-gray-900 block">Estudia con el Mentor IA</span>
+                        Si tienes dudas en una clase, usa el chat de IA a la derecha para hacer preguntas contextuales del tema del video en tiempo real.
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveGuide(null)}
+                    className="w-full mt-6 py-2.5 bg-brand-blue hover:bg-blue-600 text-white text-xs font-black rounded-xl border-0 cursor-pointer transition-colors"
+                  >
+                    ¡Entendido, empecemos!
+                  </button>
+                </div>
+              )}
+
+              {activeGuide === 'roadmap' && (
+                <div className="p-6">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
+                    <Clock className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-black text-gray-950 leading-tight">Roadmap de Aprendizaje</h3>
+                  <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                    Te recomendamos seguir este flujo estructurado para optimizar tu aprendizaje en análisis de datos y business intelligence:
+                  </p>
+                  <div className="mt-5 space-y-4 text-xs text-gray-700">
+                    <div className="flex gap-3">
+                      <div className="w-5 h-5 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">A</div>
+                      <div>
+                        <span className="font-bold text-gray-900 block">Excel Avanzado para Analytics</span>
+                        Domina tablas dinámicas, Power Query y el modelado inicial de datos para estructurar reportes básicos.
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-5 h-5 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">B</div>
+                      <div>
+                        <span className="font-bold text-gray-900 block">Bases de Datos & SQL</span>
+                        Aprende a escribir consultas complejas, joins, agregaciones y filtros para extraer información directo de los servidores.
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-5 h-5 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">C</div>
+                      <div>
+                        <span className="font-bold text-gray-900 block">Visualización en Power BI & Tableau</span>
+                        Conecta tus modelos de bases de datos, crea dashboards interactivos e implementa fórmulas DAX para análisis corporativo.
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveGuide(null)}
+                    className="w-full mt-6 py-2.5 bg-brand-blue hover:bg-blue-600 text-white text-xs font-black rounded-xl border-0 cursor-pointer transition-colors"
+                  >
+                    Seguir mi Ruta
+                  </button>
+                </div>
+              )}
+
+              {activeGuide === 'normas' && (
+                <div className="p-6">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-650 flex items-center justify-center mb-4">
+                    <Sparkles className="w-6 h-6 animate-none" />
+                  </div>
+                  <h3 className="text-lg font-black text-gray-950 leading-tight">Código de Convivencia</h3>
+                  <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                    Mantenemos un espacio seguro y profesional para el crecimiento mutuo. Estas son nuestras pautas de convivencia:
+                  </p>
+                  <div className="mt-5 space-y-4 text-xs text-gray-700">
+                    <div className="flex gap-3">
+                      <div className="w-5 h-5 rounded-full bg-indigo-50 text-indigo-650 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">✓</div>
+                      <div>
+                        <span className="font-bold text-gray-900 block">Respeto y Colaboración</span>
+                        Apoya a tus compañeros respondiendo preguntas en el muro. El conocimiento compartido multiplica el crecimiento.
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-5 h-5 rounded-full bg-indigo-50 text-indigo-650 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">✓</div>
+                      <div>
+                        <span className="font-bold text-gray-900 block">Preguntas Detalladas</span>
+                        Cuando publiques una duda sobre código en el muro, proporciona el fragmento exacto de tu consulta para facilitar que los demás te ayuden.
+                      </div>
+                    </div>
+                    <div className="flex gap-3">
+                      <div className="w-5 h-5 rounded-full bg-indigo-50 text-indigo-650 flex items-center justify-center font-bold text-[10px] shrink-0 mt-0.5">✓</div>
+                      <div>
+                        <span className="font-bold text-gray-900 block">Crecimiento Continuo</span>
+                        Celebra tus logros e hitos de aprendizaje compartiendo tus reportes completados y certificados.
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveGuide(null)}
+                    className="w-full mt-6 py-2.5 bg-brand-blue hover:bg-blue-600 text-white text-xs font-black rounded-xl border-0 cursor-pointer transition-colors"
+                  >
+                    Acepto las Pautas
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
-/* ── Stat Card ── */
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  suffix = "",
-  color,
-  bg,
-  delay = 0,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: number | string;
-  suffix?: string;
-  color: string;
-  bg: string;
-  delay?: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay }}
-      className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow"
-    >
-      <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center mb-3`}>
-        <Icon className={`w-5 h-5 ${color}`} />
-      </div>
-      <div className="font-display font-black text-2xl text-gray-900">
-        {typeof value === "number" ? value.toLocaleString() : value}
-        {suffix}
-      </div>
-      <div className="text-xs font-medium text-gray-500 mt-0.5">{label}</div>
-    </motion.div>
-  );
-}
+
 
 /* ── Post Card (unchanged logic) ── */
 function PostCard({ post, onLike, onSubmitComment }: any) {
