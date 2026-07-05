@@ -266,8 +266,8 @@ export function ConversationSidebar({
         className={cn(
           "group flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] cursor-pointer transition-colors select-none",
           isActive
-            ? "bg-stone-250/60 dark:bg-neutral-800 font-medium text-stone-900 dark:text-white"
-            : "text-stone-600 dark:text-neutral-400 hover:bg-stone-200/25 dark:hover:bg-neutral-800/50 hover:text-stone-900 dark:hover:text-white"
+            ? "bg-stone-200 text-stone-900 font-bold"
+            : "text-stone-600 hover:bg-stone-200/30 hover:text-stone-900"
         )}
       >
         {isEditing ? (
@@ -287,7 +287,7 @@ export function ConversationSidebar({
               }}
               autoFocus
               onClick={(e) => e.stopPropagation()}
-              className="min-w-0 flex-1 rounded-md bg-white dark:bg-neutral-700 px-2 py-0.5 text-[13px] outline-none ring-1 ring-stone-300 dark:ring-neutral-600 text-stone-900 dark:text-white"
+              className="min-w-0 flex-1 rounded-md bg-white px-2 py-0.5 text-[13px] outline-none ring-1 ring-stone-300 text-stone-900"
             />
           </>
         ) : (
@@ -335,17 +335,17 @@ export function ConversationSidebar({
   };
 
   return (
-    <div className="flex h-full flex-col bg-[#F9F9FB] dark:bg-black relative overflow-visible">
+    <div className="flex h-full flex-col bg-[#F9F9FB] border-r border-stone-200 relative overflow-visible">
       {/* ═══ Header: Logo + Collapse ═══ */}
       <div className="flex h-14 shrink-0 items-center justify-between px-5">
         <div className="flex items-center">
-          <div className="relative w-12 h-6 flex items-center shrink-0">
+          <div className="relative w-20 h-9 flex items-center shrink-0">
             <Image
               src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
               alt="ProgramBI Logo"
-              width={48}
-              height={24}
-              className="object-contain dark:invert"
+              width={80}
+              height={36}
+              className="object-contain"
             />
           </div>
         </div>
@@ -353,7 +353,7 @@ export function ConversationSidebar({
           <button
             onClick={onClose}
             aria-label="Colapsar menú"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 hover:bg-stone-200/50 dark:hover:bg-neutral-800 hover:text-stone-800 dark:hover:text-white transition-colors cursor-pointer border-0 bg-transparent"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 hover:bg-stone-200/50 hover:text-stone-800 transition-colors cursor-pointer border-0 bg-transparent"
           >
             <PanelLeftClose className="h-[18px] w-[18px]" />
           </button>
@@ -369,9 +369,9 @@ export function ConversationSidebar({
               <button
                 key={idx}
                 onClick={item.onClick}
-                className="flex w-full items-center gap-3.5 rounded-lg px-3 py-2.5 text-[14px] font-medium text-stone-700 dark:text-neutral-300 hover:bg-stone-200/25 dark:hover:bg-neutral-800/60 hover:text-stone-900 dark:hover:text-white transition-colors cursor-pointer border-0 bg-transparent text-left"
+                className="flex w-full items-center gap-3.5 rounded-lg px-3 py-2.5 text-[14px] font-semibold text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors cursor-pointer border-0 bg-transparent text-left"
               >
-                <Icon className="h-[18px] w-[18px] text-stone-500 dark:text-neutral-500 shrink-0" />
+                <Icon className="h-[18px] w-[18px] text-stone-500 shrink-0" />
                 <span>{item.label}</span>
               </button>
             );
@@ -380,9 +380,9 @@ export function ConversationSidebar({
             <Link
               key={idx}
               href={item.href!}
-              className="flex items-center gap-3.5 rounded-lg px-3 py-2.5 text-[14px] font-medium text-stone-700 dark:text-neutral-300 hover:bg-stone-200/25 dark:hover:bg-neutral-800/60 hover:text-stone-900 dark:hover:text-white transition-colors no-underline"
+              className="flex items-center gap-3.5 rounded-lg px-3 py-2.5 text-[14px] font-semibold text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors no-underline"
             >
-              <Icon className="h-[18px] w-[18px] text-stone-500 dark:text-neutral-500 shrink-0" />
+              <Icon className="h-[18px] w-[18px] text-stone-500 shrink-0" />
               <span>{item.label}</span>
             </Link>
           );
@@ -390,14 +390,14 @@ export function ConversationSidebar({
       </nav>
 
       {/* ═══ Chats Section (collapsible like Grok) ═══ */}
-      <div className="flex-1 flex flex-col min-h-0 border-t border-stone-100 dark:border-neutral-800">
+      <div className="flex-1 flex flex-col min-h-0 border-t border-stone-200">
         <button
           onClick={() => setChatsOpen(!chatsOpen)}
-          className="w-full flex items-center justify-between px-5 py-3 text-[14px] font-medium text-stone-900 dark:text-white hover:bg-stone-200/25 dark:hover:bg-neutral-800/40 transition-colors border-0 bg-transparent cursor-pointer select-none shrink-0"
+          className="w-full flex items-center justify-between px-5 py-3 text-[14px] font-semibold text-stone-900 hover:bg-stone-200/35 transition-colors border-0 bg-transparent cursor-pointer select-none shrink-0"
         >
           <span>Chats</span>
           <ChevronDown className={cn(
-            "h-4 w-4 text-stone-400 dark:text-neutral-500 transition-transform duration-200",
+            "h-4 w-4 text-stone-500 transition-transform duration-200",
             chatsOpen ? "" : "-rotate-90"
           )} />
         </button>
@@ -409,14 +409,14 @@ export function ConversationSidebar({
                 <Loader2 className="h-4 w-4 animate-spin text-stone-400" />
               </div>
             ) : chats.length === 0 ? (
-              <p className="py-10 text-center text-[13px] text-stone-400 dark:text-neutral-500">
+              <p className="py-10 text-center text-[13px] text-stone-400">
                 Aún no hay conversaciones
               </p>
             ) : (
               <>
                 {pinned.length > 0 && (
                   <div className="space-y-0.5">
-                    <div className="px-3 py-1.5 text-[11px] font-medium text-stone-400 dark:text-neutral-500">
+                    <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-stone-400">
                       Fijados
                     </div>
                     {pinned.map(renderRow)}
@@ -424,7 +424,7 @@ export function ConversationSidebar({
                 )}
                 {groups.map(([label, items]) => (
                   <div key={label} className="space-y-0.5">
-                    <div className="px-3 py-1.5 text-[11px] font-medium text-stone-400 dark:text-neutral-500">
+                    <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-stone-400">
                       {label}
                     </div>
                     {items.map(renderRow)}
@@ -437,7 +437,7 @@ export function ConversationSidebar({
       </div>
 
       {/* ═══ Footer: Profile + Bell (Grok-style) ═══ */}
-      <div className="shrink-0 border-t border-stone-100 dark:border-neutral-800 px-3 py-3 relative" ref={profileMenuRef}>
+      <div className="shrink-0 border-t border-stone-200 px-3 py-3 relative" ref={profileMenuRef}>
         {/* ── Profile Popup Menu ── */}
         <AnimatePresence>
           {profileMenuOpen && (
@@ -643,28 +643,28 @@ export function ConversationSidebar({
         <AnimatePresence>
           {notifOpen && (
             <motion.div
-              initial={{ opacity: 0, y: 8, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 8, scale: 0.96 }}
+              initial={{ opacity: 0, x: 8, scale: 0.96 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 8, scale: 0.96 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
-              className="absolute bottom-full right-3 w-[320px] mb-2 z-50"
+              className="absolute left-full bottom-0 ml-3 w-[320px] z-50"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="bg-white dark:bg-neutral-900 border border-stone-200 dark:border-neutral-700 rounded-2xl shadow-xl p-4 flex flex-col text-stone-900 dark:text-white" ref={notifRef}>
+              <div className="bg-white border border-stone-200 rounded-2xl shadow-xl p-4 flex flex-col text-stone-900" ref={notifRef}>
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-black text-stone-900 dark:text-white">Notificaciones</span>
-                  <button className="text-stone-400 hover:text-stone-700 dark:hover:text-white border-0 bg-transparent cursor-pointer">
+                  <span className="text-sm font-black text-stone-900">Notificaciones</span>
+                  <button className="text-stone-400 hover:text-stone-700 border-0 bg-transparent cursor-pointer">
                     <MoreHorizontal className="w-4 h-4" />
                   </button>
                 </div>
                 
-                <div className="h-px bg-stone-100 dark:bg-neutral-800 my-3" />
+                <div className="h-px bg-stone-100 my-3" />
 
                 {/* Empty State Body */}
                 <div className="flex flex-col items-center justify-center py-8">
-                  <Inbox className="w-12 h-12 text-stone-300 dark:text-neutral-600 mb-3" />
-                  <span className="text-xs font-semibold text-stone-500 dark:text-neutral-400">
+                  <Inbox className="w-12 h-12 text-stone-300 mb-3" />
+                  <span className="text-xs font-semibold text-stone-500">
                     Tus notificaciones aparecerán aquí
                   </span>
                 </div>
@@ -681,7 +681,7 @@ export function ConversationSidebar({
               setProfileMenuOpen((o) => !o);
               if (profileMenuOpen) setActiveSubmenu(null);
             }}
-            className="flex-1 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-stone-50 dark:hover:bg-neutral-800/50 cursor-pointer border-0 bg-transparent min-w-0"
+            className="flex-1 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-stone-200/35 cursor-pointer border-0 bg-transparent min-w-0"
           >
             {/* Avatar with subscription badge */}
             <div className="relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs">
@@ -696,16 +696,16 @@ export function ConversationSidebar({
                 <span aria-hidden>{initials}</span>
               )}
               {/* Tier badge below avatar */}
-              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-black uppercase tracking-wider leading-none whitespace-nowrap">
+              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white uppercase tracking-wider leading-none whitespace-nowrap">
                 {tierLabel}
               </span>
             </div>
 
             {/* Name + expand icon */}
-            <span className="truncate text-[13px] font-medium text-stone-800 dark:text-neutral-200 min-w-0">
+            <span className="truncate text-[13px] font-semibold text-stone-805 min-w-0">
               {displayName}
             </span>
-            <ChevronsUpDown className="h-3.5 w-3.5 text-stone-400 dark:text-neutral-500 shrink-0 ml-auto" />
+            <ChevronsUpDown className="h-3.5 w-3.5 text-stone-500 shrink-0 ml-auto" />
           </button>
 
           {/* Bell icon */}
@@ -714,7 +714,7 @@ export function ConversationSidebar({
               e.stopPropagation();
               setNotifOpen(!notifOpen);
             }}
-            className="h-9 w-9 rounded-xl flex items-center justify-center text-stone-400 dark:text-neutral-500 hover:bg-stone-50 dark:hover:bg-neutral-800 hover:text-stone-700 dark:hover:text-white transition-colors shrink-0 cursor-pointer border-0 bg-transparent"
+            className="h-9 w-9 rounded-xl flex items-center justify-center text-stone-500 hover:bg-stone-200/35 hover:text-stone-850 transition-colors shrink-0 cursor-pointer border-0 bg-transparent"
             title="Notificaciones"
           >
             <Bell className="w-[18px] h-[18px]" />
