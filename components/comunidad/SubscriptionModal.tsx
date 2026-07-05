@@ -2,88 +2,56 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Sparkles, Zap, Shield, HelpCircle, Star } from "lucide-react";
-import Image from "next/image";
+import { X, Check, Star, Sparkles, Loader2, ArrowRight } from "lucide-react";
+import { communityPlans } from "@/lib/data/community_plans";
+import { useGeoPricing } from "@/hooks/useGeoPricing";
 
 interface SubscriptionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  currentPlanId?: string | null;
 }
 
-export default function SubscriptionModal({ isOpen, onClose }: SubscriptionModalProps) {
+export default function SubscriptionModal({ isOpen, onClose, currentPlanId = null }: SubscriptionModalProps) {
   const [billingCycle, setBillingCycle] = useState<'mensual' | 'semestral' | 'anual'>('mensual');
+  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const { isInternational, formatGeoPrice } = useGeoPricing();
 
-  // Pricing plans configuration
-  const plans = [
-    {
-      name: "ProgramBI Lite",
-      badge: null,
-      description: "Acceso básico para dar tus primeros pasos en datos",
-      prices: {
-        mensual: { usd: 15, clp: "14.500" },
-        semestral: { usd: 12, clp: "11.600" },
-        anual: { usd: 9, clp: "8.700" }
-      },
-      buttonText: "Mejorar a Lite",
-      features: [
-        "Acceso a 2 cursos simultáneos",
-        "Chats limitados con Mentor IA (50 al mes)",
-        "Certificados digitales estándar",
-        "Soporte básico por foro comunitario",
-        "Descarga de archivos de lección básica"
-      ],
-      icon: Zap,
-      color: "text-slate-500",
-      borderClass: "border-gray-200",
-      buttonClass: "bg-gray-100 hover:bg-gray-200 text-gray-800"
-    },
-    {
-      name: "ProgramBI Pro",
-      badge: "Oferta por tiempo limitado",
-      description: "Acceso ilimitado a todas las herramientas profesionales",
-      prices: {
-        mensual: { usd: 29, clp: "28.000" },
-        semestral: { usd: 22, clp: "21.200" },
-        anual: { usd: 18, clp: "17.400" }
-      },
-      buttonText: "Aprovechar oferta de $0.00",
-      features: [
-        "Acceso ILIMITADO a los 4 cursos (Power BI, Python, SQL, Excel)",
-        "Chats con IA ilimitados en modo Experto",
-        "Descarga ilimitada de recursos y archivos de clase",
-        "Certificaciones profesionales oficiales de ProgramBI",
-        "Acceso inmediato a tutorías grupales semanales",
-        "Proyectos integradores reales con feedback"
-      ],
-      icon: Star,
-      color: "text-brand-blue",
-      borderClass: "border-brand-blue ring-2 ring-brand-blue/10",
-      buttonClass: "bg-slate-950 hover:bg-slate-900 text-white shadow-lg",
-      highlighted: true
-    },
-    {
-      name: "ProgramBI Expert",
-      badge: "67% de descuento por 3 meses",
-      description: "Mentoría 1-a-1 y acompañamiento profesional premium",
-      prices: {
-        mensual: { usd: 79, clp: "76.000" },
-        semestral: { usd: 59, clp: "57.000" },
-        anual: { usd: 49, clp: "47.000" }
-      },
-      buttonText: "Aprovechar oferta Expert",
-      features: [
-        "Todo lo de Pro + Consultoría 1-a-1 (30 min semanales)",
-        "Revisión y auditoría de código de proyectos",
-        "Acceso a clases y bootcamps exclusivos en vivo",
-        "Certificado Expert firmado por Manuel Ropero",
-        "Canal exclusivo de WhatsApp 24/7 con mentores"
-      ],
-      icon: Sparkles,
-      color: "text-violet-600",
-      borderClass: "border-violet-200 hover:border-violet-400",
-      buttonClass: "bg-slate-950 hover:bg-slate-900 text-white"
+  const handleAction = async (planId: string) => {
+    setLoadingPlan(planId);
+    try {
+      // Redirigir al checkout de suscripción de Mercado Pago
+      const res = await fetch("/api/mercadopago/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId }),
+      });
+      const data = await res.json();
+      
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("Error de suscripción: " + (data.error || "Fallo al generar orden."));
+        setLoadingPlan(null);
+      }
+    } catch (err) {
+      alert("Error redirigiendo a la pasarela de pagos.");
+      setLoadingPlan(null);
     }
-  ];
+  };
+
+  const getPlanHierarchy = (planId: string): number => {
+    switch (planId) {
+      case "pro": return 1;
+      case "max": return 2;
+      case "ultra": return 3;
+      case "ultraplus": return 4;
+      default: return 0;
+    }
+  };
+
+  const hasAnyPlan = !!currentPlanId;
+  const currentHierarchy = currentPlanId ? getPlanHierarchy(currentPlanId) : 0;
 
   return (
     <AnimatePresence>
@@ -104,7 +72,7 @@ export default function SubscriptionModal({ isOpen, onClose }: SubscriptionModal
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="relative bg-[#f8f9fb] w-full max-w-5xl rounded-[32px] overflow-hidden shadow-2xl z-10 my-8 border border-white"
+            className="relative bg-[#f8f9fb] w-full max-w-6xl rounded-[32px] overflow-hidden shadow-2xl z-10 my-8 border border-white"
           >
             {/* Close button */}
             <button
@@ -125,10 +93,10 @@ export default function SubscriptionModal({ isOpen, onClose }: SubscriptionModal
                 />
               </div>
               <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight leading-none">
-                Pruébalo gratis por $0.00 durante 7 días
+                {hasAnyPlan ? "Mejora tu Plan de Membresía" : "Pruébalo gratis por $0.00 durante 7 días"}
               </h2>
               <p className="text-xs text-gray-500 mt-2 font-medium">
-                Desbloquea los 4 cursos y acelera tu especialización profesional en datos.
+                {hasAnyPlan ? "Sube al siguiente nivel y desbloquea más beneficios exclusivos." : "Desbloquea los cursos y acelera tu especialización profesional en datos."}
               </p>
 
               {/* Billing Cycle Switcher */}
@@ -143,9 +111,14 @@ export default function SubscriptionModal({ isOpen, onClose }: SubscriptionModal
                         : 'bg-transparent text-gray-500 hover:text-gray-900'}`}
                   >
                     {cycle}
+                    {cycle === 'semestral' && (
+                      <span className="ml-1 text-[9px] bg-emerald-100 text-emerald-700 font-extrabold px-1.5 py-0.5 rounded-full lowercase">
+                        -10%
+                      </span>
+                    )}
                     {cycle === 'anual' && (
-                      <span className="ml-1 text-[9px] bg-green-100 text-green-700 font-extrabold px-1.5 py-0.5 rounded-full lowercase">
-                        -35%
+                      <span className="ml-1 text-[9px] bg-blue-100 text-blue-700 font-extrabold px-1.5 py-0.5 rounded-full lowercase">
+                        -30%
                       </span>
                     )}
                   </button>
@@ -154,22 +127,43 @@ export default function SubscriptionModal({ isOpen, onClose }: SubscriptionModal
             </div>
 
             {/* Plan Cards Grid */}
-            <div className="px-6 pb-10 grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-              {plans.map((plan, i) => {
-                const currentPrice = plan.prices[billingCycle];
-                const Icon = plan.icon;
+            <div className="px-6 pb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+              {communityPlans.map((plan, i) => {
+                const planHierarchy = getPlanHierarchy(plan.id);
+                const isCurrent = currentPlanId === plan.id;
+                const isDowngrade = currentHierarchy > planHierarchy;
+                
+                // Pricing calculation matching SubscriptionGate.tsx
+                let periodName = "mes";
+                let monthsCount = 1;
+                let totalBilledPrice = plan.price;
+
+                if (billingCycle === 'semestral') {
+                  periodName = "semestre";
+                  monthsCount = 6;
+                  totalBilledPrice = plan.priceSemiannual || (plan.price * 6 * 0.9);
+                }
+                if (billingCycle === 'anual') {
+                  periodName = "año";
+                  monthsCount = 12;
+                  totalBilledPrice = plan.priceAnnual || (plan.price * 12 * 0.7);
+                }
+
+                const finalMonthlyPrice = Math.round(totalBilledPrice / monthsCount);
+                const compositePlanId = `${plan.id}_${billingCycle}`;
+                const isProcessing = loadingPlan === compositePlanId;
+
                 return (
                   <div
-                    key={i}
-                    className={`bg-white rounded-3xl p-6 border flex flex-col justify-between transition-all duration-300 relative
-                      ${plan.borderClass}
-                      ${plan.highlighted ? 'shadow-md md:scale-[1.02]' : 'shadow-sm'}`}
+                    key={plan.id}
+                    className={`bg-white rounded-3xl p-6 border flex flex-col justify-between transition-all duration-300 relative shadow-sm
+                      ${isCurrent ? 'opacity-85 bg-gray-50/50 border-gray-300 ring-2 ring-gray-300/10' : 'border-gray-200 hover:border-blue-400'}`}
                   >
                     {/* Badge */}
-                    {plan.badge && (
+                    {plan.highlight && (
                       <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
                         <span className="bg-amber-100/90 backdrop-blur-sm text-amber-800 text-[10px] font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-sm border border-amber-200">
-                          {plan.badge}
+                          {plan.highlight}
                         </span>
                       </div>
                     )}
@@ -180,19 +174,20 @@ export default function SubscriptionModal({ isOpen, onClose }: SubscriptionModal
                         <h3 className="text-sm font-black text-gray-900 uppercase tracking-wide">
                           {plan.name}
                         </h3>
-                        <Icon className={`w-5 h-5 ${plan.color}`} />
+                        {plan.id === 'ultra' || plan.id === 'ultraplus' ? (
+                          <Sparkles className="w-5 h-5 text-violet-600" />
+                        ) : (
+                          <Star className="w-5 h-5 text-brand-blue" />
+                        )}
                       </div>
 
                       {/* Price Block */}
                       <div className="my-4 flex items-baseline">
-                        <span className="text-4xl font-black text-gray-950 tracking-tight">
-                          ${currentPrice.usd}
+                        <span className="text-3xl font-black text-gray-950 tracking-tight">
+                          {formatGeoPrice(finalMonthlyPrice)}
                         </span>
-                        <span className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1.5">
-                          USD/mes
-                        </span>
-                        <span className="text-xs text-gray-400 ml-2 font-medium">
-                          (~${currentPrice.clp} CLP)
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                          /mes
                         </span>
                       </div>
 
@@ -200,25 +195,59 @@ export default function SubscriptionModal({ isOpen, onClose }: SubscriptionModal
                         {plan.description}
                       </p>
 
-                      <button
-                        onClick={onClose}
-                        className={`w-full py-3 rounded-xl text-xs font-black border-0 cursor-pointer transition-all active:scale-[0.98] mb-6 ${plan.buttonClass}`}
-                      >
-                        {plan.buttonText}
-                      </button>
+                      {isCurrent ? (
+                        <button
+                          disabled
+                          className="w-full py-3 rounded-xl text-xs font-black border-0 cursor-not-allowed transition-all bg-gray-200 text-gray-500 mb-6"
+                        >
+                          Plan Actual
+                        </button>
+                      ) : isDowngrade ? (
+                        <button
+                          disabled
+                          className="w-full py-3 rounded-xl text-xs font-black border-0 cursor-not-allowed transition-all bg-gray-100 text-gray-400 mb-6"
+                        >
+                          No disponible
+                        </button>
+                      ) : (
+                        <div className="mb-6">
+                          <button
+                            onClick={() => handleAction(compositePlanId)}
+                            disabled={isProcessing}
+                            className="w-full py-3 rounded-xl text-xs font-black border-0 cursor-pointer transition-all active:scale-[0.98] bg-slate-950 hover:bg-slate-900 text-white flex items-center justify-center gap-1.5"
+                          >
+                            {isProcessing ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <>
+                                {hasAnyPlan ? "Mejorar Plan" : (plan.id === 'ultraplus' ? "Suscribirse Ahora" : "Aprovechar oferta")}
+                                <ArrowRight className="w-3.5 h-3.5" />
+                              </>
+                            )}
+                          </button>
+                          {!hasAnyPlan && plan.id !== 'ultraplus' && (
+                            <span className="text-[9px] font-bold text-gray-400 block text-center mt-1 uppercase tracking-wider">
+                              7 días de acceso gratis
+                            </span>
+                          )}
+                        </div>
+                      )}
 
                       <div className="h-px bg-gray-100 mb-6" />
 
                       {/* Features List */}
                       <ul className="space-y-4 p-0 m-0">
-                        {plan.features.map((feature, idx) => (
-                          <li key={idx} className="flex items-start gap-2.5 text-xs text-gray-700 leading-normal list-none">
-                            <div className="w-5 h-5 rounded-full bg-gray-50 border border-gray-150 flex items-center justify-center shrink-0 mt-0.5">
-                              <Check className="w-3.5 h-3.5 text-gray-800 font-black" />
-                            </div>
-                            <span className="flex-1 font-medium">{feature}</span>
-                          </li>
-                        ))}
+                        {plan.features.map((feature, idx) => {
+                          const cleanFeature = feature.replace(/^✓\s*|^💬\s*|^🎓\s*/, "");
+                          return (
+                            <li key={idx} className="flex items-start gap-2.5 text-xs text-gray-700 leading-normal list-none">
+                              <div className="w-5 h-5 rounded-full bg-gray-50 border border-gray-150 flex items-center justify-center shrink-0 mt-0.5">
+                                <Check className="w-3.5 h-3.5 text-gray-800 font-black" />
+                              </div>
+                              <span className="flex-1 font-medium">{cleanFeature}</span>
+                            </li>
+                          );
+                        })}
                       </ul>
                     </div>
                   </div>

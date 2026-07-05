@@ -365,6 +365,7 @@ export default function ComunidadPortal() {
         <SubscriptionModal
           isOpen={showUpgradeModal}
           onClose={() => setShowUpgradeModal(false)}
+          currentPlanId={userProfile?.subscription_plan}
         />
       </div>
     </ToastProvider>
