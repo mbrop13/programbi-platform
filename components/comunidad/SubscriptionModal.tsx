@@ -45,7 +45,6 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
       case "pro": return 1;
       case "max": return 2;
       case "ultra": return 3;
-      case "ultraplus": return 4;
       default: return 0;
     }
   };
@@ -127,7 +126,7 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
             </div>
 
             {/* Plan Cards Grid */}
-            <div className="px-6 pb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+            <div className="px-6 pb-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch">
               {communityPlans.map((plan, i) => {
                 const planHierarchy = getPlanHierarchy(plan.id);
                 const isCurrent = currentPlanId === plan.id;
@@ -174,7 +173,7 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
                         <h3 className="text-sm font-black text-gray-900 uppercase tracking-wide">
                           {plan.name}
                         </h3>
-                        {plan.id === 'ultra' || plan.id === 'ultraplus' ? (
+                        {plan.id === 'ultra' ? (
                           <Sparkles className="w-5 h-5 text-violet-600" />
                         ) : (
                           <Star className="w-5 h-5 text-brand-blue" />
@@ -182,13 +181,20 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
                       </div>
 
                       {/* Price Block */}
-                      <div className="my-4 flex items-baseline">
-                        <span className="text-3xl font-black text-gray-950 tracking-tight">
-                          {formatGeoPrice(finalMonthlyPrice)}
-                        </span>
-                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
-                          /mes
-                        </span>
+                      <div className="my-4 flex flex-col">
+                        {(plan.originalPrice || plan.id === 'pro') && (
+                          <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold mb-1 block w-fit">
+                            {formatGeoPrice(plan.originalPrice ? Math.round(plan.originalPrice * (billingCycle === 'semestral' ? 0.9 : billingCycle === 'anual' ? 0.7 : 1)) : 49990)}
+                          </span>
+                        )}
+                        <div className="flex items-baseline">
+                          <span className="text-3xl font-black text-gray-950 tracking-tight">
+                            {formatGeoPrice(finalMonthlyPrice)}
+                          </span>
+                          <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                            /mes
+                          </span>
+                        </div>
                       </div>
 
                       <p className="text-xs text-gray-500 font-medium leading-relaxed mb-6">
@@ -220,12 +226,12 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
                               <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                               <>
-                                {hasAnyPlan ? "Mejorar Plan" : (plan.id === 'ultraplus' ? "Suscribirse Ahora" : "Aprovechar oferta")}
+                                {hasAnyPlan ? "Mejorar Plan" : (plan.id === 'ultra' ? "Suscribirse Ahora" : "Aprovechar oferta")}
                                 <ArrowRight className="w-3.5 h-3.5" />
                               </>
                             )}
                           </button>
-                          {!hasAnyPlan && plan.id !== 'ultraplus' && (
+                          {!hasAnyPlan && plan.id !== 'ultra' && (
                             <span className="text-[9px] font-bold text-gray-400 block text-center mt-1 uppercase tracking-wider">
                               7 días de acceso gratis
                             </span>

@@ -74,7 +74,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
     }
   };
   return (
-    <div id={heroOnly ? "hero" : "pricing"} className={`w-full relative isolate flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-14 sm:pt-18 pb-6 sm:pb-8' : 'pt-6 pb-28'}`}>
+    <div id={heroOnly ? "hero" : "pricing"} className={`w-full relative isolate flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-14 sm:pt-18 pb-6 sm:pb-8' : 'pt-6 pb-12'}`}>
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
@@ -108,7 +108,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
       )}
 
       <div className={`max-w-4xl text-center relative z-10 ${heroOnly ? 'mb-0' : 'mb-12'}`}>
-        {!heroOnly && (
+        {heroOnly && (
           <motion.div
              initial={{ opacity: 0, scale: 0.9 }}
              animate={{ opacity: 1, scale: 1 }}
@@ -131,20 +131,29 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
              <span className="text-slate-950 font-black">{message}</span>
           ) : (
              <div className="flex flex-col gap-1 items-center">
-               {heroOnly && (
-                 <span className="text-[11px] uppercase tracking-[0.22em] font-mono text-brand-blue mb-4 block font-bold">
-                   Membresía Premium
+               {heroOnly ? (
+                 <>
+                   <span className="text-[11px] uppercase tracking-[0.22em] font-mono text-brand-blue mb-4 block font-bold">
+                     Membresía Premium
+                   </span>
+                   <span className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-slate-800 tracking-tight leading-none block">
+                     Desbloquea el poder de la
+                   </span>
+                   <span className="text-4xl sm:text-5xl lg:text-[4rem] font-black text-slate-900 tracking-tight leading-[1.1] font-display mt-2 block">
+                     Comunidad{" "}
+                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
+                       ProgramBI
+                     </span>
+                   </span>
+                 </>
+               ) : (
+                 <span className="text-4xl sm:text-5xl lg:text-[3.5rem] font-black text-slate-900 tracking-tight leading-[1.1] font-display block">
+                   Membresía{" "}
+                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
+                     ProgramBI
+                   </span>
                  </span>
                )}
-               <span className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-slate-800 tracking-tight leading-none block">
-                 Desbloquea el poder de la
-               </span>
-               <span className="text-4xl sm:text-5xl lg:text-[4rem] font-black text-slate-900 tracking-tight leading-[1.1] font-display mt-2 block">
-                 Comunidad{" "}
-                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
-                   ProgramBI
-                 </span>
-               </span>
              </div>
           )}
         </motion.h1>
@@ -190,14 +199,20 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
               Ver Planes
               <ArrowRight className="w-4 h-4" />
             </motion.a>
-            <motion.a
-              href="/#contacto"
-              whileHover={{ scale: 1.02, y: -1, backgroundColor: "var(--color-surface-1)" }}
+            <motion.button
+              onClick={() => {
+                if (isLoggedIn) {
+                  window.location.href = "/comunidad/inicio";
+                } else {
+                  setShowAuthModal(true);
+                }
+              }}
+              whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
               className="inline-flex items-center gap-2 bg-white text-slate-800 border border-slate-200 font-black text-sm px-8 py-4 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
             >
-              Contactar
-            </motion.a>
+              Acceder
+            </motion.button>
           </motion.div>
         )}
 
@@ -232,7 +247,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
       </div>
 
       {!heroOnly && (
-        <div className="max-w-[1400px] mx-auto px-5 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-stretch relative z-10">
+        <div className="max-w-[1400px] mx-auto px-5 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch relative z-10">
         {communityPlans.map((plan, i) => {
           const isActive = selectedPlanId === plan.id;
           const compositePlanId = `${plan.id}_${billingPeriod}`;
@@ -315,9 +330,9 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
 
                 {/* Pricing */}
                 <div className="flex flex-col mb-6 flex-grow-0 pb-6 border-b border-gray-100">
-                  {adminDiscountPercent > 0 && (
+                  {(plan.originalPrice || adminDiscountPercent > 0) && (
                      <div className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold mb-1 block w-fit">
-                        {formatGeoPrice(originalMonthlyPrice)} /mes
+                        {formatGeoPrice(plan.originalPrice ? Math.round(plan.originalPrice * (billingPeriod === 'semestral' ? 0.9 : billingPeriod === 'anual' ? 0.7 : 1)) : originalMonthlyPrice)} /mes
                      </div>
                   )}
                   <div className="flex items-end gap-1">
@@ -383,10 +398,10 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
                     ) : (
                         <div className="flex flex-col items-center justify-center relative z-10 w-full">
                           <div className="flex items-center gap-2 justify-center w-full">
-                            {plan.id === 'ultraplus' ? "Suscribirse Ahora" : "Iniciar Prueba Gratis"}
+                            {plan.id === 'ultra' ? "Suscribirse Ahora" : "Iniciar Prueba Gratis"}
                             <ArrowRight className={`w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
                           </div>
-                          {plan.id !== 'ultraplus' && (
+                          {plan.id !== 'ultra' && (
                             <span className="text-[9px] font-bold opacity-80 mt-1 uppercase tracking-wider block text-center">7 días de acceso y sin cargos</span>
                           )}
                         </div>
@@ -402,7 +417,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
 
       {!heroOnly && (
         <>
-          <div className="mt-20 flex flex-col sm:flex-row items-center gap-6 opacity-60 pb-4">
+          <div className="mt-10 flex flex-col sm:flex-row items-center gap-6 opacity-60 pb-4">
             <span className="text-sm font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">
               <Shield className="w-4 h-4" /> Pagos Procesados de Forma Segura
             </span>
@@ -410,7 +425,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
             <span className="text-sm font-medium text-slate-500">Cancela cuando quieras, sin amarras institucionales.</span>
           </div>
           {isInternational && (
-            <div className="text-center opacity-60 pb-10">
+            <div className="text-center opacity-60 pb-4">
               <span className="text-[10px] text-slate-500 font-medium">
                 * Los cobros se procesarán en pesos chilenos (CLP). Tu banco aplicará la conversión a tu moneda local. (Tasa ref: $1 USD = $1000 CLP)
               </span>

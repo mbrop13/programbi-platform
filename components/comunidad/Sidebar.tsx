@@ -199,31 +199,6 @@ export default function Sidebar({
             </div>
           )}
         </Link>
-        {/* Collapse toggle button next to logo */}
-        <AnimatePresence>
-          {!collapsed && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              onClick={onToggleCollapse}
-              className="ml-auto w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-              title="Colapsar sidebar"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </motion.button>
-          )}
-        </AnimatePresence>
-        {/* When collapsed, show expand button below logo */}
-        {collapsed && (
-          <button
-            onClick={onToggleCollapse}
-            className="absolute top-[72px] left-1/2 -translate-x-1/2 w-7 h-7 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-            title="Expandir sidebar"
-          >
-            <ChevronLeft className="w-4 h-4 rotate-180" />
-          </button>
-        )}
       </div>
 
       {/* ─── SEARCH SECTION ─── */}
@@ -381,8 +356,46 @@ export default function Sidebar({
         }
         return null;
       })()}
-
-      {/* ─── USER SECTION (bottom) ─── */}
+      {/* ─── COLLAPSE / EXPAND TOGGLE (modern pill in the empty space) ─── */}
+      <div className={`shrink-0 ${collapsed ? "px-2 pb-2 flex justify-center" : "px-3 pb-2.5"}`}>
+        <button
+          onClick={onToggleCollapse}
+          title={collapsed ? "Expandir barra" : "Colapsar barra"}
+          aria-label={collapsed ? "Expandir barra" : "Colapsar barra"}
+          className={`
+            group relative flex items-center gap-2.5
+            ${collapsed ? "w-10 h-10 justify-center" : "w-full px-3 py-2.5"}
+            rounded-xl text-[12px] font-medium text-gray-400
+            border border-dashed border-gray-200
+            hover:border-solid hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700
+            active:scale-[0.98]
+            transition-all duration-200 cursor-pointer
+          `}
+        >
+          <ChevronLeft
+            className={`w-[18px] h-[18px] shrink-0 transition-transform duration-300
+              ${collapsed ? "rotate-180" : ""}
+              group-hover:-translate-x-0.5`}
+          />
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.span
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "auto" }}
+                exit={{ opacity: 0, width: 0 }}
+                className="whitespace-nowrap overflow-hidden flex-1 text-left"
+              >
+                Colapsar barra
+              </motion.span>
+            )}
+          </AnimatePresence>
+          {!collapsed && (
+            <kbd className="ml-auto hidden sm:flex items-center justify-center h-5 min-w-[18px] px-1 rounded-md bg-white border border-gray-200 text-[10px] font-semibold text-gray-400 select-none group-hover:text-gray-500">
+              [
+            </kbd>
+          )}
+        </button>
+      </div>      {/* ─── USER SECTION (bottom) ─── */}
       <div className={`shrink-0 border-t border-gray-100 ${collapsed ? "p-2 flex justify-center" : "p-3"}`}>
         {authLoading && !userProfile ? (
           // Loading skeleton (avoids the "??" / empty flash while the session
