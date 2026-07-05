@@ -871,12 +871,6 @@ export function ConversationSidebar({
             </button>
           </div>
         )}
-      </div>nsparent"
-            title="Notificaciones"
-          >
-            <Bell className="w-[18px] h-[18px]" />
-          </button>
-        </div>
       </div>
 
       {/* ── Settings Dialog Modal (Viewport overlay) ── */}
