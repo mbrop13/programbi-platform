@@ -49,7 +49,7 @@ export function CanvasPanel() {
   return (
     <div className="flex h-full flex-col bg-white dark:bg-[#1E1E1E] text-stone-850 dark:text-stone-300">
       {/* Header (diseño mockup) */}
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/10 dark:border-white/10 bg-white dark:bg-[#26282A] shrink-0">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/10 dark:border-white/10 bg-white shrink-0">
         
         {/* Grupo Izquierdo: Pestañas (Código / Vista Previa) */}
         <div className="flex items-center gap-1 p-1 bg-gray-100/80 dark:bg-black/20 rounded-md border border-gray-200/50 dark:border-white/5">
@@ -68,9 +68,8 @@ export function CanvasPanel() {
             title="Código"
           >
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" strokeWidth="1.5" className="w-4 h-4">
-              <path d="M5.33398 4.33301L1.33398 8.47707L5.33398 12.333" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
-              <path d="M10.666 4.33301L14.666 8.47707L10.666 12.333" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
-              <path d="M9.33333 1.33301L7 14.6663" stroke="currentColor" strokeLinecap="round"></path>
+              <path d="M5.33398 4.33301L1.33398 8.00007L5.33398 11.667" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
+              <path d="M10.666 4.33301L14.666 8.00007L10.666 11.667" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
             </svg>
           </button>
           

@@ -98,6 +98,8 @@ function ChatShellInner({
 }) {
   const canvas = useCanvas();
 
+  const [canvasModeActive, setCanvasModeActive] = useState(true);
+
   // ─── Estado ───
   const [chats, setChats] = useState<AiChat[]>([]);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
@@ -484,6 +486,8 @@ function ChatShellInner({
                   onAttachmentsChange={setAttachments}
                   modelId={selectedModel}
                   onSelectModel={setSelectedModel}
+                  canvasModeActive={canvasModeActive}
+                  onCanvasModeChange={setCanvasModeActive}
                 />
               </Landing>
             ) : (
@@ -517,6 +521,8 @@ function ChatShellInner({
                       onAttachmentsChange={setAttachments}
                       modelId={selectedModel}
                       onSelectModel={setSelectedModel}
+                      canvasModeActive={canvasModeActive}
+                      onCanvasModeChange={setCanvasModeActive}
                     />
                   </div>
                 </div>
@@ -534,7 +540,7 @@ function ChatShellInner({
                   isDragging && "is-dragging"
                 )}
               />
-              <div className="hidden min-w-0 flex-1 flex-col overflow-hidden rounded-2xl border border-border bg-surface-0 shadow-float md:mr-8 md:mt-8 md:mb-4 md:flex">
+              <div className="hidden min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-surface-0 shadow-float md:mr-8 md:mt-8 md:mb-4 md:flex">
                 <CanvasPanel key={canvas.activeFile?.id ?? "empty"} />
               </div>
             </>

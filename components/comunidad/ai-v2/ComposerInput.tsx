@@ -43,6 +43,8 @@ interface ComposerInputProps {
   modelId: string;
   onSelectModel: (id: string) => void;
   placeholder?: string;
+  canvasModeActive: boolean;
+  onCanvasModeChange: (active: boolean) => void;
 }
 
 // ─── Tipos mínimos para la Web Speech API (no incluidos en lib.dom) ───
@@ -107,6 +109,8 @@ export function ComposerInput({
   modelId,
   onSelectModel,
   placeholder,
+  canvasModeActive,
+  onCanvasModeChange,
 }: ComposerInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const canvas = useCanvas();
@@ -374,34 +378,20 @@ export function ComposerInput({
             {/* Botón Canvas */}
             <motion.button
               type="button"
-              onClick={() => {
-                if (canvas.isOpen) {
-                  canvas.closeCanvas();
-                } else {
-                  canvas.openCanvas(
-                    canvas.activeFile || {
-                      id: "canvas-default",
-                      title: "Nuevo Documento",
-                      code: "<!-- Escribe tu código HTML/CSS aquí para visualizarlo -->\n",
-                      language: "html",
-                    }
-                  );
-                }
-              }}
+              onClick={() => onCanvasModeChange(!canvasModeActive)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
               className={cn(
-                "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold shadow-sm transition-all duration-150 cursor-pointer active:scale-95",
-                canvas.isOpen
+                "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all duration-150 cursor-pointer active:scale-95 shadow-none",
+                canvasModeActive
                   ? "bg-blue-600 border-blue-600 text-white hover:bg-blue-700"
                   : "bg-white border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-stone-800"
               )}
               title="Modo Canvas"
             >
               <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" strokeWidth="2" className="w-3.5 h-3.5 shrink-0">
-                <path d="M5.33398 4.33301L1.33398 8.47707L5.33398 12.333" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
-                <path d="M10.666 4.33301L14.666 8.47707L10.666 12.333" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
-                <path d="M9.33333 1.33301L7 14.6663" stroke="currentColor" strokeLinecap="round"></path>
+                <path d="M5.33398 4.33301L1.33398 8.00007L5.33398 11.667" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
+                <path d="M10.666 4.33301L14.666 8.00007L10.666 11.667" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
               </svg>
               <span>Canvas</span>
             </motion.button>
