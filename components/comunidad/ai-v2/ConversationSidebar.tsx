@@ -254,8 +254,8 @@ export function ConversationSidebar({
         className={cn(
           "group flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] cursor-pointer transition-colors select-none",
           isActive
-            ? "bg-stone-100 dark:bg-neutral-800 font-medium text-stone-900 dark:text-white"
-            : "text-stone-600 dark:text-neutral-400 hover:bg-stone-50 dark:hover:bg-neutral-800/50 hover:text-stone-900 dark:hover:text-white"
+            ? "bg-stone-250/60 dark:bg-neutral-800 font-medium text-stone-900 dark:text-white"
+            : "text-stone-600 dark:text-neutral-400 hover:bg-stone-200/25 dark:hover:bg-neutral-800/50 hover:text-stone-900 dark:hover:text-white"
         )}
       >
         {isEditing ? (
@@ -323,25 +323,25 @@ export function ConversationSidebar({
   };
 
   return (
-    <div className="flex h-full flex-col bg-white dark:bg-black relative">
+    <div className="flex h-full flex-col bg-[#F9F9FB] dark:bg-black relative overflow-visible">
       {/* ═══ Header: Logo + Collapse ═══ */}
       <div className="flex h-14 shrink-0 items-center justify-between px-5">
-        <div className="flex items-center gap-2.5">
-          <div className="relative w-7 h-7 rounded-lg overflow-hidden flex items-center justify-center shrink-0">
+        <div className="flex items-center">
+          <div className="relative w-12 h-6 flex items-center shrink-0">
             <Image
               src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
-              alt="ProgramBI"
-              fill
-              className="object-contain"
+              alt="ProgramBI Logo"
+              width={48}
+              height={24}
+              className="object-contain dark:invert"
             />
           </div>
-          <span className="font-display font-black text-stone-900 dark:text-white text-sm tracking-tight">ProgramBI</span>
         </div>
         {onClose && (
           <button
             onClick={onClose}
             aria-label="Colapsar menú"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 hover:bg-stone-100 dark:hover:bg-neutral-800 hover:text-stone-800 dark:hover:text-white transition-colors cursor-pointer border-0 bg-transparent"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 hover:bg-stone-200/50 dark:hover:bg-neutral-800 hover:text-stone-800 dark:hover:text-white transition-colors cursor-pointer border-0 bg-transparent"
           >
             <PanelLeftClose className="h-[18px] w-[18px]" />
           </button>
@@ -357,7 +357,7 @@ export function ConversationSidebar({
               <button
                 key={idx}
                 onClick={item.onClick}
-                className="flex w-full items-center gap-3.5 rounded-lg px-3 py-2.5 text-[14px] font-medium text-stone-700 dark:text-neutral-300 hover:bg-stone-50 dark:hover:bg-neutral-800/60 hover:text-stone-900 dark:hover:text-white transition-colors cursor-pointer border-0 bg-transparent text-left"
+                className="flex w-full items-center gap-3.5 rounded-lg px-3 py-2.5 text-[14px] font-medium text-stone-700 dark:text-neutral-300 hover:bg-stone-200/25 dark:hover:bg-neutral-800/60 hover:text-stone-900 dark:hover:text-white transition-colors cursor-pointer border-0 bg-transparent text-left"
               >
                 <Icon className="h-[18px] w-[18px] text-stone-500 dark:text-neutral-500 shrink-0" />
                 <span>{item.label}</span>
@@ -368,7 +368,7 @@ export function ConversationSidebar({
             <Link
               key={idx}
               href={item.href!}
-              className="flex items-center gap-3.5 rounded-lg px-3 py-2.5 text-[14px] font-medium text-stone-700 dark:text-neutral-300 hover:bg-stone-50 dark:hover:bg-neutral-800/60 hover:text-stone-900 dark:hover:text-white transition-colors no-underline"
+              className="flex items-center gap-3.5 rounded-lg px-3 py-2.5 text-[14px] font-medium text-stone-700 dark:text-neutral-300 hover:bg-stone-200/25 dark:hover:bg-neutral-800/60 hover:text-stone-900 dark:hover:text-white transition-colors no-underline"
             >
               <Icon className="h-[18px] w-[18px] text-stone-500 dark:text-neutral-500 shrink-0" />
               <span>{item.label}</span>
@@ -381,7 +381,7 @@ export function ConversationSidebar({
       <div className="flex-1 flex flex-col min-h-0 border-t border-stone-100 dark:border-neutral-800">
         <button
           onClick={() => setChatsOpen(!chatsOpen)}
-          className="w-full flex items-center justify-between px-5 py-3 text-[14px] font-medium text-stone-900 dark:text-white hover:bg-stone-50 dark:hover:bg-neutral-800/40 transition-colors border-0 bg-transparent cursor-pointer select-none shrink-0"
+          className="w-full flex items-center justify-between px-5 py-3 text-[14px] font-medium text-stone-900 dark:text-white hover:bg-stone-200/25 dark:hover:bg-neutral-800/40 transition-colors border-0 bg-transparent cursor-pointer select-none shrink-0"
         >
           <span>Chats</span>
           <ChevronDown className={cn(

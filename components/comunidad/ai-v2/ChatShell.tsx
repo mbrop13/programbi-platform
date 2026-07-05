@@ -383,11 +383,14 @@ function ChatShellInner({
       <motion.aside
         initial={false}
         animate={{
-          width: sidebarOpen ? 280 : isMobile ? 0 : 64,
+          width: sidebarOpen ? 240 : isMobile ? 0 : 64,
           opacity: sidebarOpen || !isMobile ? 1 : 0,
         }}
         transition={{ duration: 0.25, ease: "easeInOut" }}
-        className="absolute z-50 h-full shrink-0 overflow-hidden border-r border-stone-100 dark:border-neutral-800 md:relative"
+        className={cn(
+          "absolute z-50 h-full shrink-0 border-r border-stone-100 dark:border-neutral-800 md:relative",
+          sidebarOpen ? "overflow-visible" : "overflow-hidden"
+        )}
       >
         {sidebarOpen ? (
           <ConversationSidebar
@@ -431,14 +434,16 @@ function ChatShellInner({
 
       {/* Main (sin barra superior) */}
       <div className="relative flex min-w-0 flex-1 flex-col">
-        {/* Toggle flotante para abrir/cerrar el sidebar */}
-        <button
-          onClick={() => setSidebarOpen((o) => !o)}
-          className="absolute left-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface-0/80 text-text-muted shadow-premium backdrop-blur-md transition-colors hover:bg-surface-2 hover:text-text-primary"
-          title={sidebarOpen ? "Ocultar historial" : "Mostrar historial"}
-        >
-          {sidebarOpen ? <PanelLeftClose className="h-5 w-5" /> : <PanelLeft className="h-5 w-5" />}
-        </button>
+        {/* Toggle flotante para abrir/cerrar el sidebar (solo cuando está cerrado) */}
+        {!sidebarOpen && (
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="absolute left-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface-0/80 text-text-muted shadow-premium backdrop-blur-md transition-colors hover:bg-surface-2 hover:text-text-primary"
+            title="Mostrar historial"
+          >
+            <PanelLeft className="h-5 w-5" />
+          </button>
+        )}
 
         {/* Workspace: chat (resizable) + canvas (split / sheet) */}
         <div ref={workspaceRef} className="flex min-h-0 flex-1">
