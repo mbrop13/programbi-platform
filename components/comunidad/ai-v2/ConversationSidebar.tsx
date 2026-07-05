@@ -217,14 +217,25 @@ export function ConversationSidebar({
     if (t) onRename(id, t);
   };
 
-  const displayName = userName || "Usuario";
-  const initials =
-    displayName
+  const cleanDisplayName = useMemo(() => {
+    if (userName && !userName.includes("@")) {
+      return userName;
+    }
+    const emailToUse = userEmail || (userName && userName.includes("@") ? userName : "");
+    if (emailToUse) {
+      return emailToUse.split("@")[0];
+    }
+    return "Usuario";
+  }, [userName, userEmail]);
+
+  const initials = useMemo(() => {
+    return cleanDisplayName
       .split(" ")
       .map((n) => n[0])
       .join("")
       .substring(0, 2)
       .toUpperCase() || "?";
+  }, [cleanDisplayName]);
 
   const tierLabel = useMemo(() => {
     if (isAdmin) return "Admin";
@@ -487,7 +498,7 @@ export function ConversationSidebar({
                   {/* Email header */}
                   <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl">
                     <User className="h-4 w-4 text-stone-400 shrink-0" />
-                    <span className="truncate text-[13px] font-medium text-stone-650">{userEmail || displayName}</span>
+                    <span className="truncate text-[13px] font-medium text-stone-655">{userEmail || cleanDisplayName}</span>
                   </div>
 
                   <div className="h-px bg-stone-100 mx-2 my-1" />
@@ -721,21 +732,21 @@ export function ConversationSidebar({
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src={avatarUrl}
-                  alt={displayName}
+                  alt={cleanDisplayName}
                   className="h-full w-full object-cover rounded-full"
                 />
               ) : (
                 <span aria-hidden>{initials}</span>
               )}
               {/* Tier badge below avatar */}
-              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-violet-600 text-white text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white uppercase tracking-wider leading-none whitespace-nowrap">
+              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-black text-white text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-neutral-900 uppercase tracking-wider leading-none whitespace-nowrap animate-scale">
                 {tierLabel}
               </span>
             </div>
 
             {/* Name + expand icon */}
             <span className="truncate text-[13px] font-semibold text-stone-850 min-w-0">
-              {displayName}
+              {cleanDisplayName}
             </span>
           </button>
 
@@ -817,13 +828,13 @@ export function ConversationSidebar({
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-lg font-bold shrink-0">
                         {avatarUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
-                          <img src={avatarUrl} alt={displayName} className="h-full w-full object-cover rounded-full" />
+                          <img src={avatarUrl} alt={cleanDisplayName} className="h-full w-full object-cover rounded-full" />
                         ) : (
                           initials
                         )}
                       </div>
                       <div className="flex-grow min-w-0">
-                        <h4 className="text-sm font-black text-stone-850 truncate">{displayName}</h4>
+                        <h4 className="text-sm font-black text-stone-850 truncate">{cleanDisplayName}</h4>
                         <p className="text-xs text-stone-500 truncate">{userEmail}</p>
                       </div>
                       <button className="border border-stone-250 hover:bg-stone-50 text-xs px-4 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer bg-transparent text-stone-750">
