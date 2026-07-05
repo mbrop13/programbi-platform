@@ -734,10 +734,9 @@ export function ConversationSidebar({
             </div>
 
             {/* Name + expand icon */}
-            <span className="truncate text-[13px] font-semibold text-stone-805 min-w-0">
+            <span className="truncate text-[13px] font-semibold text-stone-850 min-w-0">
               {displayName}
             </span>
-            <ChevronsUpDown className="h-3.5 w-3.5 text-stone-500 shrink-0 ml-auto" />
           </button>
 
           {/* Bell icon */}
