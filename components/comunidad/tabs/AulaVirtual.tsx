@@ -97,13 +97,133 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
   const [code, setCode] = useState("# Escribe tu código aquí\nprint('¡Hola ProgramBI!')");
   const [codeOutput, setCodeOutput] = useState("");
   const [isExecuting, setIsExecuting] = useState(false);
-
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
+
+  // Metrics calculations
+  const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
+  const progress = totalLessons > 0 ? Math.round((completedLessons.size / totalLessons) * 100) : 0;
+  const videoId = selectedLesson ? extractYouTubeId(selectedLesson.video_url) : null;
+
+  // YouTube player tracking refs & state
+  const playerRef = useRef<any>(null);
+  const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const completedLessonsRef = useRef(completedLessons);
+  const toggleCompleteRef = useRef<any>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
+
+  // Sync ref with completedLessons state
+  useEffect(() => {
+    completedLessonsRef.current = completedLessons;
+  }, [completedLessons]);
+
+  // YouTube Player tracking and auto-complete logic at 70% watch time
+  useEffect(() => {
+    if (!videoId || !selectedLesson) return;
+
+    const lessonId = selectedLesson.id;
+
+    // Load the YouTube API script if not already loaded
+    if (!(window as any).YT) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+    }
+
+    let player: any;
+
+    const initPlayer = () => {
+      const container = videoContainerRef.current;
+      if (!container) return;
+
+      // Clear container and create player target element
+      container.innerHTML = "";
+      const playerDiv = document.createElement("div");
+      playerDiv.id = "youtube-player-target";
+      playerDiv.className = "absolute inset-0 w-full h-full";
+      container.appendChild(playerDiv);
+
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+
+      player = new (window as any).YT.Player('youtube-player-target', {
+        videoId: videoId,
+        playerVars: {
+          rel: 0,
+          modestbranding: 1,
+          controls: 1,
+        },
+        events: {
+          onStateChange: (event: any) => {
+            // YT.PlayerState.PLAYING is 1
+            if (event.data === 1) {
+              if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+              progressIntervalRef.current = setInterval(() => {
+                if (player && typeof player.getDuration === 'function' && typeof player.getCurrentTime === 'function') {
+                  const duration = player.getDuration();
+                  const currentTime = player.getCurrentTime();
+                  if (duration > 0) {
+                    const percentWatched = (currentTime / duration) * 100;
+                    if (percentWatched >= 70 && !completedLessonsRef.current.has(lessonId)) {
+                      if (toggleCompleteRef.current) {
+                        toggleCompleteRef.current(lessonId);
+                      }
+                      if (progressIntervalRef.current) {
+                        clearInterval(progressIntervalRef.current);
+                        progressIntervalRef.current = null;
+                      }
+                    }
+                  }
+                }
+              }, 1000);
+            } else {
+              if (progressIntervalRef.current) {
+                clearInterval(progressIntervalRef.current);
+                progressIntervalRef.current = null;
+              }
+            }
+          }
+        }
+      });
+      playerRef.current = player;
+    };
+
+    if ((window as any).YT && (window as any).YT.Player) {
+      initPlayer();
+    } else {
+      const prevCallback = (window as any).onYouTubeIframeAPIReady;
+      (window as any).onYouTubeIframeAPIReady = () => {
+        if (prevCallback) prevCallback();
+        initPlayer();
+      };
+    }
+
+    return () => {
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = null;
+      }
+      if (playerRef.current) {
+        try {
+          playerRef.current.destroy();
+        } catch (e) {
+          // ignore
+        }
+        playerRef.current = null;
+      }
+    };
+  }, [videoId, selectedLesson]);
 
   // Auto-scroll chat to bottom
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages, chatLoading]);
+
+
+
+
 
   // Sync selected lesson based on slug change in URL
   useEffect(() => {
@@ -121,9 +241,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
         const { lessons, access, completedLessonIds } = await getCourseLessons(courseId);
         setAccessType(access);
 
-        if (completedLessonIds && completedLessonIds.length > 0) {
-          setCompletedLessons(new Set(completedLessonIds));
-        }
+        setCompletedLessons(new Set(completedLessonIds || []));
 
         const moduleMap: Record<string, Module> = {};
         lessons.forEach((l: any) => {
@@ -461,15 +579,16 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
     }
   };
 
+  useEffect(() => {
+    toggleCompleteRef.current = toggleComplete;
+  }, [toggleComplete]);
+
   const handleSelectLesson = (lesson: Lesson) => {
     setSelectedLesson(lesson);
     router.push(`/comunidad/cursos/${courseSlug}/${slugify(lesson.title)}`);
   };
 
-  // Metrics calculations
-  const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
-  const progress = totalLessons > 0 ? Math.round((completedLessons.size / totalLessons) * 100) : 0;
-  const videoId = selectedLesson ? extractYouTubeId(selectedLesson.video_url) : null;
+
 
   const selectedLessonGlobalIndex = selectedLesson ? modules.flatMap(m => m.lessons).findIndex(l => l.id === selectedLesson.id) : -1;
   const isSelectedLessonLocked = accessType === "trial" && selectedLessonGlobalIndex >= 2;
@@ -558,37 +677,24 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
             <span className="hidden sm:inline">{copiedShare ? "¡Copiado!" : "Compartir"}</span>
           </button>
 
-          {/* Progress Circular SVG */}
+          {/* Tu Progreso Premium Pill */}
           <div className="h-6 w-px bg-gray-200" />
-          <div className="flex items-center gap-2.5">
-            <div className="relative w-8 h-8">
-              <svg className="w-full h-full transform -rotate-90">
-                <circle
-                  cx="16"
-                  cy="16"
-                  r="13"
-                  className="stroke-gray-100"
-                  strokeWidth="2.5"
-                  fill="transparent"
-                />
-                <circle
-                  cx="16"
-                  cy="16"
-                  r="13"
-                  className="stroke-brand-blue transition-all duration-500"
-                  strokeWidth="2.5"
-                  fill="transparent"
-                  strokeDasharray={2 * Math.PI * 13}
-                  strokeDashoffset={2 * Math.PI * 13 * (1 - progress / 100)}
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center text-[9px] font-black text-gray-900">
-                {progress}%
-              </div>
+          <div className="flex items-center gap-3 bg-gray-50 border border-gray-200/80 rounded-2xl px-3.5 py-1.5 shadow-sm">
+            <div className="hidden md:block text-right leading-none">
+              <span className="text-[9px] text-gray-400 font-extrabold uppercase tracking-wider block">Progreso</span>
+              <span className="text-[11px] font-black text-gray-900 mt-0.5 block">{completedLessons.size} de {totalLessons} clases</span>
             </div>
-            <div className="hidden md:block text-left leading-none">
-              <div className="text-[9px] text-gray-400 font-extrabold uppercase tracking-wide">Tu Progreso</div>
-              <div className="text-[11px] font-bold text-gray-700 mt-1">{completedLessons.size}/{totalLessons} clases</div>
+            
+            {/* Progress Bar container */}
+            <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden hidden sm:block">
+              <div
+                className="h-full bg-gradient-to-r from-brand-blue to-violet-600 transition-all duration-500"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+
+            <div className="bg-gradient-to-r from-brand-blue to-violet-650 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
+              {progress}%
             </div>
           </div>
 
@@ -748,12 +854,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                         </button>
                       </div>
                     ) : videoId ? (
-                      <iframe
-                        className="absolute inset-0 w-full h-full"
-                        src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                      />
+                      <div ref={videoContainerRef} className="absolute inset-0 w-full h-full bg-slate-900" />
                     ) : (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 gap-2">
                         <Play className="w-12 h-12 text-slate-800" />
