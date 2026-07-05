@@ -6,6 +6,7 @@ import { DefaultChatTransport } from "ai";
 import { Bot, MessageSquarePlus, PanelLeft, PanelLeftClose } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ConversationSidebar } from "./ConversationSidebar";
 import { ChatList } from "./ChatList";
@@ -33,6 +34,7 @@ interface ChatShellProps {
   avatarUrl?: string | null;
   subscriptionPlan?: string | null;
   isAdmin?: boolean;
+  initialChatId?: string | null;
 }
 
 export default function ChatShell({
@@ -41,6 +43,7 @@ export default function ChatShell({
   avatarUrl,
   subscriptionPlan,
   isAdmin = false,
+  initialChatId = null,
 }: ChatShellProps) {
   const isPremium = !isRestricted;
 
@@ -78,6 +81,7 @@ export default function ChatShell({
         avatarUrl={avatarUrl ?? null}
         subscriptionPlan={subscriptionPlan}
         isAdmin={isAdmin}
+        initialChatId={initialChatId}
       />
     </CanvasProvider>
   );
@@ -89,20 +93,23 @@ function ChatShellInner({
   avatarUrl,
   subscriptionPlan,
   isAdmin = false,
+  initialChatId = null,
 }: {
   isPremium: boolean;
   userName?: string;
   avatarUrl: string | null;
   subscriptionPlan?: string | null;
   isAdmin?: boolean;
+  initialChatId?: string | null;
 }) {
   const canvas = useCanvas();
+  const router = useRouter();
 
   const [canvasModeActive, setCanvasModeActive] = useState(true);
 
   // ─── Estado ───
   const [chats, setChats] = useState<AiChat[]>([]);
-  const [activeChatId, setActiveChatId] = useState<string | null>(null);
+  const [activeChatId, setActiveChatId] = useState<string | null>(initialChatId);
   const [loadingChats, setLoadingChats] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [selectedModel, setSelectedModel] = useState<string>(() => {
@@ -165,6 +172,7 @@ function ChatShellInner({
       const meta = (message as { metadata?: { chatId?: string } }).metadata;
       if (meta?.chatId && !chatIdRef.current) {
         setActiveChatId(meta.chatId);
+        router.push(`/ai/${meta.chatId}`);
       }
       refreshChats();
     },
@@ -274,6 +282,19 @@ function ChatShellInner({
       setSidebarOpen(false);
     }
   }, [setMessages]);
+
+  // Sincronizar activeChatId con la prop initialChatId de la URL
+  useEffect(() => {
+    if (initialChatId) {
+      if (activeChatId !== initialChatId) {
+        selectChat(initialChatId);
+      }
+    } else {
+      if (activeChatId !== null) {
+        newChat();
+      }
+    }
+  }, [initialChatId, activeChatId, selectChat, newChat]);
 
   // ─── Mutaciones del sidebar ───
   const handleDelete = useCallback(
@@ -431,8 +452,8 @@ function ChatShellInner({
           chats={chats}
           activeChatId={activeChatId}
           loading={loadingChats}
-          onSelect={selectChat}
-          onNew={newChat}
+          onSelect={(id) => router.push(`/ai/${id}`)}
+          onNew={() => router.push("/ai")}
           onDelete={handleDelete}
           onRename={handleRename}
           onPin={handlePin}
