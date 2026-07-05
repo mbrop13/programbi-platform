@@ -148,12 +148,6 @@ function MessageRowBase({
       className="group flex gap-3 px-4 py-4 sm:px-6"
     >
       <div className="min-w-0 flex-1">
-        {/* Header: nombre modelo */}
-        <div className="mb-1 flex items-center gap-2">
-          <span className="text-sm font-bold text-text-primary">
-            Mentor IA
-          </span>
-        </div>
 
         {/* Razonamiento */}
         {(reasoningText || reasoningStreaming) && (
@@ -190,7 +184,7 @@ function MessageRowBase({
 
         {/* Acciones: visibles en hover, foco y táctil */}
         {!isStreaming && text && (
-          <div className="touch-visible mt-3 flex items-center gap-2 opacity-50 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+          <div className="touch-visible mt-3 flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
             <motion.button
               onClick={handleCopy}
               aria-label={copied ? "Copiado" : "Copiar mensaje"}

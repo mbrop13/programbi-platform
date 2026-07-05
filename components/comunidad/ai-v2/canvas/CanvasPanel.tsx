@@ -52,7 +52,7 @@ export function CanvasPanel() {
       <div className="flex items-center justify-between px-4 py-2.5 border-b border-black/10 dark:border-white/10 bg-white shrink-0">
         
         {/* Grupo Izquierdo: Pestañas (Código / Vista Previa) */}
-        <div className="flex items-center gap-1 p-1 bg-gray-100/80 dark:bg-black/20 rounded-md border border-gray-200/50 dark:border-white/5">
+        <div className="flex items-center gap-1 p-1 bg-gray-100/80 rounded-md border border-gray-200/50">
           {/* Botón activo/inactivo: Código */}
           <button
             onClick={() => {
@@ -61,8 +61,8 @@ export function CanvasPanel() {
             className={cn(
               "w-8 h-6 flex justify-center items-center rounded transition-all cursor-pointer border-0 bg-transparent",
               tab === "code"
-                ? "bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-white"
-                : "text-gray-500 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-gray-700/50"
+                ? "bg-white shadow-sm text-gray-900"
+                : "text-gray-500 hover:bg-gray-200/50"
             )}
             aria-label="Ver Código"
             title="Código"
@@ -87,8 +87,8 @@ export function CanvasPanel() {
               !previewable
                 ? "opacity-30 cursor-not-allowed text-gray-305"
                 : tab === "preview"
-                ? "bg-white dark:bg-gray-700 shadow-sm text-gray-900 dark:text-white cursor-pointer"
-                : "text-gray-500 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-gray-700/50 cursor-pointer"
+                ? "bg-white shadow-sm text-gray-900 cursor-pointer"
+                : "text-gray-500 hover:bg-gray-200/50 cursor-pointer"
             )}
             aria-label="Vista Previa"
             title="Vista Previa"

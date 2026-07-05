@@ -57,7 +57,16 @@ export function ChatList({ messages, status, modelName, onRegenerate, userName, 
         aria-live="polite"
         aria-label="Mensajes de la conversación"
         className="h-full overflow-y-auto scroll-smooth"
+        style={{
+          scrollbarWidth: "none",
+          msOverflowStyle: "none",
+        }}
       >
+        <style dangerouslySetInnerHTML={{ __html: `
+          [role="log"]::-webkit-scrollbar {
+            display: none !important;
+          }
+        ` }} />
         <div className="mx-auto w-full max-w-3xl pb-40 pt-2">
           {messages.map((m, i) => (
             <MessageRow

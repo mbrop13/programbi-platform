@@ -33,7 +33,7 @@ export function CodeEditor({ editing }: CodeEditorProps) {
   const lineNumbers = Array.from({ length: lineCount }, (_, i) => i + 1);
 
   return (
-    <div className="canvas-preview-bg relative h-full overflow-auto">
+    <div className="group canvas-preview-bg relative h-full overflow-auto">
       <div className="flex min-h-full min-w-max">
         {/* Gutter de números de línea */}
         <div
@@ -115,7 +115,7 @@ function CopyButton({ code }: { code: string }) {
     <button
       onClick={handle}
       aria-label={copied ? "Código copiado" : "Copiar código"}
-      className="absolute top-4 right-6 z-10 flex items-center gap-1.5 px-3 py-1.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm rounded-lg text-xs font-semibold text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all active:scale-95 cursor-pointer"
+      className="absolute top-4 right-6 z-10 flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 shadow-sm rounded-lg text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-all duration-150 active:scale-95 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
     >
       {copied ? (
         <Check className="w-4 h-4 text-emerald-600" aria-hidden />
