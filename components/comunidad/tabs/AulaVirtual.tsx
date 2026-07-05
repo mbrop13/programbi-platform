@@ -41,7 +41,11 @@ interface AulaVirtualProps {
 
 function extractYouTubeId(url: string): string | null {
   if (!url) return null;
-  const match = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&?/]+)/);
+  const trimmed = url.trim();
+  if (trimmed.length === 11 && !trimmed.includes('/') && !trimmed.includes('.')) {
+    return trimmed;
+  }
+  const match = trimmed.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([^&?/]+)/);
   return match ? match[1] : null;
 }
 
@@ -635,6 +639,14 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
           -ms-overflow-style: none !important;
           scrollbar-width: none !important;
         }
+        #video-container-wrapper iframe {
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          border: none !important;
+        }
       `}</style>
 
       {/* ─── BODY LAYOUT ─── */}
@@ -678,7 +690,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                       <span className="text-[9px] text-gray-400 font-extrabold uppercase tracking-wider block">Progreso</span>
                       <span className="text-[11px] font-black text-gray-900 mt-0.5 block">{completedLessons.size} de {totalLessons} clases</span>
                     </div>
-                    <div className="bg-gradient-to-r from-brand-blue to-violet-650 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
+                    <div className="bg-brand-blue text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
                       {progress}%
                     </div>
                   </div>
@@ -1033,12 +1045,12 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                       {/* Progress Bar container */}
                       <div className="w-16 h-2 bg-gray-200 rounded-full overflow-hidden hidden sm:block">
                         <div
-                          className="h-full bg-gradient-to-r from-brand-blue to-violet-600 transition-all duration-500"
+                          className="h-full bg-brand-blue transition-all duration-500"
                           style={{ width: `${progress}%` }}
                         />
                       </div>
 
-                      <div className="bg-gradient-to-r from-brand-blue to-violet-650 text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
+                      <div className="bg-brand-blue text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
                         {progress}%
                       </div>
                     </div>
@@ -1074,7 +1086,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                         </button>
                       </div>
                     ) : videoId ? (
-                      <div ref={videoContainerRef} className="absolute inset-0 w-full h-full bg-slate-900" />
+                      <div id="video-container-wrapper" ref={videoContainerRef} className="absolute inset-0 w-full h-full bg-slate-900" />
                     ) : (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-950 gap-2">
                         <Play className="w-12 h-12 text-slate-800" />
