@@ -14,10 +14,12 @@ import {
   Plus,
   Square,
   X,
+  LayoutTemplate,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { getModel, getAvailableModels, type ChatModel } from "@/lib/ai/models";
+import { useCanvas } from "./canvas/CanvasStore";
 
 export interface Attachment {
   url: string;
@@ -107,6 +109,7 @@ export function ComposerInput({
   placeholder,
 }: ComposerInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const canvas = useCanvas();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
   const finalTranscriptRef = useRef("");
@@ -367,6 +370,36 @@ export function ComposerInput({
                 )}
               </AnimatePresence>
             </div>
+
+            {/* Botón Canvas */}
+            <motion.button
+              type="button"
+              onClick={() => {
+                if (canvas.isOpen) {
+                  canvas.closeCanvas();
+                } else {
+                  canvas.openCanvas(
+                    canvas.activeFile || {
+                      id: "canvas-default",
+                      title: "Nuevo Documento",
+                      code: "<!-- Escribe tu código HTML/CSS aquí para visualizarlo -->\n",
+                      language: "html",
+                    }
+                  );
+                }
+              }}
+              aria-label="Modo Canvas"
+              title="Modo Canvas"
+              whileHover={{ scale: 1.08, backgroundColor: "rgba(15, 23, 42, 0.05)" }}
+              whileTap={{ scale: 0.95 }}
+              className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-lg transition-colors cursor-pointer",
+                canvas.isOpen ? "text-blue-600 bg-blue-50/50" : "text-text-muted"
+              )}
+            >
+              <LayoutTemplate className="h-5 w-5" />
+            </motion.button>
+
             {uploading && <Loader2 className="h-3.5 w-3.5 animate-spin text-text-muted" aria-hidden />}
           </div>
 
