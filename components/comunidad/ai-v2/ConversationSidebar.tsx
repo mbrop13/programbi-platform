@@ -30,6 +30,12 @@ import {
   Moon,
   Monitor,
   Newspaper,
+  MoreHorizontal,
+  Inbox,
+  Cpu,
+  Sliders,
+  Database,
+  X,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -107,7 +113,14 @@ export function ConversationSidebar({
   const [activeSubmenu, setActiveSubmenu] = useState<'apariencia' | 'idioma' | null>(null);
   const [currentTheme, setCurrentTheme] = useState<'claro' | 'oscuro' | 'sistema'>('claro');
   const [currentLanguage, setCurrentLanguage] = useState<'es' | 'en'>('es');
+  
+  // New States for settings and notifications popovers
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [activeSettingsTab, setActiveSettingsTab] = useState<'cuenta' | 'apariencia' | 'comportamiento' | 'customize' | 'datos'>('cuenta');
+
   const profileMenuRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
 
   /* ── Theme persistence ── */
   useEffect(() => {
@@ -161,16 +174,18 @@ export function ConversationSidebar({
 
   /* ── Close menu on click outside ── */
   useEffect(() => {
-    if (!profileMenuOpen) return;
     const handler = (e: MouseEvent) => {
-      if (profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
+      if (profileMenuOpen && profileMenuRef.current && !profileMenuRef.current.contains(e.target as Node)) {
         setProfileMenuOpen(false);
         setActiveSubmenu(null);
+      }
+      if (notifOpen && notifRef.current && !notifRef.current.contains(e.target as Node)) {
+        setNotifOpen(false);
       }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, [profileMenuOpen]);
+  }, [profileMenuOpen, notifOpen]);
 
   /* ── Chat filtering and grouping ── */
   const pinned = chats.filter((c) => c.pinned);
@@ -220,9 +235,6 @@ export function ConversationSidebar({
   const navItems = [
     { label: "Nuevo Chat", icon: MessageSquarePlus, onClick: onNew },
     { label: "Buscar", icon: Search, href: "/comunidad/inicio" },
-    { label: "Mis Cursos", icon: GraduationCap, href: "/comunidad/cursos" },
-    { label: "Certificados", icon: Award, href: "/comunidad/certificados" },
-    { label: "Noticias", icon: Newspaper, href: "/comunidad/inicio" },
     { label: "Inicio", icon: Home, href: "/comunidad/inicio" },
   ];
 
@@ -449,14 +461,17 @@ export function ConversationSidebar({
                   <div className="h-px bg-stone-100 dark:bg-neutral-800 mx-2 my-1" />
 
                   {/* Todos los ajustes */}
-                  <Link
-                    href="/comunidad/perfil"
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 dark:text-neutral-300 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-colors no-underline cursor-pointer"
+                  <button
+                    onClick={() => {
+                      setProfileMenuOpen(false);
+                      setSettingsOpen(true);
+                    }}
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 dark:text-neutral-300 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
                   >
                     <Settings className="h-4 w-4 text-stone-500 dark:text-neutral-500 shrink-0" />
                     <span className="flex-1 font-medium">Todos los ajustes</span>
                     <span className="text-[11px] text-stone-400 dark:text-neutral-600 font-mono">⇧^,</span>
-                  </Link>
+                  </button>
 
                   {/* Actualizar plan */}
                   <Link
@@ -624,6 +639,40 @@ export function ConversationSidebar({
           )}
         </AnimatePresence>
 
+        {/* ── Notifications Popover ── */}
+        <AnimatePresence>
+          {notifOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 8, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 8, scale: 0.96 }}
+              transition={{ duration: 0.15, ease: "easeOut" }}
+              className="absolute bottom-full right-3 w-[320px] mb-2 z-50"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="bg-white dark:bg-neutral-900 border border-stone-200 dark:border-neutral-700 rounded-2xl shadow-xl p-4 flex flex-col text-stone-900 dark:text-white" ref={notifRef}>
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-black text-stone-900 dark:text-white">Notificaciones</span>
+                  <button className="text-stone-400 hover:text-stone-700 dark:hover:text-white border-0 bg-transparent cursor-pointer">
+                    <MoreHorizontal className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                <div className="h-px bg-stone-100 dark:bg-neutral-800 my-3" />
+
+                {/* Empty State Body */}
+                <div className="flex flex-col items-center justify-center py-8">
+                  <Inbox className="w-12 h-12 text-stone-300 dark:text-neutral-600 mb-3" />
+                  <span className="text-xs font-semibold text-stone-500 dark:text-neutral-400">
+                    Tus notificaciones aparecerán aquí
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* ── Profile trigger button (matching Grok: avatar+name ↕ 🔔) ── */}
         <div className="flex items-center gap-2">
           <button
@@ -661,7 +710,10 @@ export function ConversationSidebar({
 
           {/* Bell icon */}
           <button
-            onClick={() => router.push("/comunidad/inicio")}
+            onClick={(e) => {
+              e.stopPropagation();
+              setNotifOpen(!notifOpen);
+            }}
             className="h-9 w-9 rounded-xl flex items-center justify-center text-stone-400 dark:text-neutral-500 hover:bg-stone-50 dark:hover:bg-neutral-800 hover:text-stone-700 dark:hover:text-white transition-colors shrink-0 cursor-pointer border-0 bg-transparent"
             title="Notificaciones"
           >
@@ -669,6 +721,262 @@ export function ConversationSidebar({
           </button>
         </div>
       </div>
+
+      {/* ── Settings Dialog Modal (Viewport overlay) ── */}
+      <AnimatePresence>
+        {settingsOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-[4px] p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              transition={{ type: "spring", duration: 0.3 }}
+              className="w-full max-w-[850px] h-[550px] bg-white dark:bg-neutral-900 border border-stone-200 dark:border-neutral-800 rounded-3xl shadow-2xl flex overflow-hidden relative text-stone-900 dark:text-white"
+            >
+              {/* Close button */}
+              <button
+                onClick={() => setSettingsOpen(false)}
+                className="absolute top-5 right-5 text-stone-400 hover:text-stone-700 dark:hover:text-white border-0 bg-transparent cursor-pointer z-10"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Left column navigation */}
+              <div className="w-60 border-r border-stone-100 dark:border-neutral-800 p-5 flex flex-col gap-1.5 shrink-0 bg-stone-50/50 dark:bg-neutral-900/50">
+                {[
+                  { id: 'cuenta' as const, label: 'Cuenta', icon: User },
+                  { id: 'apariencia' as const, label: 'Apariencia', icon: Pencil },
+                  { id: 'comportamiento' as const, label: 'Comportamiento', icon: Cpu },
+                  { id: 'customize' as const, label: 'Customize', icon: Sliders },
+                  { id: 'datos' as const, label: 'Controles de datos', icon: Database },
+                ].map((tab) => {
+                  const TabIcon = tab.icon;
+                  const isTabActive = activeSettingsTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveSettingsTab(tab.id)}
+                      className={cn(
+                        "w-full px-3 py-2.5 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all border-0 bg-transparent text-left cursor-pointer",
+                        isTabActive
+                          ? "bg-stone-200/60 dark:bg-neutral-800 text-stone-900 dark:text-white shadow-sm"
+                          : "text-stone-600 dark:text-neutral-400 hover:bg-stone-200/25 dark:hover:bg-neutral-800/40"
+                      )}
+                    >
+                      <TabIcon className="w-4 h-4 text-stone-500 dark:text-neutral-400 shrink-0" />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Right column details */}
+              <div className="flex-1 flex flex-col p-8 min-w-0 overflow-y-auto">
+                {activeSettingsTab === 'cuenta' && (
+                  <div className="flex-grow flex flex-col">
+                    <h3 className="text-xl font-black text-stone-900 dark:text-white mb-6">Cuenta</h3>
+                    
+                    {/* User row */}
+                    <div className="flex items-center gap-4 py-4 border-b border-stone-100 dark:border-neutral-800">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-lg font-bold shrink-0">
+                        {avatarUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={avatarUrl} alt={displayName} className="h-full w-full object-cover rounded-full" />
+                        ) : (
+                          initials
+                        )}
+                      </div>
+                      <div className="flex-grow min-w-0">
+                        <h4 className="text-sm font-black text-stone-850 dark:text-white truncate">{displayName}</h4>
+                        <p className="text-xs text-stone-500 dark:text-neutral-450 truncate">{userEmail}</p>
+                      </div>
+                      <button className="border border-stone-250 dark:border-neutral-700 hover:bg-stone-50 dark:hover:bg-neutral-800 text-xs px-4 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer bg-transparent text-stone-750 dark:text-neutral-300">
+                        Administrar
+                      </button>
+                    </div>
+
+                    {/* ProgramBI Premium Row */}
+                    <div className="flex items-center gap-4 py-4 border-b border-stone-100 dark:border-neutral-800">
+                      <div className="w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-950/40 flex items-center justify-center shrink-0">
+                        <Sliders className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                      </div>
+                      <div className="flex-grow min-w-0">
+                        <h4 className="text-sm font-semibold text-stone-850 dark:text-white">Obtener ProgramBI Premium</h4>
+                      </div>
+                      <button
+                        onClick={() => { setSettingsOpen(false); router.push('/comunidad/planes'); }}
+                        className="border border-stone-250 dark:border-neutral-700 hover:bg-stone-50 dark:hover:bg-neutral-800 text-xs px-4 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer bg-transparent text-stone-750 dark:text-neutral-300"
+                      >
+                        Actualizar
+                      </button>
+                    </div>
+
+                    {/* Conectar Redes Row */}
+                    <div className="flex items-center gap-4 py-4 border-b border-stone-100 dark:border-neutral-800">
+                      <div className="w-8 h-8 rounded-full bg-stone-50 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+                        <Globe className="w-4 h-4 text-stone-500 dark:text-neutral-450" />
+                      </div>
+                      <div className="flex-grow min-w-0">
+                        <h4 className="text-sm font-semibold text-stone-850 dark:text-white">Vincular Redes Sociales</h4>
+                      </div>
+                      <button className="border border-stone-250 dark:border-neutral-700 hover:bg-stone-50 dark:hover:bg-neutral-800 text-xs px-4 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer bg-transparent text-stone-750 dark:text-neutral-300">
+                        Conectar
+                      </button>
+                    </div>
+
+                    {/* Idioma Row */}
+                    <div className="flex items-center gap-4 py-4 border-b border-stone-100 dark:border-neutral-800">
+                      <div className="flex-grow min-w-0">
+                        <h4 className="text-sm font-semibold text-stone-850 dark:text-white">Idioma</h4>
+                        <p className="text-xs text-stone-500 dark:text-neutral-450 mt-0.5">{currentLanguage === 'es' ? 'Español' : 'Inglés'}</p>
+                      </div>
+                      <button className="border border-stone-250 dark:border-neutral-700 hover:bg-stone-50 dark:hover:bg-neutral-800 text-xs px-4 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer bg-transparent text-stone-750 dark:text-neutral-300">
+                        Cambiar
+                      </button>
+                    </div>
+
+                    {/* Año de nacimiento Row */}
+                    <div className="py-4">
+                      <h4 className="text-sm font-semibold text-stone-850 dark:text-white">Año de nacimiento</h4>
+                      <p className="text-xs text-stone-500 dark:text-neutral-450 mt-1">2007</p>
+                    </div>
+
+                    {/* Banner at bottom */}
+                    <div className="mt-auto bg-stone-950 dark:bg-black rounded-2xl p-4 flex items-center justify-between border border-stone-850/80">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                          <Image
+                            src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
+                            alt="ProgramBI"
+                            width={20}
+                            height={20}
+                            className="object-contain invert brightness-200"
+                          />
+                        </div>
+                        <div className="min-w-0">
+                          <h5 className="text-[13px] font-black text-white">ProgramBI Premium</h5>
+                          <p className="text-[10px] text-stone-400 mt-0.5">Menos límites de consulta, más capacidades</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => { setSettingsOpen(false); router.push('/comunidad/planes'); }}
+                        className="bg-white hover:bg-stone-100 text-stone-950 text-xs font-black px-4 py-2 rounded-full shrink-0 cursor-pointer border-0 transition-all active:scale-[0.98]"
+                      >
+                        Probar gratis
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {activeSettingsTab === 'apariencia' && (
+                  <div className="flex-grow flex flex-col">
+                    <h3 className="text-xl font-black text-stone-900 dark:text-white mb-6">Apariencia</h3>
+                    <p className="text-sm text-stone-500 dark:text-neutral-400 mb-6">Personaliza el aspecto visual del Mentor IA en tu pantalla.</p>
+                    
+                    <div className="grid grid-cols-3 gap-4">
+                      {[
+                        { key: 'claro' as const, label: 'Claro', icon: Sun, desc: 'Fondo brillante de alta legibilidad' },
+                        { key: 'oscuro' as const, label: 'Oscuro', icon: Moon, desc: 'Fondo negro puro para evitar fatiga' },
+                        { key: 'sistema' as const, label: 'Sistema', icon: Monitor, desc: 'Adapta según tu sistema operativo' },
+                      ].map(({ key, label, icon: Ic, desc }) => (
+                        <button
+                          key={key}
+                          onClick={() => handleThemeChange(key)}
+                          className={cn(
+                            "p-5 rounded-2xl border text-left cursor-pointer transition-all flex flex-col gap-3 bg-transparent",
+                            currentTheme === key
+                              ? "border-blue-500 bg-blue-500/5 text-stone-900 dark:text-white font-medium"
+                              : "border-stone-200 dark:border-neutral-800 text-stone-600 dark:text-neutral-450 hover:border-stone-300 dark:hover:border-neutral-700"
+                          )}
+                        >
+                          <Ic className={cn("w-5 h-5", currentTheme === key ? "text-blue-500" : "text-stone-400")} />
+                          <div>
+                            <h4 className="text-sm font-black">{label}</h4>
+                            <p className="text-[11px] text-stone-500 dark:text-neutral-450 mt-1 leading-normal">{desc}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {activeSettingsTab === 'comportamiento' && (
+                  <div className="flex-grow flex flex-col">
+                    <h3 className="text-xl font-black text-stone-900 dark:text-white mb-6">Comportamiento</h3>
+                    <p className="text-sm text-stone-500 dark:text-neutral-400 mb-6">Ajusta cómo interactúa y responde el Mentor IA en las conversaciones.</p>
+                    
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-4 rounded-xl border border-stone-200 dark:border-neutral-800">
+                        <div>
+                          <h4 className="text-sm font-semibold">Razonamiento profundo</h4>
+                          <p className="text-xs text-stone-500 mt-0.5">Permite explicaciones matemáticas y lógicas paso a paso.</p>
+                        </div>
+                        <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-blue-600" />
+                      </div>
+                      <div className="flex items-center justify-between p-4 rounded-xl border border-stone-200 dark:border-neutral-800">
+                        <div>
+                          <h4 className="text-sm font-semibold">Auto-completado de código</h4>
+                          <p className="text-xs text-stone-500 mt-0.5">Sugiere bloques de SQL, Python o DAX mientras escribes.</p>
+                        </div>
+                        <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-blue-600" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeSettingsTab === 'customize' && (
+                  <div className="flex-grow flex flex-col">
+                    <h3 className="text-xl font-black text-stone-900 dark:text-white mb-6">Customize</h3>
+                    <p className="text-sm text-stone-500 dark:text-neutral-400 mb-6">Instrucciones personalizadas y sistema de prompts predeterminados.</p>
+                    
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-neutral-400 mb-2">Instrucciones para el Mentor</label>
+                        <textarea
+                          rows={4}
+                          placeholder="Ej. 'Siempre responde con explicaciones cortas y código en Python listo para copiar...'"
+                          className="w-full rounded-xl border border-stone-200 dark:border-neutral-850 bg-transparent p-3 text-sm text-stone-800 dark:text-white outline-none focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeSettingsTab === 'datos' && (
+                  <div className="flex-grow flex flex-col">
+                    <h3 className="text-xl font-black text-stone-900 dark:text-white mb-6">Controles de datos</h3>
+                    <p className="text-sm text-stone-500 dark:text-neutral-400 mb-6">Administra tu historial de chats, exportaciones y seguridad.</p>
+                    
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between p-4 rounded-xl border border-stone-200 dark:border-neutral-800">
+                        <div>
+                          <h4 className="text-sm font-semibold">Historial de chat y entrenamiento</h4>
+                          <p className="text-xs text-stone-500 mt-0.5">Guarda los nuevos chats del mentor en este dispositivo.</p>
+                        </div>
+                        <input type="checkbox" defaultChecked className="w-4 h-4 rounded text-blue-600" />
+                      </div>
+                      <div className="flex items-center justify-between p-4 rounded-xl border border-stone-200 dark:border-neutral-800">
+                        <div>
+                          <h4 className="text-sm font-semibold">Exportar datos</h4>
+                          <p className="text-xs text-stone-500 mt-0.5">Descarga un archivo JSON con todo tu historial de chats.</p>
+                        </div>
+                        <button className="border border-stone-250 dark:border-neutral-700 hover:bg-stone-50 dark:hover:bg-neutral-800 text-xs px-4 py-1.5 rounded-full font-bold cursor-pointer bg-transparent text-stone-750 dark:text-neutral-300">
+                          Exportar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

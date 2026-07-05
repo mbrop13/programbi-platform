@@ -149,12 +149,15 @@ export default function ComunidadPortal() {
     }
   }, [isOrgManager, activeTab, router]);
 
-  // Open settings modal when navigating to /comunidad/configuracion
+  // Open settings modal when navigating to /comunidad/configuracion, or redirect AI to /ai
   useEffect(() => {
     if (activeTab === "configuracion") {
       setShowSettingsModal(true);
     }
-  }, [activeTab]);
+    if (activeTab === "ai") {
+      router.replace("/ai");
+    }
+  }, [activeTab, router]);
 
   const hasSubscription = !!userProfile?.subscription_plan;
   const canAccessFull = isAdmin || hasSubscription;
@@ -169,7 +172,11 @@ export default function ComunidadPortal() {
 
   const handleTabChange = (tabId: string) => {
     handleSelectCourse(null);
-    router.push(`/comunidad/${tabId}`);
+    if (tabId === "ai") {
+      router.push("/ai");
+    } else {
+      router.push(`/comunidad/${tabId}`);
+    }
   };
 
   return (
