@@ -383,11 +383,11 @@ function ChatShellInner({
       <motion.aside
         initial={false}
         animate={{
-          width: sidebarOpen ? 240 : isMobile ? 0 : 64,
+          width: sidebarOpen ? 280 : isMobile ? 0 : 64,
           opacity: sidebarOpen || !isMobile ? 1 : 0,
         }}
         transition={{ duration: 0.25, ease: "easeInOut" }}
-        className="absolute z-50 h-full shrink-0 overflow-hidden border-r border-border md:relative"
+        className="absolute z-50 h-full shrink-0 overflow-hidden border-r border-stone-100 dark:border-neutral-800 md:relative"
       >
         {sidebarOpen ? (
           <ConversationSidebar
