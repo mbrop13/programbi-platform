@@ -130,7 +130,7 @@ BEGIN
       WHEN content IS NULL OR content = '' THEN '[]'::jsonb
       ELSE jsonb_build_array(jsonb_build_object('type','text','text',content))
     END,
-    model,
+    null::text,
     created_at
   FROM ai_messages
   ON CONFLICT (id) DO NOTHING;
