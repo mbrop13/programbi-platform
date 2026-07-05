@@ -19,11 +19,6 @@ export default async function ComunidadPage() {
   const hasSubscription = !!profile?.subscription_plan;
   const canAccessFull = isAdmin || hasSubscription;
 
-  // If the user has access to the community portal (via courses or subscription), send them to the dashboard
-  if (canAccessFull || hasCourses) {
-    redirect("/comunidad/inicio");
-  }
-
   // If they don't have access, show them the Marketing Subscription Gate page
   return (
     <div className="bg-white min-h-screen">

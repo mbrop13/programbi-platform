@@ -15,6 +15,7 @@ import { Landing } from "./Landing";
 import { ChatError } from "./ChatError";
 import { CanvasProvider, useCanvas } from "./canvas/CanvasStore";
 import { CanvasPanel } from "./canvas/CanvasPanel";
+import SubscriptionModal from "../SubscriptionModal";
 import { getModel, DEFAULT_MODEL_ID } from "@/lib/ai/models";
 import {
   getChats,
@@ -35,6 +36,7 @@ interface ChatShellProps {
   subscriptionPlan?: string | null;
   isAdmin?: boolean;
   initialChatId?: string | null;
+  isGuest?: boolean;
 }
 
 export default function ChatShell({
@@ -44,8 +46,9 @@ export default function ChatShell({
   subscriptionPlan,
   isAdmin = false,
   initialChatId = null,
+  isGuest = false,
 }: ChatShellProps) {
-  const isPremium = !isRestricted;
+  const isPremium = !isRestricted && !isGuest;
 
   // Vista restringida (freemium upsell) — no necesita Canvas
   if (isRestricted) {
@@ -82,6 +85,7 @@ export default function ChatShell({
         subscriptionPlan={subscriptionPlan}
         isAdmin={isAdmin}
         initialChatId={initialChatId}
+        isGuest={isGuest}
       />
     </CanvasProvider>
   );
@@ -94,6 +98,7 @@ function ChatShellInner({
   subscriptionPlan,
   isAdmin = false,
   initialChatId = null,
+  isGuest = false,
 }: {
   isPremium: boolean;
   userName?: string;
@@ -101,11 +106,13 @@ function ChatShellInner({
   subscriptionPlan?: string | null;
   isAdmin?: boolean;
   initialChatId?: string | null;
+  isGuest?: boolean;
 }) {
   const canvas = useCanvas();
   const router = useRouter();
 
   const [canvasModeActive, setCanvasModeActive] = useState(true);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // ─── Estado ───
   const [chats, setChats] = useState<AiChat[]>([]);
@@ -356,6 +363,10 @@ function ChatShellInner({
   // ─── Envío ───
   const submit = useCallback(
     (overrideText?: string) => {
+      if (isGuest) {
+        setShowUpgradeModal(true);
+        return;
+      }
       const text = (overrideText ?? input).trim();
       if (!text || isStreaming) return;
       setErrorMsg(null);
@@ -388,7 +399,7 @@ function ChatShellInner({
       setInput("");
       setAttachments([]);
     },
-    [input, attachments, isStreaming, sendMessage]
+    [input, attachments, isStreaming, sendMessage, isGuest]
   );
 
   // ─── Resizer del split (desktop) ───
@@ -509,6 +520,7 @@ function ChatShellInner({
                   onSelectModel={setSelectedModel}
                   canvasModeActive={canvasModeActive}
                   onCanvasModeChange={setCanvasModeActive}
+                  placeholder={isGuest ? "Suscríbete a un plan Premium para chatear con el Mentor IA" : undefined}
                 />
               </Landing>
             ) : (
@@ -544,6 +556,7 @@ function ChatShellInner({
                       onSelectModel={setSelectedModel}
                       canvasModeActive={canvasModeActive}
                       onCanvasModeChange={setCanvasModeActive}
+                      placeholder={isGuest ? "Suscríbete a un plan Premium para chatear con el Mentor IA" : undefined}
                     />
                   </div>
                 </div>
@@ -589,6 +602,12 @@ function ChatShellInner({
           </motion.div>
         )}
       </AnimatePresence>
+
+      <SubscriptionModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        currentPlanId={subscriptionPlan}
+      />
 
     </div>
   );

@@ -22,11 +22,7 @@ export default async function AiChatPage({ params }: PageProps) {
   const hasCourses = enrollments && enrollments.length > 0;
   const hasSubscription = !!profile?.subscription_plan;
   const canAccessFull = isAdmin || hasSubscription;
-
-  // If no courses and no subscription, they are not allowed to enter the portal
-  if (!canAccessFull && !hasCourses) {
-    redirect("/comunidad");
-  }
+  const isGuest = !canAccessFull && !hasCourses;
 
   const restrictedView = !canAccessFull && hasCourses;
 
@@ -39,6 +35,7 @@ export default async function AiChatPage({ params }: PageProps) {
         subscriptionPlan={profile.subscription_plan}
         isAdmin={isAdmin}
         initialChatId={id}
+        isGuest={isGuest}
       />
     </div>
   );

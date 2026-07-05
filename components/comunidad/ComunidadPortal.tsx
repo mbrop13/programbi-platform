@@ -163,10 +163,10 @@ export default function ComunidadPortal() {
   const canAccessFull = isAdmin || hasSubscription;
 
   useEffect(() => {
-    if (!isCheckingPlan && !canAccessFull && !hasCourses) {
+    if (!authLoading && !isCheckingPlan && !userProfile) {
       router.push("/comunidad");
     }
-  }, [isCheckingPlan, canAccessFull, hasCourses, router]);
+  }, [authLoading, isCheckingPlan, userProfile, router]);
 
   const restrictedView = !canAccessFull && hasCourses && activeTab !== "cursos";
 

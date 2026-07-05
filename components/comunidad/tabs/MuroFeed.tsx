@@ -163,6 +163,9 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
   }
 
   const greeting = getGreeting();
+  const hasSubscription = !!userProfile?.subscription_plan;
+  const hasCourses = !!(dashStats?.courseProgress && dashStats.courseProgress.length > 0);
+  const isGuest = !isAdmin && !hasSubscription && !hasCourses;
 
   return (
     <div className="space-y-6 w-full max-w-[1400px] mx-auto">
@@ -277,15 +280,21 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
             </div>
           ) : (
             <button
-              onClick={() => setIsQuestionPost(true)}
+              onClick={() => {
+                if (isGuest) {
+                  router.push("/comunidad");
+                } else {
+                  setIsQuestionPost(true);
+                }
+              }}
               disabled={isRestricted}
-              className="w-full bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-brand-blue/20 transition-all text-left flex items-center gap-4 group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-brand-blue/20 transition-all text-left flex items-center gap-4 group disabled:opacity-50"
             >
               <div className="w-11 h-11 rounded-xl bg-gray-100 group-hover:bg-brand-blue/10 text-gray-400 group-hover:text-brand-blue flex items-center justify-center transition-colors shrink-0">
                 <MessageCircle className="w-5 h-5" />
               </div>
               <span className="text-gray-400 group-hover:text-gray-600 text-sm font-medium transition-colors">
-                ¿Tienes una pregunta? Compártela con la comunidad...
+                {isGuest ? "Suscríbete a un plan Premium para publicar en la comunidad" : "¿Tienes una pregunta? Compártela con la comunidad..."}
               </span>
             </button>
           )}
@@ -368,10 +377,14 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                 >
                   <PostCard
                     post={post}
+                    isGuest={isGuest}
                     onLike={() => handleLike(post.id)}
                     onSubmitComment={(text: string) =>
                       handleCreateComment(post.id, text)
                     }
+                    onUpgradeClick={() => {
+                      router.push("/comunidad");
+                    }}
                   />
                 </motion.div>
               ))}
@@ -658,7 +671,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
 
 
 /* ── Post Card (unchanged logic) ── */
-function PostCard({ post, onLike, onSubmitComment }: any) {
+function PostCard({ post, isGuest, onLike, onSubmitComment, onUpgradeClick }: any) {
   const isQuestion = post.channel_id === "support";
   const authorName = post.author?.full_name || "Estudiante";
   const timeStr = getRelativeTime(post.created_at);
@@ -724,12 +737,36 @@ function PostCard({ post, onLike, onSubmitComment }: any) {
       </div>
 
       {/* Content */}
-      <p className="text-gray-800 text-[15px] leading-relaxed whitespace-pre-wrap mb-5">
-        {post.content}
-      </p>
+      {isGuest && post.author?.role === "admin" && !/gratis|gratuita/i.test(post.content || "") ? (
+        <div className="relative mb-5">
+          <p className="text-gray-400 text-[15px] leading-relaxed whitespace-pre-wrap select-none filter blur-[5px] pointer-events-none">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ut lorem quis diam elementum elementum. Nullam luctus finibus elit eget elementum. Duis id arcu id urna finibus porta.
+          </p>
+          <div className="absolute inset-0 bg-white/40 flex flex-col items-center justify-center p-4 text-center z-10">
+            <Crown className="w-7 h-7 text-amber-500 mb-1 animate-bounce" />
+            <h5 className="text-xs font-black text-gray-900 uppercase tracking-wide">
+              Publicación Premium Exclusiva
+            </h5>
+            <p className="text-[10px] text-gray-505 font-medium mt-1 mb-2.5 max-w-[260px]">
+              Esta publicación del administrador es exclusiva para alumnos premium activos.
+            </p>
+            <button
+              onClick={onUpgradeClick}
+              className="bg-brand-blue hover:bg-blue-600 text-white text-[10px] font-black px-3.5 py-1.5 rounded-lg shadow-sm border-0 cursor-pointer transition-all active:scale-95"
+            >
+              Ver Planes Premium
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="text-gray-800 text-[15px] leading-relaxed whitespace-pre-wrap mb-5">
+          {post.content}
+        </p>
+      )}
 
       {/* Actions */}
-      <div className="flex items-center gap-1 pt-3 border-t border-gray-100">
+      {!(isGuest && post.author?.role === "admin" && !/gratis|gratuita/i.test(post.content || "")) && (
+        <div className="flex items-center gap-1 pt-3 border-t border-gray-100">
         <button
           onClick={() => {
             setIsLiked(!isLiked);
@@ -754,11 +791,11 @@ function PostCard({ post, onLike, onSubmitComment }: any) {
         <button className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all">
           <Bookmark className="w-[18px] h-[18px]" />
         </button>
-        <div className="flex-1" />
         <button className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all">
           <Share2 className="w-[18px] h-[18px]" />
         </button>
       </div>
+      )}
 
       {/* Comments */}
       <AnimatePresence>
