@@ -451,14 +451,14 @@ export function ConversationSidebar({
             >
               <div className="relative">
                 {/* Main menu */}
-                <div className="bg-white dark:bg-neutral-900 border border-stone-200 dark:border-neutral-700 rounded-2xl shadow-lg shadow-stone-200/50 dark:shadow-black/40 p-1.5 flex flex-col">
+                <div className="bg-white border border-stone-200 rounded-2xl shadow-lg p-1.5 flex flex-col">
                   {/* Email header */}
                   <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl">
-                    <User className="h-4 w-4 text-stone-400 dark:text-neutral-500 shrink-0" />
-                    <span className="truncate text-[13px] font-medium text-stone-600 dark:text-neutral-300">{userEmail || displayName}</span>
+                    <User className="h-4 w-4 text-stone-400 shrink-0" />
+                    <span className="truncate text-[13px] font-medium text-stone-650">{userEmail || displayName}</span>
                   </div>
 
-                  <div className="h-px bg-stone-100 dark:bg-neutral-800 mx-2 my-1" />
+                  <div className="h-px bg-stone-100 mx-2 my-1" />
 
                   {/* Todos los ajustes */}
                   <button
@@ -466,32 +466,32 @@ export function ConversationSidebar({
                       setProfileMenuOpen(false);
                       setSettingsOpen(true);
                     }}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 dark:text-neutral-300 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
                   >
-                    <Settings className="h-4 w-4 text-stone-500 dark:text-neutral-500 shrink-0" />
-                    <span className="flex-1 font-medium">Todos los ajustes</span>
-                    <span className="text-[11px] text-stone-400 dark:text-neutral-600 font-mono">⇧^,</span>
+                    <Settings className="h-4 w-4 text-stone-500 shrink-0" />
+                    <span className="flex-1 font-semibold text-left">Todos los ajustes</span>
+                    <span className="text-[11px] text-stone-400 font-mono">⇧^,</span>
                   </button>
 
                   {/* Actualizar plan */}
                   <Link
                     href="/comunidad/planes"
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 dark:text-neutral-300 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-colors no-underline cursor-pointer"
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors no-underline cursor-pointer"
                   >
-                    <ArrowUpCircle className="h-4 w-4 text-stone-500 dark:text-neutral-500 shrink-0" />
-                    <span className="font-medium">Actualizar plan</span>
+                    <ArrowUpCircle className="h-4 w-4 text-stone-500 shrink-0" />
+                    <span className="font-semibold">Actualizar plan</span>
                   </Link>
 
                   {/* Instalar apps */}
                   <button
                     onClick={() => alert("La aplicación de escritorio se encuentra en desarrollo.")}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 dark:text-neutral-300 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
                   >
-                    <Download className="h-4 w-4 text-stone-500 dark:text-neutral-500 shrink-0" />
-                    <span className="font-medium">Instalar apps</span>
+                    <Download className="h-4 w-4 text-stone-500 shrink-0" />
+                    <span className="font-semibold">Instalar apps</span>
                   </button>
 
-                  <div className="h-px bg-stone-100 dark:bg-neutral-800 mx-2 my-1" />
+                  <div className="h-px bg-stone-100 mx-2 my-1" />
 
                   {/* Apariencia - with flyout submenu */}
                   <div
@@ -504,16 +504,16 @@ export function ConversationSidebar({
                       className={cn(
                         "flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] w-full text-left transition-colors cursor-pointer border-0 bg-transparent",
                         activeSubmenu === 'apariencia'
-                          ? "bg-stone-50 dark:bg-neutral-800 text-stone-900 dark:text-white"
-                          : "text-stone-700 dark:text-neutral-300 hover:bg-stone-50 dark:hover:bg-neutral-800"
+                          ? "bg-stone-200/40 text-stone-900"
+                          : "text-stone-700 hover:bg-stone-200/35 hover:text-stone-900"
                       )}
                     >
-                      <Sun className="h-4 w-4 text-stone-500 dark:text-neutral-500 shrink-0" />
+                      <Sun className="h-4 w-4 text-stone-500 shrink-0" />
                       <div className="flex-1 flex flex-col items-start min-w-0">
-                        <span className="font-medium">Apariencia</span>
-                        <span className="text-[11px] text-stone-400 dark:text-neutral-500 capitalize">{currentTheme}</span>
+                        <span className="font-semibold">Apariencia</span>
+                        <span className="text-[11px] text-stone-400 capitalize">{currentTheme}</span>
                       </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-stone-400 dark:text-neutral-500 shrink-0" />
+                      <ChevronRight className="h-3.5 w-3.5 text-stone-400 shrink-0" />
                     </button>
 
                     {/* Flyout submenu - Apariencia */}
@@ -524,7 +524,7 @@ export function ConversationSidebar({
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -4 }}
                           transition={{ duration: 0.12 }}
-                          className="absolute left-full top-0 ml-1.5 w-40 bg-white dark:bg-neutral-900 border border-stone-200 dark:border-neutral-700 rounded-xl shadow-lg shadow-stone-200/40 dark:shadow-black/40 p-1 flex flex-col z-50"
+                          className="absolute left-full top-0 ml-1.5 w-40 bg-white border border-stone-200 rounded-xl shadow-lg p-1 flex flex-col z-50"
                           onClick={(e) => e.stopPropagation()}
                         >
                           {([
@@ -538,13 +538,13 @@ export function ConversationSidebar({
                               className={cn(
                                 "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] transition-colors border-0 bg-transparent text-left w-full cursor-pointer",
                                 currentTheme === key
-                                  ? "text-stone-900 dark:text-white font-medium"
-                                  : "text-stone-600 dark:text-neutral-400 hover:bg-stone-50 dark:hover:bg-neutral-800"
+                                  ? "text-stone-900 font-bold"
+                                  : "text-stone-605 hover:bg-stone-200/35 hover:text-stone-900"
                               )}
                             >
-                              <Ic className="h-4 w-4 text-stone-500 dark:text-neutral-500 shrink-0" />
+                              <Ic className="h-4 w-4 text-stone-500 shrink-0" />
                               <span className="flex-1">{label}</span>
-                              {currentTheme === key && <Check className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />}
+                              {currentTheme === key && <Check className="h-4 w-4 text-blue-600 shrink-0" />}
                             </button>
                           ))}
                         </motion.div>
@@ -563,16 +563,16 @@ export function ConversationSidebar({
                       className={cn(
                         "flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] w-full text-left transition-colors cursor-pointer border-0 bg-transparent",
                         activeSubmenu === 'idioma'
-                          ? "bg-stone-50 dark:bg-neutral-800 text-stone-900 dark:text-white"
-                          : "text-stone-700 dark:text-neutral-300 hover:bg-stone-50 dark:hover:bg-neutral-800"
+                          ? "bg-stone-200/40 text-stone-900"
+                          : "text-stone-700 hover:bg-stone-200/35 hover:text-stone-900"
                       )}
                     >
-                      <Globe className="h-4 w-4 text-stone-500 dark:text-neutral-500 shrink-0" />
+                      <Globe className="h-4 w-4 text-stone-500 shrink-0" />
                       <div className="flex-1 flex flex-col items-start min-w-0">
-                        <span className="font-medium">Idioma</span>
-                        <span className="text-[11px] text-stone-400 dark:text-neutral-500">{currentLanguage === 'es' ? 'Español' : 'English'}</span>
+                        <span className="font-semibold">Idioma</span>
+                        <span className="text-[11px] text-stone-400">{currentLanguage === 'es' ? 'Español' : 'English'}</span>
                       </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-stone-400 dark:text-neutral-500 shrink-0" />
+                      <ChevronRight className="h-3.5 w-3.5 text-stone-400 shrink-0" />
                     </button>
 
                     {/* Flyout submenu - Idioma */}
@@ -583,7 +583,7 @@ export function ConversationSidebar({
                           animate={{ opacity: 1, x: 0 }}
                           exit={{ opacity: 0, x: -4 }}
                           transition={{ duration: 0.12 }}
-                          className="absolute left-full top-0 ml-1.5 w-40 bg-white dark:bg-neutral-900 border border-stone-200 dark:border-neutral-700 rounded-xl shadow-lg shadow-stone-200/40 dark:shadow-black/40 p-1 flex flex-col z-50"
+                          className="absolute left-full top-0 ml-1.5 w-40 bg-white border border-stone-200 rounded-xl shadow-lg p-1 flex flex-col z-50"
                           onClick={(e) => e.stopPropagation()}
                         >
                           {([
@@ -596,12 +596,12 @@ export function ConversationSidebar({
                               className={cn(
                                 "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] transition-colors border-0 bg-transparent text-left w-full cursor-pointer",
                                 currentLanguage === key
-                                  ? "text-stone-900 dark:text-white font-medium"
-                                  : "text-stone-600 dark:text-neutral-400 hover:bg-stone-50 dark:hover:bg-neutral-800"
+                                  ? "text-stone-900 font-bold"
+                                  : "text-stone-605 hover:bg-stone-200/35 hover:text-stone-900"
                               )}
                             >
                               <span className="flex-1">{label}</span>
-                              {currentLanguage === key && <Check className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />}
+                              {currentLanguage === key && <Check className="h-4 w-4 text-blue-600 shrink-0" />}
                             </button>
                           ))}
                         </motion.div>
@@ -612,14 +612,14 @@ export function ConversationSidebar({
                   {/* Ayuda */}
                   <Link
                     href="/faq"
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 dark:text-neutral-300 hover:bg-stone-50 dark:hover:bg-neutral-800 transition-colors no-underline cursor-pointer"
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors no-underline cursor-pointer"
                   >
-                    <HelpCircle className="h-4 w-4 text-stone-500 dark:text-neutral-500 shrink-0" />
-                    <span className="flex-1 font-medium">Ayuda</span>
-                    <ChevronRight className="h-3.5 w-3.5 text-stone-400 dark:text-neutral-500" />
+                    <HelpCircle className="h-4 w-4 text-stone-500 shrink-0" />
+                    <span className="flex-1 font-semibold">Ayuda</span>
+                    <ChevronRight className="h-3.5 w-3.5 text-stone-400" />
                   </Link>
 
-                  <div className="h-px bg-stone-100 dark:bg-neutral-800 mx-2 my-1" />
+                  <div className="h-px bg-stone-100 mx-2 my-1" />
 
                   {/* Cerrar sesión */}
                   <button
@@ -628,10 +628,10 @@ export function ConversationSidebar({
                       await supabase.auth.signOut();
                       window.location.reload();
                     }}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 dark:text-neutral-300 hover:bg-red-50 dark:hover:bg-red-950/30 hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-red-50 hover:text-red-650 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
                   >
-                    <LogOut className="h-4 w-4 text-stone-400 dark:text-neutral-500 shrink-0" />
-                    <span className="font-medium">Cerrar sesión</span>
+                    <LogOut className="h-4 w-4 text-stone-400 shrink-0" />
+                    <span className="font-semibold">Cerrar sesión</span>
                   </button>
                 </div>
               </div>

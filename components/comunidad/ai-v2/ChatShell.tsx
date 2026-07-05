@@ -383,12 +383,12 @@ function ChatShellInner({
       <motion.aside
         initial={false}
         animate={{
-          width: sidebarOpen ? 240 : isMobile ? 0 : 64,
+          width: sidebarOpen ? 200 : isMobile ? 0 : 64,
           opacity: sidebarOpen || !isMobile ? 1 : 0,
         }}
         transition={{ duration: 0.25, ease: "easeInOut" }}
         className={cn(
-          "absolute z-50 h-full shrink-0 border-r border-stone-100 dark:border-neutral-800 md:relative",
+          "absolute z-50 h-full shrink-0 md:relative",
           sidebarOpen ? "overflow-visible" : "overflow-hidden"
         )}
       >
