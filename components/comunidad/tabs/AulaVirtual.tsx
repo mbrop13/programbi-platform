@@ -102,8 +102,8 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
   const [codeOutput, setCodeOutput] = useState("");
   const [isExecuting, setIsExecuting] = useState(false);
   const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
-
-  // Metrics calculations
+  const [homeTab, setHomeTab] = useState<'syllabus' | 'files' | 'faq'>('syllabus');
+  
   const totalLessons = modules.reduce((sum, m) => sum + m.lessons.length, 0);
   const progress = totalLessons > 0 ? Math.round((completedLessons.size / totalLessons) * 100) : 0;
   const videoId = selectedLesson ? extractYouTubeId(selectedLesson.video_url) : null;
@@ -659,213 +659,440 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
           <div className="flex-1 min-h-0 overflow-hidden relative">
             {!selectedLesson ? (
               /* ── COURSE HOME / LANDING VIEW (Inicio del Curso) ── */
-              <div className="flex flex-col h-full bg-white overflow-y-auto no-scrollbar">
-                {/* Course Home Header Navigation */}
-                <header className="flex-none h-[64px] bg-white flex items-center justify-between px-6 border-b border-gray-100">
-                  <div className="flex items-center gap-4 min-w-0">
-                    <button
-                      onClick={onBack}
-                      className="w-8 h-8 rounded-xl bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-all border-0 cursor-pointer"
-                      title="Volver a los cursos"
-                    >
-                      <ChevronLeft className="w-5 h-5" />
-                    </button>
-                    <div className="flex items-center shrink-0">
-                      <img
-                        src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
-                        alt="ProgramBI Logo"
-                        className="h-7 w-auto object-contain cursor-pointer"
-                        onClick={onBack}
-                      />
-                    </div>
-                    <div className="h-6 w-px bg-gray-200 hidden sm:block" />
-                    <span className="text-xs font-black text-brand-blue uppercase tracking-widest hidden sm:inline">
-                      Inicio del Curso
-                    </span>
-                  </div>
-                  
-                  {/* Progress Badge */}
-                  <div className="flex items-center gap-3 bg-gray-50 border border-gray-200/80 rounded-2xl px-3.5 py-1.5 shadow-sm">
-                    <div className="text-right leading-none hidden md:block">
-                      <span className="text-[9px] text-gray-400 font-extrabold uppercase tracking-wider block">Progreso</span>
-                      <span className="text-[11px] font-black text-gray-900 mt-0.5 block">{completedLessons.size} de {totalLessons} clases</span>
-                    </div>
-                    <div className="bg-brand-blue text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
-                      {progress}%
-                    </div>
-                  </div>
-                </header>
+              (() => {
+                const totalMinutes = modules.flatMap(m => m.lessons).reduce((acc, curr) => acc + (curr.duration_minutes || 0), 0);
+                const formattedHours = Math.floor(totalMinutes / 60);
+                const remainingMinutes = totalMinutes % 60;
+                const timeString = formattedHours > 0 
+                  ? `${formattedHours}h ${remainingMinutes}m` 
+                  : `${totalMinutes} min`;
 
-                <div className="flex-1 w-full max-w-[1120px] mx-auto px-6 py-8">
-                  {/* Banner / Hero Section */}
-                  <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-950 text-white rounded-3xl p-8 relative overflow-hidden shadow-lg mb-8">
-                    {/* Decorative glowing background shape */}
-                    <div className="absolute top-0 right-0 w-80 h-80 bg-brand-blue/15 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
-                    <div className="absolute bottom-0 left-0 w-60 h-60 bg-violet-600/10 rounded-full filter blur-[60px] -ml-20 -mb-20 pointer-events-none" />
+                const allResources = modules
+                  .flatMap(m => m.lessons)
+                  .filter(l => l.resources && Array.isArray(l.resources))
+                  .flatMap(l => (l.resources || []).map((r: any) => ({ ...r, lessonTitle: l.title })));
+
+                const CertificateCard = () => (
+                  <div className="bg-white border border-gray-150/70 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
+                    <h2 className="text-sm font-black text-gray-905 uppercase tracking-wider mb-4 flex items-center gap-2">
+                      <Star className="w-4 h-4 text-brand-blue" /> Certificado del Curso
+                    </h2>
                     
-                    <div className="relative z-10 max-w-2xl">
-                      <span className="text-[10px] font-black tracking-widest uppercase text-brand-blue/90 bg-brand-blue/10 px-3 py-1 rounded-full border border-brand-blue/20">
-                        {readableCourseName}
-                      </span>
-                      <h1 className="text-2xl sm:text-3xl font-black mt-4 leading-tight">
-                        Bienvenido a tu Aula de Aprendizaje
-                      </h1>
-                      <p className="text-xs sm:text-sm text-slate-300 mt-3 leading-relaxed">
-                        Aprende paso a paso con lecciones en video interactivas, material de descarga y cuestionarios prácticos de código. Consulta a tu tutor de IA en cualquier momento para guiar tu aprendizaje.
-                      </p>
+                    {/* Certificate Mockup Preview */}
+                    <div className="relative aspect-[1.41] bg-slate-950 border border-slate-900 rounded-2xl p-4 flex flex-col items-center justify-between text-white overflow-hidden shadow-sm select-none mb-4">
+                      {/* Subtle gold lines or circles decor */}
+                      <div className="absolute inset-2 border border-amber-600/30 rounded-xl pointer-events-none" />
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full filter blur-[20px] pointer-events-none" />
+                      <div className="absolute bottom-0 left-0 w-24 h-24 bg-brand-blue/5 rounded-full filter blur-[20px] pointer-events-none" />
+
+                      <span className="text-[8px] text-amber-500 font-black tracking-widest uppercase mt-2">Certificado de Finalización</span>
                       
-                      <div className="flex flex-wrap gap-4 mt-6 items-center">
-                        <button
-                          onClick={() => {
-                            const firstLesson = modules.length > 0 && modules[0].lessons.length > 0 ? modules[0].lessons[0] : null;
-                            const next = modules.flatMap(m => m.lessons).find(l => !completedLessons.has(l.id)) || firstLesson;
-                            if (next) handleSelectLesson(next);
-                          }}
-                          className="px-6 py-3 bg-gradient-to-r from-brand-blue to-violet-650 hover:opacity-95 text-white font-bold rounded-xl shadow-lg transition-all active:scale-[0.98] cursor-pointer border-0 text-xs sm:text-sm"
-                        >
-                          {completedLessons.size > 0 ? "Continuar Aprendiendo" : "Empezar Curso"}
+                      <div className="text-center my-auto">
+                        <span className="text-[6px] text-slate-400 block font-semibold leading-none">Otorgado oficialmente a</span>
+                        <span className="text-[9px] font-black text-white block mt-1 leading-none uppercase truncate max-w-[120px]">Tu Nombre</span>
+                        <div className="w-10 h-px bg-amber-600/50 mx-auto my-1.5" />
+                        <span className="text-[6px] text-slate-400 block leading-none">Por completar la especialización en</span>
+                        <span className="text-[8px] font-bold text-amber-500/90 block mt-0.5 leading-tight truncate max-w-[140px]">{readableCourseName}</span>
+                      </div>
+
+                      <div className="w-full flex items-end justify-between px-2 pb-1 shrink-0">
+                        <div className="text-left">
+                          <span className="text-[4px] text-slate-500 block leading-none">Emisor</span>
+                          <span className="text-[6px] font-bold text-white block leading-none mt-0.5">ProgramBI</span>
+                        </div>
+                        {/* Circular Gold Seal mockup */}
+                        <div className="w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 border border-amber-300 flex items-center justify-center shadow-md">
+                          <Sparkles className="w-2.5 h-2.5 text-amber-900 animate-none" />
+                        </div>
+                      </div>
+
+                      {/* Lock Overlay if progress is < 100 */}
+                      {progress < 100 && (
+                        <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-[1px] flex flex-col items-center justify-center">
+                          <Lock className="w-6 h-6 text-amber-500 mb-1.5" />
+                          <span className="text-[9px] text-amber-500 font-black tracking-wider uppercase">{progress}% completado</span>
+                          <span className="text-[7px] text-slate-400 mt-1">Sigue estudiando para desbloquearlo</span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="space-y-3">
+                      {progress === 100 ? (
+                        <button className="w-full py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-95 text-white text-xs font-black rounded-xl shadow-md border-0 cursor-pointer flex items-center justify-center gap-1.5">
+                          <Download className="w-3.5 h-3.5" /> Descargar Certificado PDF
                         </button>
-                        
-                        <div className="text-xs text-slate-400 font-bold">
-                          {totalLessons} lecciones • {modules.length} módulos
-                        </div>
-                      </div>
+                      ) : (
+                        <>
+                          {/* Small progress indicator bar */}
+                          <div>
+                            <div className="flex justify-between text-[10px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">
+                              <span>Progreso</span>
+                              <span>{progress}%</span>
+                            </div>
+                            <div className="w-full h-1.5 bg-gray-150/70 rounded-full overflow-hidden">
+                              <div className="h-full bg-brand-blue transition-all duration-500" style={{ width: `${progress}%` }} />
+                            </div>
+                          </div>
+                          <p className="text-[10px] text-gray-400 leading-normal">
+                            Al completar el 100% de las clases, se emitirá un certificado digital firmado con código QR de verificación.
+                          </p>
+                        </>
+                      )}
                     </div>
                   </div>
+                );
 
-                  {/* Course Details Grid */}
-                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Left Column (curriculum & teachings) */}
-                    <div className="lg:col-span-2 space-y-8">
-                      {/* Teachings section */}
-                      <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
-                        <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                          <Sparkles className="w-4 h-4 text-brand-blue" /> Lo que aprenderás en este curso
-                        </h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs text-gray-600">
-                          {[
-                            "Dominio completo de los fundamentos prácticos del curso",
-                            "Metodologías ágiles de implementación y despliegue real",
-                            "Desarrollo lógico con herramientas de última generación",
-                            "Optimización de código y mejores prácticas de la industria",
-                          ].map((item, idx) => (
-                            <div key={idx} className="flex items-start gap-2">
-                              <div className="w-4 h-4 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
-                                <Check className="w-2.5 h-2.5 stroke-[3px]" />
-                              </div>
-                              <span className="leading-snug">{item}</span>
+                const InstructorCard = () => (
+                  <div className="bg-white border border-gray-150/70 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col">
+                    <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-4">
+                      Tu Instructor
+                    </h2>
+                    <div className="flex items-center gap-3.5 mb-3.5">
+                      <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-brand-blue to-indigo-650 text-white font-black text-xs flex items-center justify-center shrink-0 shadow-md shadow-brand-blue/15">
+                        MR
+                      </div>
+                      <div className="min-w-0">
+                        <span className="block font-black text-gray-900 text-xs leading-none">Manuel Ropero</span>
+                        <span className="block text-[9px] text-gray-400 font-extrabold mt-1 uppercase tracking-wider">Fundador & Mentor</span>
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-gray-500 leading-relaxed">
+                      Especialista en Business Intelligence, analítica avanzada de datos y desarrollo moderno. Apasionado por diseñar metodologías de enseñanza ágiles y proyectos aplicados al mercado profesional.
+                    </p>
+                  </div>
+                );
+
+                return (
+                  <div className="flex flex-col h-full bg-white overflow-y-auto no-scrollbar">
+                    {/* Course Home Header Navigation */}
+                    <header className="flex-none h-[64px] bg-white flex items-center justify-between px-6 border-b border-gray-100">
+                      <div className="flex items-center gap-4 min-w-0">
+                        <button
+                          onClick={onBack}
+                          className="w-8 h-8 rounded-xl bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-500 hover:text-gray-900 transition-all border-0 cursor-pointer"
+                          title="Volver a los cursos"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                        </button>
+                        <div className="flex items-center shrink-0">
+                          <img
+                            src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
+                            alt="ProgramBI Logo"
+                            className="h-7 w-auto object-contain cursor-pointer"
+                            onClick={onBack}
+                          />
+                        </div>
+                        <div className="h-6 w-px bg-gray-200 hidden sm:block" />
+                        <span className="text-xs font-black text-brand-blue uppercase tracking-widest hidden sm:inline">
+                          Inicio del Curso
+                        </span>
+                      </div>
+                      
+                      {/* Progress Badge */}
+                      <div className="flex items-center gap-3 bg-gray-50 border border-gray-200/80 rounded-2xl px-3.5 py-1.5 shadow-sm">
+                        <div className="text-right leading-none hidden md:block">
+                          <span className="text-[9px] text-gray-400 font-extrabold uppercase tracking-wider block">Progreso</span>
+                          <span className="text-[11px] font-black text-gray-900 mt-0.5 block">{completedLessons.size} de {totalLessons} clases</span>
+                        </div>
+                        <div className="bg-brand-blue text-white text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-sm">
+                          {progress}%
+                        </div>
+                      </div>
+                    </header>
+
+                    <div className="flex-1 w-full max-w-[1120px] mx-auto px-6 py-8">
+                      {/* Banner / Hero Section */}
+                      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-950 text-white rounded-3xl p-8 relative overflow-hidden shadow-lg mb-8">
+                        {/* Decorative glowing background shape */}
+                        <div className="absolute top-0 right-0 w-80 h-80 bg-brand-blue/15 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 w-60 h-60 bg-violet-600/10 rounded-full filter blur-[60px] -ml-20 -mb-20 pointer-events-none" />
+                        
+                        <div className="relative z-10 max-w-2xl">
+                          <span className="text-[10px] font-black tracking-widest uppercase text-brand-blue/90 bg-brand-blue/10 px-3 py-1 rounded-full border border-brand-blue/20">
+                            {readableCourseName}
+                          </span>
+                          <h1 className="text-2xl sm:text-3xl font-black mt-4 leading-tight">
+                            Bienvenido a tu Aula de Aprendizaje
+                          </h1>
+                          <p className="text-xs sm:text-sm text-slate-300 mt-3 leading-relaxed">
+                            Aprende paso a paso con lecciones en video interactivas, material de descarga y cuestionarios prácticos de código. Consulta a tu tutor de IA en cualquier momento para guiar tu aprendizaje.
+                          </p>
+                          
+                          <div className="flex flex-wrap gap-4 mt-6 items-center">
+                            <button
+                              onClick={() => {
+                                const firstLesson = modules.length > 0 && modules[0].lessons.length > 0 ? modules[0].lessons[0] : null;
+                                const next = modules.flatMap(m => m.lessons).find(l => !completedLessons.has(l.id)) || firstLesson;
+                                if (next) handleSelectLesson(next);
+                              }}
+                              className="px-6 py-3 bg-gradient-to-r from-brand-blue to-violet-650 hover:opacity-95 text-white font-bold rounded-xl shadow-lg transition-all active:scale-[0.98] cursor-pointer border-0 text-xs sm:text-sm"
+                            >
+                              {completedLessons.size > 0 ? "Continuar Aprendiendo" : "Empezar Curso"}
+                            </button>
+                            
+                            <div className="text-xs text-slate-400 font-bold">
+                              {totalLessons} lecciones • {modules.length} módulos
                             </div>
-                          ))}
+                          </div>
                         </div>
                       </div>
 
-                      {/* Content curriculum section */}
-                      <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
-                        <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-4">
-                          Plan de estudios completo
-                        </h2>
-                        <div className="space-y-4">
-                          {modules.map((mod) => (
-                            <div key={mod.name} className="border border-gray-100 rounded-2xl overflow-hidden">
-                              <div className="bg-gray-50/50 px-4 py-3 border-b border-gray-100 flex items-center justify-between">
-                                <div className="text-left">
-                                  <span className="text-[9px] font-black text-brand-blue uppercase tracking-widest block">Módulo {mod.order}</span>
-                                  <h3 className="text-xs font-black text-gray-900 mt-0.5 leading-snug">{mod.name}</h3>
+                      {/* Premium Stats Grid */}
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        {/* Stat 1: Completed Classes */}
+                        <div className="bg-white border border-gray-150/70 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                            <CheckCircle className="w-5 h-5 stroke-[2.5px]" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="block text-[10px] text-gray-400 font-extrabold uppercase tracking-wider leading-none">Clases Vistas</span>
+                            <span className="block text-base font-black text-gray-900 mt-1 leading-none">{completedLessons.size} / {totalLessons}</span>
+                          </div>
+                        </div>
+
+                        {/* Stat 2: Estimated Duration */}
+                        <div className="bg-white border border-gray-150/70 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-2xl bg-blue-50 text-brand-blue flex items-center justify-center shrink-0">
+                            <Clock className="w-5 h-5" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="block text-[10px] text-gray-400 font-extrabold uppercase tracking-wider leading-none">Duración Total</span>
+                            <span className="block text-base font-black text-gray-900 mt-1 leading-none">{timeString}</span>
+                          </div>
+                        </div>
+
+                        {/* Stat 3: Resources */}
+                        <div className="bg-white border border-gray-150/70 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                            <FileText className="w-5 h-5" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="block text-[10px] text-gray-400 font-extrabold uppercase tracking-wider leading-none">Recursos</span>
+                            <span className="block text-base font-black text-gray-900 mt-1 leading-none">{allResources.length} archivos</span>
+                          </div>
+                        </div>
+
+                        {/* Stat 4: IA Mentor */}
+                        <div className="bg-white border border-gray-150/70 rounded-3xl p-5 shadow-sm hover:shadow-md transition-all flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-2xl bg-violet-50 text-violet-650 flex items-center justify-center shrink-0">
+                            <Sparkles className="w-5 h-5 animate-none" />
+                          </div>
+                          <div className="min-w-0">
+                            <span className="block text-[10px] text-gray-400 font-extrabold uppercase tracking-wider leading-none">Estudio con IA</span>
+                            <span className="block text-base font-black text-gray-900 mt-1 leading-none">Mentor Activo</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Tabs Switcher for Course Home */}
+                      <div className="flex border-b border-gray-150/70 mb-6">
+                        <button
+                          onClick={() => setHomeTab('syllabus')}
+                          className={`pb-3 px-4 text-xs font-black uppercase tracking-wider border-b-2 transition-all border-0 bg-transparent cursor-pointer ${
+                            homeTab === 'syllabus'
+                              ? 'border-brand-blue text-brand-blue'
+                              : 'border-transparent text-gray-400 hover:text-gray-650'
+                          }`}
+                        >
+                          Plan de Estudios
+                        </button>
+                        <button
+                          onClick={() => setHomeTab('files')}
+                          className={`pb-3 px-4 text-xs font-black uppercase tracking-wider border-b-2 transition-all border-0 bg-transparent cursor-pointer flex items-center gap-1.5 ${
+                            homeTab === 'files'
+                              ? 'border-brand-blue text-brand-blue'
+                              : 'border-transparent text-gray-400 hover:text-gray-650'
+                          }`}
+                        >
+                          Recursos del Curso
+                          {allResources.length > 0 && (
+                            <span className="bg-blue-50 text-brand-blue text-[10px] font-bold px-1.5 py-0.5 rounded-full shrink-0">
+                              {allResources.length}
+                            </span>
+                          )}
+                        </button>
+                        <button
+                          onClick={() => setHomeTab('faq')}
+                          className={`pb-3 px-4 text-xs font-black uppercase tracking-wider border-b-2 transition-all border-0 bg-transparent cursor-pointer ${
+                            homeTab === 'faq'
+                              ? 'border-brand-blue text-brand-blue'
+                              : 'border-transparent text-gray-400 hover:text-gray-650'
+                          }`}
+                        >
+                          Mentoría y FAQs
+                        </button>
+                      </div>
+
+                      {/* Course Details Grid */}
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Left Column (curriculum & teachings) */}
+                        <div className="lg:col-span-2 space-y-8">
+                          
+                          {homeTab === 'syllabus' && (
+                            <>
+                              {/* Teachings section */}
+                              <div className="bg-white border border-gray-150/70 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
+                                <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                  <Sparkles className="w-4 h-4 text-brand-blue animate-none" /> Lo que aprenderás en este curso
+                                </h2>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 text-xs text-gray-600">
+                                  {[
+                                    "Dominio completo de los fundamentos prácticos del curso",
+                                    "Metodologías ágiles de implementación y despliegue real",
+                                    "Desarrollo lógico con herramientas de última generación",
+                                    "Optimización de código y mejores prácticas de la industria",
+                                  ].map((item, idx) => (
+                                    <div key={idx} className="flex items-start gap-2">
+                                      <div className="w-4 h-4 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
+                                        <Check className="w-2.5 h-2.5 stroke-[3px]" />
+                                      </div>
+                                      <span className="leading-snug">{item}</span>
+                                    </div>
+                                  ))}
                                 </div>
-                                <span className="text-[10px] text-gray-400 font-bold">{mod.lessons.length} clases</span>
                               </div>
-                              <div className="divide-y divide-gray-100/40 bg-white">
-                                {mod.lessons.map((lesson) => {
-                                  const isCompleted = completedLessons.has(lesson.id);
-                                  return (
-                                    <div
-                                      key={lesson.id}
-                                      onClick={() => handleSelectLesson(lesson)}
-                                      className="px-4 py-3 flex items-center justify-between hover:bg-slate-50/40 cursor-pointer transition-colors text-xs text-gray-700"
-                                    >
-                                      <div className="flex items-center gap-3">
-                                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
-                                          isCompleted ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-gray-300 bg-white text-transparent'
-                                        }`}>
-                                          <Check className="w-2.5 h-2.5 stroke-[3px]" />
+
+                              {/* Content curriculum section */}
+                              <div className="bg-white border border-gray-150/70 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
+                                <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-4">
+                                  Plan de estudios completo
+                                </h2>
+                                <div className="space-y-4">
+                                  {modules.map((mod) => (
+                                    <div key={mod.name} className="border border-gray-150/70 rounded-2xl overflow-hidden">
+                                      <div className="bg-gray-50/50 px-4 py-3 border-b border-gray-150/70 flex items-center justify-between">
+                                        <div className="text-left">
+                                          <span className="text-[9px] font-black text-brand-blue uppercase tracking-widest block">Módulo {mod.order}</span>
+                                          <h3 className="text-xs font-black text-gray-900 mt-0.5 leading-snug">{mod.name}</h3>
                                         </div>
-                                        <span className="font-medium">{lesson.lesson_order}. {lesson.title}</span>
+                                        <span className="text-[10px] text-gray-400 font-bold">{mod.lessons.length} clases</span>
                                       </div>
-                                      <span className="text-[10px] text-gray-400 font-bold shrink-0">{lesson.duration_minutes || 0} min</span>
+                                      <div className="divide-y divide-gray-100/40 bg-white">
+                                        {mod.lessons.map((lesson) => {
+                                          const isCompleted = completedLessons.has(lesson.id);
+                                          return (
+                                            <div
+                                              key={lesson.id}
+                                              onClick={() => handleSelectLesson(lesson)}
+                                              className="px-4 py-3 flex items-center justify-between hover:bg-slate-50/40 cursor-pointer transition-colors text-xs text-gray-700"
+                                            >
+                                              <div className="flex items-center gap-3">
+                                                <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                                                  isCompleted ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-gray-300 bg-white text-transparent'
+                                                }`}>
+                                                  <Check className="w-2.5 h-2.5 stroke-[3px]" />
+                                                </div>
+                                                <span className="font-medium">{lesson.lesson_order}. {lesson.title}</span>
+                                              </div>
+                                              <span className="text-[10px] text-gray-400 font-bold shrink-0">{lesson.duration_minutes || 0} min</span>
+                                            </div>
+                                          );
+                                        })}
+                                      </div>
                                     </div>
-                                  );
-                                })}
+                                  ))}
+                                </div>
+                              </div>
+                            </>
+                          )}
+
+                          {homeTab === 'files' && (
+                            <div className="bg-white border border-gray-150/70 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
+                              <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
+                                <FileText className="w-4 h-4 text-brand-blue" /> Todos los recursos descargables
+                              </h2>
+                              {allResources.length === 0 ? (
+                                <div className="text-center py-8 text-gray-400 border border-dashed border-gray-250/80 rounded-2xl">
+                                  <FileText className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                                  <p className="text-[10px] leading-relaxed px-4">No se han subido archivos de recursos complementarios para este curso.</p>
+                                </div>
+                              ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                  {allResources.map((res: any, idx: number) => {
+                                    const isExcel = res.name.endsWith('.xlsx') || res.name.endsWith('.xls') || res.name.endsWith('.csv');
+                                    const isPdf = res.name.endsWith('.pdf');
+                                    const isZip = res.name.endsWith('.zip') || res.name.endsWith('.rar');
+
+                                    return (
+                                      <a
+                                        key={idx}
+                                        href={res.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-start justify-between p-4 bg-gray-55 hover:bg-brand-blue/5 rounded-2xl border border-gray-150/70 hover:border-brand-blue/20 transition-all text-xs font-semibold text-gray-700 hover:text-brand-blue shadow-sm group text-left"
+                                      >
+                                        <div className="flex items-center gap-2.5 min-w-0">
+                                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
+                                            isExcel ? 'bg-emerald-50 text-emerald-600' :
+                                            isPdf ? 'bg-rose-50 text-rose-600' :
+                                            isZip ? 'bg-amber-50 text-amber-600' :
+                                            'bg-blue-50 text-brand-blue'
+                                          }`}>
+                                            <FileText className="w-4 h-4" />
+                                          </div>
+                                          <div className="min-w-0">
+                                            <span className="block truncate font-bold text-gray-800 group-hover:text-brand-blue leading-none">{res.name}</span>
+                                            <span className="block text-[8px] text-gray-400 font-extrabold mt-1.5 truncate">Clase: {res.lessonTitle}</span>
+                                          </div>
+                                        </div>
+                                        <Download className="w-4 h-4 text-gray-405 group-hover:text-brand-blue shrink-0 ml-1.5 mt-2" />
+                                      </a>
+                                    );
+                                  })}
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {homeTab === 'faq' && (
+                            <div className="bg-white border border-gray-150/70 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
+                              <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-5 flex items-center gap-2">
+                                <HelpCircle className="w-4 h-4 text-brand-blue" /> Preguntas Frecuentes y Soporte
+                              </h2>
+                              <div className="space-y-4">
+                                {[
+                                  {
+                                    q: "¿Cómo interactúo con mi tutor de IA?",
+                                    a: "En la barra lateral derecha de cualquier clase, dispones de una pestaña de Asistente de IA. Este asistente tiene el contexto en tiempo real del curso y la clase que estás viendo, por lo que responderá tus dudas de forma 100% personalizada."
+                                  },
+                                  {
+                                    q: "¿Cuándo se desbloquea el certificado?",
+                                    a: "El certificado de finalización oficial con validez internacional de ProgramBI se emitirá en formato PDF de manera automática tan pronto como completes el 100% de las clases del temario."
+                                  },
+                                  {
+                                    q: "¿Cómo descargo los archivos y recursos?",
+                                    a: "Cada lección cuenta con una pestaña opcional llamada 'Archivos' con sus archivos adjuntos. Si prefieres verlos todos juntos, puedes ir a la pestaña 'Recursos del Curso' aquí mismo en el Inicio del curso."
+                                  },
+                                  {
+                                    q: "¿Tengo soporte para resolver ejercicios de programación?",
+                                    a: "¡Claro! En las lecciones habilitadas como Super Clases cuentas con un playground Monaco integrado a tu izquierda para correr código. Si tu código falla, puedes pegarlo en el Asistente de IA de la clase y te guiará paso a paso."
+                                  }
+                                ].map((faq, idx) => (
+                                  <div key={idx} className="p-4 bg-gray-50/50 border border-gray-150/70 rounded-2xl">
+                                    <h4 className="text-xs font-black text-gray-950 leading-snug flex items-start gap-2">
+                                      <HelpCircle className="w-4 h-4 text-brand-blue shrink-0 mt-0.5" />
+                                      {faq.q}
+                                    </h4>
+                                    <p className="text-[10px] text-gray-500 mt-2 leading-relaxed pl-6">
+                                      {faq.a}
+                                    </p>
+                                  </div>
+                                ))}
                               </div>
                             </div>
-                          ))}
+                          )}
+                        </div>
+
+                        {/* Right Column Widgets */}
+                        <div className="space-y-6">
+                          <CertificateCard />
+                          <InstructorCard />
                         </div>
                       </div>
                     </div>
-
-                    {/* Right Column (centralized files/resources) */}
-                    <div className="space-y-6">
-                      <div className="bg-white border border-gray-100 rounded-3xl p-6 shadow-sm">
-                        <h2 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-brand-blue" /> Todos los recursos descargables
-                        </h2>
-                        
-                        {/* Collect all resources */}
-                        {(() => {
-                          const allResources = modules
-                            .flatMap(m => m.lessons)
-                            .filter(l => l.resources && Array.isArray(l.resources))
-                            .flatMap(l => (l.resources || []).map((r: any) => ({ ...r, lessonTitle: l.title })));
-
-                          if (allResources.length === 0) {
-                            return (
-                              <div className="text-center py-6 text-gray-400 border border-dashed border-gray-250/80 rounded-2xl">
-                                <FileText className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                                <p className="text-[10px] leading-relaxed px-4">No se han subido archivos de recursos complementarios para este curso.</p>
-                              </div>
-                            );
-                          }
-
-                          return (
-                            <div className="space-y-3">
-                              {allResources.map((res: any, idx: number) => {
-                                const isExcel = res.name.endsWith('.xlsx') || res.name.endsWith('.xls') || res.name.endsWith('.csv');
-                                const isPdf = res.name.endsWith('.pdf');
-                                const isZip = res.name.endsWith('.zip') || res.name.endsWith('.rar');
-
-                                return (
-                                  <a
-                                    key={idx}
-                                    href={res.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-start justify-between p-3 bg-gray-50 hover:bg-brand-blue/5 rounded-2xl border border-gray-200/60 hover:border-brand-blue/20 transition-all text-xs font-semibold text-gray-700 hover:text-brand-blue shadow-sm group text-left"
-                                  >
-                                    <div className="flex items-center gap-2.5 min-w-0">
-                                      <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
-                                        isExcel ? 'bg-emerald-50 text-emerald-600' :
-                                        isPdf ? 'bg-rose-50 text-rose-600' :
-                                        isZip ? 'bg-amber-50 text-amber-600' :
-                                        'bg-blue-50 text-brand-blue'
-                                      }`}>
-                                        <FileText className="w-4 h-4" />
-                                      </div>
-                                      <div className="min-w-0">
-                                        <span className="block truncate font-bold text-gray-800 group-hover:text-brand-blue leading-none">{res.name}</span>
-                                        <span className="block text-[8px] text-gray-400 font-extrabold mt-1 truncate">Clase: {res.lessonTitle}</span>
-                                      </div>
-                                    </div>
-                                    <Download className="w-4 h-4 text-gray-400 group-hover:text-brand-blue shrink-0 ml-1.5 mt-2" />
-                                  </a>
-                                );
-                              })}
-                            </div>
-                          );
-                        })()}
-                      </div>
-                    </div>
                   </div>
-                </div>
-              </div>
+                );
+              })()
             ) : superClaseActive && selectedLesson.superclass_language ? (
               
               /* ── SUPER CLASE WORKSTATION MODE (Side by Side Coding) ── */
