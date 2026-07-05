@@ -178,27 +178,26 @@ export default function Sidebar({
     <div className="flex flex-col h-full relative">
       {/* Logo + Collapse button */}
       <div className={`flex items-center shrink-0 ${collapsed ? "justify-center px-2" : "px-4"} h-[68px] border-b border-gray-100`}>
-        <Link href="/" className="flex items-center gap-2.5 no-underline group shrink-0">
-          <div className="relative w-9 h-9 shrink-0 overflow-hidden rounded-xl bg-white shadow-sm border border-gray-100 flex items-center justify-center">
-            <Image
-              src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
-              alt="ProgramBI"
-              fill
-              className="object-contain p-1 group-hover:scale-110 transition-transform duration-300"
-            />
-          </div>
-          <AnimatePresence>
-            {!collapsed && (
-              <motion.span
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "auto" }}
-                exit={{ opacity: 0, width: 0 }}
-                className="font-display font-bold text-gray-900 text-sm whitespace-nowrap overflow-hidden"
-              >
-                ProgramBI
-              </motion.span>
-            )}
-          </AnimatePresence>
+        <Link href="/" className="flex items-center justify-center no-underline group shrink-0">
+          {collapsed ? (
+            <div className="relative w-9 h-9 shrink-0 overflow-hidden flex items-center justify-center">
+              <Image
+                src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
+                alt="ProgramBI"
+                fill
+                className="object-contain group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          ) : (
+            <div className="relative w-36 h-[34px] shrink-0 overflow-hidden flex items-center justify-center">
+              <Image
+                src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
+                alt="ProgramBI"
+                fill
+                className="object-contain group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+          )}
         </Link>
         {/* Collapse toggle button next to logo */}
         <AnimatePresence>
@@ -227,77 +226,41 @@ export default function Sidebar({
         )}
       </div>
 
-      {/* ─── SEARCH + NOTIFICATIONS ─── */}
+      {/* ─── SEARCH SECTION ─── */}
       <div className={`shrink-0 border-b border-gray-100 ${collapsed ? "px-2 py-3 flex flex-col items-center gap-2" : "px-3 py-3"}`}>
         {collapsed ? (
-          <>
-            <button
-              onClick={() => { onExpand(); setTimeout(() => searchRef.current?.focus(), 60); }}
-              className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-              title="Buscar (expande la barra)"
-            >
-              <Search className="w-[18px] h-[18px]" />
-            </button>
-            <div className="relative">
-              <button
-                onClick={() => setNotifOpen(!notifOpen)}
-                className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors relative"
-                title="Notificaciones"
-              >
-                <Bell className="w-[18px] h-[18px]" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[9px] font-bold px-1 ring-2 ring-white">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
-              </button>
-            </div>
-          </>
+          <button
+            onClick={() => { onExpand(); setTimeout(() => searchRef.current?.focus(), 60); }}
+            className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            title="Buscar (expande la barra)"
+          >
+            <Search className="w-[18px] h-[18px]" />
+          </button>
         ) : (
-          <div className="flex items-center gap-2">
-            {/* Search input */}
-            <div className={`relative flex-1 transition-all duration-200 ${searchFocused ? "ring-2 ring-brand-blue/20 bg-white" : "bg-gray-50"} rounded-xl`}>
-              <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${searchFocused ? "text-brand-blue" : "text-gray-400"}`} />
-              <input
-                ref={searchRef}
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setSearchFocused(false)}
-                placeholder="Buscar..."
-                className="w-full pl-9 pr-7 py-2 bg-transparent border border-transparent rounded-xl text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none transition-all"
-              />
-              {searchQuery ? (
-                <button
-                  onClick={() => { setSearchQuery(""); searchRef.current?.focus(); }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-gray-300 text-white hover:bg-gray-400 transition-colors"
-                >
-                  <X className="w-2.5 h-2.5" />
-                </button>
-              ) : (
-                <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex items-center justify-center h-5 min-w-[18px] px-1 rounded-md bg-white border border-gray-200 text-[10px] font-semibold text-gray-400 select-none">
-                  /
-                </kbd>
-              )}
-            </div>
-
-            {/* Notification bell */}
-            <div className="relative">
+          <div className={`relative w-full transition-all duration-200 ${searchFocused ? "ring-2 ring-brand-blue/20 bg-white" : "bg-gray-50"} rounded-xl`}>
+            <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${searchFocused ? "text-brand-blue" : "text-gray-400"}`} />
+            <input
+              ref={searchRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              placeholder="Buscar..."
+              className="w-full pl-9 pr-7 py-2 bg-transparent border border-transparent rounded-xl text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none transition-all"
+            />
+            {searchQuery ? (
               <button
-                onClick={() => setNotifOpen(!notifOpen)}
-                className={`w-9 h-9 flex items-center justify-center rounded-xl transition-colors relative
-                  ${notifOpen ? "bg-brand-blue/10 text-brand-blue" : "text-gray-400 hover:text-gray-700 hover:bg-gray-100"}`}
-                title="Notificaciones"
+                onClick={() => { setSearchQuery(""); searchRef.current?.focus(); }}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-gray-300 text-white hover:bg-gray-400 transition-colors"
               >
-                <Bell className="w-[18px] h-[18px]" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[9px] font-bold px-1 ring-2 ring-white">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
+                <X className="w-2.5 h-2.5" />
               </button>
-            </div>
+            ) : (
+              <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex items-center justify-center h-5 min-w-[18px] px-1 rounded-md bg-white border border-gray-200 text-[10px] font-semibold text-gray-400 select-none">
+                /
+              </kbd>
+            )}
           </div>
         )}
       </div>
@@ -439,42 +402,49 @@ export default function Sidebar({
           <button
             onClick={() => setUserMenuOpen(!userMenuOpen)}
             className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all"
-            title={userProfile?.full_name || "Usuario"}
+            title={displayName}
           >
             {initials}
-            <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[8px] font-bold px-1 ring-2 ring-white">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
           </button>
         ) : (
-          <button
-            onClick={() => setUserMenuOpen(!userMenuOpen)}
-            className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all duration-200 text-left
-              ${userMenuOpen ? "bg-brand-blue/5 ring-1 ring-brand-blue/20" : "hover:bg-gray-50"}`}
-          >
-            <div className="relative shrink-0">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm">
-                {initials}
-              </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-sm text-gray-900 truncate leading-tight">
-                  {userProfile?.full_name || "Usuario"}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setUserMenuOpen(!userMenuOpen)}
+              className={`flex-1 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors duration-200 cursor-pointer border-0 bg-transparent min-w-0
+                ${userMenuOpen ? "bg-brand-blue/5 ring-1 ring-brand-blue/20" : "hover:bg-gray-50"}`}
+            >
+              {/* Avatar with subscription badge */}
+              <div className="relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs">
+                <span aria-hidden>{initials}</span>
+                {/* Tier badge below avatar */}
+                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-black text-white text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-neutral-900 uppercase tracking-wider leading-none whitespace-nowrap">
+                  {planLabel || "FREE"}
                 </span>
-                {planLabel && (
-                  <span className="shrink-0 text-[9px] font-black px-1.5 py-0.5 rounded-md bg-brand-blue/10 text-brand-blue leading-none">
-                    {planLabel}
-                  </span>
-                )}
               </div>
-              <div className="text-[11px] text-gray-400 truncate leading-tight">
-                {userProfile?.email || ""}
-              </div>
-            </div>
-            <motion.div animate={{ rotate: userMenuOpen ? 180 : 0 }} className="shrink-0">
-              <ChevronLeft className="w-4 h-4 text-gray-400 -rotate-90" />
-            </motion.div>
-          </button>
+
+              {/* Name */}
+              <span className="truncate text-[13px] font-semibold text-gray-700 min-w-0">
+                {displayName}
+              </span>
+            </button>
+
+            {/* Bell icon */}
+            <button
+              onClick={() => setNotifOpen(!notifOpen)}
+              className="h-9 w-9 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-700 transition-colors shrink-0 cursor-pointer border-0 bg-transparent relative"
+              title="Notificaciones"
+            >
+              <Bell className="w-[18px] h-[18px]" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white animate-pulse" />
+              )}
+            </button>
+          </div>
         )}
       </div>
 

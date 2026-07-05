@@ -214,8 +214,7 @@ export default function ComunidadPortal() {
           )}
 
           <main className="flex-1 w-full flex flex-col min-h-0">
-            {/* ─── LOADING STATE (sidebar visible, content loading) ─── */}
-            {isCheckingPlan || (!canAccessFull && !hasCourses) ? (
+            {isCheckingPlan ? (
               <div className="flex-1 flex items-center justify-center">
                 <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
               </div>
