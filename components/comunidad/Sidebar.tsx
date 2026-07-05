@@ -27,6 +27,7 @@ import {
 import NotificationCenter from "./NotificationCenter";
 import { getUnreadNotificationCount } from "@/lib/supabase/comunidad";
 import { createClient } from "@/lib/supabase/client";
+import { cn } from "@/lib/utils";
 
 export interface SidebarTab {
   id: string;
@@ -174,8 +175,22 @@ export default function Sidebar({
   const planLabel = userProfile?.subscription_plan?.replace("plan_", "").toUpperCase() || null;
   const sidebarWidth = collapsed ? 72 : 260;
 
+  const handleSidebarClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const isInteractive = target.closest("button, a, input, select, textarea");
+    if (!isInteractive) {
+      onToggleCollapse();
+    }
+  };
+
   const sidebarContent = (
-    <div className="flex flex-col h-full relative">
+    <div
+      className={cn(
+        "flex flex-col h-full relative selection:bg-transparent",
+        collapsed ? "cursor-pointer select-none" : "cursor-default"
+      )}
+      onClick={handleSidebarClick}
+    >
       {/* Logo + Collapse button */}
       <div className={`flex items-center shrink-0 ${collapsed ? "justify-center px-2" : "px-4"} h-[68px] border-b border-gray-100`}>
         <Link href="/" className="flex items-center justify-center no-underline group shrink-0">
@@ -356,46 +371,8 @@ export default function Sidebar({
         }
         return null;
       })()}
-      {/* ─── COLLAPSE / EXPAND TOGGLE (modern pill in the empty space) ─── */}
-      <div className={`shrink-0 ${collapsed ? "px-2 pb-2 flex justify-center" : "px-3 pb-2.5"}`}>
-        <button
-          onClick={onToggleCollapse}
-          title={collapsed ? "Expandir barra" : "Colapsar barra"}
-          aria-label={collapsed ? "Expandir barra" : "Colapsar barra"}
-          className={`
-            group relative flex items-center gap-2.5
-            ${collapsed ? "w-10 h-10 justify-center" : "w-full px-3 py-2.5"}
-            rounded-xl text-[12px] font-medium text-gray-400
-            border border-dashed border-gray-200
-            hover:border-solid hover:border-gray-300 hover:bg-gray-50 hover:text-gray-700
-            active:scale-[0.98]
-            transition-all duration-200 cursor-pointer
-          `}
-        >
-          <ChevronLeft
-            className={`w-[18px] h-[18px] shrink-0 transition-transform duration-300
-              ${collapsed ? "rotate-180" : ""}
-              group-hover:-translate-x-0.5`}
-          />
-          <AnimatePresence>
-            {!collapsed && (
-              <motion.span
-                initial={{ opacity: 0, width: 0 }}
-                animate={{ opacity: 1, width: "auto" }}
-                exit={{ opacity: 0, width: 0 }}
-                className="whitespace-nowrap overflow-hidden flex-1 text-left"
-              >
-                Colapsar barra
-              </motion.span>
-            )}
-          </AnimatePresence>
-          {!collapsed && (
-            <kbd className="ml-auto hidden sm:flex items-center justify-center h-5 min-w-[18px] px-1 rounded-md bg-white border border-gray-200 text-[10px] font-semibold text-gray-400 select-none group-hover:text-gray-500">
-              [
-            </kbd>
-          )}
-        </button>
-      </div>      {/* ─── USER SECTION (bottom) ─── */}
+      {/* Empty space filler that acts as a clickable area to collapse */}
+      <div className="flex-grow cursor-pointer" />      {/* ─── USER SECTION (bottom) ─── */}
       <div className={`shrink-0 border-t border-gray-100 ${collapsed ? "p-2 flex justify-center" : "p-3"}`}>
         {authLoading && !userProfile ? (
           // Loading skeleton (avoids the "??" / empty flash while the session

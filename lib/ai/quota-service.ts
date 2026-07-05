@@ -109,10 +109,22 @@ export async function checkQuota(
 
   // Chequeo en orden creciente de ventana (la más restrictiva primero).
   // Si la pequeña está agotada, reportamos esa (más útil para el usuario).
+  //
+  // Caso FREE: las 3 ventanas tienen el mismo tope (= mensual), así que se
+  // agotan a la vez. En ese escenario forzamos el bloqueo por "monthly"
+  // (no "five_hour") para que el mensaje le diga al usuario que debe esperar
+  // al reinicio mensual, no a un refresco inútil de 5h.
+  const isFlatQuota =
+    quota.fiveHour === quota.monthly && quota.weekly === quota.monthly;
+
   let blocked: QuotaWindow | undefined;
-  if (remaining.five_hour <= 0) blocked = "five_hour";
-  else if (remaining.weekly <= 0) blocked = "weekly";
-  else if (remaining.monthly <= 0) blocked = "monthly";
+  if (isFlatQuota) {
+    if (remaining.monthly <= 0) blocked = "monthly";
+  } else {
+    if (remaining.five_hour <= 0) blocked = "five_hour";
+    else if (remaining.weekly <= 0) blocked = "weekly";
+    else if (remaining.monthly <= 0) blocked = "monthly";
+  }
 
   const windowStarts = {
     five_hour: state?.five_hour_window_start,

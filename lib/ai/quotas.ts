@@ -20,12 +20,24 @@ export interface PlanQuota {
   fiveHour: number;
 }
 
-/** Cuotas por plan (en tokens). */
+/**
+ * Cuotas por plan (en tokens).
+ *
+ * Reglas de reparto:
+ *  - Planes de pago (pro/max/ultra):
+ *      weekly   = monthly / 4.33
+ *      fiveHour = weekly * 0.20
+ *  - FREE: las 3 ventanas valen lo mismo (= mensual). Como las 3 ventanas
+ *    se incrementan juntas y todas deben tener saldo, esto colapsa el
+ *    límite efectivo a uno solo: el mensual. Si un free agota sus tokens,
+ *    el refresco de 5h y el semanal NO le dan nada útil → debe esperar al
+ *    reinicio mensual. (Es decir: "sin tokens → espera al próximo mes".)
+ */
 export const PLAN_QUOTAS: Record<string, PlanQuota> = {
   free: {
     monthly: 50_000,
-    weekly: Math.round(50_000 / 4.33), // ≈ 11 547
-    fiveHour: Math.round((50_000 / 4.33) * 0.2), // ≈ 2 309
+    weekly: 50_000, // = mensual: la ventana semanal nunca limita antes que el mes
+    fiveHour: 50_000, // = mensual: la ventana 5h nunca limita antes que el mes
   },
   pro: {
     monthly: 2_000_000,
