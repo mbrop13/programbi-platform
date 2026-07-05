@@ -455,25 +455,33 @@ function ChatShellInner({
         )}
       </AnimatePresence>
 
-      {/* Sidebar de historial: se acopla a la izquierda (rail) al cerrar */}
+      {/* Sidebar de historial: se acopla a la izquierda (rail) al cerrar en desktop, cajón en móvil */}
       <motion.aside
-        initial={false}
-        animate={{
-          width: sidebarOpen ? 200 : 0,
-          opacity: sidebarOpen ? 1 : 0,
-        }}
-        transition={{ duration: 0.25, ease: "easeInOut" }}
+        initial={isMobile ? { x: -280 } : false}
+        animate={
+          isMobile
+            ? { x: sidebarOpen ? 0 : -280, width: 280 }
+            : { width: sidebarOpen ? 260 : 72 }
+        }
+        transition={{ duration: 0.2, ease: "easeInOut" }}
         className={cn(
-          "absolute z-50 h-full shrink-0 md:relative",
-          sidebarOpen ? "overflow-visible" : "overflow-hidden"
+          isMobile
+            ? "fixed top-0 left-0 bottom-0 z-50 flex flex-col shadow-2xl bg-[#F9F9FB] border-r border-stone-200"
+            : "relative flex flex-col h-full shrink-0 bg-[#F9F9FB] border-r border-stone-200 overflow-hidden z-30"
         )}
       >
         <ConversationSidebar
           chats={chats}
           activeChatId={activeChatId}
           loading={loadingChats}
-          onSelect={(id) => router.push(`/ai/${id}`)}
-          onNew={() => router.push("/ai")}
+          onSelect={(id) => {
+            router.push(`/ai/${id}`);
+            if (isMobile) setSidebarOpen(false);
+          }}
+          onNew={() => {
+            router.push("/ai");
+            if (isMobile) setSidebarOpen(false);
+          }}
           onDelete={handleDelete}
           onRename={handleRename}
           onPin={handlePin}
@@ -482,17 +490,19 @@ function ChatShellInner({
           avatarUrl={avatarUrl}
           subscriptionPlan={subscriptionPlan}
           isAdmin={isAdmin}
-          onClose={() => setSidebarOpen(false)}
+          onClose={isMobile ? () => setSidebarOpen(false) : undefined}
+          collapsed={!isMobile && !sidebarOpen}
+          onToggleCollapse={() => setSidebarOpen(!sidebarOpen)}
         />
       </motion.aside>
 
       {/* Main (sin barra superior) */}
       <div className="relative flex min-w-0 flex-1 flex-col">
-        {/* Toggle flotante para abrir/cerrar el sidebar (solo cuando está cerrado) */}
-        {!sidebarOpen && (
+        {/* Toggle flotante para abrir el sidebar (solo en móvil cuando está cerrado) */}
+        {isMobile && !sidebarOpen && (
           <button
             onClick={() => setSidebarOpen(true)}
-            className="absolute left-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface-0/80 text-text-muted shadow-premium backdrop-blur-md transition-colors hover:bg-surface-2 hover:text-text-primary"
+            className="absolute left-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface-0/80 text-text-muted shadow-premium backdrop-blur-md transition-colors hover:bg-surface-2 hover:text-text-primary cursor-pointer"
             title="Mostrar historial"
           >
             <PanelLeft className="h-5 w-5" />

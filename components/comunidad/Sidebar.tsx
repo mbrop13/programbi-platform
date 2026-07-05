@@ -446,91 +446,92 @@ export default function Sidebar({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 28 }}
-            className={`absolute bottom-16 ${collapsed ? "left-2 w-56" : "left-3 right-3"} z-50`}
+            className={cn(
+              "fixed z-50 bg-white rounded-2xl shadow-2xl shadow-gray-300/30 border border-gray-100 overflow-hidden",
+              collapsed ? "bottom-16 left-3 w-56" : "bottom-16 left-3 w-[236px]"
+            )}
           >
-            <div className="bg-white rounded-2xl shadow-2xl shadow-gray-300/30 border border-gray-100 overflow-hidden">
-              {/* User header */}
-              <div className="p-4 bg-gradient-to-br from-brand-blue/5 to-indigo-50 border-b border-gray-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
-                    {initials}
+            {/* User header */}
+            <div className="p-4 bg-gradient-to-br from-brand-blue/5 to-indigo-50 border-b border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                  {initials}
+                </div>
+                <div className="min-w-0">
+                  <div className="font-bold text-sm text-gray-900 truncate">
+                    {userProfile?.full_name || "Usuario"}
                   </div>
-                  <div className="min-w-0">
-                    <div className="font-bold text-sm text-gray-900 truncate">
-                      {userProfile?.full_name || "Usuario"}
-                    </div>
-                    <div className="text-[11px] text-gray-500 truncate">{userProfile?.email}</div>
-                    {planLabel && (
-                      <span className="inline-block mt-1 text-[10px] font-black px-1.5 py-0.5 rounded-md bg-brand-blue/10 text-brand-blue">
-                        {planLabel}
-                      </span>
-                    )}
-                  </div>
+                  <div className="text-[11px] text-gray-500 truncate">{userProfile?.email}</div>
+                  {planLabel && (
+                    <span className="inline-block mt-1 text-[10px] font-black px-1.5 py-0.5 rounded-md bg-brand-blue/10 text-brand-blue">
+                      {planLabel}
+                    </span>
+                  )}
                 </div>
               </div>
+            </div>
 
-              {/* Menu items */}
-              <div className="p-2">
-                <MenuItem
-                  icon={User}
-                  label="Mi Perfil"
-                  onClick={() => {
-                    onTabChange("perfil");
-                    setUserMenuOpen(false);
-                  }}
-                />
-                <MenuItem
-                  icon={Award}
-                  label="Certificados"
-                  onClick={() => {
-                    onTabChange("certificados");
-                    setUserMenuOpen(false);
-                  }}
-                />
-                <MenuItem
-                  icon={CreditCard}
-                  label="Suscripción"
-                  onClick={() => {
-                    onUpgradeClick();
-                    setUserMenuOpen(false);
-                  }}
-                />
+            {/* Menu items */}
+            <div className="p-2">
+              <MenuItem
+                icon={User}
+                label="Mi Perfil"
+                onClick={() => {
+                  onTabChange("perfil");
+                  setUserMenuOpen(false);
+                }}
+              />
+              <MenuItem
+                icon={Award}
+                label="Certificados"
+                onClick={() => {
+                  onTabChange("certificados");
+                  setUserMenuOpen(false);
+                }}
+              />
+              <MenuItem
+                icon={CreditCard}
+                label="Suscripción"
+                onClick={() => {
+                  onUpgradeClick();
+                  setUserMenuOpen(false);
+                }}
+              />
 
-                <div className="my-1.5 h-px bg-gray-100" />
+              <div className="my-1.5 h-px bg-gray-100" />
 
-                <MenuItem
-                  icon={Settings}
-                  label="Configuración"
-                  onClick={() => {
-                    onOpenSettings();
-                    setUserMenuOpen(false);
-                  }}
-                />
+              <MenuItem
+                icon={Settings}
+                label="Configuración"
+                onClick={() => {
+                  onOpenSettings();
+                  setUserMenuOpen(false);
+                }}
+              />
 
-                {isAdmin && (
-                  <>
-                    <div className="my-1.5 h-px bg-gray-100" />
-                    <a
-                      href="/admin"
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-amber-600 hover:bg-amber-50 transition-colors font-medium no-underline"
-                    >
-                      <ShieldAlert className="w-4 h-4" />
-                      Panel Admin
-                      <ExternalLink className="w-3 h-3 ml-auto opacity-50" />
-                    </a>
-                  </>
-                )}
+              {isAdmin && (
+                <>
+                  <div className="my-1.5 h-px bg-gray-100" />
+                  <a
+                    href="/admin"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-amber-600 hover:bg-amber-50 transition-colors font-medium no-underline"
+                  >
+                    <ShieldAlert className="w-4 h-4" />
+                    Panel Admin
+                    <ExternalLink className="w-3 h-3 ml-auto opacity-50" />
+                  </a>
+                </>
+              )}
 
-                <div className="my-1.5 h-px bg-gray-100" />
+              <div className="my-1.5 h-px bg-gray-100" />
 
-                <a
-                  href="/"
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-500 hover:bg-red-50 transition-colors font-medium no-underline"
-                >
-                  <LogOut className="w-4 h-4" />
-                  Cerrar Sesión
-                </a>
-              </div>
+              <a
+                href="/"
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-500 hover:bg-red-50 transition-colors font-medium no-underline"
+              >
+                <LogOut className="w-4 h-4" />
+                Cerrar Sesión
+              </a>
             </div>
           </motion.div>
         )}
@@ -579,7 +580,7 @@ export default function Sidebar({
         )}
       </AnimatePresence>
 
-      <NotificationCenter open={notifOpen} onClose={() => setNotifOpen(false)} onUnreadChange={setUnreadCount} />
+      <NotificationCenter open={notifOpen} onClose={() => setNotifOpen(false)} onUnreadChange={setUnreadCount} collapsed={collapsed} />
     </>
   );
 }

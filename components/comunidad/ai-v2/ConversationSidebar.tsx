@@ -60,6 +60,8 @@ interface ConversationSidebarProps {
   subscriptionPlan?: string | null;
   isAdmin?: boolean;
   onClose?: () => void;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 /* ── Grouping helpers ── */
@@ -103,6 +105,8 @@ export function ConversationSidebar({
   subscriptionPlan,
   isAdmin = false,
   onClose,
+  collapsed = false,
+  onToggleCollapse,
 }: ConversationSidebarProps) {
   const router = useRouter();
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -304,95 +308,132 @@ export function ConversationSidebar({
         }}
         onDoubleClick={(e) => {
           e.stopPropagation();
-          startRename(c);
+          if (!collapsed) startRename(c);
         }}
+        title={collapsed ? (c.title || "Conversación") : undefined}
         className={cn(
-          "group flex items-center gap-2 rounded-lg px-3 py-2 text-[13px] cursor-pointer transition-colors select-none",
+          "group flex items-center transition-all duration-200 select-none cursor-pointer",
+          collapsed ? "justify-center p-2 rounded-lg" : "gap-2 rounded-lg px-3 py-2 text-[13px]",
           isActive
             ? "bg-stone-200 text-stone-900 font-bold"
             : "text-stone-600 hover:bg-stone-200/30 hover:text-stone-900"
         )}
       >
-        {isEditing ? (
-          <>
-            <label htmlFor={`rename-${c.id}`} className="sr-only">
-              Renombrar conversación
-            </label>
-            <input
-              id={`rename-${c.id}`}
-              type="text"
-              value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
-              onBlur={() => saveRename(c.id)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") saveRename(c.id);
-                if (e.key === "Escape") setEditingId(null);
-              }}
-              autoFocus
-              onClick={(e) => e.stopPropagation()}
-              className="min-w-0 flex-1 rounded-md bg-white px-2 py-0.5 text-[13px] outline-none ring-1 ring-stone-300 text-stone-900"
-            />
-          </>
+        {collapsed ? (
+          <MessageSquare className="h-[18px] w-[18px] text-stone-500 shrink-0" />
         ) : (
-          <span className="flex-1 truncate">{c.title || "Sin título"}</span>
-        )}
+          <>
+            <MessageSquare className="h-[18px] w-[18px] text-stone-500 shrink-0" />
+            {isEditing ? (
+              <>
+                <label htmlFor={`rename-${c.id}`} className="sr-only">
+                  Renombrar conversación
+                </label>
+                <input
+                  id={`rename-${c.id}`}
+                  type="text"
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  onBlur={() => saveRename(c.id)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") saveRename(c.id);
+                    if (e.key === "Escape") setEditingId(null);
+                  }}
+                  autoFocus
+                  onClick={(e) => e.stopPropagation()}
+                  className="min-w-0 flex-1 rounded-md bg-white px-2 py-0.5 text-[13px] outline-none ring-1 ring-stone-300 text-stone-900"
+                />
+              </>
+            ) : (
+              <span className="flex-1 truncate">{c.title || "Sin título"}</span>
+            )}
 
-        {/* Context actions on hover */}
-        {!isEditing && (
-          <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-            <button
-              onClick={(e) => { e.stopPropagation(); startRename(c); }}
-              aria-label="Renombrar"
-              className="rounded p-1 text-stone-400 hover:text-stone-700 dark:hover:text-white border-0 bg-transparent cursor-pointer"
-            >
-              <Pencil className="h-3 w-3" />
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); onPin(c.id); }}
-              aria-label={c.pinned ? "Desfijar" : "Fijar"}
-              className={cn(
-                "rounded p-1 border-0 bg-transparent cursor-pointer",
-                c.pinned ? "text-amber-500" : "text-stone-400 hover:text-stone-700 dark:hover:text-white"
-              )}
-            >
-              <Pin className="h-3 w-3" />
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); onArchive(c.id); }}
-              aria-label="Archivar"
-              className="rounded p-1 text-stone-400 hover:text-stone-700 dark:hover:text-white border-0 bg-transparent cursor-pointer"
-            >
-              <Archive className="h-3 w-3" />
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); onDelete(c.id); }}
-              aria-label="Eliminar"
-              className="rounded p-1 text-stone-400 hover:text-red-600 border-0 bg-transparent cursor-pointer"
-            >
-              <Trash2 className="h-3 w-3" />
-            </button>
-          </div>
+            {/* Context actions on hover */}
+            {!isEditing && (
+              <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+                <button
+                  onClick={(e) => { e.stopPropagation(); startRename(c); }}
+                  aria-label="Renombrar"
+                  className="rounded p-1 text-stone-400 hover:text-stone-700 dark:hover:text-white border-0 bg-transparent cursor-pointer"
+                >
+                  <Pencil className="h-3 w-3" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onPin(c.id); }}
+                  aria-label={c.pinned ? "Desfijar" : "Fijar"}
+                  className={cn(
+                    "rounded p-1 border-0 bg-transparent cursor-pointer",
+                    c.pinned ? "text-amber-500" : "text-stone-400 hover:text-stone-700 dark:hover:text-white"
+                  )}
+                >
+                  <Pin className="h-3 w-3" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onArchive(c.id); }}
+                  aria-label="Archivar"
+                  className="rounded p-1 text-stone-400 hover:text-stone-700 dark:hover:text-white border-0 bg-transparent cursor-pointer"
+                >
+                  <Archive className="h-3 w-3" />
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); onDelete(c.id); }}
+                  aria-label="Eliminar"
+                  className="rounded p-1 text-stone-400 hover:text-red-600 border-0 bg-transparent cursor-pointer"
+                >
+                  <Trash2 className="h-3 w-3" />
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     );
   };
 
+  const handleSidebarClick = (e: React.MouseEvent) => {
+    const target = e.target as HTMLElement;
+    const isInteractive = target.closest("button, a, input, select, textarea");
+    if (!isInteractive && onToggleCollapse) {
+      onToggleCollapse();
+    }
+  };
+
   return (
-    <div className="flex h-full flex-col bg-[#F9F9FB] border-r border-stone-200 relative overflow-visible">
-      {/* ═══ Header: Logo + Collapse ═══ */}
-      <div className="flex h-14 shrink-0 items-center justify-between px-5">
-        <div className="flex items-center">
-          <div className="relative w-24 h-10 flex items-center shrink-0">
+    <div
+      className={cn(
+        "flex h-full flex-col bg-[#F9F9FB] border-r border-stone-200 relative overflow-visible selection:bg-transparent",
+        collapsed ? "cursor-pointer select-none" : "cursor-default"
+      )}
+      onClick={handleSidebarClick}
+    >
+      {/* ═══ Header: Logo ═══ */}
+      <div className={cn(
+        "flex h-14 shrink-0 items-center justify-between px-5",
+        collapsed && "justify-center px-2"
+      )}>
+        {collapsed ? (
+          <div className="relative w-9 h-9 shrink-0 overflow-hidden flex items-center justify-center">
             <Image
               src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
-              alt="ProgramBI Logo"
-              width={96}
-              height={40}
+              alt="ProgramBI"
+              fill
               className="object-contain"
             />
           </div>
-        </div>
-        {onClose && (
+        ) : (
+          <div className="flex items-center">
+            <div className="relative w-24 h-10 flex items-center shrink-0">
+              <Image
+                src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
+                alt="ProgramBI Logo"
+                width={96}
+                height={40}
+                className="object-contain"
+              />
+            </div>
+          </div>
+        )}
+        {onClose && !collapsed && (
           <button
             onClick={onClose}
             aria-label="Colapsar menú"
@@ -403,19 +444,35 @@ export function ConversationSidebar({
         )}
       </div>
 
-      {/* ═══ Navigation Items (flat list like Grok) ═══ */}
-      <nav className="px-3 space-y-0.5 pb-4">
+      {/* ═══ Navigation Items ═══ */}
+      <nav className={cn("px-3 space-y-0.5 pb-4", collapsed && "px-2 flex flex-col items-center gap-1.5")}>
         {navItems.map((item, idx) => {
           const Icon = item.icon;
+          const buttonClass = cn(
+            "flex items-center rounded-lg text-[14px] font-semibold text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-all duration-200 border-0 bg-transparent text-left cursor-pointer",
+            collapsed ? "justify-center p-2.5 w-10 h-10" : "w-full gap-3.5 px-3 py-2.5"
+          );
           if (item.onClick) {
             return (
               <button
                 key={idx}
                 onClick={item.onClick}
-                className="flex w-full items-center gap-3.5 rounded-lg px-3 py-2.5 text-[14px] font-semibold text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors cursor-pointer border-0 bg-transparent text-left"
+                className={buttonClass}
+                title={collapsed ? item.label : undefined}
               >
                 <Icon className="h-[18px] w-[18px] text-stone-500 shrink-0" />
-                <span>{item.label}</span>
+                <AnimatePresence>
+                  {!collapsed && (
+                    <motion.span
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="whitespace-nowrap overflow-hidden block w-[160px] truncate text-left"
+                    >
+                      {item.label}
+                    </motion.span>
+                  )}
+                </AnimatePresence>
               </button>
             );
           }
@@ -423,53 +480,75 @@ export function ConversationSidebar({
             <Link
               key={idx}
               href={item.href!}
-              className="flex items-center gap-3.5 rounded-lg px-3 py-2.5 text-[14px] font-semibold text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors no-underline"
+              className={cn(buttonClass, "no-underline")}
+              title={collapsed ? item.label : undefined}
             >
               <Icon className="h-[18px] w-[18px] text-stone-500 shrink-0" />
-              <span>{item.label}</span>
+              <AnimatePresence>
+                {!collapsed && (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="whitespace-nowrap overflow-hidden block w-[160px] truncate text-left"
+                  >
+                    {item.label}
+                  </motion.span>
+                )}
+              </AnimatePresence>
             </Link>
           );
         })}
       </nav>
 
-      {/* ═══ Chats Section (collapsible like Grok) ═══ */}
+      {/* ═══ Chats Section ═══ */}
       <div className="flex-1 flex flex-col min-h-0 border-t border-stone-200">
-        <button
-          onClick={() => setChatsOpen(!chatsOpen)}
-          className="w-full flex items-center justify-between px-5 py-3 text-[14px] font-semibold text-stone-900 hover:bg-stone-200/35 transition-colors border-0 bg-transparent cursor-pointer select-none shrink-0"
-        >
-          <span>Chats</span>
-          <ChevronDown className={cn(
-            "h-4 w-4 text-stone-500 transition-transform duration-200",
-            chatsOpen ? "" : "-rotate-90"
-          )} />
-        </button>
+        {!collapsed ? (
+          <button
+            onClick={() => setChatsOpen(!chatsOpen)}
+            className="w-full flex items-center justify-between px-5 py-3 text-[14px] font-semibold text-stone-900 hover:bg-stone-200/35 transition-colors border-0 bg-transparent cursor-pointer select-none shrink-0"
+          >
+            <span>Chats</span>
+            <ChevronDown className={cn(
+              "h-4 w-4 text-stone-500 transition-transform duration-200",
+              chatsOpen ? "" : "-rotate-90"
+            )} />
+          </button>
+        ) : (
+          <div className="h-px bg-stone-200 my-2 shrink-0" />
+        )}
 
-        {chatsOpen && (
-          <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-1 scrollbar-hide">
+        {(!collapsed ? chatsOpen : true) && (
+          <div className={cn("flex-1 overflow-y-auto pb-3 space-y-1 scrollbar-hide", collapsed ? "px-2" : "px-3")}>
             {loading ? (
               <div className="flex items-center justify-center py-10">
                 <Loader2 className="h-4 w-4 animate-spin text-stone-400" />
               </div>
             ) : chats.length === 0 ? (
-              <p className="py-10 text-center text-[13px] text-stone-400">
-                Aún no hay conversaciones
-              </p>
+              !collapsed && (
+                <p className="py-10 text-center text-[13px] text-stone-400">
+                  Aún no hay conversaciones
+                </p>
+              )
             ) : (
               <>
                 {pinned.length > 0 && (
                   <div className="space-y-0.5">
-                    <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-stone-400">
-                      Fijados
-                    </div>
+                    {!collapsed && (
+                      <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-stone-400">
+                        Fijados
+                      </div>
+                    )}
                     {pinned.map(renderRow)}
                   </div>
                 )}
                 {groups.map(([label, items]) => (
                   <div key={label} className="space-y-0.5">
-                    <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-stone-400">
-                      {label}
-                    </div>
+                    {!collapsed && (
+                      <div className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-stone-400">
+                        {label}
+                      </div>
+                    )}
                     {items.map(renderRow)}
                   </div>
                 ))}
@@ -479,7 +558,7 @@ export function ConversationSidebar({
         )}
       </div>
 
-      {/* ═══ Footer: Profile + Bell (Grok-style) ═══ */}
+      {/* ─── Footer: Profile + Bell ─── */}
       <div className="shrink-0 border-t border-stone-200 px-3 py-3 relative" ref={profileMenuRef}>
         {/* ── Profile Popup Menu ── */}
         <AnimatePresence>
@@ -489,195 +568,193 @@ export function ConversationSidebar({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.96 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
-              className="absolute bottom-full left-3 w-56 mb-2 z-50"
+              className={cn(
+                "fixed z-50 bg-white border border-stone-200 rounded-2xl shadow-xl p-1.5 flex flex-col w-56 mb-2",
+                collapsed ? "bottom-16 left-3" : "bottom-16 left-3 w-[236px]"
+              )}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="relative">
-                {/* Main menu */}
-                <div className="bg-white border border-stone-200 rounded-2xl shadow-lg p-1.5 flex flex-col">
-                  {/* Email header */}
-                  <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl">
-                    <User className="h-4 w-4 text-stone-400 shrink-0" />
-                    <span className="truncate text-[13px] font-medium text-stone-655">{userEmail || cleanDisplayName}</span>
-                  </div>
-
-                  <div className="h-px bg-stone-100 mx-2 my-1" />
-
-                  {/* Todos los ajustes */}
-                  <button
-                    onClick={() => {
-                      setProfileMenuOpen(false);
-                      setSettingsOpen(true);
-                    }}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
-                  >
-                    <Settings className="h-4 w-4 text-stone-500 shrink-0" />
-                    <span className="flex-1 font-semibold text-left">Todos los ajustes</span>
-                    <span className="text-[11px] text-stone-400 font-mono">⇧^,</span>
-                  </button>
-
-                  {/* Actualizar plan */}
-                  <Link
-                    href="/comunidad/planes"
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors no-underline cursor-pointer"
-                  >
-                    <ArrowUpCircle className="h-4 w-4 text-stone-500 shrink-0" />
-                    <span className="font-semibold">Actualizar plan</span>
-                  </Link>
-
-                  {/* Instalar apps */}
-                  <button
-                    onClick={() => alert("La aplicación de escritorio se encuentra en desarrollo.")}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
-                  >
-                    <Download className="h-4 w-4 text-stone-500 shrink-0" />
-                    <span className="font-semibold">Instalar apps</span>
-                  </button>
-
-                  <div className="h-px bg-stone-100 mx-2 my-1" />
-
-                  {/* Apariencia - with flyout submenu */}
-                  <div
-                    className="relative"
-                    onMouseEnter={() => setActiveSubmenu('apariencia')}
-                    onMouseLeave={() => { if (activeSubmenu === 'apariencia') setActiveSubmenu(null); }}
-                  >
-                    <button
-                      onClick={() => setActiveSubmenu(activeSubmenu === 'apariencia' ? null : 'apariencia')}
-                      className={cn(
-                        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] w-full text-left transition-colors cursor-pointer border-0 bg-transparent",
-                        activeSubmenu === 'apariencia'
-                          ? "bg-stone-200/40 text-stone-900"
-                          : "text-stone-700 hover:bg-stone-200/35 hover:text-stone-900"
-                      )}
-                    >
-                      <Sun className="h-4 w-4 text-stone-500 shrink-0" />
-                      <div className="flex-1 flex flex-col items-start min-w-0">
-                        <span className="font-semibold">Apariencia</span>
-                        <span className="text-[11px] text-stone-400 capitalize">{currentTheme}</span>
-                      </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-stone-400 shrink-0" />
-                    </button>
-
-                    {/* Flyout submenu - Apariencia */}
-                    <AnimatePresence>
-                      {activeSubmenu === 'apariencia' && (
-                        <motion.div
-                          initial={{ opacity: 0, x: -4 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -4 }}
-                          transition={{ duration: 0.12 }}
-                          className="absolute left-full top-0 ml-1.5 w-40 bg-white border border-stone-200 rounded-xl shadow-lg p-1 flex flex-col z-50"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {([
-                            { key: 'claro' as const, label: 'Claro', icon: Sun },
-                            { key: 'oscuro' as const, label: 'Oscuro', icon: Moon },
-                            { key: 'sistema' as const, label: 'Sistema', icon: Monitor },
-                          ]).map(({ key, label, icon: Ic }) => (
-                            <button
-                              key={key}
-                              onClick={() => handleThemeChange(key)}
-                              className={cn(
-                                "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] transition-colors border-0 bg-transparent text-left w-full cursor-pointer",
-                                currentTheme === key
-                                  ? "text-stone-900 font-bold"
-                                  : "text-stone-605 hover:bg-stone-200/35 hover:text-stone-900"
-                              )}
-                            >
-                              <Ic className="h-4 w-4 text-stone-500 shrink-0" />
-                              <span className="flex-1">{label}</span>
-                              {currentTheme === key && <Check className="h-4 w-4 text-blue-600 shrink-0" />}
-                            </button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Idioma - with flyout submenu */}
-                  <div
-                    className="relative"
-                    onMouseEnter={() => setActiveSubmenu('idioma')}
-                    onMouseLeave={() => { if (activeSubmenu === 'idioma') setActiveSubmenu(null); }}
-                  >
-                    <button
-                      onClick={() => setActiveSubmenu(activeSubmenu === 'idioma' ? null : 'idioma')}
-                      className={cn(
-                        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] w-full text-left transition-colors cursor-pointer border-0 bg-transparent",
-                        activeSubmenu === 'idioma'
-                          ? "bg-stone-200/40 text-stone-900"
-                          : "text-stone-700 hover:bg-stone-200/35 hover:text-stone-900"
-                      )}
-                    >
-                      <Globe className="h-4 w-4 text-stone-500 shrink-0" />
-                      <div className="flex-1 flex flex-col items-start min-w-0">
-                        <span className="font-semibold">Idioma</span>
-                        <span className="text-[11px] text-stone-400">{currentLanguage === 'es' ? 'Español' : 'English'}</span>
-                      </div>
-                      <ChevronRight className="h-3.5 w-3.5 text-stone-400 shrink-0" />
-                    </button>
-
-                    {/* Flyout submenu - Idioma */}
-                    <AnimatePresence>
-                      {activeSubmenu === 'idioma' && (
-                        <motion.div
-                          initial={{ opacity: 0, x: -4 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          exit={{ opacity: 0, x: -4 }}
-                          transition={{ duration: 0.12 }}
-                          className="absolute left-full top-0 ml-1.5 w-40 bg-white border border-stone-200 rounded-xl shadow-lg p-1 flex flex-col z-50"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {([
-                            { key: 'es' as const, label: 'Español' },
-                            { key: 'en' as const, label: 'English' },
-                          ]).map(({ key, label }) => (
-                            <button
-                              key={key}
-                              onClick={() => handleLanguageChange(key)}
-                              className={cn(
-                                "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] transition-colors border-0 bg-transparent text-left w-full cursor-pointer",
-                                currentLanguage === key
-                                  ? "text-stone-900 font-bold"
-                                  : "text-stone-605 hover:bg-stone-200/35 hover:text-stone-900"
-                              )}
-                            >
-                              <span className="flex-1">{label}</span>
-                              {currentLanguage === key && <Check className="h-4 w-4 text-blue-600 shrink-0" />}
-                            </button>
-                          ))}
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Ayuda */}
-                  <Link
-                    href="/faq"
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors no-underline cursor-pointer"
-                  >
-                    <HelpCircle className="h-4 w-4 text-stone-500 shrink-0" />
-                    <span className="flex-1 font-semibold">Ayuda</span>
-                    <ChevronRight className="h-3.5 w-3.5 text-stone-400" />
-                  </Link>
-
-                  <div className="h-px bg-stone-100 mx-2 my-1" />
-
-                  {/* Cerrar sesión */}
-                  <button
-                    onClick={async () => {
-                      const supabase = createClient();
-                      await supabase.auth.signOut();
-                      window.location.reload();
-                    }}
-                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-red-50 hover:text-red-650 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
-                  >
-                    <LogOut className="h-4 w-4 text-stone-400 shrink-0" />
-                    <span className="font-semibold">Cerrar sesión</span>
-                  </button>
-                </div>
+              {/* Email header */}
+              <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl">
+                <User className="h-4 w-4 text-stone-400 shrink-0" />
+                <span className="truncate text-[13px] font-medium text-stone-655">{userEmail || cleanDisplayName}</span>
               </div>
+
+              <div className="h-px bg-stone-100 mx-2 my-1" />
+
+              {/* Todos los ajustes */}
+              <button
+                onClick={() => {
+                  setProfileMenuOpen(false);
+                  setSettingsOpen(true);
+                }}
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
+              >
+                <Settings className="h-4 w-4 text-stone-500 shrink-0" />
+                <span className="flex-1 font-semibold text-left">Todos los ajustes</span>
+                <span className="text-[11px] text-stone-400 font-mono">⇧^,</span>
+              </button>
+
+              {/* Actualizar plan */}
+              <Link
+                href="/comunidad/planes"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors no-underline cursor-pointer"
+              >
+                <ArrowUpCircle className="h-4 w-4 text-stone-500 shrink-0" />
+                <span className="font-semibold">Actualizar plan</span>
+              </Link>
+
+              {/* Instalar apps */}
+              <button
+                onClick={() => alert("La aplicación de escritorio se encuentra en desarrollo.")}
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
+              >
+                <Download className="h-4 w-4 text-stone-500 shrink-0" />
+                <span className="font-semibold">Instalar apps</span>
+              </button>
+
+              <div className="h-px bg-stone-100 mx-2 my-1" />
+
+              {/* Apariencia - with flyout submenu */}
+              <div
+                className="relative"
+                onMouseEnter={() => setActiveSubmenu('apariencia')}
+                onMouseLeave={() => { if (activeSubmenu === 'apariencia') setActiveSubmenu(null); }}
+              >
+                <button
+                  onClick={() => setActiveSubmenu(activeSubmenu === 'apariencia' ? null : 'apariencia')}
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] w-full text-left transition-colors cursor-pointer border-0 bg-transparent",
+                    activeSubmenu === 'apariencia'
+                      ? "bg-stone-200/40 text-stone-900"
+                      : "text-stone-700 hover:bg-stone-200/35 hover:text-stone-900"
+                  )}
+                >
+                  <Sun className="h-4 w-4 text-stone-500 shrink-0" />
+                  <div className="flex-1 flex flex-col items-start min-w-0">
+                    <span className="font-semibold">Apariencia</span>
+                    <span className="text-[11px] text-stone-400 capitalize">{currentTheme}</span>
+                  </div>
+                  <ChevronRight className="h-3.5 w-3.5 text-stone-400 shrink-0" />
+                </button>
+
+                {/* Flyout submenu - Apariencia */}
+                <AnimatePresence>
+                  {activeSubmenu === 'apariencia' && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -4 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -4 }}
+                      transition={{ duration: 0.12 }}
+                      className="absolute left-full top-0 ml-1.5 w-40 bg-white border border-stone-200 rounded-xl shadow-lg p-1 flex flex-col z-50"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {([
+                        { key: 'claro' as const, label: 'Claro', icon: Sun },
+                        { key: 'oscuro' as const, label: 'Oscuro', icon: Moon },
+                        { key: 'sistema' as const, label: 'Sistema', icon: Monitor },
+                      ]).map(({ key, label, icon: Ic }) => (
+                        <button
+                          key={key}
+                          onClick={() => handleThemeChange(key)}
+                          className={cn(
+                            "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] transition-colors border-0 bg-transparent text-left w-full cursor-pointer",
+                            currentTheme === key
+                              ? "text-stone-900 font-bold"
+                              : "text-stone-605 hover:bg-stone-200/35 hover:text-stone-900"
+                          )}
+                        >
+                          <Ic className="h-4 w-4 text-stone-500 shrink-0" />
+                          <span className="flex-1">{label}</span>
+                          {currentTheme === key && <Check className="h-4 w-4 text-blue-600 shrink-0" />}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Idioma - with flyout submenu */}
+              <div
+                className="relative"
+                onMouseEnter={() => setActiveSubmenu('idioma')}
+                onMouseLeave={() => { if (activeSubmenu === 'idioma') setActiveSubmenu(null); }}
+              >
+                <button
+                  onClick={() => setActiveSubmenu(activeSubmenu === 'idioma' ? null : 'idioma')}
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] w-full text-left transition-colors cursor-pointer border-0 bg-transparent",
+                    activeSubmenu === 'idioma'
+                      ? "bg-stone-200/40 text-stone-900"
+                      : "text-stone-700 hover:bg-stone-200/35 hover:text-stone-900"
+                  )}
+                >
+                  <Globe className="h-4 w-4 text-stone-500 shrink-0" />
+                  <div className="flex-1 flex flex-col items-start min-w-0">
+                    <span className="font-semibold">Idioma</span>
+                    <span className="text-[11px] text-stone-400">{currentLanguage === 'es' ? 'Español' : 'English'}</span>
+                  </div>
+                  <ChevronRight className="h-3.5 w-3.5 text-stone-400 shrink-0" />
+                </button>
+
+                {/* Flyout submenu - Idioma */}
+                <AnimatePresence>
+                  {activeSubmenu === 'idioma' && (
+                    <motion.div
+                      initial={{ opacity: 0, x: -4 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -4 }}
+                      transition={{ duration: 0.12 }}
+                      className="absolute left-full top-0 ml-1.5 w-40 bg-white border border-stone-200 rounded-xl shadow-lg p-1 flex flex-col z-50"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {([
+                        { key: 'es' as const, label: 'Español' },
+                        { key: 'en' as const, label: 'English' },
+                      ]).map(({ key, label }) => (
+                        <button
+                          key={key}
+                          onClick={() => handleLanguageChange(key)}
+                          className={cn(
+                            "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] transition-colors border-0 bg-transparent text-left w-full cursor-pointer",
+                            currentLanguage === key
+                              ? "text-stone-900 font-bold"
+                              : "text-stone-605 hover:bg-stone-200/35 hover:text-stone-900"
+                          )}
+                        >
+                          <span className="flex-1">{label}</span>
+                          {currentLanguage === key && <Check className="h-4 w-4 text-blue-600 shrink-0" />}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Ayuda */}
+              <Link
+                href="/faq"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors no-underline cursor-pointer"
+              >
+                <HelpCircle className="h-4 w-4 text-stone-500 shrink-0" />
+                <span className="flex-1 font-semibold">Ayuda</span>
+                <ChevronRight className="h-3.5 w-3.5 text-stone-400" />
+              </Link>
+
+              <div className="h-px bg-stone-100 mx-2 my-1" />
+
+              {/* Cerrar sesión */}
+              <button
+                onClick={async () => {
+                  const supabase = createClient();
+                  await supabase.auth.signOut({ scope: "global" });
+                  window.location.replace("/");
+                }}
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-red-50 hover:text-red-650 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
+              >
+                <LogOut className="h-4 w-4 text-stone-400 shrink-0" />
+                <span className="font-semibold">Cerrar sesión</span>
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -690,10 +767,13 @@ export function ConversationSidebar({
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 8, scale: 0.96 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
-              className="absolute left-full bottom-0 ml-3 w-[320px] z-50"
+              className={cn(
+                "fixed z-50 w-[320px] mb-2 bg-white border border-stone-200 rounded-2xl shadow-xl p-4 flex flex-col text-stone-900",
+                collapsed ? "bottom-16 left-[78px]" : "bottom-16 left-[266px]"
+              )}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="bg-white border border-stone-200 rounded-2xl shadow-xl p-4 flex flex-col text-stone-900" ref={notifRef}>
+              <div className="flex flex-col" ref={notifRef}>
                 {/* Header */}
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-black text-stone-900">Notificaciones</span>
@@ -716,18 +796,18 @@ export function ConversationSidebar({
           )}
         </AnimatePresence>
 
-        {/* ── Profile trigger button (matching Grok: avatar+name ↕ 🔔) ── */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setProfileMenuOpen((o) => !o);
-              if (profileMenuOpen) setActiveSubmenu(null);
-            }}
-            className="flex-1 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-stone-200/35 cursor-pointer border-0 bg-transparent min-w-0"
-          >
-            {/* Avatar with subscription badge */}
-            <div className="relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs">
+        {/* ── Profile trigger button ── */}
+        {collapsed ? (
+          <div className="flex items-center justify-center">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setProfileMenuOpen((o) => !o);
+                if (profileMenuOpen) setActiveSubmenu(null);
+              }}
+              className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0"
+              title={cleanDisplayName}
+            >
               {avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
@@ -739,24 +819,59 @@ export function ConversationSidebar({
                 <span aria-hidden>{initials}</span>
               )}
               {/* Tier badge below avatar */}
-              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-black text-white text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-neutral-900 uppercase tracking-wider leading-none whitespace-nowrap animate-scale">
+              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-black text-white text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-neutral-900 uppercase tracking-wider leading-none whitespace-nowrap">
                 {tierLabel}
               </span>
-            </div>
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setProfileMenuOpen((o) => !o);
+                if (profileMenuOpen) setActiveSubmenu(null);
+              }}
+              className="flex-1 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-stone-200/35 cursor-pointer border-0 bg-transparent min-w-0"
+            >
+              {/* Avatar with subscription badge */}
+              <div className="relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={avatarUrl}
+                    alt={cleanDisplayName}
+                    className="h-full w-full object-cover rounded-full"
+                  />
+                ) : (
+                  <span aria-hidden>{initials}</span>
+                )}
+                {/* Tier badge below avatar */}
+                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-black text-white text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-neutral-900 uppercase tracking-wider leading-none whitespace-nowrap">
+                  {tierLabel}
+                </span>
+              </div>
 
-            {/* Name + expand icon */}
-            <span className="truncate text-[13px] font-semibold text-stone-850 min-w-0">
-              {cleanDisplayName}
-            </span>
-          </button>
+              {/* Name */}
+              <span className="truncate text-[13px] font-semibold text-stone-850 min-w-0">
+                {cleanDisplayName}
+              </span>
+            </button>
 
-          {/* Bell icon */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setNotifOpen(!notifOpen);
-            }}
-            className="h-9 w-9 rounded-xl flex items-center justify-center text-stone-500 hover:bg-stone-200/35 hover:text-stone-850 transition-colors shrink-0 cursor-pointer border-0 bg-transparent"
+            {/* Bell icon */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setNotifOpen(!notifOpen);
+              }}
+              className="h-9 w-9 rounded-xl flex items-center justify-center text-stone-500 hover:bg-stone-200/35 hover:text-stone-850 transition-colors shrink-0 cursor-pointer border-0 bg-transparent"
+              title="Notificaciones"
+            >
+              <Bell className="w-[18px] h-[18px]" />
+            </button>
+          </div>
+        )}
+      </div>nsparent"
             title="Notificaciones"
           >
             <Bell className="w-[18px] h-[18px]" />

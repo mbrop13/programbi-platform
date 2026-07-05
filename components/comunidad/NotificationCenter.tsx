@@ -42,14 +42,16 @@ interface Notification {
   link?: string;
   user_id?: string;
 }
+import { cn } from "@/lib/utils";
 
 interface NotificationCenterProps {
   open: boolean;
   onClose: () => void;
   onUnreadChange?: (count: number | ((prev: number) => number)) => void;
+  collapsed?: boolean;
 }
 
-export default function NotificationCenter({ open, onClose, onUnreadChange }: NotificationCenterProps) {
+export default function NotificationCenter({ open, onClose, onUnreadChange, collapsed = false }: NotificationCenterProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -173,7 +175,12 @@ export default function NotificationCenter({ open, onClose, onUnreadChange }: No
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 8, scale: 0.96 }}
           transition={{ duration: 0.15 }}
-          className="fixed top-4 right-4 w-[360px] max-h-[500px] bg-white rounded-2xl shadow-xl shadow-gray-200/60 border border-gray-100 overflow-hidden z-[100] flex flex-col"
+          className={cn(
+            "fixed z-[100] flex flex-col bg-white rounded-2xl shadow-xl shadow-gray-250/50 border border-gray-150 overflow-hidden w-[360px] max-h-[500px]",
+            collapsed
+              ? "bottom-16 left-4 md:left-[76px]"
+              : "bottom-16 left-4 md:left-[264px]"
+          )}
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
