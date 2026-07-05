@@ -152,9 +152,6 @@ export default function QuotaIndicator({ refreshKey = 0, onUpgradeClick }: Quota
         title="Uso de tokens IA"
       >
         <span className={cn("w-1.5 h-1.5 rounded-full", triggerDot)} />
-        <span className="text-[11px] font-semibold tabular-nums">
-          {100 - maxPct}%
-        </span>
       </button>
 
       <AnimatePresence>
