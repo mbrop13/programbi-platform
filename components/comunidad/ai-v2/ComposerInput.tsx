@@ -388,16 +388,22 @@ export function ComposerInput({
                   );
                 }
               }}
-              aria-label="Modo Canvas"
-              title="Modo Canvas"
-              whileHover={{ scale: 1.08, backgroundColor: "rgba(15, 23, 42, 0.05)" }}
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
               className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-lg transition-colors cursor-pointer",
-                canvas.isOpen ? "text-blue-600 bg-blue-50/50" : "text-text-muted"
+                "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold shadow-sm transition-all duration-150 cursor-pointer active:scale-95",
+                canvas.isOpen
+                  ? "bg-blue-600 border-blue-600 text-white hover:bg-blue-700"
+                  : "bg-white border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-stone-800"
               )}
+              title="Modo Canvas"
             >
-              <LayoutTemplate className="h-5 w-5" />
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" strokeWidth="2" className="w-3.5 h-3.5 shrink-0">
+                <path d="M5.33398 4.33301L1.33398 8.47707L5.33398 12.333" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
+                <path d="M10.666 4.33301L14.666 8.47707L10.666 12.333" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
+                <path d="M9.33333 1.33301L7 14.6663" stroke="currentColor" strokeLinecap="round"></path>
+              </svg>
+              <span>Canvas</span>
             </motion.button>
 
             {uploading && <Loader2 className="h-3.5 w-3.5 animate-spin text-text-muted" aria-hidden />}

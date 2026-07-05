@@ -171,6 +171,39 @@ function ChatShellInner({
   const { messages, status, sendMessage, regenerate, stop, setMessages } = chat;
   const isStreaming = status === "streaming" || status === "submitted";
 
+  // Auto-open canvas when AI starts generating code block
+  useEffect(() => {
+    if (!isStreaming) return;
+    const lastMsg = messages[messages.length - 1];
+    if (!lastMsg || lastMsg.role !== "assistant") return;
+
+    // Extract text from parts
+    const textChunks: string[] = [];
+    for (const part of (lastMsg as any).parts ?? []) {
+      if (part.type === "text") {
+        textChunks.push(part.text ?? "");
+      }
+    }
+    const content = textChunks.join("\n\n");
+
+    // Matches markdown code block syntax with any language
+    const match = content.match(/```([a-zA-Z0-9_-]+)\n([\s\S]*?)(?:```|$)/);
+
+    if (match) {
+      const lang = match[1];
+      const code = match[2];
+
+      if (!canvas.isOpen || canvas.activeFile?.id !== "canvas-auto-stream" || canvas.activeFile?.code !== code) {
+        canvas.openCanvas({
+          id: "canvas-auto-stream",
+          title: "Código de la IA",
+          code: code,
+          language: lang,
+        });
+      }
+    }
+  }, [messages, isStreaming, canvas]);
+
   // ─── Carga de lista de chats ───
   const refreshChats = useCallback(async () => {
     try {
