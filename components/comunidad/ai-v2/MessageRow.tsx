@@ -21,30 +21,6 @@ function isImagePart(p: ChatPart) {
   return p.type === "file" && String(p.mediaType ?? "").startsWith("image/");
 }
 
-/** Avatar del usuario: imagen si existe, si no iniciales sobre gradiente de marca. */
-function UserAvatar({ name, url }: { name?: string; url?: string | null }) {
-  const initials = (name ?? "?")
-    .split(" ")
-    .map((w) => w[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-  return (
-    <div
-      className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-brand-blue to-brand-blue-dark text-xs font-semibold text-white shadow-sm ring-2 ring-surface-0"
-      aria-hidden
-    >
-      {url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={url} alt="" className="h-full w-full object-cover" />
-      ) : (
-        <span>{initials || "?"}</span>
-      )}
-    </div>
-  );
-}
-
 /** Convierte markdown a texto plano para TTS (no leer sintaxis cruda). */
 function toPlainText(md: string): string {
   return md
@@ -128,10 +104,15 @@ function MessageRowBase({
     setSpeaking(true);
   };
 
-  // ─── Usuario: burbuja derecha + avatar ───
+  // ─── Usuario: burbuja derecha ───
   if (isUser) {
     return (
-      <div className="flex justify-end gap-2.5 px-4 py-2 sm:px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, ease: "easeOut" }}
+        className="flex justify-end px-4 py-2 sm:px-6"
+      >
         <div className="flex flex-col items-end gap-2 max-w-[85%] sm:max-w-[75%]">
           {imageParts.length > 0 && (
             <div className="flex flex-wrap justify-end gap-2">
@@ -154,19 +135,23 @@ function MessageRowBase({
             </div>
           )}
         </div>
-        <UserAvatar name={userName} url={userAvatarUrl} />
-      </div>
+      </motion.div>
     );
   }
 
   // ─── Asistente: full-width, sin burbuja (documento premium) ───
   return (
-    <div className="group flex gap-3 px-4 py-4 sm:px-6">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
+      className="group flex gap-3 px-4 py-4 sm:px-6"
+    >
       <div className="min-w-0 flex-1">
         {/* Header: nombre modelo */}
         <div className="mb-1 flex items-center gap-2">
-          <span className="text-sm font-semibold text-text-primary">
-            {modelName ?? "Mentor IA"}
+          <span className="text-sm font-bold text-text-primary">
+            Mentor IA
           </span>
         </div>
 
@@ -205,45 +190,42 @@ function MessageRowBase({
 
         {/* Acciones: visibles en hover, foco y táctil */}
         {!isStreaming && text && (
-          <div className="touch-visible mt-2.5 flex items-center gap-1.5 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+          <div className="touch-visible mt-3 flex items-center gap-2 opacity-50 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
             <motion.button
               onClick={handleCopy}
               aria-label={copied ? "Copiado" : "Copiar mensaje"}
-              whileHover={{ scale: 1.02, backgroundColor: "var(--color-surface-2)" }}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors duration-150 hover:text-text-secondary cursor-pointer border-0 bg-transparent"
+              className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-500 hover:text-stone-700 px-3 py-1.5 text-xs font-semibold shadow-sm transition-all duration-150 cursor-pointer active:scale-95"
             >
-              {copied ? <Check className="h-3 w-3 text-accent-emerald" aria-hidden /> : <Copy className="h-3 w-3" aria-hidden />}
-              {copied ? "Copiado" : "Copiar"}
+              {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}
+              <span>{copied ? "Copiado" : "Copiar"}</span>
             </motion.button>
             {typeof window !== "undefined" && window.speechSynthesis && (
               <motion.button
                 onClick={handleSpeak}
                 aria-label={speaking ? "Detener lectura" : "Escuchar mensaje"}
-                whileHover={{ scale: 1.02, backgroundColor: "var(--color-surface-2)" }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors duration-150 hover:text-text-secondary cursor-pointer border-0 bg-transparent"
+                className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-500 hover:text-stone-700 px-3 py-1.5 text-xs font-semibold shadow-sm transition-all duration-150 cursor-pointer active:scale-95"
               >
-                {speaking ? <VolumeX className="h-3 w-3" aria-hidden /> : <Volume2 className="h-3 w-3" aria-hidden />}
-                {speaking ? "Detener" : "Escuchar"}
+                {speaking ? <VolumeX className="h-3.5 w-3.5" aria-hidden /> : <Volume2 className="h-3.5 w-3.5" aria-hidden />}
+                <span>{speaking ? "Detener" : "Escuchar"}</span>
               </motion.button>
             )}
             {onRegenerate && (
               <motion.button
                 onClick={onRegenerate}
                 aria-label="Regenerar respuesta"
-                whileHover={{ scale: 1.02, backgroundColor: "var(--color-surface-2)" }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-1 rounded-md px-2 py-1 text-[11px] text-text-muted transition-colors duration-150 hover:text-text-secondary cursor-pointer border-0 bg-transparent"
+                className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-500 hover:text-stone-700 px-3 py-1.5 text-xs font-semibold shadow-sm transition-all duration-150 cursor-pointer active:scale-95"
               >
-                <RefreshCw className="h-3 w-3" aria-hidden />
-                Regenerar
+                <RefreshCw className="h-3.5 w-3.5" aria-hidden />
+                <span>Regenerar</span>
               </motion.button>
             )}
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
