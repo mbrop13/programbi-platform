@@ -1,10 +1,8 @@
 "use client";
 
-import Image from "next/image";
 import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 import { Code, Database, LineChart, BookOpen } from "lucide-react";
-import { LOGO_URL } from "./constants";
 
 interface LandingProps {
   /** Composer (u otro contenido) que se incrusta debajo */
@@ -45,42 +43,20 @@ const SUGGESTIONS = [
 ];
 
 /**
- * Estado vacío: logotipo de la empresa balanceado, saludo con tipografía display
- * y sugerencias rápidas e interactivas para iniciar la conversación.
+ * Estado vacío: saludo con tipografía display y sugerencias rápidas
+ * e interactivas para iniciar la conversación.
  */
 export function Landing({ children, onSuggestionClick }: LandingProps) {
   return (
     <div className="relative flex-1 overflow-y-auto">
       <div className="flex min-h-full flex-col items-center justify-center gap-6 px-4 py-10 md:py-16">
-        {/* Encabezado: Logo + Título */}
+        {/* Encabezado: Título */}
         <div className="flex flex-col items-center text-center">
-          {/* Logo con brillo de fondo sutil */}
-          <div className="relative mb-4">
-            <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
-              <div className="h-24 w-24 rounded-full bg-brand-blue/10 blur-2xl" />
-            </div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-            >
-              <Image
-                src={LOGO_URL}
-                alt="ProgramBI"
-                width={80}
-                height={80}
-                className="h-16 w-16 object-contain"
-                priority
-              />
-            </motion.div>
-          </div>
-
           {/* Título de Bienvenida en fuente display */}
           <motion.h2
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.05, ease: "easeOut" }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
             className="font-display text-3xl font-bold tracking-tight text-text-primary md:text-4xl"
           >
             ¿Qué vamos a <span className="text-gradient-brand">resolver hoy</span>?
@@ -90,7 +66,7 @@ export function Landing({ children, onSuggestionClick }: LandingProps) {
           <motion.p
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+            transition={{ duration: 0.4, delay: 0.05, ease: "easeOut" }}
             className="mt-2 max-w-[52ch] text-sm leading-relaxed text-text-muted"
           >
             Tu mentor de IA para resolver dudas de Data Science, Python, SQL y Power BI.

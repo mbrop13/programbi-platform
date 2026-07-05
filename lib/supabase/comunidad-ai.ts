@@ -418,7 +418,9 @@ export async function getAllPublishedCourses() {
     .order("sort_order", { ascending: true });
 
   if (error) { console.error("Error:", error); return []; }
-  return data || [];
+  
+  const allowedSlugs = ["power-bi", "python", "sql-server", "excel"];
+  return (data || []).filter((c: any) => allowedSlugs.includes(c.slug));
 }
 
 export async function getMyEnrollments() {

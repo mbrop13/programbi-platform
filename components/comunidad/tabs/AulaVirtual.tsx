@@ -37,6 +37,7 @@ interface Module {
 interface AulaVirtualProps {
   courseId: string;
   onBack: () => void;
+  onUpgradeClick?: () => void;
 }
 
 function extractYouTubeId(url: string): string | null {
@@ -62,7 +63,7 @@ function slugify(text: string): string {
     .replace(/-+$/, "");
 }
 
-export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
+export default function AulaVirtual({ courseId, onBack, onUpgradeClick }: AulaVirtualProps) {
   const router = useRouter();
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
@@ -1333,7 +1334,7 @@ export default function AulaVirtual({ courseId, onBack }: AulaVirtualProps) {
                           Estás en los 7 días de prueba. Para desbloquear todas las clases adicionales, puedes contratar el plan premium de la plataforma ahora.
                         </p>
                         <button
-                          onClick={() => window.location.href = `/api/mercadopago/upgrade-trial`}
+                          onClick={() => onUpgradeClick ? onUpgradeClick() : (window.location.href = `/api/mercadopago/upgrade-trial`)}
                           className="px-5 py-2.5 bg-gradient-to-r from-brand-blue to-indigo-600 text-white text-xs font-bold rounded-xl shadow-lg flex items-center gap-1.5 active:scale-[0.98] transition-all cursor-pointer border-0"
                         >
                           <Sparkles className="w-4 h-4" /> Desbloquear Curso Completo

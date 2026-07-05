@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useState } from "react";
-import { Bot, Check, Copy, RefreshCw, Volume2, VolumeX } from "lucide-react";
+import { Check, Copy, RefreshCw, Volume2, VolumeX } from "lucide-react";
 import { motion } from "framer-motion";
 import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ReasoningPanel } from "./ReasoningPanel";
@@ -162,14 +162,6 @@ function MessageRowBase({
   // ─── Asistente: full-width, sin burbuja (documento premium) ───
   return (
     <div className="group flex gap-3 px-4 py-4 sm:px-6">
-      {/* Avatar IA */}
-      <div
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-blue to-brand-blue-dark shadow-glow-brand"
-        aria-hidden
-      >
-        <Bot className="h-4 w-4 text-white" />
-      </div>
-
       <div className="min-w-0 flex-1">
         {/* Header: nombre modelo */}
         <div className="mb-1 flex items-center gap-2">

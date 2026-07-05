@@ -31,9 +31,17 @@ interface ChatShellProps {
   isRestricted?: boolean;
   userName?: string;
   avatarUrl?: string | null;
+  subscriptionPlan?: string | null;
+  isAdmin?: boolean;
 }
 
-export default function ChatShell({ isRestricted = false, userName, avatarUrl }: ChatShellProps) {
+export default function ChatShell({
+  isRestricted = false,
+  userName,
+  avatarUrl,
+  subscriptionPlan,
+  isAdmin = false,
+}: ChatShellProps) {
   const isPremium = !isRestricted;
 
   // Vista restringida (freemium upsell) — no necesita Canvas
@@ -64,7 +72,13 @@ export default function ChatShell({ isRestricted = false, userName, avatarUrl }:
 
   return (
     <CanvasProvider>
-      <ChatShellInner isPremium={isPremium} userName={userName} avatarUrl={avatarUrl ?? null} />
+      <ChatShellInner
+        isPremium={isPremium}
+        userName={userName}
+        avatarUrl={avatarUrl ?? null}
+        subscriptionPlan={subscriptionPlan}
+        isAdmin={isAdmin}
+      />
     </CanvasProvider>
   );
 }
@@ -73,10 +87,14 @@ function ChatShellInner({
   isPremium,
   userName,
   avatarUrl,
+  subscriptionPlan,
+  isAdmin = false,
 }: {
   isPremium: boolean;
   userName?: string;
   avatarUrl: string | null;
+  subscriptionPlan?: string | null;
+  isAdmin?: boolean;
 }) {
   const canvas = useCanvas();
 
@@ -384,6 +402,8 @@ function ChatShellInner({
             onArchive={handleArchive}
             userName={userName}
             avatarUrl={avatarUrl}
+            subscriptionPlan={subscriptionPlan}
+            isAdmin={isAdmin}
             onClose={() => setSidebarOpen(false)}
           />
         ) : (

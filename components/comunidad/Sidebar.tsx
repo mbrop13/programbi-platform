@@ -22,6 +22,7 @@ import {
   ExternalLink,
   Search,
   Bell,
+  ArrowRight,
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
 import { getUnreadNotificationCount } from "@/lib/supabase/comunidad";
@@ -54,6 +55,7 @@ interface SidebarProps {
   mobileOpen: boolean;
   onMobileClose: () => void;
   onOpenSettings: () => void;
+  onUpgradeClick: () => void;
 }
 
 export default function Sidebar({
@@ -69,6 +71,7 @@ export default function Sidebar({
   mobileOpen,
   onMobileClose,
   onOpenSettings,
+  onUpgradeClick,
 }: SidebarProps) {
   const router = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
@@ -384,6 +387,38 @@ export default function Sidebar({
         ))}
       </nav>
 
+      {/* Upgrade Banner for Unsubscribed Students */}
+      {(() => {
+        const hasSubscription = !!userProfile?.subscription_plan || isAdmin;
+        if (!collapsed && !hasSubscription) {
+          return (
+            <div className="mx-3 mb-4 p-4 rounded-2xl bg-gradient-to-br from-blue-50/50 via-indigo-50/30 to-brand-blue/5 border border-brand-blue/10 relative overflow-hidden shadow-sm shrink-0">
+              {/* Sparkles glow */}
+              <div className="absolute top-0 right-0 w-16 h-16 bg-brand-blue/5 rounded-full filter blur-xl pointer-events-none" />
+              <div className="relative z-10">
+                <span className="text-[9px] font-black uppercase tracking-widest text-brand-blue bg-white px-2 py-0.5 rounded-full border border-brand-blue/10 inline-flex items-center gap-1 shadow-sm">
+                  <Sparkles className="w-2.5 h-2.5" /> Acceso Completo
+                </span>
+                <h4 className="text-xs font-black text-gray-900 mt-2.5 leading-snug">
+                  Desbloquea los 4 cursos
+                </h4>
+                <p className="text-[10px] text-gray-500 mt-1 leading-normal">
+                  Obtén acceso ilimitado a SQL, Power BI, Python y Excel.
+                </p>
+                <button
+                  onClick={onUpgradeClick}
+                  className="w-full mt-3 py-2 bg-slate-950 hover:bg-slate-900 text-white text-[10px] font-black rounded-lg transition-all active:scale-[0.98] border-0 cursor-pointer shadow-sm flex items-center justify-center gap-1"
+                >
+                  Suscribirse
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          );
+        }
+        return null;
+      })()}
+
       {/* ─── USER SECTION (bottom) ─── */}
       <div className={`shrink-0 border-t border-gray-100 ${collapsed ? "p-2 flex justify-center" : "p-3"}`}>
         {authLoading && !userProfile ? (
@@ -496,7 +531,7 @@ export default function Sidebar({
                   icon={CreditCard}
                   label="Suscripción"
                   onClick={() => {
-                    onTabChange("cursos");
+                    onUpgradeClick();
                     setUserMenuOpen(false);
                   }}
                 />

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Bot, ArrowDown } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { MessageRow } from "./MessageRow";
 import type { ChatMessage } from "./types";
 
@@ -80,9 +80,6 @@ export function ChatList({ messages, status, modelName, onRegenerate, userName, 
               role="status"
               aria-label="Mentor IA escribiendo"
             >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-blue to-brand-blue-dark shadow-sm">
-                <Bot className="h-4 w-4 text-white" aria-hidden />
-              </div>
               <div className="flex items-center gap-1 pt-2">
                 <span className="h-2 w-2 animate-pulse rounded-full bg-text-muted" />
                 <span className="h-2 w-2 animate-pulse rounded-full bg-text-muted [animation-delay:120ms]" />

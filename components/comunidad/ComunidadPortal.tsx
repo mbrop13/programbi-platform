@@ -16,6 +16,7 @@ import LivePanel from "./tabs/LivePanel";
 import UserProfile from "./tabs/UserProfile";
 import Certificates from "./tabs/Certificates";
 import SettingsModal from "./SettingsModal";
+import SubscriptionModal from "./SubscriptionModal";
 import { ToastProvider } from "./ui/Toast";
 
 import {
@@ -52,6 +53,7 @@ export default function ComunidadPortal() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const selectedCourseSlug = activeTab === "cursos" ? (segments[2] || null) : null;
   const selectedCourseId = selectedCourseSlug ? (courseSlugMap[selectedCourseSlug] || null) : null;
@@ -188,6 +190,7 @@ export default function ComunidadPortal() {
             mobileOpen={mobileNavOpen}
             onMobileClose={() => setMobileNavOpen(false)}
             onOpenSettings={() => setShowSettingsModal(true)}
+            onUpgradeClick={() => setShowUpgradeModal(true)}
           />
         )}
 
@@ -223,6 +226,8 @@ export default function ComunidadPortal() {
                     isRestricted={!!restrictedView}
                     userName={userProfile?.full_name}
                     avatarUrl={userProfile?.avatar_url ?? null}
+                    subscriptionPlan={userProfile?.subscription_plan}
+                    isAdmin={isAdmin}
                   />
                 </motion.div>
               </AnimatePresence>
@@ -239,6 +244,7 @@ export default function ComunidadPortal() {
                   <AulaVirtual
                     courseId={selectedCourseId}
                     onBack={() => handleSelectCourse(null)}
+                    onUpgradeClick={() => setShowUpgradeModal(true)}
                   />
                 </motion.div>
               </AnimatePresence>
@@ -261,6 +267,7 @@ export default function ComunidadPortal() {
                         <AulaVirtual
                           courseId={selectedCourseId}
                           onBack={() => handleSelectCourse(null)}
+                          onUpgradeClick={() => setShowUpgradeModal(true)}
                         />
                       ) : (
                         <MisCursos onSelectCourse={(id) => handleSelectCourse(id)} />
@@ -347,6 +354,11 @@ export default function ComunidadPortal() {
             />
           )}
         </AnimatePresence>
+
+        <SubscriptionModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+        />
       </div>
     </ToastProvider>
   );
