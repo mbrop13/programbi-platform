@@ -2,7 +2,13 @@
  * Premium B2B Enterprise Email Template — ProgramBI
  */
 
+import { escapeHtml } from "@/lib/security/escape";
+
 export function buildEnterpriseEmailHtml(nombre: string, empresa: string): string {
+  // A-15 / V5.4.7 (OWASP ASVS L3): escape user-controlled fields before
+  // interpolating into the HTML email body to prevent HTML/CSS injection.
+  const safeNombre = escapeHtml(nombre);
+  const safeEmpresa = escapeHtml(empresa);
   const year = new Date().getFullYear();
 
   const logos = [
@@ -39,7 +45,7 @@ h1,h2,h3,p{margin:0;padding:0}
 }
 </style></head>
 <body>
-<div style="display:none;max-height:0;overflow:hidden;font-size:1px;color:#f1f5f9;">${nombre}, hemos recibido tu solicitud de capacitación corporativa. Pronto te contactaremos.</div>
+<div style="display:none;max-height:0;overflow:hidden;font-size:1px;color:#f1f5f9;">${safeNombre}, hemos recibido tu solicitud de capacitación corporativa. Pronto te contactaremos.</div>
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#f1f5f9">
 <tr><td align="center" style="padding:32px 16px" class="outer">
 <table width="600" cellpadding="0" cellspacing="0" border="0" class="card" style="max-width:600px;width:100%;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.04)">
@@ -60,8 +66,8 @@ h1,h2,h3,p{margin:0;padding:0}
 
 <!-- SALUDO -->
 <tr><td style="padding:40px 40px 0" class="mp">
-<h1 style="font-size:26px;font-weight:800;color:#0f172a;letter-spacing:-0.5px;margin-bottom:16px">Hola ${nombre},</h1>
-<p style="font-size:15px;line-height:1.7;color:#475569;margin-bottom:24px"><strong style="color:#0f172a">Hemos recibido exitosamente tu solicitud${empresa ? ` desde ${empresa}` : ""}.</strong> Gracias por confiar en nosotros para liderar la capacitación y transformación tecnológica de tu equipo.</p>
+<h1 style="font-size:26px;font-weight:800;color:#0f172a;letter-spacing:-0.5px;margin-bottom:16px">Hola ${safeNombre},</h1>
+<p style="font-size:15px;line-height:1.7;color:#475569;margin-bottom:24px"><strong style="color:#0f172a">Hemos recibido exitosamente tu solicitud${safeEmpresa ? ` desde ${safeEmpresa}` : ""}.</strong> Gracias por confiar en nosotros para liderar la capacitación y transformación tecnológica de tu equipo.</p>
 </td></tr>
 
 <!-- CALLOUT -->

@@ -6,6 +6,7 @@ import { useState, useEffect, FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { validatePassword, isBreachedPassword } from "@/lib/security/password";
 import { useCountry } from "@/lib/context/CountryContext";
 import { subscribeToNewsletter } from "@/lib/supabase/comunidad-ai";
 
@@ -128,12 +129,23 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     e.preventDefault();
     setError(null);
 
-    if (password.length < 6) {
-      setError("La contraseña debe tener al menos 6 caracteres.");
+    // A-01 / V2.5.1 (OWASP ASVS L3): apply the same centralized policy used by
+    // the dedicated registro page. The previous check (< 6 chars) was far too
+    // weak and diverged from the rest of the app.
+    const pwCheck = validatePassword(password);
+    if (!pwCheck.ok) {
+      setError(pwCheck.error!);
       return;
     }
 
     setLoading(true);
+
+    // A-02 / V2.5.7 (OWASP ASVS L3): reject passwords found in known breaches.
+    if (await isBreachedPassword(password)) {
+      setError("Esta contraseña aparece en filtraciones conocidas. Elige otra.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data, error } = await supabase.auth.signUp({

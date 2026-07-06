@@ -6,29 +6,25 @@ import { sendPaymentConfirmation, sendNewPurchaseNotificationToAdmin } from "@/l
 /**
  * GET /api/mp/return
  * MercadoPago redirects the user here after payment via Checkout Pro.
- * Query params from MP: collection_id, collection_status, external_reference, payment_type, merchant_order_id, preference_id, site_id, processing_mode, merchant_account_id
+ *
+ * A-10 / V4.2.2 (OWASP ASVS L3): this URL must NOT mutate financial state based
+ * on client-controlled query params. The previous implementation trusted
+ * `collection_status` from the URL, allowing a user to fake `?collection_status=
+ * approved&external_reference=...` and auto-approve a payment without paying.
+ *
+ * The fix: only the verified response from MercadoPago's API (`getMPPayment`)
+ * can authorize a payment mutation. If we cannot reach the MP API or the status
+ * is not `approved`, we redirect with a neutral label and let the verified
+ * webhook (which checks HMAC) do the final mutation.
  */
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
-  const collectionStatus = url.searchParams.get("collection_status");
   const externalReference = url.searchParams.get("external_reference"); // Our commerceOrder
   const collectionId = url.searchParams.get("collection_id"); // MP payment ID
+  // NOTE: collection_status is intentionally NOT trusted for state mutations.
 
   if (!externalReference) {
     return NextResponse.redirect(new URL("/comunidad/inicio?payment=error", req.url));
-  }
-
-  // If status is not approved, redirect with appropriate label
-  if (collectionStatus !== "approved") {
-    const statusMap: Record<string, string> = {
-      "rejected": "rejected",
-      "cancelled": "cancelled",
-      "pending": "pending",
-      "in_process": "pending",
-      "null": "cancelled",
-    };
-    const label = statusMap[collectionStatus || "null"] || "pending";
-    return NextResponse.redirect(new URL(`/comunidad/inicio?payment=${label}`, req.url));
   }
 
   try {
@@ -46,22 +42,39 @@ export async function GET(req: NextRequest) {
       return NextResponse.redirect(new URL("/comunidad/inicio?payment=error", req.url));
     }
 
-    // Already processed by webhook?
+    // Already processed by the verified webhook? Just redirect to success.
     if (payment.status === "paid") {
       return NextResponse.redirect(new URL("/comunidad/inicio?payment=success", req.url));
     }
 
-    // Get full payment details from MercadoPago
+    // Re-query MercadoPago to get the AUTHORITATIVE payment status. We do not
+    // trust `collection_status` from the URL.
     let mpPayment: any = null;
     if (collectionId) {
       try {
         mpPayment = await getMPPayment(collectionId);
       } catch (err) {
         console.error("MP Return: Error fetching MP payment details:", err);
+        // Cannot verify — redirect to a neutral "processing" page. The verified
+        // webhook will finalize the payment when MP calls it.
+        return NextResponse.redirect(new URL("/comunidad/inicio?payment=pending", req.url));
       }
+    } else {
+      // Without the payment id we cannot verify — defer to the webhook.
+      return NextResponse.redirect(new URL("/comunidad/inicio?payment=pending", req.url));
     }
 
-    // Mark as paid
+    // Only mutate state if MP's API confirms approval.
+    const isApproved = mpPayment && mpPayment.status === "approved";
+    if (!isApproved) {
+      const label =
+        mpPayment?.status === "rejected" ? "rejected"
+        : mpPayment?.status === "cancelled" ? "cancelled"
+        : "pending";
+      return NextResponse.redirect(new URL(`/comunidad/inicio?payment=${label}`, req.url));
+    }
+
+    // Mark as paid (idempotent — webhook may have already done this)
     await supabase.from("payments").update({
       status: "paid",
       flow_status: 2, // Reuse column: 2 = paid
@@ -73,10 +86,8 @@ export async function GET(req: NextRequest) {
     let cartItems: any[] = [];
     let schedulingSlots: any[] = [];
     let couponCodeToIncrement: string | null = null;
-    
+
     try {
-      // Read the original payment_method JSON (before we overwrote it above)
-      // We need to query again since we just updated it. Use the original value.
       if (payment.payment_method && payment.payment_method.startsWith('{')) {
         const parsed = JSON.parse(payment.payment_method);
         if (parsed.items) cartItems = parsed.items;
@@ -92,7 +103,6 @@ export async function GET(req: NextRequest) {
       try {
         const { adminIncrementCouponUsedCount } = await import("@/lib/supabase/comunidad-ai");
         await adminIncrementCouponUsedCount(couponCodeToIncrement);
-        console.log(`✅ Coupon ${couponCodeToIncrement} used count incremented successfully.`);
       } catch (couponErr) {
         console.error("❌ Error incrementing coupon used count:", couponErr);
       }
@@ -144,7 +154,6 @@ export async function GET(req: NextRequest) {
             totalPaid: payment.amount,
             paymentMethod: mpPayment?.payment_method_id || "MercadoPago",
           });
-          console.log(`📧 Purchase confirmation email sent to ${email} via MP return redirect`);
 
           try {
             await sendNewPurchaseNotificationToAdmin({
@@ -156,7 +165,6 @@ export async function GET(req: NextRequest) {
               totalPaid: payment.amount,
               paymentMethod: mpPayment?.payment_method_id || "MercadoPago"
             });
-            console.log("📧 Admin notification sent via MP return redirect");
           } catch (adminEmailErr) {
             console.error("❌ Error sending admin notification:", adminEmailErr);
           }
@@ -182,8 +190,6 @@ export async function GET(req: NextRequest) {
             .upsert(enrollmentsToCreate, { onConflict: "user_id,course_slug" });
           if (enrollErr) {
             console.error("❌ Enrollment error:", enrollErr);
-          } else {
-            console.log(`✅ Enrolled user ${userId} in ${enrollmentsToCreate.length} courses via MP return`);
           }
         }
       } else if (payment.course_id) {
@@ -196,7 +202,6 @@ export async function GET(req: NextRequest) {
             status: "active",
             access_type: "full",
           }, { onConflict: "user_id,course_slug" });
-          console.log(`✅ User ${userId} enrolled in course ${course.slug} via MP return`);
         }
       }
 

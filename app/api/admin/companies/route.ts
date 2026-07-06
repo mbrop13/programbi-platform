@@ -102,8 +102,32 @@ export async function POST(req: NextRequest) {
 
       const file = formData.get("file") as File;
       if (file) {
+        // A-25 / V12.5.1 (OWASP ASVS L3): bound the upload size and MIME type
+        // before reading the body to prevent memory-exhaustion DoS.
+        const MAX_CSV_BYTES = 1_000_000; // 1MB
+        if (file.size > MAX_CSV_BYTES) {
+          return NextResponse.json(
+            { error: "El archivo CSV excede el tamaño máximo permitido (1MB)." },
+            { status: 413 }
+          );
+        }
+        const fileType = (file.type || "").toLowerCase();
+        const fileExt = (file.name.split(".").pop() || "").toLowerCase();
+        const looksLikeCsv =
+          fileType === "text/csv" ||
+          fileType === "application/csv" ||
+          fileType === "application/vnd.ms-excel" ||
+          fileExt === "csv" ||
+          fileType === "text/plain";
+        if (!looksLikeCsv) {
+          return NextResponse.json(
+            { error: "Solo se permiten archivos CSV." },
+            { status: 415 }
+          );
+        }
         const csvText = await file.text();
-        employees = parseCSV(csvText);
+        // Cap the number of rows processed to avoid runaway loops.
+        employees = parseCSV(csvText).slice(0, 1000);
       }
     } else {
       // Expect JSON
@@ -259,9 +283,10 @@ export async function POST(req: NextRequest) {
       } catch (err: any) {
         console.error(`Error processing employee ${employee.email}:`, err);
         results.failed++;
+        const isProd = process.env.NODE_ENV === "production";
         results.errors.push({
           email: employee.email,
-          error: err.message || "Error desconocido",
+          error: isProd ? "Error desconocido" : (err.message || "Error desconocido"),
         });
       }
     }
@@ -273,6 +298,12 @@ export async function POST(req: NextRequest) {
     });
   } catch (err: any) {
     console.error("Error in superadmin create company API:", err);
-    return NextResponse.json({ error: err.message || "Error interno del servidor" }, { status: 500 });
+    // V8-03 / V14.3.2 (OWASP ASVS L3): never leak internal error details to
+    // the client in production.
+    const isProd = process.env.NODE_ENV === "production";
+    return NextResponse.json(
+      { error: isProd ? "Error interno del servidor" : (err.message || "Error interno del servidor") },
+      { status: 500 }
+    );
   }
 }

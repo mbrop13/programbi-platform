@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, Phone, Building, Eye, EyeOff, UserPlus, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { validatePassword, isBreachedPassword } from "@/lib/security/password";
 
 export default function RegistroPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,27 +33,26 @@ export default function RegistroPage() {
     }
 
     const password = formData.password;
-    if (password.length < 10) {
-      setError("La contraseña debe tener al menos 10 caracteres.");
+    // A-01 / V2.5.1 (OWASP ASVS L3): unified centralized policy (>= 12 chars).
+    const pwCheck = validatePassword(password);
+    if (!pwCheck.ok) {
+      setError(pwCheck.error!);
       return;
     }
 
-    const hasUppercase = /[A-Z]/.test(password);
-    const hasLowercase = /[a-z]/.test(password);
-    const hasNumber = /[0-9]/.test(password);
-    const hasSpecial = /[^A-Za-z0-9]/.test(password);
-
-    if (!(hasUppercase && hasLowercase && (hasNumber || hasSpecial))) {
-      setError("La contraseña debe incluir mayúsculas, minúsculas y al menos un número o carácter especial.");
+    // A-02 / V2.5.7 (OWASP ASVS L3): reject passwords found in known breaches.
+    setLoading(true);
+    if (await isBreachedPassword(password)) {
+      setError("Esta contraseña aparece en filtraciones conocidas. Elige otra.");
+      setLoading(false);
       return;
     }
 
     if (!acceptsPrivacy) {
       setError("Debes aceptar la política de privacidad.");
+      setLoading(false);
       return;
     }
-
-    setLoading(true);
 
     try {
       const supabase = createClient();

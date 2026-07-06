@@ -1,11 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { getMPSubscription, getMPPayment } from "@/lib/mercadopago/client";
+import { verifyMercadoPagoSignature } from "@/lib/security/webhook-signature";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    console.log("🔔 MP Webhook received:", JSON.stringify(body));
+
+    // CR-3 (OWASP ASVS L3): verify the MercadoPago HMAC signature before
+    // trusting the payload. Without this, anyone could forge a notification
+    // and activate premium plans or self-enroll in paid courses for free.
+    if (!verifyMercadoPagoSignature(req, body)) {
+      console.warn("⚠️ MP Webhook rejected: invalid signature");
+      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+    }
 
     // Webhooks de Preapproval envían action="created" o "updated"
     // Webhooks de Pagos Únicos (Preferences) envían type="payment" y action="payment.created" o similar.

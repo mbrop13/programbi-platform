@@ -337,11 +337,19 @@ export default function ChatbotAdminClient({
   };
 
   const renderSimpleMarkdown = (text: string) => {
-    // Basic formatting for timeline view
-    return text
+    // Basic formatting for timeline view.
+    // IMPORTANT: visitor messages are untrusted (stored in chatbot_messages) and
+    // are rendered inside the admin panel — without sanitization this would be a
+    // stored XSS that escalates to admin. Sanitize the result before returning.
+    // (OWASP ASVS L3 audit, CR-6)
+    const html = text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
       .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-blue-600">$1</strong>')
       .replace(/\*(.*?)\*/g, '<em class="italic">$1</em>')
       .replace(/\n/g, "<br />");
+    return html;
   };
 
   const totalPages = Math.ceil(total / limit) || 1;

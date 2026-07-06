@@ -156,6 +156,10 @@ export async function POST(req: NextRequest) {
     }
   } catch (err: any) {
     console.error("Error in LiveKit egress route:", err);
-    return NextResponse.json({ error: err.message || "Error interno del servidor" }, { status: 500 });
+    const isProd = process.env.NODE_ENV === "production";
+    return NextResponse.json(
+      { error: isProd ? "Error interno del servidor" : (err.message || "Error interno del servidor") },
+      { status: 500 }
+    );
   }
 }

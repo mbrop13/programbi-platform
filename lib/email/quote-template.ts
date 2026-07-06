@@ -3,6 +3,8 @@
  * Generates the full HTML for the quotation confirmation email.
  */
 
+import { escapeHtml } from "@/lib/security/escape";
+
 export interface EmailCourseItem {
   slug: string;
   title: string;
@@ -29,6 +31,9 @@ export function buildQuoteEmailHtml(
   recommendedCourses: EmailCourseItem[],
   packRecommendation: EmailPackInfo
 ): string {
+  // A-15 / V5.4.7 (OWASP ASVS L3): escape any user-controlled string before
+  // interpolating into the HTML email body to prevent HTML/CSS injection.
+  const safeNombre = escapeHtml(nombre);
   const year = new Date().getFullYear();
 
   // Renderizar las tarjetas de cursos seleccionados por el usuario
@@ -204,7 +209,7 @@ export function buildQuoteEmailHtml(
 </head>
 <body>
   <div style="display: none; max-height: 0; overflow: hidden; font-size: 1px; color: #f8fafc;">
-    ${nombre}, aquí tienes tu cotización personalizada con las fechas más próximas y precios actualizados.
+    ${safeNombre}, aquí tienes tu cotización personalizada con las fechas más próximas y precios actualizados.
   </div>
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8fafc;">
     <tr>
@@ -224,7 +229,7 @@ export function buildQuoteEmailHtml(
           <tr>
             <td style="padding: 40px 40px 24px" class="mp">
               <h1 style="font-family: 'Outfit', 'Inter', sans-serif; font-size: 26px; font-weight: 900; color: #0f172a; letter-spacing: -0.5px; margin-bottom: 16px;">
-                Hola ${nombre},
+                Hola ${safeNombre},
               </h1>
               <p style="font-family: 'Inter', sans-serif; font-size: 15px; line-height: 1.7; color: #475569; margin: 0;">
                 Gracias por tu interés en <strong style="color: #0f172a;">ProgramBI</strong>. A continuación, te presentamos el detalle de los cursos que has cotizado con la información de horarios, fechas y valores 100% actualizados:

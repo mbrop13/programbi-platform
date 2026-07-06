@@ -52,6 +52,10 @@ export async function GET() {
     });
   } catch (err: any) {
     console.error("Error in check-admin endpoint:", err);
-    return NextResponse.json({ isAdmin: false, authenticated: false, error: err.message }, { status: 500 });
+    const isProd = process.env.NODE_ENV === "production";
+    return NextResponse.json(
+      { isAdmin: false, authenticated: false, error: isProd ? "Error interno del servidor" : err.message },
+      { status: 500 }
+    );
   }
 }

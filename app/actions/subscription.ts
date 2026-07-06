@@ -6,19 +6,22 @@ import { createClient } from "@/lib/supabase/server";
 export async function cancelSubscription() {
   try {
     const supabase = await createClient();
-    const { data: { session } } = await supabase.auth.getSession();
-    
-    if (!session) {
+    // A-06 (OWASP ASVS L3): validate the user via getUser() which verifies the
+    // JWT signature against Supabase's JWKS. getSession() only reads the cookie
+    // without validating, so it must not be used to authorize mutations.
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
       throw new Error("No hay sesión activa");
     }
 
     const adminDb = createAdminClient();
-    
+
     // Get both subscription records in case of legacy flow accounts
     const { data: profile } = await adminDb
       .from("profiles")
       .select("flow_subscription_id, mp_subscription_id")
-      .eq("id", session.user.id)
+      .eq("id", user.id)
       .single();
 
     // Cancel in Flow if exists (Legacy)
@@ -40,28 +43,28 @@ export async function cancelSubscription() {
           console.error("Warning: Failed to cancel in Mercado Pago.", err.message);
        }
     }
-    
+
     const { error } = await adminDb
       .from("profiles")
-      .update({ 
-         subscription_plan: null, 
-         subscription_expires_at: null, 
+      .update({
+         subscription_plan: null,
+         subscription_expires_at: null,
          flow_subscription_id: null,
-         mp_subscription_id: null 
+         mp_subscription_id: null
       })
-      .eq("id", session.user.id);
-      
+      .eq("id", user.id);
+
     if (error) {
       throw error;
     }
-    
+
     return { success: true };
   } catch (error: any) {
     console.error("Subscription cancellation error:", error);
     const isProd = process.env.NODE_ENV === "production";
-    return { 
-      success: false, 
-      error: isProd ? "Ocurrió un error inesperado al cancelar la suscripción." : error.message 
+    return {
+      success: false,
+      error: isProd ? "Ocurrió un error inesperado al cancelar la suscripción." : error.message
     };
   }
 }

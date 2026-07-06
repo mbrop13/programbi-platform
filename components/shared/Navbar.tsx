@@ -180,8 +180,11 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.reload();
+    // A-08 (OWASP ASVS L3): revoke ALL sessions for the user (not just the
+    // current device), then redirect with replace() to avoid serving cached
+    // authenticated content from the browser.
+    await supabase.auth.signOut({ scope: "global" });
+    window.location.replace("/");
   };
 
   const getInitials = (name: string) => {

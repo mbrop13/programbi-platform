@@ -63,9 +63,10 @@ export async function isCurrentUserAdmin() {
     .single();
 
   if (adminCheck) return true;
-  
-  // Fallback for dev — remove in production
-  return user.email === "manuel@programbi.com" || false; 
+
+  // Authorization is derived exclusively from database roles (community_members / profiles).
+  // The previous email-based dev fallback was removed (OWASP ASVS L3 audit, CR-2).
+  return false;
 }
 
 // ------------------------------------------

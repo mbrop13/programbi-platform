@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/server";
+import { randomUUID } from "crypto";
 
 /**
  * POST /api/mp/create
@@ -128,7 +129,9 @@ export async function POST(req: NextRequest) {
     }
 
     const email = user.email || "";
-    const commerceOrder = `PBI-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
+    // A-32 (OWASP ASVS L3): use a CSPRNG for order identifiers so they cannot
+    // be predicted or collide. Math.random() is NOT cryptographically secure.
+    const commerceOrder = `PBI-${randomUUID()}`;
 
     // Calculate bump add logic correctly for backwards compatibility
     const { bumpSelections = [] } = body;

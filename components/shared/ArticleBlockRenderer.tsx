@@ -6,11 +6,7 @@ import { Info, Lightbulb, AlertTriangle, Zap, Quote, Copy, Check } from "lucide-
 import { useState } from "react";
 import InteractiveChart from "./InteractiveChart";
 import TradingViewWidget from "./TradingViewWidget";
-import DOMPurify from "dompurify";
-
-const sanitizeHtml = (html: string): string => {
-  return typeof window !== "undefined" ? DOMPurify.sanitize(html) : html;
-};
+import { sanitizeHtml } from "@/lib/security/sanitize";
 
 /* ─── Lightweight Markdown Parser ─── */
 
@@ -26,8 +22,8 @@ export function applyInlineMarkdown(text: string): string {
   // Italic: *text* or _text_
   html = html.replace(/\*(.*?)\*/g, '<em class="italic">$1</em>');
   html = html.replace(/_(.*?)_/g, '<em class="italic">$1</em>');
-  // Links: [text](url)
-  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-[#1890FF] font-semibold underline underline-offset-4 hover:text-[#0050b3] transition-colors">$1</a>');
+  // Links: [text](url) — opened in a new tab with safe rel attributes.
+  html = html.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-[#1890FF] font-semibold underline underline-offset-4 hover:text-[#0050b3] transition-colors">$1</a>');
   return html;
 }
 

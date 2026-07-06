@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFlowPaymentStatus, flowStatusToString, FLOW_STATUS } from "@/lib/flow/client";
 import { createAdminClient } from "@/lib/supabase/server";
 import { sendPaymentConfirmation, sendNewPurchaseNotificationToAdmin } from "@/lib/email/mailersend";
+import { isFlowTrustedSource } from "@/lib/security/webhook-signature";
 
 /**
  * Flow calls this webhook POST with { token } after payment is processed.
@@ -9,6 +10,14 @@ import { sendPaymentConfirmation, sendNewPurchaseNotificationToAdmin } from "@/l
  */
 export async function POST(req: NextRequest) {
   try {
+    // CR-4 (OWASP ASVS L3): validate the request origin before trusting the
+    // token. Without this, anyone could POST a known/auctioned token and
+    // trigger enrollments or payment updates.
+    if (!isFlowTrustedSource(req)) {
+      console.warn("⚠️ Flow confirm rejected: untrusted source");
+      return NextResponse.json({ error: "Untrusted source" }, { status: 401 });
+    }
+
     const formData = await req.formData();
     const token = formData.get("token") as string;
 

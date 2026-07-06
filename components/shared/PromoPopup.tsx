@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowRight, Zap, Clock, Shield, Users, Star, TrendingUp } from "lucide-react";
 import { getActivePopups } from "@/lib/supabase/comunidad-ai";
 import { createClient } from "@/lib/supabase/client";
-import DOMPurify from "dompurify";
+import { sanitizeHtml } from "@/lib/security/sanitize";
 
 interface PromoPopupData {
   id: string;
@@ -24,27 +24,20 @@ interface PromoPopupData {
   custom_html: string | null;
 }
 
-/* ─── Custom HTML Renderer (Ejecuta Scripts Inyectados) ────────── */
+/* ─── Custom HTML Renderer (sanitized, no script execution) ────── */
+// SECURITY: the previous implementation deliberately re-injected <script> tags
+// after DOMPurify removed them, which allowed any admin-editable `custom_html`
+// to execute arbitrary JavaScript in every visitor's browser (OWASP ASVS L3
+// audit, A-13). The HTML is now sanitized through the centralized isomorphic
+// sanitizer (server + client) and scripts are never re-executed.
 function CustomHtmlRenderer({ html, onDismiss }: { html: string, onDismiss: () => void }) {
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const scripts = Array.from(containerRef.current.querySelectorAll('script'));
-    scripts.forEach(oldScript => {
-      const newScript = document.createElement('script');
-      Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-      newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-      oldScript.parentNode?.replaceChild(newScript, oldScript);
-    });
-  }, [html]);
-
-  const sanitizedHtml = typeof window !== "undefined" ? DOMPurify.sanitize(html) : html;
+  const sanitized = sanitizeHtml(html);
 
   return (
     <div
       ref={containerRef}
-      dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+      dangerouslySetInnerHTML={{ __html: sanitized }}
       onClick={(e) => {
         const target = e.target as HTMLElement;
         if (target.tagName === 'A' || target.closest('a')) {
