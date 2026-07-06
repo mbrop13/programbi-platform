@@ -632,6 +632,8 @@ function AdminSupport() {
 function AdminLeads() {
   const [allLeads, setAllLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 50;
 
   useEffect(() => {
     async function load() {
@@ -664,6 +666,8 @@ function AdminLeads() {
   }, []);
 
   const leads = allLeads.filter(l => l.lead_type !== "abandoned_cart");
+  const totalPages = Math.max(1, Math.ceil(leads.length / ITEMS_PER_PAGE));
+  const displayedLeads = leads.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const exportToCSV = () => {
     if (leads.length === 0) return alert("No hay contactos para exportar.");
@@ -735,50 +739,76 @@ function AdminLeads() {
                </tr>
              </thead>
              <tbody className="divide-y divide-gray-100 bg-white">
-               {leads.map(lead => (
-                 <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors">
-                   <td className="px-4 py-4">
-                     <div className="font-bold text-gray-900 text-sm">{lead.name}</div>
-                     <div className="text-xs text-brand-blue">{lead.email}</div>
-                     {lead.whatsapp && (
-                       <a 
-                        href={`https://wa.me/${lead.whatsapp.replace(/\D/g, '')}`} 
-                        target="_blank" 
-                        rel="noreferrer" 
-                        className="flex items-center gap-1 text-xs text-emerald-600 font-bold mt-1 hover:underline whitespace-nowrap"
-                       >
-                         <MessageSquare className="w-3 h-3" /> {lead.whatsapp}
-                       </a>
-                     )}
-                   </td>
-                   <td className="px-4 py-4">
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
-                        lead.lead_type === 'enterprise' ? 'bg-indigo-50 text-indigo-600' :
-                        lead.lead_type === 'notify' ? 'bg-amber-50 text-amber-600' :
-                        'bg-blue-50 text-blue-600'
-                      }`}>
-                        {lead.lead_type === 'enterprise' ? '🏢 Empresa' : lead.lead_type === 'notify' ? '🔔 Notificar' : '📩 Contacto'}
-                      </span>
+                {displayedLeads.map(lead => (
+                  <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors">
+                    <td className="px-4 py-4">
+                      <div className="font-bold text-gray-900 text-sm">{lead.name}</div>
+                      <div className="text-xs text-brand-blue">{lead.email}</div>
+                      {lead.whatsapp && (
+                        <a 
+                         href={`https://wa.me/${lead.whatsapp.replace(/\D/g, '')}`} 
+                         target="_blank" 
+                         rel="noreferrer" 
+                         className="flex items-center gap-1 text-xs text-emerald-600 font-bold mt-1 hover:underline whitespace-nowrap"
+                        >
+                          <MessageSquare className="w-3 h-3" /> {lead.whatsapp}
+                        </a>
+                      )}
                     </td>
-                   <td className="px-4 py-4">
-                     <div className="flex flex-wrap gap-1 max-w-[200px]">
-                       {(lead.selected_courses || []).map((c: string, i: number) => (
-                         <span key={i} className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-brand-blue border border-blue-100">{c}</span>
-                       ))}
-                     </div>
-                     {lead.source_course && <div className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-semibold">Origen: {lead.source_course}</div>}
-                   </td>
-                   <td className="px-4 py-4 hidden md:table-cell max-w-xs">
-                     <div className="text-xs text-gray-600 whitespace-pre-wrap break-words">{lead.message || <span className="text-gray-300 italic">Sin mensaje</span>}</div>
-                   </td>
-                   <td className="px-4 py-4 whitespace-nowrap">
-                     <div className="text-xs font-medium text-gray-900">{new Date(lead.created_at).toLocaleDateString('es-CL')}</div>
-                     <div className="text-[10px] text-gray-400">{new Date(lead.created_at).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}</div>
-                   </td>
-                 </tr>
-               ))}
-             </tbody>
-           </table>
+                    <td className="px-4 py-4">
+                       <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
+                         lead.lead_type === 'enterprise' ? 'bg-indigo-50 text-indigo-600' :
+                         lead.lead_type === 'notify' ? 'bg-amber-50 text-amber-600' :
+                         'bg-blue-50 text-blue-600'
+                       }`}>
+                         {lead.lead_type === 'enterprise' ? '🏢 Empresa' : lead.lead_type === 'notify' ? '🔔 Notificar' : '📩 Contacto'}
+                       </span>
+                     </td>
+                    <td className="px-4 py-4">
+                      <div className="flex flex-wrap gap-1 max-w-[200px]">
+                        {(lead.selected_courses || []).map((c: string, i: number) => (
+                          <span key={i} className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-brand-blue border border-blue-100">{c}</span>
+                        ))}
+                      </div>
+                      {lead.source_course && <div className="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-semibold">Origen: {lead.source_course}</div>}
+                    </td>
+                    <td className="px-4 py-4 hidden md:table-cell max-w-xs">
+                      <div className="text-xs text-gray-600 whitespace-pre-wrap break-words">{lead.message || <span className="text-gray-300 italic">Sin mensaje</span>}</div>
+                    </td>
+                    <td className="px-4 py-4 whitespace-nowrap">
+                      <div className="text-xs font-medium text-gray-900">{new Date(lead.created_at).toLocaleDateString('es-CL')}</div>
+                      <div className="text-[10px] text-gray-400">{new Date(lead.created_at).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}</div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+       )}
+       {leads.length > ITEMS_PER_PAGE && (
+         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-1 pt-4 border-t border-gray-100">
+           <span className="text-xs text-gray-500 font-medium">
+             Mostrando {Math.min(leads.length, (currentPage - 1) * ITEMS_PER_PAGE + 1)} - {Math.min(leads.length, currentPage * ITEMS_PER_PAGE)} de {leads.length} contactos
+           </span>
+           <div className="flex items-center gap-2">
+             <button
+               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+               disabled={currentPage === 1}
+               className="p-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 disabled:opacity-40 disabled:hover:bg-white transition-colors cursor-pointer disabled:cursor-not-allowed shadow-sm"
+             >
+               <ChevronLeft className="w-4 h-4" />
+             </button>
+             <span className="text-xs font-bold text-gray-700 min-w-[70px] text-center">
+               Pág. {currentPage} de {totalPages}
+             </span>
+             <button
+               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+               disabled={currentPage === totalPages}
+               className="p-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 disabled:opacity-40 disabled:hover:bg-white transition-colors cursor-pointer disabled:cursor-not-allowed shadow-sm"
+             >
+               <ChevronRight className="w-4 h-4" />
+             </button>
+           </div>
          </div>
        )}
     </div>
@@ -899,6 +929,12 @@ function AdminMembers() {
   const [loadingEnrollments, setLoadingEnrollments] = useState(false);
   const [enrollCourseId, setEnrollCourseId] = useState("");
   const [enrollType, setEnrollType] = useState("full");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 50;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
 
   useEffect(() => {
     async function load() {
@@ -963,6 +999,9 @@ function AdminMembers() {
     (u.full_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
     (u.email || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+  const displayedUsers = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const exportToCSV = () => {
     if (filtered.length === 0) return alert("No hay miembros para exportar.");
@@ -1102,6 +1141,7 @@ function AdminMembers() {
             <span className="text-sm text-gray-400">Cargando usuarios...</span>
           </div>
        ) : (
+       <>
        <div className="overflow-x-auto rounded-xl border border-gray-100">
           <table className="w-full text-left text-sm">
               <thead>
@@ -1114,7 +1154,7 @@ function AdminMembers() {
                  </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                 {filtered.map((u, i) => (
+                 {displayedUsers.map((u, i) => (
                     <motion.tr key={u.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }}
                       className="hover:bg-gray-50/50 transition-colors cursor-pointer" onClick={() => selectUser(u)}>
                        <td className="px-5 py-4">
@@ -1159,6 +1199,33 @@ function AdminMembers() {
               </tbody>
           </table>
        </div>
+       {filtered.length > ITEMS_PER_PAGE && (
+         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-1 pt-4 border-t border-gray-100">
+           <span className="text-xs text-gray-500 font-medium">
+             Mostrando {Math.min(filtered.length, (currentPage - 1) * ITEMS_PER_PAGE + 1)} - {Math.min(filtered.length, currentPage * ITEMS_PER_PAGE)} de {filtered.length} miembros
+           </span>
+           <div className="flex items-center gap-2">
+             <button
+               onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+               disabled={currentPage === 1}
+               className="p-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 disabled:opacity-40 disabled:hover:bg-white transition-colors cursor-pointer disabled:cursor-not-allowed shadow-sm"
+             >
+               <ChevronLeft className="w-4 h-4" />
+             </button>
+             <span className="text-xs font-bold text-gray-700 min-w-[70px] text-center">
+               Pág. {currentPage} de {totalPages}
+             </span>
+             <button
+               onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+               disabled={currentPage === totalPages}
+               className="p-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-600 disabled:opacity-40 disabled:hover:bg-white transition-colors cursor-pointer disabled:cursor-not-allowed shadow-sm"
+             >
+               <ChevronRight className="w-4 h-4" />
+             </button>
+           </div>
+         </div>
+       )}
+       </>
        )}
     </div>
   )

@@ -513,7 +513,7 @@ export default function Sidebar({
                 <>
                   <div className="my-1.5 h-px bg-gray-100" />
                   <a
-                    href="/admin"
+                    href="/comunidad/admin"
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-amber-600 hover:bg-amber-50 transition-colors font-medium no-underline"
                   >
                     <ShieldAlert className="w-4 h-4" />
