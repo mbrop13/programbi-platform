@@ -831,70 +831,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                   .filter(l => l.resources && Array.isArray(l.resources))
                   .flatMap(l => (l.resources || []).map((r) => ({ ...r, lessonTitle: l.title })));
 
-                const CertificateCard = () => (
-                  <div className="bg-white dark:bg-neutral-950 border border-neutral-200/80 dark:border-neutral-800/80 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all">
-                    <h2 className="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                      <Star className="w-4 h-4 text-amber-500" /> Certificado del Curso
-                    </h2>
-                    
-                    {/* Certificate Mockup Preview */}
-                    <div className="relative aspect-[1.41] bg-neutral-950 border border-neutral-800/60 rounded-2xl p-4 flex flex-col items-center justify-between text-white overflow-hidden shadow-sm select-none mb-4">
-                      <div className="absolute inset-2 border border-amber-600/20 rounded-xl pointer-events-none" />
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-amber-500/5 rounded-full filter blur-[20px] pointer-events-none" />
-                      <div className="absolute bottom-0 left-0 w-24 h-24 bg-neutral-500/5 rounded-full filter blur-[20px] pointer-events-none" />
 
-                      <span className="text-[7px] text-amber-500 font-extrabold tracking-widest uppercase mt-2">Certificado de Finalización</span>
-                      
-                      <div className="text-center my-auto">
-                        <span className="text-[5px] text-neutral-400 block font-semibold leading-none">Otorgado oficialmente a</span>
-                        <span className="text-[9px] font-bold text-white block mt-1 leading-none uppercase truncate max-w-[120px]">Tu Nombre</span>
-                        <div className="w-8 h-px bg-amber-600/30 mx-auto my-1.5" />
-                        <span className="text-[5px] text-neutral-400 block leading-none">Por completar la especialización en</span>
-                        <span className="text-[8px] font-bold text-amber-500/90 block mt-0.5 leading-tight truncate max-w-[140px]">{readableCourseName}</span>
-                      </div>
-
-                      <div className="w-full flex items-end justify-between px-2 pb-1 shrink-0">
-                        <div className="text-left">
-                          <span className="text-[4px] text-neutral-500 block leading-none">Emisor</span>
-                          <span className="text-[6px] font-bold text-white block leading-none mt-0.5">ProgramBI</span>
-                        </div>
-                        <div className="w-5 h-5 rounded-full bg-gradient-to-br from-amber-400 to-amber-600 border border-amber-300 flex items-center justify-center shadow-md">
-                          <Sparkles className="w-2.5 h-2.5 text-amber-900" />
-                        </div>
-                      </div>
-
-                      {progress < 100 && (
-                        <div className="absolute inset-0 bg-neutral-950/85 backdrop-blur-[1px] flex flex-col items-center justify-center select-none">
-                          <Lock className="w-5 h-5 text-amber-500 mb-1.5" />
-                          <span className="text-[9px] text-amber-500 font-bold tracking-wider uppercase">{progress}% completado</span>
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="space-y-3">
-                      {progress === 100 ? (
-                        <button className="w-full py-2 bg-neutral-900 hover:bg-black text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 text-xs font-bold rounded-xl shadow-sm border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-colors">
-                          <Download className="w-3.5 h-3.5" /> Descargar PDF
-                        </button>
-                      ) : (
-                        <>
-                          <div>
-                            <div className="flex justify-between text-[9px] font-bold text-neutral-400 uppercase tracking-wider mb-1">
-                              <span>{t.progress}</span>
-                              <span>{progress}%</span>
-                            </div>
-                            <div className="w-full h-1.5 bg-neutral-100 dark:bg-neutral-900 rounded-full overflow-hidden">
-                              <div className="h-full bg-neutral-900 dark:bg-white transition-all duration-500" style={{ width: `${progress}%` }} />
-                            </div>
-                          </div>
-                          <p className="text-[10px] text-neutral-400 dark:text-neutral-500 leading-normal leading-relaxed">
-                            Al completar el 100% de las clases, se emitirá un certificado digital firmado con código de verificación.
-                          </p>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                );
 
                 const InstructorCard = () => (
                   <div className="bg-white dark:bg-neutral-950 border border-neutral-200/80 dark:border-neutral-800/80 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col">
@@ -1235,7 +1172,6 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
 
                         {/* Right Column Widgets */}
                         <div className="space-y-6">
-                          <CertificateCard />
                           <InstructorCard />
                         </div>
                       </div>
