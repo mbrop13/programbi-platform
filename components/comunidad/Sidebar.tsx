@@ -25,7 +25,6 @@ import {
   ExternalLink,
   Search,
   Bell,
-  ArrowRight,
   Download,
   Globe,
   HelpCircle,
@@ -469,36 +468,7 @@ export default function Sidebar({
         ))}
       </nav>
 
-       {/* Upgrade Banner for Unsubscribed Students */}
-      {(() => {
-        const hasSubscription = !!userProfile?.subscription_plan || isAdmin;
-        if (!collapsed && !hasSubscription) {
-          return (
-            <div className="mx-3 mb-4 p-4 rounded-xl bg-neutral-50 border border-neutral-200 relative overflow-hidden shadow-sm shrink-0">
-              <div className="absolute top-0 right-0 w-16 h-16 bg-neutral-100 rounded-full filter blur-xl pointer-events-none" />
-              <div className="relative z-10">
-                <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-800 bg-white px-2 py-0.5 rounded-full border border-neutral-200 inline-flex items-center gap-1 shadow-sm select-none">
-                  <Sparkles className="w-2.5 h-2.5 text-neutral-700" /> {t.fullAccess}
-                </span>
-                <h4 className="text-xs font-bold text-neutral-900 mt-2.5 leading-snug">
-                  {t.premiumBannerTitle}
-                </h4>
-                <p className="text-[10px] text-neutral-500 mt-1 leading-normal font-medium">
-                  {t.premiumBannerDesc}
-                </p>
-                <button
-                  onClick={onUpgradeClick}
-                  className="w-full mt-3 py-2 bg-neutral-900 hover:bg-neutral-955 text-white text-[10px] font-bold rounded-lg transition-all active:scale-[0.98] border-0 cursor-pointer shadow-sm flex items-center justify-center gap-1"
-                >
-                  {t.subscribe}
-                  <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-            </div>
-          );
-        }
-        return null;
-      })()}
+
       {/* Empty space filler that acts as a clickable area to collapse */}
       <div className="flex-grow cursor-pointer" />      {/* ─── USER SECTION (bottom) ─── */}
       <div className={`shrink-0 border-t border-gray-100 ${collapsed ? "p-2 flex justify-center" : "p-3"}`}>
@@ -537,8 +507,8 @@ export default function Sidebar({
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
               className={cn(
-                "flex-1 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-all duration-200 cursor-pointer border-0 min-w-0 bg-neutral-100/90 hover:bg-neutral-200/60 user-trigger-btn",
-                userMenuOpen && "bg-neutral-200/80 ring-1 ring-neutral-300"
+                "flex-1 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-all duration-200 cursor-pointer border-0 min-w-0 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-850 user-trigger-btn",
+                userMenuOpen && "bg-neutral-200 dark:bg-neutral-800 ring-1 ring-neutral-300 dark:ring-neutral-700"
               )}
             >
               {/* Avatar with subscription badge (restored from original design) */}
@@ -547,7 +517,7 @@ export default function Sidebar({
               </div>
 
               {/* Name (no ChevronsUpDown arrows next to it) */}
-              <span className="truncate text-[13px] font-semibold text-gray-700 min-w-0 flex-1">
+              <span className="truncate text-[13px] font-semibold text-neutral-750 dark:text-neutral-200 min-w-0 flex-1">
                 {displayName}
               </span>
             </button>
@@ -555,7 +525,7 @@ export default function Sidebar({
             {/* Bell icon */}
             <button
               onClick={() => setNotifOpen(!notifOpen)}
-              className="h-9 w-9 rounded-xl flex items-center justify-center text-neutral-500 bg-neutral-100/90 hover:bg-neutral-200/60 hover:text-neutral-700 transition-colors shrink-0 cursor-pointer border-0 relative"
+              className="h-9 w-9 rounded-xl flex items-center justify-center text-neutral-500 hover:text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:text-neutral-400 dark:hover:text-white transition-colors shrink-0 cursor-pointer border-0 relative"
               title="Notificaciones"
             >
               <Bell className="w-4.5 h-4.5" />

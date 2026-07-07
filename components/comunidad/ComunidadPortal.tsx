@@ -138,7 +138,13 @@ export default function ComunidadPortal() {
           getAllPublishedCourses().catch(() => []),
         ]);
         setIsAdmin(adminStatus);
-        if (profile) setUserProfile(profile as unknown as UserProfile);
+        if (profile) {
+          const profileData = profile as unknown as UserProfile;
+          if (adminStatus) {
+            profileData.subscription_plan = "ultra";
+          }
+          setUserProfile(profileData);
+        }
         setHasCourses(
           (Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments).length > 0
         );
