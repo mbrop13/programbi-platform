@@ -106,7 +106,21 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
             </div>
 
             {/* Plan Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch w-full">
+            <motion.div
+              key={userType}
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.05
+                  }
+                }
+              }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 items-stretch w-full"
+            >
               {communityPlans.map((plan) => {
                 const planHierarchy = getPlanHierarchy(plan.id);
                 const isCurrent = currentPlanId === plan.id;
@@ -133,7 +147,20 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
                   : "bg-slate-900 hover:bg-slate-950 dark:bg-white dark:text-black dark:hover:bg-neutral-100 text-white";
 
                 return (
-                  <div
+                  <motion.div
+                    variants={{
+                      hidden: { opacity: 0, y: 12, scale: 0.98 },
+                      visible: { 
+                        opacity: 1, 
+                        y: 0, 
+                        scale: 1,
+                        transition: {
+                          type: "spring",
+                          stiffness: 260,
+                          damping: 24
+                        }
+                      }
+                    }}
                     key={plan.id}
                     className={`bg-white dark:bg-neutral-950 rounded-3xl p-6 border border-neutral-200/80 dark:border-neutral-800/80 flex flex-col justify-between transition-all duration-300 relative shadow-sm hover:shadow-md
                       ${isCurrent ? 'opacity-85 bg-neutral-50/50 dark:bg-neutral-900/30 border-neutral-300 dark:border-neutral-700' : ''}`}
@@ -226,10 +253,10 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
                         })}
                       </ul>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
 
             {/* Bottom Toggle Switcher */}
             <div className="mt-8 flex flex-col items-center gap-2 shrink-0 select-none">
