@@ -959,8 +959,8 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
 
                     <div className="flex-1 w-full max-w-[1120px] mx-auto px-6 py-8">
                       {/* Banner / Hero Section */}
-                      <div className="bg-gradient-to-r from-blue-950 via-[#0b193c] to-neutral-950 text-white border border-blue-900/30 rounded-3xl p-8 relative overflow-hidden shadow-sm mb-8 select-none">
-                        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
+                      <div className="bg-gradient-to-r from-[#0a1128] via-[#004e92] to-[#1890ff] text-white border border-blue-400/20 rounded-3xl p-8 relative overflow-hidden shadow-sm mb-8 select-none">
+                        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-300/10 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
                         
                         <div className="relative z-10 max-w-2xl">
                           <span className="text-[9px] font-bold tracking-widest uppercase text-neutral-300 bg-neutral-800 px-3 py-1 rounded-full border border-neutral-750">
