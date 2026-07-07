@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Check, Star, Shield, Lock, ArrowRight, Loader2, Sparkles, ChevronRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { Check, Star, Shield, ArrowRight, Loader2, Sparkles } from "lucide-react";
 import { communityPlans } from "@/lib/data/community_plans";
 import AuthModal from "@/components/shared/AuthModal";
 import { useGeoPricing } from "@/hooks/useGeoPricing";
@@ -24,7 +24,14 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('mensual');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-  const [promotions, setPromotions] = useState<any[]>([]);
+  interface Promotion {
+    target_type: string;
+    target_id?: string;
+    promo_price?: number;
+    discount_percentage?: number;
+  }
+
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
 
   const { isInternational, formatGeoPrice } = useGeoPricing();
 
@@ -68,7 +75,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
           setLoadingPlan(null);
         }
       }
-    } catch(err) {
+    } catch {
       alert("Error redirigiendo a la pasarela de pagos.");
       setLoadingPlan(null);
     }
@@ -133,9 +140,6 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
              <div className="flex flex-col gap-1 items-center">
                {heroOnly ? (
                  <>
-                   <span className="text-[11px] uppercase tracking-[0.22em] font-mono text-brand-blue mb-4 block font-bold">
-                     Membresía Premium
-                   </span>
                    <span className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-slate-800 tracking-tight leading-none block">
                      Desbloquea el poder de la
                    </span>
@@ -277,7 +281,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
              if (promo.promo_price) {
                 totalBilledPrice = promo.promo_price;
                 adminDiscountPercent = promo.discount_percentage || Math.round((1 - (promo.promo_price / (plan.price * monthsCount))) * 100);
-             } else if (promo.discount_percentage > 0) {
+             } else if (promo.discount_percentage !== undefined && promo.discount_percentage > 0) {
                 adminDiscountPercent = promo.discount_percentage;
                 totalBilledPrice = Math.round(totalBilledPrice * (100 - adminDiscountPercent) / 100);
              }
