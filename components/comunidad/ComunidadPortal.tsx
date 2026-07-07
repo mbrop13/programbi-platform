@@ -319,6 +319,7 @@ export default function ComunidadPortal() {
                           courseId={selectedCourseId}
                           onBack={() => handleSelectCourse(null)}
                           onUpgradeClick={() => setShowUpgradeModal(true)}
+                          interfaceLanguage={language}
                         />
                       ) : (
                         <MisCursos onSelectCourse={(id) => handleSelectCourse(id)} language={language} />
