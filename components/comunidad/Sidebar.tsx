@@ -18,11 +18,13 @@ import {
   LogOut,
   X,
   Sun,
+  Moon,
+  Monitor,
+  Check,
   ExternalLink,
   Search,
   Bell,
   ArrowRight,
-  ChevronsUpDown,
   Download,
   Globe,
   HelpCircle,
@@ -88,6 +90,18 @@ export default function Sidebar({
   const [notifOpen, setNotifOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [hasUpcomingLives, setHasUpcomingLives] = useState(false);
+  const [activeSubmenu, setActiveSubmenu] = useState<"apariencia" | "idioma" | null>(null);
+  const [activeTheme, setActiveTheme] = useState<"claro" | "oscuro" | "sistema">("claro");
+
+  // Close submenu when main user menu closes
+  useEffect(() => {
+    if (!userMenuOpen) {
+      const handle = setTimeout(() => {
+        setActiveSubmenu(null);
+      }, 0);
+      return () => clearTimeout(handle);
+    }
+  }, [userMenuOpen]);
 
   // Close user menu when clicking outside
   useEffect(() => {
@@ -190,6 +204,16 @@ export default function Sidebar({
 
   const displayName =
     userProfile?.full_name || userProfile?.email || "";
+  const initials = displayName
+    ? displayName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .substring(0, 2)
+        .toUpperCase()
+    : "?";
+
+  const planLabel = userProfile?.subscription_plan?.replace("plan_", "").toUpperCase() || null;
   const sidebarWidth = collapsed ? 72 : 260;
 
   const handleSidebarClick = (e: React.MouseEvent) => {
@@ -409,12 +433,16 @@ export default function Sidebar({
           <button
             onClick={() => setUserMenuOpen(!userMenuOpen)}
             className={cn(
-              "relative w-10 h-10 rounded-xl bg-neutral-100 hover:bg-neutral-200/70 text-neutral-600 flex items-center justify-center shadow-sm cursor-pointer hover:shadow-md transition-all border-0 user-trigger-btn",
-              userMenuOpen && "bg-neutral-200 ring-1 ring-neutral-300"
+              "relative w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0 user-trigger-btn",
+              userMenuOpen && "ring-2 ring-indigo-500"
             )}
             title={displayName}
           >
-            <User className="w-[18px] h-[18px] text-neutral-500" />
+            <span>{initials}</span>
+            {/* Tier badge below avatar */}
+            <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-black text-white text-[7px] font-bold px-1 py-px rounded-full border border-white uppercase tracking-wider leading-none whitespace-nowrap scale-75 select-none">
+              {planLabel || "FREE"}
+            </span>
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[8px] font-bold px-1 ring-2 ring-white">
                 {unreadCount > 9 ? "9+" : unreadCount}
@@ -426,15 +454,23 @@ export default function Sidebar({
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
               className={cn(
-                "flex-1 flex items-center gap-2 rounded-xl px-3 py-2.5 text-left transition-all duration-200 cursor-pointer border-0 min-w-0 bg-neutral-100/90 hover:bg-neutral-200/60 user-trigger-btn",
+                "flex-1 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-all duration-200 cursor-pointer border-0 min-w-0 bg-neutral-100/90 hover:bg-neutral-200/60 user-trigger-btn",
                 userMenuOpen && "bg-neutral-200/80 ring-1 ring-neutral-300"
               )}
             >
-              <User className="w-4 h-4 text-neutral-500 shrink-0" />
-              <span className="truncate text-[13px] font-medium text-neutral-700 flex-1 min-w-0">
+              {/* Avatar with subscription badge (restored from original design) */}
+              <div className="relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs select-none">
+                <span>{initials}</span>
+                {/* Tier badge below avatar */}
+                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-black text-white text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-neutral-900 uppercase tracking-wider leading-none whitespace-nowrap">
+                  {planLabel || "FREE"}
+                </span>
+              </div>
+
+              {/* Name (no ChevronsUpDown arrows next to it) */}
+              <span className="truncate text-[13px] font-semibold text-gray-700 min-w-0 flex-1">
                 {displayName}
               </span>
-              <ChevronsUpDown className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
             </button>
 
             {/* Bell icon */}
@@ -482,6 +518,7 @@ export default function Sidebar({
                 icon={Settings}
                 label="Todos los ajustes"
                 suffix="↑ ^ ,"
+                onMouseEnter={() => setActiveSubmenu(null)}
                 onClick={() => {
                   onOpenSettings();
                   setUserMenuOpen(false);
@@ -490,6 +527,7 @@ export default function Sidebar({
               <MenuItem
                 icon={ArrowUpCircle}
                 label="Actualizar plan"
+                onMouseEnter={() => setActiveSubmenu(null)}
                 onClick={() => {
                   onUpgradeClick();
                   setUserMenuOpen(false);
@@ -498,6 +536,7 @@ export default function Sidebar({
               <MenuItem
                 icon={Download}
                 label="Instalar apps"
+                onMouseEnter={() => setActiveSubmenu(null)}
                 onClick={() => {
                   toast("info", "Instalación de Aplicación", "ProgramBI es una PWA. Puedes instalarla directamente desde el menú del navegador en tu móvil u ordenador.");
                   setUserMenuOpen(false);
@@ -509,11 +548,11 @@ export default function Sidebar({
               <MenuItem
                 icon={Sun}
                 label="Apariencia"
-                sublabel="Claro"
+                sublabel={activeTheme === "claro" ? "Claro" : activeTheme === "oscuro" ? "Oscuro" : "Sistema"}
                 hasChevron
+                onMouseEnter={() => setActiveSubmenu("apariencia")}
                 onClick={() => {
-                  onOpenSettings();
-                  setUserMenuOpen(false);
+                  setActiveSubmenu(activeSubmenu === "apariencia" ? null : "apariencia");
                 }}
               />
               <MenuItem
@@ -521,6 +560,7 @@ export default function Sidebar({
                 label="Idioma"
                 sublabel="Por defecto"
                 hasChevron
+                onMouseEnter={() => setActiveSubmenu(null)}
                 onClick={() => {
                   onOpenSettings();
                   setUserMenuOpen(false);
@@ -530,6 +570,7 @@ export default function Sidebar({
                 icon={HelpCircle}
                 label="Ayuda"
                 hasChevron
+                onMouseEnter={() => setActiveSubmenu(null)}
                 onClick={() => {
                   toast("info", "Centro de Ayuda", "Si necesitas ayuda, puedes consultarle a nuestro Asistente IA o enviarnos un correo a soporte@programbi.com.");
                   setUserMenuOpen(false);
@@ -542,6 +583,7 @@ export default function Sidebar({
                 <>
                   <Link
                     href="/comunidad/admin"
+                    onMouseEnter={() => setActiveSubmenu(null)}
                     className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-amber-600 hover:bg-amber-50 transition-colors font-medium no-underline"
                   >
                     <ShieldAlert className="w-4 h-4 shrink-0" />
@@ -554,12 +596,56 @@ export default function Sidebar({
 
               <Link
                 href="/"
+                onMouseEnter={() => setActiveSubmenu(null)}
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-neutral-50 hover:text-red-600 transition-colors font-medium no-underline"
               >
                 <LogOut className="w-4 h-4 shrink-0 text-neutral-400 hover:text-red-500" />
                 <span>Cerrar sesión</span>
               </Link>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── SUBMENU DE APARIENCIA (elegant, to the right) ─── */}
+      <AnimatePresence>
+        {userMenuOpen && activeSubmenu === "apariencia" && (
+          <motion.div
+            initial={{ opacity: 0, x: -8, scale: 0.96 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -8, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+            className={cn(
+              "fixed z-50 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 p-1.5 space-y-0.5 w-44",
+              collapsed ? "bottom-[80px] left-[264px]" : "bottom-[80px] left-[244px]"
+            )}
+          >
+            <SubmenuItem
+              icon={Sun}
+              label="Claro"
+              isActive={activeTheme === "claro"}
+              onClick={() => {
+                setActiveTheme("claro");
+                toast("success", "Tema Claro activado", "Se ha establecido el tema visual de la plataforma en Claro.");
+                setActiveSubmenu(null);
+              }}
+            />
+            <SubmenuItem
+              icon={Moon}
+              label="Oscuro"
+              isActive={activeTheme === "oscuro"}
+              onClick={() => {
+                toast("info", "Tema Oscuro", "El tema Oscuro estará disponible en una actualización muy pronto.");
+              }}
+            />
+            <SubmenuItem
+              icon={Monitor}
+              label="Sistema"
+              isActive={activeTheme === "sistema"}
+              onClick={() => {
+                toast("info", "Tema del Sistema", "La sincronización automática con el sistema estará disponible próximamente.");
+              }}
+            />
           </motion.div>
         )}
       </AnimatePresence>
@@ -620,6 +706,7 @@ function MenuItem({
   suffix,
   hasChevron,
   onClick,
+  onMouseEnter,
   className,
 }: {
   icon: React.ElementType;
@@ -628,11 +715,13 @@ function MenuItem({
   suffix?: string;
   hasChevron?: boolean;
   onClick: () => void;
+  onMouseEnter?: () => void;
   className?: string;
 }) {
   return (
     <button
       onClick={onClick}
+      onMouseEnter={onMouseEnter}
       className={cn(
         "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-neutral-100/70 transition-colors cursor-pointer border-0 bg-transparent min-w-0 select-none",
         className
@@ -645,6 +734,33 @@ function MenuItem({
       </div>
       {suffix && <span className="text-[11px] text-neutral-400 font-mono tracking-wider ml-auto">{suffix}</span>}
       {hasChevron && <ChevronRight className="w-3.5 h-3.5 text-neutral-400 shrink-0 ml-auto" />}
+    </button>
+  );
+}
+
+/* ── Submenu Item Component ── */
+function SubmenuItem({
+  icon: Icon,
+  label,
+  isActive,
+  onClick,
+}: {
+  icon: React.ElementType;
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        "w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left hover:bg-neutral-100/70 transition-colors cursor-pointer border-0 bg-transparent min-w-0 select-none",
+        isActive && "bg-neutral-100 text-slate-800 font-semibold"
+      )}
+    >
+      <Icon className="w-4.5 h-4.5 text-neutral-500 shrink-0" />
+      <span className="text-[13px] font-medium text-neutral-800 flex-1">{label}</span>
+      {isActive && <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 ml-auto font-bold" />}
     </button>
   );
 }
