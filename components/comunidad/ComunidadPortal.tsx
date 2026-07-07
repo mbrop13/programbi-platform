@@ -315,7 +315,7 @@ export default function ComunidadPortal() {
                           onUpgradeClick={() => setShowUpgradeModal(true)}
                         />
                       ) : (
-                        <MisCursos onSelectCourse={(id) => handleSelectCourse(id)} />
+                        <MisCursos onSelectCourse={(id) => handleSelectCourse(id)} language={language} />
                       ))}
 
                     {activeTab === "live" && (
