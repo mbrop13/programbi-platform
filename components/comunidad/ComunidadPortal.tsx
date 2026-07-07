@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, ShieldAlert, Menu } from "lucide-react";
+import { Lock, Menu } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
 import Sidebar from "./Sidebar";
@@ -105,7 +105,7 @@ export default function ComunidadPortal() {
           getAllPublishedCourses().catch(() => []),
         ]);
         setIsAdmin(adminStatus);
-        if (profile) setUserProfile(profile as any);
+        if (profile) setUserProfile(profile as unknown as UserProfile);
         setHasCourses(
           (Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments).length > 0
         );
@@ -113,15 +113,17 @@ export default function ComunidadPortal() {
 
         const mapping: Record<string, string> = {};
         if (Array.isArray(allCourses)) {
-          allCourses.forEach((c: any) => {
-            if (c.slug && c.id) mapping[c.slug] = c.id;
+          allCourses.forEach((c) => {
+            const course = c as { slug?: string; id?: string };
+            if (course.slug && course.id) mapping[course.slug] = course.id;
           });
         }
         const enrolls = Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments;
         if (Array.isArray(enrolls)) {
-          enrolls.forEach((e: any) => {
-            const slug = e.course?.slug || e.course_slug;
-            const id = e.course?.id || e.course_id;
+          enrolls.forEach((e) => {
+            const item = e as { course?: { slug?: string; id?: string }; course_slug?: string; course_id?: string };
+            const slug = item.course?.slug || item.course_slug;
+            const id = item.course?.id || item.course_id;
             if (slug && id) mapping[slug] = id;
           });
         }
@@ -357,6 +359,7 @@ export default function ComunidadPortal() {
                 }
               }}
               userProfile={userProfile}
+              onUpgradeClick={() => setShowUpgradeModal(true)}
             />
           )}
         </AnimatePresence>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useCallback, useState, useRef } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,19 +14,24 @@ import {
   User,
   Award,
   Settings,
-  ChevronLeft,
+  ChevronRight,
   LogOut,
   X,
-  CreditCard,
   ExternalLink,
   Search,
   Bell,
   ArrowRight,
+  ChevronsUpDown,
+  Download,
+  Globe,
+  HelpCircle,
+  ArrowUpCircle,
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
 import { getUnreadNotificationCount } from "@/lib/supabase/comunidad";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
+import { useToast } from "./ui/Toast";
 
 export interface SidebarTab {
   id: string;
@@ -74,14 +78,33 @@ export default function Sidebar({
   onOpenSettings,
   onUpgradeClick,
 }: SidebarProps) {
-  const router = useRouter();
   const searchRef = useRef<HTMLInputElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [hasUpcomingLives, setHasUpcomingLives] = useState(false);
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        const trigger = (event.target as HTMLElement).closest(".user-trigger-btn");
+        if (!trigger) {
+          setUserMenuOpen(false);
+        }
+      }
+    };
+    if (userMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [userMenuOpen]);
 
   // Fetch unread count on mount
   useEffect(() => {
@@ -138,7 +161,10 @@ export default function Sidebar({
 
   // Close user menu when tab changes
   useEffect(() => {
-    setUserMenuOpen(false);
+    const handle = setTimeout(() => {
+      setUserMenuOpen(false);
+    }, 0);
+    return () => clearTimeout(handle);
   }, [activeTab]);
 
   const tabs: SidebarTab[] = [
@@ -163,16 +189,6 @@ export default function Sidebar({
 
   const displayName =
     userProfile?.full_name || userProfile?.email || "";
-  const initials = displayName
-    ? displayName
-        .split(" ")
-        .map((n) => n[0])
-        .join("")
-        .substring(0, 2)
-        .toUpperCase()
-    : "?";
-
-  const planLabel = userProfile?.subscription_plan?.replace("plan_", "").toUpperCase() || null;
   const sidebarWidth = collapsed ? 72 : 260;
 
   const handleSidebarClick = (e: React.MouseEvent) => {
@@ -391,10 +407,13 @@ export default function Sidebar({
         ) : collapsed ? (
           <button
             onClick={() => setUserMenuOpen(!userMenuOpen)}
-            className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all"
+            className={cn(
+              "relative w-10 h-10 rounded-xl bg-neutral-100 hover:bg-neutral-200/70 text-neutral-600 flex items-center justify-center shadow-sm cursor-pointer hover:shadow-md transition-all border-0 user-trigger-btn",
+              userMenuOpen && "bg-neutral-200 ring-1 ring-neutral-300"
+            )}
             title={displayName}
           >
-            {initials}
+            <User className="w-[18px] h-[18px] text-neutral-500" />
             {unreadCount > 0 && (
               <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[8px] font-bold px-1 ring-2 ring-white">
                 {unreadCount > 9 ? "9+" : unreadCount}
@@ -402,36 +421,30 @@ export default function Sidebar({
             )}
           </button>
         ) : (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full">
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className={`flex-1 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors duration-200 cursor-pointer border-0 bg-transparent min-w-0
-                ${userMenuOpen ? "bg-brand-blue/5 ring-1 ring-brand-blue/20" : "hover:bg-gray-50"}`}
+              className={cn(
+                "flex-1 flex items-center gap-2 rounded-xl px-3 py-2.5 text-left transition-all duration-200 cursor-pointer border-0 min-w-0 bg-neutral-100/90 hover:bg-neutral-200/60 user-trigger-btn",
+                userMenuOpen && "bg-neutral-200/80 ring-1 ring-neutral-300"
+              )}
             >
-              {/* Avatar with subscription badge */}
-              <div className="relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs">
-                <span aria-hidden>{initials}</span>
-                {/* Tier badge below avatar */}
-                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-black text-white text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-neutral-900 uppercase tracking-wider leading-none whitespace-nowrap">
-                  {planLabel || "FREE"}
-                </span>
-              </div>
-
-              {/* Name */}
-              <span className="truncate text-[13px] font-semibold text-gray-700 min-w-0">
+              <User className="w-4 h-4 text-neutral-500 shrink-0" />
+              <span className="truncate text-[13px] font-medium text-neutral-700 flex-1 min-w-0">
                 {displayName}
               </span>
+              <ChevronsUpDown className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
             </button>
 
             {/* Bell icon */}
             <button
               onClick={() => setNotifOpen(!notifOpen)}
-              className="h-9 w-9 rounded-xl flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-700 transition-colors shrink-0 cursor-pointer border-0 bg-transparent relative"
+              className="h-9 w-9 rounded-xl flex items-center justify-center text-neutral-500 bg-neutral-100/90 hover:bg-neutral-200/60 hover:text-neutral-700 transition-colors shrink-0 cursor-pointer border-0 relative"
               title="Notificaciones"
             >
-              <Bell className="w-[18px] h-[18px]" />
+              <Bell className="w-4.5 h-4.5" />
               {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white animate-pulse" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500" />
               )}
             </button>
           </div>
@@ -442,96 +455,109 @@ export default function Sidebar({
       <AnimatePresence>
         {userMenuOpen && (
           <motion.div
+            ref={dropdownRef}
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 28 }}
             className={cn(
-              "fixed z-50 bg-white rounded-2xl shadow-2xl shadow-gray-300/30 border border-gray-100 overflow-hidden",
-              collapsed ? "bottom-16 left-3 w-56" : "bottom-16 left-3 w-[236px]"
+              "fixed z-50 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 overflow-hidden",
+              collapsed ? "bottom-16 left-3 w-64" : "bottom-16 left-3 w-[236px]"
             )}
           >
             {/* User header */}
-            <div className="p-4 bg-gradient-to-br from-brand-blue/5 to-indigo-50 border-b border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
-                  {initials}
-                </div>
-                <div className="min-w-0">
-                  <div className="font-bold text-sm text-gray-900 truncate">
-                    {userProfile?.full_name || "Usuario"}
-                  </div>
-                  <div className="text-[11px] text-gray-500 truncate">{userProfile?.email}</div>
-                  {planLabel && (
-                    <span className="inline-block mt-1 text-[10px] font-black px-1.5 py-0.5 rounded-md bg-brand-blue/10 text-brand-blue">
-                      {planLabel}
-                    </span>
-                  )}
-                </div>
+            <div className="px-4 py-3 border-b border-neutral-100 flex items-center gap-2.5 min-w-0">
+              <div className="w-7 h-7 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-500 shrink-0">
+                <User className="w-3.5 h-3.5" />
               </div>
+              <span className="text-[13px] font-normal text-neutral-600 truncate min-w-0 flex-1">
+                {userProfile?.email || "usuario@programbi.com"}
+              </span>
             </div>
 
             {/* Menu items */}
-            <div className="p-2">
-              <MenuItem
-                icon={User}
-                label="Mi Perfil"
-                onClick={() => {
-                  onTabChange("perfil");
-                  setUserMenuOpen(false);
-                }}
-              />
-              <MenuItem
-                icon={Award}
-                label="Certificados"
-                onClick={() => {
-                  onTabChange("certificados");
-                  setUserMenuOpen(false);
-                }}
-              />
-              <MenuItem
-                icon={CreditCard}
-                label="Suscripción"
-                onClick={() => {
-                  onUpgradeClick();
-                  setUserMenuOpen(false);
-                }}
-              />
-
-              <div className="my-1.5 h-px bg-gray-100" />
-
+            <div className="p-1.5 space-y-0.5">
               <MenuItem
                 icon={Settings}
-                label="Configuración"
+                label="Todos los ajustes"
+                suffix="↑ ^ ,"
                 onClick={() => {
                   onOpenSettings();
                   setUserMenuOpen(false);
                 }}
               />
+              <MenuItem
+                icon={ArrowUpCircle}
+                label="Actualizar plan"
+                onClick={() => {
+                  onUpgradeClick();
+                  setUserMenuOpen(false);
+                }}
+              />
+              <MenuItem
+                icon={Download}
+                label="Instalar apps"
+                onClick={() => {
+                  toast("info", "Instalación de Aplicación", "ProgramBI es una PWA. Puedes instalarla directamente desde el menú del navegador en tu móvil u ordenador.");
+                  setUserMenuOpen(false);
+                }}
+              />
+
+              <div className="my-1 h-px bg-neutral-100" />
+
+              <MenuItem
+                icon={Sun}
+                label="Apariencia"
+                sublabel="Claro"
+                hasChevron
+                onClick={() => {
+                  onOpenSettings();
+                  setUserMenuOpen(false);
+                }}
+              />
+              <MenuItem
+                icon={Globe}
+                label="Idioma"
+                sublabel="Por defecto"
+                hasChevron
+                onClick={() => {
+                  onOpenSettings();
+                  setUserMenuOpen(false);
+                }}
+              />
+              <MenuItem
+                icon={HelpCircle}
+                label="Ayuda"
+                hasChevron
+                onClick={() => {
+                  toast("info", "Centro de Ayuda", "Si necesitas ayuda, puedes consultarle a nuestro Asistente IA o enviarnos un correo a soporte@programbi.com.");
+                  setUserMenuOpen(false);
+                }}
+              />
+
+              <div className="my-1 h-px bg-neutral-100" />
 
               {isAdmin && (
                 <>
-                  <div className="my-1.5 h-px bg-gray-100" />
-                  <a
+                  <Link
                     href="/comunidad/admin"
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-amber-600 hover:bg-amber-50 transition-colors font-medium no-underline"
+                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-amber-600 hover:bg-amber-50 transition-colors font-medium no-underline"
                   >
-                    <ShieldAlert className="w-4 h-4" />
-                    Panel Admin
-                    <ExternalLink className="w-3 h-3 ml-auto opacity-50" />
-                  </a>
+                    <ShieldAlert className="w-4 h-4 shrink-0" />
+                    <span>Panel Admin</span>
+                    <ExternalLink className="w-3 h-3 ml-auto opacity-50 shrink-0" />
+                  </Link>
+                  <div className="my-1 h-px bg-neutral-100" />
                 </>
               )}
 
-              <div className="my-1.5 h-px bg-gray-100" />
-
-              <a
+              <Link
                 href="/"
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-red-500 hover:bg-red-50 transition-colors font-medium no-underline"
+                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-neutral-50 hover:text-red-600 transition-colors font-medium no-underline"
               >
-                <LogOut className="w-4 h-4" />
-                Cerrar Sesión
-              </a>
+                <LogOut className="w-4 h-4 shrink-0 text-neutral-400 hover:text-red-500" />
+                <span>Cerrar sesión</span>
+              </Link>
             </div>
           </motion.div>
         )}
@@ -586,14 +612,38 @@ export default function Sidebar({
 }
 
 /* ── Menu Item Component ── */
-function MenuItem({ icon: Icon, label, onClick }: { icon: React.ElementType; label: string; onClick: () => void }) {
+function MenuItem({
+  icon: Icon,
+  label,
+  sublabel,
+  suffix,
+  hasChevron,
+  onClick,
+  className,
+}: {
+  icon: React.ElementType;
+  label: string;
+  sublabel?: string;
+  suffix?: string;
+  hasChevron?: boolean;
+  onClick: () => void;
+  className?: string;
+}) {
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors font-medium"
+      className={cn(
+        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-neutral-100/70 transition-colors cursor-pointer border-0 bg-transparent min-w-0 select-none",
+        className
+      )}
     >
-      <Icon className="w-4 h-4 text-gray-400" />
-      {label}
+      <Icon className="w-4 h-4 text-neutral-500 shrink-0" />
+      <div className="flex-1 min-w-0">
+        <div className="text-[13px] font-medium text-neutral-800 leading-tight">{label}</div>
+        {sublabel && <div className="text-[11px] text-neutral-400 font-normal leading-normal mt-0.5">{sublabel}</div>}
+      </div>
+      {suffix && <span className="text-[11px] text-neutral-400 font-mono tracking-wider ml-auto">{suffix}</span>}
+      {hasChevron && <ChevronRight className="w-3.5 h-3.5 text-neutral-400 shrink-0 ml-auto" />}
     </button>
   );
 }

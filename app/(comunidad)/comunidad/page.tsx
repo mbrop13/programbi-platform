@@ -36,12 +36,12 @@ export default async function ComunidadPage() {
         </div>
         {/* ─── FEATURES ZIGZAG (clases en vivo, material, IA) ─── */}
         <CommunityFeatures />
-        {/* ─── TESTIMONIOS ─── */}
-        <TestimonialsSection />
         {/* ─── PLANES Y PRECIOS ─── */}
         <SubscriptionGate 
           isLoggedIn={!!profile}
         />
+        {/* ─── TESTIMONIOS ─── */}
+        <TestimonialsSection />
         {/* ─── FAQ ─── */}
         <CommunityFaq />
       </main>
