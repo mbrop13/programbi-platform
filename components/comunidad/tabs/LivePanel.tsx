@@ -12,10 +12,9 @@ import {
   Calendar, 
   Clock, 
   AlertCircle, 
-  RefreshCw,
-  ExternalLink,
   Film,
-  X
+  X,
+  ChevronRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -158,11 +157,7 @@ export default function LivePanel() {
     };
   }, [isWatchingLive, activeClass?.status, fetchClassInfo]);
 
-  const handleRefresh = async () => {
-    setLoading(true);
-    await Promise.all([checkAdmin(), fetchClassInfo()]);
-    setLoading(false);
-  };
+
 
 
   const handleStartClass = async () => {
@@ -313,17 +308,7 @@ export default function LivePanel() {
         )}
       </AnimatePresence>
 
-      {/* Refresh button (top right) */}
-      <div className="flex justify-end">
-        <button
-          onClick={handleRefresh}
-          disabled={loading}
-          className="flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-350 transition-colors disabled:opacity-40 cursor-pointer bg-transparent border-none"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-          Actualizar
-        </button>
-      </div>
+
       {/* Active, Scheduled or Last Emitted class banner */}
       {activeClass ? (
         activeClass.status === "active" ? (
@@ -331,10 +316,12 @@ export default function LivePanel() {
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-neutral-950 rounded-3xl border border-red-500/20 shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[300px]"
+            className="bg-gradient-to-r from-[#0284c7] via-[#0ea5e9] to-[#38bdf8] text-white border border-sky-400/30 rounded-3xl p-5 md:p-6 relative overflow-hidden shadow-sm flex flex-col md:flex-row gap-6 min-h-[300px]"
           >
-            {/* Left Section: Live Video Embed */}
-            <div className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-black flex items-center justify-center border-b md:border-b-0 md:border-r border-neutral-100 dark:border-neutral-900">
+            <div className="absolute top-0 right-0 w-80 h-80 bg-white/15 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
+
+            {/* Left Section: Live Video Embed inside Glass Container */}
+            <div className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-black/40 backdrop-blur-sm p-1 rounded-2xl overflow-hidden border border-white/20 z-10">
               {activeClass.youtube_video_id ? (
                 <iframe
                   width="100%"
@@ -344,21 +331,21 @@ export default function LivePanel() {
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
-                  className="absolute inset-0 w-full h-full border-none"
+                  className="absolute inset-0 w-full h-full border-none rounded-xl"
                 />
               ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-500 bg-neutral-950">
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white/50 bg-neutral-950 rounded-xl">
                   <VideoOff className="w-8 h-8 mb-2" />
-                  <span className="text-[10px] font-bold">Señal no disponible</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider">Señal no disponible</span>
                 </div>
               )}
             </div>
 
             {/* Right Section: Live Texts & Actions */}
-            <div className="flex-1 p-6 sm:p-8 flex flex-col justify-between">
+            <div className="flex-1 flex flex-col justify-between relative z-10">
               <div>
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="bg-red-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                  <span className="text-white bg-white/15 px-3 py-1 rounded-full border border-white/25 backdrop-blur-sm flex items-center gap-1.5 shadow-sm text-[10px] font-black uppercase tracking-wider select-none">
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
@@ -366,11 +353,11 @@ export default function LivePanel() {
                     En Vivo Ahora
                   </span>
                 </div>
-                <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2.5">
+                <h2 className="font-display font-black text-xl sm:text-2xl text-white leading-tight mb-2.5">
                   {activeClass.title}
                 </h2>
                 {activeClass.description && (
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed line-clamp-3">
+                  <p className="text-xs text-sky-50 leading-relaxed line-clamp-3">
                     {activeClass.description}
                   </p>
                 )}
@@ -379,7 +366,7 @@ export default function LivePanel() {
               <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
                 <button 
                   onClick={handleJoinClass}
-                  className="w-full sm:w-auto px-6 py-3 bg-[#1890ff] hover:bg-blue-600 active:scale-[0.98] text-white font-black text-xs rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer"
+                  className="w-full sm:w-auto px-6 py-3 bg-white hover:bg-neutral-50 text-[#0284c7] font-black text-xs rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer active:scale-[0.98]"
                 >
                   <Tv className="w-4 h-4" />
                   Unirse a la Clase (Pantalla Completa)
@@ -387,7 +374,7 @@ export default function LivePanel() {
                 {isAdmin && (
                   <button 
                     onClick={handleStartClass}
-                    className="w-full sm:w-auto px-5 py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs rounded-xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 border-none cursor-pointer"
+                    className="w-full sm:w-auto px-5 py-3 bg-white/15 hover:bg-white/25 text-white font-bold text-xs rounded-xl transition-all border border-white/20 cursor-pointer active:scale-[0.98]"
                   >
                     <Play className="w-3.5 h-3.5" /> Iniciar Clase
                   </button>
@@ -400,37 +387,38 @@ export default function LivePanel() {
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-neutral-950 rounded-3xl border border-[#1890ff]/20 shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[300px]"
+            className="bg-gradient-to-r from-[#0284c7] via-[#0ea5e9] to-[#38bdf8] text-white border border-sky-400/30 rounded-3xl p-5 md:p-6 relative overflow-hidden shadow-sm flex flex-col md:flex-row gap-6 min-h-[300px]"
           >
-            {/* Left Section: Graphic Placeholder */}
-            <div className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center border-b md:border-b-0 md:border-r border-neutral-100 dark:border-neutral-900 select-none">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#1890ff]/10 to-indigo-500/10 dark:from-blue-950/20 dark:to-indigo-950/20" />
-              <Calendar className="w-16 h-16 text-[#1890ff]/40 animate-pulse relative z-10" />
+            <div className="absolute top-0 right-0 w-80 h-80 bg-white/15 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
+
+            {/* Left Section: Graphic Placeholder inside Glass Container */}
+            <div className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center overflow-hidden border border-white/15 select-none z-10">
+              <Calendar className="w-16 h-16 text-white/30 animate-pulse relative z-10" />
             </div>
 
             {/* Right Section: Countdown, Date & Texts */}
-            <div className="flex-1 p-6 sm:p-8 flex flex-col justify-between">
+            <div className="flex-1 flex flex-col justify-between relative z-10">
               <div>
                 <div className="flex flex-wrap items-center gap-2 mb-3">
-                  <span className="bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-                    <Clock className="w-3 h-3" />
+                  <span className="text-sky-100 bg-white/10 px-3 py-1 rounded-full border border-white/20 backdrop-blur-sm flex items-center gap-1.5 shadow-sm text-[10px] font-black uppercase tracking-wider select-none">
+                    <Clock className="w-3 h-3 text-white" />
                     Clase Programada
                   </span>
-                  <span className="text-xs text-neutral-600 dark:text-neutral-450 font-bold flex items-center gap-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800/50 px-2.5 py-1 rounded-full select-none">
-                    <Calendar className="w-3.5 h-3.5 text-[#1890ff]" />
+                  <span className="text-xs text-white/95 font-bold flex items-center gap-1 bg-white/10 border border-white/10 px-2.5 py-1 rounded-full select-none">
+                    <Calendar className="w-3.5 h-3.5 text-white/80" />
                     {new Date(activeClass.scheduled_at).toLocaleDateString("es-CL", { weekday: 'short', day: 'numeric', month: 'short' })}
                   </span>
-                  <span className="text-xs text-neutral-600 dark:text-neutral-450 font-bold flex items-center gap-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800/50 px-2.5 py-1 rounded-full select-none">
-                    <Clock className="w-3.5 h-3.5 text-[#1890ff]" />
+                  <span className="text-xs text-white/95 font-bold flex items-center gap-1 bg-white/10 border border-white/10 px-2.5 py-1 rounded-full select-none">
+                    <Clock className="w-3.5 h-3.5 text-white/80" />
                     {new Date(activeClass.scheduled_at).toLocaleTimeString("es-CL", { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
 
-                <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2.5">
+                <h2 className="font-display font-black text-xl sm:text-2xl text-white leading-tight mb-2.5">
                   {activeClass.title}
                 </h2>
                 {activeClass.description && (
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed line-clamp-3">
+                  <p className="text-xs text-sky-50 leading-relaxed line-clamp-3">
                     {activeClass.description}
                   </p>
                 )}
@@ -438,23 +426,23 @@ export default function LivePanel() {
 
               <div className="mt-6 flex flex-col items-start gap-4">
                 <div className="w-full">
-                  <span className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest block mb-2 select-none">Inicia en:</span>
+                  <span className="text-[10px] font-bold text-sky-100 uppercase tracking-widest block mb-2 select-none">Inicia en:</span>
                   <div className="grid grid-cols-4 gap-2.5 max-w-xs select-none">
-                    <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
-                      <span className="text-xl font-black text-neutral-900 dark:text-white leading-none">{countdown.days}</span>
-                      <span className="text-[9px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-bold mt-1">Días</span>
+                    <div className="bg-white/10 border border-white/15 text-center flex flex-col items-center min-w-[65px] rounded-xl p-2.5 shadow-sm">
+                      <span className="text-xl font-black text-white leading-none">{countdown.days}</span>
+                      <span className="text-[9px] uppercase tracking-wider text-sky-100 font-bold mt-1">Días</span>
                     </div>
-                    <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
-                      <span className="text-xl font-black text-neutral-900 dark:text-white leading-none">{countdown.hours}</span>
-                      <span className="text-[9px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-bold mt-1">Horas</span>
+                    <div className="bg-white/10 border border-white/15 text-center flex flex-col items-center min-w-[65px] rounded-xl p-2.5 shadow-sm">
+                      <span className="text-xl font-black text-white leading-none">{countdown.hours}</span>
+                      <span className="text-[9px] uppercase tracking-wider text-sky-100 font-bold mt-1">Horas</span>
                     </div>
-                    <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
-                      <span className="text-xl font-black text-neutral-900 dark:text-white leading-none">{countdown.minutes}</span>
-                      <span className="text-[9px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-bold mt-1">Mins</span>
+                    <div className="bg-white/10 border border-white/15 text-center flex flex-col items-center min-w-[65px] rounded-xl p-2.5 shadow-sm">
+                      <span className="text-xl font-black text-white leading-none">{countdown.minutes}</span>
+                      <span className="text-[9px] uppercase tracking-wider text-sky-100 font-bold mt-1">Mins</span>
                     </div>
-                    <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
-                      <span className="text-xl font-black text-neutral-900 dark:text-white leading-none">{countdown.seconds}</span>
-                      <span className="text-[9px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-bold mt-1">Segs</span>
+                    <div className="bg-white/10 border border-white/15 text-center flex flex-col items-center min-w-[65px] rounded-xl p-2.5 shadow-sm">
+                      <span className="text-xl font-black text-white leading-none">{countdown.seconds}</span>
+                      <span className="text-[9px] uppercase tracking-wider text-sky-100 font-bold mt-1">Segs</span>
                     </div>
                   </div>
                 </div>
@@ -462,7 +450,7 @@ export default function LivePanel() {
                 {isAdmin && (
                   <button 
                     onClick={handleStartClass}
-                    className="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs rounded-xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-1.5 border-none cursor-pointer"
+                    className="w-full sm:w-auto px-6 py-2.5 bg-white/15 hover:bg-white/25 text-white font-bold text-xs rounded-xl border border-white/20 cursor-pointer active:scale-[0.98] transition-all"
                   >
                     <Play className="w-3.5 h-3.5" /> Iniciar Clase
                   </button>
@@ -476,12 +464,14 @@ export default function LivePanel() {
         <motion.div 
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/80 dark:border-neutral-850/80 shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[300px]"
+          className="bg-gradient-to-r from-[#0284c7] via-[#0ea5e9] to-[#38bdf8] text-white border border-sky-400/30 rounded-3xl p-5 md:p-6 relative overflow-hidden shadow-sm flex flex-col md:flex-row gap-6 min-h-[300px]"
         >
-          {/* Left Section: YouTube Thumbnail with Play Button */}
+          <div className="absolute top-0 right-0 w-80 h-80 bg-white/15 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
+
+          {/* Left Section: YouTube Thumbnail inside Glass Container */}
           <div 
             onClick={() => completedClasses[0].youtube_video_id && setActiveVideoId(completedClasses[0].youtube_video_id)}
-            className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-neutral-100 dark:bg-neutral-950 overflow-hidden border-b md:border-b-0 md:border-r border-neutral-100 dark:border-neutral-900 cursor-pointer group"
+            className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-black/40 rounded-2xl overflow-hidden border border-white/15 cursor-pointer group z-10"
           >
             {completedClasses[0].youtube_video_id ? (
               <>
@@ -494,38 +484,38 @@ export default function LivePanel() {
                     (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${completedClasses[0].youtube_video_id!}/hqdefault.jpg`;
                   }}
                 />
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10 animate-fade-in" />
                 <div className="absolute inset-0 z-20 flex items-center justify-center">
-                  <div className="w-14 h-14 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
-                    <Play className="w-6 h-6 text-[#1890ff] fill-[#1890ff]/20 ml-0.5" />
+                  <div className="w-12 h-12 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl group-hover:scale-105 transition-transform">
+                    <Play className="w-5 h-5 text-[#0284c7] fill-[#0284c7]/20 ml-0.5" />
                   </div>
                 </div>
               </>
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-900 dark:to-neutral-850 flex items-center justify-center">
-                <Film className="w-12 h-12 text-neutral-300 dark:text-neutral-700" />
+              <div className="absolute inset-0 bg-white/10 flex items-center justify-center rounded-2xl">
+                <Film className="w-12 h-12 text-white/30" />
               </div>
             )}
           </div>
 
           {/* Right Section: Title, Description & Action */}
-          <div className="flex-1 p-6 sm:p-8 flex flex-col justify-between">
+          <div className="flex-1 flex flex-col justify-between relative z-10">
             <div>
               <div className="flex flex-wrap items-center gap-2 mb-3">
-                <span className="bg-neutral-100 dark:bg-neutral-900 text-neutral-550 dark:text-neutral-400 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 border border-neutral-200/50 dark:border-neutral-800/50 select-none">
-                  <Video className="w-3.5 h-3.5 text-[#1890ff]" />
+                <span className="text-sky-100 bg-white/10 px-3 py-1 rounded-full border border-white/20 backdrop-blur-sm flex items-center gap-1.5 shadow-sm text-[10px] font-black uppercase tracking-wider select-none">
+                  <Video className="w-3.5 h-3.5 text-white" />
                   Última Clase Emitida
                 </span>
-                <span className="text-[11px] text-neutral-400 dark:text-neutral-500 font-bold bg-neutral-50 dark:bg-neutral-900/60 px-2.5 py-1 rounded-full select-none">
+                <span className="text-xs text-white/95 font-bold bg-white/10 px-2.5 py-1 rounded-full select-none">
                   {getTimeAgo(completedClasses[0].scheduled_at)}
                 </span>
               </div>
 
-              <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2.5">
+              <h2 className="font-display font-black text-xl sm:text-2xl text-white leading-tight mb-2.5">
                 {completedClasses[0].title}
               </h2>
               {completedClasses[0].description && (
-                <p className="text-xs text-neutral-500 dark:text-neutral-450 leading-relaxed line-clamp-3">
+                <p className="text-xs text-sky-50 leading-relaxed line-clamp-3">
                   {completedClasses[0].description}
                 </p>
               )}
@@ -535,9 +525,9 @@ export default function LivePanel() {
               {completedClasses[0].youtube_video_id && (
                 <button 
                   onClick={() => setActiveVideoId(completedClasses[0].youtube_video_id!)}
-                  className="w-full sm:w-auto px-6 py-3 bg-[#1890ff] hover:bg-blue-600 active:scale-[0.98] text-white font-bold text-xs rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer"
+                  className="w-full sm:w-auto px-6 py-3 bg-white hover:bg-neutral-50 text-[#0284c7] font-black text-xs rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer active:scale-[0.98]"
                 >
-                  <Play className="w-4 h-4 fill-white/20" />
+                  <Play className="w-4 h-4 fill-[#0284c7]/20" />
                   Ver Grabación de la Clase
                 </button>
               )}
@@ -676,10 +666,10 @@ function RecordingCard({ recording, index, onPlay }: { recording: LiveClass; ind
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="group bg-white dark:bg-neutral-950 rounded-2xl overflow-hidden border border-neutral-200/80 dark:border-neutral-850/80 shadow-sm hover:shadow-xl hover:border-[#1890ff]/20 transition-all duration-300 flex flex-col h-full cursor-pointer select-none"
+      className="group bg-white dark:bg-neutral-950 rounded-3xl overflow-hidden border border-neutral-200/80 dark:border-neutral-800/80 hover:shadow-lg hover:border-neutral-300 dark:hover:border-neutral-700 transition-all duration-300 flex flex-col h-full cursor-pointer select-none active:scale-[0.99]"
     >
       {/* Thumbnail */}
-      <div className="relative aspect-video w-full overflow-hidden shrink-0 bg-neutral-100 dark:bg-neutral-900">
+      <div className="relative aspect-[16/10] w-full overflow-hidden shrink-0 bg-neutral-100 dark:bg-neutral-900">
         {imgSrc ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -687,7 +677,7 @@ function RecordingCard({ recording, index, onPlay }: { recording: LiveClass; ind
               src={imgSrc}
               alt={recording.title}
               onError={handleImgError}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10 group-hover:from-black/20 transition-colors" />
           </>
@@ -700,16 +690,16 @@ function RecordingCard({ recording, index, onPlay }: { recording: LiveClass; ind
         {/* Play overlay */}
         {hasVideo && (
           <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <div className="w-14 h-14 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
-              <PlayCircle className="w-7 h-7 text-[#1890ff]" />
+            <div className="w-12 h-12 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl group-hover:scale-105 transition-transform">
+              <PlayCircle className="w-6.5 h-6.5 text-neutral-900" />
             </div>
           </div>
         )}
 
         {/* Badge */}
         <div className="absolute top-3 left-3 z-20">
-          <span className="bg-black/70 backdrop-blur-sm text-white text-[10px] font-black px-2.5 py-1 rounded-lg flex items-center gap-1">
-            <Video className="w-3 h-3 text-[#1890ff]" />
+          <span className="bg-neutral-900 text-white dark:bg-white dark:text-black text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-md uppercase tracking-wider select-none">
+            <Video className="w-2.5 h-2.5 text-[#1890ff]" />
             Grabación
           </span>
         </div>
@@ -717,18 +707,18 @@ function RecordingCard({ recording, index, onPlay }: { recording: LiveClass; ind
 
       {/* Info */}
       <div className="p-5 flex flex-col flex-1">
-        <h4 className="font-bold text-[15px] text-neutral-900 dark:text-white leading-snug mb-2 line-clamp-2 group-hover:text-[#1890ff] transition-colors">
+        <h4 className="font-bold text-sm text-neutral-900 dark:text-white leading-snug mb-2 line-clamp-2 group-hover:text-[#0284c7] transition-colors">
           {recording.title}
         </h4>
         
         {recording.description && (
-          <p className="text-xs text-neutral-550 dark:text-neutral-450 leading-relaxed line-clamp-2 mb-3">
+          <p className="text-[11px] text-neutral-400 dark:text-neutral-500 leading-relaxed line-clamp-2 mb-4">
             {recording.description}
           </p>
         )}
 
-        <div className="mt-auto pt-3 border-t border-neutral-100 dark:border-neutral-900 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-neutral-400 dark:text-neutral-500 font-medium">
+        <div className="mt-auto pt-3 border-t border-neutral-100 dark:border-neutral-900/60 flex items-center justify-between select-none">
+          <div className="flex items-center gap-1 text-[11px] text-neutral-400 font-medium">
             <Calendar className="w-3.5 h-3.5" />
             <span>{new Date(recording.scheduled_at).toLocaleDateString("es-CL", { 
               day: 'numeric', 
@@ -738,8 +728,8 @@ function RecordingCard({ recording, index, onPlay }: { recording: LiveClass; ind
           </div>
           
           {hasVideo ? (
-            <span className="text-[10px] font-bold text-[#1890ff] flex items-center gap-0.5 group-hover:gap-1.5 transition-all bg-blue-500/10 dark:bg-blue-500/5 px-2.5 py-1 rounded-full">
-              Ver ahora <ExternalLink className="w-3 h-3" />
+            <span className="text-[10px] font-bold text-neutral-900 dark:text-white flex items-center gap-0.5 group-hover:gap-1.5 transition-all">
+              Ver grabación <ChevronRight className="w-3 h-3" />
             </span>
           ) : (
             <span className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-900 px-2.5 py-1 rounded-full">
