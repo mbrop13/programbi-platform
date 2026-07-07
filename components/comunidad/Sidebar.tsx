@@ -94,6 +94,26 @@ export default function Sidebar({
   const [activeTheme, setActiveTheme] = useState<"claro" | "oscuro" | "sistema">("claro");
   const [activeLanguage, setActiveLanguage] = useState<"es" | "en">("es");
 
+  const aparienciaRef = useRef<HTMLDivElement>(null);
+  const idiomaRef = useRef<HTMLDivElement>(null);
+  const [submenuCoords, setSubmenuCoords] = useState<{ top: number; left: number } | null>(null);
+
+  const openApariencia = () => {
+    if (aparienciaRef.current) {
+      const rect = aparienciaRef.current.getBoundingClientRect();
+      setSubmenuCoords({ top: rect.top, left: rect.right + 8 });
+      setActiveSubmenu("apariencia");
+    }
+  };
+
+  const openIdioma = () => {
+    if (idiomaRef.current) {
+      const rect = idiomaRef.current.getBoundingClientRect();
+      setSubmenuCoords({ top: rect.top, left: rect.right + 8 });
+      setActiveSubmenu("idioma");
+    }
+  };
+
   // Close submenu when main user menu closes
   useEffect(() => {
     if (!userMenuOpen) {
@@ -537,100 +557,26 @@ export default function Sidebar({
 
               <div className="my-1 h-px bg-neutral-100" />
 
-              <div className="relative">
+              <div ref={aparienciaRef}>
                 <MenuItem
                   icon={Sun}
                   label="Apariencia"
                   sublabel={activeTheme === "claro" ? "Claro" : activeTheme === "oscuro" ? "Oscuro" : "Sistema"}
                   hasChevron
-                  onMouseEnter={() => setActiveSubmenu("apariencia")}
-                  onClick={() => {
-                    setActiveSubmenu(activeSubmenu === "apariencia" ? null : "apariencia");
-                  }}
+                  onMouseEnter={openApariencia}
+                  onClick={openApariencia}
                 />
-                <AnimatePresence>
-                  {activeSubmenu === "apariencia" && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -8, scale: 0.96 }}
-                      animate={{ opacity: 1, x: 0, scale: 1 }}
-                      exit={{ opacity: 0, x: -8, scale: 0.96 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 28 }}
-                      className="absolute top-0 left-full ml-2 z-50 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 p-1.5 space-y-0.5 w-44"
-                    >
-                      <SubmenuItem
-                        icon={Sun}
-                        label="Claro"
-                        isActive={activeTheme === "claro"}
-                        onClick={() => {
-                          setActiveTheme("claro");
-                          toast("success", "Tema Claro activado", "Se ha establecido el tema visual de la plataforma en Claro.");
-                          setActiveSubmenu(null);
-                        }}
-                      />
-                      <SubmenuItem
-                        icon={Moon}
-                        label="Oscuro"
-                        isActive={activeTheme === "oscuro"}
-                        onClick={() => {
-                          toast("info", "Tema Oscuro", "El tema Oscuro estará disponible en una actualización muy pronto.");
-                        }}
-                      />
-                      <SubmenuItem
-                        icon={Monitor}
-                        label="Sistema"
-                        isActive={activeTheme === "sistema"}
-                        onClick={() => {
-                          toast("info", "Tema del Sistema", "La sincronización automática con el sistema estará disponible próximamente.");
-                        }}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </div>
 
-              <div className="relative">
+              <div ref={idiomaRef}>
                 <MenuItem
                   icon={Globe}
                   label="Idioma"
                   sublabel={activeLanguage === "es" ? "Español" : "English"}
                   hasChevron
-                  onMouseEnter={() => setActiveSubmenu("idioma")}
-                  onClick={() => {
-                    setActiveSubmenu(activeSubmenu === "idioma" ? null : "idioma");
-                  }}
+                  onMouseEnter={openIdioma}
+                  onClick={openIdioma}
                 />
-                <AnimatePresence>
-                  {activeSubmenu === "idioma" && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -8, scale: 0.96 }}
-                      animate={{ opacity: 1, x: 0, scale: 1 }}
-                      exit={{ opacity: 0, x: -8, scale: 0.96 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 28 }}
-                      className="absolute top-0 left-full ml-2 z-50 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 p-1.5 space-y-0.5 w-44"
-                    >
-                      <SubmenuItem
-                        icon={Globe}
-                        label="Español"
-                        isActive={activeLanguage === "es"}
-                        onClick={() => {
-                          setActiveLanguage("es");
-                          toast("success", "Idioma cambiado", "Se ha establecido el idioma en Español.");
-                          setActiveSubmenu(null);
-                        }}
-                      />
-                      <SubmenuItem
-                        icon={Globe}
-                        label="English"
-                        isActive={activeLanguage === "en"}
-                        onClick={() => {
-                          setActiveLanguage("en");
-                          toast("success", "Language changed", "Language set to English.");
-                          setActiveSubmenu(null);
-                        }}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
               </div>
 
               <MenuItem
@@ -720,6 +666,87 @@ export default function Sidebar({
       </AnimatePresence>
 
       <NotificationCenter open={notifOpen} onClose={() => setNotifOpen(false)} onUnreadChange={setUnreadCount} collapsed={collapsed} />
+
+      {/* ─── FIXED SUBMENUS DE APARIENCIA E IDIOMA ─── */}
+      <AnimatePresence>
+        {userMenuOpen && activeSubmenu === "apariencia" && submenuCoords && (
+          <motion.div
+            initial={{ opacity: 0, x: -8, scale: 0.96 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -8, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+            className="fixed z-50 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 p-1.5 space-y-0.5 w-44"
+            style={{
+              top: submenuCoords.top,
+              left: submenuCoords.left,
+            }}
+          >
+            <SubmenuItem
+              icon={Sun}
+              label="Claro"
+              isActive={activeTheme === "claro"}
+              onClick={() => {
+                setActiveTheme("claro");
+                toast("success", "Tema Claro activado", "Se ha establecido el tema visual de la plataforma en Claro.");
+                setActiveSubmenu(null);
+              }}
+            />
+            <SubmenuItem
+              icon={Moon}
+              label="Oscuro"
+              isActive={activeTheme === "oscuro"}
+              onClick={() => {
+                toast("info", "Tema Oscuro", "El tema Oscuro estará disponible en una actualización muy pronto.");
+              }}
+            />
+            <SubmenuItem
+              icon={Monitor}
+              label="Sistema"
+              isActive={activeTheme === "sistema"}
+              onClick={() => {
+                toast("info", "Tema del Sistema", "La sincronización automática con el sistema estará disponible próximamente.");
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {userMenuOpen && activeSubmenu === "idioma" && submenuCoords && (
+          <motion.div
+            initial={{ opacity: 0, x: -8, scale: 0.96 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: -8, scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+            className="fixed z-50 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 p-1.5 space-y-0.5 w-44"
+            style={{
+              top: submenuCoords.top,
+              left: submenuCoords.left,
+            }}
+          >
+            <SubmenuItem
+              icon={Globe}
+              label="Español"
+              isActive={activeLanguage === "es"}
+              onClick={() => {
+                setActiveLanguage("es");
+                toast("success", "Idioma cambiado", "Se ha establecido el idioma en Español.");
+                setActiveSubmenu(null);
+              }}
+            />
+            <SubmenuItem
+              icon={Globe}
+              label="English"
+              isActive={activeLanguage === "en"}
+              onClick={() => {
+                setActiveLanguage("en");
+                toast("success", "Language changed", "Language set to English.");
+                setActiveSubmenu(null);
+              }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
