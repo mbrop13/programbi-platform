@@ -922,7 +922,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                               {completedLessons.size > 0 ? t.continueLearning : t.startCourse}
                             </button>
                             
-                            <div className="text-[10px] text-neutral-500 font-bold uppercase tracking-wider">
+                            <div className="text-[10px] text-white font-bold uppercase tracking-wider">
                               {totalLessons} {t.lessonsCount} • {modules.length} {t.modulesCount}
                             </div>
                           </div>
