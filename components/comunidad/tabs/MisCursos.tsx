@@ -1,6 +1,6 @@
 "use client";
 
-import { PlayCircle, Clock, CheckCircle, Layers, GraduationCap, BookOpen, Lock, Sparkles, Eye, ShoppingCart, ChevronRight, Zap, Timer, X, Loader2 } from "lucide-react";
+import { PlayCircle, Clock, CheckCircle, Layers, GraduationCap, Lock, Sparkles, Eye, ShoppingCart, ChevronRight, Zap, Timer, X, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -294,20 +294,7 @@ export default function MisCursos({ onSelectCourse, language }: { onSelectCourse
   };
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
-       {/* ─── HEADER ─── */}
-       <div className="mb-10 select-none">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-neutral-900 dark:bg-neutral-100 flex items-center justify-center shadow-sm">
-              <BookOpen className="w-5.5 h-5.5 text-white dark:text-black" />
-            </div>
-            <div>
-              <h1 className="font-display font-bold text-2xl sm:text-3xl text-neutral-900 dark:text-white tracking-tight leading-tight">{t.title}</h1>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1.5 font-medium">{t.subtitle}</p>
-            </div>
-          </div>
-       </div>
-
+    <div className="w-full max-w-6xl mx-auto pt-4">
        {/* ─── FILTER TABS ─── */}
        <div className="flex items-center gap-2 mb-8 select-none">
          {[
@@ -322,14 +309,14 @@ export default function MisCursos({ onSelectCourse, language }: { onSelectCourse
                className={cn(
                  "relative px-4 py-2.5 rounded-xl text-xs font-bold transition-all border-0 cursor-pointer flex items-center gap-2",
                  isActive
-                   ? "bg-neutral-900 text-white dark:bg-white dark:text-black shadow-sm"
+                   ? "bg-[#1890ff] text-white shadow-sm"
                    : "bg-neutral-100 hover:bg-neutral-200 text-neutral-500 hover:text-neutral-800 dark:bg-neutral-900/60 dark:hover:bg-neutral-900"
                )}
              >
                <span>{tab.label}</span>
                <span className={cn(
                  "text-[10px] px-1.5 py-0.5 rounded-md font-bold transition-colors",
-                 isActive ? "bg-white/20 text-white dark:bg-black/10 dark:text-black" : "bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
+                 isActive ? "bg-white/20 text-white" : "bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400"
                )}>
                  {tab.count}
                </span>
