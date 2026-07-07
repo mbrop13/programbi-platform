@@ -107,7 +107,7 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
 
             {/* Plan Cards Grid */}
             <motion.div
-              key={userType}
+              key={`${userType}_${billingCycle}`}
               initial="hidden"
               animate="visible"
               variants={{
@@ -149,15 +149,15 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
                 return (
                   <motion.div
                     variants={{
-                      hidden: { opacity: 0, y: 12, scale: 0.98 },
+                      hidden: { opacity: 0, y: -8, scale: 1.02 },
                       visible: { 
                         opacity: 1, 
                         y: 0, 
                         scale: 1,
                         transition: {
                           type: "spring",
-                          stiffness: 260,
-                          damping: 24
+                          stiffness: 220,
+                          damping: 26
                         }
                       }
                     }}
@@ -192,6 +192,16 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
                             /mes
                           </span>
                         </div>
+                        {billingCycle === 'anual' && (
+                          <div className="flex items-center gap-1.5 mt-1 select-none">
+                            <span className="text-[10px] text-neutral-400 dark:text-neutral-550 line-through">
+                              {formatGeoPrice(plan.price)}/mes
+                            </span>
+                            <span className="bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/5 dark:text-emerald-400 text-[9px] font-extrabold px-1.5 py-0.5 rounded uppercase tracking-wider border border-emerald-500/20 dark:border-emerald-500/10">
+                              -30% DTO
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <p className="text-xs text-neutral-600 dark:text-neutral-400 font-medium leading-relaxed mb-6">
