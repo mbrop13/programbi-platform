@@ -959,17 +959,17 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
 
                     <div className="flex-1 w-full max-w-[1120px] mx-auto px-6 py-8">
                       {/* Banner / Hero Section */}
-                      <div className="bg-gradient-to-r from-[#003a8c] via-[#096dd9] to-[#1890ff] text-white border border-blue-400/25 rounded-3xl p-8 relative overflow-hidden shadow-sm mb-8 select-none">
-                        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-300/10 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
+                      <div className="bg-gradient-to-r from-[#0284c7] via-[#0ea5e9] to-[#38bdf8] text-white border border-sky-400/30 rounded-3xl p-8 relative overflow-hidden shadow-sm mb-8 select-none">
+                        <div className="absolute top-0 right-0 w-80 h-80 bg-white/15 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
                         
                         <div className="relative z-10 max-w-2xl">
-                          <span className="text-[9px] font-bold tracking-widest uppercase text-neutral-300 bg-neutral-800 px-3 py-1 rounded-full border border-neutral-750">
+                          <span className="text-[9px] font-bold tracking-widest uppercase text-sky-100 bg-white/10 px-3 py-1 rounded-full border border-white/20 backdrop-blur-sm select-none">
                             {readableCourseName}
                           </span>
                           <h1 className="text-2xl sm:text-3xl font-bold mt-4 leading-tight">
                             {t.welcome}
                           </h1>
-                          <p className="text-xs text-neutral-405 mt-3 leading-relaxed">
+                          <p className="text-xs text-sky-50 mt-3 leading-relaxed">
                             {t.welcomeDesc}
                           </p>
                           
