@@ -14,6 +14,7 @@ import {
   User,
   Award,
   Settings,
+  ChevronLeft,
   ChevronRight,
   LogOut,
   X,
@@ -253,28 +254,42 @@ export default function Sidebar({
       onClick={handleSidebarClick}
     >
       {/* Logo + Collapse button */}
-      <div className={`flex items-center shrink-0 ${collapsed ? "justify-center px-2" : "px-4"} h-[68px] border-b border-gray-100`}>
-        <Link href="/" className="flex items-center justify-center no-underline group shrink-0">
-          {collapsed ? (
-            <div className="relative w-9 h-9 shrink-0 overflow-hidden flex items-center justify-center">
-              <Image
-                src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
-                alt="ProgramBI"
-                fill
-                className="object-contain group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-          ) : (
-            <div className="relative w-36 h-[34px] shrink-0 overflow-hidden flex items-center justify-center">
-              <Image
-                src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
-                alt="ProgramBI"
-                fill
-                className="object-contain group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-          )}
-        </Link>
+      <div className={`flex items-center shrink-0 ${collapsed ? "justify-center px-2" : "justify-between px-4"} h-[68px] border-b border-gray-100`}>
+        {collapsed ? (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleCollapse();
+            }}
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:bg-neutral-50 transition-colors border-0 bg-transparent cursor-pointer"
+            title="Expandir menú"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        ) : (
+          <>
+            <Link href="/" className="flex items-center justify-center no-underline group shrink-0">
+              <div className="relative w-32 h-[30px] shrink-0 overflow-hidden flex items-center justify-center">
+                <Image
+                  src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
+                  alt="ProgramBI"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            </Link>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleCollapse();
+              }}
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:bg-neutral-50 transition-colors border-0 bg-transparent cursor-pointer"
+              title="Colapsar menú"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+          </>
+        )}
       </div>
 
       {/* ─── SEARCH SECTION ─── */}
@@ -317,23 +332,16 @@ export default function Sidebar({
       </div>
 
       {/* Nav Items */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-5 scrollbar-hide">
+      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6 scrollbar-hide">
         {Object.entries(groups).map(([groupName, groupTabs]) => (
-          <div key={groupName}>
-            <AnimatePresence>
-              {!collapsed && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="mb-2 overflow-hidden"
-                >
-                  <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider px-3">
-                    {groupName}
-                  </span>
-                </motion.div>
-              )}
-            </AnimatePresence>
+          <div key={groupName} className="space-y-2">
+            {!collapsed && (
+              <div className="px-3 mb-1">
+                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider select-none">
+                  {groupName}
+                </span>
+              </div>
+            )}
 
             <div className="space-y-1">
               {groupTabs.map((tab) => {
@@ -347,52 +355,34 @@ export default function Sidebar({
                       onMobileClose();
                     }}
                     title={collapsed ? tab.label : undefined}
-                    className={`relative w-full flex items-center gap-3 font-medium text-[13px] transition-all duration-200
-                      ${collapsed ? "justify-center px-2 py-2.5 rounded-xl" : "px-3 py-2.5 rounded-xl"}
+                    className={`w-full flex items-center gap-3 font-semibold text-[13px] transition-colors duration-150 select-none border-0 cursor-pointer
+                      ${collapsed ? "justify-center px-2.5 py-2.5 rounded-xl" : "px-3 py-2.5 rounded-xl"}
                       ${isActive
-                        ? "bg-gradient-to-r from-brand-blue/10 to-brand-blue/[0.02] text-brand-blue"
-                        : "text-gray-500 hover:text-gray-900 hover:bg-gray-50"
+                        ? "bg-neutral-100 text-neutral-900"
+                        : "bg-transparent text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
                       }
                     `}
                   >
-                    {isActive && (
-                      <motion.div
-                        layoutId="sidebarActive"
-                        className={`absolute top-1.5 bottom-1.5 rounded-full bg-brand-blue ${collapsed ? "left-0 w-[3px]" : "-left-3 w-[3px]"}`}
-                        transition={{ type: "spring", stiffness: 500, damping: 35 }}
-                      />
-                    )}
-
-                    <span className="relative shrink-0">
-                      <Icon className={`w-[18px] h-[18px] transition-colors ${isActive ? "text-brand-blue" : collapsed ? "text-gray-400" : tab.color}`} />
+                    <span className="relative shrink-0 flex items-center justify-center">
+                      <Icon className={`w-5 h-5 transition-colors ${isActive ? "text-neutral-900" : "text-neutral-500 group-hover:text-neutral-800"}`} />
                       {tab.showPing && (
-                        <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
-                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500" />
-                        </span>
+                        <span className="absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5 rounded-full bg-rose-500" />
                       )}
                     </span>
 
-                    <AnimatePresence>
-                      {!collapsed && (
-                        <motion.span
-                          initial={{ opacity: 0, width: 0 }}
-                          animate={{ opacity: 1, width: "auto" }}
-                          exit={{ opacity: 0, width: 0 }}
-                          className={`whitespace-nowrap overflow-hidden ${isActive ? "font-semibold" : ""}`}
-                        >
-                          {tab.label}
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-
-                    {tab.badge && tab.badge > 0 && (
-                      <span className={`shrink-0 min-w-[20px] h-5 flex items-center justify-center rounded-full text-[10px] font-bold px-1.5
-                        ${collapsed ? "absolute -top-1 -right-1" : "ml-auto"}
-                        ${isActive ? "bg-brand-blue text-white" : "bg-rose-500 text-white"}`}>
-                        {tab.badge > 99 ? "99+" : tab.badge}
+                    {!collapsed && (
+                      <span className="whitespace-nowrap overflow-hidden truncate">
+                        {tab.label}
                       </span>
                     )}
+
+                    {!collapsed && tab.badge && tab.badge > 0 ? (
+                      <span className="shrink-0 min-w-[20px] h-5 flex items-center justify-center rounded-full text-[10px] font-bold px-1.5 ml-auto bg-neutral-200 text-neutral-800">
+                        {tab.badge > 99 ? "99+" : tab.badge}
+                      </span>
+                    ) : collapsed && tab.badge && tab.badge > 0 ? (
+                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500" />
+                    ) : null}
                   </button>
                 );
               })}
@@ -406,22 +396,21 @@ export default function Sidebar({
         const hasSubscription = !!userProfile?.subscription_plan || isAdmin;
         if (!collapsed && !hasSubscription) {
           return (
-            <div className="mx-3 mb-4 p-4 rounded-2xl bg-gradient-to-br from-blue-50/50 via-indigo-50/30 to-brand-blue/5 border border-brand-blue/10 relative overflow-hidden shadow-sm shrink-0">
-              {/* Sparkles glow */}
-              <div className="absolute top-0 right-0 w-16 h-16 bg-brand-blue/5 rounded-full filter blur-xl pointer-events-none" />
+            <div className="mx-3 mb-4 p-4 rounded-xl bg-neutral-50 border border-neutral-200 relative overflow-hidden shadow-sm shrink-0">
+              <div className="absolute top-0 right-0 w-16 h-16 bg-neutral-100 rounded-full filter blur-xl pointer-events-none" />
               <div className="relative z-10">
-                <span className="text-[9px] font-black uppercase tracking-widest text-brand-blue bg-white px-2 py-0.5 rounded-full border border-brand-blue/10 inline-flex items-center gap-1 shadow-sm">
-                  <Sparkles className="w-2.5 h-2.5" /> Acceso Completo
+                <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-800 bg-white px-2 py-0.5 rounded-full border border-neutral-200 inline-flex items-center gap-1 shadow-sm select-none">
+                  <Sparkles className="w-2.5 h-2.5 text-neutral-700" /> Acceso Completo
                 </span>
-                <h4 className="text-xs font-black text-gray-900 mt-2.5 leading-snug">
-                  Desbloquea los 4 cursos
+                <h4 className="text-xs font-bold text-neutral-900 mt-2.5 leading-snug">
+                  Membresía Premium
                 </h4>
-                <p className="text-[10px] text-gray-500 mt-1 leading-normal">
+                <p className="text-[10px] text-neutral-500 mt-1 leading-normal font-medium">
                   Obtén acceso ilimitado a SQL, Power BI, Python y Excel.
                 </p>
                 <button
                   onClick={onUpgradeClick}
-                  className="w-full mt-3 py-2 bg-slate-950 hover:bg-slate-900 text-white text-[10px] font-black rounded-lg transition-all active:scale-[0.98] border-0 cursor-pointer shadow-sm flex items-center justify-center gap-1"
+                  className="w-full mt-3 py-2 bg-neutral-900 hover:bg-neutral-950 text-white text-[10px] font-bold rounded-lg transition-all active:scale-[0.98] border-0 cursor-pointer shadow-sm flex items-center justify-center gap-1"
                 >
                   Suscribirse
                   <ArrowRight className="w-3 h-3" />
