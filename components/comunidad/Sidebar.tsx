@@ -17,6 +17,7 @@ import {
   ChevronRight,
   LogOut,
   X,
+  Sun,
   ExternalLink,
   Search,
   Bell,
