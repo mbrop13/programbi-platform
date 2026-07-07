@@ -28,7 +28,8 @@ import {
   WifiOff,
   ExternalLink,
   Film,
-  Plus
+  Plus,
+  X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
@@ -68,6 +69,7 @@ export default function LivePanel() {
   const [isConnecting, setIsConnecting] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [error, setError] = useState<string | null>(null);
+  const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
 
   // Form states for creating a class
   const [title, setTitle] = useState("");
@@ -346,7 +348,7 @@ export default function LivePanel() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-8 pt-2 select-none">
       {/* Error banner */}
       <AnimatePresence>
         {error && (
@@ -354,7 +356,7 @@ export default function LivePanel() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="bg-red-50 border border-red-200 text-red-700 rounded-2xl p-4 flex items-start gap-3"
+            className="bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 rounded-2xl p-4 flex items-start gap-3"
           >
             <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
             <div className="flex-1">
@@ -375,7 +377,7 @@ export default function LivePanel() {
         <button
           onClick={handleRefresh}
           disabled={loading}
-          className="flex items-center gap-2 text-xs font-bold text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-40 cursor-pointer bg-transparent border-none"
+          className="flex items-center gap-2 text-xs font-bold text-neutral-400 hover:text-neutral-600 dark:text-neutral-500 dark:hover:text-neutral-350 transition-colors disabled:opacity-40 cursor-pointer bg-transparent border-none"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
           Actualizar
@@ -387,17 +389,17 @@ export default function LivePanel() {
         <motion.div 
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden"
+          className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/80 dark:border-neutral-850/80 shadow-sm overflow-hidden"
         >
           {/* Hero area with gradient background */}
           <div className={`relative px-6 sm:px-8 py-8 overflow-hidden ${
             activeClass.status === "active" 
-              ? "bg-gradient-to-br from-red-500/5 via-rose-50 to-orange-50/50" 
-              : "bg-gradient-to-br from-blue-500/5 via-indigo-50 to-violet-50/50"
+              ? "bg-gradient-to-br from-red-500/5 via-rose-500/5 to-neutral-50/10 dark:from-red-950/10 dark:via-rose-950/5 dark:to-neutral-950/20" 
+              : "bg-gradient-to-br from-sky-500/5 via-blue-500/5 to-neutral-50/10 dark:from-sky-950/10 dark:via-blue-950/5 dark:to-neutral-950/20"
           }`}>
             {/* Decorative blur circle */}
-            <div className={`absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-[0.08] blur-3xl ${
-              activeClass.status === "active" ? "bg-red-500" : "bg-blue-500"
+            <div className={`absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-[0.15] blur-3xl ${
+              activeClass.status === "active" ? "bg-red-500" : "bg-[#1890ff]"
             }`} />
 
             <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -418,20 +420,20 @@ export default function LivePanel() {
                       Programada
                     </span>
                   )}
-                  <span className="text-xs text-gray-500 font-bold flex items-center gap-1 bg-white/80 px-2.5 py-1 rounded-full">
-                    <Calendar className="w-3.5 h-3.5" />
+                  <span className="text-xs text-neutral-650 dark:text-neutral-350 font-bold flex items-center gap-1 bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/30 dark:border-neutral-800/30 px-2.5 py-1 rounded-full">
+                    <Calendar className="w-3.5 h-3.5 text-[#1890ff]" />
                     {new Date(activeClass.scheduled_at).toLocaleDateString("es-CL", { weekday: 'short', day: 'numeric', month: 'short' })}
                   </span>
-                  <span className="text-xs text-gray-500 font-bold flex items-center gap-1 bg-white/80 px-2.5 py-1 rounded-full">
-                    <Clock className="w-3.5 h-3.5" />
+                  <span className="text-xs text-neutral-650 dark:text-neutral-350 font-bold flex items-center gap-1 bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/30 dark:border-neutral-800/30 px-2.5 py-1 rounded-full">
+                    <Clock className="w-3.5 h-3.5 text-[#1890ff]" />
                     {new Date(activeClass.scheduled_at).toLocaleTimeString("es-CL", { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
 
                 {/* Title */}
-                <h2 className="font-display font-black text-xl sm:text-2xl text-gray-900 leading-tight mb-2">{activeClass.title}</h2>
+                <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2">{activeClass.title}</h2>
                 {activeClass.description && (
-                  <p className="text-sm text-gray-500 max-w-lg leading-relaxed">{activeClass.description}</p>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-lg leading-relaxed">{activeClass.description}</p>
                 )}
               </div>
 
@@ -449,7 +451,7 @@ export default function LivePanel() {
                   <button 
                     onClick={handleJoinClass}
                     disabled={isConnecting}
-                    className="w-full sm:w-auto px-8 py-3.5 bg-brand-blue hover:bg-blue-600 text-white font-black text-sm rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer disabled:opacity-50"
+                    className="w-full sm:w-auto px-8 py-3.5 bg-[#1890ff] hover:bg-blue-600 text-white font-black text-sm rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer disabled:opacity-50"
                   >
                     {isConnecting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Tv className="w-4 h-4" />}
                     {isConnecting ? "Conectando..." : "Unirse a la Clase"}
@@ -463,19 +465,19 @@ export default function LivePanel() {
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden"
+          className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/80 dark:border-neutral-850/80 shadow-sm overflow-hidden"
         >
           <div className="relative px-6 sm:px-8 py-14 text-center overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-white to-indigo-50/30" />
+            <div className="absolute inset-0 bg-gradient-to-br from-[#1890ff]/5 via-white to-transparent dark:from-[#1890ff]/5 dark:via-neutral-950 dark:to-transparent" />
             <div className="absolute top-6 left-8 w-24 h-24 bg-blue-200 rounded-full opacity-[0.07] blur-2xl" />
             <div className="absolute bottom-6 right-8 w-32 h-32 bg-indigo-200 rounded-full opacity-[0.07] blur-2xl" />
             
             <div className="relative z-10">
-              <div className="w-18 h-18 bg-gradient-to-br from-blue-100 to-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm w-[72px] h-[72px]">
-                <Radio className="w-9 h-9 text-brand-blue" />
+              <div className="bg-[#1890ff]/10 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm w-[72px] h-[72px]">
+                <Radio className="w-9 h-9 text-[#1890ff]" />
               </div>
-              <h2 className="font-display font-black text-xl text-gray-900 mb-2">No hay clases en vivo</h2>
-              <p className="text-gray-400 text-sm max-w-sm mx-auto leading-relaxed">
+              <h2 className="font-display font-black text-xl text-neutral-900 dark:text-white mb-2">No hay clases en vivo</h2>
+              <p className="text-neutral-500 dark:text-neutral-400 text-sm max-w-sm mx-auto leading-relaxed">
                 Cuando haya una clase programada, podrás unirte a la transmisión en directo desde aquí.
               </p>
             </div>
@@ -488,69 +490,69 @@ export default function LivePanel() {
         <motion.div 
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-3xl border border-gray-150 p-6 sm:p-8 shadow-sm space-y-6"
+          className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/80 dark:border-neutral-850/80 p-6 sm:p-8 shadow-sm space-y-6"
         >
           <div>
-            <h3 className="font-display font-black text-lg text-gray-900 mb-1">Agendar Nueva Masterclass</h3>
-            <p className="text-sm text-gray-400">Programa una sesión en vivo para los alumnos.</p>
+            <h3 className="font-display font-black text-lg text-neutral-900 dark:text-white mb-1">Agendar Nueva Masterclass</h3>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Programa una sesión en vivo para los alumnos.</p>
           </div>
 
           <form onSubmit={handleCreateClass} className="space-y-4">
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Título de la Clase *</label>
+                <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Título de la Clase *</label>
                 <input 
                   type="text" 
                   required 
                   value={title} 
                   onChange={e => setTitle(e.target.value)} 
                   placeholder="Ej. Masterclass SQL Server Avanzado" 
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" 
+                  className="w-full bg-neutral-55 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Nombre de Sala de LiveKit (Única) *</label>
+                <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Nombre de Sala de LiveKit (Única) *</label>
                 <input 
                   type="text" 
                   required 
                   value={roomName} 
                   onChange={e => setRoomName(e.target.value)} 
                   placeholder="ej. masterclass-sql-01" 
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" 
+                  className="w-full bg-neutral-55 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
+              <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
               <textarea 
                 value={description} 
                 onChange={e => setDescription(e.target.value)} 
                 placeholder="Indica de qué tratará la clase..." 
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all resize-none min-h-[60px]" 
+                className="w-full bg-neutral-55 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all resize-none min-h-[60px]" 
                 rows={2}
               />
             </div>
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Clave de Transmisión de YouTube Live (Opcional)</label>
+                <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Clave de Transmisión de YouTube Live (Opcional)</label>
                 <input 
                   type="password" 
                   value={youtubeKey} 
                   onChange={e => setYoutubeKey(e.target.value)} 
                   placeholder="Clave de stream RTMP" 
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" 
+                  className="w-full bg-neutral-55 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
                 />
               </div>
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Fecha y Hora Programada *</label>
+                <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Fecha y Hora Programada *</label>
                 <input 
                   type="datetime-local" 
                   required 
                   value={scheduledAt} 
                   onChange={e => setScheduledAt(e.target.value)} 
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" 
+                  className="w-full bg-neutral-55 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
                 />
               </div>
             </div>
@@ -559,7 +561,7 @@ export default function LivePanel() {
               <button 
                 type="submit" 
                 disabled={submitting}
-                className="px-6 py-3 bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
+                className="px-6 py-3 bg-[#1890ff] hover:bg-blue-600 disabled:opacity-50 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
               >
                 {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calendar className="w-4 h-4" />}
                 {submitting ? "Agendando..." : "Agendar Masterclass"}
@@ -569,21 +571,21 @@ export default function LivePanel() {
         </motion.div>
       )}
 
-      {/* â”€â”€â”€ COMPLETED CLASSES (RECORDINGS) SECTION â”€â”€â”€ */}
+      {/* ─── COMPLETED CLASSES (RECORDINGS) SECTION ─── */}
       <motion.div 
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-3xl border border-gray-150 p-6 sm:p-8 shadow-sm"
+        className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/80 dark:border-neutral-850/80 p-6 sm:p-8 shadow-sm"
       >
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="font-display font-black text-lg text-gray-900 mb-1">Clases Grabadas</h3>
-            <p className="text-sm text-gray-400">Revisa las masterclasses anteriores cuando quieras.</p>
+            <h3 className="font-display font-black text-lg text-neutral-900 dark:text-white mb-1">Clases Grabadas</h3>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400">Revisa las masterclasses anteriores cuando quieras.</p>
           </div>
           {isAdmin && (
             <button
               onClick={() => setShowAddRecording(!showAddRecording)}
-              className="px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
+              className="px-4 py-2 bg-[#1890ff] hover:bg-blue-600 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
             >
               {showAddRecording ? "Cancelar" : "Agregar Grabación"}
             </button>
@@ -598,52 +600,52 @@ export default function LivePanel() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               onSubmit={handleAddRecording}
-              className="mb-6 p-5 bg-gray-50 rounded-2xl border border-gray-200 space-y-4 overflow-hidden"
+              className="mb-6 p-5 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 space-y-4 overflow-hidden"
             >
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Título de la Grabación *</label>
+                  <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Título de la Grabación *</label>
                   <input 
                     type="text" 
                     required 
                     value={recordingTitle} 
                     onChange={e => setRecordingTitle(e.target.value)} 
                     placeholder="Ej. Masterclass SQL Server - Sesión 1" 
-                    className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" 
+                    className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">ID de Video de YouTube *</label>
+                  <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">ID de Video de YouTube *</label>
                   <input 
                     type="text" 
                     required 
                     value={recordingVideoId} 
                     onChange={e => setRecordingVideoId(e.target.value)} 
                     placeholder="Ej. dQw4w9WgXcQ" 
-                    className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" 
+                    className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
+                <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
                 <textarea 
                   value={recordingDescription} 
                   onChange={e => setRecordingDescription(e.target.value)} 
                   placeholder="Breve descripción del contenido de la clase..." 
-                  className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all resize-none min-h-[60px]" 
+                  className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all resize-none min-h-[60px]" 
                   rows={2}
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-1.5">Fecha de la Clase *</label>
+                <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Fecha de la Clase *</label>
                 <input 
                   type="datetime-local" 
                   required 
                   value={recordingDate} 
                   onChange={e => setRecordingDate(e.target.value)} 
-                  className="w-full bg-white border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" 
+                  className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
                 />
               </div>
 
@@ -651,7 +653,7 @@ export default function LivePanel() {
                 <button 
                   type="submit" 
                   disabled={submittingRecording}
-                  className="px-6 py-3 bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
+                  className="px-6 py-3 bg-[#1890ff] hover:bg-blue-600 disabled:opacity-50 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
                 >
                   {submittingRecording ? <Loader2 className="w-4 h-4 animate-spin" /> : <Video className="w-4 h-4" />}
                   {submittingRecording ? "Agregando..." : "Agregar Grabación"}
@@ -665,25 +667,25 @@ export default function LivePanel() {
         {completedClasses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {completedClasses.map((recording, index) => (
-              <RecordingCard key={recording.id} recording={recording} index={index} />
+              <RecordingCard key={recording.id} recording={recording} index={index} onPlay={(videoId) => setActiveVideoId(videoId)} />
             ))}
           </div>
         ) : (
           <div className="text-center py-16">
             <div className="relative mx-auto mb-5 w-[72px] h-[72px]">
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-50 rounded-2xl" />
+              <div className="absolute inset-0 bg-neutral-100 dark:bg-neutral-900 rounded-2xl" />
               <div className="relative z-10 w-full h-full flex items-center justify-center">
-                <Film className="w-8 h-8 text-gray-300" />
+                <Film className="w-8 h-8 text-neutral-350 dark:text-neutral-700" />
               </div>
             </div>
-            <h4 className="font-display font-black text-lg text-gray-900 mb-1.5">Sin grabaciones aún</h4>
-            <p className="text-sm text-gray-400 max-w-xs mx-auto leading-relaxed">
+            <h4 className="font-display font-black text-lg text-neutral-900 dark:text-white mb-1.5">Sin grabaciones aún</h4>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-xs mx-auto leading-relaxed">
               Las masterclasses grabadas aparecerán aquí para que las revises cuando quieras.
             </p>
             {isAdmin && (
               <button
                 onClick={() => setShowAddRecording(true)}
-                className="mt-5 px-5 py-2.5 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm hover:shadow-md transition-all mx-auto border-none cursor-pointer"
+                className="mt-5 px-5 py-2.5 bg-[#1890ff] hover:bg-blue-600 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm hover:shadow-md transition-all mx-auto border-none cursor-pointer"
               >
                 <Plus className="w-4 h-4" /> Agregar primera grabación
               </button>
@@ -691,6 +693,47 @@ export default function LivePanel() {
           </div>
         )}
       </motion.div>
+
+      {/* Immersive Video Modal */}
+      <AnimatePresence>
+        {activeVideoId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-6"
+            onClick={() => setActiveVideoId(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              transition={{ type: "spring", stiffness: 300, damping: 28 }}
+              className="bg-neutral-950 rounded-3xl border border-neutral-800/80 w-full max-w-4xl overflow-hidden shadow-2xl relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setActiveVideoId(null)}
+                className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/60 border border-white/10 hover:border-white/30 text-white hover:bg-black/80 flex items-center justify-center cursor-pointer transition-all active:scale-95"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <div className="aspect-video w-full bg-black">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={`https://www.youtube.com/embed/${activeVideoId}?autoplay=1&rel=0`}
+                  title="Reproductor de Video"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="border-0"
+                ></iframe>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -1307,7 +1350,7 @@ function ScreenShareButton({ room, theme }: { room: Room; theme?: 'light' | 'dar
 }
 
 // ─── RECORDING CARD ───
-function RecordingCard({ recording, index }: { recording: LiveClass; index: number }) {
+function RecordingCard({ recording, index, onPlay }: { recording: LiveClass; index: number; onPlay: (id: string) => void }) {
   const hasVideo = !!recording.youtube_video_id;
   const [imgSrc, setImgSrc] = useState(
     recording.youtube_video_id 
@@ -1323,18 +1366,23 @@ function RecordingCard({ recording, index }: { recording: LiveClass; index: numb
     }
   };
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (hasVideo && recording.youtube_video_id) {
+      e.preventDefault();
+      onPlay(recording.youtube_video_id);
+    }
+  };
+
   return (
-    <motion.a
-      href={hasVideo ? `https://www.youtube.com/watch?v=${recording.youtube_video_id}` : "#"}
-      target={hasVideo ? "_blank" : undefined}
-      rel={hasVideo ? "noopener noreferrer" : undefined}
+    <motion.div
+      onClick={handleClick}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.06 }}
-      className="group bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:border-brand-blue/15 transition-all duration-300 flex flex-col h-full cursor-pointer"
+      className="group bg-white dark:bg-neutral-950 rounded-2xl overflow-hidden border border-neutral-200/80 dark:border-neutral-850/80 shadow-sm hover:shadow-xl hover:border-[#1890ff]/20 transition-all duration-300 flex flex-col h-full cursor-pointer select-none"
     >
       {/* Thumbnail */}
-      <div className="relative aspect-video w-full overflow-hidden shrink-0 bg-gray-100">
+      <div className="relative aspect-video w-full overflow-hidden shrink-0 bg-neutral-100 dark:bg-neutral-900">
         {imgSrc ? (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1347,16 +1395,16 @@ function RecordingCard({ recording, index }: { recording: LiveClass; index: numb
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10 group-hover:from-black/20 transition-colors" />
           </>
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-100 flex items-center justify-center">
-            <Film className="w-12 h-12 text-gray-300" />
+          <div className="absolute inset-0 bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-900 dark:to-neutral-850 flex items-center justify-center">
+            <Film className="w-12 h-12 text-neutral-300 dark:text-neutral-700" />
           </div>
         )}
 
         {/* Play overlay */}
         {hasVideo && (
           <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <div className="w-14 h-14 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
-              <PlayCircle className="w-7 h-7 text-red-600" />
+            <div className="w-14 h-14 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform">
+              <PlayCircle className="w-7 h-7 text-[#1890ff]" />
             </div>
           </div>
         )}
@@ -1364,7 +1412,7 @@ function RecordingCard({ recording, index }: { recording: LiveClass; index: numb
         {/* Badge */}
         <div className="absolute top-3 left-3 z-20">
           <span className="bg-black/70 backdrop-blur-sm text-white text-[10px] font-black px-2.5 py-1 rounded-lg flex items-center gap-1">
-            <Video className="w-3 h-3" />
+            <Video className="w-3 h-3 text-[#1890ff]" />
             Grabación
           </span>
         </div>
@@ -1372,18 +1420,18 @@ function RecordingCard({ recording, index }: { recording: LiveClass; index: numb
 
       {/* Info */}
       <div className="p-5 flex flex-col flex-1">
-        <h4 className="font-bold text-[15px] text-gray-900 leading-snug mb-2 line-clamp-2 group-hover:text-brand-blue transition-colors">
+        <h4 className="font-bold text-[15px] text-neutral-900 dark:text-white leading-snug mb-2 line-clamp-2 group-hover:text-[#1890ff] transition-colors">
           {recording.title}
         </h4>
         
         {recording.description && (
-          <p className="text-xs text-gray-500 leading-relaxed line-clamp-2 mb-3">
+          <p className="text-xs text-neutral-550 dark:text-neutral-450 leading-relaxed line-clamp-2 mb-3">
             {recording.description}
           </p>
         )}
 
-        <div className="mt-auto pt-3 border-t border-gray-100 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs text-gray-400 font-medium">
+        <div className="mt-auto pt-3 border-t border-neutral-100 dark:border-neutral-900 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs text-neutral-400 dark:text-neutral-500 font-medium">
             <Calendar className="w-3.5 h-3.5" />
             <span>{new Date(recording.scheduled_at).toLocaleDateString("es-CL", { 
               day: 'numeric', 
@@ -1393,16 +1441,16 @@ function RecordingCard({ recording, index }: { recording: LiveClass; index: numb
           </div>
           
           {hasVideo ? (
-            <span className="text-[10px] font-bold text-brand-blue flex items-center gap-0.5 group-hover:gap-1.5 transition-all bg-blue-50 px-2.5 py-1 rounded-full">
+            <span className="text-[10px] font-bold text-[#1890ff] flex items-center gap-0.5 group-hover:gap-1.5 transition-all bg-blue-500/10 dark:bg-blue-500/5 px-2.5 py-1 rounded-full">
               Ver ahora <ExternalLink className="w-3 h-3" />
             </span>
           ) : (
-            <span className="text-[10px] font-bold text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
+            <span className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-900 px-2.5 py-1 rounded-full">
               Sin video
             </span>
           )}
         </div>
       </div>
-    </motion.a>
+    </motion.div>
   );
 }
