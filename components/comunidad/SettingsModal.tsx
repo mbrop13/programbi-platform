@@ -38,11 +38,41 @@ interface SettingsModalProps {
     subscription_plan?: string | null;
   } | null;
   onUpgradeClick?: () => void;
+  language?: 'es' | 'en';
 }
 
 type SettingsTab = "cuenta" | "apariencia" | "comportamiento" | "customize" | "datos";
 
-export default function SettingsModal({ onClose, userProfile, onUpgradeClick }: SettingsModalProps) {
+export default function SettingsModal({ onClose, userProfile, onUpgradeClick, language }: SettingsModalProps) {
+  const activeLanguage = language || "es";
+  const st = {
+    es: {
+      settings: "Ajustes",
+      cuenta: "Cuenta",
+      apariencia: "Apariencia",
+      comportamiento: "Comportamiento",
+      customize: "Customize",
+      datos: "Controles de datos",
+      cuentaDesc: "Perfil y datos de membresía",
+      aparienciaDesc: "Temas e idioma",
+      comportamientoDesc: "Alertas y notificaciones",
+      customizeDesc: "Configuración de interfaz",
+      datosDesc: "Privacidad y facturación",
+    },
+    en: {
+      settings: "Settings",
+      cuenta: "Account",
+      apariencia: "Appearance",
+      comportamiento: "Behavior",
+      customize: "Customize",
+      datos: "Data Controls",
+      cuentaDesc: "Profile and membership details",
+      aparienciaDesc: "Themes and language",
+      comportamientoDesc: "Alerts and notifications",
+      customizeDesc: "Interface settings",
+      datosDesc: "Privacy and billing",
+    }
+  }[activeLanguage];
   const [activeTab, setActiveTab] = useState<SettingsTab>("cuenta");
   const [isCanceling, setIsCanceling] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
@@ -100,11 +130,11 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick }: 
     : "Membresía Básica";
 
   const tabs: { id: SettingsTab; label: string; icon: React.ElementType; desc: string }[] = [
-    { id: "cuenta", label: "Cuenta", icon: User, desc: "Perfil y datos de membresía" },
-    { id: "apariencia", label: "Apariencia", icon: Palette, desc: "Temas e idioma" },
-    { id: "comportamiento", label: "Comportamiento", icon: Sliders, desc: "Alertas y notificaciones" },
-    { id: "customize", label: "Customize", icon: Sliders, desc: "Configuración de interfaz" },
-    { id: "datos", label: "Controles de datos", icon: Database, desc: "Privacidad y facturación" },
+    { id: "cuenta", label: st.cuenta, icon: User, desc: st.cuentaDesc },
+    { id: "apariencia", label: st.apariencia, icon: Palette, desc: st.aparienciaDesc },
+    { id: "comportamiento", label: st.comportamiento, icon: Sliders, desc: st.comportamientoDesc },
+    { id: "customize", label: st.customize, icon: Sliders, desc: st.customizeDesc },
+    { id: "datos", label: st.datos, icon: Database, desc: st.datosDesc },
   ];
 
   // User initials for the avatar
@@ -136,7 +166,7 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick }: 
           <div>
             {/* Título de la barra */}
             <div className="mb-6 px-1">
-              <h3 className="font-display font-black text-slate-900 text-lg tracking-tight">Ajustes</h3>
+              <h3 className="font-display font-black text-slate-900 text-lg tracking-tight">{st.settings}</h3>
             </div>
 
             {/* Pestañas de Navegación */}
@@ -183,11 +213,11 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick }: 
             {/* Header del contenido */}
             <div className="flex items-center justify-between mb-6 pb-2">
               <h2 className="font-display font-black text-xl text-slate-900 capitalize tracking-tight">
-                {activeTab === "cuenta" ? "Cuenta" : 
-                 activeTab === "apariencia" ? "Apariencia" : 
-                 activeTab === "comportamiento" ? "Comportamiento" : 
-                 activeTab === "customize" ? "Customize" : 
-                 "Controles de datos"}
+                {activeTab === "cuenta" ? st.cuenta : 
+                 activeTab === "apariencia" ? st.apariencia : 
+                 activeTab === "comportamiento" ? st.comportamiento : 
+                 activeTab === "customize" ? st.customize : 
+                 st.datos}
               </h2>
               <button 
                 onClick={onClose} 

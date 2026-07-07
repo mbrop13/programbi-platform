@@ -55,6 +55,39 @@ export default function ComunidadPortal() {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
+  const [theme, setTheme] = useState<'claro' | 'oscuro' | 'sistema'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('comunidad-theme') as 'claro' | 'oscuro' | 'sistema') || 'claro';
+    }
+    return 'claro';
+  });
+
+  const [language, setLanguage] = useState<'es' | 'en'>(() => {
+    if (typeof window !== 'undefined') {
+      return (localStorage.getItem('comunidad-language') as 'es' | 'en') || 'es';
+    }
+    return 'es';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('comunidad-theme', theme);
+    if (theme === 'oscuro') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
+  useEffect(() => {
+    localStorage.setItem('comunidad-language', language);
+  }, [language]);
+
+  useEffect(() => {
+    return () => {
+      document.documentElement.classList.remove('dark');
+    };
+  }, []);
+
   const selectedCourseSlug = activeTab === "cursos" ? (segments[2] || null) : null;
   const selectedCourseId = selectedCourseSlug ? (courseSlugMap[selectedCourseSlug] || null) : null;
 
@@ -183,7 +216,7 @@ export default function ComunidadPortal() {
 
   return (
     <ToastProvider>
-      <div className="flex min-h-screen bg-[#f8f9fb]">
+      <div className="flex min-h-screen transition-colors duration-200 bg-[#f8f9fb] dark:bg-black text-neutral-900 dark:text-neutral-100">
         {/* ─── SIDEBAR (oculta en el chat IA y en el aula virtual de un curso) ─── */}
         {(activeTab !== "ai" && !(activeTab === "cursos" && selectedCourseId)) && (
           <Sidebar
@@ -198,6 +231,10 @@ export default function ComunidadPortal() {
             authLoading={authLoading}
             mobileOpen={mobileNavOpen}
             onMobileClose={() => setMobileNavOpen(false)}
+            theme={theme}
+            onThemeChange={setTheme}
+            language={language}
+            onLanguageChange={setLanguage}
             onOpenSettings={() => setShowSettingsModal(true)}
             onUpgradeClick={() => setShowUpgradeModal(true)}
           />
@@ -360,6 +397,7 @@ export default function ComunidadPortal() {
               }}
               userProfile={userProfile}
               onUpgradeClick={() => setShowUpgradeModal(true)}
+              language={language}
             />
           )}
         </AnimatePresence>

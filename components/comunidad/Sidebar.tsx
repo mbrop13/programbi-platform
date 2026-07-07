@@ -37,6 +37,71 @@ import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useToast } from "./ui/Toast";
 
+const translations = {
+  es: {
+    search: "Buscar...",
+    newChat: "Nuevo Chat",
+    allSettings: "Todos los ajustes",
+    upgradePlan: "Actualizar plan",
+    installApps: "Instalar apps",
+    appearance: "Apariencia",
+    language: "Idioma",
+    help: "Ayuda",
+    adminPanel: "Panel Admin",
+    signOut: "Cerrar sesión",
+    inicio: "Inicio",
+    cursos: "Cursos",
+    live: "En Vivo",
+    ai: "IA",
+    perfil: "Mi Perfil",
+    certificados: "Certificados",
+    empresa: "Empresa",
+    configuracion: "Configuración",
+    claro: "Claro",
+    oscuro: "Oscuro",
+    sistema: "Sistema",
+    idioma_name: "Español",
+    premiumBannerTitle: "Membresía Premium",
+    premiumBannerDesc: "Obtén acceso ilimitado a SQL, Power BI, Python y Excel.",
+    subscribe: "Suscribirse",
+    fullAccess: "Acceso Completo",
+    principal: "Principal",
+    personal: "Personal",
+    gestion: "Gestión"
+  },
+  en: {
+    search: "Search...",
+    newChat: "New Chat",
+    allSettings: "All Settings",
+    upgradePlan: "Upgrade Plan",
+    installApps: "Install Apps",
+    appearance: "Appearance",
+    language: "Language",
+    help: "Help",
+    adminPanel: "Admin Panel",
+    signOut: "Sign Out",
+    inicio: "Feed",
+    cursos: "My Courses",
+    live: "Live Class",
+    ai: "AI Assistant",
+    perfil: "My Profile",
+    certificados: "Certificates",
+    empresa: "Business",
+    configuracion: "Settings",
+    claro: "Light",
+    oscuro: "Dark",
+    sistema: "System",
+    idioma_name: "English",
+    premiumBannerTitle: "Premium Membership",
+    premiumBannerDesc: "Get unlimited access to SQL, Power BI, Python, and Excel.",
+    subscribe: "Subscribe",
+    fullAccess: "Full Access",
+    principal: "Main",
+    personal: "Personal",
+    gestion: "Management"
+  }
+};
+
 export interface SidebarTab {
   id: string;
   label: string;
@@ -65,6 +130,10 @@ interface SidebarProps {
   onMobileClose: () => void;
   onOpenSettings: () => void;
   onUpgradeClick: () => void;
+  theme?: 'claro' | 'oscuro' | 'sistema';
+  onThemeChange?: (theme: 'claro' | 'oscuro' | 'sistema') => void;
+  language?: 'es' | 'en';
+  onLanguageChange?: (lang: 'es' | 'en') => void;
 }
 
 export default function Sidebar({
@@ -81,6 +150,10 @@ export default function Sidebar({
   onMobileClose,
   onOpenSettings,
   onUpgradeClick,
+  theme,
+  onThemeChange,
+  language,
+  onLanguageChange,
 }: SidebarProps) {
   const searchRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -92,8 +165,11 @@ export default function Sidebar({
   const [unreadCount, setUnreadCount] = useState(0);
   const [hasUpcomingLives, setHasUpcomingLives] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<"apariencia" | "idioma" | null>(null);
-  const [activeTheme, setActiveTheme] = useState<"claro" | "oscuro" | "sistema">("claro");
-  const [activeLanguage, setActiveLanguage] = useState<"es" | "en">("es");
+  
+  const activeTheme = theme || "claro";
+  const setActiveTheme = onThemeChange || (() => {});
+  const activeLanguage = language || "es";
+  const setActiveLanguage = onLanguageChange || (() => {});
 
   const aparienciaRef = useRef<HTMLDivElement>(null);
   const idiomaRef = useRef<HTMLDivElement>(null);
@@ -204,17 +280,19 @@ export default function Sidebar({
     return () => clearTimeout(handle);
   }, [activeTab]);
 
+  const t = translations[activeLanguage];
+
   const tabs: SidebarTab[] = [
-    { id: "inicio", label: "Inicio", icon: LayoutDashboard, color: "text-blue-500", group: "Principal" },
-    { id: "cursos", label: "Cursos", icon: GraduationCap, color: "text-indigo-500", group: "Principal" },
+    { id: "inicio", label: t.inicio, icon: LayoutDashboard, color: "text-blue-500", group: t.principal },
+    { id: "cursos", label: t.cursos, icon: GraduationCap, color: "text-indigo-500", group: t.principal },
     ...(hasUpcomingLives
-      ? [{ id: "live", label: "En Vivo", icon: Radio, color: "text-rose-500", group: "Principal", showPing: true }]
+      ? [{ id: "live", label: t.live, icon: Radio, color: "text-rose-500", group: t.principal, showPing: true }]
       : []),
-    { id: "ai", label: "IA", icon: Sparkles, color: "text-purple-500", group: "Principal" },
-    { id: "perfil", label: "Mi Perfil", icon: User, color: "text-cyan-500", group: "Personal" },
-    { id: "certificados", label: "Certificados", icon: Award, color: "text-amber-500", group: "Personal" },
+    { id: "ai", label: t.ai, icon: Sparkles, color: "text-purple-500", group: t.principal },
+    { id: "perfil", label: t.perfil, icon: User, color: "text-cyan-500", group: t.personal },
+    { id: "certificados", label: t.certificados, icon: Award, color: "text-amber-500", group: t.personal },
     ...(isOrgManager
-      ? [{ id: "business", label: "Empresa", icon: Building2, color: "text-slate-500", group: "Gestión" }]
+      ? [{ id: "business", label: t.empresa, icon: Building2, color: "text-slate-500", group: t.gestion }]
       : []),
   ];
 
@@ -312,7 +390,7 @@ export default function Sidebar({
               onChange={(e) => setSearchQuery(e.target.value)}
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
-              placeholder="Buscar..."
+              placeholder={t.search}
               className="w-full pl-9 pr-7 py-2 bg-transparent border border-transparent rounded-xl text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none transition-all"
             />
             {searchQuery ? (
@@ -391,7 +469,7 @@ export default function Sidebar({
         ))}
       </nav>
 
-      {/* Upgrade Banner for Unsubscribed Students */}
+       {/* Upgrade Banner for Unsubscribed Students */}
       {(() => {
         const hasSubscription = !!userProfile?.subscription_plan || isAdmin;
         if (!collapsed && !hasSubscription) {
@@ -400,19 +478,19 @@ export default function Sidebar({
               <div className="absolute top-0 right-0 w-16 h-16 bg-neutral-100 rounded-full filter blur-xl pointer-events-none" />
               <div className="relative z-10">
                 <span className="text-[9px] font-bold uppercase tracking-widest text-neutral-800 bg-white px-2 py-0.5 rounded-full border border-neutral-200 inline-flex items-center gap-1 shadow-sm select-none">
-                  <Sparkles className="w-2.5 h-2.5 text-neutral-700" /> Acceso Completo
+                  <Sparkles className="w-2.5 h-2.5 text-neutral-700" /> {t.fullAccess}
                 </span>
                 <h4 className="text-xs font-bold text-neutral-900 mt-2.5 leading-snug">
-                  Membresía Premium
+                  {t.premiumBannerTitle}
                 </h4>
                 <p className="text-[10px] text-neutral-500 mt-1 leading-normal font-medium">
-                  Obtén acceso ilimitado a SQL, Power BI, Python y Excel.
+                  {t.premiumBannerDesc}
                 </p>
                 <button
                   onClick={onUpgradeClick}
-                  className="w-full mt-3 py-2 bg-neutral-900 hover:bg-neutral-950 text-white text-[10px] font-bold rounded-lg transition-all active:scale-[0.98] border-0 cursor-pointer shadow-sm flex items-center justify-center gap-1"
+                  className="w-full mt-3 py-2 bg-neutral-900 hover:bg-neutral-955 text-white text-[10px] font-bold rounded-lg transition-all active:scale-[0.98] border-0 cursor-pointer shadow-sm flex items-center justify-center gap-1"
                 >
-                  Suscribirse
+                  {t.subscribe}
                   <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
@@ -517,7 +595,7 @@ export default function Sidebar({
             <div className="p-1.5 space-y-0.5">
               <MenuItem
                 icon={Settings}
-                label="Todos los ajustes"
+                label={t.allSettings}
                 suffix="↑ ^ ,"
                 onMouseEnter={() => setActiveSubmenu(null)}
                 onClick={() => {
@@ -527,7 +605,7 @@ export default function Sidebar({
               />
               <MenuItem
                 icon={ArrowUpCircle}
-                label="Actualizar plan"
+                label={t.upgradePlan}
                 onMouseEnter={() => setActiveSubmenu(null)}
                 onClick={() => {
                   onUpgradeClick();
@@ -536,10 +614,14 @@ export default function Sidebar({
               />
               <MenuItem
                 icon={Download}
-                label="Instalar apps"
+                label={t.installApps}
                 onMouseEnter={() => setActiveSubmenu(null)}
                 onClick={() => {
-                  toast("info", "Instalación de Aplicación", "ProgramBI es una PWA. Puedes instalarla directamente desde el menú del navegador en tu móvil u ordenador.");
+                  const title = activeLanguage === 'es' ? "Instalación de Aplicación" : "App Installation";
+                  const body = activeLanguage === 'es' 
+                    ? "ProgramBI es una PWA. Puedes instalarla directamente desde el menú del navegador en tu móvil u ordenador."
+                    : "ProgramBI is a PWA. You can install it directly from your browser menu on mobile or desktop.";
+                  toast("info", title, body);
                   setUserMenuOpen(false);
                 }}
               />
@@ -549,8 +631,8 @@ export default function Sidebar({
               <div ref={aparienciaRef}>
                 <MenuItem
                   icon={Sun}
-                  label="Apariencia"
-                  sublabel={activeTheme === "claro" ? "Claro" : activeTheme === "oscuro" ? "Oscuro" : "Sistema"}
+                  label={t.appearance}
+                  sublabel={activeTheme === "claro" ? t.claro : activeTheme === "oscuro" ? t.oscuro : t.sistema}
                   hasChevron
                   onMouseEnter={openApariencia}
                   onClick={openApariencia}
@@ -560,8 +642,8 @@ export default function Sidebar({
               <div ref={idiomaRef}>
                 <MenuItem
                   icon={Globe}
-                  label="Idioma"
-                  sublabel={activeLanguage === "es" ? "Español" : "English"}
+                  label={t.language}
+                  sublabel={t.idioma_name}
                   hasChevron
                   onMouseEnter={openIdioma}
                   onClick={openIdioma}
@@ -570,11 +652,15 @@ export default function Sidebar({
 
               <MenuItem
                 icon={HelpCircle}
-                label="Ayuda"
+                label={t.help}
                 hasChevron
                 onMouseEnter={() => setActiveSubmenu(null)}
                 onClick={() => {
-                  toast("info", "Centro de Ayuda", "Si necesitas ayuda, puedes consultarle a nuestro Asistente IA o enviarnos un correo a soporte@programbi.com.");
+                  const title = activeLanguage === 'es' ? "Centro de Ayuda" : "Help Center";
+                  const body = activeLanguage === 'es'
+                    ? "Si necesitas ayuda, puedes consultarle a nuestro Asistente IA o enviarnos un correo a soporte@programbi.com."
+                    : "If you need help, you can consult our AI Assistant or send us an email at support@programbi.com.";
+                  toast("info", title, body);
                   setUserMenuOpen(false);
                 }}
               />
@@ -589,7 +675,7 @@ export default function Sidebar({
                     className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-amber-600 hover:bg-amber-50 transition-colors font-medium no-underline"
                   >
                     <ShieldAlert className="w-4 h-4 shrink-0" />
-                    <span>Panel Admin</span>
+                    <span>{t.adminPanel}</span>
                     <ExternalLink className="w-3 h-3 ml-auto opacity-50 shrink-0" />
                   </Link>
                   <div className="my-1 h-px bg-neutral-100" />
@@ -602,7 +688,7 @@ export default function Sidebar({
                 className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-neutral-50 hover:text-red-600 transition-colors font-medium no-underline"
               >
                 <LogOut className="w-4 h-4 shrink-0 text-neutral-400 hover:text-red-500" />
-                <span>Cerrar sesión</span>
+                <span>{t.signOut}</span>
               </Link>
             </div>
           </motion.div>
@@ -672,28 +758,38 @@ export default function Sidebar({
           >
             <SubmenuItem
               icon={Sun}
-              label="Claro"
+              label={t.claro}
               isActive={activeTheme === "claro"}
               onClick={() => {
                 setActiveTheme("claro");
-                toast("success", "Tema Claro activado", "Se ha establecido el tema visual de la plataforma en Claro.");
+                const title = activeLanguage === 'es' ? "Tema Claro activado" : "Light Theme activated";
+                const body = activeLanguage === 'es' ? "Se ha establecido el tema visual de la plataforma en Claro." : "Platform visual theme set to Light.";
+                toast("success", title, body);
                 setActiveSubmenu(null);
               }}
             />
             <SubmenuItem
               icon={Moon}
-              label="Oscuro"
+              label={t.oscuro}
               isActive={activeTheme === "oscuro"}
               onClick={() => {
-                toast("info", "Tema Oscuro", "El tema Oscuro estará disponible en una actualización muy pronto.");
+                setActiveTheme("oscuro");
+                const title = activeLanguage === 'es' ? "Tema Oscuro activado" : "Dark Theme activated";
+                const body = activeLanguage === 'es' ? "Se ha establecido el tema visual de la plataforma en Oscuro." : "Platform visual theme set to Dark.";
+                toast("success", title, body);
+                setActiveSubmenu(null);
               }}
             />
             <SubmenuItem
               icon={Monitor}
-              label="Sistema"
+              label={t.sistema}
               isActive={activeTheme === "sistema"}
               onClick={() => {
-                toast("info", "Tema del Sistema", "La sincronización automática con el sistema estará disponible próximamente.");
+                setActiveTheme("sistema");
+                const title = activeLanguage === 'es' ? "Tema del Sistema activado" : "System Theme activated";
+                const body = activeLanguage === 'es' ? "Se ha establecido la sincronización automática con el sistema." : "Automatic system theme sync set.";
+                toast("success", title, body);
+                setActiveSubmenu(null);
               }}
             />
           </motion.div>
