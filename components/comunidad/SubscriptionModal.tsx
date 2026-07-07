@@ -85,7 +85,7 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
               </div>
               
               <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight leading-none mt-2">
-                Pruébalo por <span className="text-orange-600 font-extrabold">$0.00</span> durante 7 días
+                Pruébalo por <span className="text-blue-600 dark:text-blue-400 font-extrabold">$0.00</span> durante 7 días
               </h2>
 
               {/* User Type Switcher (Individual / Empresarial) */}
@@ -141,7 +141,7 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
                     {/* Badge */}
                     {plan.highlight && (
                       <div className="absolute -top-3 right-6">
-                        <span className="bg-orange-500/10 text-orange-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-orange-200/20 shadow-sm select-none">
+                        <span className="bg-blue-500/10 text-blue-600 dark:bg-blue-500/5 dark:text-blue-450 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider border border-blue-200/20 dark:border-blue-900/30 shadow-sm select-none">
                           {plan.highlight}
                         </span>
                       </div>
