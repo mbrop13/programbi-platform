@@ -15,7 +15,6 @@ import {
   RefreshCw,
   ExternalLink,
   Film,
-  Plus,
   X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -36,6 +35,19 @@ interface LiveClass {
 const POLL_INTERVAL_ACTIVE = 10_000;   // 10s â€” detect when admin starts class
 const POLL_INTERVAL_IDLE = 30_000;     // 30s â€” idle background refresh
 
+const getTimeAgo = (dateStr: string) => {
+  const diffMs = Date.now() - new Date(dateStr).getTime();
+  const diffSecs = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffSecs / 60);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffDays > 0) return `Hace ${diffDays} día${diffDays === 1 ? '' : 's'}`;
+  if (diffHours > 0) return `Hace ${diffHours} hora${diffHours === 1 ? '' : 's'}`;
+  if (diffMins > 0) return `Hace ${diffMins} minuto${diffMins === 1 ? '' : 's'}`;
+  return 'Hace unos instantes';
+};
+
 export default function LivePanel() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminChecked, setAdminChecked] = useState(false);
@@ -45,22 +57,7 @@ export default function LivePanel() {
   const [error, setError] = useState<string | null>(null);
   const [activeVideoId, setActiveVideoId] = useState<string | null>(null);
   const [isWatchingLive, setIsWatchingLive] = useState(false);
-
-  // Form states for creating a class
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [roomName, setRoomName] = useState("");
-  const [youtubeKey, setYoutubeKey] = useState("");
-  const [scheduledAt, setScheduledAt] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-
-  // Form for adding completed class recording
-  const [showAddRecording, setShowAddRecording] = useState(false);
-  const [recordingTitle, setRecordingTitle] = useState("");
-  const [recordingDescription, setRecordingDescription] = useState("");
-  const [recordingVideoId, setRecordingVideoId] = useState("");
-  const [recordingDate, setRecordingDate] = useState("");
-  const [submittingRecording, setSubmittingRecording] = useState(false);
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -114,6 +111,28 @@ export default function LivePanel() {
     }
   }, []);
 
+  // Countdown timer for scheduled classes
+  useEffect(() => {
+    if (!activeClass || activeClass.status !== "scheduled") return;
+
+    const timer = setInterval(() => {
+      const diff = new Date(activeClass.scheduled_at).getTime() - Date.now();
+      if (diff <= 0) {
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        clearInterval(timer);
+        fetchClassInfo();
+        return;
+      }
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      setCountdown({ days, hours, minutes, seconds });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [activeClass, fetchClassInfo]);
+
   // ——— Initial load: check admin + fetch classes ———
   useEffect(() => {
     const init = async () => {
@@ -145,57 +164,6 @@ export default function LivePanel() {
     setLoading(false);
   };
 
-  const handleCreateClass = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !roomName.trim() || !scheduledAt) return;
-    setSubmitting(true);
-    setError(null);
-
-    try {
-      const { createClient } = await import("@/lib/supabase/client");
-      const supabase = createClient();
-
-      const { data, error: insertError } = await supabase
-        .from("live_classes")
-        .insert({
-          title: title.trim(),
-          description: description.trim() || null,
-          room_name: roomName.trim().replace(/\s+/g, "-").toLowerCase(),
-          youtube_stream_key: youtubeKey.trim() || null,
-          scheduled_at: new Date(scheduledAt).toISOString(),
-          status: "scheduled"
-        })
-        .select()
-        .single();
-
-      if (insertError) throw insertError;
-
-      // Broadcast notification to all enrolled users
-      const { broadcastNotification } = await import("@/lib/supabase/comunidad");
-      const scheduledDate = new Date(scheduledAt).toLocaleDateString("es-CL", { 
-        weekday: 'long', 
-        day: 'numeric', 
-        month: 'long' 
-      });
-      await broadcastNotification(
-        "live",
-        "Nueva clase en vivo programada",
-        `"${title.trim()}" - ${scheduledDate}`,
-        "/comunidad/live"
-      );
-
-      setActiveClass(data);
-      setTitle("");
-      setDescription("");
-      setRoomName("");
-      setYoutubeKey("");
-      setScheduledAt("");
-    } catch (err: any) {
-      setError("Error al agendar clase: " + err.message);
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
   const handleStartClass = async () => {
     if (!activeClass) return;
@@ -247,45 +215,7 @@ export default function LivePanel() {
     }
   };
 
-  // â”€â”€â”€ Add completed class recording (admin only) â”€â”€â”€
-  const handleAddRecording = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!recordingTitle.trim() || !recordingVideoId.trim() || !recordingDate) return;
-    setSubmittingRecording(true);
-    setError(null);
 
-    try {
-      const { createClient } = await import("@/lib/supabase/client");
-      const supabase = createClient();
-
-      const { error: insertError } = await supabase
-        .from("live_classes")
-        .insert({
-          title: recordingTitle.trim(),
-          description: recordingDescription.trim() || null,
-          room_name: `recording-${Date.now()}`,
-          youtube_video_id: recordingVideoId.trim(),
-          scheduled_at: new Date(recordingDate).toISOString(),
-          status: "completed"
-        });
-
-      if (insertError) throw insertError;
-
-      // Refresh completed classes list
-      await fetchClassInfo();
-      
-      // Reset form
-      setRecordingTitle("");
-      setRecordingDescription("");
-      setRecordingVideoId("");
-      setRecordingDate("");
-      setShowAddRecording(false);
-    } catch (err: any) {
-      setError("Error al agregar grabación: " + err.message);
-    } finally {
-      setSubmittingRecording(false);
-    }
-  };
 
   // â”€â”€â”€ Loading state â”€â”€â”€
   if (loading && !adminChecked) {
@@ -393,29 +323,21 @@ export default function LivePanel() {
         </button>
       </div>
 
-      {/* Active or Scheduled class banner */}
+      {/* Active, Scheduled or Last Emitted class banner */}
       {activeClass ? (
-        <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/80 dark:border-neutral-850/80 shadow-sm overflow-hidden"
-        >
-          {/* Hero area with gradient background */}
-          <div className={`relative px-6 sm:px-8 py-8 overflow-hidden ${
-            activeClass.status === "active" 
-              ? "bg-gradient-to-br from-red-500/5 via-rose-500/5 to-neutral-50/10 dark:from-red-950/10 dark:via-rose-950/5 dark:to-neutral-950/20" 
-              : "bg-gradient-to-br from-sky-500/5 via-blue-500/5 to-neutral-50/10 dark:from-sky-950/10 dark:via-blue-950/5 dark:to-neutral-950/20"
-          }`}>
-            {/* Decorative blur circle */}
-            <div className={`absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-[0.15] blur-3xl ${
-              activeClass.status === "active" ? "bg-red-500" : "bg-[#1890ff]"
-            }`} />
+        activeClass.status === "active" ? (
+          /* Scenario 1: Live Class is Streaming Right Now */
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white dark:bg-neutral-950 rounded-3xl border border-red-500/20 shadow-sm overflow-hidden"
+          >
+            <div className="relative px-6 sm:px-8 py-10 bg-gradient-to-br from-red-500/10 via-rose-500/5 to-neutral-50/10 dark:from-red-950/15 dark:via-rose-950/5 dark:to-neutral-950/20 overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-[0.15] blur-3xl bg-red-500 animate-pulse" />
 
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="flex-1 min-w-0">
-                {/* Status + meta */}
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  {activeClass.status === "active" ? (
+              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
                     <span className="bg-red-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
                       <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
@@ -423,40 +345,24 @@ export default function LivePanel() {
                       </span>
                       En Vivo Ahora
                     </span>
-                  ) : (
-                    <span className="bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-                      <Clock className="w-3 h-3" />
-                      Programada
-                    </span>
+                  </div>
+                  <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2">
+                    {activeClass.title}
+                  </h2>
+                  {activeClass.description && (
+                    <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-lg leading-relaxed">{activeClass.description}</p>
                   )}
-                  <span className="text-xs text-neutral-650 dark:text-neutral-350 font-bold flex items-center gap-1 bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/30 dark:border-neutral-800/30 px-2.5 py-1 rounded-full">
-                    <Calendar className="w-3.5 h-3.5 text-[#1890ff]" />
-                    {new Date(activeClass.scheduled_at).toLocaleDateString("es-CL", { weekday: 'short', day: 'numeric', month: 'short' })}
-                  </span>
-                  <span className="text-xs text-neutral-650 dark:text-neutral-350 font-bold flex items-center gap-1 bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/30 dark:border-neutral-800/30 px-2.5 py-1 rounded-full">
-                    <Clock className="w-3.5 h-3.5 text-[#1890ff]" />
-                    {new Date(activeClass.scheduled_at).toLocaleTimeString("es-CL", { hour: '2-digit', minute: '2-digit' })}
-                  </span>
                 </div>
 
-                {/* Title */}
-                <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2">{activeClass.title}</h2>
-                {activeClass.description && (
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-lg leading-relaxed">{activeClass.description}</p>
-                )}
-              </div>
-
-              {/* Action buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-                {isAdmin && activeClass.status === "scheduled" && (
-                  <button 
-                    onClick={handleStartClass}
-                    className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 border-none cursor-pointer"
-                  >
-                    <Play className="w-4 h-4" /> Iniciar Clase
-                  </button>
-                )}
-                {activeClass.status === "active" && (
+                <div className="flex flex-col sm:flex-row gap-3 shrink-0">
+                  {isAdmin && (
+                    <button 
+                      onClick={handleStartClass}
+                      className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 border-none cursor-pointer"
+                    >
+                      <Play className="w-4 h-4" /> Iniciar Clase
+                    </button>
+                  )}
                   <button 
                     onClick={handleJoinClass}
                     className="w-full sm:w-auto px-8 py-3.5 bg-[#1890ff] hover:bg-blue-600 text-white font-black text-sm rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer active:scale-95 transition-transform"
@@ -464,12 +370,120 @@ export default function LivePanel() {
                     <Tv className="w-4 h-4" />
                     Unirse a la Clase
                   </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          /* Scenario 2: Upcoming Class Scheduled (Countdown) */
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white dark:bg-neutral-950 rounded-3xl border border-[#1890ff]/20 shadow-sm overflow-hidden"
+          >
+            <div className="relative px-6 sm:px-8 py-10 bg-gradient-to-br from-blue-500/10 via-[#1890ff]/5 to-neutral-50/10 dark:from-blue-950/15 dark:via-blue-950/5 dark:to-neutral-950/20 overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-[0.15] blur-3xl bg-[#1890ff]" />
+
+              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                <div className="flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                      <Clock className="w-3 h-3" />
+                      Próxima Clase Programada
+                    </span>
+                    <span className="text-xs text-neutral-650 dark:text-neutral-350 font-bold flex items-center gap-1 bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/30 dark:border-neutral-800/30 px-2.5 py-1 rounded-full">
+                      <Calendar className="w-3.5 h-3.5 text-[#1890ff]" />
+                      {new Date(activeClass.scheduled_at).toLocaleDateString("es-CL", { weekday: 'short', day: 'numeric', month: 'short' })}
+                    </span>
+                    <span className="text-xs text-neutral-650 dark:text-neutral-350 font-bold flex items-center gap-1 bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/30 dark:border-neutral-800/30 px-2.5 py-1 rounded-full">
+                      <Clock className="w-3.5 h-3.5 text-[#1890ff]" />
+                      {new Date(activeClass.scheduled_at).toLocaleTimeString("es-CL", { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+                  <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2">
+                    {activeClass.title}
+                  </h2>
+                  {activeClass.description && (
+                    <p className="text-sm text-neutral-600 dark:text-neutral-455 max-w-lg leading-relaxed">{activeClass.description}</p>
+                  )}
+                </div>
+
+                {/* Countdown display */}
+                <div className="flex flex-col items-center sm:items-end shrink-0 gap-2">
+                  <span className="text-xs font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest mr-1">Inicia en:</span>
+                  <div className="grid grid-cols-4 gap-2.5 max-w-xs select-none">
+                    <div className="bg-white/90 dark:bg-neutral-900/80 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
+                      <span className="text-xl font-black text-neutral-900 dark:text-white leading-none">{countdown.days}</span>
+                      <span className="text-[9px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-bold mt-1">Días</span>
+                    </div>
+                    <div className="bg-white/90 dark:bg-neutral-900/80 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
+                      <span className="text-xl font-black text-neutral-900 dark:text-white leading-none">{countdown.hours}</span>
+                      <span className="text-[9px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-bold mt-1">Horas</span>
+                    </div>
+                    <div className="bg-white/90 dark:bg-neutral-900/80 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
+                      <span className="text-xl font-black text-neutral-900 dark:text-white leading-none">{countdown.minutes}</span>
+                      <span className="text-[9px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-bold mt-1">Mins</span>
+                    </div>
+                    <div className="bg-white/90 dark:bg-neutral-900/80 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
+                      <span className="text-xl font-black text-neutral-900 dark:text-white leading-none">{countdown.seconds}</span>
+                      <span className="text-[9px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-bold mt-1">Segs</span>
+                    </div>
+                  </div>
+                  {isAdmin && (
+                    <button 
+                      onClick={handleStartClass}
+                      className="mt-3 w-full sm:w-auto px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-1.5 border-none cursor-pointer"
+                    >
+                      <Play className="w-3.5 h-3.5" /> Iniciar Clase
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )
+      ) : completedClasses[0] ? (
+        /* Scenario 3: No scheduled class. Show last broadcasted class details */
+        <motion.div 
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/80 dark:border-neutral-850/80 shadow-sm overflow-hidden"
+        >
+          <div className="relative px-6 sm:px-8 py-10 bg-gradient-to-br from-neutral-100 to-transparent dark:from-neutral-900/40 dark:to-transparent overflow-hidden">
+            <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-[0.05] blur-3xl bg-neutral-450" />
+
+            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-2.5 mb-3">
+                  <span className="bg-neutral-150 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 border border-neutral-200/50 dark:border-neutral-800/50 shadow-sm">
+                    <Video className="w-3 h-3 text-[#1890ff]" />
+                    Última Clase Emitida
+                  </span>
+                  <span className="text-[11px] text-neutral-450 dark:text-neutral-500 font-bold bg-neutral-100 dark:bg-neutral-900/60 px-2.5 py-1 rounded-full">
+                    {getTimeAgo(completedClasses[0].scheduled_at)}
+                  </span>
+                </div>
+                <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2">
+                  {completedClasses[0].title}
+                </h2>
+                {completedClasses[0].description && (
+                  <p className="text-sm text-neutral-600 dark:text-neutral-405 max-w-lg leading-relaxed line-clamp-2">{completedClasses[0].description}</p>
                 )}
               </div>
+              {completedClasses[0].youtube_video_id && (
+                <button 
+                  onClick={() => setActiveVideoId(completedClasses[0].youtube_video_id)}
+                  className="w-full sm:w-auto px-6 py-3 bg-[#1890ff] hover:bg-blue-600 text-white font-bold text-sm rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer active:scale-95 transition-transform shrink-0"
+                >
+                  <Play className="w-4 h-4 animate-pulse" />
+                  Ver Grabación
+                </button>
+              )}
             </div>
           </div>
         </motion.div>
       ) : (
+        /* Scenario 4: No live classes at all */
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
@@ -477,105 +491,16 @@ export default function LivePanel() {
         >
           <div className="relative px-6 sm:px-8 py-14 text-center overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-[#1890ff]/5 via-white to-transparent dark:from-[#1890ff]/5 dark:via-neutral-950 dark:to-transparent" />
-            <div className="absolute top-6 left-8 w-24 h-24 bg-blue-200 rounded-full opacity-[0.07] blur-2xl" />
-            <div className="absolute bottom-6 right-8 w-32 h-32 bg-indigo-200 rounded-full opacity-[0.07] blur-2xl" />
-            
             <div className="relative z-10">
               <div className="bg-[#1890ff]/10 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-sm w-[72px] h-[72px]">
                 <Radio className="w-9 h-9 text-[#1890ff]" />
               </div>
-              <h2 className="font-display font-black text-xl text-neutral-900 dark:text-white mb-2">No hay clases en vivo</h2>
+              <h2 className="font-display font-black text-xl text-neutral-900 dark:text-white mb-2">No hay transmisiones registradas</h2>
               <p className="text-neutral-500 dark:text-neutral-400 text-sm max-w-sm mx-auto leading-relaxed">
-                Cuando haya una clase programada, podrás unirte a la transmisión en directo desde aquí.
+                Las próximas transmisiones y grabaciones aparecerán en esta sección.
               </p>
             </div>
           </div>
-        </motion.div>
-      )}
-
-      {/* Admin Panel to schedule live class */}
-      {isAdmin && (
-        <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/80 dark:border-neutral-850/80 p-6 sm:p-8 shadow-sm space-y-6"
-        >
-          <div>
-            <h3 className="font-display font-black text-lg text-neutral-900 dark:text-white mb-1">Agendar Nueva Masterclass</h3>
-            <p className="text-sm text-neutral-500 dark:text-neutral-400">Programa una sesión en vivo para los alumnos.</p>
-          </div>
-
-          <form onSubmit={handleCreateClass} className="space-y-4">
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Título de la Clase *</label>
-                <input 
-                  type="text" 
-                  required 
-                  value={title} 
-                  onChange={e => setTitle(e.target.value)} 
-                  placeholder="Ej. Masterclass SQL Server Avanzado" 
-                  className="w-full bg-neutral-55 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Nombre de Sala de LiveKit (Única) *</label>
-                <input 
-                  type="text" 
-                  required 
-                  value={roomName} 
-                  onChange={e => setRoomName(e.target.value)} 
-                  placeholder="ej. masterclass-sql-01" 
-                  className="w-full bg-neutral-55 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
-              <textarea 
-                value={description} 
-                onChange={e => setDescription(e.target.value)} 
-                placeholder="Indica de qué tratará la clase..." 
-                className="w-full bg-neutral-55 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all resize-none min-h-[60px]" 
-                rows={2}
-              />
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Clave de Transmisión de YouTube Live (Opcional)</label>
-                <input 
-                  type="password" 
-                  value={youtubeKey} 
-                  onChange={e => setYoutubeKey(e.target.value)} 
-                  placeholder="Clave de stream RTMP" 
-                  className="w-full bg-neutral-55 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
-                />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Fecha y Hora Programada *</label>
-                <input 
-                  type="datetime-local" 
-                  required 
-                  value={scheduledAt} 
-                  onChange={e => setScheduledAt(e.target.value)} 
-                  className="w-full bg-neutral-55 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-2">
-              <button 
-                type="submit" 
-                disabled={submitting}
-                className="px-6 py-3 bg-[#1890ff] hover:bg-blue-600 disabled:opacity-50 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
-              >
-                {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Calendar className="w-4 h-4" />}
-                {submitting ? "Agendando..." : "Agendar Masterclass"}
-              </button>
-            </div>
-          </form>
         </motion.div>
       )}
 
@@ -590,86 +515,7 @@ export default function LivePanel() {
             <h3 className="font-display font-black text-lg text-neutral-900 dark:text-white mb-1">Clases Grabadas</h3>
             <p className="text-sm text-neutral-500 dark:text-neutral-400">Revisa las masterclasses anteriores cuando quieras.</p>
           </div>
-          {isAdmin && (
-            <button
-              onClick={() => setShowAddRecording(!showAddRecording)}
-              className="px-4 py-2 bg-[#1890ff] hover:bg-blue-600 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
-            >
-              {showAddRecording ? "Cancelar" : "Agregar Grabación"}
-            </button>
-          )}
         </div>
-
-        {/* Admin form to add recording */}
-        <AnimatePresence>
-          {isAdmin && showAddRecording && (
-            <motion.form
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              onSubmit={handleAddRecording}
-              className="mb-6 p-5 bg-neutral-50 dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 space-y-4 overflow-hidden"
-            >
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Título de la Grabación *</label>
-                  <input 
-                    type="text" 
-                    required 
-                    value={recordingTitle} 
-                    onChange={e => setRecordingTitle(e.target.value)} 
-                    placeholder="Ej. Masterclass SQL Server - Sesión 1" 
-                    className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">ID de Video de YouTube *</label>
-                  <input 
-                    type="text" 
-                    required 
-                    value={recordingVideoId} 
-                    onChange={e => setRecordingVideoId(e.target.value)} 
-                    placeholder="Ej. dQw4w9WgXcQ" 
-                    className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
-                <textarea 
-                  value={recordingDescription} 
-                  onChange={e => setRecordingDescription(e.target.value)} 
-                  placeholder="Breve descripción del contenido de la clase..." 
-                  className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all resize-none min-h-[60px]" 
-                  rows={2}
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-neutral-400 dark:text-neutral-550 uppercase tracking-widest mb-1.5">Fecha de la Clase *</label>
-                <input 
-                  type="datetime-local" 
-                  required 
-                  value={recordingDate} 
-                  onChange={e => setRecordingDate(e.target.value)} 
-                  className="w-full bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-xl p-3 text-sm focus:border-[#1890ff] focus:ring-2 focus:ring-[#1890ff]/20 text-neutral-900 dark:text-white outline-none transition-all" 
-                />
-              </div>
-
-              <div className="flex justify-end pt-2">
-                <button 
-                  type="submit" 
-                  disabled={submittingRecording}
-                  className="px-6 py-3 bg-[#1890ff] hover:bg-blue-600 disabled:opacity-50 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
-                >
-                  {submittingRecording ? <Loader2 className="w-4 h-4 animate-spin" /> : <Video className="w-4 h-4" />}
-                  {submittingRecording ? "Agregando..." : "Agregar Grabación"}
-                </button>
-              </div>
-            </motion.form>
-          )}
-        </AnimatePresence>
 
         {/* Recordings grid */}
         {completedClasses.length > 0 ? (
@@ -690,14 +536,6 @@ export default function LivePanel() {
             <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-xs mx-auto leading-relaxed">
               Las masterclasses grabadas aparecerán aquí para que las revises cuando quieras.
             </p>
-            {isAdmin && (
-              <button
-                onClick={() => setShowAddRecording(true)}
-                className="mt-5 px-5 py-2.5 bg-[#1890ff] hover:bg-blue-600 text-white rounded-xl text-sm font-bold flex items-center gap-2 shadow-sm hover:shadow-md transition-all mx-auto border-none cursor-pointer"
-              >
-                <Plus className="w-4 h-4" /> Agregar primera grabación
-              </button>
-            )}
           </div>
         )}
       </motion.div>

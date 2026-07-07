@@ -5,7 +5,7 @@ import { Users, Building, CreditCard, Settings, Plus, TrendingUp, Search, MoreHo
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
 import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminUpdateLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon } from "@/lib/supabase/comunidad-ai";
-import { Calendar } from "lucide-react";
+import { Calendar, Radio, Film, Clock } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
 import ArticleBlockEditor from "@/components/shared/ArticleBlockEditor";
@@ -92,6 +92,7 @@ export default function AdminPanel() {
     { id: "cart", label: "Carritos", icon: ShoppingCart },
     { id: "courses", label: "Cursos", icon: GraduationCap },
     { id: "asesorias", label: "Asesorías", icon: Video, badgeCount: unreadAsesoriasCount },
+    { id: "live_admin", label: "Clases En Vivo", icon: Radio },
     { id: "schedules", label: "Horarios", icon: Calendar },
     { id: "export_csv", label: "Exportar Datos", icon: Download },
     { id: "import", label: "Importar CSV", icon: Upload },
@@ -160,6 +161,7 @@ export default function AdminPanel() {
               { activeTab === "cart" && <AdminAbandonedCarts /> }
               { activeTab === "courses" && <AdminCourses /> }
               { activeTab === "asesorias" && <AdminAsesorias /> }
+              { activeTab === "live_admin" && <AdminLiveClasses /> }
               { activeTab === "schedules" && <AdminSchedules /> }
               { activeTab === "export_csv" && <AdminExportCsv /> }
               { activeTab === "import" && <AdminImport /> }
@@ -5323,6 +5325,484 @@ function AdminCompanies() {
           </div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── ADMIN LIVE CLASSES MANAGEMENT ───
+interface AdminLiveClass {
+  id: string;
+  title: string;
+  description: string | null;
+  room_name: string;
+  youtube_stream_key: string | null;
+  youtube_video_id: string | null;
+  status: "scheduled" | "active" | "completed";
+  scheduled_at: string;
+}
+
+function AdminLiveClasses() {
+  const [activeTab, setActiveTab] = useState<"schedule" | "recording" | "list">("schedule");
+  const [classes, setClasses] = useState<AdminLiveClass[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  // Schedule class form states
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [roomName, setRoomName] = useState("");
+  const [youtubeKey, setYoutubeKey] = useState("");
+  const [scheduledAt, setScheduledAt] = useState("");
+  const [submittingSchedule, setSubmittingSchedule] = useState(false);
+
+  // Recording form states
+  const [recordingTitle, setRecordingTitle] = useState("");
+  const [recordingDescription, setRecordingDescription] = useState("");
+  const [recordingVideoId, setRecordingVideoId] = useState("");
+  const [recordingDate, setRecordingDate] = useState("");
+  const [submittingRecording, setSubmittingRecording] = useState(false);
+
+  const fetchClasses = async () => {
+    setLoading(true);
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+      const { data, error: fetchErr } = await supabase
+        .from("live_classes")
+        .select("*")
+        .order("scheduled_at", { ascending: false });
+      if (fetchErr) throw fetchErr;
+      setClasses(data || []);
+    } catch (err: unknown) {
+      console.error(err);
+      const msg = err instanceof Error ? err.message : String(err);
+      setError("Error al cargar las clases: " + msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchClasses();
+  }, []);
+
+  const handleScheduleClass = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim() || !roomName.trim() || !scheduledAt) return;
+    setSubmittingSchedule(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+
+      const { error: insertError } = await supabase
+        .from("live_classes")
+        .insert({
+          title: title.trim(),
+          description: description.trim() || null,
+          room_name: roomName.trim().replace(/\s+/g, "-").toLowerCase(),
+          youtube_stream_key: youtubeKey.trim() || null,
+          scheduled_at: new Date(scheduledAt).toISOString(),
+          status: "scheduled"
+        });
+
+      if (insertError) throw insertError;
+
+      // Broadcast notification to all enrolled users
+      try {
+        const { broadcastNotification } = await import("@/lib/supabase/comunidad");
+        const scheduledDate = new Date(scheduledAt).toLocaleDateString("es-CL", { 
+          weekday: 'long', 
+          day: 'numeric', 
+          month: 'long' 
+        });
+        await broadcastNotification(
+          "live",
+          "Nueva clase en vivo programada",
+          `"${title.trim()}" - ${scheduledDate}`,
+          "/comunidad/live"
+        );
+      } catch (notifErr) {
+        console.error("Error sending notification:", notifErr);
+      }
+
+      setSuccess(`Clase "${title}" agendada exitosamente.`);
+      setTitle("");
+      setDescription("");
+      setRoomName("");
+      setYoutubeKey("");
+      setScheduledAt("");
+      fetchClasses();
+      setActiveTab("list");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError("Error al agendar clase: " + msg);
+    } finally {
+      setSubmittingSchedule(false);
+    }
+  };
+
+  const handleAddRecording = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!recordingTitle.trim() || !recordingVideoId.trim() || !recordingDate) return;
+    setSubmittingRecording(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+
+      const { error: insertError } = await supabase
+        .from("live_classes")
+        .insert({
+          title: recordingTitle.trim(),
+          description: recordingDescription.trim() || null,
+          room_name: `recording-${Date.now()}`,
+          youtube_video_id: recordingVideoId.trim(),
+          scheduled_at: new Date(recordingDate).toISOString(),
+          status: "completed"
+        });
+
+      if (insertError) throw insertError;
+
+      setSuccess(`Grabación "${recordingTitle}" agregada exitosamente.`);
+      setRecordingTitle("");
+      setRecordingDescription("");
+      setRecordingVideoId("");
+      setRecordingDate("");
+      fetchClasses();
+      setActiveTab("list");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError("Error al agregar grabación: " + msg);
+    } finally {
+      setSubmittingRecording(false);
+    }
+  };
+
+  const handleStartClass = async (classId: string) => {
+    setError(null);
+    setSuccess(null);
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+
+      const { error: startError } = await supabase
+        .from("live_classes")
+        .update({ status: "active", started_at: new Date().toISOString() })
+        .eq("id", classId);
+
+      if (startError) throw startError;
+      setSuccess("Clase iniciada en vivo. Los estudiantes ya pueden unirse.");
+      fetchClasses();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError("Error al iniciar clase: " + msg);
+    }
+  };
+
+  const handleDeleteClass = async (classId: string, classNameStr: string) => {
+    if (!confirm(`¿Estás seguro de eliminar la clase "${classNameStr}"?`)) return;
+    setError(null);
+    setSuccess(null);
+    try {
+      const { createClient } = await import("@/lib/supabase/client");
+      const supabase = createClient();
+
+      const { error: deleteError } = await supabase
+        .from("live_classes")
+        .delete()
+        .eq("id", classId);
+
+      if (deleteError) throw deleteError;
+      setSuccess("Clase eliminada exitosamente.");
+      fetchClasses();
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError("Error al eliminar clase: " + msg);
+    }
+  };
+
+  return (
+    <div className="p-6 space-y-6">
+      <div className="flex items-center justify-between border-b border-gray-150 pb-4">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900">Gestión de Clases en Vivo</h2>
+          <p className="text-xs text-gray-500">Programa clases en vivo o añade grabaciones de sesiones pasadas.</p>
+        </div>
+        
+        <div className="flex bg-gray-100 rounded-xl p-1 shrink-0">
+          <button
+            onClick={() => setActiveTab("schedule")}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all border-none cursor-pointer ${
+              activeTab === "schedule" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-900 bg-transparent"
+            }`}
+          >
+            Agendar Live
+          </button>
+          <button
+            onClick={() => setActiveTab("recording")}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all border-none cursor-pointer ${
+              activeTab === "recording" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-900 bg-transparent"
+            }`}
+          >
+            Agregar Grabación
+          </button>
+          <button
+            onClick={() => setActiveTab("list")}
+            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all border-none cursor-pointer ${
+              activeTab === "list" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-900 bg-transparent"
+            }`}
+          >
+            Ver Todas ({classes.length})
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <div className="bg-red-50 text-red-600 rounded-xl p-4 text-xs font-semibold border border-red-200">
+          {error}
+        </div>
+      )}
+
+      {success && (
+        <div className="bg-emerald-50 text-emerald-700 rounded-xl p-4 text-xs font-semibold border border-emerald-200">
+          {success}
+        </div>
+      )}
+
+      {activeTab === "schedule" && (
+        <form onSubmit={handleScheduleClass} className="space-y-4 max-w-2xl bg-white border border-gray-150 rounded-2xl p-6">
+          <h3 className="font-bold text-sm text-gray-900 mb-2">Programar una Masterclass</h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Título de la Clase *</label>
+              <input 
+                type="text" 
+                required 
+                value={title} 
+                onChange={e => setTitle(e.target.value)} 
+                placeholder="Ej. Masterclass SQL Avanzado" 
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Sala de Directo (ID único) *</label>
+              <input 
+                type="text" 
+                required 
+                value={roomName} 
+                onChange={e => setRoomName(e.target.value)} 
+                placeholder="ej. masterclass-sql" 
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
+            <textarea 
+              value={description} 
+              onChange={e => setDescription(e.target.value)} 
+              placeholder="Indica el contenido clave de la clase..." 
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue resize-none min-h-[60px]" 
+              rows={2}
+            />
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Clave de Stream (Opcional)</label>
+              <input 
+                type="password" 
+                value={youtubeKey} 
+                onChange={e => setYoutubeKey(e.target.value)} 
+                placeholder="Para transmitir con OBS Studio" 
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Fecha y Hora Programada *</label>
+              <input 
+                type="datetime-local" 
+                required 
+                value={scheduledAt} 
+                onChange={e => setScheduledAt(e.target.value)} 
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <button 
+              type="submit" 
+              disabled={submittingSchedule}
+              className="px-6 py-3 bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white rounded-xl font-bold text-xs flex items-center gap-2 border-none cursor-pointer"
+            >
+              {submittingSchedule ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Calendar className="w-3.5 h-3.5" />}
+              {submittingSchedule ? "Agendando..." : "Agendar Masterclass"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {activeTab === "recording" && (
+        <form onSubmit={handleAddRecording} className="space-y-4 max-w-2xl bg-white border border-gray-150 rounded-2xl p-6">
+          <h3 className="font-bold text-sm text-gray-900 mb-2">Agregar Grabación de Clase Pasada</h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Título de la Grabación *</label>
+              <input 
+                type="text" 
+                required 
+                value={recordingTitle} 
+                onChange={e => setRecordingTitle(e.target.value)} 
+                placeholder="Ej. Masterclass SQL Server - Sesión 1" 
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
+              />
+            </div>
+            <div>
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">ID de Video de YouTube *</label>
+              <input 
+                type="text" 
+                required 
+                value={recordingVideoId} 
+                onChange={e => setRecordingVideoId(e.target.value)} 
+                placeholder="Ej. dQw4w9WgXcQ" 
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
+            <textarea 
+              value={recordingDescription} 
+              onChange={e => setRecordingDescription(e.target.value)} 
+              placeholder="Escribe un breve resumen de los temas explicados..." 
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue resize-none min-h-[60px]" 
+              rows={2}
+            />
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Fecha de la Clase *</label>
+            <input 
+              type="datetime-local" 
+              required 
+              value={recordingDate} 
+              onChange={e => setRecordingDate(e.target.value)} 
+              className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
+            />
+          </div>
+
+          <div className="flex justify-end pt-2">
+            <button 
+              type="submit" 
+              disabled={submittingRecording}
+              className="px-6 py-3 bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white rounded-xl font-bold text-xs flex items-center gap-2 border-none cursor-pointer"
+            >
+              {submittingRecording ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Video className="w-3.5 h-3.5" />}
+              {submittingRecording ? "Agregando..." : "Agregar Grabación"}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {activeTab === "list" && (
+        <div className="bg-white border border-gray-150 rounded-2xl overflow-hidden shadow-sm">
+          {loading ? (
+            <div className="py-12 flex justify-center">
+              <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
+            </div>
+          ) : classes.length === 0 ? (
+            <div className="p-12 text-center text-gray-400 text-xs">
+              No hay clases registradas.
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-left text-xs text-gray-500">
+                <thead className="bg-gray-50 text-[10px] uppercase font-bold text-gray-400 border-b border-gray-150">
+                  <tr>
+                    <th className="px-6 py-4">Título</th>
+                    <th className="px-6 py-4">Programada / Fecha</th>
+                    <th className="px-6 py-4">Tipo/Estado</th>
+                    <th className="px-6 py-4">Enlace YouTube</th>
+                    <th className="px-6 py-4 text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {classes.map((cls) => (
+                    <tr key={cls.id} className="hover:bg-gray-50/50">
+                      <td className="px-6 py-4 font-bold text-gray-900">{cls.title}</td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {new Date(cls.scheduled_at).toLocaleDateString("es-CL", { 
+                          day: 'numeric', 
+                          month: 'short', 
+                          year: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {cls.status === "active" ? (
+                          <span className="bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded-full font-bold text-[10px]">
+                            En Vivo Ahora
+                          </span>
+                        ) : cls.status === "scheduled" ? (
+                          <span className="bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded-full font-bold text-[10px]">
+                            Programada
+                          </span>
+                        ) : (
+                          <span className="bg-gray-100 text-gray-600 border border-gray-200 px-2 py-0.5 rounded-full font-semibold text-[10px]">
+                            Grabación
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-gray-400">
+                        {cls.youtube_video_id ? (
+                          <a 
+                            href={`https://youtu.be/${cls.youtube_video_id}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className="text-brand-blue font-semibold hover:underline flex items-center gap-1"
+                          >
+                            {cls.youtube_video_id} <ExternalLink className="w-3 h-3" />
+                          </a>
+                        ) : cls.youtube_stream_key ? (
+                          <span className="font-mono text-[10px]">Transmisión RTMP</span>
+                        ) : (
+                          <span>Sin enlace</span>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-right whitespace-nowrap space-x-2">
+                        {cls.status === "scheduled" && (
+                          <button
+                            onClick={() => handleStartClass(cls.id)}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] px-2.5 py-1 rounded-lg border-none cursor-pointer shadow-sm"
+                          >
+                            Iniciar Live
+                          </button>
+                        )}
+                        <button
+                          onClick={() => handleDeleteClass(cls.id, cls.title)}
+                          className="bg-red-50 hover:bg-red-100 text-red-600 font-bold text-[10px] px-2.5 py-1 rounded-lg border border-red-200 cursor-pointer"
+                        >
+                          Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
