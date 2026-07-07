@@ -516,42 +516,48 @@ export async function getCourseLessons(courseId: string) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { lessons: [], access: null, completedLessonIds: [] };
 
-  const { data: profile } = await supabase.from("profiles").select("is_on_trial, subscription_plan").eq("id", user.id).single();
+  const adminDb = createAdminClient();
+
+  const [profileRes, courseDataRes, lessonsRes, progressDataRes] = await Promise.all([
+    adminDb.from("profiles").select("is_on_trial, subscription_plan").eq("id", user.id).maybeSingle(),
+    adminDb.from("courses").select("slug").eq("id", courseId).maybeSingle(),
+    adminDb.from("lessons")
+      .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources")
+      .eq("course_id", courseId)
+      .order("module_order", { ascending: true })
+      .order("lesson_order", { ascending: true }),
+    adminDb.from("user_progress")
+      .select("lesson_id")
+      .eq("user_id", user.id)
+      .eq("course_id", courseId)
+      .eq("completed", true)
+  ]);
+
+  const profile = profileRes.data;
+  const courseData = courseDataRes.data;
+  const lessons = lessonsRes.data || [];
+  const progressData = progressDataRes.data || [];
+  const completedLessonIds = progressData.map((p) => p.lesson_id);
+
+  let enrollment = null;
+  if (courseData?.slug) {
+    const { data } = await adminDb
+      .from("enrollments")
+      .select("access_type")
+      .eq("user_id", user.id)
+      .eq("course_slug", courseData.slug)
+      .eq("status", "active")
+      .maybeSingle();
+    enrollment = data;
+  }
+
   const isOnTrial = profile?.is_on_trial === true;
-
-  // Check enrollment - need to get slug from courseId first
-  const { data: courseData } = await supabase.from("courses").select("slug").eq("id", courseId).single();
-  const { data: enrollment } = await supabase
-    .from("enrollments")
-    .select("access_type")
-    .eq("user_id", user.id)
-    .eq("course_slug", courseData?.slug || '')
-    .eq("status", "active")
-    .single();
-
-  const { data: lessons } = await supabase
-    .from("lessons")
-    .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources")
-    .eq("course_id", courseId)
-    .order("module_order", { ascending: true })
-    .order("lesson_order", { ascending: true });
-
-  // Fetch user completed lessons for this course
-  const { data: progressData } = await supabase
-    .from("user_progress")
-    .select("lesson_id")
-    .eq("user_id", user.id)
-    .eq("course_id", courseId)
-    .eq("completed", true);
-
-  const completedLessonIds = (progressData || []).map((p: any) => p.lesson_id);
-
   let finalAccess = enrollment?.access_type || null;
-  if (!finalAccess && profile?.subscription_plan) finalAccess = "full"; // Subscriptions grant full access
+  if (!finalAccess && profile?.subscription_plan) finalAccess = "full";
   if (isOnTrial) finalAccess = "trial";
 
   return {
-    lessons: lessons || [],
+    lessons,
     access: finalAccess,
     isOnTrial,
     completedLessonIds,
