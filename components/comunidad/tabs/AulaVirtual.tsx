@@ -903,15 +903,18 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                     </h2>
                     <div className="flex items-center gap-3.5 mb-3.5 select-none">
                       <div className="w-10 h-10 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black font-bold text-xs flex items-center justify-center shrink-0 shadow-sm">
-                        MR
+                        MO
                       </div>
                       <div className="min-w-0">
-                        <span className="block font-bold text-neutral-900 dark:text-white text-xs leading-none">Manuel Ropero</span>
+                        <span className="block font-bold text-neutral-900 dark:text-white text-xs leading-none">Manuel Oliva</span>
                         <span className="block text-[8px] text-neutral-400 font-bold mt-1 uppercase tracking-wider">Fundador & Mentor</span>
                       </div>
                     </div>
-                    <p className="text-[10px] text-neutral-500 dark:text-neutral-400 leading-relaxed">
-                      Especialista en Business Intelligence, analítica avanzada de datos y desarrollo moderno. Apasionado por diseñar metodologías de enseñanza ágiles y proyectos aplicados al mercado profesional.
+                    <p className="text-[10px] text-neutral-555 dark:text-neutral-400 leading-relaxed">
+                      Lidero un equipo dedicado a empoderar empresas con herramientas de datos avanzadas. Con años de experiencia como consultor en análisis y visualización, he desarrollado dashboards personalizados integrando web, servidores y bases de datos.
+                    </p>
+                    <p className="text-[10px] text-neutral-555 dark:text-neutral-400 leading-relaxed mt-2.5">
+                      Mi enfoque práctico ha ayudado a compañías líderes en Minería, Finanzas y Retail a optimizar procesos críticos y tomar decisiones informadas basadas en hechos.
                     </p>
                   </div>
                 );
@@ -956,8 +959,8 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
 
                     <div className="flex-1 w-full max-w-[1120px] mx-auto px-6 py-8">
                       {/* Banner / Hero Section */}
-                      <div className="bg-neutral-950 text-white border border-neutral-800 rounded-3xl p-8 relative overflow-hidden shadow-sm mb-8 select-none">
-                        <div className="absolute top-0 right-0 w-80 h-80 bg-neutral-800/10 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
+                      <div className="bg-gradient-to-r from-blue-950 via-[#0b193c] to-neutral-950 text-white border border-blue-900/30 rounded-3xl p-8 relative overflow-hidden shadow-sm mb-8 select-none">
+                        <div className="absolute top-0 right-0 w-80 h-80 bg-blue-600/10 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
                         
                         <div className="relative z-10 max-w-2xl">
                           <span className="text-[9px] font-bold tracking-widest uppercase text-neutral-300 bg-neutral-800 px-3 py-1 rounded-full border border-neutral-750">
@@ -1575,14 +1578,16 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                         </div>
 
                         {/* Instructor Profile Card */}
-                        <div className="pt-5 border-t border-neutral-100 dark:border-neutral-900 flex items-center gap-4 select-none">
+                        <div className="pt-6 border-t border-neutral-100 dark:border-neutral-900 flex items-start gap-4 select-none">
                           <div className="w-10 h-10 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black font-bold text-xs flex items-center justify-center shrink-0 border border-neutral-200 dark:border-neutral-800">
-                            BI
+                            MO
                           </div>
-                          <div>
+                          <div className="flex-1 min-w-0">
                             <span className="text-[9px] text-neutral-400 font-bold uppercase block tracking-wider">{t.instructor}</span>
-                            <span className="text-xs font-bold text-neutral-900 dark:text-white mt-0.5 block">ProgramBI Team</span>
-                            <span className="text-[10px] text-neutral-500 dark:text-neutral-450 block mt-0.5">Especialistas en Business Intelligence y Analítica de Datos</span>
+                            <span className="text-xs font-bold text-neutral-900 dark:text-white mt-0.5 block">Manuel Oliva</span>
+                            <p className="text-[10px] text-neutral-500 dark:text-neutral-450 leading-relaxed mt-1">
+                              Lidero un equipo dedicado a empoderar empresas con herramientas de datos avanzadas. Con años de experiencia como consultor en análisis y visualización, he desarrollado dashboards personalizados integrando web, servidores y bases de datos.
+                            </p>
                           </div>
                         </div>
                       </motion.div>
