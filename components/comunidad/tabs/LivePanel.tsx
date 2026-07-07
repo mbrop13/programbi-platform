@@ -105,7 +105,7 @@ export default function LivePanel() {
       setCompletedClasses(completed || []);
 
       setError(null);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Error fetching live classes:", err);
       setError("No se pudieron cargar las clases en vivo.");
     }
@@ -181,8 +181,9 @@ export default function LivePanel() {
       if (startError) throw startError;
       await fetchClassInfo();
       setIsWatchingLive(true);
-    } catch (err: any) {
-      setError("Error al iniciar clase: " + err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError("Error al iniciar clase: " + msg);
     } finally {
       setLoading(false);
     }
@@ -208,8 +209,9 @@ export default function LivePanel() {
       if (completeError) throw completeError;
       setIsWatchingLive(false);
       await fetchClassInfo();
-    } catch (err: any) {
-      setError("Error al finalizar clase: " + err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setError("Error al finalizar clase: " + msg);
     } finally {
       setLoading(false);
     }
@@ -322,7 +324,6 @@ export default function LivePanel() {
           Actualizar
         </button>
       </div>
-
       {/* Active, Scheduled or Last Emitted class banner */}
       {activeClass ? (
         activeClass.status === "active" ? (
@@ -330,47 +331,67 @@ export default function LivePanel() {
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-neutral-950 rounded-3xl border border-red-500/20 shadow-sm overflow-hidden"
+            className="bg-white dark:bg-neutral-950 rounded-3xl border border-red-500/20 shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[300px]"
           >
-            <div className="relative px-6 sm:px-8 py-10 bg-gradient-to-br from-red-500/10 via-rose-500/5 to-neutral-50/10 dark:from-red-950/15 dark:via-rose-950/5 dark:to-neutral-950/20 overflow-hidden">
-              <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-[0.15] blur-3xl bg-red-500 animate-pulse" />
+            {/* Left Section: Live Video Embed */}
+            <div className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-black flex items-center justify-center border-b md:border-b-0 md:border-r border-neutral-100 dark:border-neutral-900">
+              {activeClass.youtube_video_id ? (
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={`https://www.youtube.com/embed/${activeClass.youtube_video_id}?autoplay=1&mute=1&rel=0`}
+                  title="YouTube Live Stream"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full border-none"
+                />
+              ) : (
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-neutral-500 bg-neutral-950">
+                  <VideoOff className="w-8 h-8 mb-2" />
+                  <span className="text-[10px] font-bold">Señal no disponible</span>
+                </div>
+              )}
+            </div>
 
-              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className="bg-red-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-                      <span className="relative flex h-2 w-2">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
-                      </span>
-                      En Vivo Ahora
+            {/* Right Section: Live Texts & Actions */}
+            <div className="flex-1 p-6 sm:p-8 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="bg-red-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
                     </span>
-                  </div>
-                  <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2">
-                    {activeClass.title}
-                  </h2>
-                  {activeClass.description && (
-                    <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-lg leading-relaxed">{activeClass.description}</p>
-                  )}
+                    En Vivo Ahora
+                  </span>
                 </div>
+                <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2.5">
+                  {activeClass.title}
+                </h2>
+                {activeClass.description && (
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed line-clamp-3">
+                    {activeClass.description}
+                  </p>
+                )}
+              </div>
 
-                <div className="flex flex-col sm:flex-row gap-3 shrink-0">
-                  {isAdmin && (
-                    <button 
-                      onClick={handleStartClass}
-                      className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 border-none cursor-pointer"
-                    >
-                      <Play className="w-4 h-4" /> Iniciar Clase
-                    </button>
-                  )}
+              <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
+                <button 
+                  onClick={handleJoinClass}
+                  className="w-full sm:w-auto px-6 py-3 bg-[#1890ff] hover:bg-blue-600 active:scale-[0.98] text-white font-black text-xs rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer"
+                >
+                  <Tv className="w-4 h-4" />
+                  Unirse a la Clase (Pantalla Completa)
+                </button>
+                {isAdmin && (
                   <button 
-                    onClick={handleJoinClass}
-                    className="w-full sm:w-auto px-8 py-3.5 bg-[#1890ff] hover:bg-blue-600 text-white font-black text-sm rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer active:scale-95 transition-transform"
+                    onClick={handleStartClass}
+                    className="w-full sm:w-auto px-5 py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs rounded-xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 border-none cursor-pointer"
                   >
-                    <Tv className="w-4 h-4" />
-                    Unirse a la Clase
+                    <Play className="w-3.5 h-3.5" /> Iniciar Clase
                   </button>
-                </div>
+                )}
               </div>
             </div>
           </motion.div>
@@ -379,65 +400,73 @@ export default function LivePanel() {
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-neutral-950 rounded-3xl border border-[#1890ff]/20 shadow-sm overflow-hidden"
+            className="bg-white dark:bg-neutral-950 rounded-3xl border border-[#1890ff]/20 shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[300px]"
           >
-            <div className="relative px-6 sm:px-8 py-10 bg-gradient-to-br from-blue-500/10 via-[#1890ff]/5 to-neutral-50/10 dark:from-blue-950/15 dark:via-blue-950/5 dark:to-neutral-950/20 overflow-hidden">
-              <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-[0.15] blur-3xl bg-[#1890ff]" />
+            {/* Left Section: Graphic Placeholder */}
+            <div className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-neutral-50 dark:bg-neutral-950 flex items-center justify-center border-b md:border-b-0 md:border-r border-neutral-100 dark:border-neutral-900 select-none">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1890ff]/10 to-indigo-500/10 dark:from-blue-950/20 dark:to-indigo-950/20" />
+              <Calendar className="w-16 h-16 text-[#1890ff]/40 animate-pulse relative z-10" />
+            </div>
 
-              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
-                <div className="flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-3">
-                    <span className="bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
-                      <Clock className="w-3 h-3" />
-                      Próxima Clase Programada
-                    </span>
-                    <span className="text-xs text-neutral-650 dark:text-neutral-350 font-bold flex items-center gap-1 bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/30 dark:border-neutral-800/30 px-2.5 py-1 rounded-full">
-                      <Calendar className="w-3.5 h-3.5 text-[#1890ff]" />
-                      {new Date(activeClass.scheduled_at).toLocaleDateString("es-CL", { weekday: 'short', day: 'numeric', month: 'short' })}
-                    </span>
-                    <span className="text-xs text-neutral-650 dark:text-neutral-350 font-bold flex items-center gap-1 bg-white/80 dark:bg-neutral-900/80 border border-neutral-200/30 dark:border-neutral-800/30 px-2.5 py-1 rounded-full">
-                      <Clock className="w-3.5 h-3.5 text-[#1890ff]" />
-                      {new Date(activeClass.scheduled_at).toLocaleTimeString("es-CL", { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
-                  <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2">
-                    {activeClass.title}
-                  </h2>
-                  {activeClass.description && (
-                    <p className="text-sm text-neutral-600 dark:text-neutral-455 max-w-lg leading-relaxed">{activeClass.description}</p>
-                  )}
+            {/* Right Section: Countdown, Date & Texts */}
+            <div className="flex-1 p-6 sm:p-8 flex flex-col justify-between">
+              <div>
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  <span className="bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 shadow-sm">
+                    <Clock className="w-3 h-3" />
+                    Clase Programada
+                  </span>
+                  <span className="text-xs text-neutral-600 dark:text-neutral-450 font-bold flex items-center gap-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800/50 px-2.5 py-1 rounded-full select-none">
+                    <Calendar className="w-3.5 h-3.5 text-[#1890ff]" />
+                    {new Date(activeClass.scheduled_at).toLocaleDateString("es-CL", { weekday: 'short', day: 'numeric', month: 'short' })}
+                  </span>
+                  <span className="text-xs text-neutral-600 dark:text-neutral-450 font-bold flex items-center gap-1 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800/50 px-2.5 py-1 rounded-full select-none">
+                    <Clock className="w-3.5 h-3.5 text-[#1890ff]" />
+                    {new Date(activeClass.scheduled_at).toLocaleTimeString("es-CL", { hour: '2-digit', minute: '2-digit' })}
+                  </span>
                 </div>
 
-                {/* Countdown display */}
-                <div className="flex flex-col items-center sm:items-end shrink-0 gap-2">
-                  <span className="text-xs font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest mr-1">Inicia en:</span>
+                <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2.5">
+                  {activeClass.title}
+                </h2>
+                {activeClass.description && (
+                  <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed line-clamp-3">
+                    {activeClass.description}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-6 flex flex-col items-start gap-4">
+                <div className="w-full">
+                  <span className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest block mb-2 select-none">Inicia en:</span>
                   <div className="grid grid-cols-4 gap-2.5 max-w-xs select-none">
-                    <div className="bg-white/90 dark:bg-neutral-900/80 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
+                    <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
                       <span className="text-xl font-black text-neutral-900 dark:text-white leading-none">{countdown.days}</span>
                       <span className="text-[9px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-bold mt-1">Días</span>
                     </div>
-                    <div className="bg-white/90 dark:bg-neutral-900/80 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
+                    <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
                       <span className="text-xl font-black text-neutral-900 dark:text-white leading-none">{countdown.hours}</span>
                       <span className="text-[9px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-bold mt-1">Horas</span>
                     </div>
-                    <div className="bg-white/90 dark:bg-neutral-900/80 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
+                    <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
                       <span className="text-xl font-black text-neutral-900 dark:text-white leading-none">{countdown.minutes}</span>
                       <span className="text-[9px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-bold mt-1">Mins</span>
                     </div>
-                    <div className="bg-white/90 dark:bg-neutral-900/80 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
+                    <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-2.5 border border-neutral-200 dark:border-neutral-850 text-center flex flex-col items-center min-w-[65px] shadow-sm">
                       <span className="text-xl font-black text-neutral-900 dark:text-white leading-none">{countdown.seconds}</span>
                       <span className="text-[9px] uppercase tracking-wider text-neutral-400 dark:text-neutral-500 font-bold mt-1">Segs</span>
                     </div>
                   </div>
-                  {isAdmin && (
-                    <button 
-                      onClick={handleStartClass}
-                      className="mt-3 w-full sm:w-auto px-6 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-1.5 border-none cursor-pointer"
-                    >
-                      <Play className="w-3.5 h-3.5" /> Iniciar Clase
-                    </button>
-                  )}
                 </div>
+
+                {isAdmin && (
+                  <button 
+                    onClick={handleStartClass}
+                    className="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs rounded-xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-1.5 border-none cursor-pointer"
+                  >
+                    <Play className="w-3.5 h-3.5" /> Iniciar Clase
+                  </button>
+                )}
               </div>
             </div>
           </motion.div>
@@ -447,36 +476,69 @@ export default function LivePanel() {
         <motion.div 
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/80 dark:border-neutral-850/80 shadow-sm overflow-hidden"
+          className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/80 dark:border-neutral-850/80 shadow-sm overflow-hidden flex flex-col md:flex-row min-h-[300px]"
         >
-          <div className="relative px-6 sm:px-8 py-10 bg-gradient-to-br from-neutral-100 to-transparent dark:from-neutral-900/40 dark:to-transparent overflow-hidden">
-            <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full opacity-[0.05] blur-3xl bg-neutral-450" />
-
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="flex-1 min-w-0">
-                <div className="flex flex-wrap items-center gap-2.5 mb-3">
-                  <span className="bg-neutral-150 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 border border-neutral-200/50 dark:border-neutral-800/50 shadow-sm">
-                    <Video className="w-3 h-3 text-[#1890ff]" />
-                    Última Clase Emitida
-                  </span>
-                  <span className="text-[11px] text-neutral-450 dark:text-neutral-500 font-bold bg-neutral-100 dark:bg-neutral-900/60 px-2.5 py-1 rounded-full">
-                    {getTimeAgo(completedClasses[0].scheduled_at)}
-                  </span>
+          {/* Left Section: YouTube Thumbnail with Play Button */}
+          <div 
+            onClick={() => completedClasses[0].youtube_video_id && setActiveVideoId(completedClasses[0].youtube_video_id)}
+            className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-neutral-100 dark:bg-neutral-950 overflow-hidden border-b md:border-b-0 md:border-r border-neutral-100 dark:border-neutral-900 cursor-pointer group"
+          >
+            {completedClasses[0].youtube_video_id ? (
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img 
+                  src={`https://img.youtube.com/vi/${completedClasses[0].youtube_video_id}/maxresdefault.jpg`}
+                  alt={completedClasses[0].title}
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${completedClasses[0].youtube_video_id!}/hqdefault.jpg`;
+                  }}
+                />
+                <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors z-10" />
+                <div className="absolute inset-0 z-20 flex items-center justify-center">
+                  <div className="w-14 h-14 bg-white/95 dark:bg-neutral-900/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                    <Play className="w-6 h-6 text-[#1890ff] fill-[#1890ff]/20 ml-0.5" />
+                  </div>
                 </div>
-                <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2">
-                  {completedClasses[0].title}
-                </h2>
-                {completedClasses[0].description && (
-                  <p className="text-sm text-neutral-600 dark:text-neutral-405 max-w-lg leading-relaxed line-clamp-2">{completedClasses[0].description}</p>
-                )}
+              </>
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-900 dark:to-neutral-850 flex items-center justify-center">
+                <Film className="w-12 h-12 text-neutral-300 dark:text-neutral-700" />
               </div>
+            )}
+          </div>
+
+          {/* Right Section: Title, Description & Action */}
+          <div className="flex-1 p-6 sm:p-8 flex flex-col justify-between">
+            <div>
+              <div className="flex flex-wrap items-center gap-2 mb-3">
+                <span className="bg-neutral-100 dark:bg-neutral-900 text-neutral-550 dark:text-neutral-400 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full flex items-center gap-1.5 border border-neutral-200/50 dark:border-neutral-800/50 select-none">
+                  <Video className="w-3.5 h-3.5 text-[#1890ff]" />
+                  Última Clase Emitida
+                </span>
+                <span className="text-[11px] text-neutral-400 dark:text-neutral-500 font-bold bg-neutral-50 dark:bg-neutral-900/60 px-2.5 py-1 rounded-full select-none">
+                  {getTimeAgo(completedClasses[0].scheduled_at)}
+                </span>
+              </div>
+
+              <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight mb-2.5">
+                {completedClasses[0].title}
+              </h2>
+              {completedClasses[0].description && (
+                <p className="text-xs text-neutral-500 dark:text-neutral-450 leading-relaxed line-clamp-3">
+                  {completedClasses[0].description}
+                </p>
+              )}
+            </div>
+
+            <div className="mt-6">
               {completedClasses[0].youtube_video_id && (
                 <button 
-                  onClick={() => setActiveVideoId(completedClasses[0].youtube_video_id)}
-                  className="w-full sm:w-auto px-6 py-3 bg-[#1890ff] hover:bg-blue-600 text-white font-bold text-sm rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer active:scale-95 transition-transform shrink-0"
+                  onClick={() => setActiveVideoId(completedClasses[0].youtube_video_id!)}
+                  className="w-full sm:w-auto px-6 py-3 bg-[#1890ff] hover:bg-blue-600 active:scale-[0.98] text-white font-bold text-xs rounded-xl transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer"
                 >
-                  <Play className="w-4 h-4 animate-pulse" />
-                  Ver Grabación
+                  <Play className="w-4 h-4 fill-white/20" />
+                  Ver Grabación de la Clase
                 </button>
               )}
             </div>
