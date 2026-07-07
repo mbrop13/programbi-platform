@@ -1712,7 +1712,9 @@ export async function toggleLessonProgress(courseId: string, lessonId: string, c
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error("No autorizado");
 
-  const { error } = await supabase
+  const adminDb = createAdminClient();
+
+  const { error } = await adminDb
     .from("user_progress")
     .upsert({
       user_id: user.id,
@@ -1727,8 +1729,6 @@ export async function toggleLessonProgress(courseId: string, lessonId: string, c
     console.error("Error updating lesson progress:", error);
     throw new Error(error.message);
   }
-
-  revalidatePath("/comunidad/cursos", "layout");
 }
 
 /**
