@@ -284,9 +284,7 @@ export default function Sidebar({
   const tabs: SidebarTab[] = [
     { id: "inicio", label: t.inicio, icon: LayoutDashboard, color: "text-blue-500", group: t.principal },
     { id: "cursos", label: t.cursos, icon: GraduationCap, color: "text-indigo-500", group: t.principal },
-    ...(hasUpcomingLives
-      ? [{ id: "live", label: t.live, icon: Radio, color: "text-rose-500", group: t.principal, showPing: true }]
-      : []),
+    { id: "live", label: t.live, icon: Radio, color: "text-rose-500", group: t.principal, showPing: hasUpcomingLives },
     { id: "ai", label: t.ai, icon: Sparkles, color: "text-purple-500", group: t.principal },
     { id: "perfil", label: t.perfil, icon: User, color: "text-cyan-500", group: t.personal },
     { id: "certificados", label: t.certificados, icon: Award, color: "text-amber-500", group: t.personal },
