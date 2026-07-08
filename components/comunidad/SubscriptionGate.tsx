@@ -127,12 +127,11 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
             </span>
           </motion.div>
         )}
-        
-        <motion.h1 
+                <motion.h1 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-[4.5rem] font-black tracking-tight mb-6 leading-[1.08] text-slate-900"
+          className="text-3xl sm:text-5xl md:text-6xl lg:text-[4.5rem] font-black tracking-tight mb-6 leading-[1.08] text-slate-900"
         >
           {message ? (
              <span className="text-slate-950 font-black">{message}</span>
@@ -140,18 +139,18 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
              <div className="flex flex-col gap-1 items-center">
                {heroOnly ? (
                  <>
-                   <span className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-slate-800 tracking-tight leading-none block">
+                   <span className="text-xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-slate-800 tracking-tight leading-none block">
                      Desbloquea el poder de la
                    </span>
-                   <span className="text-4xl sm:text-5xl lg:text-[4rem] font-black text-slate-900 tracking-tight leading-[1.1] font-display mt-2 block">
+                   <span className="text-3xl sm:text-5xl lg:text-[4rem] font-black text-slate-900 tracking-tight leading-[1.1] font-display mt-2 block">
                      Comunidad{" "}
-                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
+                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-700">
                        ProgramBI
                      </span>
                    </span>
                  </>
                ) : (
-                 <span className="text-4xl sm:text-5xl lg:text-[3.5rem] font-black text-slate-900 tracking-tight leading-[1.1] font-display block">
+                 <span className="text-3xl sm:text-5xl lg:text-[3.5rem] font-black text-slate-900 tracking-tight leading-[1.1] font-display block">
                    Membresía{" "}
                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
                      ProgramBI
@@ -226,25 +225,25 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="bg-white/90 backdrop-blur-md border border-slate-200/80 p-1.5 rounded-full inline-flex items-center mx-auto shadow-md relative z-20"
+            className="bg-white/90 backdrop-blur-md border border-slate-200/80 p-1 sm:p-1.5 rounded-full inline-flex items-center mx-auto shadow-md relative z-20"
           >
             <button 
               onClick={() => setBillingPeriod('mensual')}
-              className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-black tracking-wider uppercase transition-all duration-300 ${billingPeriod === 'mensual' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+              className={`px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full text-[10px] sm:text-sm font-black tracking-wide sm:tracking-wider uppercase transition-all duration-300 ${billingPeriod === 'mensual' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
             >
               Mensual
             </button>
             <button 
               onClick={() => setBillingPeriod('semestral')}
-              className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-black tracking-wider uppercase transition-all duration-300 flex items-center gap-1.5 ${billingPeriod === 'semestral' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+              className={`px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full text-[10px] sm:text-sm font-black tracking-wide sm:tracking-wider uppercase transition-all duration-300 flex items-center gap-1 sm:gap-1.5 ${billingPeriod === 'semestral' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
             >
-              Semestral <span className="bg-emerald-500/10 text-emerald-600 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-normal">-10%</span>
+              Semestral <span className="bg-emerald-500/10 text-emerald-600 text-[8px] sm:text-[9px] font-extrabold px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-normal">-10%</span>
             </button>
             <button 
               onClick={() => setBillingPeriod('anual')}
-              className={`px-5 py-2.5 rounded-full text-xs sm:text-sm font-black tracking-wider uppercase transition-all duration-300 flex items-center gap-1.5 ${billingPeriod === 'anual' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
+              className={`px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-full text-[10px] sm:text-sm font-black tracking-wide sm:tracking-wider uppercase transition-all duration-300 flex items-center gap-1 sm:gap-1.5 ${billingPeriod === 'anual' ? 'bg-slate-900 text-white shadow-md' : 'text-slate-500 hover:text-slate-900'}`}
             >
-              Anual <span className="bg-blue-500/10 text-blue-600 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-normal">-30%</span>
+              Anual <span className="bg-blue-500/10 text-blue-600 text-[8px] sm:text-[9px] font-extrabold px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-normal">-30%</span>
             </button>
           </motion.div>
         )}
