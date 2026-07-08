@@ -498,61 +498,24 @@ function ChatShellInner({
 
       {/* Main (sin barra superior) */}
       <div className="relative flex min-w-0 flex-1 flex-col">
-        {/* Sticky Mobile Header */}
-        {isMobile && (
-          <header className="sticky top-0 z-20 flex h-[56px] w-full shrink-0 items-center justify-between border-b border-stone-200/80 bg-white/90 px-3 backdrop-blur-md">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setSidebarOpen(true)}
-                className="flex h-9 w-9 items-center justify-center rounded-xl text-neutral-500 hover:bg-neutral-100 transition-colors cursor-pointer border-none bg-transparent"
-                title="Mostrar historial"
-              >
-                <PanelLeft className="h-5 w-5" />
-              </button>
-              <Link
-                href="/comunidad"
-                className="inline-flex items-center justify-center text-[10px] font-black uppercase tracking-wider text-brand-blue no-underline bg-brand-blue-light/75 px-3 py-2 rounded-xl hover:bg-brand-blue-light transition-all cursor-pointer"
-              >
-                Comunidad
-              </Link>
-            </div>
-
-            <div className="flex items-center gap-1.5 bg-neutral-50 border border-neutral-150 px-2.5 py-1.5 rounded-lg">
-              <Sparkles className="h-3.5 w-3.5 text-purple-600" />
-              <span className="text-[10px] font-bold text-neutral-600">
-                {selectedModelMeta.label}
-              </span>
-            </div>
-
-            <div className="flex items-center">
-              <QuotaIndicator
-                refreshKey={quotaRefreshKey}
-                onUpgradeClick={() => setShowUpgradeModal(true)}
-              />
-            </div>
-          </header>
-        )}
-
-        {/* Floating Toggle (only desktop when collapsed) */}
-        {!isMobile && !sidebarOpen && (
+        {/* Floating Overlayed Sidebar Toggle (both mobile & desktop) */}
+        {!sidebarOpen && (
           <button
             onClick={() => setSidebarOpen(true)}
-            className="absolute left-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface-0/80 text-text-muted shadow-premium backdrop-blur-md transition-colors hover:bg-surface-2 hover:text-text-primary cursor-pointer"
+            className="absolute left-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200/80 bg-white/95 text-neutral-500 shadow-md backdrop-blur-md transition-colors hover:bg-neutral-100 hover:text-neutral-700 cursor-pointer border-none"
             title="Mostrar historial"
           >
             <PanelLeft className="h-5 w-5" />
           </button>
         )}
 
-        {/* Floating Quota Indicator (only desktop) */}
-        {!isMobile && (
-          <div className="absolute right-3 top-3 z-20">
-            <QuotaIndicator
-              refreshKey={quotaRefreshKey}
-              onUpgradeClick={() => setShowUpgradeModal(true)}
-            />
-          </div>
-        )}
+        {/* Floating Quota Indicator (both mobile & desktop) */}
+        <div className="absolute right-3 top-3 z-20">
+          <QuotaIndicator
+            refreshKey={quotaRefreshKey}
+            onUpgradeClick={() => setShowUpgradeModal(true)}
+          />
+        </div>
 
 
         {/* Workspace: chat (resizable) + canvas (split / sheet) */}
@@ -585,6 +548,7 @@ function ChatShellInner({
                   canvasModeActive={canvasModeActive}
                   onCanvasModeChange={setCanvasModeActive}
                   isMobile={isMobile}
+                  showMic={false}
                   placeholder={isGuest ? "Suscríbete a un plan Premium para chatear con el Mentor IA" : undefined}
                 />
               </Landing>
@@ -622,6 +586,7 @@ function ChatShellInner({
                       canvasModeActive={canvasModeActive}
                       onCanvasModeChange={setCanvasModeActive}
                       isMobile={isMobile}
+                      showMic={true}
                       placeholder={isGuest ? "Suscríbete a un plan Premium para chatear con el Mentor IA" : undefined}
                     />
                   </div>
