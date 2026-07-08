@@ -312,7 +312,8 @@ export default function Sidebar({
 
   const sidebarWidth = collapsed ? 72 : 260;
 
-  const handleSidebarClick = (e: React.MouseEvent) => {
+  const handleSidebarClick = (e: React.MouseEvent, isMobile: boolean) => {
+    if (isMobile) return;
     const target = e.target as HTMLElement;
     const isInteractive = target.closest("button, a, input, select, textarea");
     if (!isInteractive) {
@@ -320,352 +321,348 @@ export default function Sidebar({
     }
   };
 
-  const sidebarContent = (
-    <div
-      className={cn(
-        "flex flex-col h-full relative selection:bg-transparent",
-        collapsed ? "cursor-pointer select-none" : "cursor-default"
-      )}
-      onClick={handleSidebarClick}
-    >
-      {/* Logo + Collapse button */}
-      <div className={`flex items-center shrink-0 ${collapsed ? "justify-center px-2" : "justify-between px-4"} h-[68px] border-b border-neutral-100 dark:border-neutral-900`}>
-        {collapsed ? (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleCollapse();
-            }}
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-neutral-450 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors border-0 bg-transparent cursor-pointer"
-            title="Expandir menú"
-          >
-            <ChevronRight className="w-5 h-5" />
-          </button>
-        ) : (
-          <>
-            <Link href="/" className="flex items-center justify-center no-underline group shrink-0">
-              <div className="relative w-32 h-[30px] shrink-0 overflow-hidden flex items-center justify-center">
-                <Image
-                  src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
-                  alt="ProgramBI"
-                  fill
-                  className="object-contain dark:brightness-110"
-                />
-              </div>
-            </Link>
+  const renderSidebarContent = (isMobile: boolean) => {
+    const isCollapsed = isMobile ? false : collapsed;
+    return (
+      <div
+        className={cn(
+          "flex flex-col h-full relative selection:bg-transparent",
+          isCollapsed ? "cursor-pointer select-none" : "cursor-default"
+        )}
+        onClick={(e) => handleSidebarClick(e, isMobile)}
+      >
+        {/* Logo + Collapse button */}
+        <div className={`flex items-center shrink-0 ${isCollapsed ? "justify-center px-2" : "justify-between px-4"} h-[68px] border-b border-neutral-100 dark:border-neutral-900`}>
+          {isCollapsed ? (
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onToggleCollapse();
               }}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-450 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors border-0 bg-transparent cursor-pointer"
-              title="Colapsar menú"
+              className="w-10 h-10 rounded-xl flex items-center justify-center text-neutral-450 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors border-0 bg-transparent cursor-pointer"
+              title="Expandir menú"
             >
-              <ChevronLeft className="w-4 h-4" />
+              <ChevronRight className="w-5 h-5" />
             </button>
-          </>
-        )}
-      </div>
-
-      {/* ─── SEARCH SECTION ─── */}
-      <div className={`shrink-0 border-b border-neutral-100 dark:border-neutral-900 ${collapsed ? "px-2 py-3 flex flex-col items-center gap-2" : "px-3 py-3"}`}>
-        {collapsed ? (
-          <button
-            onClick={() => { onExpand(); setTimeout(() => searchRef.current?.focus(), 60); }}
-            className="w-10 h-10 flex items-center justify-center rounded-xl text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors"
-            title="Buscar (expande la barra)"
-          >
-            <Search className="w-[18px] h-[18px]" />
-          </button>
-        ) : (
-          <div className={`relative w-full transition-all duration-200 border border-neutral-200/65 dark:border-neutral-800/65 ${searchFocused ? "ring-2 ring-brand-blue/15 bg-white dark:bg-neutral-950 border-brand-blue/50 dark:border-brand-blue/50" : "bg-neutral-50 dark:bg-neutral-900"} rounded-xl`}>
-            <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${searchFocused ? "text-brand-blue" : "text-neutral-400"}`} />
-            <input
-              ref={searchRef}
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onFocus={() => setSearchFocused(true)}
-              onBlur={() => setSearchFocused(false)}
-              placeholder={t.search}
-              className="w-full pl-9 pr-7 py-2 bg-transparent border-0 rounded-xl text-sm text-neutral-700 dark:text-neutral-300 placeholder:text-neutral-400 focus:outline-none transition-all"
-            />
-            {searchQuery ? (
-              <button
-                onClick={() => { setSearchQuery(""); searchRef.current?.focus(); }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-neutral-300 dark:bg-neutral-700 text-white hover:bg-neutral-450 dark:hover:bg-neutral-600 transition-colors border-none"
-              >
-                <X className="w-2.5 h-2.5" />
-              </button>
-            ) : (
-              <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex items-center justify-center h-5 min-w-[18px] px-1.5 rounded-md bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-[10px] font-semibold text-neutral-400 select-none">
-                /
-              </kbd>
-            )}
-          </div>
-        )}
-      </div>
-
-      {/* Nav Items */}
-      <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6 scrollbar-hide">
-        {Object.entries(groups).map(([groupName, groupTabs]) => (
-          <div key={groupName} className="space-y-2">
-            {!collapsed && (
-              <div className="px-3 mb-1">
-                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider select-none">
-                  {groupName}
-                </span>
-              </div>
-            )}
-
-            <div className="space-y-1">
-              {groupTabs.map((tab) => {
-                const Icon = tab.icon;
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      onTabChange(tab.id);
-                      onMobileClose();
-                    }}
-                    title={collapsed ? tab.label : undefined}
-                    className={`w-full flex items-center gap-3 font-semibold text-[13px] transition-colors duration-150 select-none border-0 cursor-pointer
-                      ${collapsed ? "justify-center px-2.5 py-2.5 rounded-xl" : "px-3 py-2.5 rounded-xl"}
-                      ${isActive
-                        ? "bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white"
-                        : "bg-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-55/60 dark:hover:bg-neutral-900/60"
-                      }
-                    `}
-                  >
-                    <span className="relative shrink-0 flex items-center justify-center">
-                      <Icon className={`w-5 h-5 transition-colors ${isActive ? "text-neutral-900 dark:text-white" : "text-neutral-450 dark:text-neutral-500 group-hover:text-neutral-800 dark:group-hover:text-neutral-200"}`} />
-                      {tab.showPing && (
-                        <span className="absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5 rounded-full bg-rose-500" />
-                      )}
-                    </span>
-
-                    {!collapsed && (
-                      <span className="whitespace-nowrap overflow-hidden truncate">
-                        {tab.label}
-                      </span>
-                    )}
-
-                    {!collapsed && tab.badge && tab.badge > 0 ? (
-                      <span className="shrink-0 min-w-[20px] h-5 flex items-center justify-center rounded-full text-[10px] font-bold px-1.5 ml-auto bg-neutral-200 text-neutral-800">
-                        {tab.badge > 99 ? "99+" : tab.badge}
-                      </span>
-                    ) : collapsed && tab.badge && tab.badge > 0 ? (
-                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500" />
-                    ) : null}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </nav>
-
-
-      {/* Empty space filler that acts as a clickable area to collapse */}
-      <div className="flex-grow cursor-pointer" />      {/* ─── USER SECTION (bottom) ─── */}
-      <div className={`shrink-0 border-t border-gray-100 ${collapsed ? "p-2 flex justify-center" : "p-3"}`}>
-        {authLoading && !userProfile ? (
-          // Loading skeleton (avoids the "??" / empty flash while the session
-          // is being resolved from local storage).
-          collapsed ? (
-            <div className="w-10 h-10 rounded-xl bg-gray-100 animate-pulse" />
           ) : (
-            <div className="w-full flex items-center gap-3 p-2.5 rounded-xl">
-              <div className="w-9 h-9 rounded-xl bg-gray-100 animate-pulse shrink-0" />
-              <div className="flex-1 min-w-0 space-y-1.5">
-                <div className="h-3 w-24 bg-gray-100 rounded animate-pulse" />
-                <div className="h-2.5 w-32 bg-gray-100 rounded animate-pulse" />
+            <>
+              <Link href="/" className="flex items-center justify-center no-underline group shrink-0">
+                <div className="relative w-32 h-[30px] shrink-0 overflow-hidden flex items-center justify-center">
+                  <Image
+                    src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
+                    alt="ProgramBI"
+                    fill
+                    className="object-contain dark:brightness-110"
+                  />
+                </div>
+              </Link>
+              {!isMobile && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleCollapse();
+                  }}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-450 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors border-0 bg-transparent cursor-pointer"
+                  title="Colapsar menú"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+              )}
+            </>
+          )}
+        </div>
+
+        {/* ─── SEARCH SECTION ─── */}
+        <div className={`shrink-0 border-b border-neutral-100 dark:border-neutral-900 ${isCollapsed ? "px-2 py-3 flex flex-col items-center gap-2" : "px-3 py-3"}`}>
+          {isCollapsed ? (
+            <button
+              onClick={() => { onExpand(); setTimeout(() => searchRef.current?.focus(), 60); }}
+              className="w-10 h-10 flex items-center justify-center rounded-xl text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors"
+              title="Buscar (expande la barra)"
+            >
+              <Search className="w-[18px] h-[18px]" />
+            </button>
+          ) : (
+            <div className={`relative w-full transition-all duration-200 border border-neutral-200/65 dark:border-neutral-800/65 ${searchFocused ? "ring-2 ring-brand-blue/15 bg-white dark:bg-neutral-950 border-brand-blue/50 dark:border-brand-blue/50" : "bg-neutral-50 dark:bg-neutral-900"} rounded-xl`}>
+              <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${searchFocused ? "text-brand-blue" : "text-neutral-400"}`} />
+              <input
+                ref={searchRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onFocus={() => setSearchFocused(true)}
+                onBlur={() => setSearchFocused(false)}
+                placeholder={t.search}
+                className="w-full pl-9 pr-7 py-2 bg-transparent border-0 rounded-xl text-sm text-neutral-700 dark:text-neutral-300 placeholder:text-neutral-400 focus:outline-none transition-all"
+              />
+              {searchQuery ? (
+                <button
+                  onClick={() => { setSearchQuery(""); searchRef.current?.focus(); }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-neutral-300 dark:bg-neutral-700 text-white hover:bg-neutral-450 dark:hover:bg-neutral-600 transition-colors border-none"
+                >
+                  <X className="w-2.5 h-2.5" />
+                </button>
+              ) : (
+                <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex items-center justify-center h-5 min-w-[18px] px-1.5 rounded-md bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-[10px] font-semibold text-neutral-400 select-none">
+                  /
+                </kbd>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Nav Items */}
+        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6 scrollbar-hide">
+          {Object.entries(groups).map(([groupName, groupTabs]) => (
+            <div key={groupName} className="space-y-2">
+              {!isCollapsed && (
+                <div className="px-3 mb-1">
+                  <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider select-none">
+                    {groupName}
+                  </span>
+                </div>
+              )}
+
+              <div className="space-y-1">
+                {groupTabs.map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        onTabChange(tab.id);
+                        onMobileClose();
+                      }}
+                      title={isCollapsed ? tab.label : undefined}
+                      className={`w-full flex items-center gap-3 font-semibold text-[13px] transition-colors duration-150 select-none border-0 cursor-pointer
+                        ${isCollapsed ? "justify-center px-2.5 py-2.5 rounded-xl" : "px-3 py-2.5 rounded-xl"}
+                        ${isActive
+                          ? "bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white"
+                          : "bg-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-55/60 dark:hover:bg-neutral-900/60"
+                        }
+                      `}
+                    >
+                      <span className="relative shrink-0 flex items-center justify-center">
+                        <Icon className={`w-5 h-5 transition-colors ${isActive ? "text-neutral-900 dark:text-white" : "text-neutral-450 dark:text-neutral-500 group-hover:text-neutral-800 dark:group-hover:text-neutral-200"}`} />
+                        {tab.showPing && (
+                          <span className="absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5 rounded-full bg-rose-500" />
+                        )}
+                      </span>
+
+                      {!isCollapsed && (
+                        <span className="whitespace-nowrap overflow-hidden truncate">
+                          {tab.label}
+                        </span>
+                      )}
+
+                      {!isCollapsed && tab.badge && tab.badge > 0 ? (
+                        <span className="shrink-0 min-w-[20px] h-5 flex items-center justify-center rounded-full text-[10px] font-bold px-1.5 ml-auto bg-neutral-200 text-neutral-800">
+                          {tab.badge > 99 ? "99+" : tab.badge}
+                        </span>
+                      ) : isCollapsed && tab.badge && tab.badge > 0 ? (
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500" />
+                      ) : null}
+                    </button>
+                  );
+                })}
               </div>
             </div>
-          )
-        ) : collapsed ? (
-          <button
-            onClick={() => setUserMenuOpen(!userMenuOpen)}
-            className={cn(
-              "relative w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0 user-trigger-btn",
-              userMenuOpen && "ring-2 ring-indigo-500"
-            )}
-            title={displayName}
-          >
-            <span>{initials}</span>
-            {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[8px] font-bold px-1 ring-2 ring-white">
-                {unreadCount > 9 ? "9+" : unreadCount}
-              </span>
-            )}
-          </button>
-        ) : (
-          <div className="flex items-center gap-2 w-full">
+          ))}
+        </nav>
+
+        {/* Empty space filler that acts as a clickable area to collapse */}
+        <div className="flex-grow cursor-pointer" />
+
+        {/* ─── USER SECTION (bottom) ─── */}
+        <div className={`shrink-0 border-t border-gray-100 ${isCollapsed ? "p-2 flex justify-center" : "p-3"}`}>
+          {authLoading && !userProfile ? (
+            isCollapsed ? (
+              <div className="w-10 h-10 rounded-xl bg-gray-100 animate-pulse" />
+            ) : (
+              <div className="w-full flex items-center gap-3 p-2.5 rounded-xl">
+                <div className="w-9 h-9 rounded-xl bg-gray-100 animate-pulse shrink-0" />
+                <div className="flex-1 min-w-0 space-y-1.5">
+                  <div className="h-3 w-24 bg-gray-100 rounded animate-pulse" />
+                  <div className="h-2.5 w-32 bg-gray-100 rounded animate-pulse" />
+                </div>
+              </div>
+            )
+          ) : isCollapsed ? (
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
               className={cn(
-                "flex-1 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-all duration-200 cursor-pointer border-0 min-w-0 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-850 user-trigger-btn",
-                userMenuOpen && "bg-neutral-200 dark:bg-neutral-800 ring-1 ring-neutral-300 dark:ring-neutral-700"
+                "relative w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0 user-trigger-btn",
+                userMenuOpen && "ring-2 ring-indigo-500"
               )}
+              title={displayName}
             >
-              {/* Avatar with subscription badge (restored from original design) */}
-              <div className="relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs select-none">
-                <span>{initials}</span>
-              </div>
-
-              {/* Name (no ChevronsUpDown arrows next to it) */}
-              <span className="truncate text-[13px] font-semibold text-neutral-750 dark:text-neutral-200 min-w-0 flex-1">
-                {displayName}
-              </span>
-            </button>
-
-            {/* Bell icon */}
-            <button
-              onClick={() => setNotifOpen(!notifOpen)}
-              className="h-9 w-9 rounded-xl flex items-center justify-center text-neutral-500 hover:text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:text-neutral-400 dark:hover:text-white transition-colors shrink-0 cursor-pointer border-0 relative"
-              title="Notificaciones"
-            >
-              <Bell className="w-4.5 h-4.5" />
+              <span>{initials}</span>
               {unreadCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500" />
+                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[8px] font-bold px-1 ring-2 ring-white">
+                  {unreadCount > 9 ? "9+" : unreadCount}
+                </span>
               )}
             </button>
-          </div>
-        )}
-      </div>
-
-      {/* ─── USER DROPDOWN MENU (elegant, upward) ─── */}
-      <AnimatePresence>
-        {userMenuOpen && (
-          <motion.div
-            ref={dropdownRef}
-            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 28 }}
-            className={cn(
-              "fixed z-50 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 overflow-hidden",
-              collapsed ? "bottom-16 left-3 w-64" : "bottom-16 left-3 w-[236px]"
-            )}
-          >
-            {/* User header */}
-            <div className="px-4 py-3 border-b border-neutral-100 flex items-center gap-2.5 min-w-0">
-              <div className="w-7 h-7 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-500 shrink-0">
-                <User className="w-3.5 h-3.5" />
-              </div>
-              <span className="text-[13px] font-normal text-neutral-600 truncate min-w-0 flex-1">
-                {userProfile?.email || "usuario@programbi.com"}
-              </span>
-            </div>
-
-            {/* Menu items */}
-            <div className="p-1.5 space-y-0.5">
-              <MenuItem
-                icon={Settings}
-                label={t.allSettings}
-                suffix="↑ ^ ,"
-                onMouseEnter={() => setActiveSubmenu(null)}
-                onClick={() => {
-                  onOpenSettings();
-                  setUserMenuOpen(false);
-                }}
-              />
-              <MenuItem
-                icon={ArrowUpCircle}
-                label={t.upgradePlan}
-                onMouseEnter={() => setActiveSubmenu(null)}
-                onClick={() => {
-                  onUpgradeClick();
-                  setUserMenuOpen(false);
-                }}
-              />
-              <MenuItem
-                icon={Download}
-                label={t.installApps}
-                onMouseEnter={() => setActiveSubmenu(null)}
-                onClick={() => {
-                  const title = activeLanguage === 'es' ? "Instalación de Aplicación" : "App Installation";
-                  const body = activeLanguage === 'es' 
-                    ? "ProgramBI es una PWA. Puedes instalarla directamente desde el menú del navegador en tu móvil u ordenador."
-                    : "ProgramBI is a PWA. You can install it directly from your browser menu on mobile or desktop.";
-                  toast("info", title, body);
-                  setUserMenuOpen(false);
-                }}
-              />
-
-              <div className="my-1 h-px bg-neutral-100" />
-
-              <div ref={aparienciaRef}>
-                <MenuItem
-                  icon={Sun}
-                  label={t.appearance}
-                  sublabel={activeTheme === "claro" ? t.claro : activeTheme === "oscuro" ? t.oscuro : t.sistema}
-                  hasChevron
-                  onMouseEnter={openApariencia}
-                  onClick={openApariencia}
-                />
-              </div>
-
-              <div ref={idiomaRef}>
-                <MenuItem
-                  icon={Globe}
-                  label={t.language}
-                  sublabel={t.idioma_name}
-                  hasChevron
-                  onMouseEnter={openIdioma}
-                  onClick={openIdioma}
-                />
-              </div>
-
-              <MenuItem
-                icon={HelpCircle}
-                label={t.help}
-                hasChevron
-                onMouseEnter={() => setActiveSubmenu(null)}
-                onClick={() => {
-                  const title = activeLanguage === 'es' ? "Centro de Ayuda" : "Help Center";
-                  const body = activeLanguage === 'es'
-                    ? "Si necesitas ayuda, puedes consultarle a nuestro Asistente IA o enviarnos un correo a soporte@programbi.com."
-                    : "If you need help, you can consult our AI Assistant or send us an email at support@programbi.com.";
-                  toast("info", title, body);
-                  setUserMenuOpen(false);
-                }}
-              />
-
-              <div className="my-1 h-px bg-neutral-100" />
-
-              {isAdmin && (
-                <>
-                  <Link
-                    href="/comunidad/admin"
-                    onMouseEnter={() => setActiveSubmenu(null)}
-                    className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-amber-600 hover:bg-amber-50 transition-colors font-medium no-underline"
-                  >
-                    <ShieldAlert className="w-4 h-4 shrink-0" />
-                    <span>{t.adminPanel}</span>
-                    <ExternalLink className="w-3 h-3 ml-auto opacity-50 shrink-0" />
-                  </Link>
-                  <div className="my-1 h-px bg-neutral-100" />
-                </>
-              )}
-
-              <Link
-                href="/"
-                onMouseEnter={() => setActiveSubmenu(null)}
-                className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-neutral-50 hover:text-red-600 transition-colors font-medium no-underline"
+          ) : (
+            <div className="w-full flex items-center justify-between p-1 hover:bg-neutral-50 dark:hover:bg-neutral-900 rounded-2xl transition-all duration-200">
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className={cn(
+                  "flex items-center gap-3 p-1.5 text-left border-0 bg-transparent flex-1 cursor-pointer min-w-0 rounded-xl hover:bg-neutral-100/40 dark:hover:bg-neutral-800/40 transition-colors user-trigger-btn",
+                  userMenuOpen && "bg-neutral-100/50 dark:bg-neutral-800/50"
+                )}
               >
-                <LogOut className="w-4 h-4 shrink-0 text-neutral-400 hover:text-red-500" />
-                <span>{t.signOut}</span>
-              </Link>
+                <div className="relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs select-none">
+                  <span>{initials}</span>
+                </div>
+                <span className="truncate text-[13px] font-semibold text-neutral-750 dark:text-neutral-200 min-w-0 flex-1">
+                  {displayName}
+                </span>
+              </button>
+
+              <button
+                onClick={() => setNotifOpen(!notifOpen)}
+                className="h-9 w-9 rounded-xl flex items-center justify-center text-neutral-500 hover:text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:text-neutral-400 dark:hover:text-white transition-colors shrink-0 cursor-pointer border-0 relative"
+                title="Notificaciones"
+              >
+                <Bell className="w-4.5 h-4.5" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500" />
+                )}
+              </button>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </div>
 
+        {/* ─── USER DROPDOWN MENU ─── */}
+        <AnimatePresence>
+          {userMenuOpen && (
+            <motion.div
+              ref={dropdownRef}
+              initial={{ opacity: 0, y: 10, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 28 }}
+              className={cn(
+                "fixed z-50 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 overflow-hidden",
+                isCollapsed ? "bottom-16 left-3 w-64" : "bottom-16 left-3 w-[236px]"
+              )}
+            >
+              <div className="px-4 py-3 border-b border-neutral-100 flex items-center gap-2.5 min-w-0">
+                <div className="w-7 h-7 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-500 shrink-0">
+                  <User className="w-3.5 h-3.5" />
+                </div>
+                <span className="text-[13px] font-normal text-neutral-600 truncate min-w-0 flex-1">
+                  {userProfile?.email || "usuario@programbi.com"}
+                </span>
+              </div>
 
-    </div>
-  );
+              <div className="p-1.5 space-y-0.5">
+                <MenuItem
+                  icon={Settings}
+                  label={t.allSettings}
+                  suffix="↑ "
+                  onMouseEnter={() => setActiveSubmenu(null)}
+                  onClick={() => {
+                    onOpenSettings();
+                    setUserMenuOpen(false);
+                  }}
+                />
+                <MenuItem
+                  icon={ArrowUpCircle}
+                  label={t.upgradePlan}
+                  onMouseEnter={() => setActiveSubmenu(null)}
+                  onClick={() => {
+                    onUpgradeClick();
+                    setUserMenuOpen(false);
+                  }}
+                />
+                <MenuItem
+                  icon={Download}
+                  label={t.installApps}
+                  onMouseEnter={() => setActiveSubmenu(null)}
+                  onClick={() => {
+                    const title = activeLanguage === 'es' ? "Instalación de Aplicación" : "App Installation";
+                    const body = activeLanguage === 'es' 
+                      ? "ProgramBI es una PWA. Puedes instalarla directamente desde el menú del navegador en tu móvil u ordenador."
+                      : "ProgramBI is a PWA. You can install it directly from your browser menu on mobile or desktop.";
+                    toast("info", title, body);
+                    setUserMenuOpen(false);
+                  }}
+                />
+
+                <div className="my-1 h-px bg-neutral-100" />
+
+                <div ref={aparienciaRef}>
+                  <MenuItem
+                    icon={Sun}
+                    label={t.appearance}
+                    sublabel={activeTheme === "claro" ? t.claro : activeTheme === "oscuro" ? t.oscuro : t.sistema}
+                    hasChevron
+                    onMouseEnter={openApariencia}
+                    onClick={openApariencia}
+                  />
+                </div>
+
+                <div ref={idiomaRef}>
+                  <MenuItem
+                    icon={Globe}
+                    label={t.language}
+                    sublabel={t.idioma_name}
+                    hasChevron
+                    onMouseEnter={openIdioma}
+                    onClick={openIdioma}
+                  />
+                </div>
+
+                <MenuItem
+                  icon={HelpCircle}
+                  label={t.help}
+                  hasChevron
+                  onMouseEnter={() => setActiveSubmenu(null)}
+                  onClick={() => {
+                    const title = activeLanguage === 'es' ? "Centro de Ayuda" : "Help Center";
+                    const body = activeLanguage === 'es'
+                      ? "Si necesitas ayuda, puedes consultarle a nuestro Asistente IA o enviarnos un correo a soporte@programbi.com."
+                      : "If you need help, you can consult our AI Assistant or send us an email at support@programbi.com.";
+                    toast("info", title, body);
+                    setUserMenuOpen(false);
+                  }}
+                />
+
+                <div className="my-1 h-px bg-neutral-100" />
+
+                {isAdmin && (
+                  <>
+                    <Link
+                      href="/comunidad/admin"
+                      onMouseEnter={() => setActiveSubmenu(null)}
+                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-amber-600 hover:bg-amber-50 transition-colors font-medium no-underline"
+                    >
+                      <ShieldAlert className="w-4 h-4 shrink-0" />
+                      <span>{t.adminPanel}</span>
+                      <ExternalLink className="w-3 h-3 ml-auto opacity-50 shrink-0" />
+                    </Link>
+                    <div className="my-1 h-px bg-neutral-100" />
+                  </>
+                )}
+
+                <Link
+                  href="/"
+                  onMouseEnter={() => setActiveSubmenu(null)}
+                  className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-neutral-50 hover:text-red-600 transition-colors font-medium no-underline"
+                >
+                  <LogOut className="w-4 h-4 shrink-0 text-neutral-400 hover:text-red-500" />
+                  <span>{t.signOut}</span>
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -675,7 +672,7 @@ export default function Sidebar({
         transition={{ duration: 0.2, ease: "easeInOut" }}
         className="hidden lg:flex flex-col shrink-0 h-screen sticky top-0 bg-white dark:bg-neutral-950 border-r border-neutral-100 dark:border-neutral-900 overflow-hidden z-30"
       >
-        {sidebarContent}
+        {renderSidebarContent(false)}
       </motion.aside>
 
       {/* MOBILE DRAWER */}
@@ -698,11 +695,11 @@ export default function Sidebar({
             >
               <button
                 onClick={onMobileClose}
-                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-xl text-neutral-400 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all z-10 border-none cursor-pointer"
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-xl text-neutral-450 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all z-10 border-none cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
-              {sidebarContent}
+              {renderSidebarContent(true)}
             </motion.aside>
           </>
         )}
