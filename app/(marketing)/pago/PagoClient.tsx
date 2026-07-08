@@ -653,11 +653,13 @@ export default function PagoClient() {
                                                   onClick={() => setOpenDropdownKey(isDropdownOpen ? null : dropdownKey)}
                                                   className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:border-gray-300 hover:bg-slate-50 transition-all flex items-center justify-between cursor-pointer shadow-sm select-none outline-none focus:border-[#1890FF] focus:ring-2 focus:ring-blue-100"
                                                 >
-                                                  <span className="flex items-center gap-2 truncate">
-                                                    <Calendar className="w-3.5 h-3.5 text-[#1890FF] shrink-0" />
-                                                    <span className="capitalize text-slate-800">{selectedConverted.dateFormatted}</span>
-                                                    <span className="text-slate-400 font-semibold shrink-0">·</span>
-                                                    <span className="text-blue-600 truncate">{selectedConverted.days} {selectedConverted.time}</span>
+                                                  <span className="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-0.5 text-left min-w-0 flex-1">
+                                                    <span className="flex items-center gap-2 text-slate-800 font-bold shrink-0">
+                                                      <Calendar className="w-3.5 h-3.5 text-[#1890FF] shrink-0" />
+                                                      <span className="capitalize">{selectedConverted.dateFormatted}</span>
+                                                    </span>
+                                                    <span className="hidden sm:inline text-slate-400 font-semibold shrink-0">·</span>
+                                                    <span className="text-blue-600 truncate font-semibold text-[11px]">{selectedConverted.days} {selectedConverted.time}</span>
                                                   </span>
                                                   <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0 ${isDropdownOpen ? "rotate-180 text-[#1890FF]" : ""}`} />
                                                 </button>
@@ -713,19 +715,21 @@ export default function PagoClient() {
                                         })()}
                                       </div>
                                     ) : (
-                                      <span className="flex items-center gap-1.5 text-emerald-600 font-bold">
-                                        <Calendar className="w-3.5 h-3.5" />
-                                        <span className="capitalize">{(() => {
-                                          const converted = convertSchedule(
-                                            courseSchedules[0].start_date,
-                                            courseSchedules[0].schedule_time,
-                                            courseSchedules[0].schedule_days,
-                                            scheduleCountry.timeZone
-                                          );
-                                          return converted.dateFormatted;
-                                        })()}</span>
-                                        <span className="text-slate-500 font-semibold">·</span>
-                                        <span className="text-blue-600">{(() => {
+                                      <span className="flex flex-wrap sm:flex-nowrap items-center gap-x-1.5 gap-y-0.5 text-emerald-600 font-bold min-w-0 flex-1">
+                                        <span className="flex items-center gap-1.5 shrink-0">
+                                          <Calendar className="w-3.5 h-3.5" />
+                                          <span className="capitalize">{(() => {
+                                            const converted = convertSchedule(
+                                              courseSchedules[0].start_date,
+                                              courseSchedules[0].schedule_time,
+                                              courseSchedules[0].schedule_days,
+                                              scheduleCountry.timeZone
+                                            );
+                                            return converted.dateFormatted;
+                                          })()}</span>
+                                        </span>
+                                        <span className="hidden sm:inline text-slate-500 font-semibold shrink-0">·</span>
+                                        <span className="text-blue-600 truncate font-semibold text-[11px]">{(() => {
                                           const converted = convertSchedule(
                                             courseSchedules[0].start_date,
                                             courseSchedules[0].schedule_time,
@@ -743,8 +747,9 @@ export default function PagoClient() {
                                   </span>
                                )}
                                {currentLevelData?.durationHours && (
-                                 <span className="flex items-center gap-1.5 text-slate-500">
-                                    <Globe className="w-3.5 h-3.5" /> {currentLevelData.durationHours}h Online en vivo por Zoom
+                                 <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-slate-500 min-w-0 flex-1">
+                                    <Globe className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                    <span>{currentLevelData.durationHours}h Online en vivo por Zoom</span>
                                  </span>
                                )}
                           </div>
@@ -837,7 +842,7 @@ export default function PagoClient() {
                                 <button
                                   onClick={() => handleNotifyMe(course.slug, activeLevel)}
                                   disabled={notifySuccess.has(cartKey) || notifyLoading === cartKey}
-                                  className={`flex items-center gap-2 px-5 h-10 rounded-xl text-xs font-bold transition-all whitespace-nowrap mt-1 ${notifySuccess.has(cartKey) ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600 hover:bg-amber-100'}`}
+                                  className={`flex items-center justify-center gap-2 px-5 h-10 rounded-xl text-xs font-bold transition-all mt-1 w-full sm:w-auto ${notifySuccess.has(cartKey) ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600 hover:bg-amber-100'}`}
                                 >
                                   {notifyLoading === cartKey ? <Loader2 className="w-4 h-4 animate-spin" /> : notifySuccess.has(cartKey) ? <><CheckCircle2 className="w-4 h-4" /> ¡Registrado!</> : <><Bell className="w-4 h-4" /> Avísame la próxima fecha</>}
                                 </button>
@@ -846,7 +851,7 @@ export default function PagoClient() {
                               // Enterprise Mode action
                               <button
                                 onClick={() => toggleEnterpriseSelect(course.slug, activeLevel)}
-                                className={`flex items-center gap-2 px-6 h-10 rounded-xl text-xs font-bold transition-all whitespace-nowrap mt-1 border ${entSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                                className={`flex items-center justify-center gap-2 px-6 h-10 rounded-xl text-xs font-bold transition-all mt-1 border w-full sm:w-auto ${entSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
                               >
                                 {entSelected ? <><Check className="w-4 h-4" /> Incluido en formato</> : 'Añadir a cotización'}
                               </button>
