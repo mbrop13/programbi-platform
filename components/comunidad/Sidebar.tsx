@@ -329,14 +329,14 @@ export default function Sidebar({
       onClick={handleSidebarClick}
     >
       {/* Logo + Collapse button */}
-      <div className={`flex items-center shrink-0 ${collapsed ? "justify-center px-2" : "justify-between px-4"} h-[68px] border-b border-gray-100`}>
+      <div className={`flex items-center shrink-0 ${collapsed ? "justify-center px-2" : "justify-between px-4"} h-[68px] border-b border-neutral-100 dark:border-neutral-900`}>
         {collapsed ? (
           <button
             onClick={(e) => {
               e.stopPropagation();
               onToggleCollapse();
             }}
-            className="w-10 h-10 rounded-xl flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:bg-neutral-50 transition-colors border-0 bg-transparent cursor-pointer"
+            className="w-10 h-10 rounded-xl flex items-center justify-center text-neutral-450 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors border-0 bg-transparent cursor-pointer"
             title="Expandir menú"
           >
             <ChevronRight className="w-5 h-5" />
@@ -349,7 +349,7 @@ export default function Sidebar({
                   src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
                   alt="ProgramBI"
                   fill
-                  className="object-contain"
+                  className="object-contain dark:brightness-110"
                 />
               </div>
             </Link>
@@ -358,7 +358,7 @@ export default function Sidebar({
                 e.stopPropagation();
                 onToggleCollapse();
               }}
-              className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-400 hover:text-neutral-700 hover:bg-neutral-50 transition-colors border-0 bg-transparent cursor-pointer"
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-450 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors border-0 bg-transparent cursor-pointer"
               title="Colapsar menú"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -368,18 +368,18 @@ export default function Sidebar({
       </div>
 
       {/* ─── SEARCH SECTION ─── */}
-      <div className={`shrink-0 border-b border-gray-100 ${collapsed ? "px-2 py-3 flex flex-col items-center gap-2" : "px-3 py-3"}`}>
+      <div className={`shrink-0 border-b border-neutral-100 dark:border-neutral-900 ${collapsed ? "px-2 py-3 flex flex-col items-center gap-2" : "px-3 py-3"}`}>
         {collapsed ? (
           <button
             onClick={() => { onExpand(); setTimeout(() => searchRef.current?.focus(), 60); }}
-            className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            className="w-10 h-10 flex items-center justify-center rounded-xl text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors"
             title="Buscar (expande la barra)"
           >
             <Search className="w-[18px] h-[18px]" />
           </button>
         ) : (
-          <div className={`relative w-full transition-all duration-200 ${searchFocused ? "ring-2 ring-brand-blue/20 bg-white" : "bg-gray-50"} rounded-xl`}>
-            <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${searchFocused ? "text-brand-blue" : "text-gray-400"}`} />
+          <div className={`relative w-full transition-all duration-200 border border-neutral-200/65 dark:border-neutral-800/65 ${searchFocused ? "ring-2 ring-brand-blue/15 bg-white dark:bg-neutral-950 border-brand-blue/50 dark:border-brand-blue/50" : "bg-neutral-50 dark:bg-neutral-900"} rounded-xl`}>
+            <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${searchFocused ? "text-brand-blue" : "text-neutral-400"}`} />
             <input
               ref={searchRef}
               type="text"
@@ -388,17 +388,17 @@ export default function Sidebar({
               onFocus={() => setSearchFocused(true)}
               onBlur={() => setSearchFocused(false)}
               placeholder={t.search}
-              className="w-full pl-9 pr-7 py-2 bg-transparent border border-transparent rounded-xl text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none transition-all"
+              className="w-full pl-9 pr-7 py-2 bg-transparent border-0 rounded-xl text-sm text-neutral-700 dark:text-neutral-300 placeholder:text-neutral-400 focus:outline-none transition-all"
             />
             {searchQuery ? (
               <button
                 onClick={() => { setSearchQuery(""); searchRef.current?.focus(); }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-gray-300 text-white hover:bg-gray-400 transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-neutral-300 dark:bg-neutral-700 text-white hover:bg-neutral-450 dark:hover:bg-neutral-600 transition-colors border-none"
               >
                 <X className="w-2.5 h-2.5" />
               </button>
             ) : (
-              <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex items-center justify-center h-5 min-w-[18px] px-1 rounded-md bg-white border border-gray-200 text-[10px] font-semibold text-gray-400 select-none">
+              <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex items-center justify-center h-5 min-w-[18px] px-1.5 rounded-md bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-[10px] font-semibold text-neutral-400 select-none">
                 /
               </kbd>
             )}
@@ -433,13 +433,13 @@ export default function Sidebar({
                     className={`w-full flex items-center gap-3 font-semibold text-[13px] transition-colors duration-150 select-none border-0 cursor-pointer
                       ${collapsed ? "justify-center px-2.5 py-2.5 rounded-xl" : "px-3 py-2.5 rounded-xl"}
                       ${isActive
-                        ? "bg-neutral-100 text-neutral-900"
-                        : "bg-transparent text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                        ? "bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white"
+                        : "bg-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-55/60 dark:hover:bg-neutral-900/60"
                       }
                     `}
                   >
                     <span className="relative shrink-0 flex items-center justify-center">
-                      <Icon className={`w-5 h-5 transition-colors ${isActive ? "text-neutral-900" : "text-neutral-500 group-hover:text-neutral-800"}`} />
+                      <Icon className={`w-5 h-5 transition-colors ${isActive ? "text-neutral-900 dark:text-white" : "text-neutral-450 dark:text-neutral-500 group-hover:text-neutral-800 dark:group-hover:text-neutral-200"}`} />
                       {tab.showPing && (
                         <span className="absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5 rounded-full bg-rose-500" />
                       )}
@@ -673,7 +673,7 @@ export default function Sidebar({
       <motion.aside
         animate={{ width: sidebarWidth }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
-        className="hidden lg:flex flex-col shrink-0 h-screen sticky top-0 bg-white border-r border-gray-100 overflow-hidden z-30"
+        className="hidden lg:flex flex-col shrink-0 h-screen sticky top-0 bg-white dark:bg-neutral-950 border-r border-neutral-100 dark:border-neutral-900 overflow-hidden z-30"
       >
         {sidebarContent}
       </motion.aside>
@@ -687,18 +687,18 @@ export default function Sidebar({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={onMobileClose}
-              className="fixed inset-0 z-50 bg-gray-900/40 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-50 bg-gray-900/40 dark:bg-black/60 backdrop-blur-sm lg:hidden"
             />
             <motion.aside
               initial={{ x: -280 }}
               animate={{ x: 0 }}
               exit={{ x: -280 }}
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="fixed top-0 left-0 bottom-0 w-[280px] z-50 bg-white shadow-2xl lg:hidden flex flex-col"
+              className="fixed top-0 left-0 bottom-0 w-[280px] z-50 bg-white dark:bg-neutral-950 shadow-2xl lg:hidden flex flex-col border-r border-neutral-150 dark:border-neutral-900"
             >
               <button
                 onClick={onMobileClose}
-                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-xl text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-all z-10"
+                className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-xl text-neutral-400 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-all z-10 border-none cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -718,7 +718,7 @@ export default function Sidebar({
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: -8, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 400, damping: 28 }}
-            className="fixed z-50 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 p-1.5 space-y-0.5 w-44"
+            className="fixed z-50 bg-white dark:bg-neutral-950 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.4)] border border-neutral-100/80 dark:border-neutral-800/80 p-1.5 space-y-0.5 w-44"
             style={{
               top: submenuCoords.top,
               left: submenuCoords.left,
@@ -771,7 +771,7 @@ export default function Sidebar({
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: -8, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 400, damping: 28 }}
-            className="fixed z-50 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 p-1.5 space-y-0.5 w-44"
+            className="fixed z-50 bg-white dark:bg-neutral-950 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] dark:shadow-[0_10px_40px_rgba(0,0,0,0.4)] border border-neutral-100/80 dark:border-neutral-800/80 p-1.5 space-y-0.5 w-44"
             style={{
               top: submenuCoords.top,
               left: submenuCoords.left,
@@ -829,17 +829,17 @@ function MenuItem({
       onClick={onClick}
       onMouseEnter={onMouseEnter}
       className={cn(
-        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-neutral-100/70 transition-colors cursor-pointer border-0 bg-transparent min-w-0 select-none",
+        "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-neutral-100/70 dark:hover:bg-neutral-900/60 transition-colors cursor-pointer border-0 bg-transparent min-w-0 select-none",
         className
       )}
     >
-      <Icon className="w-4 h-4 text-neutral-500 shrink-0" />
+      <Icon className="w-4 h-4 text-neutral-500 dark:text-neutral-400 shrink-0" />
       <div className="flex-1 min-w-0">
-        <div className="text-[13px] font-medium text-neutral-800 leading-tight">{label}</div>
-        {sublabel && <div className="text-[11px] text-neutral-400 font-normal leading-normal mt-0.5">{sublabel}</div>}
+        <div className="text-[13px] font-medium text-neutral-800 dark:text-neutral-200 leading-tight">{label}</div>
+        {sublabel && <div className="text-[11px] text-neutral-400 dark:text-neutral-500 font-normal leading-normal mt-0.5">{sublabel}</div>}
       </div>
-      {suffix && <span className="text-[11px] text-neutral-400 font-mono tracking-wider ml-auto">{suffix}</span>}
-      {hasChevron && <ChevronRight className="w-3.5 h-3.5 text-neutral-400 shrink-0 ml-auto" />}
+      {suffix && <span className="text-[11px] text-neutral-400 dark:text-neutral-500 font-mono tracking-wider ml-auto">{suffix}</span>}
+      {hasChevron && <ChevronRight className="w-3.5 h-3.5 text-neutral-400 dark:text-neutral-500 shrink-0 ml-auto" />}
     </button>
   );
 }
@@ -860,12 +860,12 @@ function SubmenuItem({
     <button
       onClick={onClick}
       className={cn(
-        "w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left hover:bg-neutral-100/70 transition-colors cursor-pointer border-0 bg-transparent min-w-0 select-none",
-        isActive && "bg-neutral-100 text-slate-800 font-semibold"
+        "w-full flex items-center gap-3 px-3 py-2 rounded-xl text-left hover:bg-neutral-100/70 dark:hover:bg-neutral-900/60 transition-colors cursor-pointer border-0 bg-transparent min-w-0 select-none",
+        isActive && "bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white font-bold"
       )}
     >
-      <Icon className="w-4.5 h-4.5 text-neutral-500 shrink-0" />
-      <span className="text-[13px] font-medium text-neutral-800 flex-1">{label}</span>
+      <Icon className="w-4.5 h-4.5 text-neutral-500 dark:text-neutral-400 shrink-0" />
+      <span className="text-[13px] font-medium text-neutral-800 dark:text-neutral-200 flex-1">{label}</span>
       {isActive && <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 ml-auto font-bold" />}
     </button>
   );

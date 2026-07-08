@@ -248,14 +248,40 @@ export default function ComunidadPortal() {
 
         {/* ─── MAIN AREA ─── */}
         <div className="flex-1 flex flex-col min-w-0 min-h-screen relative">
-          {/* Mobile menu button (floating, top-left) — oculto en el chat IA y en el aula virtual */}
+          {/* Mobile Header Bar — visible only on small viewports and hidden in AI/Course pages */}
           {(activeTab !== "ai" && !(activeTab === "cursos" && selectedCourseId)) && (
-            <button
-              onClick={() => setMobileNavOpen(true)}
-              className="lg:hidden fixed top-4 left-4 z-30 w-10 h-10 flex items-center justify-center rounded-xl bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-600 shadow-sm hover:shadow-md transition-all"
-            >
-              <Menu className="w-5 h-5" />
-            </button>
+            <header className="lg:hidden sticky top-0 z-35 flex items-center justify-between px-4 py-3 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md border-b border-neutral-200/80 dark:border-neutral-900/80 shadow-sm transition-colors duration-200">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setMobileNavOpen(true)}
+                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-neutral-50 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors border-none cursor-pointer"
+                  aria-label="Menú de navegación"
+                >
+                  <Menu className="w-5 h-5" />
+                </button>
+                <div className="relative w-28 h-[24px]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
+                    alt="ProgramBI"
+                    className="w-full h-full object-contain dark:brightness-110"
+                  />
+                </div>
+              </div>
+
+              {userProfile && (
+                <button
+                  onClick={() => router.push("/comunidad/perfil")}
+                  className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-[11px] shadow-sm cursor-pointer border-none transition-transform active:scale-95"
+                >
+                  <span>
+                    {userProfile.full_name
+                      ? userProfile.full_name.split(" ").map((n) => n[0]).join("").substring(0, 2).toUpperCase()
+                      : "?"}
+                  </span>
+                </button>
+              )}
+            </header>
           )}
 
           <main className="flex-1 w-full flex flex-col min-h-0">
