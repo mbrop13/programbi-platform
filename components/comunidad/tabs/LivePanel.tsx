@@ -766,7 +766,7 @@ export default function LivePanel() {
                     )}
                   </div>
 
-                  {featuredClass.description && (
+                  {isScheduled && featuredClass.description && (
                     <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed line-clamp-3">
                       {featuredClass.description}
                     </p>
