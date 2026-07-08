@@ -285,6 +285,25 @@ body {
   display: none;
 }
 
+/* Custom thin scrollbar (playlist lateral del reproductor de clases) */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-surface-3) transparent;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-surface-3);
+  border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-faint);
+}
+
 /* Button primary gradient */
 .btn-gradient {
   background: linear-gradient(135deg, #1890FF 0%, #0050b3 100%);
