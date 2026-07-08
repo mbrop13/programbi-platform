@@ -184,7 +184,7 @@ function MessageRowBase({
 
         {/* Acciones: visibles en hover, foco y táctil */}
         {!isStreaming && text && (
-          <div className="touch-visible mt-3 flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+          <div className="touch-visible mt-3 flex flex-wrap items-center gap-2 opacity-100 md:opacity-0 transition-opacity md:group-hover:opacity-100 md:group-focus-within:opacity-100">
             <motion.button
               onClick={handleCopy}
               aria-label={copied ? "Copiado" : "Copiar mensaje"}

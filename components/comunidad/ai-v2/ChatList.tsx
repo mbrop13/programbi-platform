@@ -67,7 +67,7 @@ export function ChatList({ messages, status, modelName, onRegenerate, userName, 
             display: none !important;
           }
         ` }} />
-        <div className="mx-auto w-full max-w-3xl pb-40 pt-2">
+        <div className="mx-auto w-full max-w-3xl pb-40 pt-16 md:pt-2">
           {messages.map((m, i) => (
             <MessageRow
               key={m.id ?? i}

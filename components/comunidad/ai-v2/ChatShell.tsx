@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { Bot, MessageSquarePlus, PanelLeft, PanelLeftClose } from "lucide-react";
+import { Bot, MessageSquarePlus, PanelLeft, PanelLeftClose, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -498,8 +498,43 @@ function ChatShellInner({
 
       {/* Main (sin barra superior) */}
       <div className="relative flex min-w-0 flex-1 flex-col">
-        {/* Toggle flotante para abrir el sidebar (solo en móvil cuando está cerrado) */}
-        {isMobile && !sidebarOpen && (
+        {/* Sticky Mobile Header */}
+        {isMobile && (
+          <header className="sticky top-0 z-20 flex h-[56px] w-full shrink-0 items-center justify-between border-b border-stone-200/80 bg-white/90 px-3 backdrop-blur-md">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSidebarOpen(true)}
+                className="flex h-9 w-9 items-center justify-center rounded-xl text-neutral-500 hover:bg-neutral-100 transition-colors cursor-pointer border-none bg-transparent"
+                title="Mostrar historial"
+              >
+                <PanelLeft className="h-5 w-5" />
+              </button>
+              <Link
+                href="/comunidad"
+                className="inline-flex items-center justify-center text-[10px] font-black uppercase tracking-wider text-brand-blue no-underline bg-brand-blue-light/75 px-3 py-2 rounded-xl hover:bg-brand-blue-light transition-all cursor-pointer"
+              >
+                Comunidad
+              </Link>
+            </div>
+
+            <div className="flex items-center gap-1.5 bg-neutral-50 border border-neutral-150 px-2.5 py-1.5 rounded-lg">
+              <Sparkles className="h-3.5 w-3.5 text-purple-600" />
+              <span className="text-[10px] font-bold text-neutral-600">
+                {selectedModelMeta.label}
+              </span>
+            </div>
+
+            <div className="flex items-center">
+              <QuotaIndicator
+                refreshKey={quotaRefreshKey}
+                onUpgradeClick={() => setShowUpgradeModal(true)}
+              />
+            </div>
+          </header>
+        )}
+
+        {/* Floating Toggle (only desktop when collapsed) */}
+        {!isMobile && !sidebarOpen && (
           <button
             onClick={() => setSidebarOpen(true)}
             className="absolute left-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface-0/80 text-text-muted shadow-premium backdrop-blur-md transition-colors hover:bg-surface-2 hover:text-text-primary cursor-pointer"
@@ -509,13 +544,15 @@ function ChatShellInner({
           </button>
         )}
 
-        {/* Indicador de cuota de tokens (esquina superior derecha) */}
-        <div className="absolute right-3 top-3 z-20">
-          <QuotaIndicator
-            refreshKey={quotaRefreshKey}
-            onUpgradeClick={() => setShowUpgradeModal(true)}
-          />
-        </div>
+        {/* Floating Quota Indicator (only desktop) */}
+        {!isMobile && (
+          <div className="absolute right-3 top-3 z-20">
+            <QuotaIndicator
+              refreshKey={quotaRefreshKey}
+              onUpgradeClick={() => setShowUpgradeModal(true)}
+            />
+          </div>
+        )}
 
 
         {/* Workspace: chat (resizable) + canvas (split / sheet) */}
@@ -547,6 +584,7 @@ function ChatShellInner({
                   onSelectModel={setSelectedModel}
                   canvasModeActive={canvasModeActive}
                   onCanvasModeChange={setCanvasModeActive}
+                  isMobile={isMobile}
                   placeholder={isGuest ? "Suscríbete a un plan Premium para chatear con el Mentor IA" : undefined}
                 />
               </Landing>
@@ -583,6 +621,7 @@ function ChatShellInner({
                       onSelectModel={setSelectedModel}
                       canvasModeActive={canvasModeActive}
                       onCanvasModeChange={setCanvasModeActive}
+                      isMobile={isMobile}
                       placeholder={isGuest ? "Suscríbete a un plan Premium para chatear con el Mentor IA" : undefined}
                     />
                   </div>

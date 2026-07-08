@@ -46,6 +46,7 @@ interface ComposerInputProps {
   placeholder?: string;
   canvasModeActive: boolean;
   onCanvasModeChange: (active: boolean) => void;
+  isMobile?: boolean;
 }
 
 // ─── Tipos mínimos para la Web Speech API (no incluidos en lib.dom) ───
@@ -131,6 +132,7 @@ export function ComposerInput({
   placeholder,
   canvasModeActive,
   onCanvasModeChange,
+  isMobile = false,
 }: ComposerInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const canvas = useCanvas();
@@ -425,14 +427,13 @@ export function ComposerInput({
               </AnimatePresence>
             </div>
 
-            {/* Botón Canvas */}
             <motion.button
               type="button"
               onClick={() => onCanvasModeChange(!canvasModeActive)}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.95 }}
               className={cn(
-                "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-semibold transition-all duration-150 cursor-pointer active:scale-95 shadow-none",
+                "flex items-center gap-1 sm:gap-1.5 rounded-full border px-2 py-1.5 sm:px-3 text-xs font-semibold transition-all duration-150 cursor-pointer active:scale-95 shadow-none",
                 canvasModeActive
                   ? "bg-blue-600 border-blue-600 text-white hover:bg-blue-700"
                   : "bg-white border-stone-200 text-stone-600 hover:bg-stone-50 hover:text-stone-800"
@@ -443,7 +444,7 @@ export function ComposerInput({
                 <path d="M5.33398 4.33301L1.33398 8.00007L5.33398 11.667" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
                 <path d="M10.666 4.33301L14.666 8.00007L10.666 11.667" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
               </svg>
-              <span>Canvas</span>
+              <span className="hidden sm:inline">Canvas</span>
             </motion.button>
 
             {uploading && <Loader2 className="h-3.5 w-3.5 animate-spin text-text-muted" aria-hidden />}
@@ -452,32 +453,33 @@ export function ComposerInput({
           {/* Modelo + voz/enviar (der) */}
           <div className="flex items-center gap-1.5">
             {/* Selector de modelo: nombre + badges + flecha, sin icono */}
-            <div ref={modelRef} className="relative">
-              <motion.button
-                ref={modelBtnRef}
-                type="button"
-                onClick={() => setModelOpen((o) => !o)}
-                aria-label="Cambiar modelo"
-                aria-expanded={modelOpen}
-                aria-haspopup="menu"
-                whileHover={{ scale: 1.02, backgroundColor: "rgba(15, 23, 42, 0.05)" }}
-                whileTap={{ scale: 0.98 }}
-                className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-text-secondary transition-colors cursor-pointer border-0 bg-transparent"
-              >
-                {selectedModel.label}
-                <CapBadges model={selectedModel} />
-                <ChevronDown
-                  className={cn(
-                    "h-3.5 w-3.5 text-text-muted transition-transform",
-                    modelOpen && "rotate-180"
-                  )}
-                  aria-hidden
-                />
-              </motion.button>
-              <AnimatePresence>
-                {modelOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+            {!isMobile && (
+              <div ref={modelRef} className="relative">
+                <motion.button
+                  ref={modelBtnRef}
+                  type="button"
+                  onClick={() => setModelOpen((o) => !o)}
+                  aria-label="Cambiar modelo"
+                  aria-expanded={modelOpen}
+                  aria-haspopup="menu"
+                  whileHover={{ scale: 1.02, backgroundColor: "rgba(15, 23, 42, 0.05)" }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-text-secondary transition-colors cursor-pointer border-0 bg-transparent"
+                >
+                  {selectedModel.label}
+                  <CapBadges model={selectedModel} />
+                  <ChevronDown
+                    className={cn(
+                      "h-3.5 w-3.5 text-text-muted transition-transform",
+                      modelOpen && "rotate-180"
+                    )}
+                    aria-hidden
+                  />
+                </motion.button>
+                <AnimatePresence>
+                  {modelOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
                     transition={{ duration: 0.15, ease: "easeOut" }}
@@ -623,6 +625,7 @@ export function ComposerInput({
                 )}
               </AnimatePresence>
             </div>
+          )}
 
             {/* Botón dual: micrófono (vacío) / enviar (con texto) / detener (streaming) */}
             {isStreaming ? (

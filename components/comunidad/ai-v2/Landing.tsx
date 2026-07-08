@@ -57,7 +57,7 @@ export function Landing({ children, onSuggestionClick }: LandingProps) {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="font-display text-3xl font-bold tracking-tight text-text-primary md:text-4xl"
+            className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-text-primary md:text-4xl"
           >
             ¿Qué vamos a <span className="text-gradient-brand">resolver hoy</span>?
           </motion.h2>
