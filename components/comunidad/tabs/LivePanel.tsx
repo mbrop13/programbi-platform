@@ -849,10 +849,7 @@ export default function LivePanel() {
         {/* Recordings grid */}
         {completedClasses.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            {(activeClass && activeClass.status === "scheduled"
-              ? completedClasses
-              : completedClasses.slice(1)
-            ).map((recording, index) => (
+            {completedClasses.map((recording, index) => (
               <RecordingCard
                 key={recording.id}
                 recording={recording}
