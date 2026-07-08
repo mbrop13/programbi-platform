@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
-  Radio,
   RadioTower,
   Video,
   VideoOff,
@@ -38,18 +37,6 @@ const POLL_INTERVAL_ACTIVE = 10_000; // 10s — detect when admin starts class
 const POLL_INTERVAL_IDLE = 30_000; // 30s — idle background refresh
 const UNLOCK_WINDOW_MS = 10 * 60 * 1000; // join button unlocks 10 min before start
 
-const getTimeAgo = (dateStr: string) => {
-  const diffMs = Date.now() - new Date(dateStr).getTime();
-  const diffSecs = Math.floor(diffMs / 1000);
-  const diffMins = Math.floor(diffSecs / 60);
-  const diffHours = Math.floor(diffMins / 60);
-  const diffDays = Math.floor(diffHours / 24);
-
-  if (diffDays > 0) return `Hace ${diffDays} día${diffDays === 1 ? "" : "s"}`;
-  if (diffHours > 0) return `Hace ${diffHours} hora${diffHours === 1 ? "" : "s"}`;
-  if (diffMins > 0) return `Hace ${diffMins} minuto${diffMins === 1 ? "" : "s"}`;
-  return "Hace unos instantes";
-};
 
 // ─── Reusable: countdown digit ───
 function CountdownUnit({ value, label }: { value: number; label: string }) {
@@ -591,20 +578,9 @@ export default function LivePanel() {
       </AnimatePresence>
 
       {/* ─── FEATURED CARD: Próxima clase o última clase ─── */}
-      <section>
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-2 mb-4 px-1"
-        >
-          <span className="font-display font-black text-lg text-neutral-900 dark:text-white">
-            Destacado
-          </span>
-          <span className="h-px flex-1 bg-neutral-200 dark:bg-neutral-800" />
-        </motion.div>
-
-        {activeClass ? (
-          activeClass.status === "active" ? (
+      {activeClass && (
+        <section>
+          {activeClass.status === "active" ? (
             /* ─── ACTIVE: tarjeta destacada de la clase en vivo ─── */
             <motion.article
               initial={{ opacity: 0, y: 15 }}
@@ -763,88 +739,9 @@ export default function LivePanel() {
                 </div>
               </div>
             </motion.article>
-          )
-        ) : completedClasses[0] ? (
-          /* ─── COMPLETED: tarjeta destacada de la última clase emitida ─── */
-          <motion.article
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`group bg-white dark:bg-neutral-950 border border-neutral-200/80 dark:border-neutral-800/80 rounded-3xl overflow-hidden shadow-sm hover:shadow-lg hover:border-neutral-300 dark:hover:border-neutral-700 transition-all duration-300 flex flex-col md:flex-row ${
-              completedClasses[0].youtube_video_id ? "cursor-pointer active:scale-[0.99]" : ""
-            }`}
-            onClick={() =>
-              completedClasses[0].youtube_video_id && setPlaybackClass(completedClasses[0])
-            }
-          >
-            {/* Thumbnail */}
-            <div className="relative md:w-[42%] shrink-0 aspect-video md:aspect-auto overflow-hidden">
-              <HeroThumbnail
-                youtubeId={completedClasses[0].youtube_video_id}
-                placeholderIcon={Film}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-              <div className="absolute top-4 left-4">
-                <span className="bg-neutral-900/80 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full flex items-center gap-1.5 border border-white/10">
-                  <Video className="w-3 h-3 text-brand-blue" />
-                  Última Clase
-                </span>
-              </div>
-              {completedClasses[0].youtube_video_id && (
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <span className="w-14 h-14 bg-white/95 rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
-                    <PlayCircle className="w-7 h-7 text-neutral-900" />
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Info */}
-            <div className="flex-1 p-5 sm:p-6 flex flex-col">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs text-neutral-500 dark:text-neutral-400 font-bold bg-neutral-100/70 dark:bg-neutral-900 px-3 py-1.5 rounded-full">
-                  {getTimeAgo(completedClasses[0].scheduled_at)}
-                </span>
-              </div>
-
-              <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight">
-                {completedClasses[0].title}
-              </h2>
-              {completedClasses[0].description && (
-                <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed line-clamp-2 mt-2">
-                  {completedClasses[0].description}
-                </p>
-              )}
-
-              {completedClasses[0].youtube_video_id && (
-                <span className="mt-auto pt-5 inline-flex items-center gap-1 text-sm font-bold text-brand-blue group-hover:gap-2 transition-all">
-                  <Play className="w-4 h-4 fill-brand-blue/30" />
-                  Ver Grabación
-                  <ChevronRight className="w-4 h-4" />
-                </span>
-              )}
-            </div>
-          </motion.article>
-        ) : (
-          /* ─── EMPTY: no hay transmisiones ─── */
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/80 dark:border-neutral-800/80 shadow-sm overflow-hidden"
-          >
-            <div className="px-6 sm:px-8 py-16 text-center">
-              <div className="bg-brand-blue/10 rounded-2xl flex items-center justify-center mx-auto mb-5 w-16 h-16">
-                <Radio className="w-8 h-8 text-brand-blue" />
-              </div>
-              <h2 className="font-display font-black text-xl text-neutral-900 dark:text-white mb-2">
-                No hay transmisiones registradas
-              </h2>
-              <p className="text-neutral-500 dark:text-neutral-400 text-sm max-w-sm mx-auto leading-relaxed">
-                Las próximas clases en vivo y grabaciones aparecerán en esta sección.
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </section>
+          )}
+        </section>
+      )}
 
       {/* ─── COMPLETED CLASSES (RECORDINGS) SECTION ─── */}
       <section className="space-y-5">
