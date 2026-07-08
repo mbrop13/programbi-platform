@@ -721,3 +721,25 @@ export async function getEnrolledCoursesReal() {
 
   return results;
 }
+
+/**
+ * Obtener todos los certificados emitidos al usuario actual (por user_id o email).
+ */
+export async function getUserCertificates() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  // Fetch direct certificates where user_id matches OR email matches the profile
+  const { data, error } = await supabase
+    .from("certificates")
+    .select("id, certificate_code, issued_at, pdf_url, course_title, student_name, course_id")
+    .or(`user_id.eq.${user.id},email.eq.${user.email}`);
+
+  if (error) {
+    console.error("Error fetching user certificates:", error);
+    return [];
+  }
+
+  return data || [];
+}

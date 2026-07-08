@@ -15,7 +15,8 @@ export default async function AiPage() {
 
   const enrollments = Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments;
   const hasCourses = enrollments && enrollments.length > 0;
-  const hasSubscription = !!profile?.subscription_plan;
+  const hasSubscription = !!profile?.subscription_plan && 
+    (!profile?.subscription_expires_at || new Date(profile.subscription_expires_at) >= new Date());
   const canAccessFull = isAdmin || hasSubscription;
   const isGuest = !canAccessFull && !hasCourses;
 

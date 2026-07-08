@@ -34,6 +34,7 @@ interface UserProfile {
   avatar_url: string | null;
   role: string;
   subscription_plan?: string | null;
+  subscription_expires_at?: string | null;
 }
 
 export default function ComunidadPortal() {
@@ -200,7 +201,8 @@ export default function ComunidadPortal() {
     }
   }, [activeTab, router]);
 
-  const hasSubscription = !!userProfile?.subscription_plan;
+  const hasSubscription = !!userProfile?.subscription_plan && 
+    (!userProfile?.subscription_expires_at || new Date(userProfile.subscription_expires_at) >= new Date());
   const canAccessFull = isAdmin || hasSubscription;
 
   useEffect(() => {

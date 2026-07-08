@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Users, Building, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminUpdateLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminUpdateLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon, adminGetCertificates, adminAddCertificate, adminImportCertificates, adminDeleteCertificate } from "@/lib/supabase/comunidad-ai";
 import { Calendar, Radio, Film, Clock } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -1684,7 +1684,14 @@ function AdminCourses() {
                     <div key={lesson.id} className="flex items-center gap-4 px-5 py-3 hover:bg-gray-100/60 transition-colors">
                       <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">{lesson.lesson_order}</div>
                       <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-gray-800 truncate">{lesson.title}</div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-gray-800 truncate">{lesson.title}</span>
+                          {lesson.resources && Array.isArray(lesson.resources) && lesson.resources.length > 0 && (
+                            <span className="text-[9px] font-black bg-blue-50 text-blue-600 dark:bg-blue-950/30 dark:text-blue-400 px-1.5 py-0.5 rounded uppercase tracking-wider flex items-center gap-0.5 shrink-0" title={`${lesson.resources.length} recursos adjuntos`}>
+                              <FileText className="w-2.5 h-2.5" /> {lesson.resources.length} {lesson.resources.length === 1 ? "archivo" : "archivos"}
+                            </span>
+                          )}
+                        </div>
                         <div className="text-[11px] text-gray-400 flex items-center gap-1">{lesson.video_url ? <><Video className="w-3 h-3" /> YouTube</> : "Sin video"}</div>
                       </div>
                       {lesson.is_free_preview && (
@@ -4396,6 +4403,9 @@ function AdminNewsletterCategories() {
 
 // ─── DIPLOMAS ───
 function AdminDiplomas() {
+  const [subTab, setSubTab] = useState<"designer" | "manage">("designer");
+
+  // Designer states
   const [studentName, setStudentName] = useState("Juan Pérez");
   const [studentRut, setStudentRut] = useState("12.345.678-9");
   const [courseName, setCourseName] = useState("Power BI - Basico");
@@ -4411,6 +4421,24 @@ function AdminDiplomas() {
   const hiddenDiplomaRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
 
+  // Management states
+  const [certsList, setCertsList] = useState<any[]>([]);
+  const [loadingCerts, setLoadingCerts] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Add individual states
+  const [newEmail, setNewEmail] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newCourse, setNewCourse] = useState("");
+  const [newCode, setNewCode] = useState("");
+  const [newDate, setNewDate] = useState(new Date().toISOString().split("T")[0]);
+  const [savingCert, setSavingCert] = useState(false);
+
+  // CSV states
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState<{ success: number; failed: number; errors: string[] } | null>(null);
+
   useEffect(() => {
     const updateScale = () => {
       if (containerRef.current) {
@@ -4423,12 +4451,180 @@ function AdminDiplomas() {
     return () => window.removeEventListener('resize', updateScale);
   }, []);
 
+  const loadCertificates = useCallback(async () => {
+    setLoadingCerts(true);
+    try {
+      const list = await adminGetCertificates();
+      setCertsList(list);
+    } catch (err) {
+      console.error("Error loading certificates", err);
+    } finally {
+      setLoadingCerts(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (subTab === "manage") {
+      loadCertificates();
+    }
+  }, [subTab, loadCertificates]);
+
+  const generateRandomCode = () => {
+    const rand = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const coursePrefix = newCourse ? newCourse.trim().substring(0, 3).replace(/\s+/g, "").toUpperCase() : "CRT";
+    setNewCode(`PBI-${coursePrefix}-${rand}`);
+  };
+
+  const handleAddCertificate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newEmail || !newName || !newCourse || !newCode) {
+      alert("Por favor completa todos los campos requeridos");
+      return;
+    }
+    setSavingCert(true);
+    try {
+      await adminAddCertificate({
+        email: newEmail,
+        student_name: newName,
+        course_title: newCourse,
+        certificate_code: newCode,
+        issued_at: newDate ? new Date(newDate).toISOString() : undefined,
+      });
+      alert("Certificado emitido y guardado exitosamente");
+      setNewEmail("");
+      setNewName("");
+      setNewCourse("");
+      setNewCode("");
+      loadCertificates();
+    } catch (err: any) {
+      alert("Error al guardar certificado: " + err.message);
+    } finally {
+      setSavingCert(false);
+    }
+  };
+
+  const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setCsvFile(file);
+      setImportResult(null);
+    }
+  };
+
+  const handleImportCSV = async () => {
+    if (!csvFile) return;
+    setImporting(true);
+    setImportResult(null);
+    try {
+      const text = await csvFile.text();
+      const lines = text.split(/\r?\n/).filter(line => line.trim().length > 0);
+      if (lines.length < 2) {
+        alert("El archivo CSV está vacío o no contiene cabecera.");
+        setImporting(false);
+        return;
+      }
+      
+      const header = lines[0];
+      const separator = header.includes(";") ? ";" : ",";
+      const rows = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i];
+        const values = line.split(separator).map(v => v.replace(/^["']|["']$/g, "").trim());
+        if (values.length < 3) continue;
+
+        const nameVal = values[0];
+        const emailVal = values[1];
+        const courseVal = values[2];
+        
+        let codeVal = values[3];
+        if (!codeVal) {
+          const rand = Math.random().toString(36).substring(2, 8).toUpperCase();
+          codeVal = `PBI-CSV-${rand}`;
+        }
+
+        const dateVal = values[4];
+        let issued_at = undefined;
+        if (dateVal) {
+          const parsed = new Date(dateVal);
+          if (!isNaN(parsed.getTime())) {
+            issued_at = parsed.toISOString();
+          }
+        }
+
+        rows.push({
+          student_name: nameVal,
+          email: emailVal,
+          course_title: courseVal,
+          certificate_code: codeVal,
+          issued_at
+        });
+      }
+
+      if (rows.length === 0) {
+        alert("No se encontraron filas con datos válidos en el CSV.");
+        setImporting(false);
+        return;
+      }
+
+      const res = await adminImportCertificates(rows);
+      setImportResult(res);
+      setCsvFile(null);
+      
+      const input = document.getElementById("csv-file-input") as HTMLInputElement;
+      if (input) input.value = "";
+      
+      loadCertificates();
+    } catch (err: any) {
+      alert("Error al importar el archivo CSV: " + err.message);
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const downloadCSVTemplate = () => {
+    const headers = "Nombre Completo,Correo Electronico,Nombre Curso,Codigo Certificado,Fecha Emision\n";
+    const example1 = "Juan Pérez,juan.perez@example.com,Curso Power BI Básico,PBI-PBB-883K1,2026-07-08\n";
+    const example2 = "María Gómez,maria.gomez@example.com,SQL Server Avanzado,PBI-SQL-321L9,2026-07-07\n";
+    const blob = new Blob([headers + example1 + example2], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "plantilla_importacion_certificados.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleDeleteCertificate = async (id: string) => {
+    if (!confirm("¿Estás seguro de que deseas eliminar este certificado? El alumno ya no tendrá acceso para descargarlo.")) {
+      return;
+    }
+    try {
+      await adminDeleteCertificate(id);
+      loadCertificates();
+    } catch (err: any) {
+      alert("Error al eliminar certificado: " + err.message);
+    }
+  };
+
+  const filteredCerts = certsList.filter(c => {
+    const search = searchQuery.toLowerCase().trim();
+    if (!search) return true;
+    return (
+      c.student_name?.toLowerCase().includes(search) ||
+      c.email?.toLowerCase().includes(search) ||
+      c.course_title?.toLowerCase().includes(search) ||
+      c.certificate_code?.toLowerCase().includes(search)
+    );
+  });
+
   const generatePDF = async () => {
     setIsExporting(true);
     try {
       const { jsPDF } = await import('jspdf');
 
-      // Canvas dimensions (A4 landscape at 2x for high res)
+      // Canvas dimensions (A4 landscape)
       const W = 2246, H = 1588;
       const canvas = document.createElement('canvas');
       canvas.width = W;
@@ -4438,16 +4634,6 @@ function AdminDiplomas() {
       // --- Background ---
       ctx.fillStyle = '#fafafa';
       ctx.fillRect(0, 0, W, H);
-
-      // Dot pattern
-      ctx.fillStyle = 'rgba(229,231,235,0.3)';
-      for (let x = 0; x < W; x += 32) {
-        for (let y = 0; y < H; y += 32) {
-          ctx.beginPath();
-          ctx.arc(x, y, 1.5, 0, Math.PI * 2);
-          ctx.fill();
-        }
-      }
 
       // --- Gold Border ---
       ctx.strokeStyle = '#c5a059';
@@ -4479,7 +4665,7 @@ function AdminDiplomas() {
 
       // --- Title ---
       ctx.fillStyle = '#0f2c59';
-      ctx.font = '900 84px "Poppins", system-ui, sans-serif';
+      ctx.font = '900 84px system-ui, sans-serif';
       ctx.textAlign = 'center';
       ctx.letterSpacing = '14px';
       ctx.fillText('CERTIFICADO DE FINALIZACIÓN', W / 2, cy + 280);
@@ -4494,7 +4680,7 @@ function AdminDiplomas() {
 
       // --- Student Name ---
       ctx.fillStyle = '#0f2c59';
-      ctx.font = '700 150px "Dancing Script", cursive';
+      ctx.font = 'italic 700 110px system-ui, sans-serif';
       ctx.fillText(studentName || 'Nombre del Alumno', W / 2, cy + 540);
 
       // --- Student RUT ---
@@ -4525,87 +4711,104 @@ function AdminDiplomas() {
 
       // --- Course Name ---
       ctx.fillStyle = '#1e293b';
-      ctx.font = '900 60px "Poppins", system-ui, sans-serif';
+      ctx.font = '900 60px system-ui, sans-serif';
       ctx.fillText(courseName || 'Nombre del Curso', W / 2, cy + 770);
 
-      // --- Footer: Date (left) ---
-      const footerY = H - 300;
-      const leftCol = cx + 300;
-      const rightCol = W - cx - 300;
+      // --- Footer ---
+      const fy = cy + ch - 160;
 
-      ctx.fillStyle = '#1f2937';
-      ctx.font = '700 36px system-ui, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(issueDate, leftCol, footerY + 10);
-      ctx.strokeStyle = '#9ca3af';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(leftCol - 160, footerY + 30);
-      ctx.lineTo(leftCol + 160, footerY + 30);
-      ctx.stroke();
+      // Date
+      ctx.fillStyle = '#1e293b';
+      ctx.font = '700 28px system-ui, sans-serif';
+      ctx.fillText(issueDate, W * 0.25, fy);
       ctx.fillStyle = '#9ca3af';
-      ctx.font = '700 18px system-ui, sans-serif';
-      ctx.letterSpacing = '4px';
-      ctx.fillText('FECHA DE EMISIÓN', leftCol, footerY + 65);
+      ctx.font = '700 16px system-ui, sans-serif';
+      ctx.letterSpacing = '3px';
+      ctx.fillText('FECHA DE EMISIÓN', W * 0.25, fy + 40);
       ctx.letterSpacing = '0px';
 
-      // --- Footer: Seal (center) ---
-      const sealX = W / 2, sealY = footerY - 10;
-      const sealSize = 80;
-      for (const angle of [45, 15, 75]) {
-        ctx.save();
-        ctx.translate(sealX, sealY);
-        ctx.rotate((angle * Math.PI) / 180);
-        const grad = ctx.createLinearGradient(-sealSize, -sealSize, sealSize, sealSize);
-        grad.addColorStop(0, '#dfc27d');
-        grad.addColorStop(1, '#b38836');
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.roundRect(-sealSize, -sealSize, sealSize * 2, sealSize * 2, 20);
-        ctx.fill();
-        ctx.restore();
-      }
+      // Sign line
+      ctx.strokeStyle = '#9ca3af';
+      ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(sealX, sealY, 68, 0, Math.PI * 2);
+      ctx.moveTo(W * 0.15, fy - 20);
+      ctx.lineTo(W * 0.35, fy - 20);
+      ctx.stroke();
+
+      // Instructor Name
+      ctx.fillStyle = '#1e293b';
+      ctx.font = 'italic 700 48px system-ui, sans-serif';
+      ctx.fillText(instructorName, W * 0.75, fy);
+      ctx.fillStyle = '#9ca3af';
+      ctx.font = '700 16px system-ui, sans-serif';
+      ctx.letterSpacing = '3px';
+      ctx.fillText('INSTRUCTOR SENIOR', W * 0.75, fy + 40);
+      ctx.letterSpacing = '0px';
+
+      // Sign line
+      ctx.beginPath();
+      ctx.moveTo(W * 0.65, fy - 20);
+      ctx.lineTo(W * 0.85, fy - 20);
+      ctx.stroke();
+
+      // Sello
+      const drawStar = (x: number, y: number, r: number, p: number, m: number) => {
+        ctx.save();
+        ctx.beginPath();
+        ctx.translate(x, y);
+        ctx.moveTo(0, 0 - r);
+        for (let idx = 0; idx < p; idx++) {
+          ctx.rotate(Math.PI / p);
+          ctx.lineTo(0, 0 - (r * m));
+          ctx.rotate(Math.PI / p);
+          ctx.lineTo(0, 0 - r);
+        }
+        ctx.restore();
+      };
+
+      ctx.fillStyle = 'linear-gradient(to bottom right, #dfc27d, #b38836)';
+      const sealGrad = ctx.createLinearGradient(W / 2 - 100, fy - 100, W / 2 + 100, fy + 100);
+      sealGrad.addColorStop(0, '#dfc27d');
+      sealGrad.addColorStop(1, '#b38836');
+
+      ctx.fillStyle = sealGrad;
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+      ctx.shadowBlur = 15;
+      
+      ctx.save();
+      ctx.translate(W / 2, fy - 10);
+      for (let angle = 0; angle < 180; angle += 15) {
+        ctx.rotate((angle * Math.PI) / 180);
+        ctx.fillRect(-64, -64, 128, 128);
+      }
+      ctx.restore();
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+
       ctx.fillStyle = '#fcf8f2';
+      ctx.beginPath();
+      ctx.arc(W / 2, fy - 10, 52, 0, Math.PI * 2);
       ctx.fill();
       ctx.strokeStyle = '#c5a059';
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 2;
       ctx.stroke();
+
       ctx.fillStyle = '#b38836';
-      ctx.font = '900 40px system-ui, sans-serif';
-      ctx.fillText('★', sealX, sealY - 6);
-      ctx.font = '700 15px system-ui, sans-serif';
-      ctx.letterSpacing = '3px';
-      ctx.fillText('ACREDITADO', sealX, sealY + 30);
+      ctx.font = '900 12px system-ui, sans-serif';
+      ctx.letterSpacing = '1px';
+      ctx.fillText('ACREDITADO', W / 2, fy - 20);
       ctx.letterSpacing = '0px';
 
-      // --- Footer: Instructor (right) ---
-      ctx.fillStyle = '#1f2937';
-      ctx.font = '700 72px "Dancing Script", cursive';
-      ctx.fillText(instructorName, rightCol, footerY + 10);
-      ctx.strokeStyle = '#9ca3af';
-      ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.moveTo(rightCol - 160, footerY + 30);
-      ctx.lineTo(rightCol + 160, footerY + 30);
-      ctx.stroke();
-      ctx.fillStyle = '#9ca3af';
-      ctx.font = '700 18px system-ui, sans-serif';
-      ctx.letterSpacing = '4px';
-      ctx.fillText('INSTRUCTOR SENIOR', rightCol, footerY + 65);
-      ctx.letterSpacing = '0px';
+      // Small ribbon draw
+      ctx.font = '900 18px system-ui, sans-serif';
+      ctx.fillText('★ ★ ★', W / 2, fy + 10);
 
-      // --- Generate PDF ---
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-      const pdfW = pdf.internal.pageSize.getWidth();
-      const pdfH = pdf.internal.pageSize.getHeight();
-      pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, pdfH);
-      pdf.save(`Diploma_${studentName.replace(/\s+/g, '_')}.pdf`);
-    } catch (error: any) {
-      console.error('PDF generation error:', error);
-      alert('Error al generar el PDF:\n' + (error?.message || String(error)));
+      const pdf = new jsPDF('l', 'mm', 'a4');
+      pdf.addImage(imgData, 'JPEG', 0, 0, 297, 210);
+      pdf.save(`Certificado_${studentName.replace(/\s+/g, '_')}_${courseName.replace(/\s+/g, '_')}.pdf`);
+    } catch (err) {
+      console.error("Error al exportar PDF:", err);
     } finally {
       setIsExporting(false);
       setShowPreview(false);
@@ -4652,9 +4855,9 @@ function AdminDiplomas() {
             Este diploma es conferido con honores a:
           </p>
 
-          {/* Nombre (Dancing Script) */}
+          {/* Nombre */}
           <div className="w-full max-w-3xl mb-1 flex flex-col items-center justify-center relative">
-             <span className="font-dancing text-[90px] text-[#0f2c59] font-bold px-12 leading-none whitespace-nowrap">
+             <span className="font-dancing text-[64px] italic text-[#0f2c59] font-bold px-12 leading-none whitespace-nowrap">
                {studentName || "Nombre del Alumno"}
              </span>
              <span className="text-gray-500 uppercase tracking-widest text-[12px] font-semibold mt-4">
@@ -4685,13 +4888,13 @@ function AdminDiplomas() {
                 <div className="absolute inset-0 rounded-xl shadow-lg" style={{ background: 'linear-gradient(to bottom right, #dfc27d, #b38836)', transform: 'rotate(15deg)' }} />
                 <div className="absolute inset-0 rounded-xl shadow-lg" style={{ background: 'linear-gradient(to bottom right, #dfc27d, #b38836)', transform: 'rotate(75deg)' }} />
                 <div className="absolute inset-2 bg-[#fcf8f2] rounded-full border border-[#c5a059] flex items-center justify-center flex-col shadow-inner z-10">
-                  <Award className="w-8 h-8 text-[#b38836] mb-0.5" />
-                  <span className="text-[8px] font-bold text-[#b38836] uppercase tracking-wider">Acreditado</span>
+                   <Award className="w-8 h-8 text-[#b38836] mb-0.5" />
+                   <span className="text-[8px] font-bold text-[#b38836] uppercase tracking-wider">Acreditado</span>
                 </div>
              </div>
 
              <div className="flex flex-col items-center">
-                <span className="font-dancing text-5xl text-gray-800 mb-2 border-b border-gray-400 w-48 pb-1 pt-4">{instructorName}</span>
+                <span className="font-dancing text-3xl italic text-gray-800 mb-2 border-b border-gray-400 w-48 pb-1 pt-4">{instructorName}</span>
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Instructor Senior</span>
              </div>
           </div>
@@ -4701,63 +4904,334 @@ function AdminDiplomas() {
 
   return (
     <div className="flex flex-col h-full bg-gray-50/50 relative">
-      <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
-        <div>
-          <h2 className="text-xl font-black text-gray-900">Generador de Diplomas PDF</h2>
-          <p className="text-sm text-gray-500">Crea certificados en PDF perfectos, de exactamente 1 página.</p>
-        </div>
-        <button 
-          onClick={generatePDF}
-          disabled={isExporting}
-          className="bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors shadow-sm"
+      {/* Sub-tab Navigation */}
+      <div className="flex border-b border-gray-200 bg-white px-6 py-2 shrink-0 gap-4">
+        <button
+          onClick={() => setSubTab("designer")}
+          className={`px-4 py-2 text-sm font-bold border-b-2 transition-colors cursor-pointer border-none bg-transparent ${
+            subTab === "designer" ? "border-brand-blue text-brand-blue border-b-brand-blue" : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
         >
-          {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-          {isExporting ? "Generando..." : "Descargar PDF"}
+          Diseñador de Diplomas (Manual)
+        </button>
+        <button
+          onClick={() => setSubTab("manage")}
+          className={`px-4 py-2 text-sm font-bold border-b-2 transition-colors cursor-pointer border-none bg-transparent ${
+            subTab === "manage" ? "border-brand-blue text-brand-blue border-b-brand-blue" : "border-transparent text-gray-500 hover:text-gray-700"
+          }`}
+        >
+          Importación y Gestión de Alumnos
         </button>
       </div>
 
-      <div className="flex-1 p-6 flex flex-col lg:flex-row gap-8 overflow-y-auto">
-        {/* Form Panel */}
-        <div className="w-full lg:w-80 shrink-0 space-y-4">
-          <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
-            <h3 className="font-bold text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-3 mb-4">
-              <Edit3 className="w-4 h-4 text-brand-blue" /> Datos del Diploma
-            </h3>
+      {subTab === "designer" ? (
+        <>
+          <div className="p-6 border-b border-gray-100 flex items-center justify-between bg-white shrink-0">
+            <div>
+              <h2 className="text-xl font-black text-gray-900">Generador de Diplomas PDF</h2>
+              <p className="text-sm text-gray-500">Crea certificados en PDF perfectos, de exactamente 1 página.</p>
+            </div>
+            <button 
+              onClick={generatePDF}
+              disabled={isExporting}
+              className="bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-colors shadow-sm cursor-pointer border-none"
+            >
+              {isExporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+              {isExporting ? "Generando..." : "Descargar PDF"}
+            </button>
+          </div>
+
+          <div className="flex-1 p-6 flex flex-col lg:flex-row gap-8 overflow-y-auto">
+            {/* Form Panel */}
+            <div className="w-full lg:w-80 shrink-0 space-y-4">
+              <div className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm space-y-4">
+                <h3 className="font-bold text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-3 mb-4">
+                  <Edit3 className="w-4 h-4 text-brand-blue" /> Datos del Diploma
+                </h3>
+                
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre del Alumno</label>
+                  <input type="text" value={studentName} onChange={e => setStudentName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">RUT</label>
+                  <input type="text" value={studentRut} onChange={e => setStudentRut(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre del Curso</label>
+                  <input type="text" value={courseName} onChange={e => setCourseName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Fecha de Emisión</label>
+                  <input type="text" value={issueDate} onChange={e => setIssueDate(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Firma Instructor</label>
+                  <input type="text" value={instructorName} onChange={e => setInstructorName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+                </div>
+              </div>
+            </div>
+
+            {/* Scaled Preview Panel */}
+            <div className="flex-1 overflow-hidden" ref={containerRef}>
+              <div style={{ height: `${794 * scale}px`, width: `${1123 * scale}px` }} className="mx-auto transition-all">
+                 <DiplomaContent dRef={diplomaRef} dynamicScale={scale} />
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <div className="flex-1 p-6 flex flex-col lg:flex-row gap-8 overflow-y-auto">
+          {/* Left panel: Actions & Forms */}
+          <div className="w-full lg:w-96 shrink-0 space-y-6">
             
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre del Alumno</label>
-              <input type="text" value={studentName} onChange={e => setStudentName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+            {/* CSV Bulk Import Section */}
+            <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-neutral-100 dark:border-neutral-800/80 shadow-sm space-y-4">
+              <h3 className="font-bold text-neutral-900 dark:text-white flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-800/50 pb-3">
+                <Upload className="w-4 h-4 text-brand-blue" /> Importación Masiva (CSV)
+              </h3>
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                Sube un archivo CSV con las columnas correspondientes para registrar múltiples certificados.
+              </p>
+
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={downloadCSVTemplate}
+                  className="w-full py-2 border border-dashed border-neutral-200 dark:border-neutral-800 hover:border-brand-blue text-neutral-600 dark:text-neutral-400 hover:text-brand-blue rounded-xl text-xs font-bold transition-all bg-transparent flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Download className="w-3.5 h-3.5" /> Descargar Plantilla CSV
+                </button>
+
+                <div className="border-2 border-dashed border-neutral-250 dark:border-neutral-800 hover:border-brand-blue rounded-2xl p-4 flex flex-col items-center justify-center bg-neutral-50 dark:bg-neutral-850 hover:bg-blue-50/20 transition-all relative">
+                  <input
+                    type="file"
+                    id="csv-file-input"
+                    accept=".csv"
+                    onChange={handleCSVUpload}
+                    className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+                  />
+                  <Upload className="w-6 h-6 text-neutral-400 mb-2" />
+                  <span className="text-xs font-bold text-neutral-600 dark:text-neutral-300 text-center">
+                    {csvFile ? csvFile.name : "Selecciona o arrastra el archivo CSV"}
+                  </span>
+                  <span className="text-[10px] text-neutral-400 dark:text-neutral-500 mt-1">Soporta archivos .csv UTF-8</span>
+                </div>
+
+                {csvFile && (
+                  <button
+                    onClick={handleImportCSV}
+                    disabled={importing}
+                    className="w-full py-2.5 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-xs font-black shadow-sm disabled:opacity-50 transition-all cursor-pointer border-none"
+                  >
+                    {importing ? <Loader2 className="w-4 h-4 animate-spin mx-auto" /> : "Procesar e Importar CSV"}
+                  </button>
+                )}
+              </div>
+
+              {/* Import Results Box */}
+              {importResult && (
+                <div className={`p-4 rounded-xl border ${importResult.failed > 0 ? "bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/55 text-amber-900 dark:text-amber-300" : "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-900/55 text-emerald-900 dark:text-emerald-300"} space-y-2`}>
+                  <div className="flex items-center gap-2 font-bold text-xs">
+                    {importResult.failed > 0 ? <AlertCircle className="w-4 h-4 text-amber-600" /> : <CheckCircle className="w-4 h-4 text-emerald-600" />}
+                    <span>Resultado de Importación</span>
+                  </div>
+                  <div className="text-xs space-y-0.5">
+                    <p>✓ Creados/Actualizados: <strong>{importResult.success}</strong></p>
+                    {importResult.failed > 0 && <p>✗ Fallidos: <strong>{importResult.failed}</strong></p>}
+                  </div>
+                  {importResult.errors.length > 0 && (
+                    <div className="mt-2 text-[10px] max-h-24 overflow-y-auto bg-white/50 dark:bg-neutral-900/50 p-2 rounded-lg font-mono space-y-1">
+                      {importResult.errors.map((err, idx) => (
+                        <div key={idx} className="text-red-600 dark:text-red-400">• {err}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">RUT</label>
-              <input type="text" value={studentRut} onChange={e => setStudentRut(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+            {/* Individual Certificate Form */}
+            <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-neutral-100 dark:border-neutral-800/80 shadow-sm space-y-4">
+              <h3 className="font-bold text-neutral-900 dark:text-white flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-800/50 pb-3">
+                <Plus className="w-4 h-4 text-brand-blue" /> Emitir Individualmente
+              </h3>
+              
+              <form onSubmit={handleAddCertificate} className="space-y-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 tracking-widest uppercase">Nombre del Alumno *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ej. Juan Pérez"
+                    value={newName}
+                    onChange={e => setNewName(e.target.value)}
+                    className="w-full bg-neutral-50 dark:bg-neutral-850 border border-neutral-100 dark:border-neutral-800/80 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all dark:text-white"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 tracking-widest uppercase">Correo Electrónico *</label>
+                  <input
+                    type="email"
+                    required
+                    placeholder="Ej. juan.perez@email.com"
+                    value={newEmail}
+                    onChange={e => setNewEmail(e.target.value)}
+                    className="w-full bg-neutral-50 dark:bg-neutral-850 border border-neutral-100 dark:border-neutral-800/80 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all dark:text-white"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 tracking-widest uppercase">Nombre del Curso *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ej. Bootcamp Data Analytics"
+                    value={newCourse}
+                    onChange={e => setNewCourse(e.target.value)}
+                    className="w-full bg-neutral-50 dark:bg-neutral-850 border border-neutral-100 dark:border-neutral-800/80 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all dark:text-white"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 tracking-widest uppercase flex items-center justify-between">
+                    <span>Código Certificado *</span>
+                    <button
+                      type="button"
+                      onClick={generateRandomCode}
+                      className="text-[9px] text-brand-blue hover:text-blue-700 font-black tracking-normal uppercase border-none bg-transparent cursor-pointer"
+                    >
+                      Generar Código
+                    </button>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Ej. PBI-DATA-93K29"
+                    value={newCode}
+                    onChange={e => setNewCode(e.target.value)}
+                    className="w-full bg-neutral-50 dark:bg-neutral-850 border border-neutral-100 dark:border-neutral-800/80 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all uppercase dark:text-white"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 tracking-widest uppercase">Fecha de Emisión</label>
+                  <input
+                    type="date"
+                    value={newDate}
+                    onChange={e => setNewDate(e.target.value)}
+                    className="w-full bg-neutral-50 dark:bg-neutral-850 border border-neutral-100 dark:border-neutral-800/80 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all dark:text-white"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={savingCert}
+                  className="w-full py-3 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-xs font-black shadow-sm hover:shadow-md disabled:opacity-50 transition-all cursor-pointer border-none flex items-center justify-center gap-2"
+                >
+                  {savingCert ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                  Emitir y Guardar
+                </button>
+              </form>
+            </div>
+          </div>
+
+          {/* Right panel: Registered Certificates List */}
+          <div className="flex-1 bg-white dark:bg-neutral-900 p-5 rounded-2xl border border-neutral-100 dark:border-neutral-800/80 shadow-sm flex flex-col min-w-0 min-h-[400px]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 dark:border-neutral-800/50 pb-4 mb-4 shrink-0">
+              <div>
+                <h3 className="font-bold text-neutral-900 dark:text-white text-base">Certificados en Base de Datos</h3>
+                <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">Certificados manuales e importados para visualización de los alumnos.</p>
+              </div>
+
+              {/* Search Bar */}
+              <div className="relative w-full sm:w-64">
+                <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  placeholder="Buscar alumno, correo, código..."
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="w-full bg-neutral-50 dark:bg-neutral-850 border border-neutral-100 dark:border-neutral-800/80 rounded-xl pl-9 pr-4 py-2.5 text-xs outline-none focus:border-brand-blue focus:ring-2 focus:ring-blue-100 transition-all dark:text-white"
+                />
+              </div>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre del Curso</label>
-              <input type="text" value={courseName} onChange={e => setCourseName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Fecha de Emisión</label>
-              <input type="text" value={issueDate} onChange={e => setIssueDate(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Firma Instructor</label>
-              <input type="text" value={instructorName} onChange={e => setInstructorName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-brand-blue focus:ring-2 focus:ring-blue-100 outline-none transition-all" />
+            {/* List */}
+            <div className="flex-1 overflow-y-auto">
+              {loadingCerts ? (
+                <div className="flex items-center justify-center py-20">
+                  <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
+                </div>
+              ) : filteredCerts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 text-center text-gray-400 dark:text-neutral-500">
+                  <FileText className="w-10 h-10 mb-2 opacity-50 text-gray-300" />
+                  <p className="text-xs font-bold">No se encontraron certificados</p>
+                  <p className="text-[11px] mt-0.5">Agrega uno manualmente o sube un archivo CSV.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full border-collapse text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-neutral-100 dark:border-neutral-800/60 text-neutral-400 dark:text-neutral-500 font-bold uppercase tracking-wider bg-neutral-50/50 dark:bg-neutral-900/50">
+                        <th className="py-3 px-4">Alumno</th>
+                        <th className="py-3 px-4">Curso</th>
+                        <th className="py-3 px-4">Código</th>
+                        <th className="py-3 px-4">Fecha Emisión</th>
+                        <th className="py-3 px-4 text-right">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-neutral-100 dark:divide-neutral-850/65">
+                      {filteredCerts.map((cert) => (
+                        <tr key={cert.id} className="hover:bg-neutral-50/30 dark:hover:bg-neutral-850/20 transition-colors">
+                          <td className="py-3 px-4">
+                            <div className="font-bold text-neutral-800 dark:text-white">{cert.student_name}</div>
+                            <div className="text-[10px] text-gray-400 dark:text-neutral-500">{cert.email}</div>
+                          </td>
+                          <td className="py-3 px-4">
+                            <div className="font-medium text-neutral-750 dark:text-neutral-300 max-w-[200px] truncate" title={cert.course_title}>
+                              {cert.course_title}
+                            </div>
+                            {cert.user_id ? (
+                              <span className="inline-block text-[8px] bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded font-black mt-0.5">
+                                Registrado
+                              </span>
+                            ) : (
+                              <span className="inline-block text-[8px] bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 px-1.5 py-0.5 rounded font-black mt-0.5" title="Se vinculará automáticamente cuando cree su cuenta con este correo">
+                                Pendiente Registro
+                              </span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4 font-mono font-bold text-neutral-600 dark:text-neutral-400">
+                            {cert.certificate_code}
+                          </td>
+                          <td className="py-3 px-4 text-neutral-500 dark:text-neutral-400">
+                            {cert.issued_at ? new Date(cert.issued_at).toLocaleDateString("es-MX", { day: 'numeric', month: 'short', year: 'numeric' }) : "-"}
+                          </td>
+                          <td className="py-3 px-4 text-right">
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteCertificate(cert.id)}
+                              className="p-1.5 hover:bg-red-50 dark:hover:bg-red-950/25 text-gray-400 hover:text-red-500 rounded-lg transition-colors border-none bg-transparent cursor-pointer inline-flex items-center"
+                              title="Eliminar certificado"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>
-
-        {/* Scaled Preview Panel */}
-        <div className="flex-1 overflow-hidden" ref={containerRef}>
-          <div style={{ height: `${794 * scale}px`, width: `${1123 * scale}px` }} className="mx-auto transition-all">
-             <DiplomaContent dRef={diplomaRef} dynamicScale={scale} />
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

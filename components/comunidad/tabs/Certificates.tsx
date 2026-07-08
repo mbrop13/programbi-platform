@@ -5,15 +5,13 @@ import { motion } from "framer-motion";
 import {
   Award,
   Download,
-  Share2,
-  ExternalLink,
   Clock,
   CheckCircle2,
   Loader2,
   FileText,
   Lock,
 } from "lucide-react";
-import { getCurrentUserProfile, getDashboardStats } from "@/lib/supabase/comunidad";
+import { getCurrentUserProfile, getDashboardStats, getUserCertificates } from "@/lib/supabase/comunidad";
 
 interface Certificate {
   id: string;
@@ -22,28 +20,59 @@ interface Certificate {
   code: string;
   status: "completed" | "in_progress";
   progress: number;
+  studentName?: string;
+  isManual?: boolean;
 }
 
 export default function Certificates() {
   const [certificates, setCertificates] = useState<Certificate[]>([]);
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
       try {
-        const stats = await getDashboardStats();
+        const [stats, userProf, dbCerts] = await Promise.all([
+          getDashboardStats(),
+          getCurrentUserProfile(),
+          getUserCertificates(),
+        ]);
+        
+        setProfile(userProf);
+
+        const manualCerts: Certificate[] = (dbCerts || []).map((c: any) => ({
+          id: c.id,
+          courseTitle: c.course_title,
+          completedAt: c.issued_at,
+          code: c.certificate_code,
+          status: "completed",
+          progress: 100,
+          studentName: c.student_name,
+          isManual: true,
+        }));
+
+        let autoCerts: Certificate[] = [];
         if (stats?.courseProgress) {
-          const certs: Certificate[] = stats.courseProgress.map((cp: any, i: number) => ({
+          autoCerts = stats.courseProgress.map((cp: any, i: number) => ({
             id: `cert_${i}`,
             courseTitle: cp.title,
             completedAt: cp.progress === 100 ? new Date().toISOString() : "",
             code: cp.progress === 100 ? `PBI-${Date.now().toString(36).toUpperCase()}-${i}` : "",
             status: cp.progress === 100 ? "completed" : "in_progress",
             progress: cp.progress,
+            studentName: userProf?.full_name || "Estudiante ProgramBI",
+            isManual: false,
           }));
-          setCertificates(certs);
         }
+
+        // Avoid duplicates: if there is a manual certificate for a course title, filter out the automatic/progress one.
+        const manualTitles = new Set(manualCerts.map((c) => c.courseTitle.toLowerCase().trim()));
+        const filteredAutoCerts = autoCerts.filter(
+          (ac) => !manualTitles.has(ac.courseTitle.toLowerCase().trim())
+        );
+
+        setCertificates([...manualCerts, ...filteredAutoCerts]);
       } catch (err) {
         console.error("Error loading certificates", err);
       } finally {
@@ -58,100 +87,188 @@ export default function Certificates() {
 
   const handleDownload = async (cert: Certificate) => {
     setDownloading(cert.id);
-    // Will use jsPDF + html2canvas — for now simulate
     try {
-      const { default: jsPDF } = await import("jspdf");
-      const doc = new jsPDF("landscape", "mm", "a4");
+      const { jsPDF } = await import("jspdf");
 
-      // Professional certificate template
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
+      // Canvas dimensions (A4 landscape at 2x for high res)
+      const W = 2246, H = 1588;
+      const canvas = document.createElement("canvas");
+      canvas.width = W;
+      canvas.height = H;
+      const ctx = canvas.getContext("2d")!;
 
-      // Background
-      doc.setFillColor(255, 255, 255);
-      doc.rect(0, 0, pageWidth, pageHeight, "F");
+      // --- Background ---
+      ctx.fillStyle = "#fafafa";
+      ctx.fillRect(0, 0, W, H);
 
-      // Top blue bar
-      doc.setFillColor(24, 144, 255);
-      doc.rect(0, 0, pageWidth, 8, "F");
+      // --- Gold Border ---
+      ctx.strokeStyle = "#c5a059";
+      ctx.lineWidth = 6;
+      ctx.strokeRect(48, 48, W - 96, H - 96);
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 0.5;
+      ctx.strokeRect(60, 60, W - 120, H - 120);
+      ctx.globalAlpha = 1;
 
-      // Bottom blue bar
-      doc.rect(0, pageHeight - 8, pageWidth, 8, "F");
+      // --- White content area ---
+      const cx = 84, cy = 84, cw = W - 168, ch = H - 168;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(cx, cy, cw, ch);
 
-      // Border
-      doc.setDrawColor(24, 144, 255);
-      doc.setLineWidth(0.5);
-      doc.rect(15, 15, pageWidth - 30, pageHeight - 30);
+      // --- Logo ---
+      try {
+        const logo = new Image();
+        logo.crossOrigin = "anonymous";
+        await new Promise<void>((resolve, reject) => {
+          logo.onload = () => resolve();
+          logo.onerror = () => reject();
+          logo.src = "/logo.png";
+        });
+        const logoH = 120;
+        const logoW = (logo.naturalWidth / logo.naturalHeight) * logoH;
+        ctx.drawImage(logo, (W - logoW) / 2, cy + 50, logoW, logoH);
+      } catch { /* continue without logo */ }
 
-      // Inner border
-      doc.setDrawColor(200, 200, 200);
-      doc.setLineWidth(0.2);
-      doc.rect(18, 18, pageWidth - 36, pageHeight - 36);
+      // --- Title ---
+      ctx.fillStyle = "#0f2c59";
+      ctx.font = "900 84px system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.letterSpacing = "14px";
+      ctx.fillText("CERTIFICADO DE FINALIZACIÓN", W / 2, cy + 280);
+      ctx.letterSpacing = "0px";
 
-      // Title
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(36);
-      doc.setTextColor(15, 23, 42);
-      doc.text("CERTIFICADO", pageWidth / 2, 55, { align: "center" });
+      // --- Subtitle ---
+      ctx.fillStyle = "#c5a059";
+      ctx.font = "700 24px system-ui, sans-serif";
+      ctx.letterSpacing = "8px";
+      ctx.fillText("ESTE DIPLOMA ES CONFERIDO CON HONORES A:", W / 2, cy + 370);
+      ctx.letterSpacing = "0px";
 
-      // Subtitle
-      doc.setFontSize(14);
-      doc.setTextColor(100, 116, 139);
-      doc.text("DE FINALIZACIÓN", pageWidth / 2, 65, { align: "center" });
+      // --- Student Name ---
+      ctx.fillStyle = "#0f2c59";
+      ctx.font = 'italic 700 110px "Dancing Script", cursive, system-ui, sans-serif';
+      ctx.fillText(cert.studentName || profile?.full_name || "Nombre del Alumno", W / 2, cy + 540);
 
-      // Decorative line
-      doc.setDrawColor(24, 144, 255);
-      doc.setLineWidth(1);
-      doc.line(pageWidth / 2 - 40, 72, pageWidth / 2 + 40, 72);
+      // --- Validation Code ---
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "600 26px system-ui, sans-serif";
+      ctx.letterSpacing = "4px";
+      ctx.fillText(`CÓDIGO DE VALIDACIÓN: ${cert.code}`, W / 2, cy + 600);
+      ctx.letterSpacing = "0px";
 
-      // "This certifies that"
-      doc.setFontSize(11);
-      doc.setTextColor(100, 116, 139);
-      doc.text("Se certifica que", pageWidth / 2, 85, { align: "center" });
+      // --- Gold decorative line under name ---
+      const lineGrad = ctx.createLinearGradient(W * 0.2, 0, W * 0.8, 0);
+      lineGrad.addColorStop(0, "transparent");
+      lineGrad.addColorStop(0.5, "#c5a059");
+      lineGrad.addColorStop(1, "transparent");
+      ctx.strokeStyle = lineGrad;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(W * 0.2, cy + 630);
+      ctx.lineTo(W * 0.8, cy + 630);
+      ctx.stroke();
 
-      // Student name (placeholder)
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(28);
-      doc.setTextColor(15, 23, 42);
-      doc.text("Estudiante ProgramBI", pageWidth / 2, 100, { align: "center" });
+      // --- Description ---
+      ctx.fillStyle = "#6b7280";
+      ctx.font = "600 22px system-ui, sans-serif";
+      ctx.letterSpacing = "5px";
+      ctx.fillText("POR HABER COMPLETADO EXITOSAMENTE Y DEMOSTRADO UN DOMINIO ABSOLUTO EN:", W / 2, cy + 680);
+      ctx.letterSpacing = "0px";
 
-      // Name underline
-      doc.setDrawColor(200, 200, 200);
-      doc.setLineWidth(0.3);
-      doc.line(pageWidth / 2 - 60, 105, pageWidth / 2 + 60, 105);
+      // --- Course Name ---
+      ctx.fillStyle = "#1e293b";
+      ctx.font = "900 60px system-ui, sans-serif";
+      ctx.fillText(cert.courseTitle, W / 2, cy + 770);
 
-      // Course description
-      doc.setFontSize(11);
-      doc.setTextColor(100, 116, 139);
-      doc.text("ha completado satisfactoriamente el curso", pageWidth / 2, 118, { align: "center" });
+      // --- Footer ---
+      const fy = cy + ch - 160;
 
-      // Course name
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(22);
-      doc.setTextColor(24, 144, 255);
-      doc.text(cert.courseTitle, pageWidth / 2, 132, { align: "center" });
+      // Date
+      ctx.fillStyle = "#1e293b";
+      ctx.font = "700 28px system-ui, sans-serif";
+      const issueDateStr = cert.completedAt
+        ? new Date(cert.completedAt).toLocaleDateString("es-MX", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
+        : new Date().toLocaleDateString("es-MX", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          });
+      ctx.fillText(issueDateStr, W * 0.25, fy);
+      ctx.fillStyle = "#9ca3af";
+      ctx.font = "700 16px system-ui, sans-serif";
+      ctx.letterSpacing = "3px";
+      ctx.fillText("FECHA DE EMISIÓN", W * 0.25, fy + 40);
+      ctx.letterSpacing = "0px";
 
-      // Footer info
-      doc.setFontSize(10);
-      doc.setTextColor(100, 116, 139);
-      doc.text(`Código de verificación: ${cert.code}`, pageWidth / 2, 155, { align: "center" });
-      doc.text(
-        `Fecha de emisión: ${new Date(cert.completedAt).toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" })}`,
-        pageWidth / 2,
-        163,
-        { align: "center" }
-      );
+      // Sign line
+      ctx.strokeStyle = "#9ca3af";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(W * 0.15, fy - 20);
+      ctx.lineTo(W * 0.35, fy - 20);
+      ctx.stroke();
 
-      // ProgramBI branding
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(14);
-      doc.setTextColor(15, 23, 42);
-      doc.text("ProgramBI", pageWidth / 2, 180, { align: "center" });
-      doc.setFontSize(8);
-      doc.setTextColor(150, 150, 150);
-      doc.text("Plataforma de Formación en Datos", pageWidth / 2, 186, { align: "center" });
+      // Instructor Name
+      ctx.fillStyle = "#1e293b";
+      ctx.font = 'italic 700 48px "Dancing Script", cursive, system-ui, sans-serif';
+      ctx.fillText("Manuel Oliva", W * 0.75, fy);
+      ctx.fillStyle = "#9ca3af";
+      ctx.font = "700 16px system-ui, sans-serif";
+      ctx.letterSpacing = "3px";
+      ctx.fillText("INSTRUCTOR SENIOR", W * 0.75, fy + 40);
+      ctx.letterSpacing = "0px";
 
-      doc.save(`Certificado_${cert.courseTitle.replace(/\s+/g, "_")}.pdf`);
+      // Sign line
+      ctx.beginPath();
+      ctx.moveTo(W * 0.65, fy - 20);
+      ctx.lineTo(W * 0.85, fy - 20);
+      ctx.stroke();
+
+      // Sello
+      ctx.fillStyle = "linear-gradient(to bottom right, #dfc27d, #b38836)";
+      const sealGrad = ctx.createLinearGradient(W / 2 - 100, fy - 100, W / 2 + 100, fy + 100);
+      sealGrad.addColorStop(0, "#dfc27d");
+      sealGrad.addColorStop(1, "#b38836");
+
+      ctx.fillStyle = sealGrad;
+      ctx.shadowColor = "rgba(0, 0, 0, 0.15)";
+      ctx.shadowBlur = 15;
+      
+      ctx.save();
+      ctx.translate(W / 2, fy - 10);
+      for (let angle = 0; angle < 180; angle += 15) {
+        ctx.rotate((angle * Math.PI) / 180);
+        ctx.fillRect(-64, -64, 128, 128);
+      }
+      ctx.restore();
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
+
+      ctx.fillStyle = "#fcf8f2";
+      ctx.beginPath();
+      ctx.arc(W / 2, fy - 10, 52, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#c5a059";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = "#b38836";
+      ctx.font = "900 12px system-ui, sans-serif";
+      ctx.letterSpacing = "1px";
+      ctx.fillText("ACREDITADO", W / 2, fy - 20);
+      ctx.letterSpacing = "0px";
+
+      ctx.font = "900 18px system-ui, sans-serif";
+      ctx.fillText("★ ★ ★", W / 2, fy + 10);
+
+      const imgData = canvas.toDataURL("image/jpeg", 0.95);
+      const pdf = new jsPDF("l", "mm", "a4");
+      pdf.addImage(imgData, "JPEG", 0, 0, 297, 210);
+      pdf.save(`Certificado_${cert.courseTitle.replace(/\s+/g, "_")}.pdf`);
     } catch (err) {
       console.error("Error generating PDF", err);
     } finally {
@@ -202,14 +319,19 @@ export default function Certificates() {
                   <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMiIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA4KSIvPjwvc3ZnPg==')] opacity-50" />
                   <div className="relative z-10">
                     <Award className="w-8 h-8 text-white/80 mb-2" />
-                    <h3 className="text-white font-bold text-sm leading-tight line-clamp-2">
+                    <h3 className="text-white font-bold text-sm leading-tight line-clamp-2" title={cert.courseTitle}>
                       {cert.courseTitle}
                     </h3>
                   </div>
-                  <div className="relative z-10 flex items-center gap-2">
+                  <div className="relative z-10 flex items-center justify-between gap-2">
                     <span className="text-[10px] font-mono text-white/60 bg-white/10 px-2 py-0.5 rounded-md">
                       {cert.code}
                     </span>
+                    {cert.isManual && (
+                      <span className="text-[9px] font-black text-amber-300 bg-amber-500/20 px-1.5 py-0.5 rounded-md uppercase tracking-wider">
+                        Emitido
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -218,7 +340,7 @@ export default function Certificates() {
                   <button
                     onClick={() => handleDownload(cert)}
                     disabled={downloading === cert.id}
-                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-sm hover:shadow-md transition-all active:scale-[0.98] disabled:opacity-50"
+                    className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-brand-blue hover:bg-blue-600 text-white rounded-xl text-sm font-bold shadow-sm hover:shadow-md transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer border-none"
                   >
                     {downloading === cert.id ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -226,9 +348,6 @@ export default function Certificates() {
                       <Download className="w-4 h-4" />
                     )}
                     Descargar PDF
-                  </button>
-                  <button className="w-10 h-10 flex items-center justify-center rounded-xl border border-gray-200 text-gray-400 hover:text-brand-blue hover:border-brand-blue/30 hover:bg-blue-50 transition-all">
-                    <Share2 className="w-4 h-4" />
                   </button>
                 </div>
               </motion.div>
@@ -285,7 +404,7 @@ export default function Certificates() {
           </div>
           <h3 className="font-bold text-gray-900 mb-1">Aún no tienes certificados</h3>
           <p className="text-sm text-gray-500 mb-4">
-            Completa un curso para obtener tu certificado de finalización.
+            Completa un curso o solicita tu certificado de finalización al administrador.
           </p>
         </div>
       )}

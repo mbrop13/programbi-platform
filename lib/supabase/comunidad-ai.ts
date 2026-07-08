@@ -519,7 +519,7 @@ export async function getCourseLessons(courseId: string) {
   const adminDb = createAdminClient();
 
   const [profileRes, courseDataRes, lessonsRes, progressDataRes] = await Promise.all([
-    adminDb.from("profiles").select("is_on_trial, subscription_plan").eq("id", user.id).maybeSingle(),
+    adminDb.from("profiles").select("is_on_trial, subscription_plan, subscription_expires_at").eq("id", user.id).maybeSingle(),
     adminDb.from("courses").select("slug").eq("id", courseId).maybeSingle(),
     adminDb.from("lessons")
       .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources")
@@ -553,7 +553,9 @@ export async function getCourseLessons(courseId: string) {
 
   const isOnTrial = profile?.is_on_trial === true;
   let finalAccess = enrollment?.access_type || null;
-  if (!finalAccess && profile?.subscription_plan) finalAccess = "full";
+  const hasActiveSubscription = profile?.subscription_plan && 
+    (!profile?.subscription_expires_at || new Date(profile.subscription_expires_at) >= new Date());
+  if (!finalAccess && hasActiveSubscription) finalAccess = "full";
   if (isOnTrial) finalAccess = "trial";
 
   return {
@@ -1783,4 +1785,298 @@ export async function saveLessonNote(courseId: string, lessonId: string, content
     console.error("Error saving lesson note:", error);
     throw new Error(error.message);
   }
+}
+
+/**
+ * Obtener todos los certificados emitidos de la base de datos (para administración).
+ */
+export async function adminGetCertificates() {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data, error } = await adminDb
+    .from("certificates")
+    .select("id, email, student_name, course_title, certificate_code, issued_at, user_id, course_id")
+    .order("issued_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching certificates in admin:", error);
+    return [];
+  }
+
+  return data || [];
+}
+
+/**
+ * Agregar un certificado manualmente.
+ */
+export async function adminAddCertificate(cert: {
+  email: string;
+  student_name: string;
+  course_title: string;
+  certificate_code: string;
+  issued_at?: string;
+  course_id?: string;
+}) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  // Validate fields
+  if (!cert.email || !cert.student_name || !cert.course_title || !cert.certificate_code) {
+    throw new Error("Campos obligatorios faltantes");
+  }
+
+  // 1. Try to find user profile by email
+  const { data: profile } = await adminDb
+    .from("profiles")
+    .select("id")
+    .eq("email", cert.email.trim().toLowerCase())
+    .maybeSingle();
+
+  // 2. Try to find course by title if course_id is not specified
+  let finalCourseId = cert.course_id || null;
+  if (!finalCourseId) {
+    const { data: course } = await adminDb
+      .from("courses")
+      .select("id")
+      .eq("title", cert.course_title.trim())
+      .limit(1)
+      .maybeSingle();
+    if (course) {
+      finalCourseId = course.id;
+    }
+  }
+
+  // 3. Upsert certificate
+  const { data, error } = await adminDb
+    .from("certificates")
+    .upsert({
+      email: cert.email.trim().toLowerCase(),
+      student_name: cert.student_name.trim(),
+      course_title: cert.course_title.trim(),
+      certificate_code: cert.certificate_code.trim().toUpperCase(),
+      issued_at: cert.issued_at || new Date().toISOString(),
+      user_id: profile?.id || null,
+      course_id: finalCourseId
+    }, { onConflict: "email,course_title" })
+    .select()
+    .single();
+
+  if (error) {
+    console.error("Error inserting certificate:", error);
+    throw new Error(error.message);
+  }
+
+  return data;
+}
+
+/**
+ * Importar certificados de forma masiva desde filas procesadas.
+ */
+export async function adminImportCertificates(rows: {
+  email: string;
+  student_name: string;
+  course_title: string;
+  certificate_code: string;
+  issued_at?: string;
+}[]) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  let success = 0;
+  let failed = 0;
+  const errors: string[] = [];
+
+  for (const row of rows) {
+    try {
+      if (!row.email || !row.student_name || !row.course_title || !row.certificate_code) {
+        errors.push(`Campos incompletos en la fila para: ${row.email || 'desconocido'}`);
+        failed++;
+        continue;
+      }
+
+      // Check if user profile exists
+      const { data: profile } = await adminDb
+        .from("profiles")
+        .select("id")
+        .eq("email", row.email.trim().toLowerCase())
+        .maybeSingle();
+
+      // Check if course exists
+      const { data: course } = await adminDb
+        .from("courses")
+        .select("id")
+        .eq("title", row.course_title.trim())
+        .limit(1)
+        .maybeSingle();
+
+      const { error } = await adminDb
+        .from("certificates")
+        .upsert({
+          email: row.email.trim().toLowerCase(),
+          student_name: row.student_name.trim(),
+          course_title: row.course_title.trim(),
+          certificate_code: row.certificate_code.trim().toUpperCase(),
+          issued_at: row.issued_at || new Date().toISOString(),
+          user_id: profile?.id || null,
+          course_id: course?.id || null
+        }, { onConflict: "email,course_title" });
+
+      if (error) {
+        errors.push(`${row.email} (${row.course_title}): ${error.message}`);
+        failed++;
+      } else {
+        success++;
+      }
+    } catch (err: any) {
+      errors.push(`${row.email} (${row.course_title}): ${err.message}`);
+      failed++;
+    }
+  }
+
+  return { success, failed, errors };
+}
+
+/**
+ * Eliminar un certificado emitido.
+ */
+export async function adminDeleteCertificate(id: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await adminDb
+    .from("certificates")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error deleting certificate:", error);
+    throw new Error(error.message);
+  }
+
+  return true;
+}
+
+/**
+ * Obtener estadísticas detalladas del dashboard para la administración.
+ */
+export async function adminGetDetailedDashboardStats() {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  // 1. Obtener estadísticas básicas (ingresos, transacciones recientes, etc.)
+  const basicStats = await adminGetDashboardStats();
+
+  // 2. Obtener usuarios con suscripciones activas
+  const { data: subscribers } = await adminDb
+    .from("profiles")
+    .select("id, full_name, email, subscription_plan, subscription_expires_at, created_at")
+    .not("subscription_plan", "is", null)
+    .neq("subscription_plan", "none");
+
+  const activeSubscribers = (subscribers || []).filter(p => {
+    if (!p.subscription_expires_at) return true; // permanente
+    return new Date(p.subscription_expires_at) >= new Date();
+  });
+
+  // 3. Progreso de los usuarios y estadísticas de actividad
+  const { data: progressList } = await adminDb
+    .from("user_progress")
+    .select("user_id, lesson_id, course_id, completed, progress_percent, updated_at");
+
+  const totalProgressRecords = progressList?.length || 0;
+  const avgProgressPercent = totalProgressRecords > 0
+    ? Math.round(progressList!.reduce((sum, p) => sum + (p.progress_percent || 0), 0) / totalProgressRecords)
+    : 0;
+
+  const completedClassesCount = progressList?.filter(p => p.completed).length || 0;
+
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const watchedLastMonthCount = progressList?.filter(p => p.updated_at && new Date(p.updated_at) >= thirtyDaysAgo).length || 0;
+
+  // 4. Ranking de estudiantes (Progreso acumulado por curso)
+  const { data: courses } = await adminDb
+    .from("courses")
+    .select("id, title");
+
+  const { data: lessons } = await adminDb
+    .from("lessons")
+    .select("id, course_id");
+
+  const courseLessonsCount: Record<string, number> = {};
+  (lessons || []).forEach(l => {
+    if (l.course_id) {
+      courseLessonsCount[l.course_id] = (courseLessonsCount[l.course_id] || 0) + 1;
+    }
+  });
+
+  const { data: allProfiles } = await adminDb
+    .from("profiles")
+    .select("id, full_name, email");
+
+  const profileMap = new Map<string, { name: string; email: string }>();
+  (allProfiles || []).forEach(p => {
+    profileMap.set(p.id, { name: p.full_name || "Estudiante", email: p.email || "" });
+  });
+
+  const courseMap = new Map<string, string>();
+  (courses || []).forEach(c => {
+    courseMap.set(c.id, c.title);
+  });
+
+  const studentCourseProgress: Record<string, { completedCount: number; totalCount: number; maxPercent: number; lastUpdated: string }> = {};
+
+  (progressList || []).forEach(p => {
+    const key = `${p.user_id}_${p.course_id}`;
+    if (!studentCourseProgress[key]) {
+      studentCourseProgress[key] = { completedCount: 0, totalCount: 0, maxPercent: 0, lastUpdated: p.updated_at };
+    }
+    if (p.completed) {
+      studentCourseProgress[key].completedCount += 1;
+    }
+    studentCourseProgress[key].totalCount += 1;
+    if (p.progress_percent > studentCourseProgress[key].maxPercent) {
+      studentCourseProgress[key].maxPercent = p.progress_percent;
+    }
+    if (p.updated_at && (!studentCourseProgress[key].lastUpdated || new Date(p.updated_at) > new Date(studentCourseProgress[key].lastUpdated))) {
+      studentCourseProgress[key].lastUpdated = p.updated_at;
+    }
+  });
+
+  const leaderboard = Object.entries(studentCourseProgress).map(([key, val]) => {
+    const [userId, courseId] = key.split("_");
+    const prof = profileMap.get(userId);
+    const courseTitle = courseMap.get(courseId) || "Curso Desconocido";
+    const totalLessons = courseLessonsCount[courseId] || val.totalCount || 1;
+    const completionPercent = Math.min(100, Math.round((val.completedCount / totalLessons) * 100));
+
+    return {
+      userId,
+      courseId,
+      studentName: prof?.name || "Estudiante",
+      studentEmail: prof?.email || "",
+      courseTitle,
+      completedLessons: val.completedCount,
+      totalLessons,
+      completionPercent,
+      lastUpdated: val.lastUpdated,
+    };
+  }).sort((a, b) => b.completionPercent - a.completionPercent);
+
+  return {
+    ...basicStats,
+    subscribers: activeSubscribers,
+    activity: {
+      avgProgressPercent,
+      completedClassesCount,
+      watchedLastMonthCount,
+    },
+    leaderboard,
+  };
 }
