@@ -106,14 +106,14 @@ export default function AdminPanel() {
   return (
     <div className="flex flex-col lg:flex-row gap-6 w-full max-w-[1400px] mx-auto min-h-[600px]">
         <div className="w-full lg:w-60 flex flex-col gap-1.5 shrink-0">
-           <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-3">
+           <div className="bg-white dark:bg-neutral-900 rounded-2xl p-5 shadow-sm border border-neutral-100 dark:border-neutral-800/80 mb-3">
               <div className="flex items-center gap-3 mb-1">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 flex items-center justify-center shadow-sm">
                   <ShieldCheck className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900 text-sm">Admin Panel</h3>
-                  <p className="text-[11px] text-gray-400 font-medium">Gestión de Plataforma</p>
+                  <h3 className="font-bold text-neutral-900 dark:text-white text-sm">Admin Panel</h3>
+                  <p className="text-[11px] text-neutral-400 dark:text-neutral-500 font-medium">Gestión de Plataforma</p>
                 </div>
               </div>
            </div>
@@ -130,10 +130,10 @@ export default function AdminPanel() {
                      handleTabChange(item.id);
                    }
                  }}
-                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all relative
+                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all relative border-none cursor-pointer
                    ${activeTab === item.id 
                      ? "bg-brand-blue text-white shadow-md shadow-brand-blue/20" 
-                     : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-100 hover:border-gray-200"}
+                     : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-850 border border-neutral-100 dark:border-neutral-800/60 hover:border-neutral-200 dark:hover:border-neutral-700"}
                  `}
                >
                   <Icon className="w-4 h-4" /> {item.label}
@@ -147,7 +147,7 @@ export default function AdminPanel() {
            })}
         </div>
 
-        <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden min-w-0">
+        <div className="flex-1 bg-white dark:bg-neutral-950 rounded-2xl shadow-sm border border-neutral-250 dark:border-neutral-850/80 overflow-hidden min-w-0">
             <motion.div
               key={activeTab}
               initial={{ opacity: 0, y: 8 }}
@@ -5528,18 +5528,20 @@ function AdminLiveClasses() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between border-b border-gray-150 pb-4">
+    <div className="p-6 space-y-6 transition-colors duration-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 dark:border-neutral-900 pb-5">
         <div>
-          <h2 className="text-xl font-bold text-gray-900">Gestión de Clases en Vivo</h2>
-          <p className="text-xs text-gray-500">Programa clases en vivo o añade grabaciones de sesiones pasadas.</p>
+          <h2 className="text-xl font-black text-neutral-900 dark:text-white font-display">Gestión de Clases en Vivo</h2>
+          <p className="text-xs text-neutral-500 dark:text-neutral-400">Programa transmisiones directas o añade grabaciones de sesiones pasadas.</p>
         </div>
         
-        <div className="flex bg-gray-100 rounded-xl p-1 shrink-0">
+        <div className="flex bg-neutral-100 dark:bg-neutral-900 rounded-xl p-1 shrink-0 self-start sm:self-auto select-none">
           <button
             onClick={() => setActiveTab("schedule")}
             className={`px-4 py-2 rounded-lg text-xs font-bold transition-all border-none cursor-pointer ${
-              activeTab === "schedule" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-900 bg-transparent"
+              activeTab === "schedule" 
+                ? "bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm" 
+                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white bg-transparent"
             }`}
           >
             Agendar Live
@@ -5547,7 +5549,9 @@ function AdminLiveClasses() {
           <button
             onClick={() => setActiveTab("recording")}
             className={`px-4 py-2 rounded-lg text-xs font-bold transition-all border-none cursor-pointer ${
-              activeTab === "recording" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-900 bg-transparent"
+              activeTab === "recording" 
+                ? "bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm" 
+                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white bg-transparent"
             }`}
           >
             Agregar Grabación
@@ -5555,7 +5559,9 @@ function AdminLiveClasses() {
           <button
             onClick={() => setActiveTab("list")}
             className={`px-4 py-2 rounded-lg text-xs font-bold transition-all border-none cursor-pointer ${
-              activeTab === "list" ? "bg-white text-gray-900 shadow-sm" : "text-gray-500 hover:text-gray-900 bg-transparent"
+              activeTab === "list" 
+                ? "bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-sm" 
+                : "text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white bg-transparent"
             }`}
           >
             Ver Todas ({classes.length})
@@ -5564,75 +5570,84 @@ function AdminLiveClasses() {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-600 rounded-xl p-4 text-xs font-semibold border border-red-200">
-          {error}
+        <div className="bg-red-50 dark:bg-red-500/10 text-red-650 dark:text-red-400 rounded-xl p-4 text-xs font-bold border border-red-200/50 dark:border-red-900/50 flex items-center gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{error}</span>
         </div>
       )}
 
       {success && (
-        <div className="bg-emerald-50 text-emerald-700 rounded-xl p-4 text-xs font-semibold border border-emerald-200">
-          {success}
+        <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-450 rounded-xl p-4 text-xs font-bold border border-emerald-200/50 dark:border-emerald-900/50 flex items-center gap-2">
+          <CheckCircle className="w-4 h-4 shrink-0" />
+          <span>{success}</span>
         </div>
       )}
 
       {activeTab === "schedule" && (
-        <form onSubmit={handleScheduleClass} className="space-y-4 max-w-2xl bg-white border border-gray-150 rounded-2xl p-6">
-          <h3 className="font-bold text-sm text-gray-900 mb-2">Programar una Masterclass</h3>
-          <div className="grid md:grid-cols-2 gap-4">
+        <form onSubmit={handleScheduleClass} className="space-y-6 max-w-2xl bg-white dark:bg-neutral-950 border border-neutral-200/60 dark:border-neutral-850/80 rounded-3xl p-6 md:p-8 shadow-sm">
+          <div className="flex items-center gap-2.5 border-b border-neutral-100 dark:border-neutral-900 pb-3">
+            <div className="w-8 h-8 rounded-lg bg-brand-blue/10 dark:bg-brand-blue/15 text-brand-blue flex items-center justify-center">
+              <Calendar className="w-4.5 h-4.5" />
+            </div>
+            <h3 className="font-bold text-sm text-neutral-900 dark:text-white">Programar una Masterclass</h3>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Título de la Clase *</label>
+              <label className="block text-[10px] font-bold text-neutral-450 dark:text-neutral-500 uppercase tracking-widest mb-1.5">Título de la Clase *</label>
               <input 
                 type="text" 
                 required 
                 value={title} 
                 onChange={e => setTitle(e.target.value)} 
                 placeholder="Ej. Masterclass SQL Avanzado" 
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
+                className="w-full bg-neutral-50 focus:bg-white dark:bg-neutral-900 dark:focus:bg-neutral-950 border border-neutral-200 focus:border-brand-blue dark:border-neutral-800 dark:focus:border-brand-blue rounded-xl p-3 text-xs text-neutral-950 dark:text-white outline-none transition-all focus:ring-2 focus:ring-brand-blue/15" 
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Sala de Directo (ID único) *</label>
+              <label className="block text-[10px] font-bold text-neutral-450 dark:text-neutral-500 uppercase tracking-widest mb-1.5">Sala de Directo (ID único) *</label>
               <input 
                 type="text" 
                 required 
                 value={roomName} 
                 onChange={e => setRoomName(e.target.value)} 
                 placeholder="ej. masterclass-sql" 
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
+                className="w-full bg-neutral-50 focus:bg-white dark:bg-neutral-900 dark:focus:bg-neutral-950 border border-neutral-200 focus:border-brand-blue dark:border-neutral-800 dark:focus:border-brand-blue rounded-xl p-3 text-xs text-neutral-950 dark:text-white outline-none transition-all focus:ring-2 focus:ring-brand-blue/15" 
               />
+              <span className="text-[10px] text-neutral-400 dark:text-neutral-500 mt-1 block">El ID de la sala se convertirá a minúsculas y guiones.</span>
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
+            <label className="block text-[10px] font-bold text-neutral-450 dark:text-neutral-500 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
             <textarea 
               value={description} 
               onChange={e => setDescription(e.target.value)} 
-              placeholder="Indica el contenido clave de la clase..." 
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue resize-none min-h-[60px]" 
-              rows={2}
+              placeholder="Indica el contenido clave de la clase, temarios, o requisitos..." 
+              className="w-full bg-neutral-50 focus:bg-white dark:bg-neutral-900 dark:focus:bg-neutral-950 border border-neutral-200 focus:border-brand-blue dark:border-neutral-800 dark:focus:border-brand-blue rounded-xl p-3 text-xs text-neutral-950 dark:text-white outline-none transition-all focus:ring-2 focus:ring-brand-blue/15 resize-none min-h-[80px]" 
+              rows={3}
             />
           </div>
 
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Clave de Stream (Opcional)</label>
+              <label className="block text-[10px] font-bold text-neutral-450 dark:text-neutral-500 uppercase tracking-widest mb-1.5">Clave de Stream (Opcional)</label>
               <input 
                 type="password" 
                 value={youtubeKey} 
                 onChange={e => setYoutubeKey(e.target.value)} 
                 placeholder="Para transmitir con OBS Studio" 
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
+                className="w-full bg-neutral-50 focus:bg-white dark:bg-neutral-900 dark:focus:bg-neutral-950 border border-neutral-200 focus:border-brand-blue dark:border-neutral-800 dark:focus:border-brand-blue rounded-xl p-3 text-xs text-neutral-950 dark:text-white outline-none transition-all focus:ring-2 focus:ring-brand-blue/15" 
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Fecha y Hora Programada *</label>
+              <label className="block text-[10px] font-bold text-neutral-450 dark:text-neutral-500 uppercase tracking-widest mb-1.5">Fecha y Hora Programada *</label>
               <input 
                 type="datetime-local" 
                 required 
                 value={scheduledAt} 
                 onChange={e => setScheduledAt(e.target.value)} 
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
+                className="w-full bg-neutral-50 focus:bg-white dark:bg-neutral-900 dark:focus:bg-neutral-950 border border-neutral-200 focus:border-brand-blue dark:border-neutral-800 dark:focus:border-brand-blue rounded-xl p-3 text-xs text-neutral-950 dark:text-white outline-none transition-all focus:ring-2 focus:ring-brand-blue/15" 
               />
             </div>
           </div>
@@ -5641,7 +5656,7 @@ function AdminLiveClasses() {
             <button 
               type="submit" 
               disabled={submittingSchedule}
-              className="px-6 py-3 bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white rounded-xl font-bold text-xs flex items-center gap-2 border-none cursor-pointer"
+              className="px-6 py-3 bg-brand-blue hover:bg-blue-650 disabled:opacity-50 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 border-none cursor-pointer transition-all active:scale-[0.98]"
             >
               {submittingSchedule ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Calendar className="w-3.5 h-3.5" />}
               {submittingSchedule ? "Agendando..." : "Agendar Masterclass"}
@@ -5651,60 +5666,86 @@ function AdminLiveClasses() {
       )}
 
       {activeTab === "recording" && (
-        <form onSubmit={handleAddRecording} className="space-y-4 max-w-2xl bg-white border border-gray-150 rounded-2xl p-6">
-          <h3 className="font-bold text-sm text-gray-900 mb-2">Agregar Grabación de Clase Pasada</h3>
-          <div className="grid md:grid-cols-2 gap-4">
+        <form onSubmit={handleAddRecording} className="space-y-6 max-w-2xl bg-white dark:bg-neutral-950 border border-neutral-200/60 dark:border-neutral-850/80 rounded-3xl p-6 md:p-8 shadow-sm">
+          <div className="flex items-center gap-2.5 border-b border-neutral-100 dark:border-neutral-900 pb-3">
+            <div className="w-8 h-8 rounded-lg bg-rose-50/80 dark:bg-rose-500/10 text-rose-500 flex items-center justify-center">
+              <Video className="w-4.5 h-4.5" />
+            </div>
+            <h3 className="font-bold text-sm text-neutral-900 dark:text-white">Agregar Grabación de Clase Pasada</h3>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-5">
             <div>
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Título de la Grabación *</label>
+              <label className="block text-[10px] font-bold text-neutral-450 dark:text-neutral-500 uppercase tracking-widest mb-1.5">Título de la Grabación *</label>
               <input 
                 type="text" 
                 required 
                 value={recordingTitle} 
                 onChange={e => setRecordingTitle(e.target.value)} 
                 placeholder="Ej. Masterclass SQL Server - Sesión 1" 
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
+                className="w-full bg-neutral-50 focus:bg-white dark:bg-neutral-900 dark:focus:bg-neutral-950 border border-neutral-200 focus:border-brand-blue dark:border-neutral-800 dark:focus:border-brand-blue rounded-xl p-3 text-xs text-neutral-950 dark:text-white outline-none transition-all focus:ring-2 focus:ring-brand-blue/15" 
               />
             </div>
             <div>
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">ID de Video de YouTube *</label>
+              <label className="block text-[10px] font-bold text-neutral-450 dark:text-neutral-500 uppercase tracking-widest mb-1.5">ID de Video de YouTube *</label>
               <input 
                 type="text" 
                 required 
                 value={recordingVideoId} 
                 onChange={e => setRecordingVideoId(e.target.value)} 
                 placeholder="Ej. dQw4w9WgXcQ" 
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
+                className="w-full bg-neutral-50 focus:bg-white dark:bg-neutral-900 dark:focus:bg-neutral-950 border border-neutral-200 focus:border-brand-blue dark:border-neutral-800 dark:focus:border-brand-blue rounded-xl p-3 text-xs text-neutral-950 dark:text-white outline-none transition-all focus:ring-2 focus:ring-brand-blue/15" 
               />
+              <span className="text-[10px] text-neutral-400 dark:text-neutral-500 mt-1 block">Ingresa el ID de 11 caracteres del video de YouTube.</span>
             </div>
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
+            <label className="block text-[10px] font-bold text-neutral-450 dark:text-neutral-500 uppercase tracking-widest mb-1.5">Descripción (Opcional)</label>
             <textarea 
               value={recordingDescription} 
               onChange={e => setRecordingDescription(e.target.value)} 
-              placeholder="Escribe un breve resumen de los temas explicados..." 
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue resize-none min-h-[60px]" 
-              rows={2}
+              placeholder="Escribe un breve resumen de los temas explicados, recursos o enlaces útiles..." 
+              className="w-full bg-neutral-50 focus:bg-white dark:bg-neutral-900 dark:focus:bg-neutral-950 border border-neutral-200 focus:border-brand-blue dark:border-neutral-800 dark:focus:border-brand-blue rounded-xl p-3 text-xs text-neutral-950 dark:text-white outline-none transition-all focus:ring-2 focus:ring-brand-blue/15 resize-none min-h-[80px]" 
+              rows={3}
             />
           </div>
 
-          <div>
-            <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5">Fecha de la Clase *</label>
-            <input 
-              type="datetime-local" 
-              required 
-              value={recordingDate} 
-              onChange={e => setRecordingDate(e.target.value)} 
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-xs text-gray-900 outline-none focus:border-brand-blue" 
-            />
+          <div className="grid md:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-[10px] font-bold text-neutral-450 dark:text-neutral-500 uppercase tracking-widest mb-1.5">Fecha de la Clase *</label>
+              <input 
+                type="datetime-local" 
+                required 
+                value={recordingDate} 
+                onChange={e => setRecordingDate(e.target.value)} 
+                className="w-full bg-neutral-50 focus:bg-white dark:bg-neutral-900 dark:focus:bg-neutral-950 border border-neutral-200 focus:border-brand-blue dark:border-neutral-800 dark:focus:border-brand-blue rounded-xl p-3 text-xs text-neutral-950 dark:text-white outline-none transition-all focus:ring-2 focus:ring-brand-blue/15" 
+              />
+            </div>
+            
+            {/* Dynamic YouTube thumbnail preview */}
+            <div className="flex flex-col justify-end">
+              {recordingVideoId.trim().length === 11 && (
+                <div className="rounded-xl overflow-hidden border border-neutral-200/80 dark:border-neutral-800/80 bg-neutral-900 aspect-video relative max-w-[200px] shadow-sm select-none">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={`https://img.youtube.com/vi/${recordingVideoId.trim()}/hqdefault.jpg`}
+                    alt="Preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute bottom-1 right-1 bg-black/75 text-[9px] text-white px-1.5 py-0.5 rounded font-bold">
+                    Miniatura
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="flex justify-end pt-2">
             <button 
               type="submit" 
               disabled={submittingRecording}
-              className="px-6 py-3 bg-brand-blue hover:bg-blue-600 disabled:opacity-50 text-white rounded-xl font-bold text-xs flex items-center gap-2 border-none cursor-pointer"
+              className="px-6 py-3 bg-brand-blue hover:bg-blue-650 disabled:opacity-50 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-2 border-none cursor-pointer transition-all active:scale-[0.98]"
             >
               {submittingRecording ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Video className="w-3.5 h-3.5" />}
               {submittingRecording ? "Agregando..." : "Agregar Grabación"}
@@ -5714,19 +5755,19 @@ function AdminLiveClasses() {
       )}
 
       {activeTab === "list" && (
-        <div className="bg-white border border-gray-150 rounded-2xl overflow-hidden shadow-sm">
+        <div className="bg-white dark:bg-neutral-950 border border-neutral-200/70 dark:border-neutral-850/80 rounded-3xl overflow-hidden shadow-sm">
           {loading ? (
-            <div className="py-12 flex justify-center">
+            <div className="py-16 flex justify-center">
               <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
             </div>
           ) : classes.length === 0 ? (
-            <div className="p-12 text-center text-gray-400 text-xs">
-              No hay clases registradas.
+            <div className="p-16 text-center text-neutral-400 dark:text-neutral-500 text-xs">
+              No hay clases registradas aún.
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse text-left text-xs text-gray-500">
-                <thead className="bg-gray-50 text-[10px] uppercase font-bold text-gray-400 border-b border-gray-150">
+              <table className="w-full border-collapse text-left text-xs text-neutral-500 dark:text-neutral-400">
+                <thead className="bg-neutral-50 dark:bg-neutral-900/60 text-[10px] uppercase font-bold text-neutral-450 dark:text-neutral-500 border-b border-neutral-200/80 dark:border-neutral-800/80">
                   <tr>
                     <th className="px-6 py-4">Título</th>
                     <th className="px-6 py-4">Programada / Fecha</th>
@@ -5735,10 +5776,10 @@ function AdminLiveClasses() {
                     <th className="px-6 py-4 text-right">Acciones</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-neutral-100 dark:divide-neutral-900">
                   {classes.map((cls) => (
-                    <tr key={cls.id} className="hover:bg-gray-50/50">
-                      <td className="px-6 py-4 font-bold text-gray-900">{cls.title}</td>
+                    <tr key={cls.id} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-900/20 transition-colors">
+                      <td className="px-6 py-4 font-bold text-neutral-900 dark:text-white max-w-xs truncate">{cls.title}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {new Date(cls.scheduled_at).toLocaleDateString("es-CL", { 
                           day: 'numeric', 
@@ -5750,50 +5791,55 @@ function AdminLiveClasses() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         {cls.status === "active" ? (
-                          <span className="bg-red-50 text-red-600 border border-red-200 px-2 py-0.5 rounded-full font-bold text-[10px]">
+                          <span className="bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded-full font-black text-[9px] text-red-650 dark:text-red-400 flex items-center gap-1.5 w-max animate-pulse">
+                            <span className="w-1.5 h-1.5 bg-red-650 dark:bg-red-400 rounded-full" />
                             En Vivo Ahora
                           </span>
                         ) : cls.status === "scheduled" ? (
-                          <span className="bg-blue-50 text-blue-600 border border-blue-200 px-2 py-0.5 rounded-full font-bold text-[10px]">
+                          <span className="bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full font-bold text-[9px] text-amber-600 dark:text-amber-450 flex items-center gap-1 w-max">
+                            <Clock className="w-3 h-3" />
                             Programada
                           </span>
                         ) : (
-                          <span className="bg-gray-100 text-gray-600 border border-gray-200 px-2 py-0.5 rounded-full font-semibold text-[10px]">
+                          <span className="bg-neutral-100 dark:bg-neutral-900 border border-neutral-200/50 dark:border-neutral-800 px-2.5 py-1 rounded-full font-semibold text-[9px] text-neutral-600 dark:text-neutral-450 flex items-center gap-1 w-max">
+                            <Film className="w-3 h-3" />
                             Grabación
                           </span>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-gray-400">
+                      <td className="px-6 py-4 whitespace-nowrap">
                         {cls.youtube_video_id ? (
                           <a 
                             href={`https://youtu.be/${cls.youtube_video_id}`} 
                             target="_blank" 
                             rel="noopener noreferrer" 
-                            className="text-brand-blue font-semibold hover:underline flex items-center gap-1"
+                            className="text-brand-blue dark:text-blue-400 font-semibold hover:underline flex items-center gap-1 w-max"
                           >
                             {cls.youtube_video_id} <ExternalLink className="w-3 h-3" />
                           </a>
                         ) : cls.youtube_stream_key ? (
-                          <span className="font-mono text-[10px]">Transmisión RTMP</span>
+                          <span className="font-mono text-[10px] text-neutral-400">Transmisión RTMP</span>
                         ) : (
-                          <span>Sin enlace</span>
+                          <span className="text-neutral-400 dark:text-neutral-600">Sin enlace</span>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-right whitespace-nowrap space-x-2">
-                        {cls.status === "scheduled" && (
+                      <td className="px-6 py-4 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-2">
+                          {cls.status === "scheduled" && (
+                            <button
+                              onClick={() => handleStartClass(cls.id)}
+                              className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] px-3 py-1.5 rounded-lg border-none cursor-pointer shadow-sm active:scale-95 transition-all flex items-center gap-1"
+                            >
+                              <Play className="w-3 h-3 fill-white" /> Iniciar Live
+                            </button>
+                          )}
                           <button
-                            onClick={() => handleStartClass(cls.id)}
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] px-2.5 py-1 rounded-lg border-none cursor-pointer shadow-sm"
+                            onClick={() => handleDeleteClass(cls.id, cls.title)}
+                            className="bg-red-500/10 hover:bg-red-500/20 text-red-650 dark:text-red-400 font-bold text-[10px] px-3 py-1.5 rounded-lg border border-red-200/30 dark:border-red-900/30 cursor-pointer active:scale-95 transition-all"
                           >
-                            Iniciar Live
+                            Eliminar
                           </button>
-                        )}
-                        <button
-                          onClick={() => handleDeleteClass(cls.id, cls.title)}
-                          className="bg-red-50 hover:bg-red-100 text-red-600 font-bold text-[10px] px-2.5 py-1 rounded-lg border border-red-200 cursor-pointer"
-                        >
-                          Eliminar
-                        </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
