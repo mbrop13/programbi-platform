@@ -321,7 +321,7 @@ export default function LivePanel() {
             <div className="absolute top-0 right-0 w-80 h-80 bg-blue-300/10 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
 
             {/* Left Section: Live Video Embed inside Glass Container */}
-            <div className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-black/40 backdrop-blur-sm p-1 rounded-2xl overflow-hidden border border-white/20 z-10">
+            <div className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-neutral-800/80 p-1.5 rounded-2xl overflow-hidden border-2 border-black z-10">
               {activeClass.youtube_video_id ? (
                 <iframe
                   width="100%"
@@ -334,7 +334,7 @@ export default function LivePanel() {
                   className="absolute inset-0 w-full h-full border-none rounded-xl"
                 />
               ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center text-white/50 bg-neutral-950 rounded-xl">
+                <div className="absolute inset-0 flex flex-col items-center justify-center text-white/50 bg-neutral-900 rounded-xl">
                   <VideoOff className="w-8 h-8 mb-2" />
                   <span className="text-[10px] font-bold uppercase tracking-wider">Señal no disponible</span>
                 </div>
@@ -392,8 +392,8 @@ export default function LivePanel() {
             <div className="absolute top-0 right-0 w-80 h-80 bg-blue-300/10 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
 
             {/* Left Section: Graphic Placeholder inside Glass Container */}
-            <div className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center overflow-hidden border border-white/15 select-none z-10">
-              <Calendar className="w-16 h-16 text-white/30 animate-pulse relative z-10" />
+            <div className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-neutral-800/80 rounded-2xl flex items-center justify-center overflow-hidden border-2 border-black select-none z-10">
+              <Calendar className="w-16 h-16 text-white/20 animate-pulse relative z-10" />
             </div>
 
             {/* Right Section: Countdown, Date & Texts */}
@@ -469,7 +469,7 @@ export default function LivePanel() {
           <div className="absolute top-0 right-0 w-80 h-80 bg-blue-300/10 rounded-full filter blur-[80px] -mr-20 -mt-20 pointer-events-none" />
 
           {/* Left Section: YouTube Video Player Embed inside Glass Container */}
-          <div className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-black/40 rounded-2xl overflow-hidden border border-white/15 z-10 p-1">
+          <div className="w-full md:w-[48%] lg:w-[45%] shrink-0 relative aspect-video md:aspect-auto min-h-[220px] md:min-h-full bg-neutral-800/80 rounded-2xl overflow-hidden border-2 border-black z-10 p-1.5">
             {completedClasses[0].youtube_video_id ? (
               <iframe
                 width="100%"
