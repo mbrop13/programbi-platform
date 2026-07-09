@@ -23,6 +23,12 @@ import {
   X,
   Sparkles,
   HelpCircle,
+  Image as ImageIcon,
+  BarChart2,
+  Trash2,
+  Plus,
+  Search,
+  Video,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -34,7 +40,42 @@ import {
   isCurrentUserAdmin,
   getCurrentUserProfile,
   getDashboardStats,
+  voteInPoll,
+  getCoursesAndLessons,
 } from "@/lib/supabase/comunidad";
+
+const PRESET_IMAGES = [
+  {
+    id: "announcement",
+    name: "Anuncio de Clase",
+    url: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop",
+    color: "from-blue-500 to-indigo-600"
+  },
+  {
+    id: "dashboard",
+    name: "Dashboard Analytics",
+    url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop",
+    color: "from-emerald-500 to-teal-600"
+  },
+  {
+    id: "achievement",
+    name: "Felicitación / Logro",
+    url: "https://images.unsplash.com/photo-1513151233558-d860c5398176?q=80&w=600&auto=format&fit=crop",
+    color: "from-amber-500 to-orange-600"
+  },
+  {
+    id: "welcome",
+    name: "Bienvenida Comunidad",
+    url: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600&auto=format&fit=crop",
+    color: "from-purple-500 to-pink-600"
+  },
+  {
+    id: "challenge",
+    name: "Desafío Semanal",
+    url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop",
+    color: "from-rose-500 to-red-600"
+  }
+];
 
 interface MuroFeedProps {
   isRestricted?: boolean;
@@ -52,6 +93,40 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
   const [newPostContent, setNewPostContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isQuestionPost, setIsQuestionPost] = useState(false);
+
+  // Rich Media States
+  const [selectedMediaType, setSelectedMediaType] = useState<"text" | "image" | "video" | "poll">("text");
+  
+  // Image states
+  const [imagePresetUrl, setImagePresetUrl] = useState("");
+  const [imageCustomUrl, setImageCustomUrl] = useState("");
+  const [showImagePresets, setShowImagePresets] = useState(true);
+
+  // Video states
+  const [availableCourses, setAvailableCourses] = useState<any[]>([]);
+  const [availableLessons, setAvailableLessons] = useState<any[]>([]);
+  const [selectedCourseId, setSelectedCourseId] = useState("");
+  const [selectedLessonId, setSelectedLessonId] = useState("");
+  const [externalVideoUrl, setExternalVideoUrl] = useState("");
+  const [coursesLoading, setCoursesLoading] = useState(false);
+
+  // Poll states
+  const [pollQuestion, setPollQuestion] = useState("");
+  const [pollOptions, setPollOptions] = useState<string[]>(["", ""]);
+
+  // Fetch courses and lessons for video selector
+  useEffect(() => {
+    if (isAdmin && selectedMediaType === "video" && availableCourses.length === 0) {
+      setCoursesLoading(true);
+      getCoursesAndLessons()
+        .then(({ courses, lessons }) => {
+          setAvailableCourses(courses);
+          setAvailableLessons(lessons);
+        })
+        .catch(err => console.error("Error loading courses/lessons", err))
+        .finally(() => setCoursesLoading(false));
+    }
+  }, [isAdmin, selectedMediaType, availableCourses.length]);
 
   useEffect(() => {
     async function init() {
@@ -76,12 +151,82 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
   }, []);
 
   const handlePostSubmit = async () => {
-    if (!newPostContent.trim()) return;
+    // Determine content to submit
+    let finalContent = newPostContent.trim();
+    
+    if (selectedMediaType !== "text") {
+      const payload: any = {
+        __serializedRichPost: true,
+        text: newPostContent.trim(),
+        mediaType: selectedMediaType
+      };
+      
+      if (selectedMediaType === "image") {
+        const imageUrl = imageCustomUrl.trim() || imagePresetUrl;
+        if (!imageUrl) {
+          alert("Por favor selecciona una imagen o ingresa una URL.");
+          return;
+        }
+        payload.imageUrl = imageUrl;
+      } else if (selectedMediaType === "video") {
+        const course = availableCourses.find(c => c.id === selectedCourseId);
+        const lesson = availableLessons.find(l => l.id === selectedLessonId);
+        
+        if (!selectedCourseId && !externalVideoUrl.trim()) {
+          alert("Por favor selecciona un curso/clase del LMS o ingresa una URL externa.");
+          return;
+        }
+        
+        payload.videoRef = {
+          courseId: selectedCourseId || undefined,
+          courseTitle: course?.title || undefined,
+          courseSlug: course?.slug || undefined,
+          lessonId: selectedLessonId || undefined,
+          lessonTitle: lesson?.title || undefined,
+          externalUrl: externalVideoUrl.trim() || undefined
+        };
+      } else if (selectedMediaType === "poll") {
+        const question = pollQuestion.trim();
+        const validOptions = pollOptions.filter(o => o.trim() !== "");
+        
+        if (!question) {
+          alert("Por favor escribe la pregunta de la encuesta.");
+          return;
+        }
+        if (validOptions.length < 2) {
+          alert("Por favor escribe al menos 2 opciones.");
+          return;
+        }
+        
+        payload.poll = {
+          question,
+          options: validOptions.map((text, idx) => ({
+            id: `opt_${Date.now()}_${idx}`,
+            text: text.trim(),
+            votes: []
+          }))
+        };
+      }
+      
+      finalContent = JSON.stringify(payload);
+    } else {
+      if (!finalContent) return;
+    }
+    
     setIsSubmitting(true);
     try {
-      await createPost(newPostContent, isQuestionPost);
+      await createPost(finalContent, false);
       setNewPostContent("");
-      setIsQuestionPost(false);
+      // Reset composer states
+      setSelectedMediaType("text");
+      setImagePresetUrl("");
+      setImageCustomUrl("");
+      setSelectedCourseId("");
+      setSelectedLessonId("");
+      setExternalVideoUrl("");
+      setPollQuestion("");
+      setPollOptions(["", ""]);
+      
       const data = await getPosts();
       setPosts(data);
     } catch (err: any) {
@@ -247,111 +392,309 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
         {/* ─── FEED COLUMN ─── */}
         <div className="lg:col-span-8 space-y-5">
           {/* Post Composer */}
-          {isAdmin ? (
-            <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 transition-shadow hover:shadow-md">
-              <div className="flex gap-4">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm">
-                  {dashStats?.userName?.charAt(0)?.toUpperCase() || "A"}
+          {/* Post Composer (Admins Only) */}
+          {isAdmin && (
+            <div className="bg-white rounded-3xl p-6 shadow-md border border-gray-150/70 transition-all hover:shadow-lg space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-100 gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-display font-black text-sm shadow-md shrink-0">
+                    {dashStats?.userName?.charAt(0)?.toUpperCase() || "A"}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-900 text-sm">Nuevo Anuncio Oficial</h4>
+                    <p className="text-[11px] text-gray-400 font-medium">Publica contenido enriquecido para la comunidad</p>
+                  </div>
                 </div>
-                <div className="flex-1 space-y-3">
+                
+                {/* Media Type Tabs */}
+                <div className="flex bg-gray-100/80 p-1 rounded-xl border border-gray-200/50 gap-0.5 self-start sm:self-auto overflow-x-auto max-w-full">
+                  <button
+                    onClick={() => setSelectedMediaType("text")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center gap-1.5 shrink-0
+                      ${selectedMediaType === "text" ? "bg-white text-gray-900 shadow-sm" : "text-gray-450 hover:text-gray-650"}`}
+                  >
+                    <span>Texto</span>
+                  </button>
+                  <button
+                    onClick={() => setSelectedMediaType("image")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center gap-1.5 shrink-0
+                      ${selectedMediaType === "image" ? "bg-white text-gray-900 shadow-sm" : "text-gray-450 hover:text-gray-650"}`}
+                  >
+                    <ImageIcon className="w-3.5 h-3.5" />
+                    <span>Imagen</span>
+                  </button>
+                  <button
+                    onClick={() => setSelectedMediaType("video")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center gap-1.5 shrink-0
+                      ${selectedMediaType === "video" ? "bg-white text-gray-900 shadow-sm" : "text-gray-450 hover:text-gray-650"}`}
+                  >
+                    <Play className="w-3.5 h-3.5" />
+                    <span>Clase</span>
+                  </button>
+                  <button
+                    onClick={() => setSelectedMediaType("poll")}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border-none cursor-pointer flex items-center gap-1.5 shrink-0
+                      ${selectedMediaType === "poll" ? "bg-white text-gray-900 shadow-sm" : "text-gray-450 hover:text-gray-650"}`}
+                  >
+                    <BarChart2 className="w-3.5 h-3.5" />
+                    <span>Encuesta</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Main content textarea */}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-[10px] font-bold text-gray-400 mb-1.5 uppercase tracking-wider">
+                    {selectedMediaType === "poll" ? "Introducción / Contexto" : "Mensaje de la publicación"}
+                  </label>
                   <textarea
                     value={newPostContent}
                     onChange={(e) => setNewPostContent(e.target.value)}
-                    placeholder="Escribe un anuncio o comparte algo con la comunidad..."
-                    className="w-full bg-gray-50/80 rounded-xl px-4 py-3 border border-gray-200/80 focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 focus:bg-white transition-all resize-none text-sm text-gray-800 placeholder:text-gray-400 min-h-[60px]"
-                    rows={2}
+                    placeholder={
+                      selectedMediaType === "poll"
+                        ? "Escribe un mensaje introductorio para esta encuesta..."
+                        : selectedMediaType === "video"
+                          ? "Escribe un mensaje describiendo por qué recomiendas ver esta clase..."
+                          : "Escribe un anuncio o comparte algo con la comunidad..."
+                    }
+                    className="w-full bg-gray-50/70 rounded-2xl px-4 py-3 border border-gray-200 focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 focus:bg-white transition-all resize-none text-sm text-gray-800 placeholder:text-gray-400 min-h-[80px]"
+                    rows={3}
                   />
-                  <div className="flex items-center justify-end">
-                    <button
-                      onClick={handlePostSubmit}
-                      disabled={isSubmitting || !newPostContent.trim()}
-                      className="px-5 py-2 bg-brand-blue hover:bg-blue-600 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl transition-all font-bold text-sm flex items-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98]"
-                    >
-                      {isSubmitting ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Send className="w-4 h-4" />
-                      )}
-                      Publicar
-                    </button>
+                </div>
+
+                {/* --- IMAGE MEDIA SUB-INTERFACE --- */}
+                {selectedMediaType === "image" && (
+                  <div className="p-5 bg-gray-50 rounded-2xl border border-gray-200/70 space-y-4">
+                    <div className="flex items-center justify-between border-b border-gray-200/50 pb-3">
+                      <h5 className="text-xs font-bold text-gray-700">Adjuntar Imagen</h5>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => setShowImagePresets(true)}
+                          className={`px-2.5 py-1 rounded-md text-[10px] font-black tracking-wide uppercase border-none cursor-pointer
+                            ${showImagePresets ? "bg-brand-blue text-white" : "bg-gray-200 text-gray-500 hover:bg-gray-300"}`}
+                        >
+                          Presets
+                        </button>
+                        <button
+                          onClick={() => setShowImagePresets(false)}
+                          className={`px-2.5 py-1 rounded-md text-[10px] font-black tracking-wide uppercase border-none cursor-pointer
+                            ${!showImagePresets ? "bg-brand-blue text-white" : "bg-gray-200 text-gray-500 hover:bg-gray-300"}`}
+                        >
+                          URL Personalizada
+                        </button>
+                      </div>
+                    </div>
+
+                    {showImagePresets ? (
+                      <div className="space-y-3">
+                        <span className="block text-[10px] font-bold text-gray-400 uppercase">Elige un preset temático:</span>
+                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                          {PRESET_IMAGES.map((img) => (
+                            <button
+                              key={img.id}
+                              onClick={() => {
+                                setImagePresetUrl(img.url);
+                                setImageCustomUrl("");
+                              }}
+                              className={`group relative h-20 rounded-xl overflow-hidden border-2 transition-all cursor-pointer flex flex-col justify-end p-2 text-left
+                                ${imagePresetUrl === img.url ? "border-brand-blue shadow-md scale-102" : "border-transparent opacity-85 hover:opacity-100"}`}
+                            >
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={img.url} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                              <span className="relative z-10 text-[9px] font-black text-white uppercase tracking-wider line-clamp-1">{img.name}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <label className="block text-[10px] font-bold text-gray-400 uppercase">Ingresa la URL de la imagen:</label>
+                        <input
+                          type="url"
+                          placeholder="https://ejemplo.com/imagen.jpg"
+                          value={imageCustomUrl}
+                          onChange={(e) => {
+                            setImageCustomUrl(e.target.value);
+                            setImagePresetUrl("");
+                          }}
+                          className="w-full bg-white border border-gray-205 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10"
+                        />
+                      </div>
+                    )}
+
+                    {/* Live Image Preview */}
+                    {(imageCustomUrl || imagePresetUrl) && (
+                      <div className="relative rounded-xl overflow-hidden border border-gray-200 bg-white max-h-[200px] flex items-center justify-center p-1">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={imageCustomUrl || imagePresetUrl}
+                          alt="Previsualización"
+                          className="w-full h-full object-cover max-h-[190px] rounded-lg"
+                        />
+                        <button
+                          onClick={() => {
+                            setImagePresetUrl("");
+                            setImageCustomUrl("");
+                          }}
+                          className="absolute top-3 right-3 w-6 h-6 rounded-full bg-black/60 hover:bg-black/80 text-white flex items-center justify-center border-none cursor-pointer transition-colors"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    )}
                   </div>
+                )}
+
+                {/* --- VIDEO MEDIA SUB-INTERFACE --- */}
+                {selectedMediaType === "video" && (
+                  <div className="p-5 bg-gray-50 rounded-2xl border border-gray-200/70 space-y-4">
+                    <h5 className="text-xs font-bold text-gray-700 border-b border-gray-200/50 pb-3">Vincular Video o Clase LMS</h5>
+                    
+                    {coursesLoading ? (
+                      <div className="flex justify-center items-center py-6 gap-2">
+                        <Loader2 className="w-4 h-4 text-brand-blue animate-spin" />
+                        <span className="text-xs text-gray-400 font-semibold">Cargando cursos y clases...</span>
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                          <label className="block text-[10px] font-bold text-gray-400 uppercase">Selecciona el Curso:</label>
+                          <select
+                            value={selectedCourseId}
+                            onChange={(e) => {
+                              setSelectedCourseId(e.target.value);
+                              setSelectedLessonId("");
+                            }}
+                            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10"
+                          >
+                            <option value="">-- Elige un Curso --</option>
+                            {availableCourses.map((c) => (
+                              <option key={c.id} value={c.id}>{c.title}</option>
+                            ))}
+                          </select>
+                        </div>
+                        
+                        <div className="space-y-1.5">
+                          <label className="block text-[10px] font-bold text-gray-400 uppercase">Selecciona la Clase / Lección:</label>
+                          <select
+                            value={selectedLessonId}
+                            onChange={(e) => setSelectedLessonId(e.target.value)}
+                            disabled={!selectedCourseId}
+                            className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
+                          >
+                            <option value="">-- Elige una Clase --</option>
+                            {availableLessons
+                              .filter((l) => l.course_id === selectedCourseId)
+                              .map((l) => (
+                                <option key={l.id} value={l.id}>{l.title}</option>
+                              ))}
+                          </select>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="relative flex py-2 items-center">
+                      <div className="flex-grow border-t border-gray-200"></div>
+                      <span className="flex-shrink mx-4 text-[10px] text-gray-400 font-extrabold uppercase">Ó</span>
+                      <div className="flex-grow border-t border-gray-200"></div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Ingresar URL de Video Externo (YouTube, Vimeo, etc.):</label>
+                      <input
+                        type="url"
+                        placeholder="https://www.youtube.com/watch?v=..."
+                        value={externalVideoUrl}
+                        onChange={(e) => setExternalVideoUrl(e.target.value)}
+                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* --- POLL MEDIA SUB-INTERFACE --- */}
+                {selectedMediaType === "poll" && (
+                  <div className="p-5 bg-gray-50 rounded-2xl border border-gray-200/70 space-y-4">
+                    <h5 className="text-xs font-bold text-gray-700 border-b border-gray-200/50 pb-3">Crear Encuesta</h5>
+                    
+                    <div className="space-y-1.5">
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase">Pregunta de la Encuesta:</label>
+                      <input
+                        type="text"
+                        placeholder="¿Qué tema te gustaría ver en la próxima Masterclass?"
+                        value={pollQuestion}
+                        onChange={(e) => setPollQuestion(e.target.value)}
+                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10 font-bold text-gray-800"
+                      />
+                    </div>
+
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase">Opciones (Mínimo 2, Máximo 5):</span>
+                        {pollOptions.length < 5 && (
+                          <button
+                            onClick={() => setPollOptions([...pollOptions, ""])}
+                            className="bg-brand-blue/10 hover:bg-brand-blue/20 text-brand-blue text-[10px] font-black px-2.5 py-1.5 rounded-lg border-none cursor-pointer flex items-center gap-1 transition-all"
+                          >
+                            <Plus className="w-3 h-3" /> Agregar opción
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        {pollOptions.map((option, idx) => (
+                          <div key={idx} className="flex gap-2 items-center">
+                            <span className="text-xs font-bold text-gray-400 w-5 text-right">{idx + 1}.</span>
+                            <input
+                              type="text"
+                              placeholder={`Opción ${idx + 1}`}
+                              value={option}
+                              onChange={(e) => {
+                                const newOpts = [...pollOptions];
+                                newOpts[idx] = e.target.value;
+                                setPollOptions(newOpts);
+                              }}
+                              className="flex-1 bg-white border border-gray-200 rounded-xl px-4 py-2 text-xs focus:outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/10"
+                            />
+                            {pollOptions.length > 2 && (
+                              <button
+                                onClick={() => {
+                                  const newOpts = pollOptions.filter((_, i) => i !== idx);
+                                  setPollOptions(newOpts);
+                                }}
+                                className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-500 rounded-xl border-none cursor-pointer transition-colors"
+                                aria-label="Eliminar opción"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Action button */}
+                <div className="flex items-center justify-end pt-2">
+                  <button
+                    onClick={handlePostSubmit}
+                    disabled={isSubmitting || (selectedMediaType === "text" && !newPostContent.trim())}
+                    className="px-6 py-2.5 bg-brand-blue hover:bg-blue-600 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl transition-all font-bold text-sm flex items-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98] border-none cursor-pointer"
+                  >
+                    {isSubmitting ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Send className="w-4 h-4" />
+                    )}
+                    Publicar Anuncio
+                  </button>
                 </div>
               </div>
             </div>
-          ) : (
-            <button
-              onClick={() => {
-                if (isGuest) {
-                  router.push("/comunidad");
-                } else {
-                  setIsQuestionPost(true);
-                }
-              }}
-              disabled={isRestricted}
-              className="w-full bg-white rounded-2xl p-5 shadow-sm border border-gray-100 hover:shadow-md hover:border-brand-blue/20 transition-all text-left flex items-center gap-4 group disabled:opacity-50"
-            >
-              <div className="w-11 h-11 rounded-xl bg-gray-100 group-hover:bg-brand-blue/10 text-gray-400 group-hover:text-brand-blue flex items-center justify-center transition-colors shrink-0">
-                <MessageCircle className="w-5 h-5" />
-              </div>
-              <span className="text-gray-400 group-hover:text-gray-600 text-sm font-medium transition-colors">
-                {isGuest ? "Suscríbete a un plan Premium para publicar en la comunidad" : "¿Tienes una pregunta? Compártela con la comunidad..."}
-              </span>
-            </button>
           )}
-
-          {/* Question Composer */}
-          <AnimatePresence>
-            {isQuestionPost && !isAdmin && !isRestricted && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="bg-white rounded-2xl p-5 shadow-sm border border-indigo-200 space-y-3">
-                  <div className="flex items-center gap-2 text-xs font-bold text-indigo-600">
-                    <span className="bg-indigo-100 px-2 py-1 rounded-md">
-                      PREGUNTA
-                    </span>
-                    <span className="text-gray-400">
-                      La comunidad te ayudará
-                    </span>
-                  </div>
-                  <textarea
-                    value={newPostContent}
-                    onChange={(e) => setNewPostContent(e.target.value)}
-                    autoFocus
-                    placeholder="Describe tu duda sobre programación, SQL, datos..."
-                    className="w-full bg-gray-50 rounded-xl px-4 py-3 border border-gray-200 focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition-all resize-none text-sm text-gray-800 placeholder:text-gray-400 min-h-[80px]"
-                    rows={3}
-                  />
-                  <div className="flex items-center justify-end gap-2">
-                    <button
-                      onClick={() => {
-                        setIsQuestionPost(false);
-                        setNewPostContent("");
-                      }}
-                      className="px-4 py-2 text-gray-500 hover:text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      onClick={handlePostSubmit}
-                      disabled={isSubmitting || !newPostContent.trim()}
-                      className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white rounded-xl font-bold text-sm flex items-center gap-2 shadow-sm transition-all"
-                    >
-                      {isSubmitting ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Send className="w-4 h-4" />
-                      )}
-                      Publicar Pregunta
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* Feed */}
           {!posts.length ? (
@@ -378,6 +721,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                   <PostCard
                     post={post}
                     isGuest={isGuest}
+                    userId={userProfile?.id}
                     onLike={() => handleLike(post.id)}
                     onSubmitComment={(text: string) =>
                       handleCreateComment(post.id, text)
@@ -670,8 +1014,225 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
 
 
 
-/* ── Post Card (unchanged logic) ── */
-function PostCard({ post, isGuest, onLike, onSubmitComment, onUpgradeClick }: any) {
+/* ── Video Attachment Card ── */
+function VideoAttachmentCard({ videoRef }: any) {
+  const router = useRouter();
+
+  const handleRedirect = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (videoRef.courseSlug) {
+      router.push(`/comunidad/cursos/${videoRef.courseSlug}`);
+    } else if (videoRef.externalUrl) {
+      window.open(videoRef.externalUrl, "_blank");
+    } else {
+      router.push(`/comunidad/cursos`);
+    }
+  };
+
+  return (
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 overflow-hidden relative group mt-3">
+      {/* Glow decorative */}
+      <div className="absolute top-0 right-0 w-24 h-24 bg-brand-blue/10 rounded-full filter blur-xl pointer-events-none transition-opacity duration-300 group-hover:opacity-40" />
+      
+      <div className="flex flex-col sm:flex-row gap-4 items-center relative z-10">
+        {/* Play Video Thumbnail simulation */}
+        <div 
+          onClick={handleRedirect}
+          className="w-full sm:w-36 aspect-video rounded-xl bg-slate-950 flex items-center justify-center shrink-0 cursor-pointer overflow-hidden border border-slate-800 relative group/thumb"
+        >
+          {/* Decorative design */}
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 opacity-85" />
+          <div className="w-10 h-10 rounded-full bg-brand-blue/20 flex items-center justify-center border border-brand-blue/30 text-brand-blue group-hover/thumb:scale-110 group-hover/thumb:bg-brand-blue group-hover/thumb:text-white transition-all shadow-lg relative z-10 duration-300">
+            <Play className="w-4 h-4 fill-current ml-0.5" />
+          </div>
+        </div>
+
+        <div className="flex-1 min-w-0 text-center sm:text-left">
+          <span className="text-[9px] font-black uppercase tracking-widest text-brand-blue bg-brand-blue/10 px-2 py-0.5 rounded-md border border-brand-blue/25">
+            Clase Recomendada
+          </span>
+          <h4 className="text-xs font-bold text-white mt-1.5 leading-snug line-clamp-1">
+            {videoRef.lessonTitle || videoRef.courseTitle || "Ver video de la clase"}
+          </h4>
+          {videoRef.courseTitle && videoRef.lessonTitle && (
+            <p className="text-[10px] text-slate-400 font-medium mt-0.5 line-clamp-1">
+              Curso: {videoRef.courseTitle}
+            </p>
+          )}
+          {videoRef.externalUrl && !videoRef.courseTitle && (
+            <p className="text-[10px] text-slate-400 font-medium mt-0.5 truncate max-w-[250px] mx-auto sm:mx-0">
+              {videoRef.externalUrl}
+            </p>
+          )}
+        </div>
+
+        <button
+          onClick={handleRedirect}
+          className="w-full sm:w-auto px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white text-[11px] font-bold rounded-xl shadow-md border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all shrink-0 active:scale-[0.98]"
+        >
+          <span>Ver Clase</span>
+          <ArrowRight className="w-3.5 h-3.5" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/* ── Poll Attachment Card ── */
+function PollAttachmentCard({ poll, postId, userId }: any) {
+  const [localPoll, setLocalPoll] = useState(poll);
+  const [votingInProgress, setVotingInProgress] = useState(false);
+
+  useEffect(() => {
+    setLocalPoll(poll);
+  }, [poll]);
+
+  // Compute statistics
+  const totalVotes = (localPoll.options || []).reduce((sum: number, opt: any) => sum + (opt.votes || []).length, 0);
+  const hasVotedAny = (localPoll.options || []).some((opt: any) => (opt.votes || []).includes(userId));
+
+  const handleVote = async (optionId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (votingInProgress || !userId) return;
+    setVotingInProgress(true);
+
+    // Toggle logic: check if user is voting for the option they already voted for
+    const currentlyVotedOpt = localPoll.options.find((opt: any) => (opt.votes || []).includes(userId));
+    const isTogglingOff = currentlyVotedOpt && currentlyVotedOpt.id === optionId;
+
+    // Optimistic UI state update
+    const updatedOptions = localPoll.options.map((opt: any) => {
+      let votes = [...(opt.votes || [])];
+      
+      // Remove from everywhere
+      const idx = votes.indexOf(userId);
+      if (idx > -1) {
+        votes.splice(idx, 1);
+      }
+
+      // Add to this option if it's the target and we are NOT toggling it off
+      if (opt.id === optionId && !isTogglingOff) {
+        votes.push(userId);
+      }
+
+      return {
+        ...opt,
+        votes
+      };
+    });
+
+    setLocalPoll({
+      ...localPoll,
+      options: updatedOptions
+    });
+
+    try {
+      await voteInPoll(postId, optionId);
+    } catch (err: any) {
+      // rollback on error
+      setLocalPoll(poll);
+      alert("Error al votar: " + err.message);
+    } finally {
+      setVotingInProgress(false);
+    }
+  };
+
+  return (
+    <div className="bg-gray-50/50 dark:bg-neutral-900/30 border border-gray-150/70 dark:border-neutral-800 rounded-2xl p-4.5 space-y-3.5 mt-3">
+      <div>
+        <h4 className="text-xs font-bold text-gray-900 dark:text-neutral-100 flex items-center gap-2">
+          <BarChart2 className="w-4 h-4 text-brand-blue" />
+          {localPoll.question}
+        </h4>
+      </div>
+
+      <div className="space-y-2">
+        {localPoll.options.map((opt: any) => {
+          const votesCount = (opt.votes || []).length;
+          const percentage = totalVotes > 0 ? Math.round((votesCount / totalVotes) * 100) : 0;
+          const hasVotedThis = (opt.votes || []).includes(userId);
+
+          return (
+            <div key={opt.id} className="relative w-full">
+              {hasVotedAny ? (
+                <button
+                  onClick={(e) => handleVote(opt.id, e)}
+                  disabled={votingInProgress}
+                  className={`w-full text-left p-3 rounded-xl transition-all relative overflow-hidden flex items-center justify-between cursor-pointer border-none
+                    ${hasVotedThis
+                      ? "bg-blue-50/80 dark:bg-blue-950/20 text-brand-blue font-bold border border-brand-blue/30"
+                      : "bg-gray-50 dark:bg-neutral-900/70 text-gray-700 dark:text-gray-300"}`}
+                >
+                  {/* Progress background overlay */}
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${percentage}%` }}
+                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    className={`absolute left-0 top-0 bottom-0 pointer-events-none opacity-10 
+                      ${hasVotedThis ? "bg-brand-blue" : "bg-gray-450 dark:bg-gray-650"}`}
+                  />
+                  
+                  <div className="flex items-center gap-2 relative z-10">
+                    {hasVotedThis && (
+                      <span className="text-[9px] bg-brand-blue text-white w-4.5 h-4.5 rounded-full flex items-center justify-center font-black">
+                        ✓
+                      </span>
+                    )}
+                    <span className="text-xs">{opt.text}</span>
+                  </div>
+                  <span className="relative z-10 text-xs font-bold">{percentage}% ({votesCount})</span>
+                </button>
+              ) : (
+                <button
+                  onClick={(e) => handleVote(opt.id, e)}
+                  disabled={votingInProgress}
+                  className="w-full text-left p-3 rounded-xl border border-gray-250 dark:border-neutral-800 bg-white dark:bg-neutral-950 hover:bg-gray-50 dark:hover:bg-neutral-900 hover:border-brand-blue/30 text-gray-700 dark:text-gray-300 text-xs font-semibold transition-all active:scale-[0.99] flex items-center justify-between cursor-pointer"
+                >
+                  <span>{opt.text}</span>
+                  <span className="text-[10px] text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">Votar</span>
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="flex items-center justify-between text-[10px] text-gray-400 font-extrabold uppercase tracking-wide px-1 pt-1.5 border-t border-gray-100 dark:border-neutral-900">
+        <span>Votos Totales: {totalVotes}</span>
+        {hasVotedAny && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              const votedOpt = localPoll.options.find((o: any) => (o.votes || []).includes(userId));
+              if (votedOpt) handleVote(votedOpt.id, e);
+            }}
+            disabled={votingInProgress}
+            className="text-brand-blue hover:underline bg-transparent border-none cursor-pointer text-[10px] font-black uppercase tracking-wide"
+          >
+            Quitar / Cambiar Voto
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* ── Post Card ── */
+function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeClick }: any) {
+  let richPost: any = null;
+  let isRich = false;
+  try {
+    if (post.content && post.content.startsWith("{") && post.content.includes("__serializedRichPost")) {
+      richPost = JSON.parse(post.content);
+      if (richPost.__serializedRichPost) {
+        isRich = true;
+      }
+    }
+  } catch (e) {
+    // fallback to text
+  }
+
+  const postText = isRich ? richPost.text : post.content;
   const isQuestion = post.channel_id === "support";
   const authorName = post.author?.full_name || "Estudiante";
   const timeStr = getRelativeTime(post.created_at);
@@ -737,7 +1298,7 @@ function PostCard({ post, isGuest, onLike, onSubmitComment, onUpgradeClick }: an
       </div>
 
       {/* Content */}
-      {isGuest && post.author?.role === "admin" && !/gratis|gratuita/i.test(post.content || "") ? (
+      {isGuest && post.author?.role === "admin" && !/gratis|gratuita/i.test(postText || "") ? (
         <div className="relative mb-5">
           <p className="text-gray-400 text-[15px] leading-relaxed whitespace-pre-wrap select-none filter blur-[5px] pointer-events-none">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ut lorem quis diam elementum elementum. Nullam luctus finibus elit eget elementum. Duis id arcu id urna finibus porta.
@@ -759,13 +1320,42 @@ function PostCard({ post, isGuest, onLike, onSubmitComment, onUpgradeClick }: an
           </div>
         </div>
       ) : (
-        <p className="text-gray-800 text-[15px] leading-relaxed whitespace-pre-wrap mb-5">
-          {post.content}
-        </p>
+        <>
+          <p className="text-gray-800 text-[15px] leading-relaxed whitespace-pre-wrap mb-5">
+            {postText}
+          </p>
+
+          {/* Render Rich Post Attachments */}
+          {isRich && (
+            <div className="mt-4 mb-5">
+              {richPost.mediaType === "image" && richPost.imageUrl && (
+                <div className="relative rounded-2xl overflow-hidden border border-gray-100 bg-gray-50 max-h-[360px] group">
+                  <img
+                    src={richPost.imageUrl}
+                    alt="Post Media"
+                    className="w-full h-auto object-cover max-h-[360px] transition-transform duration-500 group-hover:scale-102"
+                  />
+                </div>
+              )}
+
+              {richPost.mediaType === "video" && richPost.videoRef && (
+                <VideoAttachmentCard videoRef={richPost.videoRef} />
+              )}
+
+              {richPost.mediaType === "poll" && richPost.poll && (
+                <PollAttachmentCard 
+                  poll={richPost.poll} 
+                  postId={post.id} 
+                  userId={userId} 
+                />
+              )}
+            </div>
+          )}
+        </>
       )}
 
       {/* Actions */}
-      {!(isGuest && post.author?.role === "admin" && !/gratis|gratuita/i.test(post.content || "")) && (
+      {!(isGuest && post.author?.role === "admin" && !/gratis|gratuita/i.test(postText || "")) && (
         <div className="flex items-center gap-1 pt-3 border-t border-gray-100">
         <button
           onClick={() => {
@@ -833,7 +1423,7 @@ function PostCard({ post, isGuest, onLike, onSubmitComment, onUpgradeClick }: an
 
               <div className="flex items-center gap-2 pt-1">
                 <div className="w-7 h-7 rounded-lg bg-brand-blue/10 flex items-center justify-center font-bold text-[10px] text-brand-blue shrink-0">
-                  T
+                  U
                 </div>
                 <div className="flex-1 relative">
                   <input
@@ -849,7 +1439,7 @@ function PostCard({ post, isGuest, onLike, onSubmitComment, onUpgradeClick }: an
                   <button
                     onClick={handleCommentSubmit}
                     disabled={!newComment.trim()}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-brand-blue disabled:opacity-30 text-white p-1.5 rounded-lg hover:bg-blue-600 transition-all"
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-brand-blue disabled:opacity-30 text-white p-1.5 rounded-lg hover:bg-blue-600 transition-all border-none cursor-pointer flex items-center justify-center"
                   >
                     <Send className="w-3.5 h-3.5" />
                   </button>

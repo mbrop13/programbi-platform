@@ -743,3 +743,88 @@ export async function getUserCertificates() {
 
   return data || [];
 }
+
+/**
+ * Votar en una encuesta de la comunidad.
+ * Registra o cambia el voto del usuario.
+ */
+export async function voteInPoll(postId: string, optionId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Debes iniciar sesión");
+
+  const { createAdminClient } = await import("./server");
+  const adminDb = createAdminClient();
+
+  const { data: post, error: fetchError } = await adminDb
+    .from("posts")
+    .select("content")
+    .eq("id", postId)
+    .single();
+
+  if (fetchError || !post) throw new Error("Publicación no encontrada");
+
+  let richContent: any;
+  try {
+    richContent = JSON.parse(post.content);
+  } catch (e) {
+    throw new Error("La publicación no contiene una encuesta válida");
+  }
+
+  if (!richContent.__serializedRichPost || richContent.mediaType !== "poll" || !richContent.poll) {
+    throw new Error("La publicación no es una encuesta válida");
+  }
+
+  // Update votes
+  let userAlreadyVotedOptionId = "";
+  richContent.poll.options.forEach((opt: any) => {
+    if (!Array.isArray(opt.votes)) opt.votes = [];
+    const idx = opt.votes.indexOf(user.id);
+    if (idx > -1) {
+      opt.votes.splice(idx, 1);
+      userAlreadyVotedOptionId = opt.id;
+    }
+  });
+
+  // If clicked a different option (or hadn't voted yet), add vote
+  if (userAlreadyVotedOptionId !== optionId) {
+    const targetOpt = richContent.poll.options.find((opt: any) => opt.id === optionId);
+    if (targetOpt) {
+      if (!Array.isArray(targetOpt.votes)) targetOpt.votes = [];
+      targetOpt.votes.push(user.id);
+    }
+  }
+
+  const { error: updateError } = await adminDb
+    .from("posts")
+    .update({ content: JSON.stringify(richContent) })
+    .eq("id", postId);
+
+  if (updateError) throw new Error("Error al registrar voto: " + updateError.message);
+
+  revalidatePath("/(comunidad)", "layout");
+}
+
+/**
+ * Obtener todos los cursos y sus lecciones para el compositor de administración.
+ */
+export async function getCoursesAndLessons() {
+  const { createAdminClient } = await import("./server");
+  const adminDb = createAdminClient();
+
+  const [coursesRes, lessonsRes] = await Promise.all([
+    adminDb
+      .from("courses")
+      .select("id, title, slug")
+      .order("title", { ascending: true }),
+    adminDb
+      .from("lessons")
+      .select("id, title, course_id")
+      .order("title", { ascending: true })
+  ]);
+
+  return {
+    courses: coursesRes.data || [],
+    lessons: lessonsRes.data || []
+  };
+}
