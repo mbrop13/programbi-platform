@@ -1245,6 +1245,7 @@ function AdminCourses() {
   const [editingLesson, setEditingLesson] = useState<any>(null);
   const [showMarketingEdits, setShowMarketingEdits] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [savingLesson, setSavingLesson] = useState(false);
 
   const [editDescription, setEditDescription] = useState("");
   const [savingDescription, setSavingDescription] = useState(false);
@@ -1317,7 +1318,8 @@ function AdminCourses() {
   };
 
   const handleAddLesson = async () => {
-    if (!selectedCourse || !newLesson.title || !newLesson.video_url) return;
+    if (!selectedCourse || !newLesson.title || !newLesson.video_url || savingLesson) return;
+    setSavingLesson(true);
     const lessonPayload = {
       title: newLesson.title,
       module_name: newLesson.module_name,
@@ -1340,7 +1342,11 @@ function AdminCourses() {
       setNewLesson({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] });
       setEditingLesson(null);
       setShowAddLesson(false);
-    } catch (err) { console.error(err); }
+    } catch (err) { 
+      console.error(err); 
+    } finally {
+      setSavingLesson(false);
+    }
   };
 
   const handleDeleteLesson = async (lessonId: string) => {
@@ -1654,8 +1660,9 @@ function AdminCourses() {
                     setEditingLesson(null);
                     setNewLesson({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] });
                   }} className="px-4 py-2 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors">Cancelar</button>
-                  <button onClick={handleAddLesson} disabled={!newLesson.title || !newLesson.video_url}
-                    className="px-5 py-2 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-all active:scale-[0.98] disabled:opacity-40">
+                  <button onClick={handleAddLesson} disabled={!newLesson.title || !newLesson.video_url || savingLesson}
+                    className="px-5 py-2 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-all active:scale-[0.98] disabled:opacity-40 flex items-center gap-1.5">
+                    {savingLesson && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                     Guardar Lección
                   </button>
                 </div>
