@@ -29,6 +29,7 @@ import {
   Plus,
   Search,
   Video,
+  Check,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -77,6 +78,27 @@ const PRESET_IMAGES = [
   }
 ];
 
+const GUIDE_STEPS = [
+  {
+    title: "¿Dónde están mis clases?",
+    description: "Tus especializaciones activas y tu progreso de aprendizaje se encuentran en la pestaña 'Mis Cursos' en el menú lateral.",
+    videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+    poster: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    title: "Clases en Vivo",
+    description: "Conéctate a las masterclasses semanales en vivo para resolver dudas complejas interactuando en directo con el profesor en la pestaña 'Clases en Vivo'.",
+    videoUrl: "https://www.w3schools.com/html/movie.mp4",
+    poster: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    title: "Estudia con el Mentor IA",
+    description: "Encuentra respuestas rápidas de SQL, Python y visualización de datos chateando 24/7 con el Mentor de IA.",
+    videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
+    poster: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop"
+  }
+];
+
 interface MuroFeedProps {
   isRestricted?: boolean;
 }
@@ -89,6 +111,51 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
   const [userProfile, setUserProfile] = useState<any>(null);
   const [dashStats, setDashStats] = useState<any>(null);
   const [activeGuide, setActiveGuide] = useState<'primeros-pasos' | 'roadmap' | 'normas' | null>(null);
+
+  // Start Guide States
+  const [showStartGuide, setShowStartGuide] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("programbi-hide-start-guide") !== "true";
+    }
+    return true;
+  });
+  const [activeGuideStep, setActiveGuideStep] = useState(0);
+  const [completedSteps, setCompletedSteps] = useState<boolean[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("programbi-completed-guide-steps");
+      if (saved) {
+        try { return JSON.parse(saved); } catch (e) {}
+      }
+    }
+    return [false, false, false];
+  });
+
+  const handleToggleStepCompleted = (idx: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const updated = [...completedSteps];
+    updated[idx] = !updated[idx];
+    setCompletedSteps(updated);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("programbi-completed-guide-steps", JSON.stringify(updated));
+    }
+  };
+
+  const handleSkipGuide = () => {
+    setShowStartGuide(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("programbi-hide-start-guide", "true");
+    }
+  };
+
+  const handleResetGuide = () => {
+    setShowStartGuide(true);
+    setCompletedSteps([false, false, false]);
+    setActiveGuideStep(0);
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("programbi-hide-start-guide");
+      localStorage.removeItem("programbi-completed-guide-steps");
+    }
+  };
 
   const [newPostContent, setNewPostContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -830,30 +897,116 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
             </div>
           )}
 
-          {/* Improved Resources List */}
-          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-            <h3 className="font-bold text-gray-900 text-sm mb-4">Recursos de la Comunidad</h3>
-            <div className="space-y-2">
+          {/* Guía de Inicio Card */}
+          {showStartGuide ? (
+            <div className="bg-white dark:bg-neutral-950 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-900 p-5 space-y-4 transition-all">
+              {/* Header */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-bold text-gray-905 dark:text-white text-sm flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-brand-blue animate-pulse" />
+                    Guía de Inicio
+                  </h3>
+                </div>
+                <button
+                  onClick={handleSkipGuide}
+                  className="text-[10px] font-black uppercase tracking-wide text-gray-400 hover:text-gray-650 dark:hover:text-neutral-350 bg-gray-50 dark:bg-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-800 px-2.5 py-1 rounded-lg transition-all border-none cursor-pointer"
+                >
+                  Saltar
+                </button>
+              </div>
+
+              {/* Video Player */}
+              <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-gray-150/70 dark:border-neutral-800 group/player">
+                <video
+                  key={GUIDE_STEPS[activeGuideStep].videoUrl}
+                  src={GUIDE_STEPS[activeGuideStep].videoUrl}
+                  poster={GUIDE_STEPS[activeGuideStep].poster}
+                  controls
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Steps List */}
+              <div className="space-y-2.5">
+                {GUIDE_STEPS.map((step, idx) => {
+                  const isActive = activeGuideStep === idx;
+                  const isCompleted = completedSteps[idx];
+                  
+                  return (
+                    <div
+                      key={idx}
+                      onClick={() => setActiveGuideStep(idx)}
+                      className={`p-3 rounded-xl border text-left cursor-pointer transition-all flex gap-3 items-start
+                        ${isActive 
+                          ? "bg-blue-50/50 dark:bg-blue-950/10 border-brand-blue/30 shadow-sm" 
+                          : "bg-white dark:bg-neutral-950 border-gray-100 dark:border-neutral-900 hover:border-gray-200 dark:hover:border-neutral-800"}`}
+                    >
+                      {/* Left Circle Indicator */}
+                      <button
+                        onClick={(e) => handleToggleStepCompleted(idx, e)}
+                        className="bg-transparent border-none p-0 shrink-0 cursor-pointer mt-0.5"
+                        aria-label={isCompleted ? "Paso completado" : "Marcar como completado"}
+                      >
+                        {isCompleted ? (
+                          <div className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0 shadow-sm transition-transform duration-300 scale-100 hover:scale-105 active:scale-95">
+                            <Check className="w-3 h-3 stroke-[3]" />
+                          </div>
+                        ) : (
+                          <svg className="w-5 h-5 text-gray-300 dark:text-neutral-700 hover:text-brand-blue transition-colors" viewBox="0 0 24 24" fill="none">
+                            <circle 
+                              cx="12" 
+                              cy="12" 
+                              r="10" 
+                              stroke="currentColor" 
+                              strokeWidth="2" 
+                              strokeDasharray="4 2" 
+                            />
+                            <text 
+                              x="12" 
+                              y="15.5" 
+                              textAnchor="middle" 
+                              className="text-[9px] font-black fill-gray-400 dark:fill-neutral-500 font-sans"
+                            >
+                              {idx + 1}
+                            </text>
+                          </svg>
+                        )}
+                      </button>
+
+                      <div className="min-w-0 flex-1 space-y-1">
+                        <h4 className={`text-xs font-bold leading-tight flex items-center justify-between
+                          ${isActive ? "text-brand-blue" : "text-gray-800 dark:text-neutral-200"}`}>
+                          {step.title}
+                        </h4>
+                        
+                        {isActive && (
+                          <motion.p
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            className="text-[11px] text-gray-500 dark:text-neutral-400 leading-normal"
+                          >
+                            {step.description}
+                          </motion.p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-neutral-950 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-900 p-4 text-center">
+              <span className="text-[10px] text-gray-450 font-medium">¿Te saltaste la guía de inicio?</span>
               <button
-                onClick={() => setActiveGuide('primeros-pasos')}
-                className="w-full text-left px-3 py-2.5 rounded-xl text-xs text-gray-700 hover:bg-blue-50/50 hover:text-brand-blue transition-colors font-bold border-0 bg-transparent cursor-pointer flex items-center gap-2"
+                onClick={handleResetGuide}
+                className="text-[10px] font-black text-brand-blue hover:underline block mx-auto mt-1 bg-transparent border-none cursor-pointer"
               >
-                <span>📘</span> Guía de Primeros Pasos
-              </button>
-              <button
-                onClick={() => setActiveGuide('roadmap')}
-                className="w-full text-left px-3 py-2.5 rounded-xl text-xs text-gray-700 hover:bg-amber-50/50 hover:text-amber-600 transition-colors font-bold border-0 bg-transparent cursor-pointer flex items-center gap-2"
-              >
-                <span>🎯</span> Ruta de Aprendizaje
-              </button>
-              <button
-                onClick={() => setActiveGuide('normas')}
-                className="w-full text-left px-3 py-2.5 rounded-xl text-xs text-gray-700 hover:bg-indigo-50/50 hover:text-indigo-650 transition-colors font-bold border-0 bg-transparent cursor-pointer flex items-center gap-2"
-              >
-                <span>🤝</span> Código de Convivencia
+                Reiniciar Guía de Inicio
               </button>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
