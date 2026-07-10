@@ -984,7 +984,11 @@ function AdminMembers() {
       const planVal = subPlan === "none" ? null : subPlan;
       const expiresVal = subExpiresAt ? new Date(subExpiresAt).toISOString() : null;
       
-      await adminUpdateUserSubscription(selectedUser.id, planVal, expiresVal);
+      const res = await adminUpdateUserSubscription(selectedUser.id, planVal, expiresVal);
+      if (res && !res.success) {
+        alert(res.error || "Error al actualizar suscripción.");
+        return;
+      }
       
       // Update local state
       const updatedUser = { 

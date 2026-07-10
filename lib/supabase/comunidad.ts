@@ -839,77 +839,82 @@ export async function adminUpdateUserSubscription(
   plan: string | null,
   expiresAtISO: string | null
 ) {
-  // 1. Obtener sesión de usuario e identificar al llamador en el servidor
-  const { createClient } = await import("./server");
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  try {
+    // 1. Obtener sesión de usuario e identificar al llamador en el servidor
+    const { createClient } = await import("./server");
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user) {
-    throw new Error("No autorizado: Debes iniciar sesión");
-  }
-
-  // 2. Verificar rol de administrador en el servidor
-  const isAdmin = await isCurrentUserAdmin();
-  if (!isAdmin) {
-    console.warn(`[INTENT DE ACCESO NO AUTORIZADO] El usuario ${user.email} (ID: ${user.id}) intentó modificar una suscripción sin privilegios.`);
-    throw new Error("Acceso denegado: Se requieren permisos de administrador");
-  }
-
-  // 3. Validar y sanitizar parámetros (Mitigación de inyecciones y estados corruptos)
-  const allowedPlans = [null, "none", "trial", "premium", "ultra"];
-  const sanitizedPlan = plan === "none" ? null : plan;
-  if (sanitizedPlan !== null && !allowedPlans.includes(sanitizedPlan)) {
-    throw new Error(`Plan inválido: "${plan}". Solo se permiten: none, trial, premium, ultra.`);
-  }
-
-  // Validar formato UUID para el ID del usuario destino
-  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-  if (!uuidRegex.test(targetUserId)) {
-    throw new Error("Formato de ID de usuario inválido (Debe ser UUID)");
-  }
-
-  // Validar y parsear fecha de expiración
-  let dbExpiresAt: string | null = null;
-  if (expiresAtISO) {
-    const parsedDate = new Date(expiresAtISO);
-    if (isNaN(parsedDate.getTime())) {
-      throw new Error("Formato de fecha de expiración inválido");
+    if (!user) {
+      return { success: false, error: "No autorizado: Debes iniciar sesión" };
     }
-    dbExpiresAt = parsedDate.toISOString();
+
+    // 2. Verificar rol de administrador en el servidor
+    const isAdmin = await isCurrentUserAdmin();
+    if (!isAdmin) {
+      console.warn(`[INTENT DE ACCESO NO AUTORIZADO] El usuario ${user.email} (ID: ${user.id}) intentó modificar una suscripción sin privilegios.`);
+      return { success: false, error: "Acceso denegado: Se requieren permisos de administrador" };
+    }
+
+    // 3. Validar y sanitizar parámetros (Mitigación de inyecciones y estados corruptos)
+    const allowedPlans = [null, "none", "trial", "premium", "ultra"];
+    const sanitizedPlan = plan === "none" ? null : plan;
+    if (sanitizedPlan !== null && !allowedPlans.includes(sanitizedPlan)) {
+      return { success: false, error: `Plan inválido: "${plan}". Solo se permiten: none, trial, premium, ultra.` };
+    }
+
+    // Validar formato UUID para el ID del usuario destino
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    if (!uuidRegex.test(targetUserId)) {
+      return { success: false, error: "Formato de ID de usuario inválido (Debe ser UUID)" };
+    }
+
+    // Validar y parsear fecha de expiración
+    let dbExpiresAt: string | null = null;
+    if (expiresAtISO) {
+      const parsedDate = new Date(expiresAtISO);
+      if (isNaN(parsedDate.getTime())) {
+        return { success: false, error: "Formato de fecha de expiración inválido" };
+      }
+      dbExpiresAt = parsedDate.toISOString();
+    }
+
+    // 4. Crear cliente administrador con privilegios elevados de forma controlada
+    const { createAdminClient } = await import("./server");
+    const adminDb = createAdminClient();
+
+    // Verificar que el usuario destino exista para evitar actualizaciones huerfanas
+    const { data: targetProfile, error: profileErr } = await adminDb
+      .from("profiles")
+      .select("email, subscription_plan")
+      .eq("id", targetUserId)
+      .single();
+
+    if (profileErr || !targetProfile) {
+      return { success: false, error: "El usuario destino no existe en la base de datos" };
+    }
+
+    // 5. Ejecutar la actualización en la base de datos
+    const { error: updateError } = await adminDb
+      .from("profiles")
+      .update({
+        subscription_plan: sanitizedPlan,
+        subscription_expires_at: dbExpiresAt
+      })
+      .eq("id", targetUserId);
+
+    if (updateError) {
+      return { success: false, error: "Error al actualizar la suscripción: " + updateError.message };
+    }
+
+    // 6. Registro de Auditoría de Seguridad (Inmutable en logs de Next.js / Supabase)
+    console.info(
+      `[SECURITY AUDIT - SUBSCRIPTION UPDATE] Admin: ${user.email} (ID: ${user.id}) actualizó la suscripción de ${targetProfile.email} (ID: ${targetUserId}). Plan anterior: "${targetProfile.subscription_plan || 'ninguno'}", Plan nuevo: "${sanitizedPlan || 'ninguno'}", Expiración: ${dbExpiresAt || 'Permanente'}.`
+    );
+
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error en adminUpdateUserSubscription:", error);
+    return { success: false, error: error.message || "Error interno del servidor al actualizar suscripción." };
   }
-
-  // 4. Crear cliente administrador con privilegios elevados de forma controlada
-  const { createAdminClient } = await import("./server");
-  const adminDb = createAdminClient();
-
-  // Verificar que el usuario destino exista para evitar actualizaciones huerfanas
-  const { data: targetProfile, error: profileErr } = await adminDb
-    .from("profiles")
-    .select("email, subscription_plan")
-    .eq("id", targetUserId)
-    .single();
-
-  if (profileErr || !targetProfile) {
-    throw new Error("El usuario destino no existe en la base de datos");
-  }
-
-  // 5. Ejecutar la actualización en la base de datos
-  const { error: updateError } = await adminDb
-    .from("profiles")
-    .update({
-      subscription_plan: sanitizedPlan,
-      subscription_expires_at: dbExpiresAt
-    })
-    .eq("id", targetUserId);
-
-  if (updateError) {
-    throw new Error("Error al actualizar la suscripción: " + updateError.message);
-  }
-
-  // 6. Registro de Auditoría de Seguridad (Inmutable en logs de Next.js / Supabase)
-  console.info(
-    `[SECURITY AUDIT - SUBSCRIPTION UPDATE] Admin: ${user.email} (ID: ${user.id}) actualizó la suscripción de ${targetProfile.email} (ID: ${targetUserId}). Plan anterior: "${targetProfile.subscription_plan || 'ninguno'}", Plan nuevo: "${sanitizedPlan || 'ninguno'}", Expiración: ${dbExpiresAt || 'Permanente'}.`
-  );
-
-  return { success: true };
 }

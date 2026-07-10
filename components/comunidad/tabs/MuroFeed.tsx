@@ -992,26 +992,29 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/65 backdrop-blur-sm p-4 sm:p-6"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-4 sm:p-6"
             onClick={() => setActiveModalStep(null)}
           >
             <motion.div
               initial={{ scale: 0.95, y: 15 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
-              className="bg-white dark:bg-neutral-950 border border-gray-150/70 dark:border-neutral-805 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative"
+              className="bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Decorative accent top bar */}
+              <div className="h-1.5 w-full bg-gradient-to-r from-brand-blue via-indigo-500 to-purple-600 shrink-0" />
+
               {/* Close Button */}
               <button
                 onClick={() => setActiveModalStep(null)}
-                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-50 dark:bg-neutral-900 hover:bg-gray-105 dark:hover:bg-neutral-850 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-neutral-300 border-none cursor-pointer transition-colors z-20"
+                className="absolute top-5 right-5 w-8 h-8 rounded-full bg-gray-50/80 dark:bg-neutral-900/80 hover:bg-gray-100 dark:hover:bg-neutral-800 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-neutral-350 border-none cursor-pointer transition-all active:scale-90 z-20"
               >
                 <X className="w-4 h-4" />
               </button>
 
               {/* Video Player at the Top of the Pop-up */}
-              <div className="relative aspect-video w-full bg-black border-b border-gray-100 dark:border-neutral-900 overflow-hidden">
+              <div className="relative aspect-video w-full bg-black border-b border-gray-100 dark:border-neutral-900 overflow-hidden shadow-inner shrink-0">
                 <video
                   key={GUIDE_STEPS[activeModalStep].videoUrl}
                   src={GUIDE_STEPS[activeModalStep].videoUrl}
@@ -1025,26 +1028,26 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
               {/* Content area */}
               <div className="p-6 space-y-4">
                 <div>
-                  <span className="text-[9px] font-black uppercase tracking-widest text-brand-blue bg-brand-blue/10 px-2 py-0.5 rounded-md border border-brand-blue/20">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-brand-blue bg-brand-blue/10 dark:bg-brand-blue/20 px-3 py-1 rounded-full border border-brand-blue/20">
                     Paso {activeModalStep + 1} de {GUIDE_STEPS.length}
                   </span>
-                  <h3 className="text-lg font-black text-gray-950 dark:text-white leading-tight mt-2">
+                  <h3 className="text-xl font-display font-black text-neutral-900 dark:text-white leading-snug mt-3">
                     {GUIDE_STEPS[activeModalStep].title}
                   </h3>
-                  <p className="text-xs text-gray-550 dark:text-neutral-400 mt-2 leading-relaxed">
+                  <p className="text-xs text-neutral-550 dark:text-neutral-450 mt-2 leading-relaxed">
                     {GUIDE_STEPS[activeModalStep].description}
                   </p>
                 </div>
 
                 {/* Footer Buttons */}
-                <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                <div className="flex flex-col sm:flex-row gap-2.5 pt-2">
                   {!completedSteps[activeModalStep] ? (
                     <button
                       onClick={(e) => {
                         handleToggleStepCompleted(activeModalStep, e);
                         setActiveModalStep(null);
                       }}
-                      className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black rounded-xl border-none cursor-pointer transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 shadow-sm"
+                      className="flex-1 py-3 bg-brand-blue hover:bg-blue-600 text-white text-xs font-black rounded-xl border-none cursor-pointer transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 shadow-sm"
                     >
                       <Check className="w-4 h-4 stroke-[3]" />
                       <span>Marcar como Completado</span>
@@ -1054,14 +1057,14 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                       onClick={(e) => {
                         handleToggleStepCompleted(activeModalStep, e);
                       }}
-                      className="flex-1 py-3 bg-gray-150 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-850 text-gray-700 dark:text-neutral-300 text-xs font-black rounded-xl border-none cursor-pointer transition-all active:scale-[0.98] flex items-center justify-center gap-1.5"
+                      className="flex-1 py-3 bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-850 text-neutral-700 dark:text-neutral-300 text-xs font-black rounded-xl border-none cursor-pointer transition-all active:scale-[0.98] flex items-center justify-center gap-1.5"
                     >
                       <span>Desmarcar Paso</span>
                     </button>
                   )}
                   <button
                     onClick={() => setActiveModalStep(null)}
-                    className="py-3 px-5 bg-gray-50 dark:bg-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-850 text-gray-500 dark:text-neutral-400 text-xs font-bold rounded-xl border-none cursor-pointer transition-all active:scale-[0.98]"
+                    className="py-3 px-5 bg-neutral-50 dark:bg-neutral-900/60 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400 text-xs font-bold rounded-xl border-none cursor-pointer transition-all active:scale-[0.98]"
                   >
                     Cerrar
                   </button>
