@@ -327,9 +327,8 @@ export default function Sidebar({
       <div
         className={cn(
           "flex flex-col h-full relative selection:bg-transparent",
-          isCollapsed ? "cursor-pointer select-none" : "cursor-default"
+          isCollapsed ? "select-none" : ""
         )}
-        onClick={(e) => handleSidebarClick(e, isMobile)}
       >
         {/* Logo + Collapse button */}
         <div className={`flex items-center shrink-0 ${isCollapsed ? "justify-center px-2" : "justify-between px-4"} h-[68px] border-b border-neutral-100 dark:border-neutral-900`}>
@@ -471,8 +470,8 @@ export default function Sidebar({
           ))}
         </nav>
 
-        {/* Empty space filler that acts as a clickable area to collapse */}
-        <div className="flex-grow cursor-pointer" />
+        {/* Empty space filler */}
+        <div className="flex-grow" />
 
         {/* ─── USER SECTION (bottom) ─── */}
         <div className={`shrink-0 border-t border-gray-100 ${isCollapsed ? "p-2 flex justify-center" : "p-3"}`}>
