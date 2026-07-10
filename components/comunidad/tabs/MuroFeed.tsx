@@ -1002,9 +1002,6 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
               className="bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Decorative accent top bar */}
-              <div className="h-1.5 w-full bg-gradient-to-r from-brand-blue via-indigo-500 to-purple-600 shrink-0" />
-
               {/* Close Button */}
               <button
                 onClick={() => setActiveModalStep(null)}
