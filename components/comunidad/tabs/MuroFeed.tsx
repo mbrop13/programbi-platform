@@ -120,6 +120,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
     return true;
   });
   const [activeGuideStep, setActiveGuideStep] = useState(0);
+  const [activeModalStep, setActiveModalStep] = useState<number | null>(null);
   const [completedSteps, setCompletedSteps] = useState<boolean[]>(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("programbi-completed-guide-steps");
@@ -899,7 +900,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
 
           {/* Guía de Inicio Card */}
           {showStartGuide ? (
-            <div className="bg-white dark:bg-neutral-950 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-900 p-5 space-y-4 transition-all">
+            <div className="bg-white dark:bg-neutral-950 rounded-2xl shadow-sm border border-gray-105 dark:border-neutral-900 p-5 space-y-4 transition-all">
               {/* Header */}
               <div className="flex items-center justify-between">
                 <div>
@@ -916,37 +917,21 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                 </button>
               </div>
 
-              {/* Video Player */}
-              <div className="relative aspect-video rounded-xl overflow-hidden bg-black border border-gray-150/70 dark:border-neutral-800 group/player">
-                <video
-                  key={GUIDE_STEPS[activeGuideStep].videoUrl}
-                  src={GUIDE_STEPS[activeGuideStep].videoUrl}
-                  poster={GUIDE_STEPS[activeGuideStep].poster}
-                  controls
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
               {/* Steps List */}
               <div className="space-y-2.5">
                 {GUIDE_STEPS.map((step, idx) => {
-                  const isActive = activeGuideStep === idx;
                   const isCompleted = completedSteps[idx];
                   
                   return (
                     <div
                       key={idx}
-                      onClick={() => setActiveGuideStep(idx)}
-                      className={`p-3 rounded-xl border text-left cursor-pointer transition-all flex gap-3 items-start
-                        ${isActive 
-                          ? "bg-blue-50/50 dark:bg-blue-950/10 border-brand-blue/30 shadow-sm" 
-                          : "bg-white dark:bg-neutral-950 border-gray-100 dark:border-neutral-900 hover:border-gray-200 dark:hover:border-neutral-800"}`}
+                      onClick={() => setActiveModalStep(idx)}
+                      className="p-3 bg-white dark:bg-neutral-950 border border-gray-100 dark:border-neutral-900 hover:border-brand-blue/30 hover:bg-blue-50/10 dark:hover:bg-blue-950/5 rounded-xl text-left cursor-pointer transition-all flex gap-3 items-center"
                     >
                       {/* Left Circle Indicator */}
                       <button
                         onClick={(e) => handleToggleStepCompleted(idx, e)}
-                        className="bg-transparent border-none p-0 shrink-0 cursor-pointer mt-0.5"
+                        className="bg-transparent border-none p-0 shrink-0 cursor-pointer"
                         aria-label={isCompleted ? "Paso completado" : "Marcar como completado"}
                       >
                         {isCompleted ? (
@@ -975,21 +960,11 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                         )}
                       </button>
 
-                      <div className="min-w-0 flex-1 space-y-1">
-                        <h4 className={`text-xs font-bold leading-tight flex items-center justify-between
-                          ${isActive ? "text-brand-blue" : "text-gray-800 dark:text-neutral-200"}`}>
+                      <div className="min-w-0 flex-1 flex items-center justify-between">
+                        <h4 className={`text-xs font-bold leading-tight ${isCompleted ? "text-gray-500 dark:text-neutral-450 line-through" : "text-gray-800 dark:text-neutral-200"}`}>
                           {step.title}
                         </h4>
-                        
-                        {isActive && (
-                          <motion.p
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            className="text-[11px] text-gray-500 dark:text-neutral-400 leading-normal"
-                          >
-                            {step.description}
-                          </motion.p>
-                        )}
+                        <ChevronRight className="w-3.5 h-3.5 text-gray-300 shrink-0 ml-2" />
                       </div>
                     </div>
                   );
@@ -1009,6 +984,93 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
           )}
         </div>
       </div>
+
+      {/* ─── START GUIDE STEP MODAL ─── */}
+      <AnimatePresence>
+        {activeModalStep !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/65 backdrop-blur-sm p-4 sm:p-6"
+            onClick={() => setActiveModalStep(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              className="bg-white dark:bg-neutral-950 border border-gray-150/70 dark:border-neutral-805 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setActiveModalStep(null)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-50 dark:bg-neutral-900 hover:bg-gray-105 dark:hover:bg-neutral-850 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-neutral-300 border-none cursor-pointer transition-colors z-20"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              {/* Video Player at the Top of the Pop-up */}
+              <div className="relative aspect-video w-full bg-black border-b border-gray-100 dark:border-neutral-900 overflow-hidden">
+                <video
+                  key={GUIDE_STEPS[activeModalStep].videoUrl}
+                  src={GUIDE_STEPS[activeModalStep].videoUrl}
+                  poster={GUIDE_STEPS[activeGuideStep === activeModalStep ? activeGuideStep : activeModalStep].poster}
+                  controls
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* Content area */}
+              <div className="p-6 space-y-4">
+                <div>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-brand-blue bg-brand-blue/10 px-2 py-0.5 rounded-md border border-brand-blue/20">
+                    Paso {activeModalStep + 1} de {GUIDE_STEPS.length}
+                  </span>
+                  <h3 className="text-lg font-black text-gray-950 dark:text-white leading-tight mt-2">
+                    {GUIDE_STEPS[activeModalStep].title}
+                  </h3>
+                  <p className="text-xs text-gray-550 dark:text-neutral-400 mt-2 leading-relaxed">
+                    {GUIDE_STEPS[activeModalStep].description}
+                  </p>
+                </div>
+
+                {/* Footer Buttons */}
+                <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                  {!completedSteps[activeModalStep] ? (
+                    <button
+                      onClick={(e) => {
+                        handleToggleStepCompleted(activeModalStep, e);
+                        setActiveModalStep(null);
+                      }}
+                      className="flex-1 py-3 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-black rounded-xl border-none cursor-pointer transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 shadow-sm"
+                    >
+                      <Check className="w-4 h-4 stroke-[3]" />
+                      <span>Marcar como Completado</span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        handleToggleStepCompleted(activeModalStep, e);
+                      }}
+                      className="flex-1 py-3 bg-gray-150 dark:bg-neutral-900 hover:bg-gray-200 dark:hover:bg-neutral-850 text-gray-700 dark:text-neutral-300 text-xs font-black rounded-xl border-none cursor-pointer transition-all active:scale-[0.98] flex items-center justify-center gap-1.5"
+                    >
+                      <span>Desmarcar Paso</span>
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setActiveModalStep(null)}
+                    className="py-3 px-5 bg-gray-50 dark:bg-neutral-900 hover:bg-gray-100 dark:hover:bg-neutral-850 text-gray-500 dark:text-neutral-400 text-xs font-bold rounded-xl border-none cursor-pointer transition-all active:scale-[0.98]"
+                  >
+                    Cerrar
+                  </button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ─── GUIDE MODAL ─── */}
       <AnimatePresence>
