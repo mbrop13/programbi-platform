@@ -411,7 +411,7 @@ export default function Sidebar({
         </div>
 
         {/* Nav Items */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-6 scrollbar-hide">
+        <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-4 scrollbar-hide">
           {Object.entries(groups).map(([groupName, groupTabs]) => (
             <div key={groupName} className="space-y-2">
               {!isCollapsed && (
@@ -469,9 +469,6 @@ export default function Sidebar({
             </div>
           ))}
         </nav>
-
-        {/* Empty space filler */}
-        <div className="flex-grow" />
 
         {/* ─── USER SECTION (bottom) ─── */}
         <div className={`shrink-0 border-t border-gray-100 ${isCollapsed ? "p-2 flex justify-center" : "p-3"}`}>
