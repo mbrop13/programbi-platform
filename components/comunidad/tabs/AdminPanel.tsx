@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Users, Building, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { getCommunityMembers } from "@/lib/supabase/comunidad";
+import { getCommunityMembers, adminUpdateUserSubscription } from "@/lib/supabase/comunidad";
 import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminUpdateLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon, adminGetCertificates, adminAddCertificate, adminImportCertificates, adminDeleteCertificate } from "@/lib/supabase/comunidad-ai";
 import { Calendar, Radio, Film, Clock } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
@@ -931,6 +931,9 @@ function AdminMembers() {
   const [loadingEnrollments, setLoadingEnrollments] = useState(false);
   const [enrollCourseId, setEnrollCourseId] = useState("");
   const [enrollType, setEnrollType] = useState("full");
+  const [subPlan, setSubPlan] = useState("none");
+  const [subExpiresAt, setSubExpiresAt] = useState("");
+  const [updatingSub, setUpdatingSub] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 50;
 
@@ -964,12 +967,41 @@ function AdminMembers() {
 
   const selectUser = async (user: any) => {
     setSelectedUser(user);
+    setSubPlan(user.subscription_plan || "none");
+    setSubExpiresAt(user.subscription_expires_at ? user.subscription_expires_at.split('T')[0] : "");
     setLoadingEnrollments(true);
     try {
       const enrolls = await adminGetUserEnrollments(user.id);
       setUserEnrollments(enrolls);
     } catch (err) { console.error(err); }
     finally { setLoadingEnrollments(false); }
+  };
+
+  const handleUpdateSubscription = async () => {
+    if (!selectedUser || updatingSub) return;
+    setUpdatingSub(true);
+    try {
+      const planVal = subPlan === "none" ? null : subPlan;
+      const expiresVal = subExpiresAt ? new Date(subExpiresAt).toISOString() : null;
+      
+      await adminUpdateUserSubscription(selectedUser.id, planVal, expiresVal);
+      
+      // Update local state
+      const updatedUser = { 
+        ...selectedUser, 
+        subscription_plan: planVal, 
+        subscription_expires_at: expiresVal 
+      };
+      setSelectedUser(updatedUser);
+      setUsers(prev => prev.map(u => u.id === selectedUser.id ? updatedUser : u));
+      
+      alert("Suscripción actualizada exitosamente.");
+    } catch (err: any) { 
+      console.error(err); 
+      alert(err.message || "Error al actualizar suscripción.");
+    } finally {
+      setUpdatingSub(false);
+    }
   };
 
   const handleEnroll = async () => {
@@ -1132,6 +1164,33 @@ function AdminMembers() {
                    </div>
                  </>
                )}
+
+               <hr className="my-5 border-gray-250" />
+               <h4 className="font-bold text-sm text-gray-705 mb-3">Gestión de Suscripción (Segura)</h4>
+               <div className="flex flex-col sm:flex-row items-center gap-3">
+                 <div className="flex-1 w-full">
+                   <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Plan de Suscripción:</label>
+                   <select value={subPlan} onChange={e => setSubPlan(e.target.value)}
+                     className="w-full text-sm px-3 py-2 rounded-xl border border-gray-200 bg-white focus:outline-none focus:border-brand-blue/40">
+                     <option value="none">Sin Suscripción (None)</option>
+                     <option value="trial">Prueba (Trial)</option>
+                     <option value="premium">Premium</option>
+                     <option value="ultra">Ultra</option>
+                   </select>
+                 </div>
+                 <div className="flex-1 w-full">
+                   <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">Expiración (Opcional - Vacío para Permanente):</label>
+                   <input type="date" value={subExpiresAt} onChange={e => setSubExpiresAt(e.target.value)}
+                     className="w-full text-sm px-3 py-2 rounded-xl border border-gray-200 bg-white focus:outline-none focus:border-brand-blue/40" />
+                 </div>
+                 <div className="shrink-0 pt-5">
+                   <button onClick={handleUpdateSubscription} disabled={updatingSub}
+                     className="px-5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl text-sm transition-colors disabled:opacity-30 flex items-center gap-1.5 shadow-sm">
+                     {updatingSub && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                     Guardar Plan
+                   </button>
+                 </div>
+               </div>
              </div>
            </motion.div>
          )}
