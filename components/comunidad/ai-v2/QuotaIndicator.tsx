@@ -74,10 +74,26 @@ export default function QuotaIndicator({ refreshKey = 0, onUpgradeClick }: Quota
     fetchQuota();
   }, [fetchQuota, refreshKey]);
 
-  // Refrescar cada 30s
+  // Refrescar cada 30s solo si la pestaña está visible
   useEffect(() => {
-    const t = setInterval(fetchQuota, 30_000);
-    return () => clearInterval(t);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        fetchQuota();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    const t = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        fetchQuota();
+      }
+    }, 30_000);
+
+    return () => {
+      clearInterval(t);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [fetchQuota]);
 
   if (loading || !data) {

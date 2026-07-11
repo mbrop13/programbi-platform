@@ -225,19 +225,30 @@ export default function LivePanel() {
     init();
   }, [checkAdmin, fetchClassInfo]);
 
-  // ─── Auto-polling to detect class status changes ───
+  // ─── Auto-polling to detect class status changes (only if visible) ───
   useEffect(() => {
     if (isWatchingLive) return; // Don't poll while watching stream
 
     const interval =
       activeClass?.status === "scheduled" ? POLL_INTERVAL_ACTIVE : POLL_INTERVAL_IDLE;
 
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible" && !isWatchingLive) {
+        fetchClassInfo();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     pollRef.current = setInterval(() => {
-      fetchClassInfo();
+      if (document.visibilityState === "visible") {
+        fetchClassInfo();
+      }
     }, interval);
 
     return () => {
       if (pollRef.current) clearInterval(pollRef.current);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [isWatchingLive, activeClass?.status, fetchClassInfo]);
 
