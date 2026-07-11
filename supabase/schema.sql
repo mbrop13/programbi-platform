@@ -17,6 +17,8 @@ CREATE TABLE public.profiles (
   company TEXT,
   role TEXT DEFAULT 'student' CHECK (role IN ('student', 'instructor', 'admin')),
   avatar_url TEXT,
+  subscription_plan TEXT DEFAULT NULL,
+  subscription_expires_at TIMESTAMPTZ DEFAULT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );

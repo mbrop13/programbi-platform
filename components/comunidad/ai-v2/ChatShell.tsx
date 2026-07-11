@@ -257,6 +257,21 @@ function ChatShellInner({
     return () => bc.close();
   }, [refreshChats]);
 
+  // Pre-fill query from URL if q is present
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const query = searchParams.get("q");
+      if (query && !activeChatId && messages.length === 0) {
+        setInput(query);
+        // Clean URL to prevent re-triggering
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete("q");
+        window.history.replaceState(null, "", newUrl.toString());
+      }
+    }
+  }, [activeChatId, messages.length, setInput]);
+
   // ─── Selección / carga de un chat ───
   const selectChat = useCallback(
     async (id: string) => {

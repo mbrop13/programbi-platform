@@ -2,6 +2,7 @@
 
 import { useEffect, useCallback, useState, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -29,9 +30,11 @@ import {
   Globe,
   HelpCircle,
   ArrowUpCircle,
+  ArrowRight,
+  Loader2,
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
-import { getUnreadNotificationCount } from "@/lib/supabase/comunidad";
+import { getUnreadNotificationCount, getCoursesAndLessons, getPosts } from "@/lib/supabase/comunidad";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useToast } from "./ui/Toast";
@@ -135,6 +138,32 @@ interface SidebarProps {
   onLanguageChange?: (lang: 'es' | 'en') => void;
 }
 
+interface CourseSearchResult {
+  id: string;
+  title: string;
+  slug: string;
+}
+
+interface LessonSearchResult {
+  id: string;
+  title: string;
+  course_id: string;
+}
+
+interface PostSearchResult {
+  id: string;
+  content: string | Record<string, unknown>;
+  profiles?: {
+    full_name?: string;
+  };
+}
+
+interface SearchDataState {
+  courses: CourseSearchResult[];
+  lessons: LessonSearchResult[];
+  posts: PostSearchResult[];
+}
+
 export default function Sidebar({
   activeTab,
   onTabChange,
@@ -154,16 +183,22 @@ export default function Sidebar({
   language,
   onLanguageChange,
 }: SidebarProps) {
-  const searchRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searchFocused, setSearchFocused] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [hasUpcomingLives, setHasUpcomingLives] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<"apariencia" | "idioma" | null>(null);
+  
+  // Search Modal States
+  const [searchModalOpen, setSearchModalOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<'clases' | 'publicaciones' | 'chats'>('clases');
+  const [searchData, setSearchData] = useState<SearchDataState | null>(null);
+  const [loadingSearchData, setLoadingSearchData] = useState(false);
+  const [selectedResultIndex, setSelectedResultIndex] = useState(0);
   
   const activeTheme = theme || "claro";
   const setActiveTheme = onThemeChange || (() => {});
@@ -255,21 +290,40 @@ export default function Sidebar({
         return;
       }
 
-      // "/" focuses the search input (expand sidebar first if collapsed)
-      if (e.key === "/" && !e.ctrlKey && !e.metaKey && !e.altKey && !typing) {
+      // "/" or Ctrl+K / Cmd+K opens the new Search Modal (unless typing)
+      if (
+        ((e.key === "/" && !typing) ||
+         ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k")) &&
+        !searchModalOpen
+      ) {
         e.preventDefault();
-        if (collapsed) onExpand();
-        // wait a tick for the sidebar to expand before focusing
-        setTimeout(() => searchRef.current?.focus(), 60);
+        setSearchModalOpen(true);
+        if (!searchData) setLoadingSearchData(true);
       }
     },
-    [onToggleCollapse, collapsed, onExpand]
+    [onToggleCollapse, searchModalOpen, searchData]
   );
 
   useEffect(() => {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
+
+  // Load search data on demand when modal opens
+  useEffect(() => {
+    if (searchModalOpen && !searchData) {
+      Promise.all([getCoursesAndLessons(), getPosts()])
+        .then(([coursesLessons, postsList]) => {
+          setSearchData({
+            courses: coursesLessons.courses,
+            lessons: coursesLessons.lessons,
+            posts: postsList,
+          });
+        })
+        .catch((err) => console.error("Error loading search data:", err))
+        .finally(() => setLoadingSearchData(false));
+    }
+  }, [searchModalOpen, searchData]);
 
   // Close user menu when tab changes
   useEffect(() => {
@@ -279,14 +333,59 @@ export default function Sidebar({
     return () => clearTimeout(handle);
   }, [activeTab]);
 
+  const slugify = (text: string) => {
+    return text
+      .toString()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/[^\w\-]+/g, "")
+      .replace(/\-\-+/g, "-")
+      .replace(/^-+/, "")
+      .replace(/-+$/, "");
+  };
+
+  const handleResultClick = (item: CourseSearchResult | LessonSearchResult | PostSearchResult | string) => {
+    setSearchModalOpen(false);
+    setSearchQuery("");
+    if (typeof item === "string") {
+      onTabChange("ai");
+      router.push(`/comunidad/ai?q=${encodeURIComponent(item)}`);
+      return;
+    }
+
+    if (activeCategory === "clases") {
+      const lessonItem = item as LessonSearchResult;
+      if (lessonItem.course_id) {
+        const course = searchData?.courses.find(c => c.id === lessonItem.course_id);
+        if (course) {
+          onTabChange("cursos");
+          router.push(`/comunidad/cursos/${course.slug}/${slugify(lessonItem.title)}`);
+        }
+      } else {
+        const courseItem = item as CourseSearchResult;
+        onTabChange("cursos");
+        router.push(`/comunidad/cursos/${courseItem.slug}`);
+      }
+    } else if (activeCategory === "publicaciones") {
+      onTabChange("inicio");
+      router.push(`/comunidad/inicio?post=${item.id}`);
+    } else if (activeCategory === "chats") {
+      onTabChange("ai");
+      router.push(`/comunidad/ai?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
   const t = translations[activeLanguage];
 
-  const tabs: SidebarTab[] = [
-    { id: "inicio", label: t.inicio, icon: LayoutDashboard, color: "text-blue-500", group: t.principal },
-    { id: "cursos", label: t.cursos, icon: GraduationCap, color: "text-indigo-500", group: t.principal },
-    { id: "live", label: t.live, icon: Radio, color: "text-rose-500", group: t.principal, showPing: hasUpcomingLives },
-    { id: "ai", label: t.ai, icon: Sparkles, color: "text-purple-500", group: t.principal },
-    { id: "perfil", label: t.perfil, icon: User, color: "text-cyan-500", group: t.personal },
+    const tabs: SidebarTab[] = [
+      { id: "inicio", label: t.inicio, icon: LayoutDashboard, color: "text-blue-500", group: t.principal },
+      { id: "cursos", label: t.cursos, icon: GraduationCap, color: "text-indigo-500", group: t.principal },
+      { id: "live", label: t.live, icon: Radio, color: "text-rose-500", group: t.principal, showPing: hasUpcomingLives },
+      { id: "buscar", label: "Buscar", icon: Search, color: "text-brand-blue", group: t.principal },
+      { id: "ai", label: t.ai, icon: Sparkles, color: "text-purple-500", group: t.principal },
+      { id: "perfil", label: t.perfil, icon: User, color: "text-cyan-500", group: t.personal },
     { id: "certificados", label: t.certificados, icon: Award, color: "text-amber-500", group: t.personal },
     ...(isOrgManager
       ? [{ id: "business", label: t.empresa, icon: Building2, color: "text-slate-500", group: t.gestion }]
@@ -310,16 +409,9 @@ export default function Sidebar({
         .toUpperCase()
     : "?";
 
-  const sidebarWidth = collapsed ? 72 : 260;
+  const sidebarWidth = collapsed ? 72 : 230;
 
-  const handleSidebarClick = (e: React.MouseEvent, isMobile: boolean) => {
-    if (isMobile) return;
-    const target = e.target as HTMLElement;
-    const isInteractive = target.closest("button, a, input, select, textarea");
-    if (!isInteractive) {
-      onToggleCollapse();
-    }
-  };
+
 
   const renderSidebarContent = (isMobile: boolean) => {
     const isCollapsed = isMobile ? false : collapsed;
@@ -371,45 +463,6 @@ export default function Sidebar({
           )}
         </div>
 
-        {/* ─── SEARCH SECTION ─── */}
-        <div className={`shrink-0 border-b border-neutral-100 dark:border-neutral-900 ${isCollapsed ? "px-2 py-3 flex flex-col items-center gap-2" : "px-3 py-3"}`}>
-          {isCollapsed ? (
-            <button
-              onClick={() => { onExpand(); setTimeout(() => searchRef.current?.focus(), 60); }}
-              className="w-10 h-10 flex items-center justify-center rounded-xl text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-900 transition-colors"
-              title="Buscar (expande la barra)"
-            >
-              <Search className="w-[18px] h-[18px]" />
-            </button>
-          ) : (
-            <div className={`relative w-full transition-all duration-200 border border-neutral-200/65 dark:border-neutral-800/65 ${searchFocused ? "ring-2 ring-brand-blue/15 bg-white dark:bg-neutral-950 border-brand-blue/50 dark:border-brand-blue/50" : "bg-neutral-50 dark:bg-neutral-900"} rounded-xl`}>
-              <Search className={`w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none transition-colors ${searchFocused ? "text-brand-blue" : "text-neutral-400"}`} />
-              <input
-                ref={searchRef}
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onFocus={() => setSearchFocused(true)}
-                onBlur={() => setSearchFocused(false)}
-                placeholder={t.search}
-                className="w-full pl-9 pr-7 py-2 bg-transparent border-0 rounded-xl text-sm text-neutral-700 dark:text-neutral-300 placeholder:text-neutral-400 focus:outline-none transition-all"
-              />
-              {searchQuery ? (
-                <button
-                  onClick={() => { setSearchQuery(""); searchRef.current?.focus(); }}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 flex items-center justify-center rounded-full bg-neutral-300 dark:bg-neutral-700 text-white hover:bg-neutral-450 dark:hover:bg-neutral-600 transition-colors border-none"
-                >
-                  <X className="w-2.5 h-2.5" />
-                </button>
-              ) : (
-                <kbd className="absolute right-2 top-1/2 -translate-y-1/2 hidden sm:flex items-center justify-center h-5 min-w-[18px] px-1.5 rounded-md bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 text-[10px] font-semibold text-neutral-400 select-none">
-                  /
-                </kbd>
-              )}
-            </div>
-          )}
-        </div>
-
         {/* Nav Items */}
         <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-4 scrollbar-hide">
           {Object.entries(groups).map(([groupName, groupTabs]) => (
@@ -425,12 +478,17 @@ export default function Sidebar({
               <div className="space-y-1">
                 {groupTabs.map((tab) => {
                   const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
+                  const isActive = activeTab === tab.id || (tab.id === "buscar" && searchModalOpen);
                   return (
                     <button
                       key={tab.id}
                       onClick={() => {
-                        onTabChange(tab.id);
+                        if (tab.id === "buscar") {
+                          setSearchModalOpen(true);
+                          if (!searchData) setLoadingSearchData(true);
+                        } else {
+                          onTabChange(tab.id);
+                        }
                         onMobileClose();
                       }}
                       title={isCollapsed ? tab.label : undefined}
@@ -542,7 +600,7 @@ export default function Sidebar({
               transition={{ type: "spring", stiffness: 400, damping: 28 }}
               className={cn(
                 "fixed z-50 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 overflow-hidden",
-                isCollapsed ? "bottom-16 left-3 w-64" : "bottom-16 left-3 w-[236px]"
+                isCollapsed ? "bottom-16 left-3 w-64" : "bottom-16 left-3 w-[206px]"
               )}
             >
               <div className="px-4 py-3 border-b border-neutral-100 flex items-center gap-2.5 min-w-0">
@@ -658,6 +716,99 @@ export default function Sidebar({
         </AnimatePresence>
       </div>
     );
+  };
+
+  // Filter search results
+  const searchResults = (() => {
+    if (!searchQuery) return [];
+    const query = searchQuery.toLowerCase();
+    
+    if (activeCategory === "clases") {
+      if (!searchData) return [];
+      const lessonsFiltered = searchData.lessons.filter(l => 
+        l.title.toLowerCase().includes(query)
+      );
+      const coursesFiltered = searchData.courses.filter(c => 
+        c.title.toLowerCase().includes(query)
+      );
+      return [...coursesFiltered, ...lessonsFiltered];
+    }
+    
+    if (activeCategory === "publicaciones") {
+      if (!searchData) return [];
+      return searchData.posts.filter(p => {
+        const contentStr = typeof p.content === "string" 
+          ? p.content 
+          : JSON.stringify(p.content || "");
+        const authorName = p.profiles?.full_name || "";
+        return contentStr.toLowerCase().includes(query) || 
+               authorName.toLowerCase().includes(query);
+      });
+    }
+    
+    if (activeCategory === "chats") {
+      const promptSuggestions = [
+        "Cómo hacer un bucle en Power Automate",
+        "Escribir consulta SQL para obtener ventas del mes",
+        "Qué es CALCULATE en Power BI y cómo usarlo",
+        "Cómo conectar Python a PostgreSQL",
+        "Crear automatización de Power Automate para Gmail",
+        "Cómo usar condicionales en DAX",
+        "Optimizar flujo de automatización en Power Automate"
+      ];
+      const matchedPrompts = promptSuggestions.filter(p =>
+        p.toLowerCase().includes(query)
+      );
+      if (matchedPrompts.length === 0) {
+        return [searchQuery]; // If nothing matches, offer to search the query text itself
+      }
+      return matchedPrompts;
+    }
+    
+    return [];
+  })();
+
+  const getDisplayTitle = (item: CourseSearchResult | LessonSearchResult | PostSearchResult | string): string => {
+    if (typeof item === "string") {
+      return item;
+    }
+    
+    if (activeCategory === "clases") {
+      return (item as CourseSearchResult | LessonSearchResult).title || "";
+    }
+    
+    if (activeCategory === "publicaciones") {
+      const post = item as PostSearchResult;
+      let text = "";
+      if (typeof post.content === "string") {
+        text = post.content;
+      } else if (post.content && typeof post.content === "object") {
+        text = JSON.stringify(post.content);
+      }
+      
+      text = text.replace(/[{}"[\]]/g, "").substring(0, 80);
+      return text || "Publicación sin título";
+    }
+    
+    return "";
+  };
+
+  const handleModalKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedResultIndex((prev) => Math.min(searchResults.length - 1, prev + 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedResultIndex((prev) => Math.max(0, prev - 1));
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (searchResults[selectedResultIndex]) {
+        handleResultClick(searchResults[selectedResultIndex]);
+      }
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      setSearchModalOpen(false);
+    }
   };
 
   return (
@@ -790,6 +941,204 @@ export default function Sidebar({
                 setActiveSubmenu(null);
               }}
             />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ─── ADVANCED SEARCH MODAL ─── */}
+      <AnimatePresence>
+        {searchModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-start justify-center bg-slate-950/45 backdrop-blur-[4px] p-4 sm:p-10 pt-16 sm:pt-28"
+            onClick={() => setSearchModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.97, y: -10, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.97, y: -10, opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              onKeyDown={handleModalKeyDown}
+              className="bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-900 rounded-[28px] max-w-2xl w-full shadow-[0_20px_60px_rgba(0,0,0,0.12)] overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Search input bar */}
+              <div className="relative p-5 flex items-center gap-3 border-b border-neutral-100 dark:border-neutral-900">
+                <Search className="w-5.5 h-5.5 text-neutral-450 dark:text-neutral-500 shrink-0" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setSelectedResultIndex(0);
+                  }}
+                  placeholder="Buscar clases, publicaciones, temas o recursos..."
+                  className="flex-grow text-[15px] font-medium bg-transparent border-0 text-slate-800 dark:text-slate-100 placeholder:text-neutral-400 focus:outline-none"
+                  autoFocus
+                />
+                <button
+                  onClick={() => setSearchModalOpen(false)}
+                  className="px-2 py-1 rounded-lg bg-neutral-50 hover:bg-neutral-100 dark:bg-neutral-900 dark:hover:bg-neutral-850 text-[10px] font-black text-neutral-450 tracking-wider transition-colors cursor-pointer border-0 uppercase"
+                >
+                  ESC
+                </button>
+              </div>
+
+              {/* Category selector */}
+              <div className="px-5 py-3.5 border-b border-neutral-50 dark:border-neutral-900 flex flex-wrap items-center gap-2.5">
+                <span className="text-[11px] font-black text-neutral-400 uppercase tracking-widest mr-1 select-none">
+                  Buscar en:
+                </span>
+                
+                {/* Clases Button */}
+                <button
+                  onClick={() => { setActiveCategory('clases'); setSelectedResultIndex(0); }}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full flex items-center gap-2 text-xs font-black transition-all cursor-pointer border",
+                    activeCategory === 'clases'
+                      ? "bg-blue-50/70 border-blue-100 text-blue-600 dark:bg-blue-950/20 dark:border-blue-900/40 dark:text-blue-400 shadow-sm"
+                      : "bg-white border-neutral-150 text-neutral-500 hover:text-neutral-800 dark:bg-neutral-950 dark:border-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-250"
+                  )}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-blue-500 shrink-0" />
+                  Clases
+                </button>
+
+                {/* Publicaciones Button */}
+                <button
+                  onClick={() => { setActiveCategory('publicaciones'); setSelectedResultIndex(0); }}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full flex items-center gap-2 text-xs font-black transition-all cursor-pointer border",
+                    activeCategory === 'publicaciones'
+                      ? "bg-emerald-50/70 border-emerald-100 text-emerald-600 dark:bg-emerald-950/20 dark:border-emerald-900/40 dark:text-emerald-400 shadow-sm"
+                      : "bg-white border-neutral-150 text-neutral-500 hover:text-neutral-800 dark:bg-neutral-950 dark:border-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-250"
+                  )}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                  Publicaciones
+                </button>
+
+                {/* Chats con IA Button */}
+                <button
+                  onClick={() => { setActiveCategory('chats'); setSelectedResultIndex(0); }}
+                  className={cn(
+                    "px-4 py-1.5 rounded-full flex items-center gap-2 text-xs font-black transition-all cursor-pointer border",
+                    activeCategory === 'chats'
+                      ? "bg-amber-50/70 border-amber-100 text-amber-600 dark:bg-amber-950/20 dark:border-amber-900/40 dark:text-amber-400 shadow-sm"
+                      : "bg-white border-neutral-150 text-neutral-500 hover:text-neutral-800 dark:bg-neutral-950 dark:border-neutral-800 dark:text-neutral-400 dark:hover:text-neutral-250"
+                  )}
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0" />
+                  Chats con IA
+                </button>
+              </div>
+
+              {/* Suggestions / Results area */}
+              {searchQuery === "" ? (
+                <div className="p-6 space-y-4">
+                  <div className="flex items-center gap-2 text-neutral-400">
+                    <Sparkles className="w-4 h-4 text-purple-500 animate-pulse" />
+                    <span className="text-[11px] font-black uppercase tracking-widest select-none">
+                      Descubrir para ti
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {["Power Automate", "Power BI", "SQL Server", "Python", "RPA", "ChatGPT", "Copilot"].map((tag) => (
+                      <button
+                        key={tag}
+                        onClick={() => {
+                          setSearchQuery(tag);
+                          setSelectedResultIndex(0);
+                        }}
+                        className="px-4 py-2 rounded-2xl bg-neutral-50 hover:bg-neutral-100 dark:bg-neutral-900 dark:hover:bg-neutral-850 text-xs font-bold text-neutral-600 dark:text-neutral-300 border-none cursor-pointer transition-all active:scale-95"
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-grow overflow-y-auto max-h-[360px] divide-y divide-neutral-50 dark:divide-neutral-900 p-2">
+                  {loadingSearchData ? (
+                    <div className="py-12 flex flex-col items-center justify-center gap-2.5">
+                      <Loader2 className="w-6 h-6 text-brand-blue animate-spin" />
+                      <span className="text-xs text-neutral-450">Buscando en la plataforma...</span>
+                    </div>
+                  ) : searchResults.length === 0 ? (
+                    <div className="py-12 text-center text-xs text-neutral-400 dark:text-neutral-500">
+                      No se encontraron resultados para &quot;{searchQuery}&quot;
+                    </div>
+                  ) : (
+                    searchResults.map((item, idx) => {
+                      const isSelected = idx === selectedResultIndex;
+                      const displayTitle = getDisplayTitle(item);
+                      return (
+                        <button
+                          key={typeof item === "string" ? idx : (item.id || idx)}
+                          onClick={() => handleResultClick(item)}
+                          onMouseEnter={() => setSelectedResultIndex(idx)}
+                          className={cn(
+                            "w-full text-left p-3.5 rounded-2xl flex items-start gap-3 transition-colors border-0 cursor-pointer",
+                            isSelected ? "bg-neutral-50 dark:bg-neutral-900" : "bg-transparent"
+                          )}
+                        >
+                          <div className={cn(
+                            "w-9 h-9 rounded-xl flex items-center justify-center shrink-0",
+                            activeCategory === 'clases' ? "bg-blue-50 dark:bg-blue-950/30 text-blue-600" :
+                            activeCategory === 'publicaciones' ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600" :
+                            "bg-purple-50 dark:bg-purple-950/30 text-purple-600"
+                          )}>
+                            {activeCategory === 'clases' ? <GraduationCap className="w-5 h-5" /> :
+                             activeCategory === 'publicaciones' ? <LayoutDashboard className="w-5 h-5" /> :
+                             <Sparkles className="w-5 h-5" />}
+                          </div>
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="font-bold text-[13.5px] text-slate-800 dark:text-slate-100 truncate">
+                              {displayTitle}
+                            </div>
+                            <div className="text-[11px] text-neutral-400 dark:text-neutral-500 mt-1 flex items-center gap-2 truncate">
+                              {activeCategory === 'clases' && (
+                                <span>
+                                  {(item as LessonSearchResult).course_id ? `Clase del curso: ${searchData?.courses.find(c => c.id === (item as LessonSearchResult).course_id)?.title || 'Curso'}` : 'Curso completo'}
+                                </span>
+                              )}
+                              {activeCategory === 'publicaciones' && (
+                                <span>
+                                  Publicación de {(item as PostSearchResult).profiles?.full_name || 'Miembro'}
+                                </span>
+                              )}
+                              {activeCategory === 'chats' && (
+                                <span>Pregunta rápida al Tutor IA</span>
+                              )}
+                            </div>
+                          </div>
+                          
+                          {isSelected && (
+                            <span className="text-[11px] font-black text-brand-blue flex items-center gap-1 shrink-0 self-center">
+                              Ir <ArrowRight className="w-3.5 h-3.5" />
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              )}
+
+              {/* Modal footer */}
+              <div className="px-5 py-3 bg-neutral-50 dark:bg-neutral-900/60 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-[11px] text-neutral-400 font-semibold select-none shrink-0">
+                <div className="flex items-center gap-4">
+                  <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-neutral-800 border border-neutral-250 dark:border-neutral-700 text-[9px]">Enter</kbd> Seleccionar</span>
+                  <span className="flex items-center gap-1"><kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-neutral-800 border border-neutral-250 dark:border-neutral-700 text-[9px]">↑↓</kbd> Navegar</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <kbd className="px-1.5 py-0.5 rounded bg-white dark:bg-neutral-800 border border-neutral-250 dark:border-neutral-700 text-[9px]">ESC</kbd> Cerrar
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
