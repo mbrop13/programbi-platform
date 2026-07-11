@@ -192,8 +192,8 @@ export async function adminUpdateCourseShortDescription(courseId: string, shortD
 }
 
 export async function getMarketingDescription(slug: string) {
-  const supabase = await createClient();
-  const { data } = await supabase.from("courses").select("description").eq("slug", slug).single();
+  const adminDb = createAdminClient();
+  const { data } = await adminDb.from("courses").select("description").eq("slug", slug).single();
   return data?.description || null;
 }
 
