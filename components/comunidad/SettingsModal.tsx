@@ -202,7 +202,7 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
         className="relative bg-white dark:bg-zinc-950 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.12)] w-full max-w-4xl overflow-hidden flex flex-col md:flex-row max-h-[85vh] border border-neutral-100 dark:border-zinc-800/80"
       >
         {/* ─── COLUMNA IZQUIERDA (Sidebar de Navegación) ─── */}
-        <div className="w-full md:w-[240px] bg-neutral-50/50 dark:bg-zinc-900/30 border-r border-neutral-100 dark:border-zinc-850 p-5 shrink-0 flex flex-col justify-between">
+        <div className="w-full md:w-[240px] bg-neutral-50/50 dark:bg-zinc-900 border-r border-neutral-100 dark:border-zinc-800 p-5 shrink-0 flex flex-col justify-between">
           <div>
             {/* Título de la barra */}
             <div className="mb-6 px-1">
@@ -221,8 +221,8 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
                     className={cn(
                       "w-full text-left px-3.5 py-2.5 rounded-xl transition-all text-[13px] flex items-center gap-3 cursor-pointer border-0 font-medium select-none",
                       isActive
-                        ? "bg-neutral-100 dark:bg-zinc-850 text-slate-900 dark:text-white"
-                        : "text-slate-500 dark:text-zinc-400 bg-transparent hover:bg-neutral-100/50 dark:hover:bg-zinc-900/40 hover:text-slate-850 dark:hover:text-zinc-200"
+                        ? "bg-neutral-100 dark:bg-zinc-800 text-slate-900 dark:text-white"
+                        : "text-slate-500 dark:text-zinc-400 bg-transparent hover:bg-neutral-100/50 dark:hover:bg-zinc-800/40 hover:text-slate-900 dark:hover:text-white"
                     )}
                   >
                     <Icon className={cn("w-4.5 h-4.5 shrink-0", isActive ? "text-slate-800 dark:text-white" : "text-slate-400 dark:text-zinc-500")} />
@@ -323,7 +323,7 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
                     {!isEditingName && (
                       <button
                         onClick={() => setIsEditingName(true)}
-                        className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 hover:bg-neutral-50 dark:hover:bg-zinc-805 text-slate-800 dark:text-zinc-200 font-semibold px-4 py-1.5 rounded-full text-xs transition-colors cursor-pointer shrink-0"
+                        className="bg-white dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 hover:bg-neutral-50 dark:hover:bg-zinc-700/80 text-slate-800 dark:text-white font-semibold px-4 py-1.5 rounded-full text-xs transition-colors cursor-pointer shrink-0"
                       >
                         Administrar
                       </button>
@@ -346,7 +346,7 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
                         onClose();
                         if (onUpgradeClick) onUpgradeClick();
                       }}
-                      className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 hover:bg-neutral-50 dark:hover:bg-zinc-805 text-slate-800 dark:text-zinc-200 font-semibold px-4 py-1.5 rounded-full text-xs transition-colors cursor-pointer shrink-0"
+                      className="bg-white dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 hover:bg-neutral-50 dark:hover:bg-zinc-700/80 text-slate-800 dark:text-white font-semibold px-4 py-1.5 rounded-full text-xs transition-colors cursor-pointer shrink-0"
                     >
                       Actualizar
                     </button>
@@ -365,7 +365,7 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
                     </div>
                     <button
                       onClick={() => toast("info", "Detalles de Acceso", `Rol de cuenta verificado: ${userProfile?.role === "admin" ? "Administrador de la plataforma" : "Estudiante registrado"}`)}
-                      className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 hover:bg-neutral-50 dark:hover:bg-zinc-805 text-slate-800 dark:text-zinc-200 font-semibold px-4 py-1.5 rounded-full text-xs transition-colors cursor-pointer shrink-0"
+                      className="bg-white dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 hover:bg-neutral-50 dark:hover:bg-zinc-700/80 text-slate-800 dark:text-white font-semibold px-4 py-1.5 rounded-full text-xs transition-colors cursor-pointer shrink-0"
                     >
                       Ver
                     </button>
@@ -384,7 +384,7 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
                     </div>
                     <button
                       onClick={() => setActiveTab("apariencia")}
-                      className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 hover:bg-neutral-50 dark:hover:bg-zinc-805 text-slate-800 dark:text-zinc-200 font-semibold px-4 py-1.5 rounded-full text-xs transition-colors cursor-pointer shrink-0"
+                      className="bg-white dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 hover:bg-neutral-50 dark:hover:bg-zinc-700/80 text-slate-800 dark:text-white font-semibold px-4 py-1.5 rounded-full text-xs transition-colors cursor-pointer shrink-0"
                     >
                       Cambiar
                     </button>
@@ -403,7 +403,7 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
                     </div>
                     <button
                       onClick={() => toast("info", "Metadatos del Perfil", "Tu cuenta se encuentra activa y en correcto funcionamiento.")}
-                      className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 hover:bg-neutral-50 dark:hover:bg-zinc-805 text-slate-800 dark:text-zinc-200 font-semibold px-4 py-1.5 rounded-full text-xs transition-colors cursor-pointer shrink-0"
+                      className="bg-white dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 hover:bg-neutral-50 dark:hover:bg-zinc-700/80 text-slate-800 dark:text-white font-semibold px-4 py-1.5 rounded-full text-xs transition-colors cursor-pointer shrink-0"
                     >
                       Detalles
                     </button>
@@ -752,7 +752,7 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
                     </div>
                     <button
                       onClick={() => toast("success", "Exportación iniciada", "Tus datos de cuenta se descargarán automáticamente en unos segundos.")}
-                      className="bg-white dark:bg-zinc-900 border border-neutral-200 dark:border-zinc-800 hover:bg-neutral-50 dark:hover:bg-zinc-850 text-slate-800 dark:text-zinc-200 font-semibold px-4 py-1.5 rounded-full text-xs transition-colors cursor-pointer shrink-0 border-solid"
+                      className="bg-white dark:bg-zinc-800 border border-neutral-200 dark:border-zinc-700 hover:bg-neutral-50 dark:hover:bg-zinc-700/80 text-slate-800 dark:text-white font-semibold px-4 py-1.5 rounded-full text-xs transition-colors cursor-pointer shrink-0 border-solid"
                     >
                       Exportar
                     </button>

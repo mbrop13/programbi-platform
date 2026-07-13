@@ -369,7 +369,7 @@ export function ComposerInput({
             onKeyDown={handleKeyDown}
             rows={1}
             placeholder={placeholder ?? "Pregúntale a tu mentor IA…"}
-            className="min-h-[48px] max-h-64 w-full resize-none bg-transparent py-2 px-1 text-[15px] leading-relaxed text-text-primary outline-none focus:outline-none focus:ring-0 focus-visible:ring-0 border-0 focus:border-transparent focus-visible:outline-none placeholder:text-text-faint/80"
+            className="min-h-[48px] max-h-64 w-full resize-none bg-transparent !bg-transparent dark:bg-transparent dark:!bg-transparent py-2 px-1 text-[15px] leading-relaxed text-text-primary dark:text-zinc-100 outline-none focus:outline-none focus:ring-0 focus-visible:ring-0 border-0 focus:border-transparent focus-visible:outline-none placeholder:text-text-faint/80 dark:placeholder:text-zinc-500 shadow-none focus:shadow-none"
           />
         </div>
 
