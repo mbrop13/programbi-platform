@@ -555,21 +555,22 @@ export default function Sidebar({
               </div>
             )
           ) : isCollapsed ? (
-            <button
-              onClick={() => setUserMenuOpen(!userMenuOpen)}
-              className={cn(
-                "relative w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0 user-trigger-btn",
-                userMenuOpen && "ring-2 ring-indigo-500"
-              )}
-              title={displayName}
-            >
-              <span>{initials}</span>
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[8px] font-bold px-1 ring-2 ring-white">
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </span>
-              )}
-            </button>
+            <Tooltip content={displayName} position="right">
+              <button
+                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                className={cn(
+                  "relative w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0 user-trigger-btn",
+                  userMenuOpen && "ring-2 ring-indigo-500"
+                )}
+              >
+                <span>{initials}</span>
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[8px] font-bold px-1 ring-2 ring-white">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </button>
+            </Tooltip>
           ) : (
             <div className="w-full flex items-center justify-between p-1 hover:bg-neutral-50 dark:hover:bg-neutral-900 rounded-2xl transition-all duration-200">
               <button

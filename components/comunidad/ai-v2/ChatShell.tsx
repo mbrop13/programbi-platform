@@ -478,7 +478,7 @@ function ChatShellInner({
             ? { x: sidebarOpen ? 0 : -280, width: 280 }
             : { width: sidebarOpen ? 240 : 60 }
         }
-        transition={{ duration: 0.2, ease: "easeInOut" }}
+        transition={{ type: "spring", stiffness: 300, damping: 32 }}
         className={cn(
           isMobile
             ? "fixed top-0 left-0 bottom-0 z-50 flex flex-col shadow-2xl bg-[#F9F9FB] border-r border-stone-200"
@@ -487,8 +487,7 @@ function ChatShellInner({
       >
         <div
           className={cn(
-            "flex h-full flex-col shrink-0",
-            isMobile ? "w-[280px]" : sidebarOpen ? "w-[240px]" : "w-[60px]"
+            "flex h-full flex-col shrink-0 w-full"
           )}
         >
         <ConversationSidebar

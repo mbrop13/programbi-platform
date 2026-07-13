@@ -837,33 +837,33 @@ export function ConversationSidebar({
           )}
         </AnimatePresence>
 
-        {/* ── Profile trigger button ── */}
         {collapsed ? (
           <div className="flex items-center justify-center">
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setProfileMenuOpen((o) => !o);
-                if (profileMenuOpen) setActiveSubmenu(null);
-              }}
-              className={cn(
-                "relative h-8 w-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0",
-                isPremiumUser && "ring-[1.5px] ring-stone-800 dark:ring-white/80"
-              )}
-              title={cleanDisplayName}
-            >
-              {avatarUrl ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={avatarUrl}
-                  alt={cleanDisplayName}
-                  className="h-full w-full object-cover rounded-full"
-                />
-              ) : (
-                <span aria-hidden>{initials}</span>
-              )}
+            <Tooltip content={cleanDisplayName} position="right">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setProfileMenuOpen((o) => !o);
+                  if (profileMenuOpen) setActiveSubmenu(null);
+                }}
+                className={cn(
+                  "relative h-8 w-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0",
+                  isPremiumUser && "ring-[1.5px] ring-stone-800 dark:ring-white/80"
+                )}
+              >
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={avatarUrl}
+                    alt={cleanDisplayName}
+                    className="h-full w-full object-cover rounded-full"
+                  />
+                ) : (
+                  <span aria-hidden>{initials}</span>
+                )}
 
-            </button>
+              </button>
+            </Tooltip>
           </div>
         ) : (
           <div className="flex items-center gap-2">
