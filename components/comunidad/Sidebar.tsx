@@ -198,6 +198,16 @@ export default function Sidebar({
   const [searchData, setSearchData] = useState<SearchDataState | null>(null);
   const [loadingSearchData, setLoadingSearchData] = useState(false);
   const [selectedResultIndex, setSelectedResultIndex] = useState(0);
+
+  useEffect(() => {
+    const handleOpenSearch = () => {
+      setSearchModalOpen(true);
+    };
+    window.addEventListener("open-search-modal", handleOpenSearch);
+    return () => {
+      window.removeEventListener("open-search-modal", handleOpenSearch);
+    };
+  }, []);
   
   const activeTheme = theme || "claro";
   const setActiveTheme = onThemeChange || (() => {});
@@ -913,7 +923,8 @@ export default function Sidebar({
                     setSelectedResultIndex(0);
                   }}
                   placeholder="Buscar cursos y clases..."
-                  className="flex-grow text-[15px] font-medium bg-transparent border-none outline-none focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 text-slate-800 dark:text-slate-100 placeholder:text-neutral-400"
+                  className="flex-grow text-[15px] font-medium bg-transparent border-none !border-none outline-none !outline-none focus:outline-none focus:!outline-none focus:ring-0 focus:!ring-0 focus:ring-transparent focus-visible:outline-none focus-visible:ring-0 text-slate-800 dark:text-slate-100 placeholder:text-neutral-400 shadow-none focus:shadow-none"
+                  style={{ outline: 'none', border: 'none', boxShadow: 'none' }}
                   autoFocus
                 />
                 <button

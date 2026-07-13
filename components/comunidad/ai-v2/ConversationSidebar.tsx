@@ -296,7 +296,13 @@ export function ConversationSidebar({
   /* ── Navigation items (matching the Grok sidebar image) ── */
   const navItems = [
     { label: "Nuevo Chat", icon: MessageSquarePlus, onClick: onNew },
-    { label: "Buscar", icon: Search, href: "/comunidad/inicio" },
+    {
+      label: "Buscar",
+      icon: Search,
+      onClick: () => {
+        window.dispatchEvent(new CustomEvent("open-search-modal"));
+      }
+    },
     { label: "Inicio", icon: Home, href: "/comunidad/inicio" },
   ];
 
@@ -328,17 +334,16 @@ export function ConversationSidebar({
         title={collapsed ? (c.title || "Conversación") : undefined}
         className={cn(
           "group/chat group relative flex items-center transition-all duration-200 select-none cursor-pointer",
-          collapsed ? "justify-center p-2 rounded-lg" : "gap-2 rounded-lg px-3 py-2 text-[13px]",
+          collapsed ? "justify-center p-2 rounded-lg" : "rounded-lg px-3 py-2 text-[13px]",
           isActive
-            ? "bg-stone-200 text-stone-900 font-bold"
-            : "text-stone-600 hover:bg-stone-200/30 hover:text-stone-900"
+            ? "bg-stone-200 dark:bg-zinc-800 text-stone-900 dark:text-white font-bold"
+            : "text-stone-600 dark:text-zinc-300 hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 hover:text-stone-900 dark:hover:text-white"
         )}
       >
         {collapsed ? (
-          <MessageSquare className="h-[18px] w-[18px] text-stone-500 shrink-0" />
+          <MessageSquare className="h-[18px] w-[18px] text-stone-500 dark:text-zinc-400 shrink-0" />
         ) : (
           <>
-            <MessageSquare className="h-[18px] w-[18px] text-stone-500 shrink-0" />
             {isEditing ? (
               <>
                 <label htmlFor={`rename-${c.id}`} className="sr-only">
@@ -356,60 +361,59 @@ export function ConversationSidebar({
                   }}
                   autoFocus
                   onClick={(e) => e.stopPropagation()}
-                  className="min-w-0 flex-1 rounded-md bg-white px-2 py-0.5 text-[13px] outline-none ring-1 ring-stone-300 text-stone-900"
+                  className="min-w-0 flex-1 rounded-md bg-white dark:bg-zinc-900 px-2 py-0.5 text-[13px] outline-none ring-1 ring-stone-300 dark:ring-zinc-700 text-stone-900 dark:text-white"
                 />
               </>
             ) : (
               <span
-                className="flex-1 truncate whitespace-nowrap pr-0 transition-[padding] duration-200 group-hover/chat:pr-7"
-                style={{
-                  WebkitMaskImage:
-                    "linear-gradient(to right, black calc(100% - 18px), transparent)",
-                  maskImage:
-                    "linear-gradient(to right, black calc(100% - 18px), transparent)",
-                }}
+                className="flex-1 truncate pr-8 text-stone-700 dark:text-zinc-200 group-hover:text-stone-950 dark:group-hover:text-white"
               >
                 {c.title || "Sin título"}
               </span>
             )}
 
-            {/* Trash2 revealed on hover (extrema derecha) */}
+            {/* Acciones flotantes en hover (se superponen al texto) */}
             {!isEditing && (
-              <button
-                onClick={(e) => { e.stopPropagation(); onDelete(c.id); }}
-                aria-label="Eliminar"
-                className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded p-0 opacity-0 transition-opacity hover:text-red-600 border-0 bg-transparent group-hover/chat:opacity-100"
-              >
-                <Trash2 className="h-3 w-3" />
-              </button>
-            )}
-
-            {/* Secondary actions (rename / pin / archive) — small icon row below title */}
-            {!isEditing && (
-              <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+              <div className={cn(
+                "absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5 pl-5 pr-1 opacity-0 group-hover/chat:opacity-100 transition-opacity rounded-r-lg bg-gradient-to-l",
+                isActive
+                  ? "from-stone-200 via-stone-200 to-transparent dark:from-zinc-800 dark:via-zinc-800 dark:to-transparent"
+                  : "from-white via-white to-transparent dark:from-zinc-950 dark:via-zinc-950 dark:to-transparent"
+              )}>
+                {/* Botón de Renombrar */}
                 <button
                   onClick={(e) => { e.stopPropagation(); startRename(c); }}
                   aria-label="Renombrar"
-                  className="rounded p-1 text-stone-400 hover:text-stone-700 dark:hover:text-white border-0 bg-transparent cursor-pointer"
+                  className="rounded p-1 text-stone-400 dark:text-zinc-400 hover:text-stone-700 dark:hover:text-white border-0 bg-transparent cursor-pointer"
                 >
                   <Pencil className="h-3 w-3" />
                 </button>
+                {/* Botón de Fijar */}
                 <button
                   onClick={(e) => { e.stopPropagation(); onPin(c.id); }}
                   aria-label={c.pinned ? "Desfijar" : "Fijar"}
                   className={cn(
                     "rounded p-1 border-0 bg-transparent cursor-pointer",
-                    c.pinned ? "text-amber-500" : "text-stone-400 hover:text-stone-700 dark:hover:text-white"
+                    c.pinned ? "text-indigo-500" : "text-stone-400 hover:text-stone-700 dark:hover:text-white"
                   )}
                 >
                   <Pin className="h-3 w-3" />
                 </button>
+                {/* Botón de Archivar */}
                 <button
                   onClick={(e) => { e.stopPropagation(); onArchive(c.id); }}
                   aria-label="Archivar"
                   className="rounded p-1 text-stone-400 hover:text-stone-700 dark:hover:text-white border-0 bg-transparent cursor-pointer"
                 >
                   <Archive className="h-3 w-3" />
+                </button>
+                {/* Botón de Eliminar */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); onDelete(c.id); }}
+                  aria-label="Eliminar"
+                  className="rounded p-1 text-stone-400 hover:text-red-655 dark:hover:text-red-400 border-0 bg-transparent cursor-pointer"
+                >
+                  <Trash2 className="h-3 w-3" />
                 </button>
               </div>
             )}
@@ -605,8 +609,8 @@ export function ConversationSidebar({
             >
               {/* Email header */}
               <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl">
-                <User className="h-4 w-4 text-stone-400 dark:text-zinc-550 shrink-0" />
-                <span className="truncate text-[13px] font-medium text-stone-655 dark:text-zinc-400">{userEmail || cleanDisplayName}</span>
+                <User className="h-4 w-4 text-stone-400 dark:text-zinc-500 shrink-0" />
+                <span className="truncate text-[13px] font-medium text-stone-600 dark:text-zinc-400">{userEmail || cleanDisplayName}</span>
               </div>
 
               <div className="h-px bg-stone-100 dark:bg-zinc-800/80 mx-2 my-1" />
@@ -655,16 +659,16 @@ export function ConversationSidebar({
                   className={cn(
                     "flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] w-full text-left transition-colors cursor-pointer border-0 bg-transparent",
                     activeSubmenu === 'apariencia'
-                      ? "bg-stone-200/40 text-stone-900"
-                      : "text-stone-700 hover:bg-stone-200/35 hover:text-stone-900"
+                      ? "bg-stone-200/40 dark:bg-zinc-800/60 text-stone-900 dark:text-white"
+                      : "text-stone-700 dark:text-zinc-300 hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 hover:text-stone-900 dark:hover:text-white"
                   )}
                 >
-                  <Sun className="h-4 w-4 text-stone-500 shrink-0" />
+                  <Sun className="h-4 w-4 text-stone-500 dark:text-zinc-450 shrink-0" />
                   <div className="flex-1 flex flex-col items-start min-w-0">
                     <span className="font-semibold">Apariencia</span>
-                    <span className="text-[11px] text-stone-400 capitalize">{currentTheme}</span>
+                    <span className="text-[11px] text-stone-400 dark:text-zinc-500 capitalize">{currentTheme}</span>
                   </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-stone-400 shrink-0" />
+                  <ChevronRight className="h-3.5 w-3.5 text-stone-400 dark:text-zinc-500 shrink-0" />
                 </button>
 
                 {/* Flyout submenu - Apariencia */}
@@ -675,7 +679,7 @@ export function ConversationSidebar({
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -4 }}
                       transition={{ duration: 0.12 }}
-                      className="absolute left-full top-0 ml-1.5 w-40 bg-white border border-stone-200 rounded-xl shadow-lg p-1 flex flex-col z-50"
+                      className="absolute left-full top-0 ml-1.5 w-40 bg-white dark:bg-zinc-950 border border-stone-200 dark:border-zinc-800 rounded-xl shadow-lg p-1 flex flex-col z-50"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {([
@@ -689,13 +693,13 @@ export function ConversationSidebar({
                           className={cn(
                             "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] transition-colors border-0 bg-transparent text-left w-full cursor-pointer",
                             currentTheme === key
-                              ? "text-stone-900 font-bold"
-                              : "text-stone-605 hover:bg-stone-200/35 hover:text-stone-900"
+                              ? "text-stone-900 dark:text-white font-bold"
+                              : "text-stone-600 dark:text-zinc-400 hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 hover:text-stone-900 dark:hover:text-white"
                           )}
                         >
-                          <Ic className="h-4 w-4 text-stone-500 shrink-0" />
+                          <Ic className="h-4 w-4 text-stone-550 dark:text-zinc-500 shrink-0" />
                           <span className="flex-1">{label}</span>
-                          {currentTheme === key && <Check className="h-4 w-4 text-blue-600 shrink-0" />}
+                          {currentTheme === key && <Check className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />}
                         </button>
                       ))}
                     </motion.div>
@@ -714,16 +718,16 @@ export function ConversationSidebar({
                   className={cn(
                     "flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] w-full text-left transition-colors cursor-pointer border-0 bg-transparent",
                     activeSubmenu === 'idioma'
-                      ? "bg-stone-200/40 text-stone-900"
-                      : "text-stone-700 hover:bg-stone-200/35 hover:text-stone-900"
+                      ? "bg-stone-200/40 dark:bg-zinc-800/60 text-stone-900 dark:text-white"
+                      : "text-stone-700 dark:text-zinc-300 hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 hover:text-stone-900 dark:hover:text-white"
                   )}
                 >
-                  <Globe className="h-4 w-4 text-stone-500 shrink-0" />
+                  <Globe className="h-4 w-4 text-stone-500 dark:text-zinc-450 shrink-0" />
                   <div className="flex-1 flex flex-col items-start min-w-0">
                     <span className="font-semibold">Idioma</span>
-                    <span className="text-[11px] text-stone-400">{currentLanguage === 'es' ? 'Español' : 'English'}</span>
+                    <span className="text-[11px] text-stone-400 dark:text-zinc-500">{currentLanguage === 'es' ? 'Español' : 'English'}</span>
                   </div>
-                  <ChevronRight className="h-3.5 w-3.5 text-stone-400 shrink-0" />
+                  <ChevronRight className="h-3.5 w-3.5 text-stone-400 dark:text-zinc-500 shrink-0" />
                 </button>
 
                 {/* Flyout submenu - Idioma */}
@@ -734,7 +738,7 @@ export function ConversationSidebar({
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: -4 }}
                       transition={{ duration: 0.12 }}
-                      className="absolute left-full top-0 ml-1.5 w-40 bg-white border border-stone-200 rounded-xl shadow-lg p-1 flex flex-col z-50"
+                      className="absolute left-full top-0 ml-1.5 w-40 bg-white dark:bg-zinc-950 border border-stone-200 dark:border-zinc-800 rounded-xl shadow-lg p-1 flex flex-col z-50"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {([
@@ -747,12 +751,12 @@ export function ConversationSidebar({
                           className={cn(
                             "flex items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] transition-colors border-0 bg-transparent text-left w-full cursor-pointer",
                             currentLanguage === key
-                              ? "text-stone-900 font-bold"
-                              : "text-stone-605 hover:bg-stone-200/35 hover:text-stone-900"
+                              ? "text-stone-900 dark:text-white font-bold"
+                              : "text-stone-605 dark:text-zinc-400 hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 hover:text-stone-900 dark:hover:text-white"
                           )}
                         >
                           <span className="flex-1">{label}</span>
-                          {currentLanguage === key && <Check className="h-4 w-4 text-blue-600 shrink-0" />}
+                          {currentLanguage === key && <Check className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />}
                         </button>
                       ))}
                     </motion.div>
