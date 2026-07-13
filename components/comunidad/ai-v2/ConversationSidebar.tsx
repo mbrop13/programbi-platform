@@ -23,6 +23,10 @@ import {
   Home,
   GraduationCap,
   Award,
+  Clock,
+  Gauge,
+  AlertTriangle,
+  Sparkles,
   Bell,
   ChevronDown,
   PanelLeftClose,
@@ -91,6 +95,24 @@ function sortGroups(a: string, b: string): number {
   return a.localeCompare(b);
 }
 
+function barColor(pct: number): string {
+  if (pct >= 90) return "bg-rose-500";
+  if (pct >= 75) return "bg-amber-500";
+  return "bg-indigo-600";
+}
+
+function formatRemaining(isoDate?: string): string {
+  if (!isoDate) return "ya";
+  const ms = new Date(isoDate).getTime() - Date.now();
+  if (ms <= 0) return "ya";
+  const mins = Math.round(ms / 60_000);
+  if (mins < 60) return `${mins} min`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  if (h < 24) return `${h}h ${m}m`;
+  return `${Math.round(h / 24)}d`;
+}
+
 export function ConversationSidebar({
   chats,
   activeChatId,
@@ -122,7 +144,25 @@ export function ConversationSidebar({
   // New States for settings and notifications popovers
   const [notifOpen, setNotifOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [activeSettingsTab, setActiveSettingsTab] = useState<'cuenta' | 'apariencia' | 'comportamiento' | 'customize' | 'datos'>('cuenta');
+  const [activeSettingsTab, setActiveSettingsTab] = useState<'cuenta' | 'limites' | 'apariencia' | 'comportamiento' | 'customize' | 'datos'>('cuenta');
+
+  const [quotaData, setQuotaData] = useState<any>(null);
+  const [quotaLoading, setQuotaLoading] = useState(false);
+
+  useEffect(() => {
+    if (activeSettingsTab === "limites" && !quotaData) {
+      setQuotaLoading(true);
+      fetch("/api/ai/quota")
+        .then((r) => r.json())
+        .then((data) => {
+          setQuotaData(data);
+        })
+        .catch((err) => {
+          console.error("Error loading quota data:", err);
+        })
+        .finally(() => setQuotaLoading(false));
+    }
+  }, [activeSettingsTab, quotaData]);
 
   // Behavior toggle switch states
   const [reasoningEnabled, setReasoningEnabled] = useState(true);
@@ -921,27 +961,30 @@ export function ConversationSidebar({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-[4px] p-4"
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-[4px] p-4 cursor-pointer"
+            onClick={() => setSettingsOpen(false)}
           >
             <motion.div
               initial={{ scale: 0.95, y: 15 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
               transition={{ type: "spring", duration: 0.3 }}
-              className="w-full max-w-[850px] h-[500px] bg-white border border-stone-200 rounded-3xl shadow-2xl flex overflow-hidden relative text-stone-900"
+              className="w-full max-w-[850px] h-[500px] bg-white dark:bg-zinc-950 border border-stone-200 dark:border-zinc-800/80 rounded-3xl shadow-2xl flex overflow-hidden relative text-stone-900 dark:text-white cursor-default"
+              onClick={(e) => e.stopPropagation()}
             >
               {/* Close button */}
               <button
                 onClick={() => setSettingsOpen(false)}
-                className="absolute top-5 right-5 text-stone-400 hover:text-stone-700 border-0 bg-transparent cursor-pointer z-10"
+                className="absolute top-5 right-5 text-stone-400 dark:text-zinc-550 hover:text-stone-700 dark:hover:text-white border-0 bg-transparent cursor-pointer z-10"
               >
                 <X className="w-5 h-5" />
               </button>
 
               {/* Left column navigation */}
-              <div className="w-60 border-r border-stone-200 p-5 flex flex-col gap-1.5 shrink-0 bg-stone-50/50">
+              <div className="w-60 border-r border-stone-200 dark:border-zinc-800/80 p-5 flex flex-col gap-1.5 shrink-0 bg-stone-50/50 dark:bg-zinc-900/30">
                 {[
                   { id: 'cuenta' as const, label: 'Cuenta', icon: User },
+                  { id: 'limites' as const, label: 'Límites de Uso', icon: Sparkles },
                   { id: 'apariencia' as const, label: 'Apariencia', icon: Pencil },
                   { id: 'comportamiento' as const, label: 'Comportamiento', icon: Cpu },
                   { id: 'customize' as const, label: 'Customize', icon: Sliders },
@@ -956,11 +999,11 @@ export function ConversationSidebar({
                       className={cn(
                         "w-full px-3 py-2.5 rounded-xl flex items-center gap-3 text-sm font-semibold transition-all border-0 bg-transparent text-left cursor-pointer",
                         isTabActive
-                          ? "bg-stone-200/60 text-stone-900 shadow-sm"
-                          : "text-stone-600 hover:bg-stone-200/25"
+                          ? "bg-stone-200/60 dark:bg-zinc-800 text-stone-900 dark:text-white shadow-sm"
+                          : "text-stone-600 dark:text-zinc-400 hover:bg-stone-200/25 dark:hover:bg-zinc-800/30"
                       )}
                     >
-                      <TabIcon className="w-4 h-4 text-stone-500 shrink-0" />
+                      <TabIcon className="w-4 h-4 text-stone-500 dark:text-zinc-500 shrink-0" />
                       <span>{tab.label}</span>
                     </button>
                   );
@@ -971,10 +1014,10 @@ export function ConversationSidebar({
               <div className="flex-1 flex flex-col p-8 min-w-0 overflow-y-auto">
                 {activeSettingsTab === 'cuenta' && (
                   <div className="flex-grow flex flex-col">
-                    <h3 className="text-xl font-black text-stone-900 mb-6">Cuenta</h3>
+                    <h3 className="text-xl font-black text-stone-900 dark:text-white mb-6">Cuenta</h3>
                     
                     {/* User row */}
-                    <div className="flex items-center gap-4 py-4 border-b border-stone-100">
+                    <div className="flex items-center gap-4 py-4 border-b border-stone-100 dark:border-zinc-800/80">
                       <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-lg font-bold shrink-0">
                         {avatarUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -984,26 +1027,26 @@ export function ConversationSidebar({
                         )}
                       </div>
                       <div className="flex-grow min-w-0">
-                        <h4 className="text-sm font-black text-stone-850 truncate">{cleanDisplayName}</h4>
-                        <p className="text-xs text-stone-500 truncate">{userEmail}</p>
+                        <h4 className="text-sm font-black text-stone-850 dark:text-zinc-200 truncate">{cleanDisplayName}</h4>
+                        <p className="text-xs text-stone-500 dark:text-zinc-400 truncate">{userEmail}</p>
                       </div>
-                      <button className="border border-stone-250 hover:bg-stone-50 text-xs px-4 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer bg-transparent text-stone-750">
+                      <button className="border border-stone-250 dark:border-zinc-800 hover:bg-stone-50 dark:hover:bg-zinc-900 text-xs px-4 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer bg-transparent text-stone-750 dark:text-zinc-300">
                         Administrar
                       </button>
                     </div>
 
                     {/* ProgramBI Premium Row */}
                     {!isPremiumUser && (
-                      <div className="flex items-center gap-4 py-4 border-b border-stone-100">
-                        <div className="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center shrink-0">
-                          <Sliders className="w-4 h-4 text-indigo-600" />
+                      <div className="flex items-center gap-4 py-4 border-b border-stone-100 dark:border-zinc-800/80">
+                        <div className="w-8 h-8 rounded-full bg-indigo-55/60 dark:bg-indigo-950/40 flex items-center justify-center shrink-0">
+                          <Sliders className="w-4 h-4 text-indigo-650 dark:text-indigo-400" />
                         </div>
                         <div className="flex-grow min-w-0">
-                          <h4 className="text-sm font-semibold text-stone-850">Obtener ProgramBI Premium</h4>
+                          <h4 className="text-sm font-semibold text-stone-850 dark:text-zinc-200">Obtener ProgramBI Premium</h4>
                         </div>
                         <button
                           onClick={() => { setSettingsOpen(false); router.push('/comunidad/planes'); }}
-                          className="border border-stone-250 hover:bg-stone-50 text-xs px-4 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer bg-transparent text-stone-750"
+                          className="border border-stone-250 dark:border-zinc-800 hover:bg-stone-50 dark:hover:bg-zinc-900 text-xs px-4 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer bg-transparent text-stone-750 dark:text-zinc-300"
                         >
                           Actualizar
                         </button>
@@ -1013,20 +1056,166 @@ export function ConversationSidebar({
                     {/* Idioma Row */}
                     <div className="flex items-center gap-4 py-4">
                       <div className="flex-grow min-w-0">
-                        <h4 className="text-sm font-semibold text-stone-850">Idioma</h4>
-                        <p className="text-xs text-stone-500 mt-0.5">{currentLanguage === 'es' ? 'Español' : 'Inglés'}</p>
+                        <h4 className="text-sm font-semibold text-stone-850 dark:text-zinc-200">Idioma</h4>
+                        <p className="text-xs text-stone-500 dark:text-zinc-450 mt-0.5">{currentLanguage === 'es' ? 'Español' : 'Inglés'}</p>
                       </div>
-                      <button className="border border-stone-250 hover:bg-stone-50 text-xs px-4 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer bg-transparent text-stone-750">
+                      <button className="border border-stone-250 dark:border-zinc-800 hover:bg-stone-50 dark:hover:bg-zinc-900 text-xs px-4 py-1.5 rounded-full font-bold transition-all shrink-0 cursor-pointer bg-transparent text-stone-750 dark:text-zinc-300">
                         Cambiar
                       </button>
                     </div>
                   </div>
                 )}
 
+                {activeSettingsTab === 'limites' && (
+                  <div className="flex-grow flex flex-col">
+                    <h3 className="text-xl font-black text-stone-900 dark:text-white mb-6">Límites de Uso</h3>
+                    {quotaLoading ? (
+                      <div className="flex flex-col items-center justify-center py-12 space-y-3 flex-grow">
+                        <Loader2 className="w-8.5 h-8.5 animate-spin text-indigo-600 dark:text-indigo-400" />
+                        <span className="text-xs text-stone-400 dark:text-zinc-500 font-bold">Cargando límites de uso...</span>
+                      </div>
+                    ) : quotaData ? (
+                      <div className="space-y-5">
+                        {/* Banner de Estado General */}
+                        <div className={cn(
+                          "p-5 rounded-2xl border relative overflow-hidden flex items-center justify-between shadow-sm",
+                          quotaData.unlimited
+                            ? "bg-amber-50/50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/40"
+                            : "bg-neutral-50/50 dark:bg-zinc-900/30 border-neutral-100 dark:border-zinc-800/80"
+                        )}>
+                          <div className="relative z-10 flex items-center gap-3.5">
+                            <div className={cn(
+                              "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
+                              quotaData.unlimited ? "bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400" : "bg-indigo-55/60 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400"
+                            )}>
+                              <Sparkles className="w-5 h-5 animate-pulse" />
+                            </div>
+                            <div>
+                              <div className="text-[13px] font-bold text-slate-800 dark:text-zinc-200">
+                                Membresía: <span className="uppercase text-indigo-600 dark:text-indigo-400 font-black">{quotaData.plan || "free"}</span>
+                              </div>
+                              <p className="text-[11px] text-slate-400 dark:text-zinc-450 mt-0.5">
+                                {quotaData.unlimited
+                                  ? "Tu cuenta tiene habilitado el acceso ilimitado de administrador a la IA."
+                                  : "A continuación se muestra el consumo real de tu cuenta para este periodo."}
+                              </p>
+                            </div>
+                          </div>
+                          {quotaData.unlimited && (
+                            <span className="text-[10px] font-black uppercase text-amber-700 dark:text-amber-400 bg-amber-100 dark:bg-amber-950 border border-amber-200/50 dark:border-amber-900 px-2.5 py-1 rounded-lg">
+                              Ilimitado
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Tarjetas de Límites */}
+                        {!quotaData.unlimited && (
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            {/* Tarjeta 1: 5 Horas */}
+                            <div className="bg-white dark:bg-zinc-900 border border-neutral-150 dark:border-zinc-800/85 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:border-neutral-300 dark:hover:border-zinc-700 transition-colors">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] font-black uppercase text-slate-500 dark:text-zinc-450 tracking-wider">Próximas 5h</span>
+                                <Clock className="w-4 h-4 text-slate-400 dark:text-zinc-500" />
+                              </div>
+                              <div className="mt-4">
+                                <div className="flex items-baseline gap-1">
+                                  <span className="text-2xl font-black text-slate-800 dark:text-zinc-100 leading-none">
+                                    {Math.max(0, 100 - quotaData.percentages.five_hour)}%
+                                  </span>
+                                  <span className="text-[10px] text-slate-400 dark:text-zinc-550 font-bold">restante</span>
+                                </div>
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400 block mt-1.5">
+                                  {quotaData.used.five_hour} de {quotaData.quota.fiveHour} mensajes
+                                </span>
+                              </div>
+                              <div className="mt-4">
+                                <div className="h-1.5 w-full bg-neutral-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                                  <div
+                                    className={cn("h-full rounded-full transition-all duration-500", barColor(quotaData.percentages.five_hour))}
+                                    style={{ width: `${Math.max(0, 100 - quotaData.percentages.five_hour)}%` }}
+                                  />
+                                </div>
+                                <span className="text-[8px] text-slate-400 dark:text-zinc-500 mt-2 block font-semibold">
+                                  Reinicia en {formatRemaining(quotaData.resetAt)}
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Tarjeta 2: Semanal */}
+                            <div className="bg-white dark:bg-zinc-900 border border-neutral-150 dark:border-zinc-800/85 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:border-neutral-300 dark:hover:border-zinc-700 transition-colors">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] font-black uppercase text-slate-500 dark:text-zinc-450 tracking-wider">Semanal</span>
+                                <Gauge className="w-4 h-4 text-slate-400 dark:text-zinc-500" />
+                              </div>
+                              <div className="mt-4">
+                                <div className="flex items-baseline gap-1">
+                                  <span className="text-2xl font-black text-slate-800 dark:text-zinc-100 leading-none">
+                                    {Math.max(0, 100 - quotaData.percentages.weekly)}%
+                                  </span>
+                                  <span className="text-[10px] text-slate-400 dark:text-zinc-550 font-bold">restante</span>
+                                </div>
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400 block mt-1.5">
+                                  {quotaData.used.weekly} de {quotaData.quota.weekly} mensajes
+                                </span>
+                              </div>
+                              <div className="mt-4">
+                                <div className="h-1.5 w-full bg-neutral-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                                  <div
+                                    className={cn("h-full rounded-full transition-all duration-500", barColor(quotaData.percentages.weekly))}
+                                    style={{ width: `${Math.max(0, 100 - quotaData.percentages.weekly)}%` }}
+                                  />
+                                </div>
+                                <span className="text-[8px] text-slate-400 dark:text-zinc-500 mt-2 block font-semibold">
+                                  Límite rotativo de 7 días
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Tarjeta 3: Mensual */}
+                            <div className="bg-white dark:bg-zinc-900 border border-neutral-150 dark:border-zinc-800/85 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:border-neutral-300 dark:hover:border-zinc-700 transition-colors">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[9px] font-black uppercase text-slate-500 dark:text-zinc-450 tracking-wider">Mensual</span>
+                                <Gauge className="w-4 h-4 text-slate-400 dark:text-zinc-500" />
+                              </div>
+                              <div className="mt-4">
+                                <div className="flex items-baseline gap-1">
+                                  <span className="text-2xl font-black text-slate-800 dark:text-zinc-100 leading-none">
+                                    {Math.max(0, 100 - quotaData.percentages.monthly)}%
+                                  </span>
+                                  <span className="text-[10px] text-slate-400 dark:text-zinc-550 font-bold">restante</span>
+                                </div>
+                                <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400 block mt-1.5">
+                                  {quotaData.used.monthly} de {quotaData.quota.monthly} mensajes
+                                </span>
+                              </div>
+                              <div className="mt-4">
+                                <div className="h-1.5 w-full bg-neutral-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                                  <div
+                                    className={cn("h-full rounded-full transition-all duration-500", barColor(quotaData.percentages.monthly))}
+                                    style={{ width: `${Math.max(0, 100 - quotaData.percentages.monthly)}%` }}
+                                  />
+                                </div>
+                                <span className="text-[8px] text-slate-400 dark:text-zinc-500 mt-2 block font-semibold">
+                                  Reinicio automático mensual
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-12 text-slate-400 dark:text-zinc-500 flex-grow">
+                        <AlertTriangle className="w-8 h-8 mb-2 text-rose-500" />
+                        <span className="text-xs font-bold">No se pudieron cargar los límites de uso.</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {activeSettingsTab === 'apariencia' && (
                   <div className="flex-grow flex flex-col">
-                    <h3 className="text-xl font-black text-stone-900 mb-6">Apariencia</h3>
-                    <p className="text-sm text-stone-500 mb-6">Personaliza el aspecto visual del Mentor IA en tu pantalla.</p>
+                    <h3 className="text-xl font-black text-stone-900 dark:text-white mb-6">Apariencia</h3>
+                    <p className="text-sm text-stone-500 dark:text-zinc-450 mb-6">Personaliza el aspecto visual del Mentor IA en tu pantalla.</p>
                     
                     <div className="grid grid-cols-3 gap-4">
                       {[
@@ -1040,14 +1229,14 @@ export function ConversationSidebar({
                           className={cn(
                             "p-5 rounded-2xl border text-left cursor-pointer transition-all flex flex-col gap-3 bg-transparent",
                             currentTheme === key
-                              ? "border-blue-500 bg-blue-500/5 text-stone-900 font-medium"
-                              : "border-stone-200 text-stone-600 hover:border-stone-300"
+                              ? "border-blue-500 bg-blue-500/5 text-stone-900 dark:text-white font-medium"
+                              : "border-stone-200 dark:border-zinc-800 text-stone-600 dark:text-zinc-400 hover:border-stone-300 dark:hover:border-zinc-700"
                           )}
                         >
-                          <Ic className={cn("w-5 h-5", currentTheme === key ? "text-blue-500" : "text-stone-400")} />
+                          <Ic className={cn("w-5 h-5", currentTheme === key ? "text-blue-500" : "text-stone-400 dark:text-zinc-550")} />
                           <div>
-                            <h4 className="text-sm font-black">{label}</h4>
-                            <p className="text-[11px] text-stone-500 mt-1 leading-normal">{desc}</p>
+                            <h4 className="text-sm font-black text-stone-850 dark:text-zinc-200">{label}</h4>
+                            <p className="text-[11px] text-stone-500 dark:text-zinc-500 mt-1 leading-normal">{desc}</p>
                           </div>
                         </button>
                       ))}
@@ -1057,21 +1246,21 @@ export function ConversationSidebar({
 
                 {activeSettingsTab === 'comportamiento' && (
                   <div className="flex-grow flex flex-col">
-                    <h3 className="text-xl font-black text-stone-900 mb-6">Comportamiento</h3>
-                    <p className="text-sm text-stone-500 mb-6">Ajusta cómo interactúa y responde el Mentor IA en las conversaciones.</p>
+                    <h3 className="text-xl font-black text-stone-900 dark:text-white mb-6">Comportamiento</h3>
+                    <p className="text-sm text-stone-500 dark:text-zinc-450 mb-6">Ajusta cómo interactúa y responde el Mentor IA en las conversaciones.</p>
                     
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 rounded-xl border border-stone-200">
+                      <div className="flex items-center justify-between p-4 rounded-xl border border-stone-200 dark:border-zinc-800/80">
                         <div className="pr-4">
-                          <h4 className="text-sm font-semibold text-stone-850">Razonamiento profundo</h4>
-                          <p className="text-xs text-stone-500 mt-0.5">Permite explicaciones matemáticas y lógicas paso a paso.</p>
+                          <h4 className="text-sm font-semibold text-stone-850 dark:text-zinc-200">Razonamiento profundo</h4>
+                          <p className="text-xs text-stone-500 dark:text-zinc-450 mt-0.5">Permite explicaciones matemáticas y lógicas paso a paso.</p>
                         </div>
                         <ToggleSwitch checked={reasoningEnabled} onChange={() => setReasoningEnabled(!reasoningEnabled)} />
                       </div>
-                      <div className="flex items-center justify-between p-4 rounded-xl border border-stone-200">
+                      <div className="flex items-center justify-between p-4 rounded-xl border border-stone-200 dark:border-zinc-800/80">
                         <div className="pr-4">
-                          <h4 className="text-sm font-semibold text-stone-850">Auto-completado de código</h4>
-                          <p className="text-xs text-stone-500 mt-0.5">Sugiere bloques de SQL, Python o DAX mientras escribes.</p>
+                          <h4 className="text-sm font-semibold text-stone-850 dark:text-zinc-200">Auto-completado de código</h4>
+                          <p className="text-xs text-stone-500 dark:text-zinc-450 mt-0.5">Sugiere bloques de SQL, Python o DAX mientras escribes.</p>
                         </div>
                         <ToggleSwitch checked={autocompleteEnabled} onChange={() => setAutocompleteEnabled(!autocompleteEnabled)} />
                       </div>
@@ -1081,16 +1270,16 @@ export function ConversationSidebar({
 
                 {activeSettingsTab === 'customize' && (
                   <div className="flex-grow flex flex-col">
-                    <h3 className="text-xl font-black text-stone-900 mb-6">Customize</h3>
-                    <p className="text-sm text-stone-500 mb-6">Instrucciones personalizadas y sistema de prompts predeterminados.</p>
+                    <h3 className="text-xl font-black text-stone-900 dark:text-white mb-6">Customize</h3>
+                    <p className="text-sm text-stone-500 dark:text-zinc-450 mb-6">Instrucciones personalizadas y sistema de prompts predeterminados.</p>
                     
                     <div className="space-y-4">
                       <div>
-                        <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 mb-2">Instrucciones para el Mentor</label>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-zinc-400 mb-2">Instrucciones para el Mentor</label>
                         <textarea
                           rows={4}
                           placeholder="Ej. 'Siempre responde con explicaciones cortas y código en Python listo para copiar...'"
-                          className="w-full rounded-xl border border-stone-200 bg-transparent p-3 text-sm text-stone-800 outline-none focus:border-blue-500"
+                          className="w-full rounded-xl border border-stone-200 dark:border-zinc-800/80 bg-transparent p-3 text-sm text-stone-800 dark:text-zinc-200 outline-none focus:border-blue-500 placeholder-stone-400 dark:placeholder-zinc-650"
                         />
                       </div>
                     </div>
@@ -1099,23 +1288,23 @@ export function ConversationSidebar({
 
                 {activeSettingsTab === 'datos' && (
                   <div className="flex-grow flex flex-col">
-                    <h3 className="text-xl font-black text-stone-900 mb-6">Controles de datos</h3>
-                    <p className="text-sm text-stone-500 mb-6">Administra tu historial de chats, exportaciones y seguridad.</p>
+                    <h3 className="text-xl font-black text-stone-900 dark:text-white mb-6">Controles de datos</h3>
+                    <p className="text-sm text-stone-500 dark:text-zinc-450 mb-6">Administra tu historial de chats, exportaciones y seguridad.</p>
                     
                     <div className="space-y-4">
-                      <div className="flex items-center justify-between p-4 rounded-xl border border-stone-200">
+                      <div className="flex items-center justify-between p-4 rounded-xl border border-stone-200 dark:border-zinc-800/80">
                         <div className="pr-4">
-                          <h4 className="text-sm font-semibold text-stone-850">Historial de chat y entrenamiento</h4>
-                          <p className="text-xs text-stone-500 mt-0.5">Guarda los nuevos chats del mentor en este dispositivo.</p>
+                          <h4 className="text-sm font-semibold text-stone-850 dark:text-zinc-200">Historial de chat y entrenamiento</h4>
+                          <p className="text-xs text-stone-500 dark:text-zinc-450 mt-0.5">Guarda los nuevos chats del mentor en este dispositivo.</p>
                         </div>
                         <ToggleSwitch checked={dataTrainingEnabled} onChange={() => setDataTrainingEnabled(!dataTrainingEnabled)} />
                       </div>
-                      <div className="flex items-center justify-between p-4 rounded-xl border border-stone-200">
+                      <div className="flex items-center justify-between p-4 rounded-xl border border-stone-200 dark:border-zinc-800/80">
                         <div>
-                          <h4 className="text-sm font-semibold text-stone-850">Exportar datos</h4>
-                          <p className="text-xs text-stone-500 mt-0.5">Descarga un archivo JSON con todo tu historial de chats.</p>
+                          <h4 className="text-sm font-semibold text-stone-850 dark:text-zinc-200">Exportar datos</h4>
+                          <p className="text-xs text-stone-500 dark:text-zinc-450 mt-0.5">Descarga un archivo JSON con todo tu historial de chats.</p>
                         </div>
-                        <button className="border border-stone-250 hover:bg-stone-50 text-xs px-4 py-1.5 rounded-full font-bold cursor-pointer bg-transparent text-stone-750 transition-colors">
+                        <button className="border border-stone-250 dark:border-zinc-800 hover:bg-stone-50 dark:hover:bg-zinc-900 text-xs px-4 py-1.5 rounded-full font-bold cursor-pointer bg-transparent text-stone-750 dark:text-zinc-300 transition-colors">
                           Exportar
                         </button>
                       </div>

@@ -141,6 +141,7 @@ function ChatShellInner({
   // Refs para que prepareSendMessagesRequest lea valores actuales al enviar
   const chatIdRef = useRef<string | null>(null);
   const modelRef = useRef(selectedModel);
+  const initialLoadRef = useRef(false);
 
   useEffect(() => { chatIdRef.current = activeChatId; }, [activeChatId]);
   useEffect(() => { modelRef.current = selectedModel; localStorage.setItem(MODEL_KEY, selectedModel); }, [selectedModel]);
@@ -317,7 +318,8 @@ function ChatShellInner({
   // Sincronizar activeChatId con la prop initialChatId de la URL
   useEffect(() => {
     if (initialChatId) {
-      if (activeChatId !== initialChatId) {
+      if (activeChatId !== initialChatId || !initialLoadRef.current) {
+        initialLoadRef.current = true;
         selectChat(initialChatId);
       }
     } else {
