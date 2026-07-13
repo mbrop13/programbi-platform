@@ -465,9 +465,9 @@ export default function Sidebar({
         </div>
 
         {/* Nav Items */}
-        <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-4 scrollbar-hide">
+        <nav className={cn("overflow-y-auto py-3 px-3 scrollbar-hide", isCollapsed ? "space-y-1.5" : "flex-1 space-y-4")}>
           {Object.entries(groups).map(([groupName, groupTabs]) => (
-            <div key={groupName} className="space-y-2">
+            <div key={groupName} className={isCollapsed ? "contents" : "space-y-2"}>
               {!isCollapsed && (
                 <div className="px-3 mb-1">
                   <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider select-none">
@@ -476,7 +476,7 @@ export default function Sidebar({
                 </div>
               )}
 
-              <div className="space-y-1">
+              <div className={isCollapsed ? "contents" : "space-y-1"}>
                 {groupTabs.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id || (tab.id === "buscar" && searchModalOpen);
