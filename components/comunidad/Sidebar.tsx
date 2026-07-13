@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useCallback, useState, useRef } from "react";
+import React, { useEffect, useCallback, useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -38,6 +38,7 @@ import { getUnreadNotificationCount, getCoursesAndLessons, getPosts } from "@/li
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useToast } from "./ui/Toast";
+import { Tooltip } from "./ai-v2/Tooltip";
 
 const translations = {
   es: {
@@ -480,9 +481,8 @@ export default function Sidebar({
                 {groupTabs.map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id || (tab.id === "buscar" && searchModalOpen);
-                  return (
+                  const buttonEl = (
                     <button
-                      key={tab.id}
                       onClick={() => {
                         if (tab.id === "buscar") {
                           setSearchModalOpen(true);
@@ -492,7 +492,6 @@ export default function Sidebar({
                         }
                         onMobileClose();
                       }}
-                      title={isCollapsed ? tab.label : undefined}
                       className={`w-full flex items-center gap-3 font-semibold text-[13px] transition-colors duration-150 select-none border-0 cursor-pointer
                         ${isCollapsed ? "justify-center px-2.5 py-2.5 rounded-xl" : "px-3 py-2.5 rounded-xl"}
                         ${isActive
@@ -522,6 +521,18 @@ export default function Sidebar({
                         <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500" />
                       ) : null}
                     </button>
+                  );
+
+                  return (
+                    <React.Fragment key={tab.id}>
+                      {isCollapsed ? (
+                        <Tooltip content={tab.label} position="right">
+                          {buttonEl}
+                        </Tooltip>
+                      ) : (
+                        buttonEl
+                      )}
+                    </React.Fragment>
                   );
                 })}
               </div>

@@ -46,7 +46,7 @@ export function Tooltip({
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.12, ease: "easeOut" }}
             className={cn(
-              "absolute z-[9999] whitespace-nowrap bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-100 text-[11.5px] font-bold px-3.5 py-2.5 rounded-[18px] shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-neutral-100 dark:border-zinc-800/80 pointer-events-none select-none",
+              "absolute z-[9999] whitespace-nowrap bg-white dark:bg-zinc-900 text-slate-800 dark:text-zinc-100 text-[11.5px] font-bold px-3.5 py-2 rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-neutral-100 dark:border-zinc-800/80 pointer-events-none select-none",
               position === "right" && "left-full ml-3 top-1/2",
               position === "left" && "right-full mr-3 top-1/2",
               position === "top" && "bottom-full mb-3 left-1/2",

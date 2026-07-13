@@ -376,10 +376,10 @@ export function ConversationSidebar({
             {/* Acciones flotantes en hover (se superponen al texto) */}
             {!isEditing && (
               <div className={cn(
-                "absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5 pl-5 pr-1 opacity-0 group-hover/chat:opacity-100 transition-opacity rounded-r-lg bg-gradient-to-l",
+                "absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5 px-1.5 py-0.5 opacity-0 group-hover/chat:opacity-100 transition-opacity rounded-lg shadow-sm border border-stone-300/40 dark:border-zinc-700/40",
                 isActive
-                  ? "from-stone-200 via-stone-200 to-transparent dark:from-zinc-800 dark:via-zinc-800 dark:to-transparent"
-                  : "from-white via-white to-transparent dark:from-zinc-950 dark:via-zinc-950 dark:to-transparent"
+                  ? "bg-stone-300 dark:bg-zinc-700 text-stone-900 dark:text-white"
+                  : "bg-stone-200 dark:bg-zinc-850 text-stone-700 dark:text-zinc-300"
               )}>
                 {/* Botón de Renombrar */}
                 <button
@@ -467,11 +467,15 @@ export function ConversationSidebar({
             </div>
           </div>
         )}
-        {onClose && !collapsed && (
+        {((onToggleCollapse || onClose) && !collapsed) && (
           <button
-            onClick={onClose}
+            onClick={(e) => {
+              e.stopPropagation();
+              if (onToggleCollapse) onToggleCollapse();
+              else if (onClose) onClose();
+            }}
             aria-label="Colapsar menú"
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 hover:bg-stone-200/50 hover:text-stone-800 transition-colors cursor-pointer border-0 bg-transparent"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-stone-400 dark:text-zinc-550 hover:bg-stone-200/50 dark:hover:bg-zinc-800/50 hover:text-stone-800 dark:hover:text-white transition-colors cursor-pointer border-0 bg-transparent"
           >
             <PanelLeftClose className="h-[18px] w-[18px]" />
           </button>
@@ -553,9 +557,7 @@ export function ConversationSidebar({
               chatsOpen ? "" : "-rotate-90"
             )} />
           </button>
-        ) : (
-          <div className="h-px bg-stone-200 dark:bg-zinc-800/80 my-2 shrink-0" />
-        )}
+        ) : null}
 
         {!collapsed && chatsOpen && (
           <div className={cn("flex-1 overflow-y-auto pb-3 space-y-1 scrollbar-hide", collapsed ? "px-2" : "px-3")}>
