@@ -84,7 +84,7 @@ function PrimaryCta({
     <button
       type="button"
       onClick={onClick}
-      className="px-6 py-3 bg-brand-blue hover:bg-brand-blue-dark active:scale-[0.98] text-white font-bold text-xs rounded-xl transition-all shadow-glow-brand hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer"
+      className="px-6 py-3 bg-brand-blue hover:bg-brand-blue-dark hover:scale-[1.03] active:scale-[0.98] text-white font-bold text-xs rounded-xl transition-all duration-200 shadow-glow-brand hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer"
     >
       {children}
     </button>
@@ -580,18 +580,21 @@ export default function LivePanel() {
               </p>
             </div>
 
-            <div className="space-y-2 max-h-[560px] overflow-y-auto pr-1.5 custom-scrollbar">
+            <div className="space-y-2 max-h-[560px] overflow-y-auto overflow-x-hidden pr-1.5 py-0.5 custom-scrollbar">
               {completedClasses.map((item) => {
                 const isActive = playbackClass.id === item.id;
                 return (
-                  <button
+                  <motion.button
                     key={item.id}
                     type="button"
                     onClick={() => setPlaybackClass(item)}
-                    className={`w-full flex gap-3 p-2.5 rounded-xl cursor-pointer transition-all border text-left ${
+                    whileHover={{ scale: 1.02, x: 2 }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 450, damping: 30 }}
+                    className={`group/item w-full flex gap-3 p-2.5 rounded-xl cursor-pointer border text-left origin-left ${
                       isActive
-                        ? "bg-brand-blue/[0.06] border-brand-blue/50 shadow-sm"
-                        : "bg-white dark:bg-neutral-950 hover:bg-neutral-50 dark:hover:bg-neutral-900 border-neutral-200/80 dark:border-neutral-800/80"
+                        ? "bg-brand-blue/[0.08] border-brand-blue/50 shadow-sm"
+                        : "bg-white dark:bg-neutral-950 hover:bg-neutral-50 dark:hover:bg-neutral-900 border-neutral-200/80 dark:border-neutral-800/80 hover:border-brand-blue/25 hover:shadow-md"
                     }`}
                   >
                     <div className="w-24 aspect-[16/10] shrink-0 bg-neutral-100 dark:bg-neutral-900 rounded-lg overflow-hidden relative border border-neutral-200/60 dark:border-neutral-800/60">
@@ -600,7 +603,7 @@ export default function LivePanel() {
                         <img
                           src={`https://img.youtube.com/vi/${item.youtube_video_id}/hqdefault.jpg`}
                           alt={item.title}
-                          className="absolute inset-0 w-full h-full object-cover"
+                          className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover/item:scale-110"
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">
@@ -608,15 +611,17 @@ export default function LivePanel() {
                         </div>
                       )}
                       {isActive && (
-                        <div className="absolute inset-0 bg-brand-blue/15 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-brand-blue/20 flex items-center justify-center">
                           <Play className="w-4 h-4 text-white fill-white drop-shadow" />
                         </div>
                       )}
                     </div>
                     <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5">
                       <h5
-                        className={`font-bold text-[11px] leading-snug line-clamp-2 ${
-                          isActive ? "text-brand-blue" : "text-neutral-800 dark:text-neutral-200"
+                        className={`font-bold text-[11px] leading-snug line-clamp-2 transition-colors ${
+                          isActive
+                            ? "text-brand-blue"
+                            : "text-neutral-800 dark:text-neutral-200 group-hover/item:text-brand-blue"
                         }`}
                       >
                         {item.title}
@@ -628,7 +633,7 @@ export default function LivePanel() {
                         })}
                       </span>
                     </div>
-                  </button>
+                  </motion.button>
                 );
               })}
             </div>
@@ -667,16 +672,18 @@ export default function LivePanel() {
 
       {/* ─── FEATURED CARD: clase en vivo activa ─── */}
       {activeClass && activeClass.status === "active" && (
-        <section>
+        <section className="px-0.5">
           <motion.article
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="group bg-white dark:bg-neutral-950 border border-red-200/50 dark:border-red-900/30 rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col md:flex-row ring-1 ring-red-500/5"
+            whileHover={{ y: -4, scale: 1.01 }}
+            transition={{ type: "spring", stiffness: 380, damping: 28 }}
+            className="group bg-white dark:bg-neutral-950 border border-red-200/50 dark:border-red-900/30 rounded-3xl overflow-hidden shadow-float hover:shadow-lift flex flex-col md:flex-row ring-1 ring-red-500/5 will-change-transform"
           >
             {/* Thumbnail + LIVE badge */}
             <div className="relative md:w-[42%] shrink-0 aspect-video md:aspect-auto md:min-h-[240px] cursor-pointer overflow-hidden bg-neutral-900">
               <HeroThumbnail youtubeId={activeClass.youtube_video_id} placeholderIcon={Film} />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent transition-opacity duration-500 group-hover:from-black/40" />
               <div className="absolute top-4 left-4 z-10">
                 <span className="bg-red-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg shadow-red-500/25">
                   <span className="relative flex h-2 w-2">
@@ -692,7 +699,7 @@ export default function LivePanel() {
                 className="absolute inset-0 z-10 flex items-center justify-center cursor-pointer border-none bg-transparent"
                 aria-label="Unirse a la clase"
               >
-                <span className="w-14 h-14 bg-white/95 rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform duration-300">
+                <span className="w-14 h-14 bg-white/95 rounded-full flex items-center justify-center shadow-xl scale-100 group-hover:scale-125 transition-transform duration-300 ease-out ring-0 group-hover:ring-4 group-hover:ring-white/30">
                   <Tv className="w-6 h-6 text-neutral-900" />
                 </span>
               </button>
@@ -703,7 +710,7 @@ export default function LivePanel() {
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-red-500 mb-1.5">
                 Transmisión en curso
               </p>
-              <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight tracking-tight">
+              <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight tracking-tight group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-300">
                 {activeClass.title}
               </h2>
               {activeClass.description && (
@@ -758,12 +765,14 @@ export default function LivePanel() {
             <motion.div
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-neutral-950 border border-neutral-200/80 dark:border-neutral-800/80 rounded-3xl p-5 md:p-6 shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col md:flex-row gap-6"
+              whileHover={{ y: -5, scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 380, damping: 28 }}
+              className="group/hero bg-white dark:bg-neutral-950 border border-neutral-200/80 dark:border-neutral-800/80 rounded-3xl p-5 md:p-6 shadow-float hover:shadow-lift hover:border-brand-blue/25 dark:hover:border-brand-blue/30 flex flex-col md:flex-row gap-6 will-change-transform"
             >
               {/* Left Column: Video Preview Thumbnail */}
               <div
-                className={`relative md:w-[42%] shrink-0 aspect-video rounded-2xl overflow-hidden border border-neutral-200/60 dark:border-neutral-800 bg-neutral-900 flex items-center justify-center select-none ${
-                  !isScheduled && featuredClass.youtube_video_id ? "cursor-pointer group" : ""
+                className={`relative md:w-[42%] shrink-0 aspect-video rounded-2xl overflow-hidden border border-neutral-200/60 dark:border-neutral-800 bg-neutral-900 flex items-center justify-center select-none shadow-sm ${
+                  !isScheduled && featuredClass.youtube_video_id ? "cursor-pointer group" : "group"
                 }`}
                 onClick={() => {
                   if (!isScheduled && featuredClass.youtube_video_id) {
@@ -777,23 +786,23 @@ export default function LivePanel() {
                     <img
                       src={`https://img.youtube.com/vi/${featuredClass.youtube_video_id}/maxresdefault.jpg`}
                       alt={featuredClass.title}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110 group-hover/hero:scale-110"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = `https://img.youtube.com/vi/${featuredClass.youtube_video_id}/hqdefault.jpg`;
                       }}
                     />
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors" />
+                    <div className="absolute inset-0 bg-black/25 group-hover:bg-black/10 group-hover/hero:bg-black/10 transition-colors duration-500" />
                     {!isScheduled && (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="w-12 h-12 bg-white/95 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                          <Play className="w-5 h-5 text-neutral-900 fill-neutral-900/20" />
+                        <span className="w-12 h-12 sm:w-14 sm:h-14 bg-white/95 rounded-full flex items-center justify-center shadow-xl scale-95 group-hover:scale-125 group-hover/hero:scale-125 transition-transform duration-300 ease-out ring-0 group-hover:ring-4 group-hover/hero:ring-4 ring-white/25">
+                          <Play className="w-5 h-5 sm:w-6 sm:h-6 text-neutral-900 fill-neutral-900/25 ml-0.5" />
                         </span>
                       </div>
                     )}
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-neutral-400">
-                    <div className="w-12 h-12 rounded-xl bg-brand-blue/15 flex items-center justify-center text-brand-blue mb-2.5">
+                    <div className="w-12 h-12 rounded-xl bg-brand-blue/15 flex items-center justify-center text-brand-blue mb-2.5 group-hover/hero:scale-110 transition-transform duration-300">
                       <RadioTower className="w-6 h-6" />
                     </div>
                     <span className="text-xs font-medium">Video no programado</span>
@@ -803,7 +812,7 @@ export default function LivePanel() {
                 {/* Status Badge */}
                 <div className="absolute top-3 left-3 z-10">
                   <span
-                    className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${
+                    className={`text-[9px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full transition-transform duration-300 group-hover/hero:scale-105 ${
                       isScheduled
                         ? "bg-amber-500 text-white shadow-sm shadow-amber-500/20"
                         : "bg-neutral-900/80 backdrop-blur-sm text-white border border-white/10"
@@ -817,7 +826,7 @@ export default function LivePanel() {
               {/* Right Column: Details & Countdown Info */}
               <div className="flex-1 flex flex-col justify-between py-0.5 min-w-0">
                 <div>
-                  <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight tracking-tight">
+                  <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight tracking-tight group-hover/hero:text-brand-blue transition-colors duration-300">
                     {featuredClass.title}
                   </h2>
 
@@ -969,7 +978,7 @@ export default function LivePanel() {
 
         {/* Recordings grid */}
         {completedClasses.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6 pt-1 pb-2">
             {completedClasses.map((recording, index) => (
               <RecordingCard
                 key={recording.id}
@@ -1040,15 +1049,32 @@ function RecordingCard({
           onPlay(recording);
         }
       }}
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: Math.min(index * 0.05, 0.25) }}
-      className={`group bg-white dark:bg-neutral-950 rounded-2xl overflow-hidden border border-neutral-200/80 dark:border-neutral-800/80 transition-all duration-300 flex flex-col h-full ${
+      initial={{ opacity: 0, y: 18 }}
+      animate={{
+        opacity: 1,
+        y: 0,
+        transition: { delay: Math.min(index * 0.05, 0.25), type: "spring", stiffness: 380, damping: 28 },
+      }}
+      whileHover={
         hasVideo
-          ? "hover:shadow-lg hover:border-neutral-300 dark:hover:border-neutral-700 cursor-pointer active:scale-[0.99]"
+          ? { y: -8, scale: 1.035, transition: { type: "spring", stiffness: 420, damping: 24 } }
+          : undefined
+      }
+      whileTap={hasVideo ? { scale: 0.985 } : undefined}
+      className={`group relative bg-white dark:bg-neutral-950 rounded-2xl overflow-hidden border border-neutral-200/80 dark:border-neutral-800/80 flex flex-col h-full shadow-premium will-change-transform ${
+        hasVideo
+          ? "hover:z-20 hover:shadow-lift hover:border-brand-blue/35 dark:hover:border-brand-blue/40 cursor-pointer"
           : "opacity-80"
       }`}
     >
+      {/* Glow sutil al hover */}
+      {hasVideo && (
+        <div
+          className="pointer-events-none absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-b from-brand-blue/10 via-transparent to-transparent"
+          aria-hidden
+        />
+      )}
+
       {/* Thumbnail */}
       <div className="relative aspect-video w-full overflow-hidden shrink-0 bg-neutral-100 dark:bg-neutral-900">
         {imgSrc ? (
@@ -1058,46 +1084,48 @@ function RecordingCard({
               src={imgSrc}
               alt={recording.title}
               onError={handleImgError}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent group-hover:from-black/30 transition-colors" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-500" />
+            {/* Velo azul sutil en hover */}
+            <div className="absolute inset-0 bg-brand-blue/0 group-hover:bg-brand-blue/10 transition-colors duration-500" />
           </>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 flex items-center justify-center">
-            <Film className="w-12 h-12 text-neutral-300 dark:text-neutral-700" />
+            <Film className="w-12 h-12 text-neutral-300 dark:text-neutral-700 transition-transform duration-500 group-hover:scale-110" />
           </div>
         )}
 
-        {/* Play overlay — visible sutil, más fuerte en hover */}
+        {/* Play overlay */}
         {hasVideo && (
-          <div className="absolute inset-0 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity duration-300">
-            <div className="w-11 h-11 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl scale-95 group-hover:scale-110 transition-transform">
-              <PlayCircle className="w-6 h-6 text-neutral-900" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-12 h-12 bg-white/95 backdrop-blur-sm rounded-full flex items-center justify-center shadow-xl scale-90 opacity-80 group-hover:scale-125 group-hover:opacity-100 transition-all duration-300 ease-out ring-0 group-hover:ring-[6px] group-hover:ring-white/35">
+              <PlayCircle className="w-7 h-7 text-neutral-900" />
             </div>
           </div>
         )}
 
         {/* Badge */}
-        <div className="absolute top-3 left-3">
-          <span className="bg-neutral-900/80 backdrop-blur-sm text-white text-[9px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 uppercase tracking-wider border border-white/10">
+        <div className="absolute top-3 left-3 transition-transform duration-300 group-hover:scale-105 group-hover:-translate-y-0.5">
+          <span className="bg-neutral-900/85 backdrop-blur-sm text-white text-[9px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 uppercase tracking-wider border border-white/10 shadow-sm">
             Grabación
           </span>
         </div>
       </div>
 
       {/* Info */}
-      <div className="p-4 sm:p-5 flex flex-col flex-1">
-        <h4 className="font-bold text-sm text-neutral-900 dark:text-white leading-snug line-clamp-2 group-hover:text-brand-blue transition-colors">
+      <div className="relative p-4 sm:p-5 flex flex-col flex-1 bg-white dark:bg-neutral-950">
+        <h4 className="font-bold text-sm text-neutral-900 dark:text-white leading-snug line-clamp-2 transition-colors duration-300 group-hover:text-brand-blue">
           {recording.title}
         </h4>
 
         {recording.description && (
-          <p className="text-xs text-neutral-400 dark:text-neutral-500 leading-relaxed line-clamp-2 mt-1.5">
+          <p className="text-xs text-neutral-400 dark:text-neutral-500 leading-relaxed line-clamp-2 mt-1.5 transition-colors group-hover:text-neutral-500 dark:group-hover:text-neutral-400">
             {recording.description}
           </p>
         )}
 
-        <div className="mt-auto pt-3.5 border-t border-neutral-100 dark:border-neutral-900/60 flex items-center justify-between gap-2">
+        <div className="mt-auto pt-3.5 border-t border-neutral-100 dark:border-neutral-900/60 flex items-center justify-between gap-2 group-hover:border-brand-blue/15 transition-colors duration-300">
           <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-medium min-w-0">
             <Calendar className="w-3.5 h-3.5 shrink-0" />
             <span className="truncate">
@@ -1110,8 +1138,9 @@ function RecordingCard({
           </div>
 
           {hasVideo ? (
-            <span className="text-[11px] font-bold text-brand-blue flex items-center gap-0.5 group-hover:gap-1.5 transition-all shrink-0">
-              Ver grabación <ChevronRight className="w-3 h-3" />
+            <span className="text-[11px] font-bold text-brand-blue flex items-center gap-0.5 group-hover:gap-2 transition-all duration-300 shrink-0">
+              Ver grabación{" "}
+              <ChevronRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
             </span>
           ) : (
             <span className="text-[10px] font-bold text-neutral-400 dark:text-neutral-500 bg-neutral-100 dark:bg-neutral-900 px-2.5 py-1 rounded-full shrink-0">

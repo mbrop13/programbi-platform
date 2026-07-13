@@ -541,63 +541,68 @@ export default function Sidebar({
         </nav>
 
         {/* ─── USER SECTION (bottom) ─── */}
-        <div className={`shrink-0 border-t border-gray-100 ${isCollapsed ? "p-2 flex justify-center" : "p-3"}`}>
+        <div className={cn(
+          "shrink-0 border-t border-neutral-100 dark:border-neutral-900/60 p-3 transition-all duration-200",
+          isCollapsed ? "flex justify-center px-2" : "px-3"
+        )}>
           {authLoading && !userProfile ? (
             isCollapsed ? (
-              <div className="w-10 h-10 rounded-xl bg-gray-100 animate-pulse" />
+              <div className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-900 animate-pulse mx-auto" />
             ) : (
-              <div className="w-full flex items-center gap-3 p-2.5 rounded-xl">
-                <div className="w-9 h-9 rounded-xl bg-gray-100 animate-pulse shrink-0" />
+              <div className="w-full flex items-center gap-3 p-2.5 rounded-xl bg-neutral-50/20 dark:bg-neutral-900/10">
+                <div className="w-8 h-8 rounded-full bg-neutral-100 dark:bg-neutral-900 animate-pulse shrink-0" />
                 <div className="flex-1 min-w-0 space-y-1.5">
-                  <div className="h-3 w-24 bg-gray-100 rounded animate-pulse" />
-                  <div className="h-2.5 w-32 bg-gray-100 rounded animate-pulse" />
+                  <div className="h-3 w-20 bg-neutral-100 dark:bg-neutral-900 rounded animate-pulse" />
                 </div>
               </div>
             )
-          ) : isCollapsed ? (
-            <Tooltip content={displayName} position="right">
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className={cn(
-                  "relative w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0 user-trigger-btn",
-                  userMenuOpen && "ring-2 ring-indigo-500"
-                )}
-              >
-                <span>{initials}</span>
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[8px] font-bold px-1 ring-2 ring-white">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
-              </button>
-            </Tooltip>
           ) : (
-            <div className="w-full flex items-center justify-between p-1 hover:bg-neutral-50 dark:hover:bg-neutral-900 rounded-2xl transition-all duration-200">
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className={cn(
-                  "flex items-center gap-3 p-1.5 text-left border-0 bg-transparent flex-1 cursor-pointer min-w-0 rounded-xl hover:bg-neutral-100/40 dark:hover:bg-neutral-800/40 transition-colors user-trigger-btn",
-                  userMenuOpen && "bg-neutral-100/50 dark:bg-neutral-800/50"
-                )}
-              >
-                <div className="relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs select-none">
-                  <span>{initials}</span>
-                </div>
-                <span className="truncate text-[13px] font-semibold text-neutral-750 dark:text-neutral-200 min-w-0 flex-1">
-                  {displayName}
-                </span>
-              </button>
+            <div className={cn(
+              "w-full flex items-center justify-between transition-all duration-200",
+              isCollapsed ? "justify-center" : "gap-2"
+            )}>
+              <Tooltip content={displayName} position="right" className={cn(!isCollapsed && "pointer-events-none")}>
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className={cn(
+                    "flex items-center text-left border-0 bg-transparent cursor-pointer rounded-xl transition-all duration-150 user-trigger-btn",
+                    isCollapsed 
+                      ? "p-0 hover:scale-105" 
+                      : "p-1.5 gap-2.5 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40 w-full min-w-0"
+                  )}
+                >
+                  <div className={cn(
+                    "relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm select-none transition-all duration-150",
+                    userMenuOpen && "ring-2 ring-indigo-500"
+                  )}>
+                    <span>{initials}</span>
+                    {isCollapsed && unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[8px] font-bold px-1 ring-2 ring-white">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </span>
+                    )}
+                  </div>
+                  
+                  {!isCollapsed && (
+                    <span className="truncate text-[13px] font-semibold text-neutral-750 dark:text-neutral-200 min-w-0 flex-1">
+                      {displayName}
+                    </span>
+                  )}
+                </button>
+              </Tooltip>
 
-              <button
-                onClick={() => setNotifOpen(!notifOpen)}
-                className="h-9 w-9 rounded-xl flex items-center justify-center text-neutral-500 hover:text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:text-neutral-400 dark:hover:text-white transition-colors shrink-0 cursor-pointer border-0 relative"
-                title="Notificaciones"
-              >
-                <Bell className="w-4.5 h-4.5" />
-                {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500" />
-                )}
-              </button>
+              {!isCollapsed && (
+                <button
+                  onClick={() => setNotifOpen(!notifOpen)}
+                  className="h-9 w-9 rounded-xl flex items-center justify-center text-neutral-500 hover:text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 dark:text-neutral-400 dark:hover:text-white transition-colors shrink-0 cursor-pointer border-0 relative"
+                  title="Notificaciones"
+                >
+                  <Bell className="w-4.5 h-4.5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500" />
+                  )}
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -776,7 +781,7 @@ export default function Sidebar({
       {/* DESKTOP SIDEBAR */}
       <motion.aside
         animate={{ width: sidebarWidth }}
-        transition={{ duration: 0.2, ease: "easeInOut" }}
+        transition={{ type: "spring", stiffness: 300, damping: 32 }}
         className="hidden lg:flex flex-col shrink-0 h-screen sticky top-0 bg-white dark:bg-neutral-950 border-r border-neutral-100 dark:border-neutral-900 overflow-hidden z-30"
       >
         {renderSidebarContent(false)}
