@@ -460,35 +460,7 @@ export function ComposerInput({
               </svg>
             </motion.button>
 
-            {/* Segundo botón de código: Formatear / Limpiar (</>) */}
-            <motion.button
-              type="button"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface-0 hover:bg-surface-2 text-text-muted transition-all duration-150 cursor-pointer shadow-sm"
-              title="Formatear código"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5 shrink-0">
-                <path d="M16 18l6-6-6-6M8 6L2 12l6 6" strokeLinecap="round" strokeLinejoin="round"></path>
-              </svg>
-            </motion.button>
 
-            {/* Tercer botón: Navegador virtual / Búsqueda web (Chrome Icon) */}
-            <motion.button
-              type="button"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface-0 hover:bg-surface-2 text-text-muted transition-all duration-150 cursor-pointer shadow-sm"
-              title="Búsqueda web"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3.5 h-3.5 shrink-0">
-                <circle cx="12" cy="12" r="10" />
-                <circle cx="12" cy="12" r="4" />
-                <line x1="21.17" y1="8" x2="12" y2="8" />
-                <line x1="3.95" y1="6.06" x2="8.54" y2="14" />
-                <line x1="10.88" y1="21.94" x2="15.46" y2="14" />
-              </svg>
-            </motion.button>
 
             {uploading && <Loader2 className="h-3.5 w-3.5 animate-spin text-text-muted" aria-hidden />}
           </div>

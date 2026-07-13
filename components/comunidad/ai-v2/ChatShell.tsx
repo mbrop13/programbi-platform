@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { Bot, MessageSquarePlus, PanelLeft, PanelLeftClose, Sparkles } from "lucide-react";
+import { Bot } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -476,7 +476,7 @@ function ChatShellInner({
         animate={
           isMobile
             ? { x: sidebarOpen ? 0 : -280, width: 280 }
-            : { width: sidebarOpen ? 260 : 72 }
+            : { width: sidebarOpen ? 240 : 60 }
         }
         transition={{ duration: 0.2, ease: "easeInOut" }}
         className={cn(
@@ -513,17 +513,6 @@ function ChatShellInner({
 
       {/* Main (sin barra superior) */}
       <div className="relative flex min-w-0 flex-1 flex-col">
-        {/* Floating Overlayed Sidebar Toggle (both mobile & desktop) */}
-        {!sidebarOpen && (
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="absolute left-3 top-3 z-20 flex h-10 w-10 items-center justify-center rounded-full border border-neutral-200/80 bg-white/95 text-neutral-500 shadow-md backdrop-blur-md transition-colors hover:bg-neutral-100 hover:text-neutral-700 cursor-pointer border-none"
-            title="Mostrar historial"
-          >
-            <PanelLeft className="h-5 w-5" />
-          </button>
-        )}
-
         {/* Floating Quota Indicator (both mobile & desktop) */}
         <div className="absolute right-3 top-3 z-20">
           <QuotaIndicator

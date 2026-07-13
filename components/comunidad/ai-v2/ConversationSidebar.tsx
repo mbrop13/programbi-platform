@@ -547,7 +547,7 @@ export function ConversationSidebar({
           <div className="h-px bg-stone-200 my-2 shrink-0" />
         )}
 
-        {(!collapsed ? chatsOpen : true) && (
+        {!collapsed && chatsOpen && (
           <div className={cn("flex-1 overflow-y-auto pb-3 space-y-1 scrollbar-hide", collapsed ? "px-2" : "px-3")}>
             {loading ? (
               <div className="flex items-center justify-center py-10">
@@ -835,7 +835,7 @@ export function ConversationSidebar({
                 if (profileMenuOpen) setActiveSubmenu(null);
               }}
               className={cn(
-                "relative w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0",
+                "relative h-8 w-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0",
                 isPremiumUser && "ring-[1.5px] ring-stone-800 dark:ring-white/80"
               )}
               title={cleanDisplayName}
@@ -850,13 +850,7 @@ export function ConversationSidebar({
               ) : (
                 <span aria-hidden>{initials}</span>
               )}
-              {/* Tier badge below avatar */}
-              <span className={cn(
-                "absolute -bottom-1 left-1/2 -translate-x-1/2 text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-neutral-900 uppercase tracking-wider leading-none whitespace-nowrap shadow-sm",
-                tierBadgeClass
-              )}>
-                {tierLabel}
-              </span>
+
             </button>
           </div>
         ) : (
@@ -884,13 +878,7 @@ export function ConversationSidebar({
                 ) : (
                   <span aria-hidden>{initials}</span>
                 )}
-                {/* Tier badge below avatar */}
-                <span className={cn(
-                  "absolute -bottom-1 left-1/2 -translate-x-1/2 text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-neutral-900 uppercase tracking-wider leading-none whitespace-nowrap shadow-sm",
-                  tierBadgeClass
-                )}>
-                  {tierLabel}
-                </span>
+
               </div>
 
               {/* Name */}
