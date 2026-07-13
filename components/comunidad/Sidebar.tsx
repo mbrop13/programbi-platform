@@ -466,7 +466,7 @@ export default function Sidebar({
         </div>
 
         {/* Nav Items */}
-        <nav className={cn("overflow-y-auto py-3 px-3 scrollbar-hide", isCollapsed ? "space-y-1.5" : "flex-1 space-y-4")}>
+        <nav className={cn("overflow-y-auto py-3 px-3 scrollbar-hide flex-1", isCollapsed ? "space-y-1.5" : "space-y-4")}>
           {Object.entries(groups).map(([groupName, groupTabs]) => (
             <div key={groupName} className={isCollapsed ? "contents" : "space-y-2"}>
               {!isCollapsed && (
