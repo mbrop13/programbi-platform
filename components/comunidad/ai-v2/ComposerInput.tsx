@@ -325,8 +325,9 @@ export function ComposerInput({
     <div className="mx-auto w-full max-w-3xl">
       <div
         className={cn(
-          "rounded-2xl border border-border bg-surface-0/85 shadow-premium backdrop-blur-xl transition-all duration-300 focus-within:border-brand-blue/35 focus-within:shadow-[0_0_20px_rgba(24,144,255,0.06)] focus-within:ring-1 focus-within:ring-brand-blue/30",
-          isStreaming && "composer-glow"
+          "rounded-3xl border border-border bg-surface-0/85 shadow-premium backdrop-blur-xl transition-all duration-300 focus-within:border-brand-blue/35 focus-within:shadow-[0_0_20px_rgba(24,144,255,0.06)] focus-within:ring-1 focus-within:ring-brand-blue/30",
+          isStreaming && "composer-glow",
+          recording && "border-destructive/60 shadow-[0_0_18px_rgba(239,68,68,0.18)] ring-1 ring-destructive/40"
         )}
       >
         {attachments.length > 0 && (
@@ -373,7 +374,13 @@ export function ComposerInput({
                 whileTap={{ scale: 0.95 }}
                 className="flex h-8 w-8 items-center justify-center rounded-lg text-text-muted transition-colors disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer"
               >
-                <Plus className="h-5 w-5" aria-hidden />
+                <Plus
+                  className={cn(
+                    "h-5 w-5 transition-transform duration-300",
+                    attachOpen && "rotate-45"
+                  )}
+                  aria-hidden
+                />
               </motion.button>
               <AnimatePresence>
                 {attachOpen && (

@@ -7,6 +7,7 @@ import { MarkdownRenderer } from "./MarkdownRenderer";
 import { ReasoningPanel } from "./ReasoningPanel";
 import { ToolCard } from "./ToolCard";
 import type { ChatMessage, ChatPart } from "./types";
+import { cn } from "@/lib/utils";
 
 interface MessageRowProps {
   message: ChatMessage;
@@ -17,8 +18,40 @@ interface MessageRowProps {
   userAvatarUrl?: string | null;
 }
 
+/** Umbral para mostrar "Ver más / Ver menos" en mensajes de usuario. */
+const LONG_MSG_CHARS = 450;
+const LONG_MSG_LINES = 5;
+const COLLAPSED_HEIGHT = 140;
+
 function isImagePart(p: ChatPart) {
   return p.type === "file" && String(p.mediaType ?? "").startsWith("image/");
+}
+
+/**
+ * Decodifica etiquetas <think>…</think> embebidas en el contenido final.
+ * Devuelve { reasoning, content } separados. Soporta streaming (etiqueta
+ * abierta sin cierre) para mostrar el pensamiento en tiempo real.
+ */
+function decodeThinking(raw: string): { reasoning: string; content: string } {
+  if (!raw) return { reasoning: "", content: "" };
+  let reasoning = "";
+  let content = raw;
+
+  // Etiquetas cerradas: <think>…</think>
+  const closed = /<think>([\s\S]*?)<\/think>/g;
+  content = content.replace(closed, (_m, inner) => {
+    reasoning += (reasoning ? "\n" : "") + String(inner).trim();
+    return "";
+  });
+
+  // Etiqueta abierta en streaming (sin cierre todavía)
+  const open = content.match(/<think>([\s\S]*)$/);
+  if (open) {
+    reasoning += (reasoning ? "\n" : "") + String(open[1]).trim();
+    content = content.replace(/<think>([\s\S]*)$/, "");
+  }
+
+  return { reasoning: reasoning.trim(), content: content.trim() };
 }
 
 /** Convierte markdown a texto plano para TTS (no leer sintaxis cruda). */
@@ -39,6 +72,38 @@ function toPlainText(md: string): string {
     .replace(/^\s*>\s+/gm, "")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
+}
+
+/** Burbuja de usuario con colapso "Ver más / Ver menos". */
+function UserBubble({ text }: { text: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = text.length > LONG_MSG_CHARS || text.split("\n").length > LONG_MSG_LINES;
+
+  return (
+    <div className="relative overflow-hidden rounded-3xl rounded-tr-sm bg-secondary px-5 py-3.5 text-text-primary">
+      <div
+        className={cn(
+          "whitespace-pre-wrap break-words text-[15px] leading-relaxed transition-all duration-300",
+          isLong && !expanded && "max-h-[140px] overflow-hidden"
+        )}
+        style={isLong && !expanded ? { maxHeight: COLLAPSED_HEIGHT } : undefined}
+      >
+        {text}
+      </div>
+      {isLong && !expanded && (
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-secondary via-secondary/90 to-transparent dark:from-[#0A0A0A] dark:via-[#0A0A0A]/90 dark:to-transparent" />
+      )}
+      {isLong && (
+        <button
+          type="button"
+          onClick={() => setExpanded((v) => !v)}
+          className="relative mt-1 text-xs font-semibold text-text-primary/80 hover:opacity-70 cursor-pointer"
+        >
+          {expanded ? "Ver menos ↑" : "Ver más →"}
+        </button>
+      )}
+    </div>
+  );
 }
 
 function MessageRowBase({
@@ -75,7 +140,13 @@ function MessageRowBase({
     // step-start, source-* → ignorados por ahora
   }
 
-  const text = textChunks.join("\n\n");
+  // Decodificar <think> del texto final (DeepSeek-R1) y combinar con reasoning explícito.
+  const joinedText = textChunks.join("\n\n");
+  const decoded = decodeThinking(joinedText);
+  const finalReasoning = [reasoningText, decoded.reasoning].filter(Boolean).join("\n").trim();
+  if (decoded.reasoning && reasoningStreaming) reasoningStreaming = true;
+  const text = decoded.content;
+
   const showStreamingCursor = isStreaming && !isUser && (!text || message.parts?.[message.parts.length - 1]?.type === "text");
 
   const handleCopy = async () => {
@@ -104,16 +175,17 @@ function MessageRowBase({
     setSpeaking(true);
   };
 
-  // ─── Usuario: burbuja derecha ───
+  // ─── Usuario: burbuja derecha con esquina "bocadillo" ───
   if (isUser) {
     return (
       <motion.div
+        id={`msg-user-${message.id}`}
         initial={{ opacity: 0, y: 6 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, ease: "easeOut" }}
-        className="flex justify-end px-4 py-2 sm:px-6"
+        className="flex scroll-mt-24 justify-end px-4 py-2 sm:px-6"
       >
-        <div className="flex flex-col items-end gap-2 max-w-[85%] sm:max-w-[75%]">
+        <div className="flex max-w-[85%] flex-col items-end gap-2 sm:max-w-[75%]">
           {imageParts.length > 0 && (
             <div className="flex flex-wrap justify-end gap-2">
               {imageParts.map((p, i) => (
@@ -127,13 +199,7 @@ function MessageRowBase({
               ))}
             </div>
           )}
-          {text && (
-            <div className="rounded-3xl rounded-br-lg bg-brand-blue px-4 py-2.5 text-white shadow-premium">
-              <div className="whitespace-pre-wrap break-words text-[0.95rem] leading-relaxed">
-                {text}
-              </div>
-            </div>
-          )}
+          {text && <UserBubble text={text} />}
         </div>
       </motion.div>
     );
@@ -149,9 +215,9 @@ function MessageRowBase({
     >
       <div className="min-w-0 flex-1">
 
-        {/* Razonamiento */}
-        {(reasoningText || reasoningStreaming) && (
-          <ReasoningPanel text={reasoningText} isStreaming={reasoningStreaming} />
+        {/* Razonamiento (explícito + <think> decodificado) */}
+        {(finalReasoning || reasoningStreaming) && (
+          <ReasoningPanel text={finalReasoning} isStreaming={reasoningStreaming} />
         )}
 
         {/* Tool calls */}
@@ -184,14 +250,14 @@ function MessageRowBase({
 
         {/* Acciones: visibles en hover, foco y táctil */}
         {!isStreaming && text && (
-          <div className="touch-visible mt-3 flex flex-wrap items-center gap-2 opacity-100 md:opacity-0 transition-opacity md:group-hover:opacity-100 md:group-focus-within:opacity-100">
+          <div className="touch-visible mt-3 flex flex-wrap items-center gap-2 opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100 md:group-focus-within:opacity-100">
             <motion.button
               onClick={handleCopy}
               aria-label={copied ? "Copiado" : "Copiar mensaje"}
               whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-500 hover:text-stone-700 px-3 py-1.5 text-xs font-semibold shadow-sm transition-all duration-150 cursor-pointer active:scale-95"
+              className="flex items-center gap-1.5 rounded-full border border-border bg-surface-0 px-3 py-1.5 text-xs font-semibold text-text-muted shadow-sm transition-all duration-150 cursor-pointer hover:bg-surface-2 hover:text-text-primary active:scale-95"
             >
-              {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}
+              {copied ? <Check className="h-3.5 w-3.5 text-accent-emerald" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}
               <span>{copied ? "Copiado" : "Copiar"}</span>
             </motion.button>
             {typeof window !== "undefined" && window.speechSynthesis && (
@@ -199,7 +265,7 @@ function MessageRowBase({
                 onClick={handleSpeak}
                 aria-label={speaking ? "Detener lectura" : "Escuchar mensaje"}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-500 hover:text-stone-700 px-3 py-1.5 text-xs font-semibold shadow-sm transition-all duration-150 cursor-pointer active:scale-95"
+                className="flex items-center gap-1.5 rounded-full border border-border bg-surface-0 px-3 py-1.5 text-xs font-semibold text-text-muted shadow-sm transition-all duration-150 cursor-pointer hover:bg-surface-2 hover:text-text-primary active:scale-95"
               >
                 {speaking ? <VolumeX className="h-3.5 w-3.5" aria-hidden /> : <Volume2 className="h-3.5 w-3.5" aria-hidden />}
                 <span>{speaking ? "Detener" : "Escuchar"}</span>
@@ -210,7 +276,7 @@ function MessageRowBase({
                 onClick={onRegenerate}
                 aria-label="Regenerar respuesta"
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-1.5 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-500 hover:text-stone-700 px-3 py-1.5 text-xs font-semibold shadow-sm transition-all duration-150 cursor-pointer active:scale-95"
+                className="flex items-center gap-1.5 rounded-full border border-border bg-surface-0 px-3 py-1.5 text-xs font-semibold text-text-muted shadow-sm transition-all duration-150 cursor-pointer hover:bg-surface-2 hover:text-text-primary active:scale-95"
               >
                 <RefreshCw className="h-3.5 w-3.5" aria-hidden />
                 <span>Regenerar</span>

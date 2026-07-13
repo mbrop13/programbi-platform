@@ -258,6 +258,21 @@ export function ConversationSidebar({
     return clean === "pro" || clean === "expert" || clean === "lite";
   }, [subscriptionPlan, isAdmin]);
 
+  /** Estilo del badge de plan según tier (gradientes premium del manual). */
+  const tierBadgeClass = useMemo(() => {
+    if (isAdmin) {
+      return "bg-gradient-to-r from-amber-500 to-orange-500 text-white";
+    }
+    const clean = subscriptionPlan?.replace("plan_", "").toLowerCase();
+    if (clean === "expert") {
+      return "bg-gradient-to-r from-blue-600 to-indigo-600 text-white";
+    }
+    if (clean === "pro" || clean === "lite") {
+      return "bg-gradient-to-r from-emerald-500 to-teal-600 text-white";
+    }
+    return "bg-black text-white";
+  }, [subscriptionPlan, isAdmin]);
+
   const ToggleSwitch = ({ checked, onChange }: { checked: boolean; onChange: () => void }) => {
     return (
       <button
@@ -312,7 +327,7 @@ export function ConversationSidebar({
         }}
         title={collapsed ? (c.title || "Conversación") : undefined}
         className={cn(
-          "group flex items-center transition-all duration-200 select-none cursor-pointer",
+          "group/chat group relative flex items-center transition-all duration-200 select-none cursor-pointer",
           collapsed ? "justify-center p-2 rounded-lg" : "gap-2 rounded-lg px-3 py-2 text-[13px]",
           isActive
             ? "bg-stone-200 text-stone-900 font-bold"
@@ -345,10 +360,31 @@ export function ConversationSidebar({
                 />
               </>
             ) : (
-              <span className="flex-1 truncate">{c.title || "Sin título"}</span>
+              <span
+                className="flex-1 truncate whitespace-nowrap pr-0 transition-[padding] duration-200 group-hover/chat:pr-7"
+                style={{
+                  WebkitMaskImage:
+                    "linear-gradient(to right, black calc(100% - 18px), transparent)",
+                  maskImage:
+                    "linear-gradient(to right, black calc(100% - 18px), transparent)",
+                }}
+              >
+                {c.title || "Sin título"}
+              </span>
             )}
 
-            {/* Context actions on hover */}
+            {/* Trash2 revealed on hover (extrema derecha) */}
+            {!isEditing && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onDelete(c.id); }}
+                aria-label="Eliminar"
+                className="absolute right-2 top-1/2 flex h-6 w-6 -translate-y-1/2 items-center justify-center rounded p-0 opacity-0 transition-opacity hover:text-red-600 border-0 bg-transparent group-hover/chat:opacity-100"
+              >
+                <Trash2 className="h-3 w-3" />
+              </button>
+            )}
+
+            {/* Secondary actions (rename / pin / archive) — small icon row below title */}
             {!isEditing && (
               <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
                 <button
@@ -374,13 +410,6 @@ export function ConversationSidebar({
                   className="rounded p-1 text-stone-400 hover:text-stone-700 dark:hover:text-white border-0 bg-transparent cursor-pointer"
                 >
                   <Archive className="h-3 w-3" />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); onDelete(c.id); }}
-                  aria-label="Eliminar"
-                  className="rounded p-1 text-stone-400 hover:text-red-600 border-0 bg-transparent cursor-pointer"
-                >
-                  <Trash2 className="h-3 w-3" />
                 </button>
               </div>
             )}
@@ -805,7 +834,10 @@ export function ConversationSidebar({
                 setProfileMenuOpen((o) => !o);
                 if (profileMenuOpen) setActiveSubmenu(null);
               }}
-              className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0"
+              className={cn(
+                "relative w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0",
+                isPremiumUser && "ring-[1.5px] ring-stone-800 dark:ring-white/80"
+              )}
               title={cleanDisplayName}
             >
               {avatarUrl ? (
@@ -819,7 +851,10 @@ export function ConversationSidebar({
                 <span aria-hidden>{initials}</span>
               )}
               {/* Tier badge below avatar */}
-              <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-black text-white text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-neutral-900 uppercase tracking-wider leading-none whitespace-nowrap">
+              <span className={cn(
+                "absolute -bottom-1 left-1/2 -translate-x-1/2 text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-neutral-900 uppercase tracking-wider leading-none whitespace-nowrap shadow-sm",
+                tierBadgeClass
+              )}>
                 {tierLabel}
               </span>
             </button>
@@ -835,7 +870,10 @@ export function ConversationSidebar({
               className="flex-1 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-stone-200/35 cursor-pointer border-0 bg-transparent min-w-0"
             >
               {/* Avatar with subscription badge */}
-              <div className="relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs">
+              <div className={cn(
+                "relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-xs",
+                isPremiumUser && "ring-[1.5px] ring-stone-800 dark:ring-white/80"
+              )}>
                 {avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -847,7 +885,10 @@ export function ConversationSidebar({
                   <span aria-hidden>{initials}</span>
                 )}
                 {/* Tier badge below avatar */}
-                <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-black text-white text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-neutral-900 uppercase tracking-wider leading-none whitespace-nowrap">
+                <span className={cn(
+                  "absolute -bottom-1 left-1/2 -translate-x-1/2 text-[7px] font-bold px-1.5 py-px rounded-full border-2 border-white dark:border-neutral-900 uppercase tracking-wider leading-none whitespace-nowrap shadow-sm",
+                  tierBadgeClass
+                )}>
                   {tierLabel}
                 </span>
               </div>

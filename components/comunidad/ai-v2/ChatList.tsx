@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowDown } from "lucide-react";
+import { ArrowDown, ChevronUp, ChevronDown } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { MessageRow } from "./MessageRow";
+import { cn } from "@/lib/utils";
 import type { ChatMessage } from "./types";
 
 interface ChatListProps {
@@ -12,6 +14,139 @@ interface ChatListProps {
   onRegenerate?: () => void;
   userName?: string;
   userAvatarUrl?: string | null;
+}
+
+/** Texto plano ligero de un mensaje de usuario para el preview del timeline. */
+function previewText(m: ChatMessage): string {
+  const t = (m.parts ?? [])
+    .filter((p) => p.type === "text")
+    .map((p) => p.text ?? "")
+    .join(" ");
+  return t.replace(/```[\s\S]*?```/g, " [código] ").trim();
+}
+
+/** Anchos variados para dar ritmo orgánico al timeline (rhythm anti-uniforme). */
+const BAR_WIDTHS = ["w-3.5", "w-5", "w-2.5", "w-6", "w-4", "w-7"];
+
+/**
+ * Timeline vertical flotante (solo desktop) para navegar entre las preguntas
+ * del usuario con scroll suave y destello temporal en la burbuja.
+ */
+function QuestionsTimeline({ userMessages }: { userMessages: ChatMessage[] }) {
+  const [hovered, setHovered] = useState<number | null>(null);
+  const [containerHovered, setContainerHovered] = useState(false);
+  const [active, setActive] = useState<number | null>(null);
+
+  const scrollToQuestion = (msgId: string, idx: number) => {
+    setActive(idx);
+    const el = document.getElementById(`msg-user-${msgId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("ring-4", "ring-blue-500/40", "rounded-3xl", "transition-all", "duration-500");
+      window.setTimeout(() => {
+        el.classList.remove("ring-4", "ring-blue-500/40", "rounded-3xl", "transition-all", "duration-500");
+      }, 1500);
+    }
+  };
+
+  return (
+    <div
+      className="fixed right-5 top-1/2 z-40 hidden -translate-y-1/2 select-none flex-col items-center gap-3 lg:flex"
+      onMouseEnter={() => setContainerHovered(true)}
+      onMouseLeave={() => {
+        setContainerHovered(false);
+        setHovered(null);
+      }}
+    >
+      {/* Flecha arriba */}
+      <AnimatePresence>
+        {containerHovered && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => {
+              const first = userMessages[0];
+              if (first) scrollToQuestion(first.id, 0);
+            }}
+            disabled={active === 0}
+            aria-label="Pregunta anterior"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface-0 text-text-muted shadow-sm transition-colors hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <ChevronUp className="h-4 w-4" aria-hidden />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {userMessages.map((m, idx) => {
+        const isActive = active === idx || hovered === idx;
+        const widthClass = BAR_WIDTHS[idx % BAR_WIDTHS.length];
+        return (
+          <div
+            key={m.id}
+            className="relative flex items-center justify-end"
+            onMouseEnter={() => setHovered(idx)}
+            onMouseLeave={() => setHovered(null)}
+          >
+            {/* Tarjeta preview flotante */}
+            <AnimatePresence>
+              {(hovered === idx) && (
+                <motion.div
+                  initial={{ opacity: 0, x: -12, scale: 0.96 }}
+                  animate={{ opacity: 1, x: 0, scale: 1 }}
+                  exit={{ opacity: 0, x: -12, scale: 0.96 }}
+                  transition={{ duration: 0.15 }}
+                  className="pointer-events-none absolute right-8 top-1/2 w-52 -translate-y-1/2 rounded-2xl border border-border bg-surface-0/95 p-3 shadow-2xl backdrop-blur-md"
+                >
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-1 w-1 animate-pulse rounded-full bg-brand-blue" />
+                    <span className="text-[9px] font-black uppercase tracking-widest text-brand-blue">
+                      Pregunta {idx + 1}
+                    </span>
+                  </div>
+                  <p className="mt-1.5 line-clamp-3 text-[11px] font-semibold text-text-secondary">
+                    {previewText(m) || "(Mensaje vacío)"}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Marcador */}
+            <button
+              type="button"
+              onClick={() => scrollToQuestion(m.id, idx)}
+              aria-label={`Ir a la pregunta ${idx + 1}`}
+              className={cn(
+                "h-6 rounded-full bg-text-muted/70 transition-all duration-300 hover:bg-text-muted",
+                widthClass,
+                isActive && "w-8 bg-text-primary shadow-[0_0_8px_rgba(0,0,0,0.15)]"
+              )}
+            />
+          </div>
+        );
+      })}
+
+      {/* Flecha abajo */}
+      <AnimatePresence>
+        {containerHovered && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => {
+              const last = userMessages[userMessages.length - 1];
+              if (last) scrollToQuestion(last.id, userMessages.length - 1);
+            }}
+            disabled={active === userMessages.length - 1}
+            aria-label="Pregunta siguiente"
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface-0 text-text-muted shadow-sm transition-colors hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <ChevronDown className="h-4 w-4" aria-hidden />
+          </motion.button>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 export function ChatList({ messages, status, modelName, onRegenerate, userName, userAvatarUrl }: ChatListProps) {
@@ -47,6 +182,9 @@ export function ChatList({ messages, status, modelName, onRegenerate, userName, 
   const showTypingPlaceholder =
     status === "submitted" &&
     (!lastMessage || lastMessage.role !== "assistant" || (lastMessage.parts ?? []).length === 0);
+
+  const userMessages = messages.filter((m) => m.role === "user");
+  const showTimeline = userMessages.length >= 2;
 
   return (
     <div className="relative flex-1 overflow-hidden">
@@ -98,6 +236,9 @@ export function ChatList({ messages, status, modelName, onRegenerate, userName, 
           )}
         </div>
       </div>
+
+      {/* Timeline flotante de preguntas (desktop) */}
+      {showTimeline && <QuestionsTimeline userMessages={userMessages} />}
 
       {/* Botón saltar abajo */}
       {showJump && (
