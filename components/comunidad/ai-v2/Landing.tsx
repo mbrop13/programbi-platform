@@ -1,9 +1,10 @@
+
+
 "use client";
 
 import { cloneElement, isValidElement, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import type { ReactElement, ReactNode } from "react";
-import { Code, Database, LineChart, BookOpen } from "lucide-react";
 
 interface LandingProps {
   /** Composer (u otro contenido) que se incrusta debajo del hero */
@@ -12,45 +13,20 @@ interface LandingProps {
   onSuggestionClick?: (prompt: string) => void;
 }
 
-const SUGGESTIONS = [
-  {
-    icon: Code,
-    title: "Depurar Python",
-    desc: "Encontrar errores en un script de Python.",
-    prompt: "Tengo un script de Python que me da un error. ¿Me ayudas a depurarlo? Aquí está el código:\n\n```python\n# Pega tu código aquí\n```",
-    color: "text-brand-blue bg-brand-blue/5 border-brand-blue/10",
-  },
-  {
-    icon: Database,
-    title: "Optimizar SQL",
-    desc: "Explicar y mejorar una consulta compleja.",
-    prompt: "Me gustaría optimizar una consulta SQL compleja para mejorar su rendimiento. ¿Qué buenas prácticas me recomiendas para este tipo de consultas?",
-    color: "text-accent-purple bg-accent-purple/5 border-accent-purple/10",
-  },
-  {
-    icon: LineChart,
-    title: "Análisis de Datos",
-    desc: "Pasos para realizar un EDA en ventas.",
-    prompt: "¿Cuáles son los mejores pasos en Python (usando pandas y matplotlib) para realizar un análisis exploratorio de datos (EDA) sobre un dataset de ventas?",
-    color: "text-accent-emerald bg-accent-emerald/5 border-accent-emerald/10",
-  },
-  {
-    icon: BookOpen,
-    title: "Fórmulas DAX",
-    desc: "Cálculos temporales en Power BI.",
-    prompt: "¿Cómo puedo escribir una medida en DAX para calcular las ventas acumuladas del año actual frente al año anterior (YTD vs Prior YTD)?",
-    color: "text-accent-yellow bg-accent-yellow/5 border-accent-yellow/10",
-  },
-];
+const SUGGESTIONS: Array<{
+  icon: any;
+  title: string;
+  desc: string;
+  prompt: string;
+  color: string;
+}> = [];
 
 /** Frases que rotan en el placeholder tipo typewriter del estado vacío. */
 const TYPEWRITER_PHRASES = [
   "Analiza mi portafolio...",
-  "Depura este script de Python...",
-  "Optimiza una consulta SQL...",
-  "Explícame una fórmula DAX...",
-  "Crea un EDA sobre un dataset de ventas...",
+  "Pregúntame lo que quieras...",
   "Compara dos modelos de machine learning...",
+  "¿Cómo puedo estructurar mi código?",
 ];
 
 /** Hook: rotación cíclica typewriter del placeholder. */
@@ -150,7 +126,7 @@ export function Landing({ children, onSuggestionClick }: LandingProps) {
               {composerWithPlaceholder}
             </motion.div>
           )}
-          {onSuggestionClick && (
+          {onSuggestionClick && SUGGESTIONS.length > 0 && (
             <div className="flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] snap-x snap-mandatory">
               {SUGGESTIONS.map((item, idx) => {
                 const IconComponent = item.icon;
@@ -212,7 +188,7 @@ export function Landing({ children, onSuggestionClick }: LandingProps) {
           </motion.div>
         )}
 
-        {onSuggestionClick && (
+        {onSuggestionClick && SUGGESTIONS.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}

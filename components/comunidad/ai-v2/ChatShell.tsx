@@ -485,6 +485,12 @@ function ChatShellInner({
             : "relative flex flex-col h-full shrink-0 bg-[#F9F9FB] border-r border-stone-200 overflow-hidden z-30"
         )}
       >
+        <div
+          className={cn(
+            "flex h-full flex-col shrink-0",
+            isMobile ? "w-[280px]" : sidebarOpen ? "w-[240px]" : "w-[60px]"
+          )}
+        >
         <ConversationSidebar
           chats={chats}
           activeChatId={activeChatId}
@@ -509,6 +515,7 @@ function ChatShellInner({
           collapsed={!isMobile && !sidebarOpen}
           onToggleCollapse={() => setSidebarOpen(!sidebarOpen)}
         />
+        </div>
       </motion.aside>
 
       {/* Main (sin barra superior) */}
