@@ -325,7 +325,7 @@ export function ComposerInput({
     <div className="mx-auto w-full max-w-3xl">
       <div
         className={cn(
-          "rounded-[24px] border border-border bg-surface-0 shadow-premium backdrop-blur-xl transition-all duration-300 focus-within:border-brand-blue/35 focus-within:shadow-[0_0_20px_rgba(24,144,255,0.06)] focus-within:ring-1 focus-within:ring-brand-blue/30",
+          "rounded-[24px] border border-border dark:border-zinc-800/80 bg-surface-0 dark:bg-zinc-900/60 shadow-premium backdrop-blur-xl transition-all duration-300 focus-within:border-brand-blue/35 focus-within:shadow-[0_0_20px_rgba(24,144,255,0.06)] focus-within:ring-1 focus-within:ring-brand-blue/30",
           isStreaming && "composer-glow",
           recording && "border-destructive/60 shadow-[0_0_18px_rgba(239,68,68,0.18)] ring-1 ring-destructive/40"
         )}
@@ -391,7 +391,7 @@ export function ComposerInput({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface-0 hover:bg-surface-2 text-text-muted transition-colors disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer shadow-sm",
+                  "flex h-8 w-8 items-center justify-center rounded-full border border-border dark:border-zinc-800 bg-surface-0 dark:bg-zinc-800/40 hover:bg-surface-2 dark:hover:bg-zinc-700/60 text-text-muted transition-colors disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer shadow-sm",
                   attachOpen && "bg-surface-2"
                 )}
               >

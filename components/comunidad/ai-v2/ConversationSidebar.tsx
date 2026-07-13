@@ -430,7 +430,7 @@ export function ConversationSidebar({
   return (
     <div
       className={cn(
-        "flex h-full flex-col bg-[#F9F9FB] border-r border-stone-200 relative overflow-visible selection:bg-transparent",
+        "flex h-full flex-col bg-[#F9F9FB] dark:bg-zinc-950 border-r border-stone-200 dark:border-zinc-800/80 relative overflow-visible selection:bg-transparent",
         collapsed ? "cursor-pointer select-none" : "cursor-default"
       )}
       onClick={handleSidebarClick}
@@ -478,7 +478,7 @@ export function ConversationSidebar({
         {navItems.map((item, idx) => {
           const Icon = item.icon;
           const buttonClass = cn(
-            "flex items-center rounded-lg text-[14px] font-semibold text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-all duration-200 border-0 bg-transparent text-left cursor-pointer",
+            "flex items-center rounded-lg text-[14px] font-semibold text-stone-700 dark:text-zinc-300 hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 hover:text-stone-900 dark:hover:text-white transition-all duration-200 border-0 bg-transparent text-left cursor-pointer",
             collapsed ? "justify-center p-2.5 w-10 h-10" : "w-full gap-3.5 px-3 py-2.5"
           );
           if (item.onClick) {
@@ -489,7 +489,7 @@ export function ConversationSidebar({
                 className={buttonClass}
                 title={collapsed ? item.label : undefined}
               >
-                <Icon className="h-[18px] w-[18px] text-stone-500 shrink-0" />
+                <Icon className="h-[18px] w-[18px] text-stone-500 dark:text-zinc-400 shrink-0" />
                 <AnimatePresence>
                   {!collapsed && (
                     <motion.span
@@ -512,7 +512,7 @@ export function ConversationSidebar({
               className={cn(buttonClass, "no-underline")}
               title={collapsed ? item.label : undefined}
             >
-              <Icon className="h-[18px] w-[18px] text-stone-500 shrink-0" />
+              <Icon className="h-[18px] w-[18px] text-stone-500 dark:text-zinc-400 shrink-0" />
               <AnimatePresence>
                 {!collapsed && (
                   <motion.span
@@ -531,20 +531,20 @@ export function ConversationSidebar({
       </nav>
 
       {/* ═══ Chats Section ═══ */}
-      <div className="flex-1 flex flex-col min-h-0 border-t border-stone-200">
+      <div className="flex-1 flex flex-col min-h-0 border-t border-stone-200 dark:border-zinc-800/80">
         {!collapsed ? (
           <button
             onClick={() => setChatsOpen(!chatsOpen)}
-            className="w-full flex items-center justify-between px-5 py-3 text-[14px] font-semibold text-stone-900 hover:bg-stone-200/35 transition-colors border-0 bg-transparent cursor-pointer select-none shrink-0"
+            className="w-full flex items-center justify-between px-5 py-3 text-[14px] font-semibold text-stone-900 dark:text-white hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 transition-colors border-0 bg-transparent cursor-pointer select-none shrink-0"
           >
             <span>Chats</span>
             <ChevronDown className={cn(
-              "h-4 w-4 text-stone-500 transition-transform duration-200",
+              "h-4 w-4 text-stone-500 dark:text-zinc-400 transition-transform duration-200",
               chatsOpen ? "" : "-rotate-90"
             )} />
           </button>
         ) : (
-          <div className="h-px bg-stone-200 my-2 shrink-0" />
+          <div className="h-px bg-stone-200 dark:bg-zinc-800/80 my-2 shrink-0" />
         )}
 
         {!collapsed && chatsOpen && (
@@ -555,7 +555,7 @@ export function ConversationSidebar({
               </div>
             ) : chats.length === 0 ? (
               !collapsed && (
-                <p className="py-10 text-center text-[13px] text-stone-400">
+                <p className="py-10 text-center text-[13px] text-stone-400 dark:text-zinc-500">
                   Aún no hay conversaciones
                 </p>
               )
@@ -588,7 +588,7 @@ export function ConversationSidebar({
       </div>
 
       {/* ─── Footer: Profile + Bell ─── */}
-      <div className="shrink-0 border-t border-stone-200 px-3 py-3 relative" ref={profileMenuRef}>
+      <div className="shrink-0 border-t border-stone-200 dark:border-zinc-800/80 px-3 py-3 relative" ref={profileMenuRef}>
         {/* ── Profile Popup Menu ── */}
         <AnimatePresence>
           {profileMenuOpen && (
@@ -598,18 +598,18 @@ export function ConversationSidebar({
               exit={{ opacity: 0, y: 8, scale: 0.96 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
               className={cn(
-                "fixed z-50 bg-white border border-stone-200 rounded-2xl shadow-xl p-1.5 flex flex-col w-56 mb-2",
+                "fixed z-50 bg-white dark:bg-zinc-950 border border-stone-200 dark:border-zinc-800/80 rounded-2xl shadow-xl p-1.5 flex flex-col w-56 mb-2",
                 collapsed ? "bottom-16 left-3" : "bottom-16 left-3 w-[236px]"
               )}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Email header */}
               <div className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl">
-                <User className="h-4 w-4 text-stone-400 shrink-0" />
-                <span className="truncate text-[13px] font-medium text-stone-655">{userEmail || cleanDisplayName}</span>
+                <User className="h-4 w-4 text-stone-400 dark:text-zinc-550 shrink-0" />
+                <span className="truncate text-[13px] font-medium text-stone-655 dark:text-zinc-400">{userEmail || cleanDisplayName}</span>
               </div>
 
-              <div className="h-px bg-stone-100 mx-2 my-1" />
+              <div className="h-px bg-stone-100 dark:bg-zinc-800/80 mx-2 my-1" />
 
               {/* Todos los ajustes */}
               <button
@@ -617,26 +617,26 @@ export function ConversationSidebar({
                   setProfileMenuOpen(false);
                   setSettingsOpen(true);
                 }}
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 dark:text-zinc-300 hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 hover:text-stone-900 dark:hover:text-white transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
               >
-                <Settings className="h-4 w-4 text-stone-500 shrink-0" />
+                <Settings className="h-4 w-4 text-stone-500 dark:text-zinc-400 shrink-0" />
                 <span className="flex-1 font-semibold text-left">Todos los ajustes</span>
-                <span className="text-[11px] text-stone-400 font-mono">⇧^,</span>
+                <span className="text-[11px] text-stone-400 dark:text-zinc-500 font-mono">⇧^,</span>
               </button>
 
               {/* Actualizar plan */}
               <Link
                 href="/comunidad/planes"
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors no-underline cursor-pointer"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 dark:text-zinc-300 hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 hover:text-stone-900 dark:hover:text-white transition-colors no-underline cursor-pointer"
               >
-                <ArrowUpCircle className="h-4 w-4 text-stone-500 shrink-0" />
+                <ArrowUpCircle className="h-4 w-4 text-stone-500 dark:text-zinc-400 shrink-0" />
                 <span className="font-semibold">Actualizar plan</span>
               </Link>
 
               {/* Instalar apps */}
               <button
                 onClick={() => alert("La aplicación de escritorio se encuentra en desarrollo.")}
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-stone-200/35 hover:text-stone-900 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 dark:text-zinc-300 hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 hover:text-stone-900 dark:hover:text-white transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
               >
                 <Download className="h-4 w-4 text-stone-500 shrink-0" />
                 <span className="font-semibold">Instalar apps</span>
@@ -770,7 +770,7 @@ export function ConversationSidebar({
                 <ChevronRight className="h-3.5 w-3.5 text-stone-400" />
               </Link>
 
-              <div className="h-px bg-stone-100 mx-2 my-1" />
+              <div className="h-px bg-stone-100 dark:bg-zinc-800/80 mx-2 my-1" />
 
               {/* Cerrar sesión */}
               <button
@@ -779,9 +779,9 @@ export function ConversationSidebar({
                   await supabase.auth.signOut({ scope: "global" });
                   window.location.replace("/");
                 }}
-                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 hover:bg-red-50 hover:text-red-650 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
+                className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] text-stone-700 dark:text-zinc-300 hover:bg-red-50 dark:hover:bg-red-950/20 hover:text-red-650 dark:hover:text-red-400 transition-colors cursor-pointer border-0 bg-transparent text-left w-full"
               >
-                <LogOut className="h-4 w-4 text-stone-400 shrink-0" />
+                <LogOut className="h-4 w-4 text-stone-400 dark:text-zinc-550 shrink-0" />
                 <span className="font-semibold">Cerrar sesión</span>
               </button>
             </motion.div>
@@ -797,7 +797,7 @@ export function ConversationSidebar({
               exit={{ opacity: 0, x: 8, scale: 0.96 }}
               transition={{ duration: 0.15, ease: "easeOut" }}
               className={cn(
-                "fixed z-50 w-[320px] mb-2 bg-white border border-stone-200 rounded-2xl shadow-xl p-4 flex flex-col text-stone-900",
+                "fixed z-50 w-[320px] mb-2 bg-white dark:bg-zinc-950 border border-stone-200 dark:border-zinc-800/80 rounded-2xl shadow-xl p-4 flex flex-col text-stone-900 dark:text-white",
                 collapsed ? "bottom-16 left-[78px]" : "bottom-16 left-[266px]"
               )}
               onClick={(e) => e.stopPropagation()}
@@ -805,18 +805,18 @@ export function ConversationSidebar({
               <div className="flex flex-col" ref={notifRef}>
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-black text-stone-900">Notificaciones</span>
-                  <button className="text-stone-400 hover:text-stone-700 border-0 bg-transparent cursor-pointer">
+                  <span className="text-sm font-black text-stone-900 dark:text-white">Notificaciones</span>
+                  <button className="text-stone-400 dark:text-zinc-550 hover:text-stone-700 dark:hover:text-zinc-300 border-0 bg-transparent cursor-pointer">
                     <MoreHorizontal className="w-4 h-4" />
                   </button>
                 </div>
                 
-                <div className="h-px bg-stone-100 my-3" />
+                <div className="h-px bg-stone-100 dark:bg-zinc-800/80 my-3" />
 
                 {/* Empty State Body */}
                 <div className="flex flex-col items-center justify-center py-8">
-                  <Inbox className="w-12 h-12 text-stone-300 mb-3" />
-                  <span className="text-xs font-semibold text-stone-500">
+                  <Inbox className="w-12 h-12 text-stone-300 dark:text-zinc-700 mb-3" />
+                  <span className="text-xs font-semibold text-stone-500 dark:text-zinc-450">
                     Tus notificaciones aparecerán aquí
                   </span>
                 </div>
@@ -861,7 +861,7 @@ export function ConversationSidebar({
                 setProfileMenuOpen((o) => !o);
                 if (profileMenuOpen) setActiveSubmenu(null);
               }}
-              className="flex-1 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-stone-200/35 cursor-pointer border-0 bg-transparent min-w-0"
+              className="flex-1 flex items-center gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 cursor-pointer border-0 bg-transparent min-w-0"
             >
               {/* Avatar with subscription badge */}
               <div className={cn(
@@ -882,7 +882,7 @@ export function ConversationSidebar({
               </div>
 
               {/* Name */}
-              <span className="truncate text-[13px] font-semibold text-stone-850 min-w-0">
+              <span className="truncate text-[13px] font-semibold text-stone-850 dark:text-zinc-200 min-w-0">
                 {cleanDisplayName}
               </span>
             </button>
@@ -893,7 +893,7 @@ export function ConversationSidebar({
                 e.stopPropagation();
                 setNotifOpen(!notifOpen);
               }}
-              className="h-9 w-9 rounded-xl flex items-center justify-center text-stone-500 hover:bg-stone-200/35 hover:text-stone-850 transition-colors shrink-0 cursor-pointer border-0 bg-transparent"
+              className="h-9 w-9 rounded-xl flex items-center justify-center text-stone-500 dark:text-zinc-400 hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 hover:text-stone-850 dark:hover:text-white transition-colors shrink-0 cursor-pointer border-0 bg-transparent"
               title="Notificaciones"
             >
               <Bell className="w-[18px] h-[18px]" />
