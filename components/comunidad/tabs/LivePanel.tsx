@@ -666,11 +666,13 @@ export default function LivePanel() {
 
         return (
           <section className="space-y-4">
-            <div className="px-1">
-              <h3 className="font-display font-black text-lg text-neutral-900 dark:text-white uppercase tracking-wider">
-                {sectionTitle}
-              </h3>
-            </div>
+            {isScheduled && (
+              <div className="px-1">
+                <h3 className="font-display font-black text-lg text-neutral-900 dark:text-white uppercase tracking-wider">
+                  {sectionTitle}
+                </h3>
+              </div>
+            )}
 
             <div className="bg-white dark:bg-neutral-950 border border-neutral-200/80 dark:border-neutral-800/80 rounded-3xl p-5 md:p-6 shadow-sm flex flex-col md:flex-row gap-6">
               {/* Left Column: Video Preview Thumbnail */}

@@ -547,7 +547,7 @@ export default function Sidebar({
             <button
               onClick={() => setUserMenuOpen(!userMenuOpen)}
               className={cn(
-                "relative w-10 h-10 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0 user-trigger-btn",
+                "relative w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm cursor-pointer hover:shadow-md hover:scale-105 transition-all border-0 user-trigger-btn",
                 userMenuOpen && "ring-2 ring-indigo-500"
               )}
               title={displayName}
