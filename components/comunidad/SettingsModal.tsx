@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import {
   X,
@@ -23,11 +23,31 @@ import {
   Calendar,
   Sparkles,
   Languages,
+  Gauge,
+  Clock,
 } from "lucide-react";
 import { cancelSubscription } from "@/app/actions/subscription";
 import { updateProfile } from "@/app/actions/profile";
 import { useToast } from "./ui/Toast";
 import { cn } from "@/lib/utils";
+
+function barColor(pct: number): string {
+  if (pct >= 90) return "bg-rose-500";
+  if (pct >= 75) return "bg-amber-500";
+  return "bg-indigo-600";
+}
+
+function formatRemaining(isoDate?: string): string {
+  if (!isoDate) return "ya";
+  const ms = new Date(isoDate).getTime() - Date.now();
+  if (ms <= 0) return "ya";
+  const mins = Math.round(ms / 60_000);
+  if (mins < 60) return `${mins} min`;
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  if (h < 24) return `${h}h ${m}m`;
+  return `${Math.round(h / 24)}d`;
+}
 
 interface SettingsModalProps {
   onClose: () => void;
@@ -41,7 +61,7 @@ interface SettingsModalProps {
   language?: 'es' | 'en';
 }
 
-type SettingsTab = "cuenta" | "apariencia" | "comportamiento" | "customize" | "datos";
+type SettingsTab = "cuenta" | "apariencia" | "comportamiento" | "customize" | "datos" | "limites";
 
 export default function SettingsModal({ onClose, userProfile, onUpgradeClick, language }: SettingsModalProps) {
   const activeLanguage = language || "es";
@@ -53,11 +73,13 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
       comportamiento: "Comportamiento",
       customize: "Customize",
       datos: "Controles de datos",
+      limites: "Límites de Uso",
       cuentaDesc: "Perfil y datos de membresía",
       aparienciaDesc: "Temas e idioma",
       comportamientoDesc: "Alertas y notificaciones",
       customizeDesc: "Configuración de interfaz",
       datosDesc: "Privacidad y facturación",
+      limitesDesc: "Consumo de mensajes de IA",
     },
     en: {
       settings: "Settings",
@@ -66,11 +88,13 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
       comportamiento: "Behavior",
       customize: "Customize",
       datos: "Data Controls",
+      limites: "Usage Limits",
       cuentaDesc: "Profile and membership details",
       aparienciaDesc: "Themes and language",
       comportamientoDesc: "Alerts and notifications",
       customizeDesc: "Interface settings",
       datosDesc: "Privacy and billing",
+      limitesDesc: "AI message consumption",
     }
   }[activeLanguage];
   const [activeTab, setActiveTab] = useState<SettingsTab>("cuenta");
@@ -78,8 +102,23 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
   const [isEditingName, setIsEditingName] = useState(false);
   const [newName, setNewName] = useState(userProfile?.full_name || "");
   const [isUpdatingName, setIsUpdatingName] = useState(false);
+  const [quotaData, setQuotaData] = useState<any>(null);
+  const [quotaLoading, setQuotaLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (activeTab === "limites" && !quotaData) {
+      setQuotaLoading(true);
+      fetch("/api/ai/quota")
+        .then((res) => res.json())
+        .then((data) => {
+          setQuotaData(data);
+        })
+        .catch(() => {})
+        .finally(() => setQuotaLoading(false));
+    }
+  }, [activeTab, quotaData]);
 
   // Notification preferences (local state for now)
   const [notifPrefs, setNotifPrefs] = useState({
@@ -131,6 +170,7 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
 
   const tabs: { id: SettingsTab; label: string; icon: React.ElementType; desc: string }[] = [
     { id: "cuenta", label: st.cuenta, icon: User, desc: st.cuentaDesc },
+    { id: "limites", label: st.limites, icon: Gauge, desc: st.limitesDesc },
     { id: "apariencia", label: st.apariencia, icon: Palette, desc: st.aparienciaDesc },
     { id: "comportamiento", label: st.comportamiento, icon: Sliders, desc: st.comportamientoDesc },
     { id: "customize", label: st.customize, icon: Sliders, desc: st.customizeDesc },
@@ -217,6 +257,7 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
                  activeTab === "apariencia" ? st.apariencia : 
                  activeTab === "comportamiento" ? st.comportamiento : 
                  activeTab === "customize" ? st.customize : 
+                 activeTab === "limites" ? st.limites :
                  st.datos}
               </h2>
               <button 
@@ -367,6 +408,159 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
                       Detalles
                     </button>
                   </div>
+                </motion.div>
+              )}
+
+              {/* ─── LIMITES DE USO ─── */}
+              {activeTab === "limites" && (
+                <motion.div 
+                  key="limites" 
+                  initial={{ opacity: 0, y: 5 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  exit={{ opacity: 0, y: 5 }} 
+                  transition={{ duration: 0.15 }}
+                  className="space-y-6"
+                >
+                  {quotaLoading ? (
+                    <div className="flex flex-col items-center justify-center py-12 space-y-3">
+                      <div className="w-8.5 h-8.5 rounded-full border-2 border-indigo-600 border-t-transparent animate-spin" />
+                      <span className="text-xs text-slate-400 font-bold">Cargando límites de uso...</span>
+                    </div>
+                  ) : quotaData ? (
+                    <div className="space-y-5">
+                      {/* Banner de Estado General */}
+                      <div className={cn(
+                        "p-5 rounded-2xl border relative overflow-hidden flex items-center justify-between shadow-sm",
+                        quotaData.unlimited
+                          ? "bg-amber-50/50 border-amber-200"
+                          : "bg-neutral-50/50 border-neutral-100"
+                      )}>
+                        <div className="relative z-10 flex items-center gap-3.5">
+                          <div className={cn(
+                            "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
+                            quotaData.unlimited ? "bg-amber-100 text-amber-600" : "bg-indigo-50 text-indigo-600"
+                          )}>
+                            <Sparkles className="w-5 h-5 animate-pulse" />
+                          </div>
+                          <div>
+                            <div className="text-[13px] font-bold text-slate-800">
+                              Membresía: <span className="uppercase text-indigo-600 font-black">{quotaData.plan || "free"}</span>
+                            </div>
+                            <p className="text-[11px] text-slate-400 mt-0.5">
+                              {quotaData.unlimited
+                                ? "Tu cuenta tiene habilitado el acceso ilimitado de administrador a la IA."
+                                : "A continuación se muestra el consumo real de tu cuenta para este periodo."}
+                            </p>
+                          </div>
+                        </div>
+                        {quotaData.unlimited && (
+                          <span className="text-[10px] font-black uppercase text-amber-700 bg-amber-100 border border-amber-200/50 px-2.5 py-1 rounded-lg">
+                            Ilimitado
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Tarjetas de Límites */}
+                      {!quotaData.unlimited && (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          {/* Tarjeta 1: 5 Horas */}
+                          <div className="bg-white border border-neutral-150 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:border-neutral-300 transition-colors">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Próximas 5h</span>
+                              <Clock className="w-4 h-4 text-slate-400" />
+                            </div>
+                            <div className="mt-4">
+                              <div className="flex items-baseline gap-1">
+                                <span className="text-2xl font-black text-slate-800 leading-none">
+                                  {Math.max(0, 100 - quotaData.percentages.five_hour)}%
+                                </span>
+                                <span className="text-[10px] text-slate-400 font-bold">restante</span>
+                              </div>
+                              <span className="text-[11px] font-medium text-slate-500 block mt-1.5">
+                                {quotaData.used.five_hour} de {quotaData.quota.fiveHour} mensajes
+                              </span>
+                            </div>
+                            <div className="mt-4">
+                              <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
+                                <div
+                                  className={cn("h-full rounded-full transition-all duration-500", barColor(quotaData.percentages.five_hour))}
+                                  style={{ width: `${Math.max(0, 100 - quotaData.percentages.five_hour)}%` }}
+                                />
+                              </div>
+                              <span className="text-[8px] text-slate-400 mt-2 block font-semibold">
+                                Reinicia en {formatRemaining(quotaData.resetAt)}
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Tarjeta 2: Semanal */}
+                          <div className="bg-white border border-neutral-150 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:border-neutral-300 transition-colors">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Semanal</span>
+                              <Gauge className="w-4 h-4 text-slate-400" />
+                            </div>
+                            <div className="mt-4">
+                              <div className="flex items-baseline gap-1">
+                                <span className="text-2xl font-black text-slate-800 leading-none">
+                                  {Math.max(0, 100 - quotaData.percentages.weekly)}%
+                                </span>
+                                <span className="text-[10px] text-slate-400 font-bold">restante</span>
+                              </div>
+                              <span className="text-[11px] font-medium text-slate-500 block mt-1.5">
+                                {quotaData.used.weekly} de {quotaData.quota.weekly} mensajes
+                              </span>
+                            </div>
+                            <div className="mt-4">
+                              <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
+                                <div
+                                  className={cn("h-full rounded-full transition-all duration-500", barColor(quotaData.percentages.weekly))}
+                                  style={{ width: `${Math.max(0, 100 - quotaData.percentages.weekly)}%` }}
+                                />
+                              </div>
+                              <span className="text-[8px] text-slate-400 mt-2 block font-semibold">
+                                Límite rotativo de 7 días
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Tarjeta 3: Mensual */}
+                          <div className="bg-white border border-neutral-150 rounded-2xl p-4 flex flex-col justify-between shadow-sm hover:border-neutral-300 transition-colors">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[9px] font-black uppercase text-slate-500 tracking-wider">Mensual</span>
+                              <Gauge className="w-4 h-4 text-slate-400" />
+                            </div>
+                            <div className="mt-4">
+                              <div className="flex items-baseline gap-1">
+                                <span className="text-2xl font-black text-slate-800 leading-none">
+                                  {Math.max(0, 100 - quotaData.percentages.monthly)}%
+                                </span>
+                                <span className="text-[10px] text-slate-400 font-bold">restante</span>
+                              </div>
+                              <span className="text-[11px] font-medium text-slate-500 block mt-1.5">
+                                {quotaData.used.monthly} de {quotaData.quota.monthly} mensajes
+                              </span>
+                            </div>
+                            <div className="mt-4">
+                              <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden">
+                                <div
+                                  className={cn("h-full rounded-full transition-all duration-500", barColor(quotaData.percentages.monthly))}
+                                  style={{ width: `${Math.max(0, 100 - quotaData.percentages.monthly)}%` }}
+                                />
+                              </div>
+                              <span className="text-[8px] text-slate-400 mt-2 block font-semibold">
+                                Reinicio automático mensual
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+                      <AlertTriangle className="w-8 h-8 mb-2" />
+                      <span className="text-xs font-bold">No se pudieron cargar las estadísticas.</span>
+                    </div>
+                  )}
                 </motion.div>
               )}
 
