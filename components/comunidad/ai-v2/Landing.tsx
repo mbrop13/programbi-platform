@@ -23,10 +23,10 @@ const SUGGESTIONS: Array<{
 
 /** Frases que rotan en el placeholder tipo typewriter del estado vacío. */
 const TYPEWRITER_PHRASES = [
-  "Analiza mi portafolio...",
-  "Pregúntame lo que quieras...",
-  "Compara dos modelos de machine learning...",
-  "¿Cómo puedo estructurar mi código?",
+  "¿Cómo optimizo esta consulta SQL?",
+  "Explícame el concepto de recursividad...",
+  "Escribe un script en Python para limpiar datos...",
+  "¿Cómo estructurar una API REST en Node.js?",
 ];
 
 /** Hook: rotación cíclica typewriter del placeholder. */
