@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useEffect, useRef } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import {
   Archive,
   ArrowUpCircle,
@@ -41,6 +41,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { Tooltip } from "./Tooltip";
 import type { AiChat } from "@/lib/supabase/ai";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
@@ -485,36 +486,29 @@ export function ConversationSidebar({
             "flex items-center rounded-lg text-[14px] font-semibold text-stone-700 dark:text-zinc-300 hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 hover:text-stone-900 dark:hover:text-white transition-all duration-200 border-0 bg-transparent text-left cursor-pointer",
             collapsed ? "justify-center p-2.5 w-10 h-10" : "w-full gap-3.5 px-3 py-2.5"
           );
-          if (item.onClick) {
-            return (
-              <button
-                key={idx}
-                onClick={item.onClick}
-                className={buttonClass}
-                title={collapsed ? item.label : undefined}
-              >
-                <Icon className="h-[18px] w-[18px] text-stone-500 dark:text-zinc-400 shrink-0" />
-                <AnimatePresence>
-                  {!collapsed && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="whitespace-nowrap overflow-hidden block w-[160px] truncate text-left"
-                    >
-                      {item.label}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </button>
-            );
-          }
-          return (
+          const renderedButton = item.onClick ? (
+            <button
+              onClick={item.onClick}
+              className={buttonClass}
+            >
+              <Icon className="h-[18px] w-[18px] text-stone-500 dark:text-zinc-400 shrink-0" />
+              <AnimatePresence>
+                {!collapsed && (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="whitespace-nowrap overflow-hidden block w-[160px] truncate text-left"
+                  >
+                    {item.label}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </button>
+          ) : (
             <Link
-              key={idx}
               href={item.href!}
               className={cn(buttonClass, "no-underline")}
-              title={collapsed ? item.label : undefined}
             >
               <Icon className="h-[18px] w-[18px] text-stone-500 dark:text-zinc-400 shrink-0" />
               <AnimatePresence>
@@ -530,6 +524,18 @@ export function ConversationSidebar({
                 )}
               </AnimatePresence>
             </Link>
+          );
+
+          return (
+            <React.Fragment key={idx}>
+              {collapsed ? (
+                <Tooltip content={item.label} position="right">
+                  {renderedButton}
+                </Tooltip>
+              ) : (
+                renderedButton
+              )}
+            </React.Fragment>
           );
         })}
       </nav>

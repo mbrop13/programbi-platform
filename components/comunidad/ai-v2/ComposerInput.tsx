@@ -21,6 +21,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { getModel, getAvailableModels, type ChatModel } from "@/lib/ai/models";
 import { useCanvas } from "./canvas/CanvasStore";
+import { Tooltip } from "./Tooltip";
 
 export interface Attachment {
   url: string;
@@ -379,30 +380,31 @@ export function ComposerInput({
           <div className="flex items-center gap-1.5 sm:gap-2">
             {/* Botón de Adjuntar (+) */}
             <div ref={attachRef} className="relative">
-              <motion.button
-                ref={attachBtnRef}
-                type="button"
-                onClick={() => setAttachOpen((o) => !o)}
-                disabled={uploading || isStreaming}
-                aria-label="Adjuntar archivo"
-                aria-expanded={attachOpen}
-                aria-haspopup="menu"
-                title="Adjuntar"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={cn(
-                  "flex h-8 w-8 items-center justify-center rounded-full border border-border dark:border-zinc-800 bg-surface-0 dark:bg-zinc-800/40 hover:bg-surface-2 dark:hover:bg-zinc-700/60 text-text-muted transition-colors disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer shadow-sm",
-                  attachOpen && "bg-surface-2"
-                )}
-              >
-                <Plus
+              <Tooltip content="Adjuntar archivos o fotos" position="top">
+                <motion.button
+                  ref={attachBtnRef}
+                  type="button"
+                  onClick={() => setAttachOpen((o) => !o)}
+                  disabled={uploading || isStreaming}
+                  aria-label="Adjuntar archivo"
+                  aria-expanded={attachOpen}
+                  aria-haspopup="menu"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   className={cn(
-                    "h-4 w-4 transition-transform duration-300",
-                    attachOpen && "rotate-45"
+                    "flex h-8 w-8 items-center justify-center rounded-full border border-border dark:border-zinc-800 bg-surface-0 dark:bg-zinc-800/40 hover:bg-surface-2 dark:hover:bg-zinc-700/60 text-text-muted transition-colors disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer shadow-sm",
+                    attachOpen && "bg-surface-2"
                   )}
-                  aria-hidden
-                />
-              </motion.button>
+                >
+                  <Plus
+                    className={cn(
+                      "h-4 w-4 transition-transform duration-300",
+                      attachOpen && "rotate-45"
+                    )}
+                    aria-hidden
+                  />
+                </motion.button>
+              </Tooltip>
               <AnimatePresence>
                 {attachOpen && (
                   <motion.div
@@ -441,24 +443,25 @@ export function ComposerInput({
             </div>
 
             {/* Primer botón de código: Canvas (</>) */}
-            <motion.button
-              type="button"
-              onClick={() => onCanvasModeChange(!canvasModeActive)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-150 cursor-pointer shadow-sm",
-                canvasModeActive
-                  ? "bg-blue-600/10 border-blue-600/30 text-blue-600 dark:bg-blue-500/10 dark:border-blue-500/30 dark:text-blue-400 hover:bg-blue-600/20"
-                  : "bg-surface-0 border-border text-text-muted hover:bg-surface-2 hover:text-text-primary"
-              )}
-              title="Modo Canvas"
-            >
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" strokeWidth="2" className="w-3.5 h-3.5 shrink-0">
-                <path d="M5.33398 4.33301L1.33398 8.00007L5.33398 11.667" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
-                <path d="M10.666 4.33301L14.666 8.00007L10.666 11.667" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
-              </svg>
-            </motion.button>
+            <Tooltip content="Modo Canvas (Ver y editar código)" position="top">
+              <motion.button
+                type="button"
+                onClick={() => onCanvasModeChange(!canvasModeActive)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className={cn(
+                  "flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-150 cursor-pointer shadow-sm",
+                  canvasModeActive
+                    ? "bg-blue-600/10 border-blue-600/30 text-blue-600 dark:bg-blue-500/10 dark:border-blue-500/30 dark:text-blue-400 hover:bg-blue-600/20"
+                    : "bg-surface-0 border-border text-text-muted hover:bg-surface-2 hover:text-text-primary"
+                )}
+              >
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" strokeWidth="2" className="w-3.5 h-3.5 shrink-0">
+                  <path d="M5.33398 4.33301L1.33398 8.00007L5.33398 11.667" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
+                  <path d="M10.666 4.33301L14.666 8.00007L10.666 11.667" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"></path>
+                </svg>
+              </motion.button>
+            </Tooltip>
 
 
 
@@ -624,76 +627,80 @@ export function ComposerInput({
             {/* Botón circular de acción (Micrófono o Enviar/Parar) */}
             <div className="shrink-0 flex items-center">
               {isStreaming ? (
-                <motion.button
-                  onClick={onStop}
-                  aria-label="Detener respuesta"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 dark:bg-white text-white dark:text-black cursor-pointer border-0 shadow-sm"
-                  title="Detener"
-                >
-                  <Square className="h-3.5 w-3.5 fill-current" aria-hidden />
-                </motion.button>
+                <Tooltip content="Detener respuesta" position="top">
+                  <motion.button
+                    onClick={onStop}
+                    aria-label="Detener respuesta"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 dark:bg-white text-white dark:text-black cursor-pointer border-0 shadow-sm"
+                  >
+                    <Square className="h-3.5 w-3.5 fill-current" aria-hidden />
+                  </motion.button>
+                </Tooltip>
               ) : (canSend || !showMic) ? (
-                <motion.button
-                  onClick={onSubmit}
-                  disabled={!canSend}
-                  aria-label="Enviar mensaje"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 dark:bg-white text-white dark:text-black cursor-pointer border-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none shadow-sm"
-                  title="Enviar mensaje"
-                >
-                  <ArrowUp className="h-4.5 w-4.5 stroke-[2.5]" aria-hidden />
-                </motion.button>
+                <Tooltip content="Enviar mensaje (Enter)" position="top">
+                  <motion.button
+                    onClick={onSubmit}
+                    disabled={!canSend}
+                    aria-label="Enviar mensaje"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 dark:bg-white text-white dark:text-black cursor-pointer border-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none shadow-sm"
+                  >
+                    <ArrowUp className="h-4.5 w-4.5 stroke-[2.5]" aria-hidden />
+                  </motion.button>
+                </Tooltip>
               ) : (
                 showMic && (
                   recording ? (
-                    <motion.button
-                      onClick={stopVoice}
-                      aria-label="Detener dictado"
-                      className="relative flex h-9 w-12 items-center justify-center gap-0.5 rounded-full bg-destructive/15 text-destructive cursor-pointer border-0"
-                      title="Detener"
-                      animate={{
-                        boxShadow: [
-                          "0 0 0 0px rgba(239, 68, 68, 0.2)",
-                          "0 0 0 8px rgba(239, 68, 68, 0)",
-                          "0 0 0 0px rgba(239, 68, 68, 0.2)"
-                        ]
-                      }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                        ease: "easeInOut"
-                      }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      {[0, 1, 2, 3].map((i) => (
-                        <motion.span
-                          key={i}
-                          className="w-0.5 rounded-full bg-destructive"
-                          animate={{ height: [4, 16, 4] }}
-                          transition={{
-                            duration: 0.6,
-                            repeat: Infinity,
-                            delay: i * 0.12,
-                            ease: "easeInOut",
-                          }}
-                        />
-                      ))}
-                    </motion.button>
+                    <Tooltip content="Detener dictado" position="top">
+                      <motion.button
+                        onClick={stopVoice}
+                        aria-label="Detener dictado"
+                        className="relative flex h-9 w-12 items-center justify-center gap-0.5 rounded-full bg-destructive/15 text-destructive cursor-pointer border-0"
+                        animate={{
+                          boxShadow: [
+                            "0 0 0 0px rgba(239, 68, 68, 0.2)",
+                            "0 0 0 8px rgba(239, 68, 68, 0)",
+                            "0 0 0 0px rgba(239, 68, 68, 0.2)"
+                          ]
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        {[0, 1, 2, 3].map((i) => (
+                          <motion.span
+                            key={i}
+                            className="w-0.5 rounded-full bg-destructive"
+                            animate={{ height: [4, 16, 4] }}
+                            transition={{
+                              duration: 0.6,
+                              repeat: Infinity,
+                              delay: i * 0.12,
+                              ease: "easeInOut",
+                            }}
+                          />
+                        ))}
+                      </motion.button>
+                    </Tooltip>
                   ) : (
-                    <motion.button
-                      onClick={startVoice}
-                      disabled={!voiceSupported}
-                      aria-label={voiceSupported ? "Dictado por voz" : "Voz no soportada"}
-                      whileHover={voiceSupported ? { scale: 1.05 } : {}}
-                      whileTap={voiceSupported ? { scale: 0.95 } : {}}
-                      className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 dark:bg-white text-white dark:text-black disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer border-0 shadow-sm"
-                      title={voiceSupported ? "Dictado por voz" : "Voz no soportada"}
-                    >
-                      <Mic className="h-4.5 w-4.5" aria-hidden />
-                    </motion.button>
+                    <Tooltip content={voiceSupported ? "Dictado por voz" : "Voz no soportada"} position="top">
+                      <motion.button
+                        onClick={startVoice}
+                        disabled={!voiceSupported}
+                        aria-label={voiceSupported ? "Dictado por voz" : "Voz no soportada"}
+                        whileHover={voiceSupported ? { scale: 1.05 } : {}}
+                        whileTap={voiceSupported ? { scale: 0.95 } : {}}
+                        className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 dark:bg-white text-white dark:text-black disabled:cursor-not-allowed disabled:opacity-40 cursor-pointer border-0 shadow-sm"
+                      >
+                        <Mic className="h-4.5 w-4.5" aria-hidden />
+                      </motion.button>
+                    </Tooltip>
                   )
                 )
               )}
