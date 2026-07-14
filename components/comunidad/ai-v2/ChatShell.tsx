@@ -520,6 +520,7 @@ function ChatShellInner({
             if (isMobile) setSidebarOpen(false);
           }}
           onNew={() => {
+            newChat();
             router.push("/ai");
             if (isMobile) setSidebarOpen(false);
           }}

@@ -336,15 +336,30 @@ export function ConversationSidebar({
 
   /* ── Navigation items (matching the Grok sidebar image) ── */
   const navItems = [
-    { label: "Nuevo Chat", icon: MessageSquarePlus, onClick: onNew },
+    { 
+      label: "Nuevo Chat", 
+      icon: MessageSquarePlus, 
+      onClick: () => {
+        onNew();
+        if (onClose) onClose();
+      } 
+    },
     {
       label: "Buscar",
       icon: Search,
       onClick: () => {
         window.dispatchEvent(new CustomEvent("open-search-modal"));
+        if (onClose) onClose();
       }
     },
-    { label: "Inicio", icon: Home, href: "/comunidad/inicio" },
+    { 
+      label: "Inicio", 
+      icon: Home, 
+      href: "/comunidad/inicio",
+      onClick: () => {
+        if (onClose) onClose();
+      }
+    },
   ];
 
   /* ── Render single chat row ── */
@@ -530,7 +545,27 @@ export function ConversationSidebar({
             "flex items-center rounded-lg text-[14px] font-semibold text-stone-700 dark:text-zinc-300 hover:bg-stone-200/35 dark:hover:bg-zinc-800/40 hover:text-stone-900 dark:hover:text-white transition-all duration-200 border-0 bg-transparent text-left cursor-pointer",
             collapsed ? "justify-center p-2.5 w-10 h-10" : "w-full gap-3.5 px-3 py-2.5"
           );
-          const renderedButton = item.onClick ? (
+          const renderedButton = item.href ? (
+            <Link
+              href={item.href}
+              onClick={item.onClick}
+              className={cn(buttonClass, "no-underline")}
+            >
+              <Icon className="h-[18px] w-[18px] text-stone-500 dark:text-zinc-400 shrink-0" />
+              <AnimatePresence>
+                {!collapsed && (
+                  <motion.span
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="whitespace-nowrap overflow-hidden block w-[160px] truncate text-left"
+                  >
+                    {item.label}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </Link>
+          ) : (
             <button
               onClick={item.onClick}
               className={buttonClass}
@@ -549,25 +584,6 @@ export function ConversationSidebar({
                 )}
               </AnimatePresence>
             </button>
-          ) : (
-            <Link
-              href={item.href!}
-              className={cn(buttonClass, "no-underline")}
-            >
-              <Icon className="h-[18px] w-[18px] text-stone-500 dark:text-zinc-400 shrink-0" />
-              <AnimatePresence>
-                {!collapsed && (
-                  <motion.span
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="whitespace-nowrap overflow-hidden block w-[160px] truncate text-left"
-                  >
-                    {item.label}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </Link>
           );
 
           return (
