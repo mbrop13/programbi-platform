@@ -1,8 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { Video, BookOpen, Sparkles, Check, Zap, ArrowRight } from "lucide-react";
+import { Video, BookOpen, Sparkles, Check, Zap, ArrowRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const features = [
@@ -28,11 +29,7 @@ const features = [
     accent: "text-blue-650 dark:text-sky-400",
     accentBg: "bg-sky-50/70 dark:bg-zinc-900/60",
     accentBorder: "border-sky-100/80 dark:border-zinc-800/80",
-    actionText: "Ver agenda de clases",
-    floaters: [
-      { text: "Live: Activo", icon: "🟢", position: "top-4 left-4" },
-      { text: "+140 Alumnos", icon: "👥", position: "bottom-4 right-4" }
-    ]
+    actionText: "Ver agenda de clases"
   },
   {
     badge: "A Tu Ritmo",
@@ -56,11 +53,7 @@ const features = [
     accent: "text-sky-650 dark:text-sky-400",
     accentBg: "bg-sky-50/70 dark:bg-zinc-900/60",
     accentBorder: "border-sky-100/80 dark:border-zinc-800/80",
-    actionText: "Explorar material de estudio",
-    floaters: [
-      { text: "Modelo de datos", icon: "📊", position: "top-4 right-4" },
-      { text: "Datasets listos", icon: "⚡", position: "bottom-4 left-4" }
-    ]
+    actionText: "Explorar material de estudio"
   },
   {
     badge: "IA Integrada",
@@ -84,15 +77,22 @@ const features = [
     accent: "text-indigo-600 dark:text-indigo-400",
     accentBg: "bg-sky-50/70 dark:bg-zinc-900/60",
     accentBorder: "border-sky-100/80 dark:border-zinc-800/80",
-    actionText: "Probar Asistente IA",
-    floaters: [
-      { text: "IA: Conectada", icon: "✨", position: "top-4 left-4" },
-      { text: "SQL Generator", icon: "🚀", position: "bottom-4 right-4" }
-    ]
+    actionText: "Probar Asistente IA"
   },
 ];
 
 export default function CommunityFeatures() {
+  const [selectedImage, setSelectedImage] = useState<{ src: string; label: string } | null>(null);
+
+  // Escuchar tecla Escape para cerrar el visualizador modal
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedImage(null);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <section className="relative overflow-hidden bg-white dark:bg-zinc-950">
       {/* Subtle background gradient and patterns */}
@@ -134,7 +134,7 @@ export default function CommunityFeatures() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-80px" }}
                   transition={{ duration: 0.7, ease: "easeOut" }}
-                  className="w-full bg-gradient-to-br from-sky-50/70 via-blue-50/40 to-indigo-50/20 dark:from-zinc-900/50 dark:via-zinc-900/30 dark:to-zinc-950/20 rounded-[2.5rem] p-8 md:p-12 border border-sky-100/85 dark:border-zinc-850 shadow-[0_24px_60px_-15px_rgba(14,165,233,0.08)] dark:shadow-none relative overflow-hidden"
+                  className="w-full bg-gradient-to-br from-sky-50/70 via-blue-50/40 to-indigo-50/20 dark:from-zinc-900/50 dark:via-zinc-900/30 dark:to-zinc-950/20 rounded-[2.5rem] p-8 md:p-12 border border-sky-100/85 dark:border-zinc-855 shadow-[0_24px_60px_-15px_rgba(14,165,233,0.08)] dark:shadow-none relative overflow-hidden"
                 >
                   {/* Grid de fondo punteado celeste claro */}
                   <div className="absolute inset-0 bg-[radial-gradient(rgba(14,165,233,0.12)_1.5px,transparent_1.5px)] [background-size:20px_20px] pointer-events-none opacity-70" />
@@ -193,47 +193,19 @@ export default function CommunityFeatures() {
 
                     {/* Image Composition (Col 2) */}
                     <div className="w-full flex justify-center">
-                      <div className="w-full max-w-[500px] aspect-video rounded-3xl border border-sky-100/70 dark:border-zinc-800/80 shadow-[0_12px_40px_rgba(14,165,233,0.08)] overflow-hidden relative group/img">
+                      <div 
+                        onClick={() => setSelectedImage({ src: f.image, label: f.imageLabel })}
+                        className="w-full max-w-[620px] aspect-[191/92] rounded-2xl border border-sky-100/70 dark:border-zinc-800/80 shadow-[0_12px_40px_rgba(14,165,233,0.08)] overflow-hidden relative group/img cursor-zoom-in hover:scale-[1.015] active:scale-[0.99] transition-all duration-350"
+                      >
                         <Image
                           src={f.image}
                           alt={f.imageLabel}
                           fill
-                          className="object-cover group-hover/img:scale-[1.02] transition-transform duration-700 rounded-3xl"
+                          className="object-cover rounded-2xl"
                           unoptimized
                         />
                         {/* Soft overlay gradient */}
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/15 via-transparent to-transparent pointer-events-none" />
-
-                        {/* Floaters on top of the image */}
-                        {f.floaters.map((floater, flIndex) => {
-                          const isTop = floater.position.includes("top-4");
-                          const isLeft = floater.position.includes("left-4");
-                          const isRight = floater.position.includes("right-4");
-                          const isBottom = floater.position.includes("bottom-4");
-
-                          return (
-                            <motion.div
-                              key={flIndex}
-                              animate={{ y: [0, -5, 0] }}
-                              transition={{
-                                duration: 4,
-                                repeat: Infinity,
-                                delay: flIndex * 1.5,
-                                ease: "easeInOut"
-                              }}
-                              className={cn(
-                                "absolute z-20 flex items-center gap-2 bg-white/85 dark:bg-zinc-900/85 backdrop-blur-md border border-white/40 dark:border-zinc-800 text-sky-950 dark:text-sky-200 rounded-full px-3.5 py-1.5 text-[11px] font-bold shadow-md select-none",
-                                isTop && "top-4",
-                                isBottom && "bottom-4",
-                                isLeft && "left-4",
-                                isRight && "right-4"
-                              )}
-                            >
-                              <span>{floater.icon}</span>
-                              <span>{floater.text}</span>
-                            </motion.div>
-                          );
-                        })}
                       </div>
                     </div>
                   </div>
@@ -306,47 +278,19 @@ export default function CommunityFeatures() {
                 {/* ─── IMAGE COMPOSITION ─── */}
                 <div className="flex-1 w-full max-w-lg lg:max-w-none">
                   <div className="relative group/img">
-                    <div className="w-full max-w-[500px] aspect-video rounded-3xl border border-sky-100/70 dark:border-zinc-800/80 shadow-[0_12px_40px_rgba(14,165,233,0.08)] overflow-hidden relative mx-auto group-hover/img:scale-[1.01] transition-transform duration-500">
+                    <div 
+                      onClick={() => setSelectedImage({ src: f.image, label: f.imageLabel })}
+                      className="w-full max-w-[620px] aspect-[191/92] rounded-2xl border border-sky-100/70 dark:border-zinc-800/80 shadow-[0_12px_40px_rgba(14,165,233,0.08)] overflow-hidden relative mx-auto cursor-zoom-in hover:scale-[1.015] active:scale-[0.99] transition-all duration-350"
+                    >
                       <Image
                         src={f.image}
                         alt={f.imageLabel}
                         fill
-                        className="object-cover group-hover/img:scale-[1.02] transition-transform duration-700 rounded-3xl"
+                        className="object-cover rounded-2xl"
                         unoptimized
                       />
                       {/* Soft overlay gradient */}
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-955/15 via-transparent to-transparent pointer-events-none" />
-                      
-                      {/* Floaters on top of the image */}
-                      {f.floaters.map((floater, flIndex) => {
-                        const isTop = floater.position.includes("top-4");
-                        const isLeft = floater.position.includes("left-4");
-                        const isRight = floater.position.includes("right-4");
-                        const isBottom = floater.position.includes("bottom-4");
-
-                        return (
-                          <motion.div
-                            key={flIndex}
-                            animate={{ y: [0, -5, 0] }}
-                            transition={{
-                              duration: 4,
-                              repeat: Infinity,
-                              delay: flIndex * 1.5,
-                              ease: "easeInOut"
-                            }}
-                            className={cn(
-                              "absolute z-20 flex items-center gap-2 bg-white/85 dark:bg-zinc-900/85 backdrop-blur-md border border-white/40 dark:border-zinc-800 text-sky-950 dark:text-sky-200 rounded-full px-3.5 py-1.5 text-[11px] font-bold shadow-md select-none",
-                              isTop && "top-4",
-                              isBottom && "bottom-4",
-                              isLeft && "left-4",
-                              isRight && "right-4"
-                            )}
-                          >
-                            <span>{floater.icon}</span>
-                            <span>{floater.text}</span>
-                          </motion.div>
-                        );
-                      })}
                     </div>
                   </div>
                 </div>
@@ -355,6 +299,46 @@ export default function CommunityFeatures() {
           })}
         </div>
       </div>
+
+      {/* ─── LIGHTBOX MODAL VIEWPORT OVERLAY ─── */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/95 backdrop-blur-md p-4 md:p-10 cursor-zoom-out select-none"
+          >
+            {/* Botón Cerrar */}
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute top-6 right-6 z-[110] w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center backdrop-blur-md border border-white/10 hover:scale-105 active:scale-95 transition-all duration-200 cursor-pointer"
+              aria-label="Cerrar vista completa"
+            >
+              <X size={24} />
+            </button>
+
+            {/* Contenedor Imagen */}
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              transition={{ type: "spring", stiffness: 350, damping: 30 }}
+              className="relative w-full max-w-6xl aspect-[191/92] rounded-2xl border border-white/10 shadow-2xl overflow-hidden"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Image
+                src={selectedImage.src}
+                alt={selectedImage.label}
+                fill
+                className="object-contain"
+                unoptimized
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
