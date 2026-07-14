@@ -95,6 +95,7 @@ export async function POST(req: NextRequest) {
       payerEmail: userEmail,
       externalReference: user.id, // We store our Supabase user ID here
       backUrl: backUrl,
+      hasTrial: !planId.startsWith("ultra"),
     });
 
     if (!subscription.init_point) {
