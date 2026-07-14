@@ -112,7 +112,7 @@ function ChatShellInner({
   const canvas = useCanvas();
   const router = useRouter();
 
-  const [canvasModeActive, setCanvasModeActive] = useState(true);
+  const { canvasModeActive, setCanvasModeActive } = canvas;
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   // ─── Estado ───

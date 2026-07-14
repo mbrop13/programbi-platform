@@ -6,6 +6,7 @@ import {
   useContext,
   useMemo,
   useReducer,
+  useState,
   type ReactNode,
 } from "react";
 
@@ -124,6 +125,8 @@ interface CanvasContextValue {
   history: CanvasFile[];
   canUndo: boolean;
   canRedo: boolean;
+  canvasModeActive: boolean;
+  setCanvasModeActive: (active: boolean) => void;
   openCanvas: (file: CanvasFile) => void;
   closeCanvas: () => void;
   updateCode: (code: string) => void;
@@ -136,6 +139,7 @@ const CanvasContext = createContext<CanvasContextValue | null>(null);
 
 export function CanvasProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [canvasModeActive, setCanvasModeActive] = useState(true);
 
   const openCanvas = useCallback((file: CanvasFile) => dispatch({ type: "OPEN", file }), []);
   const closeCanvas = useCallback(() => dispatch({ type: "CLOSE" }), []);
@@ -154,6 +158,8 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
       history: state.history,
       canUndo: state.undoStack.length > 0,
       canRedo: state.redoStack.length > 0,
+      canvasModeActive,
+      setCanvasModeActive,
       openCanvas,
       closeCanvas,
       updateCode,
@@ -161,7 +167,7 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
       redo,
       selectFromHistory,
     }),
-    [state, openCanvas, closeCanvas, updateCode, undo, redo, selectFromHistory]
+    [state, canvasModeActive, openCanvas, closeCanvas, updateCode, undo, redo, selectFromHistory]
   );
 
   return <CanvasContext.Provider value={value}>{children}</CanvasContext.Provider>;
