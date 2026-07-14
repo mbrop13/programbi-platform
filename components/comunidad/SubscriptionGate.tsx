@@ -15,15 +15,36 @@ interface SubscriptionGateProps {
   /** When true, renders only the hero headline/subtitle (no badge, plans, or billing) */
   heroOnly?: boolean;
   transparent?: boolean;
+  currentPlanId?: string | null;
 }
 
 type BillingPeriod = 'mensual' | 'semestral' | 'anual';
 
-export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isLoading = false, heroOnly = false, transparent = false }: SubscriptionGateProps) {
+export default function SubscriptionGate({ 
+  onSubscribe, 
+  message, 
+  isLoggedIn, 
+  isLoading = false, 
+  heroOnly = false, 
+  transparent = false,
+  currentPlanId = null
+}: SubscriptionGateProps) {
   const [selectedPlanId, setSelectedPlanId] = useState<string>("max");
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('mensual');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const getPlanHierarchy = (planId: string): number => {
+    switch (planId) {
+      case "pro": return 1;
+      case "max": return 2;
+      case "ultra": return 3;
+      default: return 0;
+    }
+  };
+
+  const hasAnyPlan = !!currentPlanId;
+  const currentHierarchy = currentPlanId ? getPlanHierarchy(currentPlanId) : 0;
   interface Promotion {
     target_type: string;
     target_id?: string;
@@ -289,19 +310,33 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.15 + 0.3 }}
-              onHoverStart={() => setSelectedPlanId(plan.id)}
-              onClick={() => setSelectedPlanId(plan.id)}
-              className={`relative rounded-[2.5rem] cursor-pointer transition-all duration-500 flex flex-col h-full bg-white border ${
-                isActive 
-                  ? 'scale-[1.03] z-20 shadow-[0_30px_60px_-15px_rgba(59,130,246,0.25)] border-blue-500/80 ring-1 ring-blue-500/30' 
-                  : 'scale-[0.97] hover:scale-[0.99] z-10 border-slate-200/80 hover:border-slate-300/80 shadow-sm opacity-90 hover:opacity-100'
+              onHoverStart={() => {
+                const planHierarchy = getPlanHierarchy(plan.id);
+                const isCurrent = currentPlanId === plan.id;
+                const isDowngrade = currentHierarchy > planHierarchy;
+                if (!isCurrent && !isDowngrade) setSelectedPlanId(plan.id);
+              }}
+              onClick={() => {
+                const planHierarchy = getPlanHierarchy(plan.id);
+                const isCurrent = currentPlanId === plan.id;
+                const isDowngrade = currentHierarchy > planHierarchy;
+                if (!isCurrent && !isDowngrade) setSelectedPlanId(plan.id);
+              }}
+              className={`relative rounded-[2.5rem] transition-all duration-500 flex flex-col h-full bg-white border ${
+                currentPlanId === plan.id
+                  ? 'scale-[0.98] border-neutral-300 bg-neutral-50/40 opacity-70 saturate-50 cursor-not-allowed shadow-none'
+                  : currentHierarchy > getPlanHierarchy(plan.id)
+                    ? 'scale-[0.96] border-neutral-200 bg-neutral-100/30 opacity-55 saturate-50 cursor-not-allowed shadow-none'
+                    : isActive 
+                      ? 'scale-[1.03] z-20 shadow-[0_30px_60px_-15px_rgba(59,130,246,0.25)] border-blue-500/80 ring-1 ring-blue-500/30 cursor-pointer' 
+                      : 'scale-[0.97] hover:scale-[0.99] z-10 border-slate-200/80 hover:border-slate-300/80 shadow-sm opacity-90 hover:opacity-100 cursor-pointer'
               }`}
             >
               
               <div className="relative z-10 w-full h-full flex flex-col p-6 lg:p-8 pt-10">
 
                 {/* Highlight Badge */}
-                {plan.highlight && adminDiscountPercent === 0 && (
+                {plan.highlight && adminDiscountPercent === 0 && currentPlanId !== plan.id && currentHierarchy <= getPlanHierarchy(plan.id) && (
                   <div 
                     className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest text-white uppercase shadow-lg shadow-blue-500/30 flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 whitespace-nowrap"
                   >
@@ -309,7 +344,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
                     {plan.highlight}
                   </div>
                 )}
-                {adminDiscountPercent > 0 && (
+                {adminDiscountPercent > 0 && currentPlanId !== plan.id && currentHierarchy <= getPlanHierarchy(plan.id) && (
                   <div 
                     className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-[10px] font-black tracking-widest text-blue-600 uppercase shadow-md shadow-blue-500/10 flex items-center gap-1.5 bg-blue-50 border border-blue-100 whitespace-nowrap"
                   >
@@ -321,7 +356,7 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
                 {/* Header */}
                 <div className="mb-5 flex-grow-0">
                   <h3 className="text-xl lg:text-2xl font-black text-slate-900 mb-2.5 tracking-tight">{plan.name}</h3>
-                  <p className="text-slate-500 leading-snug text-xs md:text-sm font-medium">
+                  <p className="text-slate-550 leading-snug text-xs md:text-sm font-medium">
                     {plan.description}
                   </p>
                 </div>
@@ -379,27 +414,35 @@ export default function SubscriptionGate({ onSubscribe, message, isLoggedIn, isL
                 {/* Action Button - Always at the bottom */}
                 <div className="flex-grow-0 mt-auto">
                     <button
-                    disabled={isLoading || isProcessing}
+                    disabled={isLoading || isProcessing || currentPlanId === plan.id || currentHierarchy > getPlanHierarchy(plan.id)}
                     onClick={(e) => {
                         e.stopPropagation();
                         handleAction(compositePlanId);
                     }}
-                    className={`w-full py-4 rounded-2xl font-black transition-all flex items-center justify-center gap-2 group relative overflow-hidden text-sm shadow-sm hover:shadow-md`}
+                    className={`w-full py-4 rounded-2xl font-black transition-all flex items-center justify-center gap-2 group relative overflow-hidden text-sm ${
+                      (currentPlanId === plan.id || currentHierarchy > getPlanHierarchy(plan.id))
+                        ? 'bg-neutral-100 text-neutral-400 cursor-not-allowed shadow-none border border-neutral-200/50' 
+                        : 'shadow-sm hover:shadow-md'
+                    }`}
                     style={{ 
-                        backgroundColor: isActive ? '#2563eb' : '#f8fafc',
-                        color: isActive ? '#ffffff' : '#334155',
+                        backgroundColor: (currentPlanId === plan.id || currentHierarchy > getPlanHierarchy(plan.id)) ? undefined : (isActive ? '#2563eb' : '#f8fafc'),
+                        color: (currentPlanId === plan.id || currentHierarchy > getPlanHierarchy(plan.id)) ? undefined : (isActive ? '#ffffff' : '#334155'),
                         opacity: (isLoading || isProcessing) ? 0.7 : undefined,
                     }}
                     >
                     {isProcessing ? (
                         <Loader2 className="w-5 h-5 animate-spin relative z-10" />
+                    ) : currentPlanId === plan.id ? (
+                        <span className="relative z-10">Plan Actual</span>
+                    ) : currentHierarchy > getPlanHierarchy(plan.id) ? (
+                        <span className="relative z-10">No disponible</span>
                     ) : (
                         <div className="flex flex-col items-center justify-center relative z-10 w-full">
                           <div className="flex items-center gap-2 justify-center w-full">
-                            {plan.id === 'ultra' ? "Suscribirse Ahora" : "Iniciar Prueba Gratis"}
+                            {hasAnyPlan ? "Mejorar Plan" : (plan.id === 'ultra' ? "Suscribirse Ahora" : "Iniciar Prueba Gratis")}
                             <ArrowRight className={`w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-600'}`} />
                           </div>
-                          {plan.id !== 'ultra' && (
+                          {!hasAnyPlan && plan.id !== 'ultra' && (
                             <span className="text-[9px] font-bold opacity-80 mt-1 uppercase tracking-wider block text-center">7 días de acceso y sin cargos</span>
                           )}
                         </div>

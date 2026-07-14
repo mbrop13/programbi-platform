@@ -31,6 +31,7 @@ export default async function ComunidadPage() {
             isLoggedIn={!!profile}
             heroOnly
             transparent
+            currentPlanId={profile?.subscription_plan}
           />
 
           <LogoSlider transparent />
@@ -40,6 +41,7 @@ export default async function ComunidadPage() {
         {/* ─── PLANES Y PRECIOS ─── */}
         <SubscriptionGate 
           isLoggedIn={!!profile}
+          currentPlanId={profile?.subscription_plan}
         />
         {/* ─── TESTIMONIOS ─── */}
         <TestimonialsSection />
