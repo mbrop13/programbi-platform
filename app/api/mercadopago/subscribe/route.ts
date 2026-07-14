@@ -89,6 +89,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    const preapprovalPlanId = MP_PLAN_MAP[planId];
+
     const subscription = await createMPSubscription({
       reason: `ProgramBI Community - ${planId.replace("_", " ").toUpperCase()}`,
       transactionAmount: Math.round(finalMonthlyPrice),
@@ -96,6 +98,7 @@ export async function POST(req: NextRequest) {
       externalReference: user.id, // We store our Supabase user ID here
       backUrl: backUrl,
       hasTrial: !planId.startsWith("ultra"),
+      preapprovalPlanId,
     });
 
     if (!subscription.init_point) {

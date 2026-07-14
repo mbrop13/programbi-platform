@@ -108,19 +108,25 @@ export async function createMPSubscription(data: {
   externalReference: string; // our userId
   backUrl: string;
   hasTrial?: boolean;
+  preapprovalPlanId?: string;
 }): Promise<MPSubscription> {
   const body: any = {
-    reason: data.reason,
-    auto_recurring: {
-      frequency: 1,
-      frequency_type: "months",
-      transaction_amount: data.transactionAmount,
-      currency_id: "CLP",
-    },
     payer_email: data.payerEmail,
     external_reference: data.externalReference,
     back_url: data.backUrl,
     status: "pending",
+  };
+
+  if (data.preapprovalPlanId) {
+    body.preapproval_plan_id = data.preapprovalPlanId;
+  }
+
+  body.reason = data.reason;
+  body.auto_recurring = {
+    frequency: 1,
+    frequency_type: "months",
+    transaction_amount: data.transactionAmount,
+    currency_id: "CLP",
   };
 
   if (data.hasTrial !== false) {
