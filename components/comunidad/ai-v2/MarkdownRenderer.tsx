@@ -61,6 +61,20 @@ function MarkdownRendererBase({ content, className }: MarkdownRendererProps) {
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex]}
         components={{
+          // Renderizador personalizado de imágenes para que encajen de forma responsiva y pulida
+          img({ src, alt }) {
+            return (
+              <span className="block my-4 relative rounded-2xl overflow-hidden border border-neutral-200/80 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900 max-h-[380px] w-full group">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={src}
+                  alt={alt || "Imagen de la publicación"}
+                  className="w-full h-auto object-contain max-h-[380px] mx-auto block transition-transform duration-500 group-hover:scale-101"
+                  loading="lazy"
+                />
+              </span>
+            );
+          },
           // Code blocks e inline code
           code({ className: cls, children, ...props }) {
             const match = /language-(\w+)/.exec(cls || "");

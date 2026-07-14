@@ -1536,10 +1536,12 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h4 className="font-bold text-gray-900 text-sm">{authorName}</h4>
+              <h4 className="font-bold text-gray-900 text-sm">
+                {post.author?.role === "admin" ? `Profesor ${authorName}` : authorName}
+              </h4>
               {post.author?.role === "admin" && (
                 <span className="bg-brand-blue/10 text-brand-blue text-[10px] font-black px-1.5 py-0.5 rounded-md tracking-wide">
-                  ADMIN
+                  Profesor
                 </span>
               )}
             </div>
@@ -1704,98 +1706,24 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
       {/* Actions */}
       {!(isGuest && post.author?.role === "admin" && !/gratis|gratuita/i.test(postText || "")) && (
         <div className="flex items-center gap-1 pt-3 border-t border-gray-100">
-        <button
-          onClick={() => {
-            setIsLiked(!isLiked);
-            onLike();
-          }}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-all active:scale-95
-            ${isLiked ? "text-rose-500 hover:bg-rose-50" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}
-        >
-          <Heart
-            className={`w-[18px] h-[18px] transition-all ${isLiked ? "fill-rose-500 scale-110" : ""}`}
-          />
-          {post.likes_count || ""}
-        </button>
-        <button
-          onClick={() => setCommentOpen(!commentOpen)}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-all
-            ${commentOpen ? "text-brand-blue bg-blue-50" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}
-        >
-          <MessageCircle className="w-[18px] h-[18px]" />
-          {post.comments?.length > 0 ? post.comments.length : ""}
-        </button>
-        <button className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all">
-          <Bookmark className="w-[18px] h-[18px]" />
-        </button>
-        <button className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all">
-          <Share2 className="w-[18px] h-[18px]" />
-        </button>
-      </div>
-      )}
-
-      {/* Comments */}
-      <AnimatePresence>
-        {commentOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
+          <button
+            onClick={() => {
+              setIsLiked(!isLiked);
+              onLike();
+            }}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-all active:scale-95
+              ${isLiked ? "text-rose-500 hover:bg-rose-50" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}
           >
-            <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
-              {post.comments?.map((c: any) => (
-                <div
-                  key={c.id}
-                  className="flex items-start gap-3 p-3 bg-gray-50/80 rounded-xl"
-                >
-                  <div className="w-7 h-7 rounded-lg bg-gray-200 flex items-center justify-center font-bold text-[10px] shrink-0 text-gray-600">
-                    {c.author?.full_name?.charAt(0) || "U"}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-0.5">
-                      <span className="font-semibold text-xs text-gray-900">
-                        {c.author?.full_name || "Estudiante"}
-                      </span>
-                      <span className="text-[10px] text-gray-400">
-                        {getRelativeTime(c.created_at)}
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-600 leading-relaxed">
-                      {c.content}
-                    </p>
-                  </div>
-                </div>
-              ))}
-
-              <div className="flex items-center gap-2 pt-1">
-                <div className="w-7 h-7 rounded-lg bg-brand-blue/10 flex items-center justify-center font-bold text-[10px] text-brand-blue shrink-0">
-                  U
-                </div>
-                <div className="flex-1 relative">
-                  <input
-                    type="text"
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 pr-11 text-sm focus:outline-none focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 focus:bg-white transition-all placeholder:text-gray-400"
-                    placeholder="Escribe un comentario..."
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    onKeyDown={(e) =>
-                      e.key === "Enter" && handleCommentSubmit()
-                    }
-                  />
-                  <button
-                    onClick={handleCommentSubmit}
-                    disabled={!newComment.trim()}
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 bg-brand-blue disabled:opacity-30 text-white p-1.5 rounded-lg hover:bg-blue-600 transition-all border-none cursor-pointer flex items-center justify-center"
-                  >
-                    <Send className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <Heart
+              className={`w-[18px] h-[18px] transition-all ${isLiked ? "fill-rose-500 scale-110" : ""}`}
+            />
+            {post.likes_count || ""}
+          </button>
+          <button className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-all border-none bg-transparent cursor-pointer">
+            <Share2 className="w-[18px] h-[18px]" />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
