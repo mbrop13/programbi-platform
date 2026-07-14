@@ -1323,37 +1323,37 @@ function VideoAttachmentCard({ videoRef }: any) {
   };
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 overflow-hidden relative group mt-3">
-      {/* Glow decorative */}
-      <div className="absolute top-0 right-0 w-24 h-24 bg-brand-blue/10 rounded-full filter blur-xl pointer-events-none transition-opacity duration-300 group-hover:opacity-40" />
+    <div className="bg-neutral-50/60 dark:bg-neutral-900/30 border border-neutral-200/70 dark:border-neutral-800/80 rounded-2xl p-4 overflow-hidden relative group mt-3 transition-colors duration-200">
+      {/* Decorative Blur Glow */}
+      <div className="absolute top-0 right-0 w-24 h-24 bg-brand-blue/5 dark:bg-brand-blue/10 rounded-full filter blur-xl pointer-events-none transition-opacity duration-300 group-hover:opacity-40" />
       
       <div className="flex flex-col sm:flex-row gap-4 items-center relative z-10">
         {/* Play Video Thumbnail simulation */}
         <div 
           onClick={handleRedirect}
-          className="w-full sm:w-36 aspect-video rounded-xl bg-slate-950 flex items-center justify-center shrink-0 cursor-pointer overflow-hidden border border-slate-800 relative group/thumb"
+          className="w-full sm:w-36 aspect-video rounded-xl bg-neutral-100 dark:bg-neutral-950 flex items-center justify-center shrink-0 cursor-pointer overflow-hidden border border-neutral-200 dark:border-neutral-800/70 relative group/thumb"
         >
           {/* Decorative design */}
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 opacity-85" />
-          <div className="w-10 h-10 rounded-full bg-brand-blue/20 flex items-center justify-center border border-brand-blue/30 text-brand-blue group-hover/thumb:scale-110 group-hover/thumb:bg-brand-blue group-hover/thumb:text-white transition-all shadow-lg relative z-10 duration-300">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/40 via-neutral-100/50 to-neutral-250/40 dark:from-indigo-950/40 dark:via-neutral-900/60 dark:to-neutral-950/60 opacity-80" />
+          <div className="w-10 h-10 rounded-full bg-brand-blue/10 dark:bg-brand-blue/20 flex items-center justify-center border border-brand-blue/30 text-brand-blue group-hover/thumb:scale-110 group-hover/thumb:bg-brand-blue group-hover/thumb:text-white transition-all shadow-md relative z-10 duration-300">
             <Play className="w-4 h-4 fill-current ml-0.5" />
           </div>
         </div>
 
         <div className="flex-1 min-w-0 text-center sm:text-left">
-          <span className="text-[9px] font-black uppercase tracking-widest text-brand-blue bg-brand-blue/10 px-2 py-0.5 rounded-md border border-brand-blue/25">
+          <span className="text-[9px] font-black uppercase tracking-widest text-brand-blue bg-blue-50/60 dark:bg-brand-blue/10 px-2 py-0.5 rounded-md border border-brand-blue/20">
             Clase Recomendada
           </span>
-          <h4 className="text-xs font-bold text-white mt-1.5 leading-snug line-clamp-1">
+          <h4 className="text-xs font-bold text-neutral-800 dark:text-neutral-100 mt-1.5 leading-snug line-clamp-1">
             {videoRef.lessonTitle || videoRef.courseTitle || "Ver video de la clase"}
           </h4>
           {videoRef.courseTitle && videoRef.lessonTitle && (
-            <p className="text-[10px] text-slate-400 font-medium mt-0.5 line-clamp-1">
+            <p className="text-[10px] text-neutral-500 dark:text-neutral-450 font-medium mt-0.5 line-clamp-1">
               Curso: {videoRef.courseTitle}
             </p>
           )}
           {videoRef.externalUrl && !videoRef.courseTitle && (
-            <p className="text-[10px] text-slate-400 font-medium mt-0.5 truncate max-w-[250px] mx-auto sm:mx-0">
+            <p className="text-[10px] text-neutral-500 dark:text-neutral-450 font-medium mt-0.5 truncate max-w-[250px] mx-auto sm:mx-0">
               {videoRef.externalUrl}
             </p>
           )}
@@ -1361,7 +1361,7 @@ function VideoAttachmentCard({ videoRef }: any) {
 
         <button
           onClick={handleRedirect}
-          className="w-full sm:w-auto px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white text-[11px] font-bold rounded-xl shadow-md border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all shrink-0 active:scale-[0.98]"
+          className="w-full sm:w-auto px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white text-[11px] font-bold rounded-xl shadow-sm hover:shadow-md border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all shrink-0 active:scale-[0.98]"
         >
           <span>Ver Clase</span>
           <ArrowRight className="w-3.5 h-3.5" />
