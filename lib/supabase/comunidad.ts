@@ -1003,3 +1003,35 @@ export async function updatePost(postId: string, newContent: string) {
 
   revalidatePath("/(comunidad)", "layout");
 }
+
+export async function getCommunityPortalData() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return {
+      isAdmin: false,
+      userProfile: null,
+      enrollmentData: { enrollments: [], programSiblings: [] },
+      orgData: null,
+      allCourses: []
+    };
+  }
+
+  // Ejecutar en paralelo en el servidor (baja latencia)
+  const { getMyEnrollments, getAllPublishedCourses } = await import("./comunidad-ai");
+  const [isAdmin, userProfile, enrollmentData, orgData, allCourses] = await Promise.all([
+    isCurrentUserAdmin(),
+    getCurrentUserProfile(),
+    getMyEnrollments(),
+    getCurrentUserManagedOrganization(),
+    getAllPublishedCourses().catch(() => []),
+  ]);
+
+  return {
+    isAdmin,
+    userProfile,
+    enrollmentData,
+    orgData,
+    allCourses
+  };
+}

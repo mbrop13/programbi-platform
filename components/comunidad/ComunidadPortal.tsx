@@ -20,11 +20,8 @@ import SubscriptionModal from "./SubscriptionModal";
 import { ToastProvider } from "./ui/Toast";
 
 import {
-  isCurrentUserAdmin,
-  getCurrentUserProfile,
-  getCurrentUserManagedOrganization,
+  getCommunityPortalData,
 } from "@/lib/supabase/comunidad";
-import { getMyEnrollments, getAllPublishedCourses } from "@/lib/supabase/comunidad-ai";
 import { createClient as createBrowserClient } from "@/lib/supabase/client";
 
 interface UserProfile {
@@ -131,13 +128,7 @@ export default function ComunidadPortal() {
       // 2. Full server-side load: validates the session with Supabase and
       //    fetches the complete profile (plan, role, avatar, etc.).
       try {
-        const [adminStatus, profile, enrollmentData, orgData, allCourses] = await Promise.all([
-          isCurrentUserAdmin(),
-          getCurrentUserProfile(),
-          getMyEnrollments(),
-          getCurrentUserManagedOrganization(),
-          getAllPublishedCourses().catch(() => []),
-        ]);
+        const { isAdmin: adminStatus, userProfile: profile, enrollmentData, orgData, allCourses } = await getCommunityPortalData();
         setIsAdmin(adminStatus);
         if (profile) {
           const profileData = profile as unknown as UserProfile;
