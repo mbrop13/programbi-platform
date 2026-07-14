@@ -1370,7 +1370,7 @@ function VideoAttachmentCard({ videoRef }: any) {
 }
 
 /* ── Poll Attachment Card ── */
-function PollAttachmentCard({ poll, postId, userId }: any) {
+function PollAttachmentCard({ poll, postId, userId, onRefresh }: any) {
   const [localPoll, setLocalPoll] = useState(poll);
   const [votingInProgress, setVotingInProgress] = useState(false);
 
@@ -1419,6 +1419,9 @@ function PollAttachmentCard({ poll, postId, userId }: any) {
 
     try {
       await voteInPoll(postId, optionId);
+      if (onRefresh) {
+        await onRefresh();
+      }
     } catch (err: any) {
       // rollback on error
       setLocalPoll(poll);
@@ -1757,6 +1760,7 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
                   poll={richPost.poll} 
                   postId={post.id} 
                   userId={userId} 
+                  onRefresh={onRefresh}
                 />
               )}
             </div>
