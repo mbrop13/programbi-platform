@@ -2,22 +2,41 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Menu } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
 import Sidebar from "./Sidebar";
-import MuroFeed from "./tabs/MuroFeed";
-import MisCursos from "./tabs/MisCursos";
-import AulaVirtual from "./tabs/AulaVirtual";
-import ChatShell from "./ai-v2/ChatShell";
-import BusinessPortal from "./tabs/BusinessPortal";
-import LivePanel from "./tabs/LivePanel";
-import UserProfile from "./tabs/UserProfile";
-import Certificates from "./tabs/Certificates";
-import SettingsModal from "./SettingsModal";
-import SubscriptionModal from "./SubscriptionModal";
 import { ToastProvider } from "./ui/Toast";
+
+// ── Lazy-loaded tabs: only the active tab's code is downloaded ──
+const MuroFeed = dynamic(() => import("./tabs/MuroFeed"), {
+  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
+});
+const MisCursos = dynamic(() => import("./tabs/MisCursos"), {
+  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
+});
+const AulaVirtual = dynamic(() => import("./tabs/AulaVirtual"), {
+  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
+});
+const ChatShell = dynamic(() => import("./ai-v2/ChatShell"), {
+  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
+});
+const BusinessPortal = dynamic(() => import("./tabs/BusinessPortal"), {
+  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
+});
+const LivePanel = dynamic(() => import("./tabs/LivePanel"), {
+  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
+});
+const UserProfile = dynamic(() => import("./tabs/UserProfile"), {
+  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
+});
+const Certificates = dynamic(() => import("./tabs/Certificates"), {
+  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
+});
+const SettingsModal = dynamic(() => import("./SettingsModal"), { ssr: false });
+const SubscriptionModal = dynamic(() => import("./SubscriptionModal"), { ssr: false });
 
 import {
   getCommunityPortalData,
