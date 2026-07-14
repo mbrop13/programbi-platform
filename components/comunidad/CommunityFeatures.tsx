@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Video, BookOpen, Sparkles, Check, Zap, ArrowRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const features = [
   {
@@ -10,7 +11,7 @@ const features = [
     icon: Video,
     title: (
       <>
-        Clases en vivo <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 font-black">100% prácticas</span>
+        Clases en vivo <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500 font-black">100% prácticas</span>
       </>
     ),
     subtitle:
@@ -22,14 +23,13 @@ const features = [
       "Pregunta y recibe feedback al instante",
     ],
     image:
-      "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/Dashboard_Cursos_Power_BI.png?v=1770535026",
+      "https://mail.programbi.com/uploads/Captura-de-pantalla-2026-07-14-053709.png",
     imageLabel: "Dashboard Power BI en vivo",
-    gradientCard: "from-blue-600 to-indigo-800",
-    glowBorder: "from-blue-400 via-cyan-300 to-indigo-500",
-    glowShadow: "rgba(59,130,246,0.4)",
-    accent: "text-blue-600",
-    accentBg: "bg-blue-50",
-    accentBorder: "border-blue-100",
+    glowBorder: "from-sky-450 via-blue-300 to-indigo-400",
+    glowShadow: "rgba(14,165,233,0.15)",
+    accent: "text-blue-650 dark:text-sky-400",
+    accentBg: "bg-sky-50/70 dark:bg-zinc-900/60",
+    accentBorder: "border-sky-100/80 dark:border-zinc-800/80",
     actionText: "Ver agenda de clases",
     floaters: [
       { text: "Live: Activo", icon: "🟢", position: "top-[-10px] left-[15px]" },
@@ -41,7 +41,7 @@ const features = [
     icon: BookOpen,
     title: (
       <>
-        Material completo y <span className="bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-teal-600 font-black">clases grabadas</span>
+        Material completo y <span className="bg-clip-text text-transparent bg-gradient-to-r from-sky-600 to-blue-500 font-black">clases grabadas</span>
       </>
     ),
     subtitle:
@@ -53,14 +53,13 @@ const features = [
       "Rutas de aprendizaje estructuradas paso a paso",
     ],
     image:
-      "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/Foto_Modelo_de_Datos_en_Power_BI.png?v=1770535026",
+      "https://mail.programbi.com/uploads/Captura-de-pantalla-2026-07-14-053922.png",
     imageLabel: "Modelado de datos",
-    gradientCard: "from-emerald-600 to-teal-800",
-    glowBorder: "from-emerald-400 via-teal-300 to-cyan-500",
-    glowShadow: "rgba(16,185,129,0.4)",
-    accent: "text-emerald-600",
-    accentBg: "bg-emerald-50",
-    accentBorder: "border-emerald-100",
+    glowBorder: "from-cyan-400 via-sky-300 to-blue-400",
+    glowShadow: "rgba(6,182,212,0.15)",
+    accent: "text-sky-650 dark:text-sky-400",
+    accentBg: "bg-sky-50/70 dark:bg-zinc-900/60",
+    accentBorder: "border-sky-100/80 dark:border-zinc-800/80",
     actionText: "Explorar material de estudio",
     floaters: [
       { text: "Modelo de datos", icon: "📊", position: "top-[-10px] right-[15px]" },
@@ -72,7 +71,7 @@ const features = [
     icon: Sparkles,
     title: (
       <>
-        Tu asistente IA con los <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-fuchsia-600 font-black">mejores modelos</span>
+        Tu asistente IA con los <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-500 font-black">mejores modelos</span>
       </>
     ),
     subtitle:
@@ -84,14 +83,13 @@ const features = [
       "Disponible 24/7 como tu mentor personal de datos",
     ],
     image:
-      "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/Python_Codigos_de_Clases.png?v=1770535025",
+      "https://mail.programbi.com/uploads/Captura-de-pantalla-2026-07-14-054229.png",
     imageLabel: "Código Python asistido por IA",
-    gradientCard: "from-violet-600 to-purple-800",
-    glowBorder: "from-violet-400 via-fuchsia-300 to-purple-500",
-    glowShadow: "rgba(139,92,246,0.4)",
-    accent: "text-violet-600",
-    accentBg: "bg-violet-50",
-    accentBorder: "border-violet-100",
+    glowBorder: "from-violet-400 via-indigo-300 to-sky-450",
+    glowShadow: "rgba(139,92,246,0.15)",
+    accent: "text-indigo-600 dark:text-indigo-400",
+    accentBg: "bg-sky-50/70 dark:bg-zinc-900/60",
+    accentBorder: "border-sky-100/80 dark:border-zinc-800/80",
     actionText: "Probar Asistente IA",
     floaters: [
       { text: "IA: Conectada", icon: "✨", position: "top-[-10px] left-[15px]" },
@@ -102,10 +100,10 @@ const features = [
 
 export default function CommunityFeatures() {
   return (
-    <section className="relative overflow-hidden bg-white">
+    <section className="relative overflow-hidden bg-white dark:bg-zinc-950">
       {/* Subtle background gradient and patterns */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50/50 to-white pointer-events-none" />
-      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] [background-size:32px_32px] opacity-[0.25] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-white via-slate-50/50 to-white dark:from-zinc-950 dark:via-zinc-900/20 dark:to-zinc-950 pointer-events-none" />
+      <div className="absolute inset-0 bg-[radial-gradient(#e2e8f0_1.5px,transparent_1.5px)] dark:bg-[radial-gradient(#27272a_1.5px,transparent_1.5px)] [background-size:32px_32px] opacity-[0.25] pointer-events-none" />
 
       <div className="max-w-[1200px] mx-auto px-5 lg:px-10 py-20 lg:py-32 relative z-10">
         {/* Section header */}
@@ -115,14 +113,14 @@ export default function CommunityFeatures() {
           viewport={{ once: true }}
           className="text-center max-w-3xl mx-auto mb-20 lg:mb-28"
         >
-          <span className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-600 font-bold text-[11px] tracking-[0.2em] uppercase px-4.5 py-2.5 rounded-full mb-6 border border-blue-100/50 shadow-sm shadow-blue-500/5">
+          <span className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-zinc-900 dark:to-zinc-850 text-blue-600 dark:text-sky-400 font-bold text-[11px] tracking-[0.2em] uppercase px-4.5 py-2.5 rounded-full mb-6 border border-blue-100/50 dark:border-zinc-800/80 shadow-sm shadow-blue-500/5">
             <Zap size={13} className="animate-pulse" /> Lo que incluye tu membresía
           </span>
-          <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-[2.75rem] text-slate-900 leading-tight mb-5">
+          <h2 className="font-display font-black text-3xl sm:text-4xl lg:text-[2.75rem] text-slate-900 dark:text-white leading-tight mb-5">
             Todo lo que necesitas para{" "}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">dominar los datos</span>
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-sky-500">dominar los datos</span>
           </h2>
-          <p className="text-slate-500 text-lg md:text-xl font-medium leading-relaxed">
+          <p className="text-slate-550 dark:text-zinc-400 text-lg md:text-xl font-medium leading-relaxed">
             Un ecosistema completo diseñado para que aprendas, practiques y
             crezcas como analista de datos profesional.
           </p>
@@ -142,31 +140,31 @@ export default function CommunityFeatures() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-80px" }}
                   transition={{ duration: 0.7, ease: "easeOut" }}
-                  className="w-full bg-gradient-to-tr from-slate-900 via-indigo-950 to-purple-950 text-white rounded-[2.5rem] p-8 md:p-12 border border-slate-800 shadow-[0_24px_70px_-15px_rgba(0,0,0,0.3)] relative overflow-hidden"
+                  className="w-full bg-gradient-to-br from-sky-50/70 via-blue-50/40 to-indigo-50/20 dark:from-zinc-900/50 dark:via-zinc-900/30 dark:to-zinc-950/20 rounded-[2.5rem] p-8 md:p-12 border border-sky-100/85 dark:border-zinc-850 shadow-[0_24px_60px_-15px_rgba(14,165,233,0.08)] dark:shadow-none relative overflow-hidden"
                 >
-                  {/* Grid de fondo punteado */}
-                  <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.1)_1.5px,transparent_1.5px)] [background-size:20px_20px] pointer-events-none opacity-40" />
+                  {/* Grid de fondo punteado celeste claro */}
+                  <div className="absolute inset-0 bg-[radial-gradient(rgba(14,165,233,0.12)_1.5px,transparent_1.5px)] [background-size:20px_20px] pointer-events-none opacity-70" />
 
                   {/* Resplandor radial de fondo */}
-                  <div className="absolute -right-16 -top-16 w-80 h-80 bg-violet-500/10 rounded-full blur-[100px] pointer-events-none" />
-                  <div className="absolute -left-16 -bottom-16 w-80 h-80 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
+                  <div className="absolute -right-16 -top-16 w-80 h-80 bg-sky-400/10 dark:bg-violet-500/5 rounded-full blur-[100px] pointer-events-none" />
+                  <div className="absolute -left-16 -bottom-16 w-80 h-80 bg-blue-400/10 dark:bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none" />
 
                   <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                     {/* Contenido de texto (Col 1) */}
                     <div className="max-w-xl">
                       {/* Badge */}
-                      <div className="inline-flex items-center gap-2 bg-violet-500/10 border border-violet-500/20 font-bold text-[11px] tracking-[0.15em] uppercase px-3.5 py-1.5 rounded-full mb-6 text-violet-300">
+                      <div className="inline-flex items-center gap-2 bg-sky-100/60 dark:bg-zinc-800/80 border border-sky-200/55 dark:border-zinc-700/80 font-bold text-[11px] tracking-[0.15em] uppercase px-3.5 py-1.5 rounded-full mb-6 text-sky-700 dark:text-sky-300">
                         <Icon size={14} />
                         {f.badge}
                       </div>
 
                       {/* Title */}
-                      <h3 className="font-display font-black text-2xl sm:text-3xl lg:text-[2.25rem] text-white leading-tight mb-4 tracking-tight">
+                      <h3 className="font-display font-black text-2xl sm:text-3xl lg:text-[2.25rem] text-slate-900 dark:text-white leading-tight mb-4 tracking-tight">
                         {f.title}
                       </h3>
 
                       {/* Subtitle */}
-                      <p className="text-slate-300 text-base lg:text-lg leading-relaxed mb-8 font-medium">
+                      <p className="text-slate-550 dark:text-zinc-400 text-base lg:text-lg leading-relaxed mb-8 font-medium">
                         {f.subtitle}
                       </p>
 
@@ -174,10 +172,10 @@ export default function CommunityFeatures() {
                       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                         {f.bullets.map((b, bi) => (
                           <li key={bi} className="flex items-start gap-3 group/item">
-                            <div className="mt-0.5 w-5 h-5 rounded-full bg-violet-500/15 flex items-center justify-center shrink-0 border border-transparent group-hover/item:scale-110 transition-transform duration-300">
-                              <Check className="w-3 h-3 text-violet-300" />
+                            <div className="mt-0.5 w-5 h-5 rounded-full bg-sky-100 dark:bg-zinc-800/80 flex items-center justify-center shrink-0 border border-sky-200/20 dark:border-zinc-700 group-hover/item:scale-110 transition-transform duration-300">
+                              <Check className="w-3 h-3 text-sky-600 dark:text-sky-400" />
                             </div>
-                            <span className="text-slate-200 text-sm leading-snug font-medium transition-colors duration-300 group-hover/item:text-white">
+                            <span className="text-slate-650 dark:text-zinc-350 text-sm leading-snug font-medium transition-colors duration-300 group-hover/item:text-slate-900 dark:group-hover/item:text-white">
                               {b}
                             </span>
                           </li>
@@ -188,12 +186,12 @@ export default function CommunityFeatures() {
                       <div className="pt-2">
                         <a
                           href="#pricing"
-                          className="group inline-flex items-center gap-2 text-[15px] font-black text-white hover:text-violet-300 transition-colors duration-300"
+                          className="group inline-flex items-center gap-2 text-[15px] font-black text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-sky-400 transition-colors duration-300"
                         >
                           <span>{f.actionText}</span>
                           <ArrowRight
                             size={16}
-                            className="text-slate-500 group-hover:text-violet-300 group-hover:translate-x-1.5 transition-all duration-300"
+                            className="text-slate-400 dark:text-zinc-500 group-hover:text-blue-600 dark:group-hover:text-sky-400 group-hover:translate-x-1.5 transition-all duration-300"
                           />
                         </a>
                       </div>
@@ -201,12 +199,15 @@ export default function CommunityFeatures() {
 
                     {/* Image Composition (Col 2) */}
                     <div className="w-full flex justify-center">
-                      <div className="w-full max-w-[440px] aspect-[4/3] p-[2px] rounded-[2rem] bg-gradient-to-br from-violet-500/30 via-cyan-400/20 to-purple-600/30 shadow-[0_0_50px_rgba(139,92,246,0.25)] overflow-hidden">
+                      <div className={cn(
+                        "w-full max-w-[440px] aspect-[4/3] p-[2px] rounded-[2rem] bg-gradient-to-br overflow-hidden",
+                        `bg-gradient-to-br ${f.glowBorder} shadow-[0_0_35px_${f.glowShadow}]`
+                      )}>
                         {/* Contenedor interior del viewport */}
-                        <div className="w-full h-full rounded-[1.9rem] bg-slate-950 overflow-hidden relative flex flex-col">
+                        <div className="w-full h-full rounded-[1.9rem] bg-sky-50/20 dark:bg-slate-950 overflow-hidden relative flex flex-col">
                           
                           {/* Barra estilo MacOS superior */}
-                          <div className="w-full bg-slate-900/60 px-4 py-2 flex items-center gap-1.5 border-b border-white/5 shrink-0">
+                          <div className="w-full bg-sky-100/40 dark:bg-slate-900/60 px-4 py-2 flex items-center gap-1.5 border-b border-sky-200/20 dark:border-white/5 shrink-0">
                             <span className="w-2 h-2 rounded-full bg-rose-500/80" />
                             <span className="w-2 h-2 rounded-full bg-amber-500/80" />
                             <span className="w-2 h-2 rounded-full bg-emerald-500/80" />
@@ -219,7 +220,7 @@ export default function CommunityFeatures() {
                               alt={f.imageLabel}
                               width={600}
                               height={400}
-                              className="w-full h-full object-cover rounded-xl border border-white/10 transition-transform duration-700"
+                              className="w-full h-full object-cover rounded-xl border border-sky-100/50 dark:border-white/10 transition-transform duration-700"
                               unoptimized
                             />
                             {/* Brillo glass sobre la captura */}
@@ -255,12 +256,12 @@ export default function CommunityFeatures() {
                   </div>
 
                   {/* Title */}
-                  <h3 className="font-display font-black text-2xl sm:text-3xl lg:text-[2.25rem] text-slate-900 leading-tight mb-4 tracking-tight">
+                  <h3 className="font-display font-black text-2xl sm:text-3xl lg:text-[2.25rem] text-slate-900 dark:text-white leading-tight mb-4 tracking-tight">
                     {f.title}
                   </h3>
 
                   {/* Subtitle */}
-                  <p className="text-slate-500 text-base lg:text-lg leading-relaxed mb-8 font-medium">
+                  <p className="text-slate-550 dark:text-zinc-400 text-base lg:text-lg leading-relaxed mb-8 font-medium">
                     {f.subtitle}
                   </p>
 
@@ -269,11 +270,11 @@ export default function CommunityFeatures() {
                     {f.bullets.map((b, bi) => (
                       <li key={bi} className="flex items-start gap-3.5 group/item">
                         <div
-                          className={`mt-0.5 w-5 h-5 rounded-full ${f.accentBg} flex items-center justify-center shrink-0 border border-transparent group-hover/item:scale-110 transition-transform duration-300`}
+                          className={`mt-0.5 w-5 h-5 rounded-full ${f.accentBg} flex items-center justify-center shrink-0 border border-sky-100 dark:border-zinc-800 group-hover/item:scale-110 transition-transform duration-300`}
                         >
                           <Check className={`w-3 h-3 ${f.accent}`} />
                         </div>
-                        <span className="text-slate-600 text-sm lg:text-[16px] leading-snug font-medium transition-colors duration-300 group-hover/item:text-slate-900">
+                        <span className="text-slate-650 dark:text-zinc-350 text-sm lg:text-[16px] leading-snug font-medium transition-colors duration-300 group-hover/item:text-slate-900 dark:group-hover/item:text-white">
                           {b}
                         </span>
                       </li>
@@ -284,35 +285,35 @@ export default function CommunityFeatures() {
                   <div className="pt-2">
                     <a
                       href="#pricing"
-                      className="group inline-flex items-center gap-2 text-[15px] font-black text-slate-900 hover:text-blue-600 transition-colors duration-300"
+                      className="group inline-flex items-center gap-2 text-[15px] font-black text-slate-900 dark:text-white hover:text-blue-650 dark:hover:text-sky-400 transition-colors duration-300"
                     >
                       <span>{f.actionText}</span>
                       <ArrowRight
                         size={16}
-                        className="text-slate-400 group-hover:text-blue-600 group-hover:translate-x-1.5 transition-all duration-300"
+                        className="text-slate-400 dark:text-zinc-500 group-hover:text-blue-655 dark:group-hover:text-sky-400 group-hover:translate-x-1.5 transition-all duration-300"
                       />
                     </a>
                   </div>
                 </div>
 
-                {/* ─── IMAGE COMPOSITION (INSPIRADA EN LA IMAGEN DE REFERENCIA) ─── */}
+                {/* ─── IMAGE COMPOSITION ─── */}
                 <div className="flex-1 w-full max-w-lg lg:max-w-none">
                   <div className="relative group">
                     {/* Contenedor externo de gradiente vibrante estilo neón */}
-                    <div className={`relative overflow-hidden rounded-[2.5rem] p-6 sm:p-10 bg-gradient-to-tr ${f.gradientCard} shadow-[0_24px_70px_-15px_rgba(0,0,0,0.15)] transition-transform duration-500 group-hover:scale-[1.01]`}>
+                    <div className="relative overflow-hidden rounded-[2.5rem] p-6 sm:p-10 bg-gradient-to-br from-sky-50/70 via-blue-50/40 to-indigo-50/20 dark:from-zinc-900/50 dark:via-zinc-900/30 dark:to-zinc-950/20 border border-sky-100/85 dark:border-zinc-850 shadow-[0_24px_60px_-15px_rgba(14,165,233,0.08)] dark:shadow-none transition-transform duration-500 group-hover:scale-[1.01]">
                       {/* Grid de fondo punteado */}
-                      <div className="absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.15)_1.5px,transparent_1.5px)] [background-size:20px_20px] pointer-events-none opacity-60" />
+                      <div className="absolute inset-0 bg-[radial-gradient(rgba(14,165,233,0.12)_1.5px,transparent_1.5px)] [background-size:20px_20px] pointer-events-none opacity-70" />
                       
                       {/* Resplandor radial difuso */}
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none animate-pulse" />
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-sky-200/10 dark:bg-white/5 rounded-full blur-3xl pointer-events-none animate-pulse" />
 
                       {/* Marco Squircle con borde brillante de neón */}
-                      <div className={`relative mx-auto max-w-[400px] aspect-[4/3] p-[2px] rounded-[2rem] bg-gradient-to-br ${f.glowBorder} shadow-[0_0_40px_${f.glowShadow}] overflow-hidden`}>
+                      <div className={`relative mx-auto max-w-[400px] aspect-[4/3] p-[2px] rounded-[2rem] bg-gradient-to-br ${f.glowBorder} shadow-[0_0_35px_${f.glowShadow}] overflow-hidden`}>
                         {/* Contenedor interior del viewport */}
-                        <div className="w-full h-full rounded-[1.9rem] bg-slate-950 overflow-hidden relative flex flex-col">
+                        <div className="w-full h-full rounded-[1.9rem] bg-sky-50/20 dark:bg-slate-950 overflow-hidden relative flex flex-col">
                           
                           {/* Barra estilo MacOS superior */}
-                          <div className="w-full bg-slate-900/60 px-4 py-2 flex items-center gap-1.5 border-b border-white/5 shrink-0">
+                          <div className="w-full bg-sky-100/40 dark:bg-slate-900/60 px-4 py-2 flex items-center gap-1.5 border-b border-sky-200/20 dark:border-white/5 shrink-0">
                             <span className="w-2 h-2 rounded-full bg-rose-500/80" />
                             <span className="w-2 h-2 rounded-full bg-amber-500/80" />
                             <span className="w-2 h-2 rounded-full bg-emerald-500/80" />
@@ -325,7 +326,7 @@ export default function CommunityFeatures() {
                               alt={f.imageLabel}
                               width={600}
                               height={400}
-                              className="w-full h-full object-cover rounded-xl border border-white/10 group-hover:scale-[1.03] transition-transform duration-700"
+                              className="w-full h-full object-cover rounded-xl border border-sky-100/50 dark:border-white/10 group-hover:scale-[1.03] transition-transform duration-700"
                               unoptimized
                             />
                             
@@ -346,7 +347,13 @@ export default function CommunityFeatures() {
                             delay: flIndex * 1.5,
                             ease: "easeInOut"
                           }}
-                          className={`absolute ${floater.position} hidden sm:flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 text-white rounded-full px-4 py-2 text-xs font-bold shadow-lg`}
+                          className="absolute hidden sm:flex items-center gap-2 bg-sky-100/60 dark:bg-zinc-900/60 backdrop-blur-md border border-sky-200/50 dark:border-zinc-800 text-sky-950 dark:text-sky-250 rounded-full px-4 py-2 text-xs font-bold shadow-lg"
+                          style={{
+                            top: floater.position.includes("top") ? floater.position.split(" ")[0].replace("top-[", "").replace("px]", "") + "px" : undefined,
+                            bottom: floater.position.includes("bottom") ? floater.position.split(" ")[0].replace("bottom-[", "").replace("px]", "") + "px" : undefined,
+                            left: floater.position.includes("left") ? floater.position.split(" ")[1].replace("left-[", "").replace("px]", "") + "px" : undefined,
+                            right: floater.position.includes("right") ? floater.position.split(" ")[1].replace("right-[", "").replace("px]", "") + "px" : undefined,
+                          }}
                         >
                           <span>{floater.icon}</span>
                           <span>{floater.text}</span>
