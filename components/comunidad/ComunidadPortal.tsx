@@ -11,12 +11,91 @@ import Sidebar from "./Sidebar";
 import { ToastProvider } from "./ui/Toast";
 import { useCommunity } from "./CommunityProvider";
 
+// ─── SKELETON LOADERS FOR SMOOTH TAB TRANSITIONS ───
+
+const MuroFeedSkeleton = () => (
+  <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-[1400px] mx-auto animate-pulse p-4 sm:p-6 lg:p-8">
+    <div className="lg:col-span-8 space-y-6">
+      <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-5 space-y-4 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-zinc-800 shrink-0" />
+          <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded-md w-1/3" />
+        </div>
+        <div className="h-16 bg-gray-100 dark:bg-zinc-850 rounded-2xl w-full" />
+      </div>
+      <div className="space-y-4">
+        {[1, 2].map((i) => (
+          <div key={i} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-6 space-y-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-zinc-800 shrink-0" />
+              <div className="space-y-2">
+                <div className="h-3.5 bg-gray-200 dark:bg-zinc-800 rounded-md w-32" />
+                <div className="h-2.5 bg-gray-100 dark:bg-zinc-850 rounded-md w-20" />
+              </div>
+            </div>
+            <div className="h-24 bg-gray-100 dark:bg-zinc-850 rounded-2xl w-full mt-4" />
+          </div>
+        ))}
+      </div>
+    </div>
+    <div className="hidden lg:block lg:col-span-4 space-y-6">
+      <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-6 space-y-4 shadow-sm">
+        <div className="h-4 bg-gray-300 dark:bg-zinc-700 rounded-md w-1/2" />
+        <div className="h-48 bg-gray-100 dark:bg-zinc-850 rounded-2xl w-full" />
+      </div>
+    </div>
+  </div>
+);
+
+const MisCursosSkeleton = () => (
+  <div className="w-full max-w-[1400px] mx-auto space-y-8 animate-pulse p-4 sm:p-6 lg:p-8">
+    <div className="h-6 bg-gray-300 dark:bg-zinc-700 rounded-md w-48" />
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="bg-white dark:bg-zinc-900 rounded-3xl border border-gray-100 dark:border-zinc-800 overflow-hidden shadow-sm">
+          <div className="aspect-[16/10] bg-gray-200 dark:bg-zinc-800" />
+          <div className="p-6 space-y-4">
+            <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded-lg w-3/4" />
+            <div className="h-3 bg-gray-150 dark:bg-zinc-850 rounded-lg w-1/2" />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const LivePanelSkeleton = () => (
+  <div className="w-full max-w-[1400px] mx-auto space-y-8 animate-pulse p-4 sm:p-6 lg:p-8">
+    <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm">
+      <div className="space-y-4 flex-1">
+        <div className="h-3 bg-blue-200 dark:bg-zinc-700 rounded-md w-28" />
+        <div className="h-7 bg-gray-300 dark:bg-zinc-700 rounded-md w-3/4" />
+        <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded-md w-5/6" />
+      </div>
+      <div className="w-full md:w-[320px] aspect-video bg-gray-200 dark:bg-zinc-800 rounded-2xl shrink-0" />
+    </div>
+    <div className="space-y-4">
+      <div className="h-5 bg-gray-300 dark:bg-zinc-700 rounded-md w-48" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {[1, 2].map((y) => (
+          <div key={y} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl overflow-hidden shadow-sm space-y-4 pb-5">
+            <div className="w-full aspect-video bg-gray-200 dark:bg-zinc-800" />
+            <div className="px-5 space-y-3">
+              <div className="h-3 bg-gray-200 dark:bg-zinc-800 rounded-md w-3/4" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
 // ── Lazy-loaded tabs: only the active tab's code is downloaded ──
 const MuroFeed = dynamic(() => import("./tabs/MuroFeed"), {
-  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
+  loading: MuroFeedSkeleton,
 });
 const MisCursos = dynamic(() => import("./tabs/MisCursos"), {
-  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
+  loading: MisCursosSkeleton,
 });
 const AulaVirtual = dynamic(() => import("./tabs/AulaVirtual"), {
   loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
@@ -28,7 +107,7 @@ const BusinessPortal = dynamic(() => import("./tabs/BusinessPortal"), {
   loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
 });
 const LivePanel = dynamic(() => import("./tabs/LivePanel"), {
-  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
+  loading: LivePanelSkeleton,
 });
 const UserProfile = dynamic(() => import("./tabs/UserProfile"), {
   loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,

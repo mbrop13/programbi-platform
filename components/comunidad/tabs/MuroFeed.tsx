@@ -372,11 +372,72 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-32 gap-3">
-        <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
-        <span className="text-sm text-gray-400 font-medium">
-          Cargando tu dashboard...
-        </span>
+      <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-[1400px] mx-auto animate-pulse">
+        {/* Columna Principal (Feed) */}
+        <div className="lg:col-span-8 space-y-6">
+          {/* Compositor de Post (Esqueleto) */}
+          <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-5 space-y-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-zinc-800 shrink-0" />
+              <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded-md w-1/3" />
+            </div>
+            <div className="h-16 bg-gray-100 dark:bg-zinc-850 rounded-2xl w-full" />
+            <div className="flex justify-between items-center pt-2">
+              <div className="flex gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gray-200 dark:bg-zinc-800" />
+                <div className="w-8 h-8 rounded-lg bg-gray-200 dark:bg-zinc-800" />
+              </div>
+              <div className="w-28 h-9 rounded-xl bg-gray-200 dark:bg-zinc-700" />
+            </div>
+          </div>
+
+          {/* Listado de Posts (Esqueleto) */}
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-6 space-y-4 shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-zinc-800 shrink-0" />
+                    <div className="space-y-2">
+                      <div className="h-3.5 bg-gray-200 dark:bg-zinc-800 rounded-md w-32" />
+                      <div className="h-2.5 bg-gray-100 dark:bg-zinc-850 rounded-md w-20" />
+                    </div>
+                  </div>
+                  <div className="w-6 h-6 rounded-full bg-gray-200 dark:bg-zinc-800" />
+                </div>
+                <div className="space-y-2.5">
+                  <div className="h-3 bg-gray-200 dark:bg-zinc-800 rounded-md w-full" />
+                  <div className="h-3 bg-gray-200 dark:bg-zinc-800 rounded-md w-5/6" />
+                  <div className="h-3 bg-gray-200 dark:bg-neutral-800 rounded-md w-2/3" />
+                </div>
+                <div className="h-40 bg-gray-100 dark:bg-zinc-850 rounded-2xl w-full mt-4" />
+                <div className="flex gap-4 pt-3 border-t border-gray-100 dark:border-zinc-850">
+                  <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded-md w-16" />
+                  <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded-md w-16" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Columna Derecha (Sidebar) */}
+        <div className="hidden lg:block lg:col-span-4 space-y-6">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-6 space-y-4 shadow-sm">
+            <div className="h-4 bg-gray-300 dark:bg-zinc-700 rounded-md w-1/2" />
+            <div className="h-48 bg-gray-100 dark:bg-zinc-850 rounded-2xl w-full" />
+          </div>
+          <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-6 space-y-4 shadow-sm">
+            <div className="h-4 bg-gray-300 dark:bg-zinc-700 rounded-md w-1/2" />
+            <div className="space-y-3">
+              {[1, 2, 3].map((x) => (
+                <div key={x} className="flex justify-between items-center">
+                  <div className="h-3 bg-gray-200 dark:bg-zinc-800 rounded-md w-1/3" />
+                  <div className="h-3 bg-gray-200 dark:bg-zinc-800 rounded-md w-8" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
