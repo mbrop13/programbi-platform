@@ -551,7 +551,11 @@ export async function getMyEnrollments() {
     }));
   }
 
-  return { enrollments: enrichedEnrollments, programSiblings };
+  const allowedSlugs = ["power-bi", "python", "sql-server", "excel"];
+  const filteredEnrollments = enrichedEnrollments.filter((e: any) => allowedSlugs.includes(e.course_slug));
+  const filteredSiblings = programSiblings.filter((s: any) => allowedSlugs.includes(s.slug));
+
+  return { enrollments: filteredEnrollments, programSiblings: filteredSiblings };
 }
 
 export async function getCourseLessons(courseId: string) {

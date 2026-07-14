@@ -209,46 +209,8 @@ export default function MisCursos({ onSelectCourse, language }: { onSelectCourse
                }
              }
 
-             // Group by category for programs
-             const categoryMap: Record<string, CourseWithAccess[]> = {};
-             const ungrouped: CourseWithAccess[] = [];
-
-             for (const c of merged) {
-               if (!c.category) { ungrouped.push(c); continue; }
-               if (!categoryMap[c.category]) categoryMap[c.category] = [];
-               categoryMap[c.category].push(c);
-             }
-
-             const programGroups: ProgramGroup[] = [];
-             const standalone: CourseWithAccess[] = [...ungrouped];
-
-             for (const [cat, catCourses] of Object.entries(categoryMap)) {
-               const hasEnrolled = catCourses.some(c => c.access_type !== null);
-               if (catCourses.length >= 2 && hasEnrolled) {
-                 const sorted = [...catCourses].sort((a, b) => {
-                   if (a.access_type && !b.access_type) return -1;
-                   if (!a.access_type && b.access_type) return 1;
-                   if (a.latest_lesson_at && b.latest_lesson_at) {
-                     return new Date(b.latest_lesson_at).getTime() - new Date(a.latest_lesson_at).getTime();
-                   }
-                   if (a.latest_lesson_at && !b.latest_lesson_at) return -1;
-                   if (!a.latest_lesson_at && b.latest_lesson_at) return 1;
-                   return (a.sort_order || 0) - (b.sort_order || 0);
-                 });
-
-                 programGroups.push({
-                   category: cat,
-                   courses: sorted,
-                   activeCourses: catCourses.filter(c => c.access_type !== null).length,
-                   totalLessons: catCourses.reduce((sum, c) => sum + (c.lesson_count || 0), 0),
-                 });
-               } else {
-                 standalone.push(...catCourses);
-               }
-             }
-
-             setPrograms(programGroups);
-             setStandaloneCourses(standalone);
+             setPrograms([]);
+             setStandaloneCourses(merged);
              setAllCoursesFlat(merged);
          } catch (e) {
              console.error("Error loading courses", e);
@@ -363,28 +325,18 @@ export default function MisCursos({ onSelectCourse, language }: { onSelectCourse
              </button>
           </div>
        ) : (
-        <div className="space-y-12">
-           {/* ─── PROGRAMS ─── */}
-           {filteredPrograms.map((program) => (
-             <ProgramCard key={program.category} program={program} onSelectCourse={onSelectCourse} translations={t} />
-           ))}
-
-           {/* ─── STANDALONE COURSES ─── */}
-           {filteredStandalone.length > 0 && (
-             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-               {filteredStandalone.map((curso) => (
-                 <StandaloneCourseCard 
-                   key={curso.id} 
-                   curso={curso} 
-                   onSelectCourse={onSelectCourse}
-                   onBuyCourse={handleBuyCourse}
-                   buyingCourseId={buyingCourseId}
-                   translations={t}
-                 />
-               ))}
-             </div>
-           )}
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {filteredStandalone.map((curso) => (
+              <StandaloneCourseCard 
+                key={curso.id} 
+                curso={curso} 
+                onSelectCourse={onSelectCourse}
+                onBuyCourse={handleBuyCourse}
+                buyingCourseId={buyingCourseId}
+                translations={t}
+              />
+            ))}
+          </div>
        )}
 
        {/* Payment notification */}
