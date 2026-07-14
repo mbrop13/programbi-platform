@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
-import { getMPSubscription, getMPPayment } from "@/lib/mercadopago/client";
+import { getMPSubscription, getMPPayment, MP_PLAN_MAP } from "@/lib/mercadopago/client";
 import { verifyMercadoPagoSignature } from "@/lib/security/webhook-signature";
 
 export async function POST(req: NextRequest) {
@@ -34,10 +34,16 @@ export async function POST(req: NextRequest) {
           const userId = subscription.external_reference;
           if (!userId) return NextResponse.json({ success: true });
 
-          // Identificar el plan basado en the reason
-          // Reason format: "ProgramBI Community - PRO MENSUAL"
-          let internalPlanId = "pro_mensual"; 
-          if (subscription.reason) {
+          // Identificar el plan basado en preapproval_plan_id o reason
+          let internalPlanId = "pro_mensual";
+          if (subscription.preapproval_plan_id) {
+             const matchedKey = Object.entries(MP_PLAN_MAP).find(
+                ([_, val]) => val === subscription.preapproval_plan_id
+             )?.[0];
+             if (matchedKey) {
+                internalPlanId = matchedKey;
+             }
+          } else if (subscription.reason) {
              const parts = subscription.reason.split(" - ");
              if (parts.length > 1) {
                 internalPlanId = parts[1].toLowerCase().replace(" ", "_");

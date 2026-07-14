@@ -119,21 +119,21 @@ export async function createMPSubscription(data: {
 
   if (data.preapprovalPlanId) {
     body.preapproval_plan_id = data.preapprovalPlanId;
-  }
-
-  body.reason = data.reason;
-  body.auto_recurring = {
-    frequency: 1,
-    frequency_type: "months",
-    transaction_amount: data.transactionAmount,
-    currency_id: "CLP",
-  };
-
-  if (data.hasTrial !== false) {
-    body.auto_recurring.free_trial = {
-      frequency: 7,
-      frequency_type: "days"
+  } else {
+    body.reason = data.reason;
+    body.auto_recurring = {
+      frequency: 1,
+      frequency_type: "months",
+      transaction_amount: data.transactionAmount,
+      currency_id: "CLP",
     };
+
+    if (data.hasTrial !== false) {
+      body.auto_recurring.free_trial = {
+        frequency: 7,
+        frequency_type: "days"
+      };
+    }
   }
 
   return mpFetch<MPSubscription>("/preapproval", {
