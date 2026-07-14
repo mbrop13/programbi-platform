@@ -624,7 +624,7 @@ export default function Sidebar({
               transition={{ type: "spring", stiffness: 400, damping: 28 }}
               className={cn(
                 "fixed z-50 bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 overflow-hidden",
-                isCollapsed ? "bottom-16 left-3 w-64" : "bottom-16 left-3 w-[206px]"
+                isCollapsed ? "bottom-16 left-3 w-56 mb-2" : "bottom-16 left-3 w-[236px] mb-2"
               )}
             >
               <div className="px-4 py-3 border-b border-neutral-100 flex items-center gap-2.5 min-w-0">
