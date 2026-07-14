@@ -9,6 +9,7 @@ import { Loader2 } from "lucide-react";
 
 import Sidebar from "./Sidebar";
 import { ToastProvider } from "./ui/Toast";
+import { useCommunity } from "./CommunityProvider";
 
 // ── Lazy-loaded tabs: only the active tab's code is downloaded ──
 const MuroFeed = dynamic(() => import("./tabs/MuroFeed"), {
@@ -38,72 +39,33 @@ const Certificates = dynamic(() => import("./tabs/Certificates"), {
 const SettingsModal = dynamic(() => import("./SettingsModal"), { ssr: false });
 const SubscriptionModal = dynamic(() => import("./SubscriptionModal"), { ssr: false });
 
-import {
-  getCommunityPortalData,
-} from "@/lib/supabase/comunidad";
-import { createClient as createBrowserClient } from "@/lib/supabase/client";
-
-interface UserProfile {
-  id: string;
-  full_name: string;
-  email: string;
-  avatar_url: string | null;
-  role: string;
-  subscription_plan?: string | null;
-  subscription_expires_at?: string | null;
-}
-
 export default function ComunidadPortal() {
   const router = useRouter();
   const pathname = usePathname();
 
+  // ── All shared data comes from the CommunityProvider (pre-loaded in layout) ──
+  const {
+    isAdmin,
+    isOrgManager,
+    userProfile,
+    authLoading,
+    isCheckingPlan,
+    hasCourses,
+    courseSlugMap,
+    canAccessFull,
+    theme,
+    setTheme,
+    language,
+    setLanguage,
+  } = useCommunity();
+
   const segments = pathname.split("/").filter(Boolean);
   const activeTab = segments[1] || "inicio";
 
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isOrgManager, setIsOrgManager] = useState(false);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [authLoading, setAuthLoading] = useState(true);
-  const [hasCourses, setHasCourses] = useState<boolean | null>(null);
-  const [isCheckingPlan, setIsCheckingPlan] = useState(true);
-  const [courseSlugMap, setCourseSlugMap] = useState<Record<string, string>>({});
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
-
-  const [theme, setTheme] = useState<'claro' | 'oscuro' | 'sistema'>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('comunidad-theme') as 'claro' | 'oscuro' | 'sistema') || 'claro';
-    }
-    return 'claro';
-  });
-
-  const [language, setLanguage] = useState<'es' | 'en'>(() => {
-    if (typeof window !== 'undefined') {
-      return (localStorage.getItem('comunidad-language') as 'es' | 'en') || 'es';
-    }
-    return 'es';
-  });
-
-  useEffect(() => {
-    localStorage.setItem('comunidad-theme', theme);
-    if (theme === 'oscuro') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [theme]);
-
-  useEffect(() => {
-    localStorage.setItem('comunidad-language', language);
-  }, [language]);
-
-  useEffect(() => {
-    return () => {
-      document.documentElement.classList.remove('dark');
-    };
-  }, []);
 
   const selectedCourseSlug = activeTab === "cursos" ? (segments[2] || null) : null;
   const selectedCourseId = selectedCourseSlug ? (courseSlugMap[selectedCourseSlug] || null) : null;
@@ -116,76 +78,6 @@ export default function ComunidadPortal() {
       router.push(`/comunidad/cursos`);
     }
   };
-
-  useEffect(() => {
-    const loadUserData = async () => {
-      // 1. Read the session synchronously from the browser storage (no network
-      //    roundtrip). This lets us populate the sidebar (email/name) almost
-      //    instantly instead of showing "??" while the server actions resolve.
-      try {
-        const browser = createBrowserClient();
-        const { data: { session } } = await browser.auth.getSession();
-        if (session?.user) {
-          setUserProfile({
-            id: session.user.id,
-            full_name:
-              (session.user.user_metadata?.full_name as string | undefined) ||
-              session.user.email ||
-              "Usuario",
-            email: session.user.email || "",
-            avatar_url: null,
-            role: "student",
-            subscription_plan: null,
-          });
-        }
-      } catch (err) {
-        console.error("Error reading local session:", err);
-      } finally {
-        setAuthLoading(false);
-      }
-
-      // 2. Full server-side load: validates the session with Supabase and
-      //    fetches the complete profile (plan, role, avatar, etc.).
-      try {
-        const { isAdmin: adminStatus, userProfile: profile, enrollmentData, orgData, allCourses } = await getCommunityPortalData();
-        setIsAdmin(adminStatus);
-        if (profile) {
-          const profileData = profile as unknown as UserProfile;
-          if (adminStatus) {
-            profileData.subscription_plan = "ultra";
-          }
-          setUserProfile(profileData);
-        }
-        setHasCourses(
-          (Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments).length > 0
-        );
-        setIsOrgManager(!!orgData);
-
-        const mapping: Record<string, string> = {};
-        if (Array.isArray(allCourses)) {
-          allCourses.forEach((c) => {
-            const course = c as { slug?: string; id?: string };
-            if (course.slug && course.id) mapping[course.slug] = course.id;
-          });
-        }
-        const enrolls = Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments;
-        if (Array.isArray(enrolls)) {
-          enrolls.forEach((e) => {
-            const item = e as { course?: { slug?: string; id?: string }; course_slug?: string; course_id?: string };
-            const slug = item.course?.slug || item.course_slug;
-            const id = item.course?.id || item.course_id;
-            if (slug && id) mapping[slug] = id;
-          });
-        }
-        setCourseSlugMap(mapping);
-      } catch (err) {
-        console.error("Error loading user data:", err);
-      } finally {
-        setIsCheckingPlan(false);
-      }
-    };
-    loadUserData();
-  }, []);
 
   // Redirect non-admins/non-managers
   useEffect(() => {
@@ -210,10 +102,6 @@ export default function ComunidadPortal() {
       router.replace("/ai");
     }
   }, [activeTab, router]);
-
-  const hasSubscription = !!userProfile?.subscription_plan && 
-    (!userProfile?.subscription_expires_at || new Date(userProfile.subscription_expires_at) >= new Date());
-  const canAccessFull = isAdmin || hasSubscription;
 
   useEffect(() => {
     if (!authLoading && !isCheckingPlan && !userProfile) {
