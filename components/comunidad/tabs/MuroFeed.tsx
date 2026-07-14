@@ -1474,7 +1474,7 @@ function PollAttachmentCard({ poll, postId, userId, onRefresh }: any) {
                     )}
                     <span className="text-xs">{opt.text}</span>
                   </div>
-                  <span className="relative z-10 text-xs font-bold">{percentage}% ({votesCount})</span>
+                  <span className="relative z-10 text-xs font-bold">{percentage}%</span>
                 </button>
               ) : (
                 <button
@@ -1489,23 +1489,6 @@ function PollAttachmentCard({ poll, postId, userId, onRefresh }: any) {
             </div>
           );
         })}
-      </div>
-
-      <div className="flex items-center justify-between text-[10px] text-gray-400 font-extrabold uppercase tracking-wide px-1 pt-1.5 border-t border-gray-100 dark:border-neutral-900">
-        <span>Votos Totales: {totalVotes}</span>
-        {hasVotedAny && (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              const votedOpt = localPoll.options.find((o: any) => (o.votes || []).includes(userId));
-              if (votedOpt) handleVote(votedOpt.id, e);
-            }}
-            disabled={votingInProgress}
-            className="text-brand-blue hover:underline bg-transparent border-none cursor-pointer text-[10px] font-black uppercase tracking-wide"
-          >
-            Quitar / Cambiar Voto
-          </button>
-        )}
       </div>
     </div>
   );
