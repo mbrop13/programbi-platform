@@ -492,33 +492,34 @@ export default function Sidebar({
                         }
                         onMobileClose();
                       }}
-                      className={`w-full flex items-center gap-3 font-semibold text-[13px] transition-colors duration-150 select-none border-0 cursor-pointer
-                        ${isCollapsed ? "justify-center px-2.5 py-2.5 rounded-xl" : "px-3 py-2.5 rounded-xl"}
-                        ${isActive
+                      className={cn(
+                        "w-full flex items-center gap-3 font-semibold text-[13px] transition-all duration-150 select-none border-0 cursor-pointer px-3 py-2.5 rounded-xl justify-start",
+                        isActive
                           ? "bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-white"
                           : "bg-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-55/60 dark:hover:bg-neutral-900/60"
-                        }
-                      `}
+                      )}
                     >
                       <span className="relative shrink-0 flex items-center justify-center">
                         <Icon className={`w-5 h-5 transition-colors ${isActive ? "text-neutral-900 dark:text-white" : "text-neutral-450 dark:text-neutral-500 group-hover:text-neutral-800 dark:group-hover:text-neutral-200"}`} />
                         {tab.showPing && (
                           <span className="absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5 rounded-full bg-rose-500" />
                         )}
+                        {isCollapsed && tab.badge && tab.badge > 0 && (
+                          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white dark:ring-neutral-950" />
+                        )}
                       </span>
 
-                      {!isCollapsed && (
-                        <span className="whitespace-nowrap overflow-hidden truncate">
-                          {tab.label}
-                        </span>
-                      )}
+                      <span className={cn(
+                        "whitespace-nowrap transition-all duration-300 overflow-hidden truncate text-left",
+                        isCollapsed ? "w-0 opacity-0 pointer-events-none" : "w-auto opacity-100"
+                      )}>
+                        {tab.label}
+                      </span>
 
                       {!isCollapsed && tab.badge && tab.badge > 0 ? (
-                        <span className="shrink-0 min-w-[20px] h-5 flex items-center justify-center rounded-full text-[10px] font-bold px-1.5 ml-auto bg-neutral-200 text-neutral-800">
+                        <span className="shrink-0 min-w-[20px] h-5 flex items-center justify-center rounded-full text-[10px] font-bold px-1.5 ml-auto bg-neutral-200 text-neutral-800 transition-all duration-300">
                           {tab.badge > 99 ? "99+" : tab.badge}
                         </span>
-                      ) : isCollapsed && tab.badge && tab.badge > 0 ? (
-                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500" />
                       ) : null}
                     </button>
                   );
