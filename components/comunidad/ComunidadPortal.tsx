@@ -109,9 +109,6 @@ const BusinessPortal = dynamic(() => import("./tabs/BusinessPortal"), {
 const LivePanel = dynamic(() => import("./tabs/LivePanel"), {
   loading: LivePanelSkeleton,
 });
-const UserProfile = dynamic(() => import("./tabs/UserProfile"), {
-  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
-});
 const Certificates = dynamic(() => import("./tabs/Certificates"), {
   loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
 });
@@ -250,7 +247,7 @@ export default function ComunidadPortal() {
 
               {userProfile && (
                 <button
-                  onClick={() => router.push("/comunidad/perfil")}
+                  onClick={() => setShowSettingsModal(true)}
                   className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-[11px] shadow-sm cursor-pointer border-none transition-transform active:scale-95"
                 >
                   <span>
@@ -368,8 +365,6 @@ export default function ComunidadPortal() {
                           </p>
                         </div>
                       ))}
-
-                    {activeTab === "perfil" && <UserProfile />}
 
                     {activeTab === "certificados" && <Certificates />}
 

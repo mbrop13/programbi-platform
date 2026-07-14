@@ -387,7 +387,6 @@ export default function Sidebar({
       { id: "live", label: t.live, icon: Radio, color: "text-rose-500", group: t.principal, showPing: hasUpcomingLives },
       { id: "buscar", label: "Buscar", icon: Search, color: "text-brand-blue", group: t.principal },
       { id: "ai", label: t.ai, icon: Sparkles, color: "text-purple-500", group: t.principal },
-      { id: "perfil", label: t.perfil, icon: User, color: "text-cyan-500", group: t.personal },
     { id: "certificados", label: t.certificados, icon: Award, color: "text-amber-500", group: t.personal },
     ...(isOrgManager
       ? [{ id: "business", label: t.empresa, icon: Building2, color: "text-slate-500", group: t.gestion }]
