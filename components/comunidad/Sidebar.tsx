@@ -465,7 +465,7 @@ export default function Sidebar({
         </div>
 
         {/* Nav Items */}
-        <nav className={cn("overflow-y-auto py-3 px-3 scrollbar-hide flex-1", isCollapsed ? "space-y-1.5" : "space-y-4")}>
+        <nav className={cn("py-3 px-3 scrollbar-hide flex-1", isCollapsed ? "overflow-visible space-y-1.5" : "overflow-y-auto space-y-4")}>
           {Object.entries(groups).map(([groupName, groupTabs]) => (
             <div key={groupName} className={isCollapsed ? "contents" : "space-y-2"}>
               {!isCollapsed && (
@@ -561,35 +561,41 @@ export default function Sidebar({
               "w-full flex items-center justify-between transition-all duration-200",
               isCollapsed ? "justify-center" : "gap-2"
             )}>
-              <Tooltip content={displayName} position="right" className={cn(!isCollapsed && "pointer-events-none")}>
+              {isCollapsed ? (
+                <Tooltip content={displayName} position="right">
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="flex items-center text-left border-0 bg-transparent cursor-pointer rounded-xl transition-all duration-150 user-trigger-btn p-0 hover:scale-105"
+                  >
+                    <div className={cn(
+                      "relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm select-none transition-all duration-150",
+                      userMenuOpen && "ring-2 ring-indigo-500"
+                    )}>
+                      <span>{initials}</span>
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[8px] font-bold px-1 ring-2 ring-white">
+                          {unreadCount > 9 ? "9+" : unreadCount}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                </Tooltip>
+              ) : (
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className={cn(
-                    "flex items-center text-left border-0 bg-transparent cursor-pointer rounded-xl transition-all duration-150 user-trigger-btn",
-                    isCollapsed 
-                      ? "p-0 hover:scale-105" 
-                      : "p-1.5 gap-2.5 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40 w-full min-w-0"
-                  )}
+                  className="flex items-center text-left border-0 bg-transparent cursor-pointer rounded-xl transition-all duration-150 user-trigger-btn p-1.5 gap-2.5 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40 w-full min-w-0"
                 >
                   <div className={cn(
                     "relative h-8 w-8 shrink-0 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-xs shadow-sm select-none transition-all duration-150",
                     userMenuOpen && "ring-2 ring-indigo-500"
                   )}>
                     <span>{initials}</span>
-                    {isCollapsed && unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center rounded-full bg-rose-500 text-white text-[8px] font-bold px-1 ring-2 ring-white">
-                        {unreadCount > 9 ? "9+" : unreadCount}
-                      </span>
-                    )}
                   </div>
-                  
-                  {!isCollapsed && (
-                    <span className="truncate text-[13px] font-semibold text-neutral-750 dark:text-neutral-200 min-w-0 flex-1">
-                      {displayName}
-                    </span>
-                  )}
+                  <span className="truncate text-[13px] font-semibold text-neutral-750 dark:text-neutral-200 min-w-0 flex-1">
+                    {displayName}
+                  </span>
                 </button>
-              </Tooltip>
+              )}
 
               {!isCollapsed && (
                 <button
@@ -782,7 +788,10 @@ export default function Sidebar({
       <motion.aside
         animate={{ width: sidebarWidth }}
         transition={{ type: "spring", stiffness: 300, damping: 32 }}
-        className="hidden lg:flex flex-col shrink-0 h-screen sticky top-0 bg-white dark:bg-neutral-950 border-r border-neutral-100 dark:border-neutral-900 overflow-hidden z-30"
+        className={cn(
+          "hidden lg:flex flex-col shrink-0 h-screen sticky top-0 bg-white dark:bg-neutral-950 border-r border-neutral-100 dark:border-neutral-900 z-30",
+          collapsed ? "overflow-visible" : "overflow-hidden"
+        )}
       >
         {renderSidebarContent(false)}
       </motion.aside>
