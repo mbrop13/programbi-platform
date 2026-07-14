@@ -30,6 +30,8 @@ import {
   Search,
   Video,
   Check,
+  Edit3,
+  Flag,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -43,7 +45,10 @@ import {
   getDashboardStats,
   voteInPoll,
   getCoursesAndLessons,
+  deletePost,
+  updatePost,
 } from "@/lib/supabase/comunidad";
+import { MarkdownRenderer } from "@/components/comunidad/ai-v2/MarkdownRenderer";
 
 const PRESET_IMAGES = [
   {
@@ -161,6 +166,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
   const [newPostContent, setNewPostContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isQuestionPost, setIsQuestionPost] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(5);
 
   // Rich Media States
   const [selectedMediaType, setSelectedMediaType] = useState<"text" | "image" | "video" | "poll">("text");
@@ -746,7 +752,8 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                 )}
 
                 {/* Action button */}
-                <div className="flex items-center justify-end pt-2">
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-[10px] text-gray-450 font-bold uppercase tracking-wider">Markdown habilitado (negrita, enlaces, listas, código...)</span>
                   <button
                     onClick={handlePostSubmit}
                     disabled={isSubmitting || (selectedMediaType === "text" && !newPostContent.trim())}
@@ -779,7 +786,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
             </div>
           ) : (
             <div className="space-y-4">
-              {posts.slice(0, 5).map((post, index) => (
+              {posts.slice(0, visibleCount).map((post, index) => (
                 <motion.div
                   key={post.id}
                   initial={{ opacity: 0, y: 16 }}
@@ -797,11 +804,19 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                     onUpgradeClick={() => {
                       router.push("/comunidad");
                     }}
+                    isAdmin={isAdmin}
+                    onRefresh={async () => {
+                      const data = await getPosts();
+                      setPosts(data);
+                    }}
                   />
                 </motion.div>
               ))}
-              {posts.length > 5 && (
-                <button className="w-full py-3 text-center text-sm font-semibold text-brand-blue hover:text-blue-600 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all">
+              {posts.length > visibleCount && (
+                <button
+                  onClick={() => setVisibleCount(posts.length)}
+                  className="w-full py-3 text-center text-sm font-semibold text-brand-blue hover:text-blue-650 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
+                >
                   Ver todas las publicaciones ({posts.length})
                 </button>
               )}
@@ -1433,7 +1448,8 @@ function PollAttachmentCard({ poll, postId, userId }: any) {
 }
 
 /* ── Post Card ── */
-function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeClick }: any) {
+/* ── Post Card ── */
+function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeClick, isAdmin, onRefresh }: any) {
   let richPost: any = null;
   let isRich = false;
   try {
@@ -1455,6 +1471,12 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
   const [newComment, setNewComment] = useState("");
   const [isLiked, setIsLiked] = useState(post.is_liked_by_user || false);
 
+  // Edit / Delete states
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedText, setEditedText] = useState(postText);
+  const [isSaving, setIsSaving] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
     setIsLiked(post.is_liked_by_user || false);
   }, [post.is_liked_by_user]);
@@ -1463,6 +1485,37 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
     if (!newComment.trim()) return;
     onSubmitComment(newComment);
     setNewComment("");
+  };
+
+  const handleSave = async () => {
+    if (!editedText.trim()) return;
+    setIsSaving(true);
+    try {
+      let updatedContent = editedText.trim();
+      if (isRich) {
+        const updatedRichPost = { ...richPost, text: editedText.trim() };
+        updatedContent = JSON.stringify(updatedRichPost);
+      }
+      await updatePost(post.id, updatedContent);
+      setIsEditing(false);
+      if (onRefresh) await onRefresh();
+    } catch (err) {
+      alert("Error al actualizar la publicación: " + (err as Error).message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setMenuOpen(false);
+    if (window.confirm("¿Estás seguro de que deseas eliminar este anuncio de forma permanente?")) {
+      try {
+        await deletePost(post.id);
+        if (onRefresh) await onRefresh();
+      } catch (err) {
+        alert("Error al eliminar la publicación: " + (err as Error).message);
+      }
+    }
   };
 
   return (
@@ -1493,9 +1546,56 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
             <span className="text-xs text-gray-400 font-medium">{timeStr}</span>
           </div>
         </div>
-        <button className="p-1.5 rounded-lg text-gray-300 hover:text-gray-500 hover:bg-gray-50 transition-colors">
-          <MoreHorizontal className="w-4 h-4" />
-        </button>
+        
+        {/* Actions Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="p-1.5 rounded-lg text-gray-300 hover:text-gray-500 hover:bg-gray-50 transition-colors border-none bg-transparent cursor-pointer"
+          >
+            <MoreHorizontal className="w-4 h-4" />
+          </button>
+          {menuOpen && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
+              <div className="absolute right-0 mt-1 w-44 bg-white rounded-xl shadow-lg border border-gray-150 py-1.5 z-20 animate-in fade-in slide-in-from-top-2 duration-150">
+                {(post.author_id === userId || isAdmin) ? (
+                  <>
+                    <button
+                      onClick={() => {
+                        setIsEditing(true);
+                        setEditedText(postText);
+                        setMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-none bg-transparent cursor-pointer"
+                    >
+                      <Edit3 className="w-3.5 h-3.5 text-gray-500" />
+                      Editar publicación
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      className="w-full text-left px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 flex items-center gap-2 border-none bg-transparent cursor-pointer"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      Eliminar publicación
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => {
+                      alert("Publicación reportada correctamente.");
+                      setMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 flex items-center gap-2 border-none bg-transparent cursor-pointer"
+                  >
+                    <Flag className="w-3.5 h-3.5 text-gray-500" />
+                    Reportar publicación
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {/* Tags */}
@@ -1523,7 +1623,7 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
             <h5 className="text-xs font-black text-gray-900 uppercase tracking-wide">
               Publicación Premium Exclusiva
             </h5>
-            <p className="text-[10px] text-gray-505 font-medium mt-1 mb-2.5 max-w-[260px]">
+            <p className="text-[10px] text-gray-550 font-medium mt-1 mb-2.5 max-w-[260px]">
               Esta publicación del administrador es exclusiva para alumnos premium activos.
             </p>
             <button
@@ -1536,9 +1636,41 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
         </div>
       ) : (
         <>
-          <p className="text-gray-800 text-[15px] leading-relaxed whitespace-pre-wrap mb-5">
-            {postText}
-          </p>
+          {isEditing ? (
+            <div className="space-y-3 mb-5">
+              <textarea
+                value={editedText}
+                onChange={(e) => setEditedText(e.target.value)}
+                className="w-full bg-gray-50 rounded-2xl px-4 py-3 border border-gray-200 focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 focus:bg-white transition-all resize-none text-sm text-gray-850 placeholder:text-gray-400 min-h-[120px]"
+                rows={4}
+                placeholder="Escribe el contenido de tu publicación (Soporta Markdown)..."
+              />
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <span className="text-[10px] text-gray-450 font-bold uppercase tracking-wider">Markdown Soportado (negrita, enlaces, listas, código...)</span>
+                <div className="flex gap-2 self-end">
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    disabled={isSaving}
+                    className="px-4 py-2 border border-gray-200 hover:bg-gray-50 text-gray-500 rounded-xl transition-all font-bold text-xs cursor-pointer bg-white"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={handleSave}
+                    disabled={isSaving || !editedText.trim()}
+                    className="px-4 py-2 bg-brand-blue hover:bg-blue-650 text-white rounded-xl transition-all font-bold text-xs flex items-center gap-1.5 cursor-pointer border-none shadow-sm hover:shadow"
+                  >
+                    {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                    Guardar cambios
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="mb-5">
+              <MarkdownRenderer content={postText} />
+            </div>
+          )}
 
           {/* Render Rich Post Attachments */}
           {isRich && (

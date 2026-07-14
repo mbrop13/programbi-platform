@@ -918,3 +918,88 @@ export async function adminUpdateUserSubscription(
     return { success: false, error: error.message || "Error interno del servidor al actualizar suscripción." };
   }
 }
+
+export async function deletePost(postId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Debes autenticarte");
+
+  // Verificar si es admin o el autor del post
+  const isAdmin = await isCurrentUserAdmin();
+  
+  // Consultar el post original para verificar el autor si no es admin
+  let isAuthor = false;
+  if (!isAdmin) {
+    const { data: post } = await supabase
+      .from("posts")
+      .select("author_id")
+      .eq("id", postId)
+      .single();
+    if (post && post.author_id === user.id) {
+      isAuthor = true;
+    }
+  }
+
+  if (!isAdmin && !isAuthor) {
+    throw new Error("No tienes permisos para eliminar este post");
+  }
+
+  // Usamos el cliente admin para saltar las RLS de DELETE
+  const { createAdminClient } = await import("./server");
+  const adminSupabase = createAdminClient();
+  const { error } = await adminSupabase
+    .from("posts")
+    .delete()
+    .eq("id", postId);
+
+  if (error) {
+    console.error("Error deleting post:", error);
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/(comunidad)", "layout");
+}
+
+export async function updatePost(postId: string, newContent: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Debes autenticarte");
+
+  // Verificar si es admin o el autor del post
+  const isAdmin = await isCurrentUserAdmin();
+  
+  // Consultar el post original para verificar el autor si no es admin
+  let isAuthor = false;
+  if (!isAdmin) {
+    const { data: post } = await supabase
+      .from("posts")
+      .select("author_id")
+      .eq("id", postId)
+      .single();
+    if (post && post.author_id === user.id) {
+      isAuthor = true;
+    }
+  }
+
+  if (!isAdmin && !isAuthor) {
+    throw new Error("No tienes permisos para editar este post");
+  }
+
+  // Usamos el cliente admin para saltar las RLS de UPDATE
+  const { createAdminClient } = await import("./server");
+  const adminSupabase = createAdminClient();
+  const { error } = await adminSupabase
+    .from("posts")
+    .update({
+      content: newContent,
+      updated_at: new Date().toISOString()
+    })
+    .eq("id", postId);
+
+  if (error) {
+    console.error("Error updating post:", error);
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/(comunidad)", "layout");
+}
