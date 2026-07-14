@@ -5,7 +5,7 @@ import {
   TrendingUp,
   Trophy,
   ArrowRight,
-  Heart,
+  ThumbsUp,
   MessageCircle,
   Send,
   Loader2,
@@ -328,6 +328,8 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
     );
     try {
       await toggleLike(postId);
+      const data = await getPosts();
+      setPosts(data);
     } catch {
       setPosts((prev) =>
         prev.map((p) => {
@@ -1759,11 +1761,11 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
               setIsLiked(!isLiked);
               onLike();
             }}
-            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-all active:scale-95
-              ${isLiked ? "text-rose-500 hover:bg-rose-50" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}
+            className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-semibold transition-all active:scale-95 border-none bg-transparent cursor-pointer
+              ${isLiked ? "text-brand-blue dark:text-blue-400 hover:bg-blue-50/50 dark:hover:bg-blue-950/10" : "text-gray-400 hover:text-gray-600 hover:bg-gray-50"}`}
           >
-            <Heart
-              className={`w-[18px] h-[18px] transition-all ${isLiked ? "fill-rose-500 scale-110" : ""}`}
+            <ThumbsUp
+              className={`w-[18px] h-[18px] transition-all ${isLiked ? "fill-brand-blue dark:fill-blue-400 scale-110" : ""}`}
             />
             {post.likes_count || ""}
           </button>
