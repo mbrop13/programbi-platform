@@ -428,13 +428,56 @@ export async function getMyEnrollments() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { enrollments: [], programSiblings: [] };
 
-  const { data, error } = await supabase
-    .from("enrollments")
-    .select("course_slug, status, access_type, enrolled_at")
-    .eq("user_id", user.id)
-    .eq("status", "active");
+  const adminDb = createAdminClient();
 
-  if (error) { console.error("Error:", error); return { enrollments: [], programSiblings: [] }; }
+  const [enrollmentsRes, profileRes, isAdmin] = await Promise.all([
+    supabase
+      .from("enrollments")
+      .select("course_slug, status, access_type, enrolled_at")
+      .eq("user_id", user.id)
+      .eq("status", "active"),
+    adminDb
+      .from("profiles")
+      .select("is_on_trial, subscription_plan, subscription_expires_at, role")
+      .eq("id", user.id)
+      .maybeSingle(),
+    isCurrentUserAdmin().catch(() => false)
+  ]);
+
+  const dbEnrollments = enrollmentsRes.data || [];
+  const profile = profileRes.data;
+
+  const hasActiveSubscription = (profile?.subscription_plan && 
+    (!profile?.subscription_expires_at || new Date(profile.subscription_expires_at) >= new Date())) || isAdmin;
+  const isOnTrial = profile?.is_on_trial === true;
+
+  let data = [...dbEnrollments];
+
+  if (hasActiveSubscription || isOnTrial) {
+    const communitySlugs = ["power-bi", "python", "sql-server", "excel"];
+    const requiredAccess = hasActiveSubscription ? "full" : "trial";
+
+    communitySlugs.forEach(slug => {
+      const existingIdx = data.findIndex(e => e.course_slug === slug);
+      if (existingIdx !== -1) {
+        if (requiredAccess === "full" && data[existingIdx].access_type !== "full") {
+          data[existingIdx] = {
+            ...data[existingIdx],
+            access_type: "full"
+          };
+        }
+      } else {
+        data.push({
+          course_slug: slug,
+          status: "active",
+          access_type: requiredAccess,
+          enrolled_at: user.created_at || new Date().toISOString()
+        });
+      }
+    });
+  }
+
+  if (enrollmentsRes.error) { console.error("Error:", enrollmentsRes.error); return { enrollments: [], programSiblings: [] }; }
   if (!data || data.length === 0) return { enrollments: [], programSiblings: [] };
 
   const slugs = data.map((e: any) => e.course_slug);
@@ -519,7 +562,7 @@ export async function getCourseLessons(courseId: string) {
   const adminDb = createAdminClient();
 
   const [profileRes, courseDataRes, lessonsRes, progressDataRes] = await Promise.all([
-    adminDb.from("profiles").select("is_on_trial, subscription_plan, subscription_expires_at").eq("id", user.id).maybeSingle(),
+    adminDb.from("profiles").select("is_on_trial, subscription_plan, subscription_expires_at, role").eq("id", user.id).maybeSingle(),
     adminDb.from("courses").select("slug").eq("id", courseId).maybeSingle(),
     adminDb.from("lessons")
       .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources")
@@ -551,10 +594,11 @@ export async function getCourseLessons(courseId: string) {
     enrollment = data;
   }
 
+  const isAdmin = profile?.role === "admin" || (await isCurrentUserAdmin().catch(() => false));
   const isOnTrial = profile?.is_on_trial === true;
   let finalAccess = enrollment?.access_type || null;
-  const hasActiveSubscription = profile?.subscription_plan && 
-    (!profile?.subscription_expires_at || new Date(profile.subscription_expires_at) >= new Date());
+  const hasActiveSubscription = (profile?.subscription_plan && 
+    (!profile?.subscription_expires_at || new Date(profile.subscription_expires_at) >= new Date())) || isAdmin;
   if (!finalAccess && hasActiveSubscription) finalAccess = "full";
   if (isOnTrial) finalAccess = "trial";
 
