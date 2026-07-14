@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { Bot } from "lucide-react";
+import { Bot, Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -472,6 +472,22 @@ function ChatShellInner({
         )}
       </AnimatePresence>
 
+      {/* Botón flotante de menú para móviles */}
+      <AnimatePresence>
+        {!sidebarOpen && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            onClick={() => setSidebarOpen(true)}
+            className="fixed left-4 top-4 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-white border border-stone-200 text-stone-700 shadow-md hover:bg-stone-50 active:scale-95 transition-all md:hidden"
+            aria-label="Abrir historial"
+          >
+            <Menu className="h-5 w-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
+
       {/* Sidebar de historial: se acopla a la izquierda (rail) al cerrar en desktop, cajón en móvil */}
       <motion.aside
         initial={isMobile ? { x: -280 } : false}
@@ -538,7 +554,7 @@ function ChatShellInner({
           {/* Panel de chat */}
           <div
             className={cn(
-              "relative flex min-w-0 flex-col",
+              "relative flex min-w-0 flex-col h-full overflow-hidden",
               canvasOpenDesktop ? "shrink-0" : "flex-1"
             )}
             style={canvasOpenDesktop ? { width: `${chatWidthPct}%` } : undefined}

@@ -150,7 +150,7 @@ export function Landing({ children, onSuggestionClick }: LandingProps) {
 
   // ─── Desktop: hero en el tercio superior (pt-[25vh]) ───
   return (
-    <div className="relative flex h-full flex-col items-center justify-start overflow-x-hidden overflow-y-auto px-4 pb-4 pt-[25vh] [scrollbar-width:none]">
+    <div className="relative flex h-full flex-col items-center justify-start overflow-x-hidden overflow-y-hidden px-4 pb-4 pt-[25vh] [scrollbar-width:none]">
       <div className="w-full max-w-4xl">
         <motion.div
           initial={{ opacity: 0, y: -10, scale: 0.98 }}
