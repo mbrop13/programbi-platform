@@ -193,7 +193,7 @@ export default function CommunityFeatures() {
 
                     {/* Image Composition (Col 2) */}
                     <div className="w-full flex justify-center">
-                      <div className="w-full max-w-[460px] aspect-[4/3] rounded-3xl border border-sky-100/70 dark:border-zinc-800/80 shadow-[0_12px_40px_rgba(14,165,233,0.08)] overflow-hidden relative group/img">
+                      <div className="w-full max-w-[500px] aspect-video rounded-3xl border border-sky-100/70 dark:border-zinc-800/80 shadow-[0_12px_40px_rgba(14,165,233,0.08)] overflow-hidden relative group/img">
                         <Image
                           src={f.image}
                           alt={f.imageLabel}
@@ -306,7 +306,7 @@ export default function CommunityFeatures() {
                 {/* ─── IMAGE COMPOSITION ─── */}
                 <div className="flex-1 w-full max-w-lg lg:max-w-none">
                   <div className="relative group/img">
-                    <div className="w-full max-w-[460px] aspect-[4/3] rounded-3xl border border-sky-100/70 dark:border-zinc-800/80 shadow-[0_12px_40px_rgba(14,165,233,0.08)] overflow-hidden relative mx-auto group-hover/img:scale-[1.01] transition-transform duration-500">
+                    <div className="w-full max-w-[500px] aspect-video rounded-3xl border border-sky-100/70 dark:border-zinc-800/80 shadow-[0_12px_40px_rgba(14,165,233,0.08)] overflow-hidden relative mx-auto group-hover/img:scale-[1.01] transition-transform duration-500">
                       <Image
                         src={f.image}
                         alt={f.imageLabel}
