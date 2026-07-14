@@ -484,7 +484,10 @@ function ChatShellInner({
         className={cn(
           isMobile
             ? "fixed top-0 left-0 bottom-0 z-50 flex flex-col shadow-2xl bg-[#F9F9FB] border-r border-stone-200"
-            : "relative flex flex-col h-full shrink-0 bg-[#F9F9FB] border-r border-stone-200 overflow-hidden z-30"
+            : cn(
+                "relative flex flex-col h-full shrink-0 bg-[#F9F9FB] border-r border-stone-200 z-30",
+                sidebarOpen ? "overflow-hidden" : "overflow-visible"
+              )
         )}
       >
         <div
