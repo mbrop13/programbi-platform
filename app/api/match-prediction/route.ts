@@ -5,7 +5,18 @@ import { isRateLimited } from "@/lib/security/rate-limiter";
 import { courses } from "@/lib/data/courses";
 
 const TEAMS = ["espana", "argentina"] as const;
-const VALID_COURSE_SLUGS = new Set(courses.map((c) => c.slug));
+
+/** Cursos excluidos del sorteo del gran partido */
+const EXCLUDED_PRIZE_SLUGS = new Set([
+  "analisis-de-datos",
+  "analitica-financiera",
+  "analitica-mineria",
+]);
+
+const ELIGIBLE_COURSES = courses.filter(
+  (c) => !EXCLUDED_PRIZE_SLUGS.has(c.slug)
+);
+const VALID_COURSE_SLUGS = new Set(ELIGIBLE_COURSES.map((c) => c.slug));
 
 const voteSchema = z.object({
   team: z.enum(TEAMS),
@@ -126,7 +137,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const course = courses.find((c) => c.slug === courseSlug)!;
+    const course = ELIGIBLE_COURSES.find((c) => c.slug === courseSlug)!;
 
     // Un voto por miembro
     const { data: existing } = await supabase

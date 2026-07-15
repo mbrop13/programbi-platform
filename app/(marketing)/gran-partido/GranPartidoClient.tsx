@@ -15,7 +15,6 @@ import {
   ArrowRight,
   GraduationCap,
   Star,
-  Ticket,
   ChevronDown,
   Crown,
   Target,
@@ -24,6 +23,13 @@ import Link from "next/link";
 import AuthModal from "@/components/shared/AuthModal";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { courses } from "@/lib/data/courses";
+
+/** Cursos no disponibles como premio del sorteo */
+const EXCLUDED_PRIZE_SLUGS = new Set([
+  "analisis-de-datos",
+  "analitica-financiera",
+  "analitica-mineria",
+]);
 
 type TeamId = "espana" | "argentina";
 
@@ -47,7 +53,6 @@ const TEAMS: {
   id: TeamId;
   name: string;
   short: string;
-  iso: string;
   flagUrl: string;
   flagUrlLg: string;
   soft: string;
@@ -56,34 +61,38 @@ const TEAMS: {
   accent: string;
   borderSel: string;
   badge: string;
+  glow: string;
+  cardBg: string;
 }[] = [
   {
     id: "espana",
     name: "España",
     short: "ESP",
-    iso: "es",
     flagUrl: "https://flagcdn.com/w160/es.png",
     flagUrlLg: "https://flagcdn.com/w320/es.png",
     soft: "bg-red-50",
     ring: "ring-red-400",
     bar: "from-red-600 via-red-500 to-amber-400",
     accent: "text-red-700",
-    borderSel: "border-red-400 shadow-red-200/60",
+    borderSel: "border-red-400 shadow-red-200/70",
     badge: "bg-red-600 text-white",
+    glow: "from-red-500/20 to-amber-400/10",
+    cardBg: "from-red-50 via-white to-amber-50/40",
   },
   {
     id: "argentina",
     name: "Argentina",
     short: "ARG",
-    iso: "ar",
     flagUrl: "https://flagcdn.com/w160/ar.png",
     flagUrlLg: "https://flagcdn.com/w320/ar.png",
     soft: "bg-sky-50",
     ring: "ring-sky-400",
     bar: "from-sky-500 via-sky-400 to-blue-200",
     accent: "text-sky-700",
-    borderSel: "border-sky-400 shadow-sky-200/60",
+    borderSel: "border-sky-400 shadow-sky-200/70",
     badge: "bg-sky-600 text-white",
+    glow: "from-sky-400/25 to-blue-100/20",
+    cardBg: "from-sky-50 via-white to-slate-50",
   },
 ];
 
@@ -98,19 +107,19 @@ const STEPS = [
     icon: Target,
     title: "Elige al ganador",
     desc: "Selecciona el equipo que crees se llevará el gran partido: España o Argentina.",
-    color: "bg-amber-50 text-amber-700 border-amber-100",
+    color: "bg-red-50 text-red-600 border-red-100",
   },
   {
     icon: GraduationCap,
     title: "Elige tu curso premio",
     desc: "Marca el curso que te gustaría ganar si aciertas y sales sorteado.",
-    color: "bg-emerald-50 text-emerald-700 border-emerald-100",
+    color: "bg-sky-50 text-sky-700 border-sky-100",
   },
   {
     icon: Gift,
     title: "Sorteo entre acertantes",
     desc: "Solo quienes votaron al país ganador entran al sorteo de cursos.",
-    color: "bg-violet-50 text-violet-700 border-violet-100",
+    color: "bg-amber-50 text-amber-700 border-amber-100",
   },
 ];
 
@@ -147,7 +156,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
     <div
       className={`border rounded-2xl transition-all duration-300 overflow-hidden ${
         open
-          ? "border-[#1890FF]/35 bg-blue-50/50 shadow-sm"
+          ? "border-red-200 bg-red-50/30 shadow-sm"
           : "border-slate-200 bg-white hover:border-slate-300"
       }`}
     >
@@ -158,7 +167,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
       >
         <span
           className={`text-sm md:text-base font-bold pr-4 tracking-tight ${
-            open ? "text-[#1890FF]" : "text-slate-800"
+            open ? "text-red-700" : "text-slate-800"
           }`}
         >
           {q}
@@ -167,7 +176,7 @@ function FaqItem({ q, a }: { q: string; a: string }) {
           animate={{ rotate: open ? 180 : 0 }}
           className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center transition-colors ${
             open
-              ? "bg-[#1890FF] text-white"
+              ? "bg-red-600 text-white"
               : "bg-slate-100 text-slate-500 group-hover:bg-slate-200"
           }`}
         >
@@ -235,8 +244,18 @@ export default function GranPartidoClient() {
   const [stats, setStats] = useState<Stats>({ espana: 0, argentina: 0, total: 0 });
   const [userVote, setUserVote] = useState<UserVote | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<TeamId | null>(null);
+  const prizeCourses = useMemo(
+    () =>
+      courses
+        .filter((c) => !EXCLUDED_PRIZE_SLUGS.has(c.slug))
+        .sort((a, b) => a.sortOrder - b.sortOrder),
+    []
+  );
+
   const [selectedCourse, setSelectedCourse] = useState(
-    courses[0]?.slug ?? "analisis-de-datos"
+    () =>
+      courses.find((c) => !EXCLUDED_PRIZE_SLUGS.has(c.slug))?.slug ??
+      "power-bi"
   );
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -246,11 +265,6 @@ export default function GranPartidoClient() {
     isOpen: boolean;
     tab: "login" | "register";
   }>({ isOpen: false, tab: "register" });
-
-  const prizeCourses = useMemo(
-    () => [...courses].sort((a, b) => a.sortOrder - b.sortOrder),
-    []
-  );
 
   const load = useCallback(async () => {
     try {
@@ -344,446 +358,334 @@ export default function GranPartidoClient() {
   const selectedTeamData = TEAMS.find((t) => t.id === selectedTeam);
   const selectedCourseData = prizeCourses.find((c) => c.slug === selectedCourse);
 
+  /** Tras elegir país (y estar logueado), mostrar selector de curso */
+  const showCourseStep =
+    authenticated && !!selectedTeam && !hasVoted;
+
   return (
-    <div className="bg-[#F7F9FC] text-slate-900 min-h-screen relative overflow-hidden font-sans">
-      {/* Pitch / field pattern */}
+    <div className="bg-white text-slate-900 min-h-screen relative overflow-hidden font-sans">
+      {/* Fondos suaves con colores de equipos — sin cuadrícula */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-[520px] bg-gradient-to-b from-emerald-50 via-[#F7F9FC] to-transparent" />
-        <div
-          className="absolute inset-0 opacity-[0.035]"
-          style={{
-            backgroundImage:
-              "repeating-linear-gradient(90deg, #0F172A 0 1px, transparent 1px 48px), repeating-linear-gradient(0deg, #0F172A 0 1px, transparent 1px 48px)",
-          }}
-        />
-        <div className="absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-red-200/30 blur-[100px]" />
-        <div className="absolute -top-16 -right-24 w-[420px] h-[420px] rounded-full bg-sky-200/40 blur-[100px]" />
+        <div className="absolute -top-32 -left-20 w-[480px] h-[480px] rounded-full bg-red-400/15 blur-[110px]" />
+        <div className="absolute -top-24 -right-16 w-[460px] h-[460px] rounded-full bg-sky-400/20 blur-[110px]" />
+        <div className="absolute top-[40%] left-1/2 -translate-x-1/2 w-[70vw] h-[40vw] rounded-full bg-amber-200/10 blur-[120px]" />
       </div>
 
       {/* ═══════ HERO ═══════ */}
-      <section className="relative pt-28 pb-10 lg:pt-32 lg:pb-16">
-        <div className="max-w-[1180px] mx-auto px-5 sm:px-6">
-          {/* Stadium ticket banner */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
+      <section className="relative pt-4 sm:pt-6 pb-10 lg:pb-14">
+        <div className="max-w-[1100px] mx-auto px-5 sm:px-6">
+          {/* Intro corta — sin badge ni título largo */}
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-8 flex justify-center"
+            className="text-center text-sm sm:text-base text-slate-600 max-w-xl mx-auto mb-6 sm:mb-8 leading-relaxed"
           >
-            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-4 py-2 shadow-sm">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
-              </span>
-              <Trophy size={13} className="text-emerald-600" />
-              <span className="text-[11px] font-black uppercase tracking-[0.16em] text-emerald-800">
-                Predicción oficial · Solo miembros · Sorteo de cursos
-              </span>
-            </div>
-          </motion.div>
+            Elige entre{" "}
+            <strong className="text-red-700">España</strong> y{" "}
+            <strong className="text-sky-700">Argentina</strong>. Entre quienes
+            acierten al país ganador se sortearán cursos a elección.
+          </motion.p>
 
-          <div className="text-center max-w-3xl mx-auto mb-10 lg:mb-12">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55 }}
-              className="font-display text-4xl sm:text-5xl lg:text-[3.4rem] font-black tracking-tight leading-[1.08] mb-4 text-slate-950"
-            >
-              ¿Quién ganará el{" "}
-              <span className="relative inline-block">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-[#1890FF]">
-                  Gran Partido
-                </span>
-                <span className="absolute -bottom-1 left-0 right-0 h-1.5 rounded-full bg-gradient-to-r from-emerald-400/50 to-sky-400/50" />
-              </span>
-              ?
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.55, delay: 0.06 }}
-              className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto"
-            >
-              Predice el resultado entre{" "}
-              <strong className="text-red-700">España</strong> y{" "}
-              <strong className="text-sky-700">Argentina</strong>.{" "}
-              <span className="text-slate-800 font-semibold">
-                Entre quienes acierten al país ganador se sortearán cursos
-              </span>{" "}
-              a elección.
-            </motion.p>
-          </div>
-
-          {/* Highlight prize strip */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="max-w-3xl mx-auto mb-10"
-          >
-            <div className="relative overflow-hidden rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 via-white to-amber-50 px-5 py-4 shadow-sm">
-              <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-amber-400 to-orange-500" />
-              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 pl-2">
-                <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-amber-100 border border-amber-200 shrink-0">
-                  <Trophy className="text-amber-600" size={22} />
-                </div>
-                <div className="text-left">
-                  <p className="text-sm sm:text-base font-bold text-slate-900">
-                    Solo quienes voten al país ganador entran al sorteo
-                  </p>
-                  <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
-                    Si tu predicción es correcta, participas por un curso de
-                    ProgramBI a tu elección. Si no aciertas, no entras al bolillero.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* VS match card — stadium style */}
-          <motion.div
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.12 }}
-            className="max-w-4xl mx-auto mb-8"
-          >
-            <div className="relative rounded-[28px] border border-slate-200/80 bg-white shadow-[0_20px_60px_-24px_rgba(15,23,42,0.18)] overflow-hidden">
-              {/* Top jersey stripes */}
-              <div className="h-1.5 flex">
-                <div className="flex-1 bg-gradient-to-r from-red-600 to-amber-400" />
-                <div className="flex-1 bg-gradient-to-r from-sky-400 to-sky-200" />
-              </div>
-
-              {/* Pitch green header */}
-              <div className="relative bg-gradient-to-b from-emerald-700 to-emerald-800 px-5 py-4 text-center overflow-hidden">
-                <div
-                  className="absolute inset-0 opacity-20"
-                  style={{
-                    backgroundImage:
-                      "repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(255,255,255,0.08) 28px, rgba(255,255,255,0.08) 56px)",
-                  }}
-                />
-                <p className="relative text-[11px] font-black uppercase tracking-[0.22em] text-emerald-100">
-                  Gran Partido · Elige tu predicción
-                </p>
-              </div>
-
-              <div className="p-5 sm:p-8">
-                <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-stretch">
-                  {TEAMS.flatMap((team, idx) => {
-                    const isSelected = selectedTeam === team.id;
-                    const share = team.id === "espana" ? espPct : argPct;
-                    const locked = hasVoted;
-
-                    const card = (
-                      <button
-                        key={team.id}
-                        type="button"
-                        disabled={locked || submitting}
-                        onClick={() => {
-                          if (!authenticated) {
-                            setAuthModal({ isOpen: true, tab: "register" });
-                            return;
-                          }
-                          setSelectedTeam(team.id);
-                          setError("");
-                        }}
-                        className={`group relative flex-1 text-left rounded-2xl border-2 p-5 sm:p-6 transition-all duration-300 bg-white ${
-                          isSelected
-                            ? `${team.borderSel} shadow-lg ring-2 ${team.ring}/30 ${team.soft}`
-                            : "border-slate-200 hover:border-slate-300 hover:shadow-md"
-                        } ${locked && !isSelected ? "opacity-45" : ""} ${
-                          locked || submitting ? "cursor-default" : "cursor-pointer"
-                        }`}
-                      >
-                        {isSelected && (
-                          <div className="absolute top-3 right-3">
-                            <CheckCircle2 className="text-emerald-500" size={22} />
-                          </div>
-                        )}
-
-                        <div className="flex flex-col items-center text-center">
-                          <TeamFlag team={team} size="lg" />
-                          <p className="mt-4 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
-                            {team.short}
-                          </p>
-                          <h2
-                            className={`text-2xl sm:text-3xl font-black font-display tracking-tight mt-1 ${team.accent}`}
-                          >
-                            {team.name}
-                          </h2>
-
-                          {/* Solo % — sin cantidad de votos */}
-                          <div className="mt-4 w-full">
-                            <p className="text-3xl font-black tabular-nums text-slate-900">
-                              {loading ? "—" : `${share}%`}
-                            </p>
-                            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-0.5">
-                              de las predicciones
-                            </p>
-                            <div className="mt-3 h-2 rounded-full bg-slate-100 overflow-hidden">
-                              <motion.div
-                                initial={{ width: 0 }}
-                                animate={{ width: loading ? "50%" : `${share}%` }}
-                                transition={{ duration: 0.9, delay: 0.25 + idx * 0.08 }}
-                                className={`h-full rounded-full bg-gradient-to-r ${team.bar}`}
-                              />
-                            </div>
-                          </div>
-
-                          {!locked && (
-                            <span
-                              className={`mt-5 inline-flex text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition ${
-                                isSelected
-                                  ? team.badge + " border-transparent"
-                                  : "border-slate-200 text-slate-600 group-hover:border-slate-300 bg-slate-50"
-                              }`}
-                            >
-                              {isSelected ? "Tu predicción" : "Elegir equipo"}
-                            </span>
-                          )}
-                        </div>
-                      </button>
-                    );
-
-                    if (idx === 0) {
-                      return [
-                        card,
-                        <div
-                          key="vs-badge"
-                          className="flex items-center justify-center sm:px-1 -my-1 sm:my-0"
-                        >
-                          <div className="relative z-10 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-slate-900 text-white font-black text-sm sm:text-base flex items-center justify-center shadow-xl border-4 border-white ring-2 ring-slate-200">
-                            VS
-                          </div>
-                        </div>,
-                      ];
-                    }
-                    return [card];
-                  })}
-                </div>
-
-                {/* Comparative bar */}
-                {!loading && (
-                  <div className="mt-6 rounded-xl bg-slate-50 border border-slate-100 p-3.5">
-                    <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider mb-2">
-                      <span className="text-red-600">España {espPct}%</span>
-                      <span className="text-slate-400 normal-case tracking-normal font-medium flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        Tendencia en vivo
-                      </span>
-                      <span className="text-sky-600">Argentina {argPct}%</span>
-                    </div>
-                    <div className="h-2.5 rounded-full overflow-hidden flex bg-white border border-slate-100">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${espPct}%` }}
-                        transition={{ duration: 1 }}
-                        className="h-full bg-gradient-to-r from-red-600 to-amber-400"
-                      />
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${argPct}%` }}
-                        transition={{ duration: 1 }}
-                        className="h-full bg-gradient-to-r from-sky-400 to-sky-200"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Vote panel */}
+          {/* VS — solo tarjetas de equipos */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.2 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-4xl mx-auto mb-6"
             id="votar"
-            className="max-w-3xl mx-auto"
           >
-            <div className="rounded-[28px] border border-slate-200 bg-white shadow-[0_16px_50px_-28px_rgba(15,23,42,0.2)] overflow-hidden">
-              <div className="h-1 bg-gradient-to-r from-red-500 via-emerald-500 to-sky-400" />
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-stretch">
+              {TEAMS.flatMap((team, idx) => {
+                const isSelected = selectedTeam === team.id;
+                const share = team.id === "espana" ? espPct : argPct;
+                const locked = hasVoted;
 
-              <div className="p-6 sm:p-8">
-                {hasVoted ? (
-                  <div className="text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 mb-4">
-                      <Trophy className="text-amber-500" size={30} />
-                    </div>
-                    <h3 className="text-2xl font-black font-display text-slate-900 mb-2">
-                      ¡Predicción registrada!
-                    </h3>
-                    <p className="text-slate-600 text-sm sm:text-base mb-5 max-w-md mx-auto leading-relaxed">
-                      Apostaste por{" "}
-                      <strong className="text-slate-900">
-                        {userVote.team === "espana" ? "España" : "Argentina"}
-                      </strong>
-                      . Si ese es el país ganador, entras al sorteo de{" "}
-                      <strong className="text-emerald-700">
-                        {userVote.preferred_course_title}
-                      </strong>
-                      .
-                    </p>
-                    <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm text-emerald-800 font-semibold">
-                      <CheckCircle2 size={16} />
-                      Estás en el bolillero solo si tu equipo gana
-                    </div>
-                  </div>
-                ) : !authenticated ? (
-                  <div className="text-center">
-                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-50 border border-slate-200 mb-4">
-                      <Lock className="text-slate-500" size={26} />
-                    </div>
-                    <h3 className="text-2xl font-black font-display text-slate-900 mb-2">
-                      Solo para miembros
-                    </h3>
-                    <p className="text-slate-600 text-sm sm:text-base mb-6 max-w-md mx-auto leading-relaxed">
-                      Regístrate o inicia sesión para registrar tu predicción.
-                      Entre quienes acierten al país ganador se sortearán cursos.
-                    </p>
-                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setAuthModal({ isOpen: true, tab: "register" })
-                        }
-                        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#1890FF] to-indigo-600 px-6 py-3.5 text-sm font-bold text-white shadow-[0_12px_32px_-10px_rgba(24,144,255,0.55)] hover:brightness-110 transition"
-                      >
-                        Crear cuenta gratis
-                        <ArrowRight size={16} />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setAuthModal({ isOpen: true, tab: "login" })
-                        }
-                        className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 hover:bg-slate-50 transition"
-                      >
-                        Ya soy miembro
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <div className="flex items-start gap-3 mb-6">
-                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0 shadow-md">
-                        <Ticket className="text-white" size={20} />
+                const card = (
+                  <button
+                    key={team.id}
+                    type="button"
+                    disabled={locked || submitting}
+                    onClick={() => {
+                      if (!authenticated) {
+                        setAuthModal({ isOpen: true, tab: "register" });
+                        return;
+                      }
+                      setSelectedTeam(team.id);
+                      setError("");
+                    }}
+                    className={`group relative flex-1 text-left rounded-3xl border-2 p-5 sm:p-7 transition-all duration-300 overflow-hidden bg-gradient-to-br ${team.cardBg} ${
+                      isSelected
+                        ? `${team.borderSel} shadow-xl ring-2 ${team.ring}/25`
+                        : "border-slate-200/90 hover:border-slate-300 hover:shadow-lg"
+                    } ${locked && !isSelected ? "opacity-45" : ""} ${
+                      locked || submitting ? "cursor-default" : "cursor-pointer"
+                    }`}
+                  >
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${team.glow} opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none`}
+                    />
+                    {isSelected && (
+                      <div className="absolute top-3 right-3 z-10">
+                        <CheckCircle2 className="text-emerald-500 drop-shadow" size={22} />
                       </div>
-                      <div>
-                        <h3 className="text-xl font-black font-display text-slate-900">
-                          Completa tu boleto
-                        </h3>
-                        <p className="text-sm text-slate-500 mt-0.5">
-                          Equipo + curso premio. Si aciertas, entras al sorteo.
-                        </p>
-                      </div>
-                    </div>
+                    )}
 
-                    {/* Selected team */}
-                    <div className="mb-6">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
-                        1. Tu equipo
+                    <div className="relative z-10 flex flex-col items-center text-center">
+                      <TeamFlag team={team} size="lg" />
+                      <p className="mt-4 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+                        {team.short}
                       </p>
-                      {selectedTeamData ? (
-                        <div
-                          className={`flex items-center gap-3 rounded-2xl border-2 px-4 py-3 ${selectedTeamData.soft} ${selectedTeamData.borderSel.split(" ")[0]}`}
-                        >
-                          <TeamFlag team={selectedTeamData} size="sm" />
-                          <div>
-                            <p className={`font-bold ${selectedTeamData.accent}`}>
-                              {selectedTeamData.name}
-                            </p>
-                            <p className="text-xs text-slate-500">
-                              Un solo voto por miembro · no se puede cambiar
-                            </p>
-                          </div>
+                      <h2
+                        className={`text-2xl sm:text-3xl font-black font-display tracking-tight mt-1 ${team.accent}`}
+                      >
+                        {team.name}
+                      </h2>
+
+                      <div className="mt-4 w-full">
+                        <p className="text-3xl font-black tabular-nums text-slate-900">
+                          {loading ? "—" : `${share}%`}
+                        </p>
+                        <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-0.5">
+                          de las predicciones
+                        </p>
+                        <div className="mt-3 h-2 rounded-full bg-white/80 border border-slate-100 overflow-hidden">
+                          <motion.div
+                            initial={{ width: 0 }}
+                            animate={{ width: loading ? "50%" : `${share}%` }}
+                            transition={{ duration: 0.9, delay: 0.2 + idx * 0.08 }}
+                            className={`h-full rounded-full bg-gradient-to-r ${team.bar}`}
+                          />
                         </div>
-                      ) : (
-                        <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3">
-                          Arriba, toca la tarjeta de España o Argentina para elegir.
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Course cards */}
-                    <div className="mb-6">
-                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">
-                        2. Curso que quieres ganar
-                      </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[340px] overflow-y-auto pr-1 custom-scrollbar">
-                        {prizeCourses.map((c) => {
-                          const selected = selectedCourse === c.slug;
-                          return (
-                            <button
-                              key={c.slug}
-                              type="button"
-                              onClick={() => setSelectedCourse(c.slug)}
-                              className={`group relative text-left rounded-2xl border-2 overflow-hidden transition-all duration-200 ${
-                                selected
-                                  ? "border-[#1890FF] shadow-md ring-2 ring-[#1890FF]/15 bg-blue-50/40"
-                                  : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
-                              }`}
-                            >
-                              <div className="relative h-28 w-full bg-slate-100 overflow-hidden">
-                                <Image
-                                  src={c.imageUrl}
-                                  alt={c.title}
-                                  fill
-                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                  sizes="(max-width: 640px) 100vw, 280px"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent" />
-                                {selected && (
-                                  <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-[#1890FF] text-white flex items-center justify-center shadow">
-                                    <CheckCircle2 size={15} />
-                                  </div>
-                                )}
-                                <div
-                                  className="absolute bottom-0 left-0 right-0 h-1"
-                                  style={{ backgroundColor: c.accentColor }}
-                                />
-                              </div>
-                              <div className="p-3">
-                                <p className="text-sm font-bold text-slate-900 leading-snug line-clamp-2">
-                                  {c.title}
-                                </p>
-                                <p className="text-[11px] text-slate-500 mt-1 line-clamp-1">
-                                  {c.techStack.join(" · ")}
-                                </p>
-                              </div>
-                            </button>
-                          );
-                        })}
                       </div>
-                      {selectedCourseData && (
-                        <p className="text-xs text-slate-500 mt-3 leading-relaxed bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
-                          <span className="font-semibold text-slate-700">
-                            Premio elegido:{" "}
-                          </span>
-                          {selectedCourseData.title} —{" "}
-                          {selectedCourseData.shortDescription}
-                        </p>
+
+                      {!locked && (
+                        <span
+                          className={`mt-5 inline-flex text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition ${
+                            isSelected
+                              ? team.badge + " border-transparent shadow-sm"
+                              : "border-slate-200/80 text-slate-600 group-hover:border-slate-300 bg-white/70"
+                          }`}
+                        >
+                          {isSelected ? "Seleccionado" : "Elegir"}
+                        </span>
                       )}
                     </div>
+                  </button>
+                );
 
-                    {/* Reminder raffle */}
-                    <div className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-3 flex gap-3">
-                      <Gift className="text-emerald-600 shrink-0 mt-0.5" size={18} />
-                      <p className="text-xs sm:text-sm text-emerald-900 leading-relaxed">
-                        <strong>Importante:</strong> entre todos los miembros que
-                        voten al país que resulte ganador se sortearán cursos. Si
-                        tu equipo no gana, no participas del sorteo.
-                      </p>
+                if (idx === 0) {
+                  return [
+                    card,
+                    <div
+                      key="vs-badge"
+                      className="flex items-center justify-center sm:px-0.5 -my-1 sm:my-0"
+                    >
+                      <div className="relative z-10 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-slate-800 to-slate-950 text-white font-black text-sm sm:text-base flex items-center justify-center shadow-xl border-4 border-white">
+                        VS
+                      </div>
+                    </div>,
+                  ];
+                }
+                return [card];
+              })}
+            </div>
+
+            {/* Barra comparativa simple */}
+            {!loading && (
+              <div className="mt-5 rounded-2xl bg-slate-50 border border-slate-100 p-3.5">
+                <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider mb-2">
+                  <span className="text-red-600">España {espPct}%</span>
+                  <span className="text-sky-600">Argentina {argPct}%</span>
+                </div>
+                <div className="h-2.5 rounded-full overflow-hidden flex bg-white border border-slate-100">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${espPct}%` }}
+                    transition={{ duration: 1 }}
+                    className="h-full bg-gradient-to-r from-red-600 to-amber-400"
+                  />
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{ width: `${argPct}%` }}
+                    transition={{ duration: 1 }}
+                    className="h-full bg-gradient-to-r from-sky-400 to-sky-200"
+                  />
+                </div>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Panel inferior: éxito / login / cursos */}
+          <div className="max-w-3xl mx-auto">
+            {hasVoted ? (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-7 sm:p-9 text-center shadow-sm"
+              >
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white border border-emerald-200 mb-4 shadow-sm">
+                  <Trophy className="text-amber-500" size={28} />
+                </div>
+                <h3 className="text-2xl font-black font-display text-slate-900 mb-2">
+                  ¡Predicción registrada!
+                </h3>
+                <p className="text-slate-600 text-sm sm:text-base mb-4 max-w-md mx-auto leading-relaxed">
+                  Apostaste por{" "}
+                  <strong className="text-slate-900">
+                    {userVote.team === "espana" ? "España" : "Argentina"}
+                  </strong>
+                  . Si ese es el país ganador, entras al sorteo de{" "}
+                  <strong className="text-emerald-700">
+                    {userVote.preferred_course_title}
+                  </strong>
+                  .
+                </p>
+                <div className="inline-flex items-center gap-2 rounded-full bg-white border border-emerald-200 px-4 py-2 text-sm text-emerald-800 font-semibold">
+                  <CheckCircle2 size={16} />
+                  Estás en el bolillero solo si tu equipo gana
+                </div>
+              </motion.div>
+            ) : !authenticated ? (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="rounded-3xl border border-slate-200 bg-white p-7 sm:p-9 text-center shadow-sm"
+              >
+                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-50 border border-slate-200 mb-4">
+                  <Lock className="text-slate-500" size={24} />
+                </div>
+                <h3 className="text-xl font-black font-display text-slate-900 mb-2">
+                  Solo para miembros
+                </h3>
+                <p className="text-slate-600 text-sm sm:text-base mb-6 max-w-md mx-auto leading-relaxed">
+                  Regístrate o inicia sesión para elegir tu equipo y participar
+                  por un curso.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setAuthModal({ isOpen: true, tab: "register" })
+                    }
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 to-amber-500 px-6 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-500/20 hover:brightness-110 transition"
+                  >
+                    Crear cuenta gratis
+                    <ArrowRight size={16} />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAuthModal({ isOpen: true, tab: "login" })}
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-6 py-3.5 text-sm font-bold text-sky-800 hover:bg-sky-100 transition"
+                  >
+                    Ya soy miembro
+                  </button>
+                </div>
+              </motion.div>
+            ) : showCourseStep ? (
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key="course-step"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 8 }}
+                  className={`rounded-3xl border-2 overflow-hidden shadow-sm ${
+                    selectedTeamData
+                      ? selectedTeamData.id === "espana"
+                        ? "border-red-200 bg-gradient-to-b from-red-50/80 to-white"
+                        : "border-sky-200 bg-gradient-to-b from-sky-50/80 to-white"
+                      : "border-slate-200 bg-white"
+                  }`}
+                >
+                  <div className="p-6 sm:p-8">
+                    {/* Chip del equipo elegido */}
+                    {selectedTeamData && (
+                      <div className="flex items-center justify-center gap-2 mb-5">
+                        <TeamFlag team={selectedTeamData} size="sm" />
+                        <span
+                          className={`text-sm font-bold ${selectedTeamData.accent}`}
+                        >
+                          Vas con {selectedTeamData.name}
+                        </span>
+                      </div>
+                    )}
+
+                    <h3 className="text-xl sm:text-2xl font-black font-display text-slate-900 text-center mb-1">
+                      Elige el curso que te interesa
+                    </h3>
+                    <p className="text-sm text-slate-500 text-center mb-6">
+                      Si aciertas, entras al sorteo de este curso.
+                    </p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[360px] overflow-y-auto pr-1">
+                      {prizeCourses.map((c) => {
+                        const selected = selectedCourse === c.slug;
+                        return (
+                          <button
+                            key={c.slug}
+                            type="button"
+                            onClick={() => setSelectedCourse(c.slug)}
+                            className={`group relative text-left rounded-2xl border-2 overflow-hidden transition-all duration-200 ${
+                              selected
+                                ? selectedTeamData?.id === "argentina"
+                                  ? "border-sky-500 shadow-md ring-2 ring-sky-400/20 bg-sky-50/50"
+                                  : "border-red-500 shadow-md ring-2 ring-red-400/20 bg-red-50/40"
+                                : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
+                            }`}
+                          >
+                            <div className="relative h-28 w-full bg-slate-100 overflow-hidden">
+                              <Image
+                                src={c.imageUrl}
+                                alt={c.title}
+                                fill
+                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                sizes="(max-width: 640px) 100vw, 280px"
+                              />
+                              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent" />
+                              {selected && (
+                                <div
+                                  className={`absolute top-2 right-2 w-7 h-7 rounded-full text-white flex items-center justify-center shadow ${
+                                    selectedTeamData?.id === "argentina"
+                                      ? "bg-sky-600"
+                                      : "bg-red-600"
+                                  }`}
+                                >
+                                  <CheckCircle2 size={15} />
+                                </div>
+                              )}
+                              <div
+                                className="absolute bottom-0 left-0 right-0 h-1"
+                                style={{ backgroundColor: c.accentColor }}
+                              />
+                            </div>
+                            <div className="p-3">
+                              <p className="text-sm font-bold text-slate-900 leading-snug line-clamp-2">
+                                {c.title}
+                              </p>
+                              <p className="text-[11px] text-slate-500 mt-1 line-clamp-1">
+                                {c.techStack.join(" · ")}
+                              </p>
+                            </div>
+                          </button>
+                        );
+                      })}
                     </div>
+
+                    {selectedCourseData && (
+                      <p className="text-xs text-slate-500 mt-4 leading-relaxed bg-white/80 border border-slate-100 rounded-xl px-3 py-2">
+                        <span className="font-semibold text-slate-700">
+                          Curso elegido:{" "}
+                        </span>
+                        {selectedCourseData.title}
+                      </p>
+                    )}
 
                     {error && (
-                      <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                      <div className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
                         {error}
                       </div>
                     )}
                     {successMsg && (
-                      <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                      <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
                         {successMsg}
                       </div>
                     )}
@@ -791,8 +693,12 @@ export default function GranPartidoClient() {
                     <button
                       type="button"
                       onClick={handleVote}
-                      disabled={submitting || !selectedTeam}
-                      className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-4 text-sm font-black text-white shadow-[0_14px_36px_-12px_rgba(5,150,105,0.55)] hover:brightness-105 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                      disabled={submitting || !selectedTeam || !selectedCourse}
+                      className={`mt-5 w-full inline-flex items-center justify-center gap-2 rounded-2xl px-6 py-4 text-sm font-black text-white shadow-lg hover:brightness-105 disabled:opacity-50 disabled:cursor-not-allowed transition ${
+                        selectedTeamData?.id === "argentina"
+                          ? "bg-gradient-to-r from-sky-500 to-sky-600 shadow-sky-500/25"
+                          : "bg-gradient-to-r from-red-600 to-amber-500 shadow-red-500/25"
+                      }`}
                     >
                       {submitting ? (
                         <>
@@ -802,7 +708,7 @@ export default function GranPartidoClient() {
                       ) : (
                         <>
                           <Sparkles size={18} />
-                          Confirmar predicción
+                          Completar predicción
                         </>
                       )}
                     </button>
@@ -810,18 +716,27 @@ export default function GranPartidoClient() {
                       Un voto por miembro. No se puede modificar después.
                     </p>
                   </div>
-                )}
-              </div>
-            </div>
-          </motion.div>
+                </motion.div>
+              </AnimatePresence>
+            ) : (
+              /* Logueado pero aún sin equipo */
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center text-sm text-slate-500 py-2"
+              >
+                Toca un equipo para continuar y elegir tu curso premio.
+              </motion.p>
+            )}
+          </div>
         </div>
       </section>
 
       {/* ═══════ HOW IT WORKS ═══════ */}
-      <section className="relative py-16 lg:py-20 border-t border-slate-200/80 bg-white">
+      <section className="relative py-14 lg:py-16 border-t border-slate-100 bg-gradient-to-b from-white via-red-50/20 to-sky-50/30">
         <div className="max-w-[1100px] mx-auto px-5 sm:px-6">
-          <FadeIn className="text-center mb-12">
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-600 mb-3">
+          <FadeIn className="text-center mb-10">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-red-600 mb-3">
               Cómo funciona
             </p>
             <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight text-slate-950">
@@ -836,7 +751,7 @@ export default function GranPartidoClient() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {STEPS.map((step, i) => (
               <FadeIn key={step.title} delay={i * 0.07}>
-                <div className="h-full rounded-3xl border border-slate-200 bg-[#F7F9FC] p-6 hover:border-slate-300 hover:shadow-sm transition">
+                <div className="h-full rounded-3xl border border-slate-200/80 bg-white p-6 hover:shadow-md transition">
                   <div
                     className={`w-12 h-12 rounded-2xl border flex items-center justify-center mb-4 ${step.color}`}
                   >
@@ -859,13 +774,19 @@ export default function GranPartidoClient() {
       </section>
 
       {/* ═══════ PRIZE ═══════ */}
-      <section className="relative py-16 lg:py-20">
+      <section className="relative py-14 lg:py-16">
         <div className="max-w-[1100px] mx-auto px-5 sm:px-6">
-          <div className="rounded-[32px] border border-amber-200/80 bg-gradient-to-br from-amber-50 via-white to-orange-50/40 p-8 sm:p-12 overflow-hidden relative shadow-sm">
-            <div className="absolute top-0 right-0 w-72 h-72 bg-amber-200/30 blur-[90px] pointer-events-none" />
+          <div className="rounded-[32px] border border-slate-200 bg-white p-8 sm:p-12 overflow-hidden relative shadow-sm">
+            <div className="absolute top-0 left-0 right-0 h-1.5 flex">
+              <div className="flex-1 bg-gradient-to-r from-red-600 to-amber-400" />
+              <div className="flex-1 bg-gradient-to-r from-sky-400 to-sky-200" />
+            </div>
+            <div className="absolute -right-20 top-10 w-72 h-72 bg-red-200/20 blur-[90px] pointer-events-none" />
+            <div className="absolute -left-20 bottom-0 w-72 h-72 bg-sky-200/25 blur-[90px] pointer-events-none" />
+
             <div className="relative grid lg:grid-cols-2 gap-10 items-center">
               <FadeIn>
-                <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/70 bg-white px-3 py-1.5 mb-4 shadow-sm">
+                <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 mb-4">
                   <Crown size={14} className="text-amber-600" />
                   <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800">
                     Premio del sorteo
@@ -879,8 +800,7 @@ export default function GranPartidoClient() {
                   <strong className="text-slate-900">
                     solo quienes hayan votado por el país ganador
                   </strong>{" "}
-                  entran al bolillero. Entre ellos se sortean cursos de ProgramBI:
-                  Power BI, Python, SQL, IA, Excel y más.
+                  entran al bolillero. Entre ellos se sortean cursos de ProgramBI.
                 </p>
                 <ul className="space-y-3">
                   {[
@@ -930,10 +850,6 @@ export default function GranPartidoClient() {
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-slate-400 mt-3 text-center">
-                  + {Math.max(0, prizeCourses.length - 6)} cursos más al
-                  completar tu boleto
-                </p>
               </FadeIn>
             </div>
           </div>
@@ -941,30 +857,35 @@ export default function GranPartidoClient() {
       </section>
 
       {/* ═══════ TRUST ═══════ */}
-      <section className="relative py-10 bg-white border-y border-slate-200/80">
+      <section className="relative py-10 border-y border-slate-100 bg-gradient-to-r from-red-50/40 via-white to-sky-50/40">
         <div className="max-w-[1100px] mx-auto px-5 sm:px-6">
           <div className="grid sm:grid-cols-3 gap-4">
             {[
               {
                 icon: ShieldCheck,
                 title: "Un voto por miembro",
-                desc: "Solo cuentas autenticadas. Sin duplicados ni bots visibles.",
+                desc: "Solo cuentas autenticadas. Sin duplicados.",
+                iconBg: "bg-red-50 border-red-100 text-red-600",
               },
               {
                 icon: Star,
                 title: "Sorteo entre acertantes",
-                desc: "Únicamente quienes elijan al país ganador entran al bolillero.",
+                desc: "Solo quienes elijan al país ganador entran al bolillero.",
+                iconBg: "bg-amber-50 border-amber-100 text-amber-600",
               },
               {
                 icon: Gift,
                 title: "Premio de valor real",
                 desc: "Un curso profesional de ProgramBI a elección del ganador.",
+                iconBg: "bg-sky-50 border-sky-100 text-sky-600",
               },
             ].map((item, i) => (
               <FadeIn key={item.title} delay={i * 0.05}>
-                <div className="rounded-2xl border border-slate-200 bg-[#F7F9FC] p-5 flex gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-                    <item.icon size={18} className="text-emerald-600" />
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 flex gap-4 shadow-sm">
+                  <div
+                    className={`w-10 h-10 rounded-xl border flex items-center justify-center shrink-0 ${item.iconBg}`}
+                  >
+                    <item.icon size={18} />
                   </div>
                   <div>
                     <h3 className="font-bold text-sm mb-1 text-slate-900">
@@ -982,10 +903,10 @@ export default function GranPartidoClient() {
       </section>
 
       {/* ═══════ FAQ ═══════ */}
-      <section className="relative py-16 lg:py-20">
+      <section className="relative py-14 lg:py-16">
         <div className="max-w-2xl mx-auto px-5 sm:px-6">
           <FadeIn className="text-center mb-10">
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-600 mb-3">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-sky-600 mb-3">
               Preguntas frecuentes
             </p>
             <h2 className="font-display text-3xl font-black tracking-tight text-slate-950">
@@ -1003,20 +924,19 @@ export default function GranPartidoClient() {
       </section>
 
       {/* ═══════ FINAL CTA ═══════ */}
-      <section className="relative py-14 lg:py-20 pb-20">
+      <section className="relative py-12 lg:py-16 pb-16">
         <div className="max-w-3xl mx-auto px-5 sm:px-6 text-center">
           <FadeIn>
-            <div className="rounded-[32px] border border-slate-200 bg-white p-10 sm:p-14 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.15)] overflow-hidden relative">
-              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-500 via-emerald-500 to-sky-400" />
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 mb-5">
-                <Trophy className="text-emerald-600" size={26} />
+            <div className="rounded-[28px] border border-slate-200 bg-white p-10 sm:p-12 shadow-sm overflow-hidden relative">
+              <div className="absolute top-0 left-0 right-0 h-1.5 flex">
+                <div className="flex-1 bg-gradient-to-r from-red-600 to-amber-400" />
+                <div className="flex-1 bg-gradient-to-r from-sky-400 to-sky-200" />
               </div>
               <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight mb-4 text-slate-950">
                 ¿Listo para predecir?
               </h2>
               <p className="text-slate-600 mb-8 max-w-lg mx-auto leading-relaxed">
-                Elige tu equipo. Elige tu curso. Si aciertas al país ganador,
-                entras al sorteo de cursos de ProgramBI.
+                Elige tu equipo, elige tu curso y, si aciertas, entras al sorteo.
               </p>
               {hasVoted ? (
                 <Link
@@ -1029,7 +949,7 @@ export default function GranPartidoClient() {
               ) : (
                 <a
                   href="#votar"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-7 py-3.5 text-sm font-black shadow-[0_12px_32px_-10px_rgba(5,150,105,0.5)] hover:brightness-105 transition"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-red-600 via-amber-500 to-sky-500 text-white px-7 py-3.5 text-sm font-black shadow-lg hover:brightness-105 transition"
                 >
                   Ir a predecir
                   <ArrowRight size={16} />
