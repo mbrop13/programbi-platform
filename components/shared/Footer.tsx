@@ -172,6 +172,7 @@ export default function Footer() {
                   { label: "Registrarse", href: "/registro" },
                   { label: "Encuesta de satisfacción", href: "/feedback" },
                   { label: "Política de Privacidad", href: "/privacidad" },
+                  { label: "Términos y Condiciones", href: "/terminos" },
                 ].map((item) => (
                   <li key={item.href}>
                     <Link href={item.href} className="text-gray-500 hover:text-[#1890FF] transition-colors text-sm no-underline flex items-center gap-1.5 group">
@@ -235,6 +236,9 @@ export default function Footer() {
           <div className="flex gap-6 text-xs text-gray-400">
             <Link href="/privacidad" className="hover:text-[#1890FF] transition-colors no-underline">
               Política de Privacidad
+            </Link>
+            <Link href="/terminos" className="hover:text-[#1890FF] transition-colors no-underline">
+              Términos y Condiciones
             </Link>
           </div>
         </div>

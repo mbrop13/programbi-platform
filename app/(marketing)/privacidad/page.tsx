@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacidadPage() {
-  const lastUpdated = "14 de abril de 2026";
+  const lastUpdated = "15 de julio de 2026";
 
   return (
     <section className="min-h-screen bg-white py-20 lg:py-32">
@@ -96,6 +96,7 @@ export default function PrivacidadPage() {
                 ["Flow.cl", "procesamiento seguro de pagos (PCI DSS)."],
                 ["Supabase", "alojamiento seguro de base de datos con encriptación en reposo."],
                 ["Amazon SES", "envío de correos transaccionales."],
+                ["Google LLC", "proveedor de autenticación federada (OAuth) para facilitar el inicio de sesión y registro seguro."],
                 ["Vercel", "hosting de la aplicación web."],
               ].map(([provider, desc]) => (
                 <li key={provider} className="flex items-start gap-3">
