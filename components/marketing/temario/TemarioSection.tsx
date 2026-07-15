@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Award,
@@ -31,7 +31,6 @@ import {
   getCourseSyllabus,
   getSyllabusLevel,
   levelHours,
-  levelTopicCount,
   normalizeTopic,
   type BenefitItem,
   type SyllabusModule,
@@ -263,18 +262,15 @@ function ModuleCard({
                 {hours}h
               </span>
             )}
-            {module.subtitle && !hours && (
-              <span className="truncate" style={{ color: accent }}>
-                {module.subtitle}
+            {module.subtitle && (
+              <span className="truncate" style={{ color: hours ? undefined : accent }}>
+                {hours != null && hours > 0
+                  ? module.subtitle
+                      .replace(/^\d+\s*Horas?\s*•\s*/i, "")
+                      .replace(/^\d+h\s*·\s*/i, "")
+                  : module.subtitle}
               </span>
             )}
-            {module.subtitle && hours != null && hours > 0 && (
-              <span className="hidden truncate sm:inline text-slate-400">
-                {module.subtitle.replace(/^\d+\s*Horas?\s*•\s*/i, "").replace(/^\d+h\s*·\s*/i, "")}
-              </span>
-            )}
-            <span className="text-slate-300">·</span>
-            <span>{topics.length} temas</span>
           </div>
         </div>
 
@@ -414,12 +410,10 @@ export default function TemarioSection({
   course,
   selectedLevel,
   isFreeTrial,
-  sidebar,
 }: {
   course: Course;
   selectedLevel: number;
   isFreeTrial?: boolean;
-  sidebar?: ReactNode;
 }) {
   const syllabus = useMemo(() => getCourseSyllabus(course), [course]);
   const level = useMemo(
@@ -429,7 +423,6 @@ export default function TemarioSection({
 
   const accent = level.theme || syllabus.accent || course.accentColor || "#1890FF";
   const hours = levelHours(level) || course.levels?.[selectedLevel]?.durationHours || course.durationHours;
-  const topics = levelTopicCount(level);
   const modules = level.modules;
 
   const audience = level.audience || syllabus.audience;
@@ -499,11 +492,10 @@ export default function TemarioSection({
         </div>
 
         {/* Stats strip */}
-        <div className="mb-8 grid grid-cols-2 gap-3 sm:mb-12 sm:grid-cols-4 sm:gap-4">
+        <div className="mx-auto mb-8 grid max-w-4xl grid-cols-1 gap-3 sm:mb-12 sm:grid-cols-3 sm:gap-4">
           {[
             { icon: Clock, label: "Horas del nivel", value: `${hours}h` },
             { icon: Layers, label: "Módulos", value: String(modules.length) },
-            { icon: ListChecks, label: "Temas / clases", value: String(topics) },
             { icon: Award, label: "Al completar", value: "Certificado" },
           ].map((stat) => (
             <div
@@ -528,9 +520,7 @@ export default function TemarioSection({
           ))}
         </div>
 
-        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-12">
-          {/* Main column */}
-          <div className="space-y-8 sm:space-y-10 lg:col-span-7">
+        <div className="mx-auto max-w-4xl space-y-8 sm:space-y-10">
             {/* Outcomes */}
             {whatYouLearn && whatYouLearn.length > 0 && (
               <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm backdrop-blur-sm sm:rounded-3xl sm:p-8">
@@ -634,18 +624,6 @@ export default function TemarioSection({
                 </motion.div>
               </AnimatePresence>
             </div>
-          </div>
-
-          {/* Sticky sidebar */}
-          {sidebar && (
-            <div className="order-last lg:col-span-5 lg:sticky lg:top-28">
-              <h3 className="mb-6 flex items-center gap-2 font-display text-xl font-bold text-slate-800">
-                <span className="h-6 w-1.5 rounded" style={{ background: accent }} />
-                Laboratorio Interactivo de Datos
-              </h3>
-              {sidebar}
-            </div>
-          )}
         </div>
       </div>
     </section>
