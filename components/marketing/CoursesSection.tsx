@@ -289,14 +289,7 @@ export default function CoursesSection() {
                           </div>
                         )}
 
-                        {/* Icono flotante */}
-                        <div
-                          className="absolute top-3 right-3 w-9 h-9 rounded-xl bg-white/85 backdrop-blur-md border border-white flex items-center justify-center shadow-md transition-all duration-300 group-hover:scale-110"
-                          style={{ color: accent }}
-                        >
-                          <CardIcon className="w-4 h-4" />
                         </div>
-                      </div>
 
                       {/* Cuerpo */}
                       <div className="flex flex-col flex-1 p-5">

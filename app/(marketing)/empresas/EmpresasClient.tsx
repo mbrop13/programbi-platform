@@ -603,10 +603,7 @@ export default function EmpresasClient() {
                           {course.badgeLabel}
                         </span>
                       )}
-                      <div className="absolute top-3 right-3 w-9 h-9 rounded-xl bg-white/90 backdrop-blur-sm flex items-center justify-center text-[#0F172A] group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                        <DynamicIcon name={course.icon} className="w-4 h-4" />
                       </div>
-                    </div>
                     <div className="p-6 flex flex-col h-[calc(100%-180px)]">
                       <h3 className="font-display font-black text-lg text-[#0F172A] mb-2 leading-tight group-hover:text-blue-600 transition-colors">
                         {course.title}

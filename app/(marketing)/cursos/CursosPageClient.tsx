@@ -126,9 +126,6 @@ export default function CursosPageClient() {
                             {course.badgeLabel}
                           </div>
                         )}
-                        <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm w-10 h-10 rounded-xl flex items-center justify-center" style={{ color: course.accentColor }}>
-                          <DynamicIcon name={course.icon} className="w-5 h-5" />
-                        </div>
                       </div>
                       <div className="p-5 lg:p-6 flex flex-col flex-grow">
                         <h3 className="font-display font-bold text-lg text-[#0F172A] mb-2 group-hover:text-[#1890FF] transition-colors">{course.title}</h3>
