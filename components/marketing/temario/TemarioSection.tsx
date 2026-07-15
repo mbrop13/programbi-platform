@@ -454,7 +454,7 @@ export default function TemarioSection({
   return (
     <section
       id="temario"
-      className="relative z-10 overflow-hidden border-t border-slate-100 bg-[#F8FAFC] py-12 lg:py-24"
+      className="relative z-10 overflow-hidden border-t border-slate-100 bg-white py-12 lg:py-24"
     >
       {/* Background décor */}
       <div

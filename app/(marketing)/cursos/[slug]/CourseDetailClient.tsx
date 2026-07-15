@@ -181,7 +181,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
   const themeGlows = useMemo(() => {
     return {
-      bg: "bg-gradient-to-br from-blue-50/50 via-slate-50 to-slate-50",
+      bg: "bg-white",
       glow1: "#1890FF",
       glow2: "#6366F1",
       glow3: "#8B5CF6"
@@ -664,7 +664,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       <section className="py-16 lg:py-20 bg-white border-t border-gray-100 overflow-hidden">
         <div className="max-w-[1000px] mx-auto px-5 lg:px-10">
           <FadeIn>
-            <div className="flex flex-col md:flex-row gap-8 items-center md:items-start bg-[#F8FAFC] rounded-[2rem] p-8 lg:p-12 border border-gray-100 shadow-sm">
+            <div className="flex flex-col md:flex-row gap-8 items-center md:items-start bg-white rounded-[2rem] p-8 lg:p-12 border border-gray-200/80 shadow-sm">
               <div className="w-40 h-40 md:w-48 md:h-48 shrink-0 relative group">
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-blue-50 rounded-3xl -rotate-6 group-hover:-rotate-3 transition-transform duration-300 z-0" style={{ backgroundColor: "#1890FF20" }} />
                 <div className="relative w-full h-full rounded-3xl overflow-hidden border-4 border-white shadow-xl z-10 bg-white transition-transform duration-300 group-hover:scale-[1.02]">
@@ -836,7 +836,7 @@ function CourseContactForm({ course }: { course: Course }) {
   const isPersonal = contactType === "personal";
 
   return (
-    <section className="py-16 lg:py-24 bg-[#F8FAFC] overflow-hidden">
+    <section className="py-16 lg:py-24 bg-white border-t border-slate-100 overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-5 lg:px-10">
         <div className="grid lg:grid-cols-2 gap-12 items-start">
           {/* Left: Info */}
@@ -952,12 +952,12 @@ function CourseContactForm({ course }: { course: Course }) {
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre *</label>
                         <input type="text" name="name" required placeholder="Tu nombre"
-                          className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                          className="w-full rounded-xl p-4 text-sm bg-slate-50/80 border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email *</label>
                         <input type="email" name="email" required placeholder={isPersonal ? "tu@email.com" : "contacto@empresa.com"}
-                          className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                          className="w-full rounded-xl p-4 text-sm bg-slate-50/80 border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
                       </div>
                     </div>
 
@@ -1003,17 +1003,17 @@ function CourseContactForm({ course }: { course: Course }) {
                           <div className="space-y-2">
                             <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Empresa *</label>
                             <input type="text" name="company" required placeholder="Nombre empresa"
-                              className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                              className="w-full rounded-xl p-4 text-sm bg-slate-50/80 border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
                           </div>
                           <div className="space-y-2">
                             <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Cargo</label>
                             <input type="text" name="position" placeholder="Ej: Gerente TI"
-                              className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                              className="w-full rounded-xl p-4 text-sm bg-slate-50/80 border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
                           </div>
                           <div className="space-y-2">
                             <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">N° personas</label>
                             <input type="number" name="employeeCount" min="1" placeholder="10"
-                              className="w-full rounded-xl p-4 text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                              className="w-full rounded-xl p-4 text-sm bg-slate-50/80 border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
                           </div>
                         </div>
 
@@ -1038,7 +1038,7 @@ function CourseContactForm({ course }: { course: Course }) {
                       <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Detalle o dudas adicionales</label>
                       <textarea name="message" rows={3}
                         placeholder={isPersonal ? "¿Tienes alguna consulta específica sobre el temario o proceso?" : "Cuéntanos tus necesidades: ¿cuántas personas? ¿qué herramientas usan actualmente?"}
-                        className="w-full rounded-xl p-4 resize-none text-sm bg-[#F8FAFC] border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
+                        className="w-full rounded-xl p-4 resize-none text-sm bg-slate-50/80 border border-[#E2E8F0] text-gray-900 focus:bg-white focus:border-[#1890FF] focus:ring-4 focus:ring-blue-100 outline-none transition-all" />
                     </div>
 
                     {/* Honeypot — invisible to humans */}
