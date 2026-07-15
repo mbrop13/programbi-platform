@@ -40,7 +40,7 @@ export default function CursosPageClient() {
       `}} />
 
       {/* ════ PREMIUM HERO & SEARCH ════ */}
-      <section className="relative -mt-20 lg:-mt-24 pt-32 lg:pt-44 pb-6 lg:pb-8 overflow-hidden bg-[#F8FAFC]">
+      <section className="relative -mt-20 lg:-mt-24 pt-24 lg:pt-32 pb-6 lg:pb-8 overflow-hidden bg-[#F8FAFC]">
         {/* Abstract Background Elements */}
         <div className="absolute inset-0 z-0 pointer-events-none opacity-40" style={{
           backgroundSize: "60px 60px",
@@ -50,11 +50,6 @@ export default function CursosPageClient() {
         <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-[#6366F1] rounded-full blur-[120px] opacity-[0.07] pointer-events-none" />
 
         <div className="relative z-10 max-w-[900px] mx-auto px-5 lg:px-10 text-center">
-          <FadeIn>
-            <span className="inline-flex items-center gap-2 bg-blue-50 text-[#1890FF] font-bold text-xs tracking-widest uppercase px-5 py-2.5 rounded-full border border-blue-100 mb-6">
-              <Sparkles size={14} /> Catálogo Formativo Completo
-            </span>
-          </FadeIn>
           <FadeIn delay={0.15}>
             <h1 className="font-display font-black text-4xl sm:text-5xl lg:text-7xl text-[#0F172A] mb-5 leading-tight tracking-tight flex flex-col items-center justify-center gap-2">
               <span className="font-handwritten text-3xl sm:text-5xl lg:text-6xl text-black font-semibold lowercase tracking-wide px-2" style={{ transform: 'rotate(-2deg)' }}>

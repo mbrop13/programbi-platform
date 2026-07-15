@@ -117,9 +117,9 @@ export default function Footer() {
 
       {/* ═══ MAIN FOOTER ═══ */}
       <div className="max-w-[1200px] mx-auto px-5 lg:px-10 py-12 lg:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 lg:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-10 lg:gap-8">
           {/* Brand */}
-          <div className="col-span-2 md:col-span-3 lg:col-span-2 pr-8">
+          <div className="col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-2 pr-8">
             <Image src={LOGO_URL} alt="ProgramBI" width={160} height={45} className="h-10 w-auto mb-5" unoptimized />
             <p className="text-[15px] text-gray-500 leading-relaxed mb-6 max-w-[380px]">
               Comprometidos con la educación tecnológica. Nuestra metodología se basa en casos reales para prepararte con las herramientas más demandadas del mercado laboral.
@@ -185,7 +185,7 @@ export default function Footer() {
             </div>
 
           {/* Contacto */}
-          <div>
+          <div className="col-span-1 sm:col-span-2 md:col-span-1">
             <h3 className="font-display font-extrabold text-[13px] text-[#0F172A] uppercase tracking-[0.15em] mb-5">
               Contacto
             </h3>
