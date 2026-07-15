@@ -87,13 +87,6 @@ export default function FounderSection() {
 
           {/* Bio Column */}
           <div className="lg:col-span-7 text-left">
-            <FadeIn>
-              <span className="inline-flex items-center gap-2 bg-blue-50 text-[#1890FF] font-bold text-[11px] uppercase tracking-[0.18em] px-3.5 py-1.5 rounded-full mb-6 border border-blue-100/60 shadow-sm backdrop-blur-sm">
-                <Sparkles className="w-3.5 h-3.5" />
-                El Profesor
-              </span>
-            </FadeIn>
-
             <FadeIn delay={0.15}>
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-800 to-[#1890FF] mb-2 font-display tracking-tight leading-[1.1]">
                 Manuel Oliva
