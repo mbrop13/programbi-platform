@@ -371,7 +371,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               {/* Schedules Dropdown container */}
               <div className="w-full space-y-6 max-w-[580px]">
                 {/* Level Selector (Single, in Hero) */}
-                {levels.length > 0 && (
+                {levels.length > 1 && (
                   <FadeIn delay={0.25} className="w-full">
                     <label className="text-[10px] font-bold text-slate-400 tracking-widest uppercase mb-2 block">
                       Selecciona el Nivel del Curso
