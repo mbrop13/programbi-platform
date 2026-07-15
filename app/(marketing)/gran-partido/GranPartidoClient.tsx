@@ -31,6 +31,18 @@ const EXCLUDED_PRIZE_SLUGS = new Set([
   "analitica-mineria",
 ]);
 
+/** Orden preferido en el selector de premios */
+const PRIZE_ORDER = [
+  "power-bi",
+  "sql-server",
+  "python",
+  "excel",
+  "copilot",
+  "power-automate",
+  "ia-productividad",
+  "machine-learning",
+];
+
 type TeamId = "espana" | "argentina";
 
 interface Stats {
@@ -244,19 +256,18 @@ export default function GranPartidoClient() {
   const [stats, setStats] = useState<Stats>({ espana: 0, argentina: 0, total: 0 });
   const [userVote, setUserVote] = useState<UserVote | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<TeamId | null>(null);
-  const prizeCourses = useMemo(
-    () =>
-      courses
-        .filter((c) => !EXCLUDED_PRIZE_SLUGS.has(c.slug))
-        .sort((a, b) => a.sortOrder - b.sortOrder),
-    []
-  );
+  const prizeCourses = useMemo(() => {
+    const eligible = courses.filter((c) => !EXCLUDED_PRIZE_SLUGS.has(c.slug));
+    return eligible.sort((a, b) => {
+      const ai = PRIZE_ORDER.indexOf(a.slug);
+      const bi = PRIZE_ORDER.indexOf(b.slug);
+      const aRank = ai === -1 ? 1000 + a.sortOrder : ai;
+      const bRank = bi === -1 ? 1000 + b.sortOrder : bi;
+      return aRank - bRank;
+    });
+  }, []);
 
-  const [selectedCourse, setSelectedCourse] = useState(
-    () =>
-      courses.find((c) => !EXCLUDED_PRIZE_SLUGS.has(c.slug))?.slug ??
-      "power-bi"
-  );
+  const [selectedCourse, setSelectedCourse] = useState("power-bi");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -374,17 +385,31 @@ export default function GranPartidoClient() {
       {/* ═══════ HERO ═══════ */}
       <section className="relative pt-4 sm:pt-6 pb-10 lg:pb-14">
         <div className="max-w-[1100px] mx-auto px-5 sm:px-6">
-          {/* Intro corta — sin badge ni título largo */}
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-center text-sm sm:text-base text-slate-600 max-w-xl mx-auto mb-6 sm:mb-8 leading-relaxed"
-          >
-            Elige entre{" "}
-            <strong className="text-red-700">España</strong> y{" "}
-            <strong className="text-sky-700">Argentina</strong>. Entre quienes
-            acierten al país ganador se sortearán cursos a elección.
-          </motion.p>
+          <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8">
+            <motion.h1
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="font-display text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] mb-3 text-slate-950"
+            >
+              ¿Quién ganará el{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-amber-500 to-sky-500">
+                Gran Partido
+              </span>
+              ?
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed"
+            >
+              Elige entre{" "}
+              <strong className="text-red-700">España</strong> y{" "}
+              <strong className="text-sky-700">Argentina</strong>. Entre quienes
+              acierten al país ganador se sortearán cursos a elección.
+            </motion.p>
+          </div>
 
           {/* VS — solo tarjetas de equipos */}
           <motion.div
@@ -516,7 +541,7 @@ export default function GranPartidoClient() {
           </motion.div>
 
           {/* Panel inferior: éxito / login / cursos */}
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             {hasVoted ? (
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
@@ -616,7 +641,7 @@ export default function GranPartidoClient() {
                       Si aciertas, entras al sorteo de este curso.
                     </p>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[360px] overflow-y-auto pr-1">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
                       {prizeCourses.map((c) => {
                         const selected = selectedCourse === c.slug;
                         return (
@@ -624,46 +649,71 @@ export default function GranPartidoClient() {
                             key={c.slug}
                             type="button"
                             onClick={() => setSelectedCourse(c.slug)}
-                            className={`group relative text-left rounded-2xl border-2 overflow-hidden transition-all duration-200 ${
+                            className={`group relative text-left rounded-2xl border overflow-hidden bg-white flex flex-col h-full transition-all duration-300 ${
                               selected
                                 ? selectedTeamData?.id === "argentina"
-                                  ? "border-sky-500 shadow-md ring-2 ring-sky-400/20 bg-sky-50/50"
-                                  : "border-red-500 shadow-md ring-2 ring-red-400/20 bg-red-50/40"
-                                : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
+                                  ? "border-sky-500 shadow-[0_16px_40px_-12px_rgba(14,165,233,0.35)] ring-2 ring-sky-400/25"
+                                  : "border-red-500 shadow-[0_16px_40px_-12px_rgba(220,38,38,0.3)] ring-2 ring-red-400/25"
+                                : "border-gray-100 hover:border-[#BAE7FF] hover:shadow-[0_16px_40px_-12px_rgba(15,23,42,0.1)] hover:-translate-y-1"
                             }`}
                           >
-                            <div className="relative h-28 w-full bg-slate-100 overflow-hidden">
+                            <div className="relative h-[160px] sm:h-[180px] w-full overflow-hidden bg-slate-50 shrink-0">
                               <Image
                                 src={c.imageUrl}
                                 alt={c.title}
                                 fill
-                                className="object-cover transition-transform duration-300 group-hover:scale-105"
-                                sizes="(max-width: 640px) 100vw, 280px"
+                                unoptimized
+                                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                sizes="(max-width: 640px) 100vw, 400px"
                               />
-                              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent" />
                               {selected && (
                                 <div
-                                  className={`absolute top-2 right-2 w-7 h-7 rounded-full text-white flex items-center justify-center shadow ${
+                                  className={`absolute top-3 right-3 w-8 h-8 rounded-full text-white flex items-center justify-center shadow-lg ${
                                     selectedTeamData?.id === "argentina"
                                       ? "bg-sky-600"
                                       : "bg-red-600"
                                   }`}
                                 >
-                                  <CheckCircle2 size={15} />
+                                  <CheckCircle2 size={17} />
                                 </div>
                               )}
-                              <div
-                                className="absolute bottom-0 left-0 right-0 h-1"
-                                style={{ backgroundColor: c.accentColor }}
-                              />
+                              {c.badgeLabel && !selected && (
+                                <div
+                                  className="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-white text-[10px] font-bold shadow-sm"
+                                  style={{
+                                    backgroundColor:
+                                      c.badgeColor || c.accentColor,
+                                  }}
+                                >
+                                  {c.badgeLabel}
+                                </div>
+                              )}
                             </div>
-                            <div className="p-3">
-                              <p className="text-sm font-bold text-slate-900 leading-snug line-clamp-2">
+                            <div className="p-4 sm:p-5 flex flex-col flex-grow">
+                              <p
+                                className={`font-display font-bold text-base sm:text-lg leading-snug mb-1.5 transition-colors ${
+                                  selected
+                                    ? selectedTeamData?.id === "argentina"
+                                      ? "text-sky-700"
+                                      : "text-red-700"
+                                    : "text-slate-900 group-hover:text-[#1890FF]"
+                                }`}
+                              >
                                 {c.title}
                               </p>
-                              <p className="text-[11px] text-slate-500 mt-1 line-clamp-1">
-                                {c.techStack.join(" · ")}
+                              <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-3">
+                                {c.shortDescription}
                               </p>
+                              <div className="flex flex-wrap gap-1.5 mt-auto">
+                                {c.techStack.slice(0, 3).map((tech) => (
+                                  <span
+                                    key={tech}
+                                    className="px-2 py-0.5 bg-slate-50 text-slate-600 text-[11px] font-semibold rounded border border-slate-100"
+                                  >
+                                    {tech}
+                                  </span>
+                                ))}
+                              </div>
                             </div>
                           </button>
                         );
@@ -671,8 +721,8 @@ export default function GranPartidoClient() {
                     </div>
 
                     {selectedCourseData && (
-                      <p className="text-xs text-slate-500 mt-4 leading-relaxed bg-white/80 border border-slate-100 rounded-xl px-3 py-2">
-                        <span className="font-semibold text-slate-700">
+                      <p className="text-sm text-slate-600 mt-5 leading-relaxed bg-white border border-slate-100 rounded-xl px-4 py-3 text-center">
+                        <span className="font-semibold text-slate-800">
                           Curso elegido:{" "}
                         </span>
                         {selectedCourseData.title}
@@ -777,10 +827,6 @@ export default function GranPartidoClient() {
       <section className="relative py-14 lg:py-16">
         <div className="max-w-[1100px] mx-auto px-5 sm:px-6">
           <div className="rounded-[32px] border border-slate-200 bg-white p-8 sm:p-12 overflow-hidden relative shadow-sm">
-            <div className="absolute top-0 left-0 right-0 h-1.5 flex">
-              <div className="flex-1 bg-gradient-to-r from-red-600 to-amber-400" />
-              <div className="flex-1 bg-gradient-to-r from-sky-400 to-sky-200" />
-            </div>
             <div className="absolute -right-20 top-10 w-72 h-72 bg-red-200/20 blur-[90px] pointer-events-none" />
             <div className="absolute -left-20 bottom-0 w-72 h-72 bg-sky-200/25 blur-[90px] pointer-events-none" />
 
@@ -928,10 +974,6 @@ export default function GranPartidoClient() {
         <div className="max-w-3xl mx-auto px-5 sm:px-6 text-center">
           <FadeIn>
             <div className="rounded-[28px] border border-slate-200 bg-white p-10 sm:p-12 shadow-sm overflow-hidden relative">
-              <div className="absolute top-0 left-0 right-0 h-1.5 flex">
-                <div className="flex-1 bg-gradient-to-r from-red-600 to-amber-400" />
-                <div className="flex-1 bg-gradient-to-r from-sky-400 to-sky-200" />
-              </div>
               <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight mb-4 text-slate-950">
                 ¿Listo para predecir?
               </h2>
