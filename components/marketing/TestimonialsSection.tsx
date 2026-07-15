@@ -308,7 +308,7 @@ export default function TestimonialsSection() {
     ));
 
   return (
-    <section className="py-10 lg:py-14 bg-surface-1 relative overflow-hidden">
+    <section className="py-10 lg:py-14 bg-white relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 dot-pattern opacity-25 pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-b from-[#1890FF]/4 to-transparent rounded-full blur-[150px] pointer-events-none" />
@@ -343,7 +343,6 @@ export default function TestimonialsSection() {
         {/* Header */}
         <div className="max-w-6xl mx-auto px-5 lg:px-10">
           <SectionHeader
-            eyebrow="Testimonios"
             icon={MessageSquareText}
             title={
               <>
@@ -365,9 +364,9 @@ export default function TestimonialsSection() {
           onMouseLeave={handleMouseLeave}
         >
           {/* Left fade mask — hidden on mobile */}
-          <div className="hidden sm:block absolute left-0 top-0 bottom-0 w-28 md:w-44 bg-gradient-to-r from-surface-1 via-surface-1/80 to-transparent z-20 pointer-events-none" />
+          <div className="hidden sm:block absolute left-0 top-0 bottom-0 w-28 md:w-44 bg-gradient-to-r from-white via-white/80 to-transparent z-20 pointer-events-none" />
           {/* Right fade mask — hidden on mobile */}
-          <div className="hidden sm:block absolute right-0 top-0 bottom-0 w-28 md:w-44 bg-gradient-to-l from-surface-1 via-surface-1/80 to-transparent z-20 pointer-events-none" />
+          <div className="hidden sm:block absolute right-0 top-0 bottom-0 w-28 md:w-44 bg-gradient-to-l from-white via-white/80 to-transparent z-20 pointer-events-none" />
 
           {/* Scrolling track — JS auto-scroll + drag-to-scroll */}
           <div
