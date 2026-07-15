@@ -301,11 +301,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
             <h1 className="font-display font-black text-3xl sm:text-4xl text-slate-900 mb-3 leading-tight tracking-tight">
               {course.title}
             </h1>
-            {(course.slug === "analisis-de-datos" || course.slug === "analitica-mineria" || course.slug === "analitica-financiera") && (
+            {(course.slug === "analitica-mineria" || course.slug === "analitica-financiera") && (
               <p className="text-xs font-black uppercase tracking-wider mb-4 text-[#1890FF]">
-                {course.slug === "analisis-de-datos"
-                  ? "★ 144 HORAS POR 3 NIVELES (48 HORAS POR NIVEL)"
-                  : "★ INCLUYE POWER BI + PYTHON + SQL SERVER EN UN SOLO PROGRAMA"}
+                ★ INCLUYE POWER BI + PYTHON + SQL SERVER EN UN SOLO PROGRAMA
               </p>
             )}
           </div>
@@ -328,11 +326,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                   <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-slate-900 mb-3 leading-tight tracking-tight">
                     {course.title}
                   </h1>
-                  {(course.slug === "analisis-de-datos" || course.slug === "analitica-mineria" || course.slug === "analitica-financiera") && (
+                  {(course.slug === "analitica-mineria" || course.slug === "analitica-financiera") && (
                     <p className="text-xs sm:text-sm font-black uppercase tracking-wider mb-4 text-[#1890FF]">
-                      {course.slug === "analisis-de-datos"
-                        ? "★ 144 HORAS POR 3 NIVELES (48 HORAS POR NIVEL)"
-                        : "★ INCLUYE POWER BI + PYTHON + SQL SERVER EN UN SOLO PROGRAMA"}
+                      ★ INCLUYE POWER BI + PYTHON + SQL SERVER EN UN SOLO PROGRAMA
                     </p>
                   )}
                 </FadeIn>
@@ -642,7 +638,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                         <div className="space-y-2.5 sm:space-y-3">
                           {[
                             { text: "Clases Online en Vivo vía Zoom", icon: "💻" },
-                            { text: `${course.durationHours} Horas de formación total`, icon: "⏱️" },
+                            { text: course.slug === "analisis-de-datos" ? "48 Horas por nivel" : `${course.durationHours} Horas de formación total`, icon: "⏱️" },
                             { text: "Acceso ilimitado a grabaciones 24/7", icon: "📂" },
                             { text: "Certificado de aprobación oficial", icon: "🎓" },
                             { text: "Proyectos prácticos con datos reales", icon: "📊" },
