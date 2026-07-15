@@ -136,9 +136,7 @@ export default function FounderSection() {
                       { text: "Contador Auditor", sub: "(U. de Concepción)" },
                     ].map((item, i) => (
                       <li key={i} className="flex items-start gap-3 group text-slate-500 list-none">
-                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#1890FF]/12 to-blue-500/8 border border-[#1890FF]/20 flex items-center justify-center text-[#1890FF] shrink-0 mt-0.5 group-hover:from-[#1890FF] group-hover:to-blue-600 group-hover:text-white transition-all">
-                          <BookOpen className="w-3.5 h-3.5" />
-                        </div>
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#1890FF] mt-2 flex-shrink-0" />
                         <span className="text-xs md:text-sm leading-relaxed font-sans">
                           <strong className="text-slate-800 font-bold">{item.text}</strong> <span className="text-slate-400">{item.sub}</span>
                         </span>
@@ -160,9 +158,7 @@ export default function FounderSection() {
                       "Ex-Gerente de Riesgos Renta 4",
                     ].map((item, i) => (
                       <li key={i} className="flex items-start gap-3 group text-slate-500 list-none">
-                        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500/12 to-violet-500/8 border border-indigo-500/20 flex items-center justify-center text-indigo-500 shrink-0 mt-0.5 group-hover:from-indigo-500 group-hover:to-violet-600 group-hover:text-white transition-all">
-                          <Briefcase className="w-3.5 h-3.5" />
-                        </div>
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-2 flex-shrink-0" />
                         <span className="text-xs md:text-sm leading-relaxed font-sans text-slate-600">
                           {item}
                         </span>
@@ -170,26 +166,6 @@ export default function FounderSection() {
                     ))}
                   </ul>
                 </div>
-              </div>
-            </FadeIn>
-
-            {/* Trust metrics consolidadas (refuerzo sutil, sin duplicar el Hero) */}
-            <FadeIn delay={0.45}>
-              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-6 mt-6 border-t border-slate-100 select-none">
-                <div className="flex items-center gap-2">
-                  <Award className="w-4 h-4 text-[#1890FF]" />
-                  <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider font-sans">
-                    Magíster en Data Science (UAI)
-                  </span>
-                </div>
-                <div className="w-1 h-1 rounded-full bg-slate-300" />
-                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider font-sans">
-                  Profesor MBA & Magíster TI (UGM)
-                </span>
-                <div className="w-1 h-1 rounded-full bg-slate-300" />
-                <span className="text-[11px] text-slate-400 font-bold uppercase tracking-wider font-sans">
-                  Ex-Banco Itaú · Renta 4
-                </span>
               </div>
             </FadeIn>
           </div>
