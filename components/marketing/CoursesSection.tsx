@@ -135,7 +135,7 @@ export default function CoursesSection() {
       case "python":
         return courses.filter(c => ["python", "machine-learning", "analitica-mineria", "analitica-financiera"].includes(c.slug));
       case "auto":
-        return courses.filter(c => ["power-automate", "ia-productividad"].includes(c.slug));
+        return courses.filter(c => ["power-automate", "ia-productividad", "copilot"].includes(c.slug));
       default:
         return courses.filter(c => c.isFeatured);
     }
@@ -150,7 +150,7 @@ export default function CoursesSection() {
       case "python":
         return courses.filter(c => ["python", "machine-learning", "analitica-mineria", "analitica-financiera"].includes(c.slug)).length;
       case "auto":
-        return courses.filter(c => ["power-automate", "ia-productividad"].includes(c.slug)).length;
+        return courses.filter(c => ["power-automate", "ia-productividad", "copilot"].includes(c.slug)).length;
       default:
         return 0;
     }

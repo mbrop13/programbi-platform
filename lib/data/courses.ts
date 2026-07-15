@@ -136,6 +136,82 @@ export const courses: Course[] = [
     ],
   },
   {
+    slug: "copilot",
+    title: "Curso de GitHub Copilot & IA",
+    shortDescription:
+      "Domina GitHub Copilot y herramientas de IA para acelerar tu desarrollo, automatizar código y multiplicar tu productividad.",
+    description:
+      "Aprende a integrar GitHub Copilot, ChatGPT y asistentes de IA en tu flujo de trabajo diario. Domina técnicas de prompt engineering para desarrollo, autocompletado inteligente, refactorización y depuración de código en SQL, Python y JavaScript.",
+    category: "automatizacion",
+    categoryLabel: "NUEVO 2026",
+    badgeLabel: "NUEVO 2026",
+    badgeColor: "#7C3AED",
+    techStack: ["GitHub Copilot", "ChatGPT", "VS Code"],
+    durationHours: 16,
+    modality: "online",
+    level: "principiante a intermedio",
+    imageUrl:
+      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2064&auto=format&fit=crop",
+    icon: "Sparkles",
+    accentColor: "#7C3AED",
+    isFeatured: true,
+    sortOrder: 2,
+    whatYouLearn: [
+      "Prompt Engineering aplicado a la generación de código",
+      "Autocompletado y sugerencias multilínea con GitHub Copilot",
+      "Depuración y refactorización automática de código SQL y Python",
+      "Creación de pruebas unitarias guiadas por IA",
+      "Uso de chat interactivo (Copilot Chat) para documentar y explicar código complejo",
+      "Integración de agentes inteligentes en VS Code",
+    ],
+    syllabus: [
+      {
+        module: "Módulo 1: Fundamentos de IA y Prompting",
+        topics: [
+          "Introducción a los Modelos de Lenguaje en desarrollo de software",
+          "Técnicas avanzadas de prompts para programadores",
+          "Configuración del entorno en VS Code con Copilot",
+          "Buenas prácticas de seguridad y privacidad del código",
+        ],
+        hours: 4,
+      },
+      {
+        module: "Módulo 2: GitHub Copilot en Acción",
+        topics: [
+          "Autocompletado inteligente en tiempo real",
+          "Generación de código a partir de comentarios",
+          "Uso avanzado de Copilot Chat y comandos rápidos",
+          "Creación automática de documentación y pruebas unitarias",
+        ],
+        hours: 6,
+      },
+      {
+        module: "Módulo 3: Automatización y Análisis con IA",
+        topics: [
+          "Generación de queries SQL complejas con ayuda de IA",
+          "Scripts de automatización en Python (Pandas y APIs)",
+          "Refactorización y optimización de código legado",
+          "Proyecto final: Creación de una aplicación asistida por IA",
+        ],
+        hours: 6,
+      },
+    ],
+    levels: [
+      { 
+        name: "Único", 
+        price: 249000, 
+        originalPrice: 498000,
+        durationHours: 16, 
+        whatYouLearn: [
+          "Fundamentos y prompting de código con IA", 
+          "GitHub Copilot y Copilot Chat para desarrollo diario", 
+          "Refactorización, depuración y pruebas automatizadas", 
+          "Automatización de consultas SQL y scripts Python"
+        ] 
+      },
+    ],
+  },
+  {
     slug: "power-automate",
     title: "Power Automate & RPA",
     shortDescription:
