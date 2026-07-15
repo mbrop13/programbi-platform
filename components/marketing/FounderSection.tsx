@@ -90,7 +90,7 @@ export default function FounderSection() {
             <FadeIn>
               <span className="inline-flex items-center gap-2 bg-blue-50 text-[#1890FF] font-bold text-[11px] uppercase tracking-[0.18em] px-3.5 py-1.5 rounded-full mb-6 border border-blue-100/60 shadow-sm backdrop-blur-sm">
                 <Sparkles className="w-3.5 h-3.5" />
-                La Historia Detrás de ProgramBI
+                El Profesor
               </span>
             </FadeIn>
 
