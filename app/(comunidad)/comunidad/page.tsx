@@ -8,6 +8,7 @@ import CommunityFeatures from "@/components/comunidad/CommunityFeatures";
 import CommunityFaq from "@/components/comunidad/CommunityFaq";
 import LogoSlider from "@/components/marketing/LogoSlider";
 import TestimonialsSection from "@/components/marketing/TestimonialsSection";
+import FounderSection from "@/components/marketing/FounderSection";
 
 export default async function ComunidadPage() {
   const profile = await getCurrentUserProfile();
@@ -45,6 +46,8 @@ export default async function ComunidadPage() {
         />
         {/* ─── TESTIMONIOS ─── */}
         <TestimonialsSection />
+        {/* ─── EL PROFESOR ─── */}
+        <FounderSection />
         {/* ─── FAQ ─── */}
         <CommunityFaq />
       </main>
