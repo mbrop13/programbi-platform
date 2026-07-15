@@ -139,20 +139,21 @@ export default function WebinarClient() {
   const targetOffset = country.timezone.offset;
   const diff = targetOffset - chileOffset;
   
-  const baseHour = 19;
-  const localTime = convertTime("19:30");
+  const baseHour = 11;
+  const localTime = convertTime("11:00");
   
   const targetHourRaw = baseHour + diff;
   const isNextDay = targetHourRaw >= 24;
   const isPrevDay = targetHourRaw < 0;
 
   const localDateStr = isNextDay 
-    ? "Viernes 26 de Junio" 
+    ? "Domingo 2 de Agosto" 
     : isPrevDay 
-    ? "Miércoles 24 de Junio" 
-    : "Jueves 25 de Junio";
+    ? "Viernes 31 de Julio" 
+    : "Sábado 1 de Agosto";
 
-  const localDayNumber = isNextDay ? 26 : isPrevDay ? 24 : 25;
+  const localDayNumber = isNextDay ? 2 : isPrevDay ? 31 : 1;
+  const localMonthStr = isPrevDay ? "JUL" : "AGO";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -168,7 +169,7 @@ export default function WebinarClient() {
           email: form.email, 
           whatsapp: form.phone ? `${phonePrefix}${form.phone}` : null,
           message: "Inscripción Webinar — De Excel a Analista de Alto Impacto",
-          selectedCourses: ["Webinar Junio 2026"], 
+          selectedCourses: ["Webinar Agosto 2026"], 
           leadType: "webinar",
           sourceCourse: "webinar",
           ...getAntiBotFields(formLoadedAt.current, honeypot),
@@ -234,12 +235,12 @@ export default function WebinarClient() {
                 {/* Dynamic Timezone Calendar Box */}
                 <div className="bg-white/70 backdrop-blur-md border border-slate-200/60 rounded-3xl p-5 mb-8 flex items-center gap-5 max-w-md shadow-[0_8px_30px_rgb(0,0,0,0.02)] select-none">
                   <div className="w-16 h-16 bg-gradient-to-br from-[#1890FF] to-indigo-600 border border-blue-400/10 rounded-2xl flex flex-col items-center justify-center shrink-0 shadow-[0_6px_20px_rgba(24,144,255,0.2)]">
-                    <span className="text-[10px] font-black text-blue-100 uppercase tracking-widest">JUN</span>
+                    <span className="text-[10px] font-black text-blue-100 uppercase tracking-widest">{localMonthStr}</span>
                     <span className="text-2xl font-black text-white leading-none mt-0.5">{localDayNumber}</span>
                   </div>
                   <div>
                     <p className="text-slate-900 font-extrabold text-base sm:text-lg leading-snug">{localDateStr}</p>
-                    <p className="text-slate-550 text-xs sm:text-sm font-semibold mt-1 flex items-center gap-1.5">
+                    <p className="text-slate-555 text-xs sm:text-sm font-semibold mt-1 flex items-center gap-1.5">
                       <Clock size={13} className="text-[#1890FF]" />
                       <span>{localTime} hrs ({country.name})</span>
                       <span className="w-1 h-1 bg-slate-300 rounded-full" />
