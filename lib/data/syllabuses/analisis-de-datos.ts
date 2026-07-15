@@ -1,0 +1,175 @@
+import type { CourseSyllabusData } from "./types";
+
+export const analisisDeDatosSyllabus: CourseSyllabusData = {
+  slug: "analisis-de-datos",
+  accent: "#1890FF",
+  programYear: "2026",
+  audience:
+    "Ideal para perfiles administrativos, financieros, comerciales, ingenieros y analistas que buscan dominar el ciclo completo del dato. Desde principiantes hasta quienes requieren análisis predictivo y automatización avanzada.",
+  audienceNote: "Formación Escalonada: Dominio de Básico, Intermedio y Avanzado en las 3 herramientas.",
+  benefits: [
+    { title: "Automatización Total", description: "Reduce horas de trabajo conectando directamente a BD corporativas." },
+    { title: "Visualización de Impacto", description: "Dashboards dinámicos para decisiones críticas de negocio." },
+    { title: "Consultas Eficientes", description: "Extrae y cruza información con SQL Server sin depender de TI." },
+    { title: "Ciencia de Datos", description: "Analítica predictiva y limpieza tabular con Pandas y Plotly." },
+    { title: "IA Transversal", description: "Uso de Inteligencia Artificial en cada módulo para generar código." },
+  ],
+  levels: [
+    {
+      id: "nivel1",
+      label: "Nivel I: Básico",
+      shortLabel: "Fundamentos (48h)",
+      theme: "#1890FF",
+      intro:
+        "Ideal para principiantes. El objetivo es establecer bases sólidas en las tres tecnologías, enfocándose en la automatización inicial.",
+      modules: [
+        {
+          id: "n1-pbi",
+          title: "Módulo Power BI",
+          hours: 16,
+          subtitle: "16 Horas • Dashboards e Informes Iniciales",
+          icon: "powerbi",
+          topics: [
+            "Introducción al entorno, instalaciones y cuentas.",
+            "Power Query: Importación desde Excel, SQL y APIs.",
+            "Limpieza básica de datos, cálculos y columnas a medida.",
+            "Visualizaciones iniciales: Barras, líneas, mapas y KPIs.",
+            "Integración de IA: Lenguaje natural (Q&A) y tendencias automáticas.",
+          ],
+        },
+        {
+          id: "n1-sql",
+          title: "Módulo SQL Server",
+          hours: 16,
+          subtitle: "16 Horas • Consultas y Filtros Base",
+          icon: "sql",
+          topics: [
+            "Recuperación de datos (SELECT) y límites (TOP).",
+            "Funciones de fecha (MONTH, YEAR) para filtros temporales.",
+            "Operadores lógicos (AND/OR) y cláusula WHERE.",
+            "Cruce de tablas inicial (INNER y LEFT JOIN).",
+            "Uso de IA para generar consultas automatizadas a medida.",
+          ],
+        },
+        {
+          id: "n1-py",
+          title: "Módulo Python",
+          hours: 16,
+          subtitle: "16 Horas • Fundamentos y Análisis Tabular",
+          icon: "python",
+          topics: [
+            "Variables, tipos de datos y control de flujo (if/else).",
+            "Estructuras de datos: Listas, Tuplas y Diccionarios.",
+            "Introducción a Pandas: DataFrames desde Excel.",
+            "Manipulación inicial de columnas y exploración tabular.",
+            "Generación de código IA para extraer datos y patrones.",
+          ],
+        },
+      ],
+    },
+    {
+      id: "nivel2",
+      label: "Nivel II: Intermedio",
+      shortLabel: "Visualización (48h)",
+      theme: "#7C3AED",
+      intro:
+        "Manipula datos de forma avanzada, domina modelado DAX y crea visualizaciones estéticas para informes consolidados.",
+      modules: [
+        {
+          id: "n2-pbi",
+          title: "Módulo Power BI",
+          hours: 16,
+          subtitle: "16 Horas • DAX, Relaciones e Interacciones",
+          icon: "chart",
+          topics: [
+            "Visualizaciones con saturación de color y Unpivot Columns.",
+            "Introducción a DAX: Tablas de medidas y relaciones.",
+            "Títulos dinámicos mediante SELECTEDVALUE y LOOKUPVALUE.",
+            "Publicación online con roles seguridad organizacional.",
+            "Estructura de medidas DAX inteligentes asistidas por IA.",
+          ],
+        },
+        {
+          id: "n2-sql",
+          title: "Módulo SQL Server",
+          hours: 16,
+          subtitle: "16 Horas • Joins Avanzados y Agrupaciones",
+          icon: "server",
+          topics: [
+            "Uso de FULL y RIGHT JOIN para detectar discrepancias.",
+            "GROUP BY y funciones de agregación (SUM, ORDER BY).",
+            "Cruces simultáneos de múltiples tablas con condiciones.",
+            "Vistas de valorización y consolidados departamentales.",
+            "Preprocesamiento de datos para modelos predictivos IA.",
+          ],
+        },
+        {
+          id: "n2-py",
+          title: "Módulo Python",
+          hours: 16,
+          subtitle: "16 Horas • Pandas y Visualización Estética",
+          icon: "network",
+          topics: [
+            "Pandas: Groupby, agregaciones múltiples y tipos.",
+            "Matplotlib: Gráficos de líneas, ejes y referencias.",
+            "Seaborn: Visualización estética avanzada para reportes.",
+            "Limpieza profunda de transacciones y fechas.",
+            "Automatización de reportes de complejidad media con IA.",
+          ],
+        },
+      ],
+    },
+    {
+      id: "nivel3",
+      label: "Nivel III: Avanzado",
+      shortLabel: "Automatización (48h)",
+      theme: "#0F172A",
+      intro:
+        "Profundiza en automatización de servidores, Data Science con librerías interactivas y modelos predictivos integrando IA avanzada.",
+      modules: [
+        {
+          id: "n3-pbi",
+          title: "Módulo Power BI",
+          hours: 16,
+          subtitle: "16 Horas • Inteligencia de Tiempo y AI Predictiva",
+          icon: "bolt",
+          topics: [
+            "DAX avanzado: YTD, MTD, SAMEPERIODLASTYEAR.",
+            "Parámetros Dinámicos (What if) y prorrateo de metas.",
+            "Interactividad Total: Botones, Marcadores y Drillthrough.",
+            "Seguridad RLS avanzada y funciones USERELATIONSHIP.",
+            "IA Generativa en PBI: Smart Narratives y Copilot.",
+          ],
+        },
+        {
+          id: "n3-sql",
+          title: "Módulo SQL Server",
+          hours: 16,
+          subtitle: "16 Horas • Procedimientos y Automatización",
+          icon: "network",
+          topics: [
+            "Vistas avanzadas con condicionales CASE WHEN.",
+            "Funciones de cadena y cruces de alta complejidad.",
+            "Automatización con CREATE PROC y EXECUTE.",
+            "Administración: SELECT INTO, ALTER TABLE y UPDATE.",
+            "Procesos ETL vinculando SQL con Python e IA.",
+          ],
+        },
+        {
+          id: "n3-py",
+          title: "Módulo Python",
+          hours: 16,
+          subtitle: "16 Horas • Dashboards Interactivos y Predictividad",
+          icon: "bot",
+          topics: [
+            "Unión de bases complejas mediante pd.merge().",
+            "Aplicación de funciones personalizadas .apply().",
+            "Gráficos declarativos e interactivos con Plotly.",
+            "Sunburst, Treemaps y subgráficos de alta interactividad.",
+            "Proyecto Final: Análisis predictivo con IA integrada.",
+          ],
+        },
+      ],
+    },
+  ],
+};

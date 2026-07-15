@@ -5,9 +5,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowLeft, ArrowRight, ChevronDown, Clock, Users,
-  CheckCircle2, BookOpen, Play, Award, Monitor, Lock, ShoppingCart, UserPlus, Star, Tag, FileText,
-  Globe, Calendar, Check
+  ArrowRight, ChevronDown, Clock,
+  BookOpen, Lock, FileText, Calendar, Check,
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import React from "react";
@@ -16,13 +15,7 @@ import { founderImage } from "@/lib/data/images";
 import { FadeIn, StaggerChildren, StaggerItem, CountUp } from "@/components/shared/AnimatedComponents";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/shared/AuthModal";
-import PythonSyllabus from "./syllabuses/PythonSyllabus";
-import SqlSyllabus from "./syllabuses/SqlSyllabus";
-import PowerBiSyllabus from "./syllabuses/PowerBiSyllabus";
-import ExcelSyllabus from "./syllabuses/ExcelSyllabus";
-import FinanceSyllabus from "./syllabuses/FinanceSyllabus";
-import MiningSyllabus from "./syllabuses/MiningSyllabus";
-import DataAnalyticsSyllabus from "./syllabuses/DataAnalyticsSyllabus";
+import TemarioSection from "@/components/marketing/temario/TemarioSection";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { type CourseSchedule, SCHEDULE_COUNTRIES, convertSchedule, getNearestSchedule, getAllActiveSchedules, staticSchedules } from "@/lib/data/course-schedules";
 import { useCountry } from "@/lib/context/CountryContext";
@@ -38,7 +31,6 @@ function formatCLP(price: number) {
 }
 
 export default function CourseDetailClient({ course }: { course: Course }) {
-  const [openModule, setOpenModule] = useState<number | null>(0);
   const [selectedLevel, setSelectedLevel] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -195,7 +187,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       glow3: "#8B5CF6"
     };
   }, []);
-  const currentWhatYouLearn = activeLevel ? activeLevel.whatYouLearn : course.whatYouLearn;
+
   const rawPrice = activeLevel?.price || null;
   const baseOriginalPrice = activeLevel?.originalPrice || course.originalPrice || rawPrice;
   
@@ -661,170 +653,13 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         </div>
       </section>
 
-      {/* ════ UNIFIED TEMARIO Y PLAN DE ESTUDIOS ════ */}
-      <section id="temario" className="relative z-10 py-12 lg:py-24 bg-white overflow-hidden border-t border-gray-150">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-10">
-          
-          {/* Header */}
-          <div className="text-center mb-8 sm:mb-16">
-            <h2 className="font-display font-black text-2xl sm:text-4xl lg:text-5xl text-[#0F172A] mb-3 sm:mb-4">
-              Temario y Plan de Estudios
-            </h2>
-            <p className="text-gray-600 text-sm sm:text-lg max-w-2xl mx-auto font-medium px-2">
-              Explora los objetivos de aprendizaje y el contenido detallado de los módulos prácticos.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-            
-            {/* Left Column (7/12): Outcomes & Syllabus Details */}
-            <div className="lg:col-span-7 space-y-8 sm:space-y-10">
-              
-              {/* Outcomes block */}
-              {currentWhatYouLearn && currentWhatYouLearn.length > 0 && (
-                <div className="bg-[#F8FAFC]/60 rounded-2xl sm:rounded-3xl p-4 sm:p-8 border border-slate-200/80">
-                  <h3 className="font-display font-black text-lg sm:text-xl text-[#0F172A] mb-5 sm:mb-6 flex items-start gap-2.5 sm:gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-[#1890FF] shrink-0 mt-0.5" /> 
-                    <span>¿Qué aprenderás en este nivel?</span>
-                  </h3>
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={selectedLevel}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.25 }}
-                      className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4"
-                    >
-                      {currentWhatYouLearn.map((item, i) => (
-                        <motion.div
-                          key={i}
-                          initial={{ opacity: 0, x: -15 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.05 }}
-                          className="flex items-start gap-2.5 sm:gap-3"
-                        >
-                          <Check className="w-4 h-4 text-emerald-500 mt-1 flex-shrink-0" />
-                          <span className="text-gray-700 text-[13px] sm:text-[14px] leading-relaxed font-semibold">{item}</span>
-                        </motion.div>
-                      ))}
-                    </motion.div>
-                  </AnimatePresence>
-                </div>
-              )}
-
-              {/* Syllabus Details */}
-              <div>
-                {course.slug === 'analisis-de-datos' ? (
-                  <DataAnalyticsSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
-                ) : course.slug === 'analitica-financiera' ? (
-                  <FinanceSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
-                ) : course.slug === 'analitica-mineria' ? (
-                  <MiningSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
-                ) : course.slug === 'excel' ? (
-                  <ExcelSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
-                ) : course.slug === 'power-bi' ? (
-                  <PowerBiSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
-                ) : course.slug === 'python' ? (
-                  <PythonSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
-                ) : course.slug === 'sql-server' ? (
-                  <SqlSyllabus selectedLevel={selectedLevel} hideSelector={true} cleanLayout={true} />
-                ) : (
-                  // Generic modules renderer (fallback)
-                  <div className="space-y-4">
-                    <div className="relative">
-                      <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-0.5 bg-gray-200 z-0" />
-                      <div className="space-y-4 relative z-10">
-                        {course.syllabus.map((module, idx) => {
-                          if (levels.length > 0 && idx !== selectedLevel) return null;
-                          return (
-                            <FadeIn key={idx} delay={0.1}>
-                              <motion.div
-                                className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:border-blue-200 transition-all ml-2 sm:ml-4"
-                                whileHover={{ boxShadow: "0 10px 30px -10px rgba(24,144,255,0.15)" }}
-                              >
-                                <button
-                                  type="button"
-                                  onClick={() => setOpenModule(openModule === idx ? null : idx)}
-                                  className="w-full flex items-center justify-between p-4 sm:p-6 bg-transparent border-none cursor-pointer text-left gap-2"
-                                >
-                                  <div className="flex items-center gap-3 sm:gap-4 min-w-0">
-                                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center text-white font-bold text-sm flex-shrink-0 shadow-md bg-[#1890FF]">
-                                      {idx + 1}
-                                    </div>
-                                    <div className="min-w-0">
-                                      <h3 className="font-display font-bold text-[#0F172A] text-sm sm:text-base truncate">{module.module}</h3>
-                                      <p className="text-gray-400 text-[10px] sm:text-xs mt-0.5">{module.hours} horas • {module.topics.length} temas</p>
-                                    </div>
-                                  </div>
-                                  <motion.div animate={{ rotate: openModule === idx ? 180 : 0 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
-                                    <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                                  </motion.div>
-                                </button>
-
-                                <AnimatePresence>
-                                  {openModule === idx && (
-                                    <motion.div
-                                      initial={{ height: 0, opacity: 0 }}
-                                      animate={{ height: "auto", opacity: 1 }}
-                                      exit={{ height: 0, opacity: 0 }}
-                                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                      className="overflow-hidden"
-                                    >
-                                      <ul className="px-4 pb-4 sm:px-6 sm:pb-6 space-y-3 list-none m-0 border-t border-gray-100 pt-4">
-                                        {module.topics.map((topic, ti) => {
-                                          const isLocked = isFreeTrial && course.slug === "power-bi" && (idx > 0 || ti > 1);
-                                          return (
-                                            <motion.li
-                                              key={ti}
-                                              initial={{ opacity: 0, x: -10 }}
-                                              animate={{ opacity: 1, x: 0 }}
-                                              transition={{ delay: ti * 0.05 }}
-                                              className={`flex items-center gap-2.5 sm:gap-3 text-xs sm:text-sm ${isLocked ? 'text-gray-400' : 'text-gray-600'}`}
-                                            >
-                                              {isLocked ? (
-                                                <Lock className="w-3.5 h-3.5 flex-shrink-0 text-gray-400" />
-                                              ) : (
-                                                <Play className="w-3.5 h-3.5 flex-shrink-0 text-[#1890FF]" />
-                                              )}
-                                              {isLocked ? (
-                                                <span className="italic flex items-center gap-2">
-                                                  Bloqueado por Prueba Gratuita
-                                                </span>
-                                              ) : (
-                                                topic
-                                              )}
-                                            </motion.li>
-                                          );
-                                        })}
-                                      </ul>
-                                    </motion.div>
-                                  )}
-                                </AnimatePresence>
-                              </motion.div>
-                            </FadeIn>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-            </div>
-
-            {/* Right Column (5/12): Sticky Interactive IDE */}
-            <div className="lg:col-span-5 lg:sticky lg:top-28">
-              <h3 className="font-display font-bold text-xl text-slate-800 mb-6 flex items-center gap-2">
-                <span className="w-1.5 h-6 rounded bg-[#1890FF]" />
-                Laboratorio Interactivo de Datos
-              </h3>
-              <CourseIDE course={course} />
-            </div>
-
-          </div>
-        </div>
-      </section>
+      {/* ════ TEMARIO PREMIUM ════ */}
+      <TemarioSection
+        course={course}
+        selectedLevel={selectedLevel}
+        isFreeTrial={isFreeTrial}
+        sidebar={<CourseIDE course={course} />}
+      />
 
       {/* ════ INSTRUCTOR ════ */}
       <section className="py-16 lg:py-20 bg-white border-t border-gray-100 overflow-hidden">

@@ -1,0 +1,175 @@
+import type { CourseSyllabusData } from "./types";
+
+export const analiticaMineriaSyllabus: CourseSyllabusData = {
+  slug: "analitica-mineria",
+  accent: "#B45309",
+  programYear: "2026",
+  audience:
+    "Especialización técnica de 48h para profesionales mineros e industriales. Domina el ciclo completo del dato, desde la automatización de flotas hasta el mantenimiento predictivo.",
+  audienceNote: "Respaldo ProgramBI: CAP, AngloAmerican y Minera Meridian.",
+  benefits: [
+    { title: "Visibilidad Operativa", description: "Dashboards en tiempo real de producción y mantenimiento." },
+    { title: "Control de Datos Nativos", description: "Conexión SQL directa a servidores (PI System, SCADA)." },
+    { title: "Mantenimiento Predictivo", description: "Modelado de vida útil de activos con Python." },
+    { title: "Optimización de Tiempos", description: "Reduce reportes de horas a simples minutos." },
+    { title: "Integración de IA", description: "Uso de IA para generar códigos y resolver problemas complejos." },
+  ],
+  levels: [
+    {
+      id: "nivel1",
+      label: "Nivel I: Básico",
+      shortLabel: "Fundamentos (16h)",
+      theme: "#B45309",
+      intro:
+        "Ideal para quienes inician. Establece las bases en las tres tecnologías, enfocándose en la automatización de la captura de datos de turnos.",
+      modules: [
+        {
+          id: "n1-pbi",
+          title: "Módulo Power BI",
+          hours: 16,
+          subtitle: "16 Horas • Dashboards de Operación",
+          icon: "powerbi",
+          topics: [
+            "Comprensión del flujo de datos en minería e instalaciones.",
+            "Importación de reportes de turnos (Excel, CSV, APIs).",
+            "Limpieza de datos de maquinaria y cálculos de disponibilidad.",
+            "Gráficos de tonelaje, seguridad y KPIs de horas hombre.",
+            "Integración de IA para consultas en lenguaje natural operativos.",
+          ],
+        },
+        {
+          id: "n1-sql",
+          title: "Módulo SQL Server",
+          hours: 16,
+          subtitle: "16 Horas • Consultas a Bases de la Mina",
+          icon: "sql",
+          topics: [
+            "SELECT, filtrado de sensores (TOP) y funciones de turno.",
+            "Cláusula WHERE para aislar equipos o incidentes específicos.",
+            "INNER JOIN para cruzar Personal con Equipos Operados.",
+            "Identificación de fallos y limpieza de registros nulos.",
+            "Queries asistidas por IA para reportes de mantenimiento.",
+          ],
+        },
+        {
+          id: "n1-py",
+          title: "Módulo Python",
+          hours: 16,
+          subtitle: "16 Horas • Automatización y Análisis Tabular",
+          icon: "python",
+          topics: [
+            "Control de flujo para alertas de presión y temperatura.",
+            "Clasificación de flotas y recursos mediante diccionarios.",
+            "Pandas: Carga de históricos de perforación o transporte.",
+            "Selección y limpieza de columnas en procesos masivos.",
+            "SCRIPTS IA para formatear logs de sensores diarios.",
+          ],
+        },
+      ],
+    },
+    {
+      id: "nivel2",
+      label: "Nivel II: Intermedio",
+      shortLabel: "Análisis & KPIs (16h)",
+      theme: "#B45309",
+      intro:
+        "Consolida datos de diferentes áreas, crea relaciones robustas y visualiza las leyes de mineral y eficiencia avanzada.",
+      modules: [
+        {
+          id: "n2-pbi",
+          title: "Módulo Power BI",
+          hours: 16,
+          subtitle: "16 Horas • DAX y Relaciones de Área",
+          icon: "powerbi",
+          topics: [
+            "Mapas geolocalizados de faena y matrices operativas.",
+            "DAX para Ley Promedio, Costo por Tonelada y Eficiencia.",
+            "Uso de CALCULATE, SWITCH y LOOKUPVALUE.",
+            "Roles de lectura (RLS) segmentados por Jefatura de Turno.",
+            "IA para estructurar medidas de eficiencia general de equipos.",
+          ],
+        },
+        {
+          id: "n2-sql",
+          title: "Módulo SQL Server",
+          hours: 16,
+          subtitle: "16 Horas • Agrupaciones y Resúmenes Consolidados",
+          icon: "sql",
+          topics: [
+            "Auditoría de inventario vs extracción (FULL JOIN).",
+            "Consolidados por mes, área y tipo de material (GROUP BY).",
+            "Cruce de Combustible, Flota, Personal y Tonelaje.",
+            "Creación de vistas de control operativo automatizadas.",
+            "Preparación de datasets optimizados para Machine Learning.",
+          ],
+        },
+        {
+          id: "n2-py",
+          title: "Módulo Python",
+          hours: 16,
+          subtitle: "16 Horas • DataFrames y Gráficos Exploratorios",
+          icon: "python",
+          topics: [
+            "Pandas: Evaluación de neumáticos y consumo eléctrico.",
+            "Análisis de series de tiempo para métricas de vibración.",
+            "Gráficos de tendencias para molinos y maquinaria pesada.",
+            "Análisis de correlación: Clima vs Eficiencia operativa.",
+            "IA para validar automáticamente datos de sensores diarios.",
+          ],
+        },
+      ],
+    },
+    {
+      id: "nivel3",
+      label: "Nivel III: Avanzado",
+      shortLabel: "Predictividad (16h)",
+      theme: "#B45309",
+      intro:
+        "Nivel definitivo: domina proyecciones, automatiza Data Warehouse y desarrolla modelos predictivos para adelantarte a fallos.",
+      modules: [
+        {
+          id: "n3-pbi",
+          title: "Módulo Power BI",
+          hours: 16,
+          subtitle: "16 Horas • Inteligencia de Tiempo y RLS Dinámico",
+          icon: "powerbi",
+          topics: [
+            "Producción acumulada (YTD) y proyecciones de extracción.",
+            "Análisis What-if para simulación de metas y rendimientos.",
+            "UX: Tooltips de equipo, marcadores y vistas gerenciales.",
+            "RLS dinámico (USERNAME) y relaciones inactivas.",
+            "IA para informes ejecutivos y detección de anomalías.",
+          ],
+        },
+        {
+          id: "n3-sql",
+          title: "Módulo SQL Server",
+          hours: 16,
+          subtitle: "16 Horas • Procedimientos y Automatización Servidor",
+          icon: "sql",
+          topics: [
+            "T-SQL: Alertas de maquinaria mediante CASE WHEN.",
+            "Automatización con Stored Procedures para Data Warehouse.",
+            "Modificación masiva (UPDATE) y restricciones de calidad.",
+            "Arquitectura ETL predictiva asistida por IA.",
+            "Optimización de queries para entornos de alta concurrencia.",
+          ],
+        },
+        {
+          id: "n3-py",
+          title: "Módulo Python",
+          hours: 16,
+          subtitle: "16 Horas • Análisis Predictivo y Dashboards Plotly",
+          icon: "bot",
+          topics: [
+            "Merge masivo de Operaciones, Mantenimiento y RRHH.",
+            "Funciones personalizadas (.apply) de riesgo operativo.",
+            "Plotly: Sunburst de fallas y diagramas de desgaste.",
+            "Proyecto Final: Modelo predictivo de fallos en flota.",
+            "Dashboard interactivo de alta calidad para gerencia.",
+          ],
+        },
+      ],
+    },
+  ],
+};
