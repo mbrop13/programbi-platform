@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 import {
   Trophy,
   Gift,
@@ -17,7 +18,6 @@ import {
   Ticket,
   ChevronDown,
   Crown,
-  Flame,
   Target,
 } from "lucide-react";
 import Link from "next/link";
@@ -40,41 +40,50 @@ interface UserVote {
   created_at: string;
 }
 
+/** Base artificial para que al inicio no salten tanto los %. No se muestran conteos. */
+const SEED_VOTES = 10;
+
 const TEAMS: {
   id: TeamId;
   name: string;
   short: string;
-  flag: string;
-  gradient: string;
+  iso: string;
+  flagUrl: string;
+  flagUrlLg: string;
   soft: string;
   ring: string;
   bar: string;
   accent: string;
-  glow: string;
+  borderSel: string;
+  badge: string;
 }[] = [
   {
     id: "espana",
     name: "España",
     short: "ESP",
-    flag: "🇪🇸",
-    gradient: "from-red-600 via-red-500 to-amber-400",
-    soft: "bg-red-50 border-red-200/70",
-    ring: "ring-red-400/50",
-    bar: "from-red-500 to-amber-400",
-    accent: "text-red-600",
-    glow: "shadow-red-500/25",
+    iso: "es",
+    flagUrl: "https://flagcdn.com/w160/es.png",
+    flagUrlLg: "https://flagcdn.com/w320/es.png",
+    soft: "bg-red-50",
+    ring: "ring-red-400",
+    bar: "from-red-600 via-red-500 to-amber-400",
+    accent: "text-red-700",
+    borderSel: "border-red-400 shadow-red-200/60",
+    badge: "bg-red-600 text-white",
   },
   {
     id: "argentina",
     name: "Argentina",
     short: "ARG",
-    flag: "🇦🇷",
-    gradient: "from-sky-500 via-sky-400 to-slate-100",
-    soft: "bg-sky-50 border-sky-200/70",
-    ring: "ring-sky-400/50",
-    bar: "from-sky-500 to-blue-300",
-    accent: "text-sky-600",
-    glow: "shadow-sky-500/25",
+    iso: "ar",
+    flagUrl: "https://flagcdn.com/w160/ar.png",
+    flagUrlLg: "https://flagcdn.com/w320/ar.png",
+    soft: "bg-sky-50",
+    ring: "ring-sky-400",
+    bar: "from-sky-500 via-sky-400 to-blue-200",
+    accent: "text-sky-700",
+    borderSel: "border-sky-400 shadow-sky-200/60",
+    badge: "bg-sky-600 text-white",
   },
 ];
 
@@ -82,53 +91,53 @@ const STEPS = [
   {
     icon: Users,
     title: "Únete como miembro",
-    desc: "Regístrate o inicia sesión en ProgramBI. Solo los miembros pueden participar.",
-    color: "from-blue-500 to-indigo-600",
+    desc: "Regístrate o inicia sesión. Solo los miembros de ProgramBI pueden predecir.",
+    color: "bg-blue-50 text-[#1890FF] border-blue-100",
   },
   {
     icon: Target,
-    title: "Elige tu predicción",
-    desc: "Selecciona quién crees que se llevará el gran partido: España o Argentina.",
-    color: "from-amber-500 to-orange-600",
+    title: "Elige al ganador",
+    desc: "Selecciona el equipo que crees se llevará el gran partido: España o Argentina.",
+    color: "bg-amber-50 text-amber-700 border-amber-100",
   },
   {
     icon: GraduationCap,
     title: "Elige tu curso premio",
-    desc: "Indica el curso que te gustaría ganar si aciertas y sales sorteado.",
-    color: "from-emerald-500 to-teal-600",
+    desc: "Marca el curso que te gustaría ganar si aciertas y sales sorteado.",
+    color: "bg-emerald-50 text-emerald-700 border-emerald-100",
   },
   {
     icon: Gift,
     title: "Sorteo entre acertantes",
-    desc: "Cuando se conozca el resultado, entre quienes acertaron se sortea un curso.",
-    color: "from-violet-500 to-purple-600",
+    desc: "Solo quienes votaron al país ganador entran al sorteo de cursos.",
+    color: "bg-violet-50 text-violet-700 border-violet-100",
   },
 ];
 
 const FAQS = [
   {
     q: "¿Quién puede participar?",
-    a: "Solo los miembros registrados de ProgramBI. Si aún no tienes cuenta, puedes crearla en segundos y luego registrar tu predicción.",
+    a: "Solo los miembros registrados de ProgramBI. Si aún no tienes cuenta, créala en segundos y luego registra tu predicción.",
   },
   {
-    q: "¿Puedo cambiar mi predicción después?",
-    a: "No. Cada miembro puede registrar una sola predicción. Elige con cuidado: tu voto es definitivo.",
+    q: "¿Cómo se gana el curso?",
+    a: "Cuando se conozca el resultado del gran partido, solo las personas que hayan votado por el país ganador entran al bolillero. Entre ellas se sortean cursos a elección.",
   },
   {
-    q: "¿Cómo funciona el premio?",
-    a: "Cuando se conozca el resultado del gran partido, entre todas las personas que acertaron el equipo ganador se realizará un sorteo. El afortunado recibe el curso que eligió al votar.",
+    q: "¿Puedo cambiar mi predicción?",
+    a: "No. Cada miembro registra una sola predicción. Elige con cuidado: tu voto es definitivo.",
   },
   {
-    q: "¿El curso es gratis para el ganador?",
-    a: "Sí. El miembro sorteado entre los acertantes recibe el acceso al curso que seleccionó al momento de su predicción.",
+    q: "¿Qué curso puedo ganar?",
+    a: "Al votar eliges el curso que quieres. Si aciertas el equipo ganador y sales sorteado, recibes ese curso.",
   },
   {
-    q: "¿Cuándo se anuncia el ganador?",
-    a: "Tras conocerse el resultado del gran partido, revisaremos las predicciones acertadas y comunicaremos el ganador del sorteo por correo y en la comunidad.",
+    q: "¿Hay costo por participar?",
+    a: "No. Es 100% gratuito para los miembros de la plataforma.",
   },
   {
-    q: "¿Hay algún costo por participar?",
-    a: "No. Participar es 100% gratuito para los miembros de la plataforma.",
+    q: "¿Cuándo se anuncia el ganador del sorteo?",
+    a: "Tras conocerse el resultado del gran partido, revisamos las predicciones acertadas y comunicamos a los ganadores del sorteo por correo y en la comunidad.",
   },
 ];
 
@@ -138,8 +147,8 @@ function FaqItem({ q, a }: { q: string; a: string }) {
     <div
       className={`border rounded-2xl transition-all duration-300 overflow-hidden ${
         open
-          ? "border-[#1890FF]/30 bg-blue-50/40 shadow-[0_12px_40px_-12px_rgba(24,144,255,0.08)]"
-          : "border-slate-200/80 bg-white/70 hover:border-slate-300 hover:shadow-sm"
+          ? "border-[#1890FF]/35 bg-blue-50/50 shadow-sm"
+          : "border-slate-200 bg-white hover:border-slate-300"
       }`}
     >
       <button
@@ -183,9 +192,42 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   );
 }
 
-function pct(part: number, total: number) {
+function displayPct(part: number, other: number) {
+  const a = part + SEED_VOTES;
+  const b = other + SEED_VOTES;
+  const total = a + b;
   if (total <= 0) return 50;
-  return Math.round((part / total) * 100);
+  return Math.round((a / total) * 100);
+}
+
+function TeamFlag({
+  team,
+  size = "md",
+}: {
+  team: (typeof TEAMS)[number];
+  size?: "sm" | "md" | "lg";
+}) {
+  const dims =
+    size === "lg"
+      ? "w-28 h-[72px] sm:w-36 sm:h-[92px]"
+      : size === "sm"
+        ? "w-12 h-8"
+        : "w-20 h-[52px] sm:w-24 sm:h-16";
+
+  return (
+    <div
+      className={`relative ${dims} rounded-lg overflow-hidden shadow-md ring-1 ring-black/10 bg-slate-100 shrink-0`}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={size === "lg" ? team.flagUrlLg : team.flagUrl}
+        alt={`Bandera de ${team.name}`}
+        className="absolute inset-0 w-full h-full object-cover"
+        loading="eager"
+        decoding="async"
+      />
+    </div>
+  );
 }
 
 export default function GranPartidoClient() {
@@ -193,7 +235,9 @@ export default function GranPartidoClient() {
   const [stats, setStats] = useState<Stats>({ espana: 0, argentina: 0, total: 0 });
   const [userVote, setUserVote] = useState<UserVote | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<TeamId | null>(null);
-  const [selectedCourse, setSelectedCourse] = useState(courses[0]?.slug ?? "analisis-de-datos");
+  const [selectedCourse, setSelectedCourse] = useState(
+    courses[0]?.slug ?? "analisis-de-datos"
+  );
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
@@ -221,7 +265,7 @@ export default function GranPartidoClient() {
         setSelectedCourse(data.userVote.preferred_course_slug);
       }
     } catch {
-      // Página usable aunque falle la API (sin stats en vivo)
+      // UI usable sin API
     } finally {
       setLoading(false);
     }
@@ -231,11 +275,8 @@ export default function GranPartidoClient() {
     load();
   }, [load]);
 
-  // Re-cargar al cerrar el modal de auth (por si se registró/logueó)
   useEffect(() => {
-    if (!authModal.isOpen) {
-      load();
-    }
+    if (!authModal.isOpen) load();
   }, [authModal.isOpen, load]);
 
   const handleVote = async () => {
@@ -288,7 +329,7 @@ export default function GranPartidoClient() {
       if (data.stats) setStats(data.stats);
       setSuccessMsg(
         data.message ||
-          "¡Predicción registrada! Si aciertas, entras al sorteo del curso."
+          "¡Predicción registrada! Si aciertas, entras al sorteo de un curso."
       );
     } catch {
       setError("Error de conexión. Inténtalo de nuevo.");
@@ -297,418 +338,517 @@ export default function GranPartidoClient() {
     }
   };
 
-  const espPct = pct(stats.espana, stats.total);
-  const argPct = pct(stats.argentina, stats.total);
+  const espPct = displayPct(stats.espana, stats.argentina);
+  const argPct = 100 - espPct;
   const hasVoted = !!userVote;
   const selectedTeamData = TEAMS.find((t) => t.id === selectedTeam);
   const selectedCourseData = prizeCourses.find((c) => c.slug === selectedCourse);
 
   return (
-    <div className="bg-[#070B14] text-white min-h-screen relative overflow-hidden font-sans">
-      {/* Ambient background */}
+    <div className="bg-[#F7F9FC] text-slate-900 min-h-screen relative overflow-hidden font-sans">
+      {/* Pitch / field pattern */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute top-[-20%] left-[-10%] w-[55vw] h-[55vw] rounded-full bg-red-600/15 blur-[120px]" />
-        <div className="absolute top-[-15%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-sky-500/15 blur-[120px]" />
-        <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80vw] h-[40vw] rounded-full bg-[#1890FF]/10 blur-[140px]" />
+        <div className="absolute top-0 left-0 right-0 h-[520px] bg-gradient-to-b from-emerald-50 via-[#F7F9FC] to-transparent" />
         <div
-          className="absolute inset-0 opacity-[0.04]"
+          className="absolute inset-0 opacity-[0.035]"
           style={{
             backgroundImage:
-              "radial-gradient(circle at 1px 1px, #fff 1px, transparent 0)",
-            backgroundSize: "32px 32px",
+              "repeating-linear-gradient(90deg, #0F172A 0 1px, transparent 1px 48px), repeating-linear-gradient(0deg, #0F172A 0 1px, transparent 1px 48px)",
           }}
         />
+        <div className="absolute -top-24 -left-24 w-[420px] h-[420px] rounded-full bg-red-200/30 blur-[100px]" />
+        <div className="absolute -top-16 -right-24 w-[420px] h-[420px] rounded-full bg-sky-200/40 blur-[100px]" />
       </div>
 
       {/* ═══════ HERO ═══════ */}
-      <section className="relative pt-28 pb-12 lg:pt-36 lg:pb-20">
-        <div className="max-w-[1200px] mx-auto px-5 sm:px-6">
-          <div className="text-center max-w-3xl mx-auto mb-12 lg:mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-md px-4 py-2 mb-6"
-            >
+      <section className="relative pt-28 pb-10 lg:pt-32 lg:pb-16">
+        <div className="max-w-[1180px] mx-auto px-5 sm:px-6">
+          {/* Stadium ticket banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-8 flex justify-center"
+          >
+            <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white px-4 py-2 shadow-sm">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-white/80">
-                Exclusivo para miembros · Sorteo de curso
+              <Trophy size={13} className="text-emerald-600" />
+              <span className="text-[11px] font-black uppercase tracking-[0.16em] text-emerald-800">
+                Predicción oficial · Solo miembros · Sorteo de cursos
               </span>
-            </motion.div>
+            </div>
+          </motion.div>
 
+          <div className="text-center max-w-3xl mx-auto mb-10 lg:mb-12">
             <motion.h1
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.05 }}
-              className="font-display text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.08] mb-5"
+              transition={{ duration: 0.55 }}
+              className="font-display text-4xl sm:text-5xl lg:text-[3.4rem] font-black tracking-tight leading-[1.08] mb-4 text-slate-950"
             >
               ¿Quién ganará el{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-amber-400">
-                Gran Partido
+              <span className="relative inline-block">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-[#1890FF]">
+                  Gran Partido
+                </span>
+                <span className="absolute -bottom-1 left-0 right-0 h-1.5 rounded-full bg-gradient-to-r from-emerald-400/50 to-sky-400/50" />
               </span>
               ?
             </motion.h1>
 
             <motion.p
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.12 }}
-              className="text-base sm:text-lg text-white/60 leading-relaxed max-w-2xl mx-auto"
+              transition={{ duration: 0.55, delay: 0.06 }}
+              className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl mx-auto"
             >
               Predice el resultado entre{" "}
-              <strong className="text-white font-semibold">España</strong> y{" "}
-              <strong className="text-white font-semibold">Argentina</strong>.
-              Si aciertas, entras al sorteo de un{" "}
-              <strong className="text-amber-300 font-semibold">
-                curso a tu elección
-              </strong>
-              .
+              <strong className="text-red-700">España</strong> y{" "}
+              <strong className="text-sky-700">Argentina</strong>.{" "}
+              <span className="text-slate-800 font-semibold">
+                Entre quienes acierten al país ganador se sortearán cursos
+              </span>{" "}
+              a elección.
             </motion.p>
           </div>
 
-          {/* VS cards */}
+          {/* Highlight prize strip */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.18 }}
-            className="relative flex flex-col sm:flex-row gap-4 sm:gap-6 items-stretch max-w-4xl mx-auto mb-10"
+            transition={{ delay: 0.1 }}
+            className="max-w-3xl mx-auto mb-10"
           >
-            {TEAMS.flatMap((team, idx) => {
-              const isSelected = selectedTeam === team.id;
-              const count = team.id === "espana" ? stats.espana : stats.argentina;
-              const share = team.id === "espana" ? espPct : argPct;
-              const locked = hasVoted;
+            <div className="relative overflow-hidden rounded-2xl border border-amber-200 bg-gradient-to-r from-amber-50 via-white to-amber-50 px-5 py-4 shadow-sm">
+              <div className="absolute left-0 top-0 bottom-0 w-1.5 bg-gradient-to-b from-amber-400 to-orange-500" />
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 pl-2">
+                <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-amber-100 border border-amber-200 shrink-0">
+                  <Trophy className="text-amber-600" size={22} />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm sm:text-base font-bold text-slate-900">
+                    Solo quienes voten al país ganador entran al sorteo
+                  </p>
+                  <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
+                    Si tu predicción es correcta, participas por un curso de
+                    ProgramBI a tu elección. Si no aciertas, no entras al bolillero.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
 
-              const card = (
-                <button
-                  key={team.id}
-                  type="button"
-                  disabled={locked || submitting}
-                  onClick={() => {
-                    if (!authenticated) {
-                      setAuthModal({ isOpen: true, tab: "register" });
-                      return;
-                    }
-                    setSelectedTeam(team.id);
-                    setError("");
+          {/* VS match card — stadium style */}
+          <motion.div
+            initial={{ opacity: 0, y: 28 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, delay: 0.12 }}
+            className="max-w-4xl mx-auto mb-8"
+          >
+            <div className="relative rounded-[28px] border border-slate-200/80 bg-white shadow-[0_20px_60px_-24px_rgba(15,23,42,0.18)] overflow-hidden">
+              {/* Top jersey stripes */}
+              <div className="h-1.5 flex">
+                <div className="flex-1 bg-gradient-to-r from-red-600 to-amber-400" />
+                <div className="flex-1 bg-gradient-to-r from-sky-400 to-sky-200" />
+              </div>
+
+              {/* Pitch green header */}
+              <div className="relative bg-gradient-to-b from-emerald-700 to-emerald-800 px-5 py-4 text-center overflow-hidden">
+                <div
+                  className="absolute inset-0 opacity-20"
+                  style={{
+                    backgroundImage:
+                      "repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(255,255,255,0.08) 28px, rgba(255,255,255,0.08) 56px)",
                   }}
-                  className={`group relative flex-1 text-left rounded-3xl border p-6 sm:p-8 transition-all duration-300 overflow-hidden ${
-                    isSelected
-                      ? `bg-white/10 border-white/30 ring-2 ${team.ring} shadow-2xl ${team.glow}`
-                      : "bg-white/[0.04] border-white/10 hover:bg-white/[0.08] hover:border-white/20"
-                  } ${locked && !isSelected ? "opacity-50" : ""} ${
-                    locked || submitting ? "cursor-default" : "cursor-pointer"
-                  }`}
-                >
-                  <div
-                    className={`absolute inset-0 transition-opacity bg-gradient-to-br ${team.gradient} ${
-                      isSelected ? "opacity-20" : "opacity-0 group-hover:opacity-10"
-                    } mix-blend-overlay`}
-                  />
-                  {isSelected && (
-                    <div className="absolute top-4 right-4">
-                      <CheckCircle2 className="text-emerald-400" size={22} />
-                    </div>
-                  )}
-                  <div className="relative z-10">
-                    <div className="text-5xl sm:text-6xl mb-4 drop-shadow-lg">
-                      {team.flag}
-                    </div>
-                    <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white/50 mb-1">
-                      {team.short}
-                    </p>
-                    <h2 className="text-2xl sm:text-3xl font-black font-display tracking-tight mb-4">
-                      {team.name}
-                    </h2>
-                    <div className="flex items-end justify-between gap-3">
-                      <div>
-                        <p className="text-3xl font-black tabular-nums">
-                          {loading ? "—" : `${share}%`}
-                        </p>
-                        <p className="text-xs text-white/45 mt-0.5">
-                          {loading
-                            ? "Cargando…"
-                            : `${count.toLocaleString("es")} predicciones`}
-                        </p>
-                      </div>
-                      {!locked && (
-                        <span
-                          className={`text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-full border ${
-                            isSelected
-                              ? "bg-white text-slate-900 border-white"
-                              : "border-white/20 text-white/70 group-hover:border-white/40"
-                          }`}
+                />
+                <p className="relative text-[11px] font-black uppercase tracking-[0.22em] text-emerald-100">
+                  Gran Partido · Elige tu predicción
+                </p>
+              </div>
+
+              <div className="p-5 sm:p-8">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 items-stretch">
+                  {TEAMS.flatMap((team, idx) => {
+                    const isSelected = selectedTeam === team.id;
+                    const share = team.id === "espana" ? espPct : argPct;
+                    const locked = hasVoted;
+
+                    const card = (
+                      <button
+                        key={team.id}
+                        type="button"
+                        disabled={locked || submitting}
+                        onClick={() => {
+                          if (!authenticated) {
+                            setAuthModal({ isOpen: true, tab: "register" });
+                            return;
+                          }
+                          setSelectedTeam(team.id);
+                          setError("");
+                        }}
+                        className={`group relative flex-1 text-left rounded-2xl border-2 p-5 sm:p-6 transition-all duration-300 bg-white ${
+                          isSelected
+                            ? `${team.borderSel} shadow-lg ring-2 ${team.ring}/30 ${team.soft}`
+                            : "border-slate-200 hover:border-slate-300 hover:shadow-md"
+                        } ${locked && !isSelected ? "opacity-45" : ""} ${
+                          locked || submitting ? "cursor-default" : "cursor-pointer"
+                        }`}
+                      >
+                        {isSelected && (
+                          <div className="absolute top-3 right-3">
+                            <CheckCircle2 className="text-emerald-500" size={22} />
+                          </div>
+                        )}
+
+                        <div className="flex flex-col items-center text-center">
+                          <TeamFlag team={team} size="lg" />
+                          <p className="mt-4 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+                            {team.short}
+                          </p>
+                          <h2
+                            className={`text-2xl sm:text-3xl font-black font-display tracking-tight mt-1 ${team.accent}`}
+                          >
+                            {team.name}
+                          </h2>
+
+                          {/* Solo % — sin cantidad de votos */}
+                          <div className="mt-4 w-full">
+                            <p className="text-3xl font-black tabular-nums text-slate-900">
+                              {loading ? "—" : `${share}%`}
+                            </p>
+                            <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mt-0.5">
+                              de las predicciones
+                            </p>
+                            <div className="mt-3 h-2 rounded-full bg-slate-100 overflow-hidden">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: loading ? "50%" : `${share}%` }}
+                                transition={{ duration: 0.9, delay: 0.25 + idx * 0.08 }}
+                                className={`h-full rounded-full bg-gradient-to-r ${team.bar}`}
+                              />
+                            </div>
+                          </div>
+
+                          {!locked && (
+                            <span
+                              className={`mt-5 inline-flex text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-full border transition ${
+                                isSelected
+                                  ? team.badge + " border-transparent"
+                                  : "border-slate-200 text-slate-600 group-hover:border-slate-300 bg-slate-50"
+                              }`}
+                            >
+                              {isSelected ? "Tu predicción" : "Elegir equipo"}
+                            </span>
+                          )}
+                        </div>
+                      </button>
+                    );
+
+                    if (idx === 0) {
+                      return [
+                        card,
+                        <div
+                          key="vs-badge"
+                          className="flex items-center justify-center sm:px-1 -my-1 sm:my-0"
                         >
-                          {isSelected ? "Elegido" : "Elegir"}
-                        </span>
-                      )}
+                          <div className="relative z-10 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-slate-900 text-white font-black text-sm sm:text-base flex items-center justify-center shadow-xl border-4 border-white ring-2 ring-slate-200">
+                            VS
+                          </div>
+                        </div>,
+                      ];
+                    }
+                    return [card];
+                  })}
+                </div>
+
+                {/* Comparative bar */}
+                {!loading && (
+                  <div className="mt-6 rounded-xl bg-slate-50 border border-slate-100 p-3.5">
+                    <div className="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider mb-2">
+                      <span className="text-red-600">España {espPct}%</span>
+                      <span className="text-slate-400 normal-case tracking-normal font-medium flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        Tendencia en vivo
+                      </span>
+                      <span className="text-sky-600">Argentina {argPct}%</span>
                     </div>
-                    <div className="mt-5 h-1.5 rounded-full bg-white/10 overflow-hidden">
+                    <div className="h-2.5 rounded-full overflow-hidden flex bg-white border border-slate-100">
                       <motion.div
                         initial={{ width: 0 }}
-                        animate={{ width: `${share}%` }}
-                        transition={{ duration: 0.9, delay: 0.3 + idx * 0.1 }}
-                        className={`h-full rounded-full bg-gradient-to-r ${team.bar}`}
+                        animate={{ width: `${espPct}%` }}
+                        transition={{ duration: 1 }}
+                        className="h-full bg-gradient-to-r from-red-600 to-amber-400"
+                      />
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${argPct}%` }}
+                        transition={{ duration: 1 }}
+                        className="h-full bg-gradient-to-r from-sky-400 to-sky-200"
                       />
                     </div>
                   </div>
-                </button>
-              );
-
-              if (idx === 0) {
-                return [
-                  card,
-                  <div
-                    key="vs-badge"
-                    className="flex items-center justify-center -my-1 sm:my-0"
-                  >
-                    <div className="relative z-20 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-amber-300 to-amber-500 text-slate-950 font-black text-base sm:text-lg flex items-center justify-center shadow-[0_0_40px_rgba(251,191,36,0.45)] border-4 border-[#070B14]">
-                      VS
-                    </div>
-                  </div>,
-                ];
-              }
-              return [card];
-            })}
-          </motion.div>
-
-          {/* Live bar comparison */}
-          {!loading && stats.total > 0 && (
-            <FadeIn className="max-w-4xl mx-auto mb-12">
-              <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5">
-                <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider mb-3 text-white/50">
-                  <span className="text-red-300">España {espPct}%</span>
-                  <span className="flex items-center gap-1.5 text-white/40 normal-case tracking-normal font-medium">
-                    <Flame size={12} className="text-amber-400" />
-                    {stats.total.toLocaleString("es")} predicciones en vivo
-                  </span>
-                  <span className="text-sky-300">Argentina {argPct}%</span>
-                </div>
-                <div className="h-3 rounded-full overflow-hidden flex bg-white/5">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${espPct}%` }}
-                    transition={{ duration: 1 }}
-                    className="h-full bg-gradient-to-r from-red-600 to-amber-400"
-                  />
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: `${argPct}%` }}
-                    transition={{ duration: 1 }}
-                    className="h-full bg-gradient-to-r from-sky-400 to-sky-200"
-                  />
-                </div>
+                )}
               </div>
-            </FadeIn>
-          )}
+            </div>
+          </motion.div>
 
           {/* Vote panel */}
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.25 }}
+            transition={{ duration: 0.55, delay: 0.2 }}
             id="votar"
-            className="max-w-2xl mx-auto"
+            className="max-w-3xl mx-auto"
           >
-            <div className="rounded-[28px] border border-white/10 bg-gradient-to-b from-white/[0.09] to-white/[0.03] backdrop-blur-xl p-6 sm:p-8 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.5)]">
-              {hasVoted ? (
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-500/15 border border-emerald-400/30 mb-4">
-                    <Trophy className="text-amber-300" size={32} />
-                  </div>
-                  <h3 className="text-2xl font-black font-display mb-2">
-                    ¡Predicción registrada!
-                  </h3>
-                  <p className="text-white/60 text-sm sm:text-base mb-6 max-w-md mx-auto">
-                    Apostaste por{" "}
-                    <strong className="text-white">
-                      {userVote.team === "espana" ? "España" : "Argentina"}
-                    </strong>
-                    . Si aciertas, entras al sorteo de{" "}
-                    <strong className="text-amber-300">
-                      {userVote.preferred_course_title}
-                    </strong>
-                    .
-                  </p>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 border border-emerald-400/20 px-4 py-2 text-sm text-emerald-300 font-semibold">
-                    <CheckCircle2 size={16} />
-                    Estás en el bolillero si tu equipo gana
-                  </div>
-                </div>
-              ) : !authenticated ? (
-                <div className="text-center">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/5 border border-white/10 mb-4">
-                    <Lock className="text-amber-300" size={28} />
-                  </div>
-                  <h3 className="text-2xl font-black font-display mb-2">
-                    Solo para miembros
-                  </h3>
-                  <p className="text-white/60 text-sm sm:text-base mb-6 max-w-md mx-auto">
-                    Regístrate o inicia sesión para registrar tu predicción y
-                    participar por un curso a tu elección.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setAuthModal({ isOpen: true, tab: "register" })
-                      }
-                      className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#1890FF] to-indigo-600 px-6 py-3.5 text-sm font-bold text-white shadow-[0_12px_40px_-8px_rgba(24,144,255,0.55)] hover:brightness-110 transition"
-                    >
-                      Crear cuenta gratis
-                      <ArrowRight size={16} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setAuthModal({ isOpen: true, tab: "login" })
-                      }
-                      className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-bold text-white hover:bg-white/10 transition"
-                    >
-                      Ya soy miembro
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <div className="flex items-start gap-3 mb-6">
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shrink-0">
-                      <Ticket className="text-white" size={20} />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-black font-display">
-                        Completa tu predicción
-                      </h3>
-                      <p className="text-sm text-white/55 mt-0.5">
-                        Elige equipo y el curso que te gustaría ganar si aciertas.
-                      </p>
-                    </div>
-                  </div>
+            <div className="rounded-[28px] border border-slate-200 bg-white shadow-[0_16px_50px_-28px_rgba(15,23,42,0.2)] overflow-hidden">
+              <div className="h-1 bg-gradient-to-r from-red-500 via-emerald-500 to-sky-400" />
 
-                  {/* Selected team summary */}
-                  <div className="mb-5">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
-                      Tu equipo
+              <div className="p-6 sm:p-8">
+                {hasVoted ? (
+                  <div className="text-center">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-50 border border-emerald-200 mb-4">
+                      <Trophy className="text-amber-500" size={30} />
+                    </div>
+                    <h3 className="text-2xl font-black font-display text-slate-900 mb-2">
+                      ¡Predicción registrada!
+                    </h3>
+                    <p className="text-slate-600 text-sm sm:text-base mb-5 max-w-md mx-auto leading-relaxed">
+                      Apostaste por{" "}
+                      <strong className="text-slate-900">
+                        {userVote.team === "espana" ? "España" : "Argentina"}
+                      </strong>
+                      . Si ese es el país ganador, entras al sorteo de{" "}
+                      <strong className="text-emerald-700">
+                        {userVote.preferred_course_title}
+                      </strong>
+                      .
                     </p>
-                    {selectedTeamData ? (
-                      <div
-                        className={`flex items-center gap-3 rounded-2xl border px-4 py-3 ${selectedTeamData.soft} text-slate-900`}
+                    <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm text-emerald-800 font-semibold">
+                      <CheckCircle2 size={16} />
+                      Estás en el bolillero solo si tu equipo gana
+                    </div>
+                  </div>
+                ) : !authenticated ? (
+                  <div className="text-center">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-50 border border-slate-200 mb-4">
+                      <Lock className="text-slate-500" size={26} />
+                    </div>
+                    <h3 className="text-2xl font-black font-display text-slate-900 mb-2">
+                      Solo para miembros
+                    </h3>
+                    <p className="text-slate-600 text-sm sm:text-base mb-6 max-w-md mx-auto leading-relaxed">
+                      Regístrate o inicia sesión para registrar tu predicción.
+                      Entre quienes acierten al país ganador se sortearán cursos.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setAuthModal({ isOpen: true, tab: "register" })
+                        }
+                        className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#1890FF] to-indigo-600 px-6 py-3.5 text-sm font-bold text-white shadow-[0_12px_32px_-10px_rgba(24,144,255,0.55)] hover:brightness-110 transition"
                       >
-                        <span className="text-2xl">{selectedTeamData.flag}</span>
-                        <div>
-                          <p className="font-bold">{selectedTeamData.name}</p>
-                          <p className="text-xs text-slate-500">
-                            Predicción lista · un solo voto por miembro
-                          </p>
-                        </div>
+                        Crear cuenta gratis
+                        <ArrowRight size={16} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setAuthModal({ isOpen: true, tab: "login" })
+                        }
+                        className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 hover:bg-slate-50 transition"
+                      >
+                        Ya soy miembro
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex items-start gap-3 mb-6">
+                      <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0 shadow-md">
+                        <Ticket className="text-white" size={20} />
                       </div>
-                    ) : (
-                      <p className="text-sm text-amber-200/90 bg-amber-500/10 border border-amber-400/20 rounded-2xl px-4 py-3">
-                        Arriba, toca la tarjeta de España o Argentina para
-                        elegir.
-                      </p>
-                    )}
-                  </div>
+                      <div>
+                        <h3 className="text-xl font-black font-display text-slate-900">
+                          Completa tu boleto
+                        </h3>
+                        <p className="text-sm text-slate-500 mt-0.5">
+                          Equipo + curso premio. Si aciertas, entras al sorteo.
+                        </p>
+                      </div>
+                    </div>
 
-                  {/* Course picker */}
-                  <div className="mb-6">
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-white/40 mb-2">
-                      Curso que quieres ganar
+                    {/* Selected team */}
+                    <div className="mb-6">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                        1. Tu equipo
+                      </p>
+                      {selectedTeamData ? (
+                        <div
+                          className={`flex items-center gap-3 rounded-2xl border-2 px-4 py-3 ${selectedTeamData.soft} ${selectedTeamData.borderSel.split(" ")[0]}`}
+                        >
+                          <TeamFlag team={selectedTeamData} size="sm" />
+                          <div>
+                            <p className={`font-bold ${selectedTeamData.accent}`}>
+                              {selectedTeamData.name}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              Un solo voto por miembro · no se puede cambiar
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3">
+                          Arriba, toca la tarjeta de España o Argentina para elegir.
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Course cards */}
+                    <div className="mb-6">
+                      <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-3">
+                        2. Curso que quieres ganar
+                      </p>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[340px] overflow-y-auto pr-1 custom-scrollbar">
+                        {prizeCourses.map((c) => {
+                          const selected = selectedCourse === c.slug;
+                          return (
+                            <button
+                              key={c.slug}
+                              type="button"
+                              onClick={() => setSelectedCourse(c.slug)}
+                              className={`group relative text-left rounded-2xl border-2 overflow-hidden transition-all duration-200 ${
+                                selected
+                                  ? "border-[#1890FF] shadow-md ring-2 ring-[#1890FF]/15 bg-blue-50/40"
+                                  : "border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm"
+                              }`}
+                            >
+                              <div className="relative h-28 w-full bg-slate-100 overflow-hidden">
+                                <Image
+                                  src={c.imageUrl}
+                                  alt={c.title}
+                                  fill
+                                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                  sizes="(max-width: 640px) 100vw, 280px"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent" />
+                                {selected && (
+                                  <div className="absolute top-2 right-2 w-7 h-7 rounded-full bg-[#1890FF] text-white flex items-center justify-center shadow">
+                                    <CheckCircle2 size={15} />
+                                  </div>
+                                )}
+                                <div
+                                  className="absolute bottom-0 left-0 right-0 h-1"
+                                  style={{ backgroundColor: c.accentColor }}
+                                />
+                              </div>
+                              <div className="p-3">
+                                <p className="text-sm font-bold text-slate-900 leading-snug line-clamp-2">
+                                  {c.title}
+                                </p>
+                                <p className="text-[11px] text-slate-500 mt-1 line-clamp-1">
+                                  {c.techStack.join(" · ")}
+                                </p>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {selectedCourseData && (
+                        <p className="text-xs text-slate-500 mt-3 leading-relaxed bg-slate-50 border border-slate-100 rounded-xl px-3 py-2">
+                          <span className="font-semibold text-slate-700">
+                            Premio elegido:{" "}
+                          </span>
+                          {selectedCourseData.title} —{" "}
+                          {selectedCourseData.shortDescription}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Reminder raffle */}
+                    <div className="mb-5 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-3 flex gap-3">
+                      <Gift className="text-emerald-600 shrink-0 mt-0.5" size={18} />
+                      <p className="text-xs sm:text-sm text-emerald-900 leading-relaxed">
+                        <strong>Importante:</strong> entre todos los miembros que
+                        voten al país que resulte ganador se sortearán cursos. Si
+                        tu equipo no gana, no participas del sorteo.
+                      </p>
+                    </div>
+
+                    {error && (
+                      <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                        {error}
+                      </div>
+                    )}
+                    {successMsg && (
+                      <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                        {successMsg}
+                      </div>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={handleVote}
+                      disabled={submitting || !selectedTeam}
+                      className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-4 text-sm font-black text-white shadow-[0_14px_36px_-12px_rgba(5,150,105,0.55)] hover:brightness-105 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    >
+                      {submitting ? (
+                        <>
+                          <Loader2 className="animate-spin" size={18} />
+                          Registrando…
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={18} />
+                          Confirmar predicción
+                        </>
+                      )}
+                    </button>
+                    <p className="text-[11px] text-slate-400 text-center mt-3">
+                      Un voto por miembro. No se puede modificar después.
                     </p>
-                    <div className="relative">
-                      <select
-                        value={selectedCourse}
-                        onChange={(e) => setSelectedCourse(e.target.value)}
-                        className="w-full appearance-none rounded-2xl border border-white/15 bg-[#0c1220] text-white px-4 py-3.5 pr-10 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#1890FF]/50"
-                      >
-                        {prizeCourses.map((c) => (
-                          <option key={c.slug} value={c.slug}>
-                            {c.title}
-                          </option>
-                        ))}
-                      </select>
-                      <ChevronDown
-                        size={16}
-                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none"
-                      />
-                    </div>
-                    {selectedCourseData && (
-                      <p className="text-xs text-white/45 mt-2 leading-relaxed">
-                        {selectedCourseData.shortDescription}
-                      </p>
-                    )}
                   </div>
-
-                  {error && (
-                    <div className="mb-4 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-                      {error}
-                    </div>
-                  )}
-                  {successMsg && (
-                    <div className="mb-4 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
-                      {successMsg}
-                    </div>
-                  )}
-
-                  <button
-                    type="button"
-                    onClick={handleVote}
-                    disabled={submitting || !selectedTeam}
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-300 px-6 py-4 text-sm font-black text-slate-950 shadow-[0_16px_40px_-10px_rgba(251,191,36,0.55)] hover:brightness-105 disabled:opacity-50 disabled:cursor-not-allowed transition"
-                  >
-                    {submitting ? (
-                      <>
-                        <Loader2 className="animate-spin" size={18} />
-                        Registrando…
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles size={18} />
-                        Confirmar predicción
-                      </>
-                    )}
-                  </button>
-                  <p className="text-[11px] text-white/35 text-center mt-3">
-                    Un voto por miembro. No se puede modificar después.
-                  </p>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </motion.div>
         </div>
       </section>
 
       {/* ═══════ HOW IT WORKS ═══════ */}
-      <section className="relative py-16 lg:py-24 border-t border-white/5">
+      <section className="relative py-16 lg:py-20 border-t border-slate-200/80 bg-white">
         <div className="max-w-[1100px] mx-auto px-5 sm:px-6">
           <FadeIn className="text-center mb-12">
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#1890FF] mb-3">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-600 mb-3">
               Cómo funciona
             </p>
-            <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight">
-              Cuatro pasos. Un premio real.
+            <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight text-slate-950">
+              Del silbato inicial al sorteo
             </h2>
+            <p className="text-slate-500 mt-3 max-w-xl mx-auto text-sm sm:text-base">
+              Solo entran al sorteo quienes acierten el país ganador del gran
+              partido.
+            </p>
           </FadeIn>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {STEPS.map((step, i) => (
-              <FadeIn key={step.title} delay={i * 0.08}>
-                <div className="h-full rounded-3xl border border-white/10 bg-white/[0.03] p-6 hover:bg-white/[0.06] transition">
+              <FadeIn key={step.title} delay={i * 0.07}>
+                <div className="h-full rounded-3xl border border-slate-200 bg-[#F7F9FC] p-6 hover:border-slate-300 hover:shadow-sm transition">
                   <div
-                    className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center mb-4 shadow-lg`}
+                    className={`w-12 h-12 rounded-2xl border flex items-center justify-center mb-4 ${step.color}`}
                   >
-                    <step.icon size={22} className="text-white" />
+                    <step.icon size={22} />
                   </div>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-white/35 mb-2">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
                     Paso {i + 1}
                   </p>
-                  <h3 className="font-bold text-lg mb-2 tracking-tight">
+                  <h3 className="font-bold text-lg mb-2 tracking-tight text-slate-900">
                     {step.title}
                   </h3>
-                  <p className="text-sm text-white/50 leading-relaxed">
+                  <p className="text-sm text-slate-500 leading-relaxed">
                     {step.desc}
                   </p>
                 </div>
@@ -721,37 +861,41 @@ export default function GranPartidoClient() {
       {/* ═══════ PRIZE ═══════ */}
       <section className="relative py-16 lg:py-20">
         <div className="max-w-[1100px] mx-auto px-5 sm:px-6">
-          <div className="rounded-[32px] border border-amber-400/20 bg-gradient-to-br from-amber-500/10 via-white/[0.03] to-transparent p-8 sm:p-12 overflow-hidden relative">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-400/10 blur-[80px] pointer-events-none" />
+          <div className="rounded-[32px] border border-amber-200/80 bg-gradient-to-br from-amber-50 via-white to-orange-50/40 p-8 sm:p-12 overflow-hidden relative shadow-sm">
+            <div className="absolute top-0 right-0 w-72 h-72 bg-amber-200/30 blur-[90px] pointer-events-none" />
             <div className="relative grid lg:grid-cols-2 gap-10 items-center">
               <FadeIn>
-                <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1.5 mb-4">
-                  <Crown size={14} className="text-amber-300" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-amber-200">
+                <div className="inline-flex items-center gap-2 rounded-full border border-amber-300/70 bg-white px-3 py-1.5 mb-4 shadow-sm">
+                  <Crown size={14} className="text-amber-600" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800">
                     Premio del sorteo
                   </span>
                 </div>
-                <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight mb-4">
-                  Un curso a tu elección
+                <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight mb-4 text-slate-950">
+                  Cursos a elección entre acertantes
                 </h2>
-                <p className="text-white/60 leading-relaxed mb-6">
-                  Entre quienes acierten el equipo ganador del gran partido,
-                  sortearemos el acceso a uno de nuestros cursos. Tú eliges cuál
-                  al momento de votar: Power BI, Python, SQL, IA, Excel y más.
+                <p className="text-slate-600 leading-relaxed mb-6">
+                  Cuando se conozca el resultado del gran partido,{" "}
+                  <strong className="text-slate-900">
+                    solo quienes hayan votado por el país ganador
+                  </strong>{" "}
+                  entran al bolillero. Entre ellos se sortean cursos de ProgramBI:
+                  Power BI, Python, SQL, IA, Excel y más.
                 </p>
                 <ul className="space-y-3">
                   {[
-                    "Solo miembros con predicción acertada participan del sorteo",
-                    "El ganador recibe el curso que seleccionó al votar",
-                    "Participación 100% gratuita",
+                    "Si aciertas el país ganador → entras al sorteo",
+                    "Si no aciertas → no participas del premio",
+                    "El ganador recibe el curso que eligió al votar",
+                    "Participación 100% gratuita para miembros",
                   ].map((item) => (
                     <li
                       key={item}
-                      className="flex items-start gap-2.5 text-sm text-white/75"
+                      className="flex items-start gap-2.5 text-sm text-slate-700"
                     >
                       <CheckCircle2
                         size={16}
-                        className="text-emerald-400 mt-0.5 shrink-0"
+                        className="text-emerald-500 mt-0.5 shrink-0"
                       />
                       {item}
                     </li>
@@ -759,29 +903,36 @@ export default function GranPartidoClient() {
                 </ul>
               </FadeIn>
 
-              <FadeIn delay={0.1}>
+              <FadeIn delay={0.08}>
                 <div className="grid grid-cols-2 gap-3">
                   {prizeCourses.slice(0, 6).map((c) => (
                     <div
                       key={c.slug}
-                      className="rounded-2xl border border-white/10 bg-[#0a101c]/80 p-4 hover:border-white/20 transition"
+                      className="rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-sm hover:shadow-md transition"
                     >
-                      <div
-                        className="w-8 h-1 rounded-full mb-3"
-                        style={{ backgroundColor: c.accentColor }}
-                      />
-                      <p className="text-sm font-bold leading-snug mb-1 line-clamp-2">
-                        {c.title}
-                      </p>
-                      <p className="text-[11px] text-white/40 line-clamp-2">
-                        {c.techStack.join(" · ")}
-                      </p>
+                      <div className="relative h-20 w-full bg-slate-100">
+                        <Image
+                          src={c.imageUrl}
+                          alt={c.title}
+                          fill
+                          className="object-cover"
+                          sizes="200px"
+                        />
+                      </div>
+                      <div className="p-3">
+                        <p className="text-xs font-bold text-slate-900 leading-snug line-clamp-2">
+                          {c.title}
+                        </p>
+                        <p className="text-[10px] text-slate-400 mt-1 line-clamp-1">
+                          {c.techStack.join(" · ")}
+                        </p>
+                      </div>
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-white/35 mt-3 text-center">
-                  + {Math.max(0, prizeCourses.length - 6)} cursos más disponibles
-                  al votar
+                <p className="text-xs text-slate-400 mt-3 text-center">
+                  + {Math.max(0, prizeCourses.length - 6)} cursos más al
+                  completar tu boleto
                 </p>
               </FadeIn>
             </div>
@@ -790,19 +941,19 @@ export default function GranPartidoClient() {
       </section>
 
       {/* ═══════ TRUST ═══════ */}
-      <section className="relative py-12">
+      <section className="relative py-10 bg-white border-y border-slate-200/80">
         <div className="max-w-[1100px] mx-auto px-5 sm:px-6">
           <div className="grid sm:grid-cols-3 gap-4">
             {[
               {
                 icon: ShieldCheck,
                 title: "Un voto por miembro",
-                desc: "Sistema autenticado: solo cuentas reales, sin duplicados.",
+                desc: "Solo cuentas autenticadas. Sin duplicados ni bots visibles.",
               },
               {
                 icon: Star,
-                title: "Transparente",
-                desc: "Las predicciones quedan registradas. El sorteo es entre acertantes.",
+                title: "Sorteo entre acertantes",
+                desc: "Únicamente quienes elijan al país ganador entran al bolillero.",
               },
               {
                 icon: Gift,
@@ -810,14 +961,16 @@ export default function GranPartidoClient() {
                 desc: "Un curso profesional de ProgramBI a elección del ganador.",
               },
             ].map((item, i) => (
-              <FadeIn key={item.title} delay={i * 0.06}>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-5 flex gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-[#1890FF]/15 border border-[#1890FF]/20 flex items-center justify-center shrink-0">
-                    <item.icon size={18} className="text-[#1890FF]" />
+              <FadeIn key={item.title} delay={i * 0.05}>
+                <div className="rounded-2xl border border-slate-200 bg-[#F7F9FC] p-5 flex gap-4">
+                  <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+                    <item.icon size={18} className="text-emerald-600" />
                   </div>
                   <div>
-                    <h3 className="font-bold text-sm mb-1">{item.title}</h3>
-                    <p className="text-xs text-white/50 leading-relaxed">
+                    <h3 className="font-bold text-sm mb-1 text-slate-900">
+                      {item.title}
+                    </h3>
+                    <p className="text-xs text-slate-500 leading-relaxed">
                       {item.desc}
                     </p>
                   </div>
@@ -829,13 +982,13 @@ export default function GranPartidoClient() {
       </section>
 
       {/* ═══════ FAQ ═══════ */}
-      <section className="relative py-16 lg:py-20 border-t border-white/5">
+      <section className="relative py-16 lg:py-20">
         <div className="max-w-2xl mx-auto px-5 sm:px-6">
           <FadeIn className="text-center mb-10">
-            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-[#1890FF] mb-3">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-emerald-600 mb-3">
               Preguntas frecuentes
             </p>
-            <h2 className="font-display text-3xl font-black tracking-tight">
+            <h2 className="font-display text-3xl font-black tracking-tight text-slate-950">
               Todo lo que necesitas saber
             </h2>
           </FadeIn>
@@ -850,21 +1003,25 @@ export default function GranPartidoClient() {
       </section>
 
       {/* ═══════ FINAL CTA ═══════ */}
-      <section className="relative py-16 lg:py-24">
+      <section className="relative py-14 lg:py-20 pb-20">
         <div className="max-w-3xl mx-auto px-5 sm:px-6 text-center">
           <FadeIn>
-            <div className="rounded-[32px] border border-white/10 bg-gradient-to-b from-[#1890FF]/15 to-transparent p-10 sm:p-14">
-              <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight mb-4">
+            <div className="rounded-[32px] border border-slate-200 bg-white p-10 sm:p-14 shadow-[0_20px_60px_-30px_rgba(15,23,42,0.15)] overflow-hidden relative">
+              <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-500 via-emerald-500 to-sky-400" />
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 mb-5">
+                <Trophy className="text-emerald-600" size={26} />
+              </div>
+              <h2 className="font-display text-3xl sm:text-4xl font-black tracking-tight mb-4 text-slate-950">
                 ¿Listo para predecir?
               </h2>
-              <p className="text-white/60 mb-8 max-w-lg mx-auto">
-                El gran partido se decide una vez. Tu predicción también. Sé
-                miembro, elige tu equipo y pelea por un curso.
+              <p className="text-slate-600 mb-8 max-w-lg mx-auto leading-relaxed">
+                Elige tu equipo. Elige tu curso. Si aciertas al país ganador,
+                entras al sorteo de cursos de ProgramBI.
               </p>
               {hasVoted ? (
                 <Link
                   href="/cursos"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white text-slate-900 px-7 py-3.5 text-sm font-bold hover:bg-slate-100 transition"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 text-white px-7 py-3.5 text-sm font-bold hover:bg-slate-800 transition"
                 >
                   Explorar cursos
                   <ArrowRight size={16} />
@@ -872,7 +1029,7 @@ export default function GranPartidoClient() {
               ) : (
                 <a
                   href="#votar"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-950 px-7 py-3.5 text-sm font-black shadow-[0_12px_40px_-8px_rgba(251,191,36,0.5)] hover:brightness-105 transition"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-7 py-3.5 text-sm font-black shadow-[0_12px_32px_-10px_rgba(5,150,105,0.5)] hover:brightness-105 transition"
                 >
                   Ir a predecir
                   <ArrowRight size={16} />
