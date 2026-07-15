@@ -575,7 +575,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                                 <span className="text-2xl sm:text-3xl font-black text-slate-900 leading-none">
                                   {convertAndFormat(grandTotal)}
                                 </span>
-                                <p className="text-[8px] sm:text-[9px] text-slate-400 mt-1 font-semibold">Precios Cyber extendido válidos hasta el domingo 7 de Junio a las 24:00 horas</p>
+                                <p className="text-[8px] sm:text-[9px] text-slate-400 mt-1 font-semibold">Precio por nivel</p>
                               </div>
                             ) : (
                               <div 
