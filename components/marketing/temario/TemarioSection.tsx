@@ -465,10 +465,19 @@ export default function TemarioSection({
           backgroundSize: "48px 48px",
         }}
       />
-      <div
-        className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[720px] -translate-x-1/2 rounded-full blur-[120px]"
-        style={{ background: hexToRgba(accent, 0.12) }}
-      />
+      {course.slug === "copilot" ? (
+        <>
+          {/* Copilot Brand Spectrum Ambient Glow Lights */}
+          <div className="pointer-events-none absolute -top-20 left-1/4 h-[450px] w-[500px] rounded-full bg-gradient-to-tr from-[#00A4EF]/20 to-[#8661C5]/20 blur-[130px]" />
+          <div className="pointer-events-none absolute top-1/3 right-1/4 h-[400px] w-[450px] rounded-full bg-gradient-to-bl from-[#C239B3]/15 via-[#F25022]/10 to-transparent blur-[140px]" />
+          <div className="pointer-events-none absolute bottom-0 left-1/3 h-[350px] w-[600px] rounded-full bg-gradient-to-r from-[#0078D4]/15 to-[#00A4EF]/15 blur-[120px]" />
+        </>
+      ) : (
+        <div
+          className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[720px] -translate-x-1/2 rounded-full blur-[120px]"
+          style={{ background: hexToRgba(accent, 0.12) }}
+        />
+      )}
 
       <div className="relative z-10 mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-10">
         {/* Header */}

@@ -145,15 +145,15 @@ export const courses: Course[] = [
     category: "automatizacion",
     categoryLabel: "NUEVO 2026",
     badgeLabel: "NUEVO 2026",
-    badgeColor: "#7C3AED",
+    badgeColor: "#0078D4",
     techStack: ["Copilot", "Copilot Studio", "Power Automate"],
     durationHours: 16,
     modality: "online",
     level: "básico a intermedio",
     imageUrl:
-      "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2064&auto=format&fit=crop",
+      "https://mail.programbi.com/uploads/Copilot_course_cover_design_2K_202607150337.jpeg",
     icon: "Sparkles",
-    accentColor: "#7C3AED",
+    accentColor: "#0078D4",
     isFeatured: true,
     sortOrder: 2,
     whatYouLearn: [
