@@ -88,21 +88,14 @@ export const metadata: Metadata = {
     title: "ProgramBI — Cursos de Análisis de Datos, Power BI, SQL y Python",
     description:
       "Capacitaciones profesionales en Power BI, Python, SQL, Excel y Big Data. +5000 estudiantes formados. Cursos online y presencial.",
-    images: [
-      {
-        url: "/default-og.png",
-        width: 1200,
-        height: 630,
-        alt: "ProgramBI — Análisis de Datos con Expertos",
-      },
-    ],
+    // Imagen generada por app/opengraph-image.tsx (usa el logo principal)
   },
   twitter: {
     card: "summary_large_image",
     title: "ProgramBI — Cursos de Análisis de Datos con Expertos",
     description:
       "Capacitaciones profesionales en Power BI, Python, SQL, Excel y Big Data. +5000 estudiantes.",
-    images: ["/default-og.png"],
+    // Imagen generada por app/twitter-image.tsx (usa el logo principal)
   },
   robots: {
     index: true,
