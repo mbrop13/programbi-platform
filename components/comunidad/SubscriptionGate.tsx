@@ -155,20 +155,20 @@ export default function SubscriptionGate({
              <div className="flex flex-col gap-1 items-center">
                {heroOnly ? (
                  <>
-                   <span className="text-xl sm:text-4xl md:text-5xl lg:text-[3.25rem] font-bold text-slate-800 tracking-tight leading-none block">
+                   <span className="font-serif italic font-normal text-xl sm:text-4xl md:text-5xl lg:text-[3.25rem] text-slate-800 tracking-tight leading-none block">
                      Desbloquea el poder de la
                    </span>
-                   <span className="text-3xl sm:text-5xl lg:text-[4rem] font-black text-slate-900 tracking-tight leading-[1.1] font-display mt-2 block">
+                   <span className="font-serif italic font-normal text-3xl sm:text-5xl lg:text-[4rem] text-slate-900 tracking-tight leading-[1.15] mt-2 block">
                      Comunidad{" "}
-                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-700">
+                     <span className="not-italic font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-700">
                        ProgramBI
                      </span>
                    </span>
                  </>
                ) : (
-                 <span className="text-3xl sm:text-5xl lg:text-[3.5rem] font-black text-slate-900 tracking-tight leading-[1.1] font-display block">
+                 <span className="font-serif italic font-normal text-3xl sm:text-5xl lg:text-[3.5rem] text-slate-900 tracking-tight leading-[1.15] block">
                    Membresía{" "}
-                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
+                   <span className="not-italic font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
                      ProgramBI
                    </span>
                  </span>

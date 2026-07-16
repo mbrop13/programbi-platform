@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
@@ -66,6 +66,34 @@ const renderCardGraphic = (theme: string) => {
 // Sub-component for individual Case Cards — Glassmorphism premium
 function CaseCard({ item }: { item: CaseStudy }) {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+  const [videoFailed, setVideoFailed] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Autoplay when the card enters the viewport (more reliable than raw autoPlay)
+  useEffect(() => {
+    const el = videoRef.current;
+    if (!el || !item.videoUrl || videoFailed) return;
+
+    const tryPlay = () => {
+      el.muted = true;
+      const p = el.play();
+      if (p) p.catch(() => {});
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (!entry) return;
+        if (entry.isIntersecting) tryPlay();
+        else el.pause();
+      },
+      { threshold: 0.35 }
+    );
+
+    observer.observe(el);
+    tryPlay();
+    return () => observer.disconnect();
+  }, [item.videoUrl, videoFailed]);
 
   return (
     <Link
@@ -81,33 +109,33 @@ function CaseCard({ item }: { item: CaseStudy }) {
           style={{ background: "linear-gradient(135deg, rgba(24,144,255,0.25), transparent 60%)" }}
         />
 
-        {item.videoUrl ? (
-          <div className="absolute inset-0 flex items-center justify-center">
-            {/* Themed gradient placeholder visible while video is loading */}
-            <div className={`absolute inset-0 bg-gradient-to-tr from-[#0F172A] via-[#1E293B] to-[#0B0F19] flex items-center justify-center pointer-events-none transition-opacity duration-1000 ${
-              isVideoLoaded ? "opacity-0" : "opacity-100"
-            }`}>
-              <div className="opacity-30">
-                {renderCardGraphic(item.theme)}
-              </div>
+        {item.videoUrl && !videoFailed ? (
+          <div className="absolute inset-0">
+            {/* Placeholder while loading */}
+            <div
+              className={`absolute inset-0 bg-gradient-to-tr from-[#0F172A] via-[#1E293B] to-[#0B0F19] flex items-center justify-center pointer-events-none transition-opacity duration-700 z-[1] ${
+                isVideoLoaded ? "opacity-0" : "opacity-100"
+              }`}
+            >
+              <div className="opacity-40 scale-75">{renderCardGraphic(item.theme)}</div>
             </div>
 
             <video
+              ref={videoRef}
               src={item.videoUrl}
               poster={item.posterUrl}
               autoPlay
               loop
               muted
               playsInline
-              preload="auto"
-              onPlay={() => setIsVideoLoaded(true)}
+              preload="metadata"
               onLoadedData={() => setIsVideoLoaded(true)}
-              className={`w-full h-full object-cover group-hover:scale-[1.06] transition-all duration-1000 ease-out pointer-events-none ${
-                isVideoLoaded ? "opacity-100" : "opacity-0"
-              }`}
+              onCanPlay={() => setIsVideoLoaded(true)}
+              onPlaying={() => setIsVideoLoaded(true)}
+              onError={() => setVideoFailed(true)}
+              className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-out pointer-events-none z-0"
             />
-            {/* Glass vignette for text contrast + premium feel */}
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-slate-950/25 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-slate-950/25 pointer-events-none z-[2]" />
           </div>
         ) : (
           <div className="absolute inset-0 transition-transform duration-700 group-hover:scale-[1.06]">

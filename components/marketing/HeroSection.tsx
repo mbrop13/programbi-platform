@@ -171,7 +171,7 @@ export default function HeroSection() {
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.1] lg:leading-[1.08] mb-6 font-display">
                 Aprende Análisis de <br className="hidden lg:block" />
                 Datos con{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
+                <span className="font-serif italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
                   Expertos
                 </span>
               </h1>

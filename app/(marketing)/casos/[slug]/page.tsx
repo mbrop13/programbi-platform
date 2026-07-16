@@ -88,6 +88,23 @@ export default async function CaseStudyPage({ params }: PageProps) {
             <p className="text-lg sm:text-xl text-slate-600 leading-relaxed font-light font-sans">
               {currentCase.intro}
             </p>
+
+            {/* Video del caso de uso */}
+            {currentCase.videoUrl && (
+              <div className="mt-8 rounded-2xl overflow-hidden border border-slate-200 shadow-lg bg-slate-950 aspect-video relative">
+                <video
+                  src={currentCase.videoUrl}
+                  poster={currentCase.posterUrl}
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  controls
+                  preload="metadata"
+                  className="absolute inset-0 w-full h-full object-cover"
+                />
+              </div>
+            )}
           </div>
 
           {/* Right: Sidebar Card */}
