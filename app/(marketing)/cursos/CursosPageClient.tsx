@@ -52,10 +52,10 @@ export default function CursosPageClient() {
         <div className="relative z-10 max-w-[900px] mx-auto px-5 lg:px-10 text-center">
           <FadeIn delay={0.15}>
             <h1 className="font-display font-black text-4xl sm:text-5xl lg:text-7xl text-[#0F172A] mb-5 leading-tight tracking-tight flex flex-col items-center justify-center gap-2">
-              <span className="font-handwritten text-3xl sm:text-5xl lg:text-6xl text-black font-semibold lowercase tracking-wide px-2" style={{ transform: 'rotate(-2deg)' }}>
+              <span className="font-serif italic font-normal text-3xl sm:text-5xl lg:text-6xl text-slate-900 tracking-tight px-2">
                 ¿Qué habilidad te llevará al...
               </span>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600 block mt-2">
+              <span className="font-serif italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600 block mt-2">
                 Siguiente Nivel?
               </span>
             </h1>
