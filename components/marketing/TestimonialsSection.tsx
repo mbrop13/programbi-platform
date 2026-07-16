@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { Star, MessageSquareText } from "lucide-react";
+import { Star } from "lucide-react";
 import SectionHeader from "@/components/shared/SectionHeader";
 
 // ── Real student testimonials ──
@@ -343,12 +343,10 @@ export default function TestimonialsSection() {
         {/* Header */}
         <div className="max-w-6xl mx-auto px-5 lg:px-10">
           <SectionHeader
-            icon={MessageSquareText}
             title={
-              <>
-                Lo que dicen nuestros{" "}
-                <span className="text-[#1890FF]">alumnos</span>
-              </>
+              <span className="font-serif italic font-normal text-slate-900 tracking-tight">
+                Lo que dicen nuestros alumnos
+              </span>
             }
             subtitle="Historias reales de profesionales que transformaron su carrera con ProgramBI."
             align="center"

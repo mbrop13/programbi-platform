@@ -211,7 +211,7 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-[1300px] mx-auto px-5 lg:px-12 xl:px-16 flex items-center justify-between xl:justify-start gap-4 lg:gap-8">
-          <div className="flex items-center gap-4 lg:gap-8">
+          <div className="flex items-center gap-2.5 lg:gap-3">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-0 no-underline group flex-shrink-0">
               <Image
@@ -225,16 +225,24 @@ export default function Navbar() {
               />
             </Link>
 
-            {/* Country Selector (Global) */}
-            <div className="relative" ref={countryDropdownRef}>
+            {/* Country Selector — solo bandera al lado del logo */}
+            <div className="relative flex items-center" ref={countryDropdownRef}>
               <button
                 type="button"
                 onClick={() => setIsCountryOpen(!isCountryOpen)}
-                className="flex items-center gap-1.5 px-2 py-1.5 lg:px-2.5 rounded-lg border border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 transition-all cursor-pointer text-xs lg:text-sm font-medium text-slate-600 shadow-sm"
+                aria-label={`País: ${country.name}. Cambiar país`}
+                aria-expanded={isCountryOpen}
+                title={country.name}
+                className="flex items-center justify-center p-0 m-0 bg-transparent border-0 shadow-none outline-none cursor-pointer rounded-sm focus-visible:ring-2 focus-visible:ring-brand-blue/30 focus-visible:ring-offset-1"
               >
-                <img src={country.flagUrl} alt={country.name} className="w-5 h-auto rounded-[2px]" />
-                <span className="hidden lg:block text-[13px]">{country.shortName}</span>
-                <ChevronDown size={13} className={`hidden lg:block text-slate-400 transition-transform ${isCountryOpen ? "rotate-180" : ""}`} />
+                <img
+                  src={country.flagUrl.replace("/w40/", "/w80/")}
+                  alt=""
+                  className={`w-8 h-auto sm:w-9 lg:w-10 object-contain transition-transform duration-150 hover:scale-105 ${
+                    isCountryOpen ? "scale-105" : ""
+                  }`}
+                  draggable={false}
+                />
               </button>
 
               <AnimatePresence>
@@ -244,24 +252,36 @@ export default function Navbar() {
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: -5, scale: 0.97 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute top-full left-0 lg:left-auto lg:right-0 mt-2 w-48 lg:w-56 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-[100]"
+                    className="absolute top-full left-0 mt-2 w-52 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-[100]"
                   >
                     <div className="px-3 py-2 border-b border-slate-100">
-                      <p className="text-[9px] lg:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Seleccionar país</p>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        Seleccionar país
+                      </p>
                     </div>
                     <div className="max-h-64 overflow-y-auto py-1">
                       {countries.map((c) => (
                         <button
                           key={c.iso}
                           type="button"
-                          onClick={() => { setCountryByIso(c.iso); setIsCountryOpen(false); }}
-                          className={`w-full px-3 py-2 text-left text-xs lg:text-sm flex items-center gap-2.5 transition-colors border-none cursor-pointer ${
-                            c.iso === country.iso ? "bg-blue-50 text-blue-700 font-semibold" : "bg-transparent text-slate-700 hover:bg-slate-50"
+                          onClick={() => {
+                            setCountryByIso(c.iso);
+                            setIsCountryOpen(false);
+                          }}
+                          className={`w-full px-3 py-2 text-left text-sm flex items-center gap-2.5 transition-colors border-none cursor-pointer ${
+                            c.iso === country.iso
+                              ? "bg-blue-50 text-blue-700 font-semibold"
+                              : "bg-transparent text-slate-700 hover:bg-slate-50"
                           }`}
                         >
-                          <img src={c.flagUrl} alt={c.name} className="w-4 lg:w-5 h-auto rounded-[2px] flex-shrink-0" />
+                          <img
+                            src={c.flagUrl.replace("/w40/", "/w80/")}
+                            alt=""
+                            className="w-6 h-auto flex-shrink-0 object-contain"
+                            draggable={false}
+                          />
                           <span className="flex-1">{c.name}</span>
-                          <span className="text-[9px] lg:text-[11px] text-slate-400">{c.currency.code}</span>
+                          <span className="text-[11px] text-slate-400">{c.currency.code}</span>
                         </button>
                       ))}
                     </div>

@@ -154,7 +154,7 @@ export const courses: Course[] = [
       "https://mail.programbi.com/uploads/Copilot_course_cover_design_2K_202607150337.jpeg",
     icon: "Sparkles",
     accentColor: "#0078D4",
-    isFeatured: true,
+    isFeatured: false,
     sortOrder: 2,
     whatYouLearn: [
       "Diseñar y construir agentes inteligentes corporativos",

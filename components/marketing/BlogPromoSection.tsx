@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, BookOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { isVideoUrl } from "@/lib/utils";
 import SectionHeader from "@/components/shared/SectionHeader";
 
@@ -82,9 +82,11 @@ export default function BlogPromoSection({ articles }: BlogPromoSectionProps) {
         
         {/* Unified Section Header */}
         <SectionHeader
-          eyebrow="Novedades del Blog"
-          icon={BookOpen}
-          title={<>Últimas publicaciones de <span className="text-[#1890FF]">ProgramBI</span></>}
+          title={
+            <span className="font-serif italic font-normal text-slate-900 tracking-tight">
+              Últimas publicaciones de ProgramBI
+            </span>
+          }
           subtitle="Insights, análisis y tendencias en datos escritos por nuestros expertos."
           align="center"
           maxWidth="md"

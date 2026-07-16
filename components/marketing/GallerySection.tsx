@@ -2,9 +2,8 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Sparkles, Briefcase } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
-import SectionHeader from "@/components/shared/SectionHeader";
 import { casesOfUse, CaseStudy } from "@/lib/data/cases";
 
 // Render vector graphic overlays corresponding to the brand themes
@@ -121,13 +120,6 @@ function CaseCard({ item }: { item: CaseStudy }) {
         <div className="absolute top-4 right-4 font-sans text-[9px] text-white font-bold bg-white/20 backdrop-blur-md py-1.5 px-3 rounded-full border border-white/30 z-10 shadow-sm">
           {item.techBadge}
         </div>
-
-        {/* Category badge — glass pill bottom */}
-        <div className="absolute bottom-4 left-4 right-4 z-10">
-          <span className="inline-block font-sans text-[9px] font-extrabold uppercase tracking-widest text-white bg-[#1890FF]/85 backdrop-blur-md py-1 px-2.5 rounded-full border border-white/20 shadow-sm">
-            {item.category}
-          </span>
-        </div>
       </div>
 
       {/* Text Block beneath visual card — Locked to 300px to prevent reflow */}
@@ -166,7 +158,7 @@ export default function GallerySection() {
   };
 
   return (
-    <section className="py-16 lg:py-24 bg-white relative overflow-hidden border-none">
+    <section className="pt-10 pb-16 lg:pt-12 lg:pb-24 bg-white relative overflow-hidden border-none">
       {/* CSS injection to hide scrollbars on all browsers while keeping horizontal scrolling functional */}
       <style dangerouslySetInnerHTML={{__html: `
         .no-scrollbar::-webkit-scrollbar {
@@ -179,16 +171,17 @@ export default function GallerySection() {
       `}} />
       <div className="max-w-7xl mx-auto px-5 lg:px-8 relative z-10">
         
-        {/* Unified Header + Navigation Arrows */}
+        {/* Header + Navigation Arrows */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <SectionHeader
-            eyebrow="Casos prácticos"
-            icon={Briefcase}
-            title={<>Proyectos reales que <span className="text-[#1890FF]">dominarás</span></>}
-            subtitle="Proyectos prácticos inspirados en desafíos corporativos reales que aprenderás a automatizar, modelar y predecir."
-            align="left"
-            maxWidth="md"
-          />
+          <FadeIn className="text-left max-w-2xl">
+            <h2 className="font-serif italic font-normal text-3xl sm:text-4xl lg:text-5xl text-slate-900 tracking-tight leading-[1.2]">
+              Proyectos reales que dominarás
+            </h2>
+            <p className="mt-4 text-base lg:text-lg text-slate-500 leading-relaxed font-sans max-w-xl">
+              Proyectos prácticos inspirados en desafíos corporativos reales que
+              aprenderás a automatizar, modelar y predecir.
+            </p>
+          </FadeIn>
 
           {/* Navigation Arrows */}
           <FadeIn delay={0.15} className="flex gap-3 self-end md:self-auto shrink-0">
