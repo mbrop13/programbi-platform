@@ -546,29 +546,41 @@ export default function GranPartidoClient() {
               <motion.div
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-7 sm:p-9 text-center shadow-sm"
+                className={`rounded-3xl border p-7 sm:p-9 text-center shadow-sm ${
+                  userVote.team === "espana"
+                    ? "border-red-200/60 bg-red-50/40"
+                    : "border-sky-200/60 bg-sky-50/40"
+                }`}
               >
-                <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white border border-emerald-200 mb-4 shadow-sm">
+                <div
+                  className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-white mb-4 shadow-sm border ${
+                    userVote.team === "espana"
+                      ? "border-red-100"
+                      : "border-sky-100"
+                  }`}
+                >
                   <Trophy className="text-amber-500" size={28} />
                 </div>
                 <h3 className="text-2xl font-black font-display text-slate-900 mb-2">
                   ¡Predicción registrada!
                 </h3>
-                <p className="text-slate-600 text-sm sm:text-base mb-4 max-w-md mx-auto leading-relaxed">
-                  Apostaste por{" "}
-                  <strong className="text-slate-900">
+                <p className="text-slate-600 text-sm sm:text-base max-w-md mx-auto leading-relaxed">
+                  Seleccionaste{" "}
+                  <strong
+                    className={
+                      userVote.team === "espana"
+                        ? "text-red-700"
+                        : "text-sky-700"
+                    }
+                  >
                     {userVote.team === "espana" ? "España" : "Argentina"}
                   </strong>
-                  . Si ese es el país ganador, entras al sorteo de{" "}
-                  <strong className="text-emerald-700">
+                  . Si es el país ganador, entras al sorteo de{" "}
+                  <strong className="text-slate-900">
                     {userVote.preferred_course_title}
                   </strong>
                   .
                 </p>
-                <div className="inline-flex items-center gap-2 rounded-full bg-white border border-emerald-200 px-4 py-2 text-sm text-emerald-800 font-semibold">
-                  <CheckCircle2 size={16} />
-                  Estás en el bolillero solo si tu equipo gana
-                </div>
               </motion.div>
             ) : !authenticated ? (
               <motion.div
