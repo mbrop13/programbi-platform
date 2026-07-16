@@ -24,24 +24,11 @@ import AuthModal from "@/components/shared/AuthModal";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { courses } from "@/lib/data/courses";
 
-/** Cursos no disponibles como premio del sorteo */
-const EXCLUDED_PRIZE_SLUGS = new Set([
-  "analisis-de-datos",
-  "analitica-financiera",
-  "analitica-mineria",
-]);
+/** Solo estos cursos están disponibles como premio del sorteo */
+const ALLOWED_PRIZE_SLUGS = ["power-bi", "sql-server", "python"] as const;
 
-/** Orden preferido en el selector de premios */
-const PRIZE_ORDER = [
-  "power-bi",
-  "sql-server",
-  "python",
-  "excel",
-  "copilot",
-  "power-automate",
-  "ia-productividad",
-  "machine-learning",
-];
+/** Orden en el selector de premios */
+const PRIZE_ORDER = ["power-bi", "sql-server", "python"] as const;
 
 type TeamId = "espana" | "argentina";
 
@@ -257,14 +244,14 @@ export default function GranPartidoClient() {
   const [userVote, setUserVote] = useState<UserVote | null>(null);
   const [selectedTeam, setSelectedTeam] = useState<TeamId | null>(null);
   const prizeCourses = useMemo(() => {
-    const eligible = courses.filter((c) => !EXCLUDED_PRIZE_SLUGS.has(c.slug));
-    return eligible.sort((a, b) => {
-      const ai = PRIZE_ORDER.indexOf(a.slug);
-      const bi = PRIZE_ORDER.indexOf(b.slug);
-      const aRank = ai === -1 ? 1000 + a.sortOrder : ai;
-      const bRank = bi === -1 ? 1000 + b.sortOrder : bi;
-      return aRank - bRank;
-    });
+    const allowed = new Set<string>(ALLOWED_PRIZE_SLUGS);
+    return courses
+      .filter((c) => allowed.has(c.slug))
+      .sort((a, b) => {
+        const ai = PRIZE_ORDER.indexOf(a.slug as (typeof PRIZE_ORDER)[number]);
+        const bi = PRIZE_ORDER.indexOf(b.slug as (typeof PRIZE_ORDER)[number]);
+        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+      });
   }, []);
 
   const [selectedCourse, setSelectedCourse] = useState("power-bi");
@@ -392,11 +379,7 @@ export default function GranPartidoClient() {
               transition={{ duration: 0.5 }}
               className="font-display text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] mb-3 text-slate-950"
             >
-              ¿Quién ganará el{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-amber-500 to-sky-500">
-                Gran Partido
-              </span>
-              ?
+              ¿Quién ganará la final?
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 10 }}

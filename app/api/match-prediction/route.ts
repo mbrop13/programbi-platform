@@ -6,16 +6,10 @@ import { courses } from "@/lib/data/courses";
 
 const TEAMS = ["espana", "argentina"] as const;
 
-/** Cursos excluidos del sorteo del gran partido */
-const EXCLUDED_PRIZE_SLUGS = new Set([
-  "analisis-de-datos",
-  "analitica-financiera",
-  "analitica-mineria",
-]);
+/** Solo estos cursos están disponibles como premio del sorteo */
+const ALLOWED_PRIZE_SLUGS = new Set(["power-bi", "sql-server", "python"]);
 
-const ELIGIBLE_COURSES = courses.filter(
-  (c) => !EXCLUDED_PRIZE_SLUGS.has(c.slug)
-);
+const ELIGIBLE_COURSES = courses.filter((c) => ALLOWED_PRIZE_SLUGS.has(c.slug));
 const VALID_COURSE_SLUGS = new Set(ELIGIBLE_COURSES.map((c) => c.slug));
 
 const voteSchema = z.object({
