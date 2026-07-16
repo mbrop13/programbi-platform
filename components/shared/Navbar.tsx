@@ -383,47 +383,70 @@ export default function Navbar() {
                     <motion.div
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                      className="absolute top-[calc(100%+8px)] right-0 w-56 bg-white rounded-2xl border border-gray-100 shadow-xl overflow-hidden py-2"
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 28 }}
+                      className="absolute top-[calc(100%+8px)] right-0 w-[260px] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 overflow-hidden"
                     >
-                      <div className="px-4 py-3 border-b border-gray-50 mb-1">
-                        <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1">Conectado como</p>
-                        <p className="text-[13px] font-semibold text-slate-700 truncate">{user.email}</p>
+                      <div className="px-4 py-3 border-b border-neutral-100 flex items-center gap-2.5 min-w-0">
+                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0">
+                          {getInitials(user.user_metadata?.full_name || user.email)}
+                        </div>
+                        <span className="text-[13px] font-normal text-neutral-600 truncate min-w-0 flex-1">
+                          {user.email}
+                        </span>
                       </div>
-                      
-                      <Link href="/comunidad/mis-cursos" className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-slate-600 hover:bg-slate-50 hover:text-[#1890FF] no-underline transition-colors">
-                        <LayoutDashboard size={16} /> Comunidad
-                      </Link>
-                      <button
-                        onClick={() => { setIsUserMenuOpen(false); setProfileModal({ isOpen: true, tab: "profile" }); }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-[14px] text-slate-600 hover:bg-slate-50 hover:text-[#1890FF] transition-colors border-none bg-transparent cursor-pointer text-left font-sans"
-                      >
-                        <UserCircle size={16} /> Ver Perfil
-                      </button>
-                      <button
-                        onClick={() => { setIsUserMenuOpen(false); setProfileModal({ isOpen: true, tab: "settings" }); }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-[14px] text-slate-600 hover:bg-slate-50 hover:text-[#1890FF] transition-colors border-none bg-transparent cursor-pointer text-left font-sans"
-                      >
-                        <Settings size={16} /> Configuración
-                      </button>
-                      {isAdmin && (
-                        <Link href="/comunidad/admin" className="flex items-center gap-3 px-4 py-2.5 text-[14px] text-amber-600 hover:bg-amber-50 no-underline transition-colors font-semibold">
-                          <ShieldAlert size={16} /> Panel Admin
-                        </Link>
-                      )}
-                      <button 
-                        onClick={() => { setIsUserMenuOpen(false); setIsSupportModalOpen(true); }}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-[14px] text-slate-600 hover:bg-slate-50 hover:text-[#1890FF] transition-all border-none cursor-pointer text-left"
-                      >
-                        <LifeBuoy size={16} /> Soporte
-                      </button>
-                      
-                      <div className="mt-1 pt-1 border-t border-gray-50 px-2">
-                        <button 
-                          onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-3 py-2.5 text-[14px] font-bold text-red-500 hover:bg-red-50 rounded-xl transition-all border-none cursor-pointer text-left"
+
+                      <div className="p-1.5 space-y-0.5">
+                        <Link
+                          href="/comunidad/mis-cursos"
+                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-neutral-50 hover:text-slate-900 transition-colors font-medium no-underline"
                         >
-                          <LogOut size={16} /> Cerrar Sesión
+                          <LayoutDashboard className="w-4 h-4 shrink-0 text-neutral-400" />
+                          <span>Comunidad</span>
+                        </Link>
+                        <button
+                          onClick={() => { setIsUserMenuOpen(false); setProfileModal({ isOpen: true, tab: "profile" }); }}
+                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-neutral-50 hover:text-slate-900 transition-colors font-medium border-0 bg-transparent cursor-pointer text-left"
+                        >
+                          <UserCircle className="w-4 h-4 shrink-0 text-neutral-400" />
+                          <span>Ver perfil</span>
+                        </button>
+                        <button
+                          onClick={() => { setIsUserMenuOpen(false); setProfileModal({ isOpen: true, tab: "settings" }); }}
+                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-neutral-50 hover:text-slate-900 transition-colors font-medium border-0 bg-transparent cursor-pointer text-left"
+                        >
+                          <Settings className="w-4 h-4 shrink-0 text-neutral-400" />
+                          <span>Ajustes</span>
+                        </button>
+                        <button
+                          onClick={() => { setIsUserMenuOpen(false); setIsSupportModalOpen(true); }}
+                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-neutral-50 hover:text-slate-900 transition-colors font-medium border-0 bg-transparent cursor-pointer text-left"
+                        >
+                          <LifeBuoy className="w-4 h-4 shrink-0 text-neutral-400" />
+                          <span>Soporte</span>
+                        </button>
+
+                        {isAdmin && (
+                          <>
+                            <div className="my-1 h-px bg-neutral-100" />
+                            <Link
+                              href="/comunidad/admin"
+                              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-amber-600 hover:bg-amber-50 transition-colors font-medium no-underline"
+                            >
+                              <ShieldAlert className="w-4 h-4 shrink-0" />
+                              <span>Panel Admin</span>
+                            </Link>
+                          </>
+                        )}
+
+                        <div className="my-1 h-px bg-neutral-100" />
+
+                        <button
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-red-50 hover:text-red-600 transition-colors font-medium border-0 bg-transparent cursor-pointer text-left"
+                        >
+                          <LogOut className="w-4 h-4 shrink-0 text-neutral-400" />
+                          <span>Cerrar sesión</span>
                         </button>
                       </div>
                     </motion.div>

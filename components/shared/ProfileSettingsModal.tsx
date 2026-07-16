@@ -1,18 +1,39 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, User, Mail, Phone, Bell, Loader2, CheckCircle, AlertCircle, Settings, Sliders, Globe, Lock, LogOut } from "lucide-react";
-import { useState, useEffect, FormEvent } from "react";
+import {
+  X,
+  User,
+  Mail,
+  Phone,
+  Bell,
+  Loader2,
+  CheckCircle,
+  AlertCircle,
+  Lock,
+  Newspaper,
+  Sparkles,
+  Shield,
+  ChevronDown,
+} from "lucide-react";
+import { useState, useEffect, FormEvent, type ElementType } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { getCurrentUserProfile } from "@/lib/supabase/comunidad";
-import { getNewsletterSubscription, subscribeToNewsletter, unsubscribeFromNewsletter } from "@/lib/supabase/comunidad-ai";
+import {
+  getNewsletterSubscription,
+  subscribeToNewsletter,
+  unsubscribeFromNewsletter,
+} from "@/lib/supabase/comunidad-ai";
 import { useCountry } from "@/lib/context/CountryContext";
+import { cn } from "@/lib/utils";
 
 interface ProfileSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultTab?: "profile" | "settings";
 }
+
+type SettingsTab = "cuenta" | "blog";
 
 const COUNTRIES = [
   { code: "+56", iso: "cl", name: "Chile" },
@@ -37,27 +58,31 @@ const COUNTRIES = [
 ];
 
 const CATEGORIES = [
-  { id: "ia", label: "Inteligencia Artificial (AI)" },
-  { id: "economia", label: "Economía y Finanzas" },
-  { id: "tecnologia", label: "Tecnología (Power BI, SQL, Python)" },
-  { id: "general", label: "Cultura y General" },
+  { id: "ia", label: "Inteligencia Artificial", desc: "IA aplicada a datos y negocio" },
+  { id: "economia", label: "Economía y Finanzas", desc: "Análisis de mercados y finanzas" },
+  { id: "tecnologia", label: "Tecnología", desc: "Power BI, SQL, Python y más" },
+  { id: "general", label: "Cultura y General", desc: "Contenido transversal y novedades" },
 ];
 
-export default function ProfileSettingsModal({ isOpen, onClose, defaultTab = "profile" }: ProfileSettingsModalProps) {
-  const [activeTab, setActiveTab] = useState<"profile" | "settings">(defaultTab);
+export default function ProfileSettingsModal({
+  isOpen,
+  onClose,
+  defaultTab = "profile",
+}: ProfileSettingsModalProps) {
+  const [activeTab, setActiveTab] = useState<SettingsTab>(
+    defaultTab === "settings" ? "blog" : "cuenta"
+  );
   const [loadingData, setLoadingData] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Profile fields
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [phonePrefix, setPhonePrefix] = useState("+56");
   const [showPrefixDropdown, setShowPrefixDropdown] = useState(false);
 
-  // Settings / Subscription fields
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [frequency, setFrequency] = useState("weekly");
@@ -65,14 +90,12 @@ export default function ProfileSettingsModal({ isOpen, onClose, defaultTab = "pr
   const supabase = createClient();
   const { country: globalCountry } = useCountry();
 
-  // Load default tab
   useEffect(() => {
     if (isOpen) {
-      setActiveTab(defaultTab);
+      setActiveTab(defaultTab === "settings" ? "blog" : "cuenta");
     }
   }, [isOpen, defaultTab]);
 
-  // Load user data & subscription state
   useEffect(() => {
     if (!isOpen) return;
 
@@ -82,7 +105,9 @@ export default function ProfileSettingsModal({ isOpen, onClose, defaultTab = "pr
       setSuccess(null);
 
       try {
-        const { data: { user: authUser } } = await supabase.auth.getUser();
+        const {
+          data: { user: authUser },
+        } = await supabase.auth.getUser();
         if (!authUser) {
           setError("No se detectó un usuario activo.");
           setLoadingData(false);
@@ -91,18 +116,16 @@ export default function ProfileSettingsModal({ isOpen, onClose, defaultTab = "pr
 
         setEmail(authUser.email || "");
 
-        // Fetch custom profile details
         const profile = await getCurrentUserProfile();
         if (profile) {
           setFullName(profile.full_name || authUser.user_metadata?.full_name || "");
-          
-          // Split prefix and number if possible
+
           const rawPhone = profile.phone || authUser.user_metadata?.whatsapp || "";
           if (rawPhone) {
             const matchedCountry = COUNTRIES.slice()
-              .sort((a, b) => b.code.length - a.code.length) // check longer codes first (+593 before +56)
-              .find(c => rawPhone.startsWith(c.code));
-            
+              .sort((a, b) => b.code.length - a.code.length)
+              .find((c) => rawPhone.startsWith(c.code));
+
             if (matchedCountry) {
               setPhonePrefix(matchedCountry.code);
               setWhatsapp(rawPhone.slice(matchedCountry.code.length));
@@ -110,13 +133,11 @@ export default function ProfileSettingsModal({ isOpen, onClose, defaultTab = "pr
               setWhatsapp(rawPhone);
             }
           } else {
-            // Default prefix to global country
-            const matched = COUNTRIES.find(c => c.iso === globalCountry.iso);
+            const matched = COUNTRIES.find((c) => c.iso === globalCountry.iso);
             if (matched) setPhonePrefix(matched.code);
           }
         }
 
-        // Fetch newsletter subscription
         const sub = await getNewsletterSubscription();
         if (sub) {
           setIsSubscribed(sub.is_active);
@@ -127,8 +148,7 @@ export default function ProfileSettingsModal({ isOpen, onClose, defaultTab = "pr
           setSelectedCategories(["ia", "economia", "tecnologia", "general"]);
           setFrequency("weekly");
         }
-
-      } catch (err: any) {
+      } catch (err) {
         console.error("Error loading profile settings:", err);
         setError("Error al cargar los datos del perfil.");
       } finally {
@@ -139,34 +159,34 @@ export default function ProfileSettingsModal({ isOpen, onClose, defaultTab = "pr
     fetchData();
   }, [isOpen, supabase, globalCountry.iso]);
 
-  // Sync prefix if no whatsapp number is loaded yet
   useEffect(() => {
     if (!whatsapp) {
-      const matched = COUNTRIES.find(c => c.iso === globalCountry.iso);
+      const matched = COUNTRIES.find((c) => c.iso === globalCountry.iso);
       if (matched) setPhonePrefix(matched.code);
     }
   }, [globalCountry.iso, whatsapp]);
 
   const handleCategoryToggle = (id: string) => {
-    setSelectedCategories(prev =>
-      prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]
+    setSelectedCategories((prev) =>
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
     );
   };
 
-  const handleSave = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleSave = async (e?: FormEvent) => {
+    e?.preventDefault();
     setError(null);
     setSuccess(null);
     setSaving(true);
 
     try {
-      const { data: { user: authUser } } = await supabase.auth.getUser();
+      const {
+        data: { user: authUser },
+      } = await supabase.auth.getUser();
       if (!authUser) throw new Error("No hay una sesión iniciada");
 
       const cleanPhone = whatsapp.trim();
       const whatsappVal = cleanPhone ? `${phonePrefix}${cleanPhone}` : "";
 
-      // 1. Update Profiles Table
       const { error: profileError } = await supabase
         .from("profiles")
         .update({
@@ -178,17 +198,15 @@ export default function ProfileSettingsModal({ isOpen, onClose, defaultTab = "pr
 
       if (profileError) throw new Error(profileError.message);
 
-      // 2. Update Auth Metadata
       const { error: authError } = await supabase.auth.updateUser({
         data: {
           full_name: fullName,
           whatsapp: whatsappVal,
-        }
+        },
       });
 
       if (authError) throw new Error(authError.message);
 
-      // 3. Update Newsletter Subscription
       if (isSubscribed) {
         if (selectedCategories.length === 0) {
           throw new Error("Debes elegir al menos una categoría si estás suscrito al blog.");
@@ -201,328 +219,507 @@ export default function ProfileSettingsModal({ isOpen, onClose, defaultTab = "pr
         await unsubscribeFromNewsletter();
       }
 
-      setSuccess("¡Configuración guardada exitosamente!");
-      setTimeout(() => {
-        setSuccess(null);
-      }, 3000);
-
-    } catch (err: any) {
-      setError(err.message || "Ocurrió un error al guardar los cambios.");
+      setSuccess("Configuración guardada correctamente");
+      setTimeout(() => setSuccess(null), 3000);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Ocurrió un error al guardar los cambios.";
+      setError(message);
     } finally {
       setSaving(false);
     }
   };
+
+  const initials = fullName
+    ? fullName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : email
+      ? email[0].toUpperCase()
+      : "U";
+
+  const tabs: { id: SettingsTab; label: string; icon: ElementType; desc: string }[] = [
+    { id: "cuenta", label: "Cuenta", icon: User, desc: "Perfil y datos de contacto" },
+    { id: "blog", label: "Blog y alertas", icon: Bell, desc: "Suscripción y preferencias" },
+  ];
 
   if (!isOpen) return null;
 
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4">
-        {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-slate-900/40 backdrop-blur-md"
+          className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm"
           onClick={onClose}
         />
 
-        {/* Modal Window */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
+          initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          className="relative w-full max-w-[760px] bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 z-10"
+          exit={{ opacity: 0, scale: 0.95, y: 15 }}
+          transition={{ type: "spring", stiffness: 380, damping: 28 }}
+          className="relative bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.12)] w-full max-w-4xl overflow-hidden flex flex-col md:flex-row max-h-[85vh] border border-neutral-100 z-10"
         >
-          {/* Header Close */}
-          <button
-            onClick={onClose}
-            className="absolute top-5 right-5 p-2 rounded-full hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-colors border-none cursor-pointer z-20"
-          >
-            <X size={18} />
-          </button>
-
-          <div className="flex flex-col md:flex-row h-full min-h-[480px]">
-            {/* Left Tab Sidebar */}
-            <div className="w-full md:w-1/3 bg-slate-50 p-6 border-r border-slate-100 flex flex-col justify-between">
-              <div>
-                <div className="mb-8 mt-2">
-                  <h3 className="font-serif font-black text-xl text-slate-900 mb-1">Ajustes</h3>
-                  <p className="text-xs text-slate-400">Gestiona tu perfil y suscripciones</p>
-                </div>
-
-                <div className="space-y-1">
-                  <button
-                    onClick={() => setActiveTab("profile")}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all border-none cursor-pointer text-left ${
-                      activeTab === "profile"
-                        ? "bg-white text-[#1890FF] shadow-sm"
-                        : "text-slate-550 hover:bg-slate-100/50 hover:text-slate-800"
-                    }`}
-                  >
-                    <User size={16} />
-                    <span>Mi Perfil</span>
-                  </button>
-                  
-                  <button
-                    onClick={() => setActiveTab("settings")}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold transition-all border-none cursor-pointer text-left ${
-                      activeTab === "settings"
-                        ? "bg-white text-[#1890FF] shadow-sm"
-                        : "text-slate-550 hover:bg-slate-100/50 hover:text-slate-800"
-                    }`}
-                  >
-                    <Bell size={16} />
-                    <span>Suscripciones Blog</span>
-                  </button>
-                </div>
+          {/* ─── Sidebar ─── */}
+          <div className="w-full md:w-[240px] bg-neutral-50/50 border-r border-neutral-100 p-5 shrink-0 flex flex-col justify-between">
+            <div>
+              <div className="mb-6 px-1">
+                <h3 className="font-display font-black text-slate-900 text-lg tracking-tight">
+                  Ajustes
+                </h3>
+                <p className="text-[11px] text-slate-400 mt-0.5">Perfil y preferencias</p>
               </div>
 
-              {/* Logged in indicator */}
-              <div className="pt-6 border-t border-slate-200/50 mt-8 hidden md:block">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-0.5">Sesión Activa</p>
-                <p className="text-xs font-semibold text-slate-650 truncate max-w-full">{email}</p>
+              <div className="flex flex-col gap-1.5">
+                {tabs.map((tab) => {
+                  const Icon = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() => setActiveTab(tab.id)}
+                      className={cn(
+                        "w-full text-left px-3.5 py-2.5 rounded-xl transition-all text-[13px] flex items-center gap-3 cursor-pointer border-0 font-medium select-none",
+                        isActive
+                          ? "bg-neutral-100 text-slate-900"
+                          : "text-slate-500 bg-transparent hover:bg-neutral-100/50 hover:text-slate-900"
+                      )}
+                    >
+                      <Icon
+                        className={cn(
+                          "w-[18px] h-[18px] shrink-0",
+                          isActive ? "text-slate-800" : "text-slate-400"
+                        )}
+                      />
+                      <span>{tab.label}</span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* Right Panel Content */}
-            <div className="flex-1 p-6 md:p-8 flex flex-col justify-between">
+            <div className="pt-4 border-t border-neutral-100 mt-8 hidden md:block">
+              <div className="flex items-center gap-3 px-1.5">
+                <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0 select-none">
+                  {initials}
+                </div>
+                <div className="min-w-0">
+                  <div className="font-semibold text-xs text-slate-800 truncate leading-snug">
+                    {fullName || "Usuario"}
+                  </div>
+                  <div className="text-[10px] text-slate-400 truncate leading-none mt-0.5">
+                    {email}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ─── Content ─── */}
+          <div className="flex-1 overflow-y-auto flex flex-col justify-between p-6 sm:p-8 bg-white min-h-[400px]">
+            <div>
+              <div className="flex items-center justify-between mb-6 pb-2">
+                <div>
+                  <h2 className="font-display font-black text-xl text-slate-900 tracking-tight">
+                    {activeTab === "cuenta" ? "Cuenta" : "Blog y alertas"}
+                  </h2>
+                  <p className="text-[12px] text-slate-400 mt-0.5">
+                    {activeTab === "cuenta"
+                      ? "Perfil y datos de membresía"
+                      : "Preferencias del newsletter y notificaciones"}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-neutral-100 text-slate-500 transition-colors border-0 bg-transparent cursor-pointer"
+                >
+                  <X className="w-[18px] h-[18px]" />
+                </button>
+              </div>
+
               {loadingData ? (
-                /* Skeleton Loader */
-                <div className="flex flex-col justify-center items-center flex-1 py-12">
-                  <Loader2 className="w-8 h-8 text-[#1890FF] animate-spin mb-4" />
-                  <span className="text-sm text-slate-400 font-medium">Cargando datos...</span>
+                <div className="flex flex-col items-center justify-center py-16 space-y-3">
+                  <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+                  <span className="text-xs text-slate-400 font-bold">Cargando datos...</span>
                 </div>
               ) : (
-                <form onSubmit={handleSave} className="flex flex-col justify-between flex-1">
-                  {/* Tab Body */}
-                  <div className="flex-1">
-                    {/* Error / Success Banners */}
-                    {error && (
-                      <div className="flex items-center gap-3 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm mb-6">
-                        <AlertCircle size={18} className="flex-shrink-0" />
-                        <span>{error}</span>
-                      </div>
-                    )}
-                    {success && (
-                      <div className="flex items-center gap-3 p-4 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-2xl text-sm mb-6">
-                        <CheckCircle size={18} className="flex-shrink-0" />
-                        <span>{success}</span>
-                      </div>
-                    )}
+                <>
+                  {error && (
+                    <div className="flex items-center gap-3 p-3.5 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-[13px] mb-5">
+                      <AlertCircle size={16} className="flex-shrink-0" />
+                      <span className="font-medium">{error}</span>
+                    </div>
+                  )}
+                  {success && (
+                    <div className="flex items-center gap-3 p-3.5 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-2xl text-[13px] mb-5">
+                      <CheckCircle size={16} className="flex-shrink-0" />
+                      <span className="font-medium">{success}</span>
+                    </div>
+                  )}
 
-                    {activeTab === "profile" ? (
-                      /* Tab 1: Profile */
-                      <div className="space-y-5">
-                        <div>
-                          <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-4">Información de Cuenta</h4>
-                        </div>
-
-                        {/* Initials & Info row */}
-                        <div className="flex items-center gap-4 mb-6">
-                          <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-[#1890FF] to-[#6366F1] flex items-center justify-center text-white font-serif font-black text-lg shadow-md shadow-blue-500/10">
-                            {fullName ? fullName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) : email ? email[0].toUpperCase() : "U"}
+                  <AnimatePresence mode="wait">
+                    {activeTab === "cuenta" && (
+                      <motion.div
+                        key="cuenta"
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 5 }}
+                        transition={{ duration: 0.15 }}
+                        className="space-y-5"
+                      >
+                        {/* Avatar + identity row */}
+                        <div className="flex items-center gap-4 pb-4 border-b border-neutral-100">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-sm select-none">
+                            {initials}
                           </div>
-                          <div>
-                            <p className="text-sm font-bold text-slate-850 mb-0.5">{fullName || "Usuario de ProgramBI"}</p>
-                            <p className="text-xs text-slate-400">Rol: Suscriptor de Comunidad</p>
-                          </div>
-                        </div>
-
-                        {/* Email (Read Only) */}
-                        <div>
-                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Correo Electrónico</label>
-                          <div className="relative">
-                            <input
-                              type="email"
-                              value={email}
-                              disabled
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-400 text-sm focus:outline-none cursor-not-allowed"
-                            />
-                            <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                            <span title="No editable por seguridad">
-                              <Lock size={14} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-                            </span>
+                          <div className="min-w-0">
+                            <div className="font-bold text-[14px] text-slate-800 truncate">
+                              {fullName || "Usuario de ProgramBI"}
+                            </div>
+                            <div className="text-[12px] text-slate-400 truncate mt-0.5">
+                              {email}
+                            </div>
                           </div>
                         </div>
 
-                        {/* Full Name */}
-                        <div>
-                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Nombre Completo</label>
-                          <div className="relative">
+                        {/* Email (read-only) */}
+                        <div className="flex items-start justify-between gap-4 py-1">
+                          <div className="flex items-start gap-3.5 min-w-0 flex-1">
+                            <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center text-slate-500 shrink-0">
+                              <Mail className="w-[18px] h-[18px]" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div className="font-bold text-[13px] text-slate-800">
+                                Correo electrónico
+                              </div>
+                              <div className="relative mt-2">
+                                <input
+                                  type="email"
+                                  value={email}
+                                  disabled
+                                  className="w-full pl-3 pr-9 py-2.5 rounded-xl border border-neutral-200 bg-neutral-50 text-slate-400 text-[13px] focus:outline-none cursor-not-allowed"
+                                />
+                                <Lock
+                                  size={13}
+                                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"
+                                />
+                              </div>
+                              <p className="text-[11px] text-slate-400 mt-1.5">
+                                No editable por seguridad
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Full name */}
+                        <div className="flex items-start gap-3.5 py-1">
+                          <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center text-indigo-500 shrink-0">
+                            <User className="w-[18px] h-[18px]" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-[13px] text-slate-800">
+                              Nombre completo
+                            </div>
                             <input
                               type="text"
                               required
                               value={fullName}
                               onChange={(e) => setFullName(e.target.value)}
-                              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-sm focus:outline-none focus:border-[#1890FF]/45 transition-colors"
+                              className="w-full mt-2 px-3 py-2.5 rounded-xl border border-neutral-200 bg-white text-slate-800 text-[13px] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all"
                               placeholder="Juan Pérez"
                             />
-                            <User size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                           </div>
                         </div>
 
-                        {/* WhatsApp / Phone */}
-                        <div>
-                          <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">WhatsApp / Teléfono</label>
-                          <div className="flex gap-2">
-                            {/* Prefix selector */}
-                            <div className="relative">
-                              <button
-                                type="button"
-                                onClick={() => setShowPrefixDropdown(!showPrefixDropdown)}
-                                className="h-[40px] px-3 rounded-xl border border-slate-200 bg-white text-slate-700 text-sm font-semibold flex items-center gap-1.5 focus:outline-none hover:bg-slate-50 cursor-pointer"
-                              >
-                                <img
-                                  src={`https://flagcdn.com/w20/${COUNTRIES.find(c => c.code === phonePrefix)?.iso || "cl"}.png`}
-                                  alt=""
-                                  className="w-4 h-auto rounded-[2px]"
-                                />
-                                <span>{phonePrefix}</span>
-                              </button>
-
-                              {showPrefixDropdown && (
-                                <>
-                                  <div className="fixed inset-0 z-30" onClick={() => setShowPrefixDropdown(false)} />
-                                  <div className="absolute top-[calc(100%+4px)] left-0 w-48 bg-white border border-slate-100 rounded-xl shadow-xl z-40 max-h-56 overflow-y-auto py-1">
-                                    {COUNTRIES.map((country) => (
-                                      <button
-                                        key={country.iso}
-                                        type="button"
-                                        onClick={() => {
-                                          setPhonePrefix(country.code);
-                                          setShowPrefixDropdown(false);
-                                        }}
-                                        className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 border-none cursor-pointer text-left"
-                                      >
-                                        <img src={`https://flagcdn.com/w20/${country.iso}.png`} alt="" className="w-4 h-auto rounded-[2px]" />
-                                        <span>{country.name} ({country.code})</span>
-                                      </button>
-                                    ))}
-                                  </div>
-                                </>
-                              )}
+                        {/* WhatsApp */}
+                        <div className="flex items-start gap-3.5 py-1">
+                          <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center text-emerald-600 shrink-0">
+                            <Phone className="w-[18px] h-[18px]" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="font-bold text-[13px] text-slate-800">
+                              WhatsApp / Teléfono
                             </div>
+                            <div className="flex gap-2 mt-2">
+                              <div className="relative">
+                                <button
+                                  type="button"
+                                  onClick={() => setShowPrefixDropdown(!showPrefixDropdown)}
+                                  className="h-[42px] px-3 rounded-xl border border-neutral-200 bg-white text-slate-700 text-[13px] font-semibold flex items-center gap-1.5 focus:outline-none hover:bg-neutral-50 cursor-pointer"
+                                >
+                                  <img
+                                    src={`https://flagcdn.com/w20/${
+                                      COUNTRIES.find((c) => c.code === phonePrefix)?.iso || "cl"
+                                    }.png`}
+                                    alt=""
+                                    className="w-4 h-auto rounded-[2px]"
+                                  />
+                                  <span>{phonePrefix}</span>
+                                  <ChevronDown size={12} className="text-slate-400" />
+                                </button>
 
-                            {/* WhatsApp number input */}
-                            <div className="relative flex-1">
+                                {showPrefixDropdown && (
+                                  <>
+                                    <div
+                                      className="fixed inset-0 z-30"
+                                      onClick={() => setShowPrefixDropdown(false)}
+                                    />
+                                    <div className="absolute top-[calc(100%+4px)] left-0 w-52 bg-white border border-neutral-100 rounded-xl shadow-xl z-40 max-h-56 overflow-y-auto py-1">
+                                      {COUNTRIES.map((country) => (
+                                        <button
+                                          key={country.iso}
+                                          type="button"
+                                          onClick={() => {
+                                            setPhonePrefix(country.code);
+                                            setShowPrefixDropdown(false);
+                                          }}
+                                          className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-neutral-50 border-none cursor-pointer text-left bg-transparent"
+                                        >
+                                          <img
+                                            src={`https://flagcdn.com/w20/${country.iso}.png`}
+                                            alt=""
+                                            className="w-4 h-auto rounded-[2px]"
+                                          />
+                                          <span>
+                                            {country.name} ({country.code})
+                                          </span>
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </>
+                                )}
+                              </div>
+
                               <input
                                 type="tel"
                                 value={whatsapp}
-                                onChange={(e) => setWhatsapp(e.target.value.replace(/\D/g, ""))}
-                                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-sm focus:outline-none focus:border-[#1890FF]/45 transition-colors"
+                                onChange={(e) =>
+                                  setWhatsapp(e.target.value.replace(/\D/g, ""))
+                                }
+                                className="flex-1 px-3 py-2.5 rounded-xl border border-neutral-200 bg-white text-slate-800 text-[13px] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all"
                                 placeholder="912345678"
                               />
-                              <Phone size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ) : (
-                      /* Tab 2: Subscription Settings */
-                      <div className="space-y-5">
-                        <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-2">
-                          <div>
-                            <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider mb-0.5">Suscripción al Blog</h4>
-                            <p className="text-xs text-slate-400">Recibe resúmenes, guías y noticias exclusivas</p>
+
+                        {/* Account type row */}
+                        <div className="flex items-center justify-between gap-4 py-4 border-t border-neutral-100">
+                          <div className="flex items-center gap-3.5">
+                            <div className="w-10 h-10 rounded-full bg-neutral-100 flex items-center justify-center text-slate-600 shrink-0">
+                              <Shield className="w-[18px] h-[18px]" />
+                            </div>
+                            <div>
+                              <div className="font-bold text-[13px] text-slate-800">
+                                Cuenta de ProgramBI
+                              </div>
+                              <div className="text-[11px] text-slate-400 mt-0.5">
+                                Acceso a la plataforma y comunidad
+                              </div>
+                            </div>
                           </div>
-                          
-                          {/* Main Subscription Switch */}
-                          <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={isSubscribed}
-                              onChange={(e) => setIsSubscribed(e.target.checked)}
-                              className="sr-only peer"
+                          <span className="bg-neutral-100 text-slate-600 font-semibold px-3 py-1.5 rounded-full text-[11px] shrink-0">
+                            Estudiante
+                          </span>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {activeTab === "blog" && (
+                      <motion.div
+                        key="blog"
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 5 }}
+                        transition={{ duration: 0.15 }}
+                        className="space-y-5"
+                      >
+                        {/* Main subscription toggle */}
+                        <div className="flex items-center justify-between gap-4 p-4 bg-neutral-50 rounded-2xl border border-neutral-100">
+                          <div className="flex items-center gap-3.5 min-w-0">
+                            <div
+                              className={cn(
+                                "w-10 h-10 rounded-xl flex items-center justify-center shrink-0",
+                                isSubscribed ? "bg-indigo-50 text-indigo-600" : "bg-neutral-100 text-neutral-400"
+                              )}
+                            >
+                              <Newspaper className="w-[18px] h-[18px]" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="font-bold text-[13px] text-slate-800">
+                                Suscripción al blog
+                              </div>
+                              <div className="text-[11px] text-slate-400 mt-0.5">
+                                Resúmenes, guías y noticias exclusivas
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setIsSubscribed(!isSubscribed)}
+                            className={cn(
+                              "relative w-11 h-6 rounded-full transition-colors duration-200 shrink-0 border-0 cursor-pointer",
+                              isSubscribed ? "bg-indigo-600" : "bg-neutral-300"
+                            )}
+                            aria-label="Activar o desactivar suscripción"
+                          >
+                            <motion.div
+                              animate={{ x: isSubscribed ? 22 : 2 }}
+                              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                              className="absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm"
                             />
-                            <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#1890FF]"></div>
-                          </label>
+                          </button>
                         </div>
 
                         {isSubscribed ? (
-                          /* Active subscription settings details */
                           <motion.div
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
-                            className="space-y-5 pt-2"
+                            className="space-y-5"
                           >
-                            {/* Categories checklist */}
                             <div>
-                              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2.5 block">Categorías de Interés</label>
-                              <div className="space-y-2 bg-slate-50 p-4 rounded-2xl border border-slate-100/50">
+                              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-3">
+                                Categorías de interés
+                              </div>
+                              <div className="space-y-2">
                                 {CATEGORIES.map((cat) => {
                                   const checked = selectedCategories.includes(cat.id);
                                   return (
-                                    <label key={cat.id} className="flex items-center gap-3.5 cursor-pointer py-1 select-none">
-                                      <input
-                                        type="checkbox"
-                                        checked={checked}
-                                        onChange={() => handleCategoryToggle(cat.id)}
-                                        className="w-4 h-4 rounded border-slate-300 text-[#1890FF] focus:ring-[#1890FF]"
-                                      />
-                                      <span className="text-sm text-slate-650 font-medium">{cat.label}</span>
-                                    </label>
+                                    <button
+                                      key={cat.id}
+                                      type="button"
+                                      onClick={() => handleCategoryToggle(cat.id)}
+                                      className={cn(
+                                        "w-full flex items-center gap-3.5 p-3.5 rounded-2xl border transition-all text-left cursor-pointer",
+                                        checked
+                                          ? "bg-indigo-50/60 border-indigo-200"
+                                          : "bg-white border-neutral-100 hover:border-neutral-200"
+                                      )}
+                                    >
+                                      <div
+                                        className={cn(
+                                          "w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-colors",
+                                          checked
+                                            ? "bg-indigo-600 border-indigo-600"
+                                            : "border-neutral-300 bg-white"
+                                        )}
+                                      >
+                                        {checked && (
+                                          <CheckCircle className="w-3 h-3 text-white" />
+                                        )}
+                                      </div>
+                                      <div className="min-w-0">
+                                        <div className="text-[13px] font-semibold text-slate-800">
+                                          {cat.label}
+                                        </div>
+                                        <div className="text-[11px] text-slate-400 mt-0.5">
+                                          {cat.desc}
+                                        </div>
+                                      </div>
+                                    </button>
                                   );
                                 })}
                               </div>
                             </div>
 
-                            {/* Frequency selector */}
                             <div>
-                              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1 block">Frecuencia de Envío</label>
+                              <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
+                                Frecuencia de envío
+                              </div>
                               <select
                                 value={frequency}
                                 onChange={(e) => setFrequency(e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-800 text-sm focus:outline-none focus:border-[#1890FF]/45 transition-colors"
+                                className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 bg-white text-slate-800 text-[13px] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all cursor-pointer"
                               >
-                                <option value="weekly">Semanal (Recomendado - Todos los fines de semana)</option>
-                                <option value="monthly">Mensual (Un súper resumen al mes)</option>
-                                <option value="instant">Instantáneo (Cada vez que sale un artículo destacado)</option>
+                                <option value="weekly">
+                                  Semanal (recomendado — fines de semana)
+                                </option>
+                                <option value="monthly">
+                                  Mensual (un resumen al mes)
+                                </option>
+                                <option value="instant">
+                                  Instantáneo (cada artículo destacado)
+                                </option>
                               </select>
                             </div>
                           </motion.div>
                         ) : (
-                          /* Unsubscribed explanation text */
-                          <div className="text-center py-6 px-4 bg-slate-50 rounded-2xl border border-dashed border-slate-200">
-                            <Sliders className="w-8 h-8 text-slate-300 mx-auto mb-2.5" />
-                            <p className="text-sm font-bold text-slate-700 mb-1">Te encuentras desuscrito del blog</p>
-                            <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                              No recibirás correos sobre nuevas entradas, tutoriales o análisis técnicos. Activa la casilla de arriba si deseas suscribirte de nuevo.
+                          <div className="text-center py-10 px-4 bg-neutral-50 rounded-2xl border border-dashed border-neutral-200">
+                            <Bell className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+                            <p className="text-[13px] font-bold text-slate-700 mb-1">
+                              Estás desuscrito del blog
+                            </p>
+                            <p className="text-[12px] text-slate-400 max-w-sm mx-auto leading-relaxed">
+                              No recibirás correos sobre nuevas entradas, tutoriales o análisis.
+                              Activa el interruptor de arriba para suscribirte.
                             </p>
                           </div>
                         )}
-                      </div>
+                      </motion.div>
                     )}
-                  </div>
-
-                  {/* Actions buttons */}
-                  <div className="flex items-center gap-3 pt-6 border-t border-slate-100 mt-6 justify-end">
-                    <button
-                      type="button"
-                      onClick={onClose}
-                      className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-650 font-bold rounded-xl text-sm transition-colors border-none cursor-pointer"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      type="submit"
-                      disabled={saving}
-                      className="px-6 py-2.5 bg-brand-blue text-white font-bold rounded-xl text-sm hover:bg-blue-600 transition-colors border-none cursor-pointer flex items-center gap-2 disabled:opacity-50"
-                    >
-                      {saving ? (
-                        <>
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                          <span>Guardando...</span>
-                        </>
-                      ) : (
-                        <span>Guardar Cambios</span>
-                      )}
-                    </button>
-                  </div>
-                </form>
+                  </AnimatePresence>
+                </>
               )}
             </div>
+
+            {/* Footer actions + premium banner */}
+            {!loadingData && (
+              <div className="mt-8 space-y-4 shrink-0">
+                <div className="flex items-center gap-3 justify-end">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 text-slate-700 font-semibold rounded-xl text-[13px] transition-colors border-0 cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSave()}
+                    disabled={saving}
+                    className="px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl text-[13px] transition-colors border-0 cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {saving ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Guardando...</span>
+                      </>
+                    ) : (
+                      <span>Guardar cambios</span>
+                    )}
+                  </button>
+                </div>
+
+                <div className="p-5 bg-slate-950 rounded-2xl relative overflow-hidden flex items-center justify-between border border-white/10 shadow-lg">
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(99,102,241,0.15),transparent_60%)] pointer-events-none" />
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(59,130,246,0.1),transparent_60%)] pointer-events-none" />
+
+                  <div className="relative z-10 flex items-center gap-3 min-w-0">
+                    <Sparkles className="w-5 h-5 text-indigo-400 animate-pulse shrink-0" />
+                    <div className="min-w-0">
+                      <div className="text-sm font-bold text-white">ProgramBI Premium</div>
+                      <div className="text-[11px] text-gray-400 mt-0.5 truncate">
+                        Cursos, IA integrada y asesorías en directo.
+                      </div>
+                    </div>
+                  </div>
+
+                  <a
+                    href="/comunidad"
+                    className="relative z-10 bg-white hover:bg-neutral-100 text-slate-950 text-xs font-bold px-4 py-2 rounded-xl transition-all cursor-pointer border-0 select-none shadow-sm no-underline shrink-0"
+                  >
+                    Ver planes
+                  </a>
+                </div>
+              </div>
+            )}
           </div>
         </motion.div>
       </div>
