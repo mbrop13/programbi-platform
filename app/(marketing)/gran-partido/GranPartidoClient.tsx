@@ -362,15 +362,15 @@ export default function GranPartidoClient() {
 
   return (
     <div className="bg-white text-slate-900 min-h-screen relative overflow-hidden font-sans">
-      {/* Fondos suaves con colores de equipos — sin cuadrícula */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+      {/* Fondos suaves — solo desktop; en móvil el hero queda limpio sin luces de color */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden hidden sm:block">
         <div className="absolute -top-32 -left-20 w-[480px] h-[480px] rounded-full bg-red-400/15 blur-[110px]" />
         <div className="absolute -top-24 -right-16 w-[460px] h-[460px] rounded-full bg-sky-400/20 blur-[110px]" />
         <div className="absolute top-[40%] left-1/2 -translate-x-1/2 w-[70vw] h-[40vw] rounded-full bg-amber-200/10 blur-[120px]" />
       </div>
 
       {/* ═══════ HERO ═══════ */}
-      <section className="relative pt-4 sm:pt-6 pb-10 lg:pb-14">
+      <section className="relative pt-10 sm:pt-12 lg:pt-14 pb-10 lg:pb-14">
         <div className="max-w-[1100px] mx-auto px-5 sm:px-6">
           <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
             <motion.h1
