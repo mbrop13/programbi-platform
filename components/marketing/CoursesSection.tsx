@@ -7,7 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   Clock,
-  Sparkles,
   Lock,
 } from "lucide-react";
 import { courses, type Course } from "@/lib/data/courses";
@@ -165,8 +164,6 @@ export default function CoursesSection() {
         
         {/* Unified Header */}
         <SectionHeader
-          eyebrow="Bootcamps de Datos"
-          icon={Sparkles}
           title={
             <>
               Programas diseñados para tu{" "}
