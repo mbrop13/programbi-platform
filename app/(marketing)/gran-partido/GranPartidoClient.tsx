@@ -372,12 +372,12 @@ export default function GranPartidoClient() {
       {/* ═══════ HERO ═══════ */}
       <section className="relative pt-4 sm:pt-6 pb-10 lg:pb-14">
         <div className="max-w-[1100px] mx-auto px-5 sm:px-6">
-          <div className="text-center max-w-3xl mx-auto mb-6 sm:mb-8">
+          <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-14">
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="font-display text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] mb-3 text-slate-950"
+              className="font-display text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.1] mb-4 sm:mb-5 text-slate-950"
             >
               ¿Quién ganará la final?
             </motion.h1>
