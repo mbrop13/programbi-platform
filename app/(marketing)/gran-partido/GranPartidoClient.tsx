@@ -795,7 +795,7 @@ export default function GranPartidoClient() {
       </section>
 
       {/* ═══════ HOW IT WORKS ═══════ */}
-      <section className="relative py-14 lg:py-16 border-t border-slate-100 bg-gradient-to-b from-white via-red-50/20 to-sky-50/30">
+      <section className="relative py-14 lg:py-16">
         <div className="max-w-[1100px] mx-auto px-5 sm:px-6">
           <FadeIn className="text-center mb-10">
             <p className="text-[11px] font-black uppercase tracking-[0.2em] text-red-600 mb-3">
@@ -915,7 +915,7 @@ export default function GranPartidoClient() {
       </section>
 
       {/* ═══════ TRUST ═══════ */}
-      <section className="relative py-10 border-y border-slate-100 bg-gradient-to-r from-red-50/40 via-white to-sky-50/40">
+      <section className="relative py-10">
         <div className="max-w-[1100px] mx-auto px-5 sm:px-6">
           <div className="grid sm:grid-cols-3 gap-4">
             {[
