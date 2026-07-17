@@ -308,7 +308,7 @@ export default function TestimonialsSection() {
     ));
 
   return (
-    <section className="py-10 lg:py-14 bg-white relative overflow-hidden">
+    <section className="pt-10 pb-4 lg:pt-14 lg:pb-6 bg-white relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 dot-pattern opacity-25 pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-b from-[#1890FF]/4 to-transparent rounded-full blur-[150px] pointer-events-none" />

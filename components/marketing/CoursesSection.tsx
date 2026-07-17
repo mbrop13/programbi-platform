@@ -208,7 +208,7 @@ export default function CoursesSection() {
           </p>
         </FadeIn>
 
-        {/* Grid de tarjetas grandes (2 columnas en desktop → más presencia visual) */}
+        {/* Grid de tarjetas de cursos (4 por fila en desktop) */}
         <div className="w-full z-10">
           <AnimatePresence mode="wait">
             <motion.div
@@ -217,7 +217,7 @@ export default function CoursesSection() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -15 }}
               transition={{ duration: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5"
             >
               {filteredCourses.map((course) => {
                 const { price, originalPrice } = getPriceInfo(course, promotions);
@@ -231,9 +231,9 @@ export default function CoursesSection() {
                   <motion.div
                     key={course.slug}
                     layout
-                    whileHover={{ y: -6 }}
+                    whileHover={{ y: -5 }}
                     transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                    className="group relative h-full"
+                    className="group relative h-full flex flex-col"
                   >
                     <div
                       className="absolute -inset-px rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500 pointer-events-none -z-10"
@@ -246,11 +246,11 @@ export default function CoursesSection() {
                       className="relative h-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white flex flex-col transition-all duration-500 group-hover:border-slate-300/90 group-hover:shadow-xl"
                       style={{
                         boxShadow:
-                          "0 12px 40px -16px rgba(15,23,42,0.12), 0 1px 0 0 rgba(255,255,255,0.9)",
+                          "0 12px 36px -16px rgba(15,23,42,0.1), 0 1px 0 0 rgba(255,255,255,0.9)",
                       }}
                     >
-                      {/* Imagen: menos redondeo (solo hereda sutil del card superior) */}
-                      <div className="relative aspect-[16/9] overflow-hidden rounded-none">
+                      {/* Imagen */}
+                      <div className="relative aspect-[16/9] overflow-hidden rounded-none shrink-0">
                         <Image
                           src={course.imageUrl}
                           alt={course.title}
@@ -267,24 +267,24 @@ export default function CoursesSection() {
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/35 via-transparent to-transparent" />
 
                         {course.slug === "analisis-de-datos" && (
-                          <div className="absolute top-3.5 left-3.5 bg-amber-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-md shadow-lg border border-white/20 flex items-center gap-1 select-none">
+                          <div className="absolute top-2.5 left-2.5 bg-amber-500 text-white text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded shadow-md border border-white/20 flex items-center gap-1 select-none">
                             🔥 Más Popular
                           </div>
                         )}
 
-                        <span className="absolute top-3.5 right-3.5 flex items-center gap-1.5 bg-white/95 text-slate-700 text-[11px] font-bold px-2.5 py-1 rounded-md shadow-sm backdrop-blur-sm">
-                          <Clock size={12} className="text-slate-400" />
+                        <span className="absolute top-2.5 right-2.5 flex items-center gap-1 bg-white/95 text-slate-700 text-[10px] font-bold px-2 py-0.5 rounded shadow-sm backdrop-blur-sm">
+                          <Clock size={11} className="text-slate-400" />
                           {course.durationHours}h
                         </span>
                       </div>
 
-                      {/* Cuerpo ampliado */}
-                      <div className="flex flex-col flex-1 p-6 lg:p-7">
-                        <div className="flex gap-2 flex-wrap mb-4">
+                      {/* Cuerpo de la tarjeta */}
+                      <div className="flex flex-col flex-1 p-4 lg:p-5">
+                        <div className="flex gap-1.5 flex-wrap mb-2.5">
                           {course.techStack.map((tech) => (
                             <span
                               key={tech}
-                              className="bg-slate-50 text-slate-600 px-2.5 py-1 rounded-md text-[11px] font-mono font-medium border border-slate-200/70"
+                              className="bg-slate-50 text-slate-600 px-2 py-0.5 rounded text-[10px] font-mono font-medium border border-slate-200/70"
                             >
                               {tech}
                             </span>
@@ -292,26 +292,26 @@ export default function CoursesSection() {
                         </div>
 
                         <Link href={`/cursos/${course.slug}`} className="block no-underline">
-                          <h3 className="font-display text-xl lg:text-[1.35rem] font-bold text-slate-900 mb-2.5 leading-snug group-hover:text-[#1890FF] transition-colors text-left line-clamp-2">
+                          <h3 className="font-display text-base font-bold text-slate-900 mb-2 leading-snug group-hover:text-[#1890FF] transition-colors text-left line-clamp-2">
                             {course.title}
                           </h3>
                         </Link>
 
-                        <p className="text-slate-500 text-sm leading-relaxed mb-6 text-left line-clamp-3 flex-1">
+                        <p className="text-slate-500 text-xs leading-relaxed mb-4 text-left line-clamp-3 flex-1">
                           {course.shortDescription}
                         </p>
 
-                        <div className="mt-auto pt-5 border-t border-slate-100 flex items-center justify-between gap-3">
+                        <div className="mt-auto pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
                           <div className="flex flex-col text-left font-sans min-w-0">
                             {isLoggedIn ? (
                               price ? (
                                 <>
-                                  <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-wider leading-none mb-1.5">
+                                  <span className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider leading-none mb-1">
                                     Inversión
                                   </span>
-                                  <div className="flex items-baseline gap-2 flex-wrap">
+                                  <div className="flex items-baseline gap-1.5 flex-wrap">
                                     {originalPrice && (
-                                      <span className="text-xs line-through text-slate-400 font-medium">
+                                      <span className="text-[11px] line-through text-slate-400 font-medium">
                                         {new Intl.NumberFormat("es-CL", {
                                           style: "currency",
                                           currency: "CLP",
@@ -319,7 +319,7 @@ export default function CoursesSection() {
                                         }).format(originalPrice)}
                                       </span>
                                     )}
-                                    <span className="text-lg font-black text-slate-900 leading-none">
+                                    <span className="text-base font-black text-slate-900 leading-none">
                                       {new Intl.NumberFormat("es-CL", {
                                         style: "currency",
                                         currency: "CLP",
@@ -329,7 +329,7 @@ export default function CoursesSection() {
                                   </div>
                                   {discountPercent && (
                                     <span
-                                      className="mt-1.5 text-[10px] font-extrabold px-2 py-0.5 rounded-md text-white w-fit leading-none"
+                                      className="mt-1 text-[9px] font-extrabold px-1.5 py-0.5 rounded text-white w-fit leading-none"
                                       style={{ backgroundColor: accent }}
                                     >
                                       -{discountPercent}% DCTO
@@ -338,8 +338,8 @@ export default function CoursesSection() {
                                 </>
                               ) : null
                             ) : (
-                              <div className="flex items-center gap-1.5 text-xs font-extrabold text-blue-500 select-none">
-                                <Lock size={13} />
+                              <div className="flex items-center gap-1 text-[11px] font-extrabold text-blue-500 select-none">
+                                <Lock size={12} />
                                 <span>Ver precios</span>
                               </div>
                             )}
@@ -347,7 +347,7 @@ export default function CoursesSection() {
 
                           <Link
                             href={`/cursos/${course.slug}`}
-                            className="inline-flex items-center gap-2 rounded-lg px-4 py-2.5 shadow-sm transition-all duration-300 text-[13px] font-bold font-sans group/btn no-underline shrink-0"
+                            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 shadow-sm transition-all duration-300 text-xs font-bold font-sans group/btn no-underline shrink-0"
                             style={{
                               backgroundColor: `${accent}14`,
                               color: accent,
@@ -355,7 +355,7 @@ export default function CoursesSection() {
                           >
                             <span>Ver temario</span>
                             <ArrowRight
-                              size={14}
+                              size={13}
                               className="transition-transform group-hover/btn:translate-x-0.5"
                             />
                           </Link>

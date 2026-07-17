@@ -77,7 +77,7 @@ export default function BlogPromoSection({ articles }: BlogPromoSectionProps) {
   const posterUrl = isVideoUrl(current.cover_image) ? getPosterFromContent(current.content) : current.cover_image;
 
   return (
-    <section className="py-16 lg:py-24 bg-white relative overflow-hidden">
+    <section className="pt-6 pb-12 lg:pt-8 lg:pb-16 bg-white relative overflow-hidden">
       <div className="max-w-6xl mx-auto px-5 lg:px-6 relative z-10">
         
         {/* Unified Section Header */}
@@ -90,7 +90,7 @@ export default function BlogPromoSection({ articles }: BlogPromoSectionProps) {
           subtitle="Insights, análisis y tendencias en datos escritos por nuestros expertos."
           align="center"
           maxWidth="md"
-          className="mb-12"
+          className="mb-6 lg:mb-8"
         />
 
         {/* Slideboard Container (Identical to Blog page BlogSlider) */}
