@@ -1,18 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, Phone, Building, Eye, EyeOff, UserPlus, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { validatePassword, isBreachedPassword } from "@/lib/security/password";
+import { honeypotStyle } from "@/lib/antibot";
 
 export default function RegistroPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [acceptsPrivacy, setAcceptsPrivacy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
+  const formLoadedAt = useRef<number>(Date.now());
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -26,6 +30,20 @@ export default function RegistroPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Anti-bot check 1: Honeypot field filled by automated scrapers/bots
+    if (honeypot.trim() !== "") {
+      console.log("🤖 Bot registration blocked (honeypot)");
+      router.push("/login?registered=true");
+      return;
+    }
+
+    // Anti-bot check 2: Instant submission check (less than 2 seconds)
+    if (Date.now() - formLoadedAt.current < 2000) {
+      console.log("🤖 Bot registration blocked (too fast)");
+      router.push("/login?registered=true");
+      return;
+    }
 
     if (formData.password !== formData.confirmPassword) {
       setError("Las contraseñas no coinciden.");
@@ -111,6 +129,18 @@ export default function RegistroPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Honeypot field - hidden from real users, filled by bots */}
+            <div style={honeypotStyle} aria-hidden="true">
+              <input
+                type="text"
+                name="_website"
+                autoComplete="off"
+                tabIndex={-1}
+                value={honeypot}
+                onChange={(e) => setHoneypot(e.target.value)}
+              />
+            </div>
+
             <div>
               <label className="block text-sm font-bold text-brand-dark mb-1.5">Nombre completo *</label>
               <div className="relative">

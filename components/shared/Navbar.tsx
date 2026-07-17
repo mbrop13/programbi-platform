@@ -132,23 +132,37 @@ export default function Navbar() {
     getNewsletterCategories().then(cats => setNlCategories(cats)).catch(() => {});
   }, [isNewsletter]);
 
-  // Listen for open-subscribe events from newsletter page
+  // Listen for open-subscribe and open-auth-modal events from any page
   useEffect(() => {
     const handleOpen = () => {
       if (!user) {
         setAuthModal({ isOpen: true, tab: "register" });
       }
     };
-    const handleOpenAuth = () => {
+    const handleOpenAuth = (e?: Event) => {
       if (!user) {
-        setAuthModal({ isOpen: true, tab: "register" });
+        const customEvent = e as CustomEvent<{ tab?: "login" | "register" }>;
+        const tab = customEvent?.detail?.tab || "register";
+        setAuthModal({ isOpen: true, tab });
       }
     };
     window.addEventListener("open-nl-subscribe", handleOpen);
-    window.addEventListener("open-nl-subscribe-auth", handleOpenAuth);
+    window.addEventListener("open-nl-subscribe-auth", handleOpen);
+    window.addEventListener("open-auth-modal", handleOpenAuth);
+
+    // Auto-open modal if URL query parameter contains ?auth=register or ?auth=login
+    if (typeof window !== "undefined" && !user) {
+      const params = new URLSearchParams(window.location.search);
+      const authParam = params.get("auth");
+      if (authParam === "register" || authParam === "login") {
+        setAuthModal({ isOpen: true, tab: authParam });
+      }
+    }
+
     return () => {
       window.removeEventListener("open-nl-subscribe", handleOpen);
-      window.removeEventListener("open-nl-subscribe-auth", handleOpenAuth);
+      window.removeEventListener("open-nl-subscribe-auth", handleOpen);
+      window.removeEventListener("open-auth-modal", handleOpenAuth);
     };
   }, [user]);
 

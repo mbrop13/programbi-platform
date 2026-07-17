@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, LogIn, UserPlus, Mail, Lock, Sparkles, ArrowRight, CheckCircle, AlertCircle, Loader2, User, Eye, EyeOff, Phone, ChevronDown } from "lucide-react";
-import { useState, useEffect, FormEvent } from "react";
+import { useState, useEffect, FormEvent, useRef } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/client";
 import { validatePassword, isBreachedPassword } from "@/lib/security/password";
 import { useCountry } from "@/lib/context/CountryContext";
 import { subscribeToNewsletter } from "@/lib/supabase/comunidad-ai";
+import { honeypotStyle } from "@/lib/antibot";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -46,6 +47,8 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [honeypot, setHoneypot] = useState("");
+  const formLoadedAt = useRef<number>(Date.now());
 
   useEffect(() => {
     setMounted(true);
@@ -79,6 +82,8 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     setPassword("");
     setFullName("");
     setWhatsapp("");
+    setHoneypot("");
+    formLoadedAt.current = Date.now();
     setShowPassword(false);
     setShowPrefixDropdown(false);
     setAcceptsPrivacy(false);
@@ -134,6 +139,22 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Anti-bot check 1: Honeypot field filled by automated scrapers/bots
+    if (honeypot.trim() !== "") {
+      console.log("🤖 Bot registration in modal blocked (honeypot)");
+      setSuccess("¡Bienvenido a ProgramBI! 🎉");
+      setTimeout(() => onClose(), 1200);
+      return;
+    }
+
+    // Anti-bot check 2: Instant submission check (less than 2 seconds)
+    if (Date.now() - formLoadedAt.current < 2000) {
+      console.log("🤖 Bot registration in modal blocked (too fast)");
+      setSuccess("¡Bienvenido a ProgramBI! 🎉");
+      setTimeout(() => onClose(), 1200);
+      return;
+    }
 
     // A-01 / V2.5.1 (OWASP ASVS L3): apply the same centralized policy used by
     // the dedicated registro page. The previous check (< 6 chars) was far too
@@ -410,6 +431,17 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                     </motion.form>
                   ) : (
                     <motion.form initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} className="space-y-4" onSubmit={handleRegister}>
+                      {/* Honeypot field - hidden from real users, filled by bots */}
+                      <div style={honeypotStyle} aria-hidden="true">
+                        <input
+                          type="text"
+                          name="_website"
+                          autoComplete="off"
+                          tabIndex={-1}
+                          value={honeypot}
+                          onChange={(e) => setHoneypot(e.target.value)}
+                        />
+                      </div>
                       <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Nombre *</label>
                         <div className="relative">

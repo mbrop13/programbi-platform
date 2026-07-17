@@ -1,8 +1,17 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/proxy'
 
+const BAD_BOT_UA_REGEX = /bytespider|petalbot|mj12bot|zgrab|sqlmap|python-requests|go-http-client|scrapy|nikto|curl\/7\.\d+|wget/i;
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const userAgent = request.headers.get('user-agent') || ''
+
+  // Bloqueo inmediato en Edge de bots agresivos en rutas sensibles (auth/registro/api)
+  if (BAD_BOT_UA_REGEX.test(userAgent) && (pathname.startsWith('/registro') || pathname.startsWith('/login') || pathname.startsWith('/api'))) {
+    return new NextResponse('Access Denied', { status: 403 })
+  }
+
   // Optimización de Active CPU: Si no hay cookies de sesión de Supabase (empiezan con sb-),
   // evitamos inicializar el cliente de Supabase y validar la sesión.
   const hasSession = request.cookies.getAll().some(cookie => cookie.name.startsWith('sb-'))
