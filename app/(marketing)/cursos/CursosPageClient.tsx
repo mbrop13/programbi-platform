@@ -55,7 +55,7 @@ export default function CursosPageClient() {
               <span className="font-extrabold text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-gray-900">
                 ¿Qué habilidad te llevará al...
               </span>
-              <span className="font-serif italic font-normal text-3xl sm:text-5xl lg:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600 inline-block pr-4 sm:pr-6 pb-1 mt-1">
+              <span className="font-serif italic font-normal text-3xl sm:text-5xl lg:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600 inline-block pr-4 sm:pr-6 pt-1 pb-3 sm:pb-4 leading-normal">
                 Siguiente Nivel?
               </span>
             </h1>
