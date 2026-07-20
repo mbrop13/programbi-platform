@@ -51,11 +51,11 @@ export default function CursosPageClient() {
 
         <div className="relative z-10 max-w-[900px] mx-auto px-5 lg:px-10 text-center">
           <FadeIn delay={0.15}>
-            <h1 className="font-display font-extrabold text-4xl sm:text-5xl lg:text-6xl text-gray-900 mb-5 leading-[1.1] tracking-tight flex flex-col items-center justify-center gap-2">
-              <span>
+            <h1 className="font-display text-gray-900 mb-5 leading-tight tracking-tight flex flex-col items-center justify-center gap-1">
+              <span className="font-extrabold text-2xl sm:text-3xl md:text-4xl lg:text-5xl text-gray-900">
                 ¿Qué habilidad te llevará al...
               </span>
-              <span className="font-serif italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600 inline-block pr-4 sm:pr-6 pb-1 mt-2">
+              <span className="font-serif italic font-normal text-3xl sm:text-5xl lg:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600 inline-block pr-4 sm:pr-6 pb-1 mt-1">
                 Siguiente Nivel?
               </span>
             </h1>
