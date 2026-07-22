@@ -112,6 +112,9 @@ const LivePanel = dynamic(() => import("./tabs/LivePanel"), {
 const Certificates = dynamic(() => import("./tabs/Certificates"), {
   loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
 });
+const Practicar = dynamic(() => import("./tabs/Practicar"), {
+  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
+});
 const SettingsModal = dynamic(() => import("./SettingsModal"), { ssr: false });
 const SubscriptionModal = dynamic(() => import("./SubscriptionModal"), { ssr: false });
 
@@ -367,6 +370,8 @@ export default function ComunidadPortal() {
                       ))}
 
                     {activeTab === "certificados" && <Certificates />}
+
+                    {activeTab === "practicar" && <Practicar />}
 
                     {activeTab === "configuracion" && (
                       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center max-w-md mx-auto">

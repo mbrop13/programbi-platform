@@ -32,6 +32,7 @@ import {
   ArrowUpCircle,
   ArrowRight,
   Loader2,
+  Dumbbell,
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
 import { getUnreadNotificationCount, getCoursesAndLessons, getPosts } from "@/lib/supabase/comunidad";
@@ -56,6 +57,7 @@ const translations = {
     cursos: "Cursos",
     live: "En Vivo",
     ai: "IA",
+    practicar: "Practica",
     perfil: "Mi Perfil",
     certificados: "Certificados",
     empresa: "Empresa",
@@ -87,6 +89,7 @@ const translations = {
     cursos: "My Courses",
     live: "Live Class",
     ai: "AI Assistant",
+    practicar: "Practice",
     perfil: "My Profile",
     certificados: "Certificates",
     empresa: "Business",
@@ -387,6 +390,7 @@ export default function Sidebar({
       { id: "live", label: t.live, icon: Radio, color: "text-rose-500", group: t.principal, showPing: hasUpcomingLives },
       { id: "buscar", label: "Buscar", icon: Search, color: "text-brand-blue", group: t.principal },
       { id: "ai", label: t.ai, icon: Sparkles, color: "text-purple-500", group: t.principal },
+      { id: "practicar", label: t.practicar, icon: Dumbbell, color: "text-emerald-500", group: t.principal },
     { id: "certificados", label: t.certificados, icon: Award, color: "text-amber-500", group: t.personal },
     ...(isOrgManager
       ? [{ id: "business", label: t.empresa, icon: Building2, color: "text-slate-500", group: t.gestion }]
