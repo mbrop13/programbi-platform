@@ -11,37 +11,37 @@ import Sidebar from "./Sidebar";
 import { ToastProvider } from "./ui/Toast";
 import { useCommunity } from "./CommunityProvider";
 
-// ─── SKELETON LOADERS FOR SMOOTH TAB TRANSITIONS ───
+// ─── SKELETON LOADERS FOR SMOOTH TAB TRANSITIONS (estilo grok) ───
 
 const MuroFeedSkeleton = () => (
   <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-[1400px] mx-auto animate-pulse p-4 sm:p-6 lg:p-8">
     <div className="lg:col-span-8 space-y-6">
-      <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-5 space-y-4 shadow-sm">
+      <div className="bg-surface border border-border rounded-xl p-5 space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-zinc-800 shrink-0" />
-          <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded-md w-1/3" />
+          <div className="w-10 h-10 rounded-xl bg-border shrink-0" />
+          <div className="h-4 bg-border rounded-md w-1/3" />
         </div>
-        <div className="h-16 bg-gray-100 dark:bg-zinc-850 rounded-2xl w-full" />
+        <div className="h-16 bg-surface-hover rounded-lg w-full" />
       </div>
       <div className="space-y-4">
         {[1, 2].map((i) => (
-          <div key={i} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-6 space-y-4 shadow-sm">
+          <div key={i} className="bg-surface border border-border rounded-xl p-6 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-zinc-800 shrink-0" />
+              <div className="w-10 h-10 rounded-xl bg-border shrink-0" />
               <div className="space-y-2">
-                <div className="h-3.5 bg-gray-200 dark:bg-zinc-800 rounded-md w-32" />
-                <div className="h-2.5 bg-gray-100 dark:bg-zinc-850 rounded-md w-20" />
+                <div className="h-3.5 bg-border rounded-md w-32" />
+                <div className="h-2.5 bg-surface-hover rounded-md w-20" />
               </div>
             </div>
-            <div className="h-24 bg-gray-100 dark:bg-zinc-850 rounded-2xl w-full mt-4" />
+            <div className="h-24 bg-surface-hover rounded-lg w-full mt-4" />
           </div>
         ))}
       </div>
     </div>
     <div className="hidden lg:block lg:col-span-4 space-y-6">
-      <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-6 space-y-4 shadow-sm">
-        <div className="h-4 bg-gray-300 dark:bg-zinc-700 rounded-md w-1/2" />
-        <div className="h-48 bg-gray-100 dark:bg-zinc-850 rounded-2xl w-full" />
+      <div className="bg-surface border border-border rounded-xl p-6 space-y-4">
+        <div className="h-4 bg-border-strong rounded-md w-1/2" />
+        <div className="h-48 bg-surface-hover rounded-lg w-full" />
       </div>
     </div>
   </div>
@@ -49,14 +49,14 @@ const MuroFeedSkeleton = () => (
 
 const MisCursosSkeleton = () => (
   <div className="w-full max-w-[1400px] mx-auto space-y-8 animate-pulse p-4 sm:p-6 lg:p-8">
-    <div className="h-6 bg-gray-300 dark:bg-zinc-700 rounded-md w-48" />
+    <div className="h-6 bg-border-strong rounded-md w-48" />
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="bg-white dark:bg-zinc-900 rounded-3xl border border-gray-100 dark:border-zinc-800 overflow-hidden shadow-sm">
-          <div className="aspect-[16/10] bg-gray-200 dark:bg-zinc-800" />
+        <div key={i} className="bg-surface rounded-xl border border-border overflow-hidden">
+          <div className="aspect-[16/10] bg-border" />
           <div className="p-6 space-y-4">
-            <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded-lg w-3/4" />
-            <div className="h-3 bg-gray-150 dark:bg-zinc-850 rounded-lg w-1/2" />
+            <div className="h-4 bg-border rounded-lg w-3/4" />
+            <div className="h-3 bg-surface-hover rounded-lg w-1/2" />
           </div>
         </div>
       ))}
@@ -66,27 +66,33 @@ const MisCursosSkeleton = () => (
 
 const LivePanelSkeleton = () => (
   <div className="w-full max-w-[1400px] mx-auto space-y-8 animate-pulse p-4 sm:p-6 lg:p-8">
-    <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-6 sm:p-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm">
+    <div className="bg-surface border border-border rounded-xl p-6 sm:p-8 flex flex-col md:flex-row justify-between items-center gap-6">
       <div className="space-y-4 flex-1">
-        <div className="h-3 bg-blue-200 dark:bg-zinc-700 rounded-md w-28" />
-        <div className="h-7 bg-gray-300 dark:bg-zinc-700 rounded-md w-3/4" />
-        <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded-md w-5/6" />
+        <div className="h-3 bg-border rounded-md w-28" />
+        <div className="h-7 bg-border-strong rounded-md w-3/4" />
+        <div className="h-4 bg-border rounded-md w-5/6" />
       </div>
-      <div className="w-full md:w-[320px] aspect-video bg-gray-200 dark:bg-zinc-800 rounded-2xl shrink-0" />
+      <div className="w-full md:w-[320px] aspect-video bg-border rounded-lg shrink-0" />
     </div>
     <div className="space-y-4">
-      <div className="h-5 bg-gray-300 dark:bg-zinc-700 rounded-md w-48" />
+      <div className="h-5 bg-border-strong rounded-md w-48" />
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2].map((y) => (
-          <div key={y} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl overflow-hidden shadow-sm space-y-4 pb-5">
-            <div className="w-full aspect-video bg-gray-200 dark:bg-zinc-800" />
+          <div key={y} className="bg-surface border border-border rounded-xl overflow-hidden space-y-4 pb-5">
+            <div className="w-full aspect-video bg-border" />
             <div className="px-5 space-y-3">
-              <div className="h-3 bg-gray-200 dark:bg-zinc-800 rounded-md w-3/4" />
+              <div className="h-3 bg-border rounded-md w-3/4" />
             </div>
           </div>
         ))}
       </div>
     </div>
+  </div>
+);
+
+const InlineLoading = () => (
+  <div className="flex-1 flex items-center justify-center py-20">
+    <Loader2 className="w-7 h-7 text-accent animate-spin" />
   </div>
 );
 
@@ -97,24 +103,12 @@ const MuroFeed = dynamic(() => import("./tabs/MuroFeed"), {
 const MisCursos = dynamic(() => import("./tabs/MisCursos"), {
   loading: MisCursosSkeleton,
 });
-const AulaVirtual = dynamic(() => import("./tabs/AulaVirtual"), {
-  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
-});
-const ChatShell = dynamic(() => import("./ai-v2/ChatShell"), {
-  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
-});
-const BusinessPortal = dynamic(() => import("./tabs/BusinessPortal"), {
-  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
-});
-const LivePanel = dynamic(() => import("./tabs/LivePanel"), {
-  loading: LivePanelSkeleton,
-});
-const Certificates = dynamic(() => import("./tabs/Certificates"), {
-  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
-});
-const Practicar = dynamic(() => import("./tabs/Practicar"), {
-  loading: () => <div className="flex-1 flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-blue animate-spin" /></div>,
-});
+const AulaVirtual = dynamic(() => import("./tabs/AulaVirtual"), { loading: InlineLoading });
+const ChatShell = dynamic(() => import("./ai-v2/ChatShell"), { loading: InlineLoading });
+const BusinessPortal = dynamic(() => import("./tabs/BusinessPortal"), { loading: InlineLoading });
+const LivePanel = dynamic(() => import("./tabs/LivePanel"), { loading: LivePanelSkeleton });
+const Certificates = dynamic(() => import("./tabs/Certificates"), { loading: InlineLoading });
+const Practicar = dynamic(() => import("./tabs/Practicar"), { loading: InlineLoading });
 const SettingsModal = dynamic(() => import("./SettingsModal"), { ssr: false });
 const SubscriptionModal = dynamic(() => import("./SubscriptionModal"), { ssr: false });
 
@@ -201,7 +195,7 @@ export default function ComunidadPortal() {
 
   return (
     <ToastProvider>
-      <div className="flex min-h-screen transition-colors duration-200 bg-[#f8f9fb] dark:bg-black text-neutral-900 dark:text-neutral-100">
+      <div className="flex min-h-screen transition-colors duration-200 bg-bg text-text">
         {/* ─── SIDEBAR (oculta en el chat IA y en el aula virtual de un curso) ─── */}
         {(activeTab !== "ai" && !(activeTab === "cursos" && selectedCourseId)) && (
           <Sidebar
@@ -229,11 +223,11 @@ export default function ComunidadPortal() {
         <div className="flex-1 flex flex-col min-w-0 min-h-screen relative">
           {/* Mobile Header Bar — visible only on small viewports and hidden in AI/Course pages */}
           {(activeTab !== "ai" && !(activeTab === "cursos" && selectedCourseId)) && (
-            <header className="lg:hidden sticky top-0 z-35 flex items-center justify-between px-4 py-3 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-md border-b border-neutral-200/80 dark:border-neutral-900/80 shadow-sm transition-colors duration-200">
+            <header className="lg:hidden sticky top-0 z-35 flex items-center justify-between px-4 py-3 bg-surface/85 backdrop-blur-md border-b border-border transition-colors duration-200">
               <div className="flex items-center gap-3">
                 <button
                   onClick={() => setMobileNavOpen(true)}
-                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-neutral-50 dark:bg-neutral-900 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors border-none cursor-pointer"
+                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-surface-hover text-text-secondary hover:bg-border transition-colors border-none cursor-pointer"
                   aria-label="Menú de navegación"
                 >
                   <Menu className="w-5 h-5" />
@@ -251,7 +245,7 @@ export default function ComunidadPortal() {
               {userProfile && (
                 <button
                   onClick={() => setShowSettingsModal(true)}
-                  className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-center font-bold text-[11px] shadow-sm cursor-pointer border-none transition-transform active:scale-95"
+                  className="w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-bold text-[11px] cursor-pointer border-none transition-transform active:scale-95"
                 >
                   <span>
                     {userProfile.full_name
@@ -266,7 +260,7 @@ export default function ComunidadPortal() {
           <main className="flex-1 w-full flex flex-col min-h-0">
             {isCheckingPlan ? (
               <div className="flex-1 flex items-center justify-center">
-                <Loader2 className="w-10 h-10 text-brand-blue animate-spin" />
+                <Loader2 className="w-10 h-10 text-accent animate-spin" />
               </div>
             ) : activeTab === "ai" ? (
               <AnimatePresence mode="wait">
@@ -333,19 +327,19 @@ export default function ComunidadPortal() {
                     {activeTab === "live" && (
                       <div className="relative">
                         {restrictedView && (
-                          <div className="absolute inset-0 z-50 rounded-3xl bg-white/40 backdrop-blur-[6px] flex flex-col items-center justify-center p-6 border border-white/20">
-                            <div className="w-16 h-16 bg-white rounded-full shadow-lg flex items-center justify-center mb-4 text-brand-blue">
-                              <Lock className="w-8 h-8" />
+                          <div className="absolute inset-0 z-50 rounded-xl bg-bg/60 backdrop-blur-[6px] flex flex-col items-center justify-center p-6 border border-border">
+                            <div className="w-16 h-16 bg-surface border border-border-strong rounded-2xl flex items-center justify-center mb-4 text-text">
+                              <Lock className="w-7 h-7" />
                             </div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
+                            <h3 className="font-display font-bold text-xl text-text mb-2">
                               Sección Premium
                             </h3>
-                            <p className="text-gray-600 text-center max-w-sm mb-6">
+                            <p className="text-text-secondary text-center max-w-sm mb-6">
                               Suscríbete a un plan de la comunidad para asistir a las Masterclasses semanales en vivo.
                             </p>
                             <button
                               onClick={() => router.push("/comunidad")}
-                              className="bg-brand-blue text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+                              className="bg-accent text-accent-foreground font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition-all"
                             >
                               Ver Planes
                             </button>
@@ -359,11 +353,11 @@ export default function ComunidadPortal() {
                       (isOrgManager ? (
                         <BusinessPortal />
                       ) : (
-                        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm p-12 text-center max-w-2xl mx-auto mt-8">
-                          <h2 className="font-display font-black text-2xl text-gray-900 mb-3">
+                        <div className="bg-surface rounded-xl border border-border p-12 text-center max-w-2xl mx-auto mt-8">
+                          <h2 className="font-display font-bold text-2xl text-text mb-3">
                             Acceso Restringido
                           </h2>
-                          <p className="text-gray-500 mb-6">
+                          <p className="text-text-secondary mb-6">
                             Esta sección está disponible únicamente para gestores corporativos.
                           </p>
                         </div>
@@ -374,16 +368,16 @@ export default function ComunidadPortal() {
                     {activeTab === "practicar" && <Practicar />}
 
                     {activeTab === "configuracion" && (
-                      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center max-w-md mx-auto">
-                        <h2 className="font-display font-bold text-xl text-gray-900 mb-2">
+                      <div className="bg-surface rounded-xl border border-border p-12 text-center max-w-md mx-auto">
+                        <h2 className="font-display font-bold text-xl text-text mb-2">
                           Configuración
                         </h2>
-                        <p className="text-gray-500 mb-4">
+                        <p className="text-text-secondary mb-4">
                           Gestiona tu cuenta, suscripción y preferencias.
                         </p>
                         <button
                           onClick={() => setShowSettingsModal(true)}
-                          className="bg-brand-blue text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-600 transition-colors shadow-sm"
+                          className="bg-accent text-accent-foreground font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity"
                         >
                           Abrir Configuración
                         </button>

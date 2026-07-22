@@ -43,16 +43,16 @@ export function MultipleChoiceRenderer({
             className={cn(
               "w-full text-left px-4 py-4 rounded-2xl border-2 font-medium text-[15px] transition-all flex items-center gap-3",
               isSel
-                ? "border-brand-blue bg-brand-blue/10 text-brand-blue-dark dark:text-white shadow-sm"
-                : "border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 hover:border-brand-blue/50 hover:bg-brand-blue/5"
+                ? "border-accent bg-accent-soft text-text shadow-sm"
+                : "border-border bg-surface text-text hover:border-accent hover:bg-accent-soft"
             )}
           >
             <span
               className={cn(
                 "inline-flex items-center justify-center w-7 h-7 rounded-lg border-2 text-[12px] font-bold shrink-0 transition-colors",
                 isSel
-                  ? "border-brand-blue bg-brand-blue text-white"
-                  : "border-current text-gray-400"
+                  ? "border-accent bg-accent text-accent-foreground"
+                  : "border-current text-text-muted"
               )}
             >
               {String.fromCharCode(65 + i)}
@@ -64,7 +64,7 @@ export function MultipleChoiceRenderer({
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   exit={{ scale: 0 }}
-                  className="text-brand-blue"
+                  className="text-text"
                 >
                   <Check className="w-5 h-5" />
                 </motion.span>
@@ -99,7 +99,7 @@ export function SelectAllRenderer({
   };
   return (
     <div className="grid gap-3">
-      <p className="text-sm text-gray-400 -mb-1 pl-1">
+      <p className="text-sm text-text-muted -mb-1 pl-1">
         Selecciona <strong>todas</strong> las que correspondan.
       </p>
       {data.options.map((opt, i) => {
@@ -113,14 +113,14 @@ export function SelectAllRenderer({
             className={cn(
               "w-full text-left px-4 py-4 rounded-2xl border-2 font-medium text-[15px] transition-all flex items-center gap-3",
               isSel
-                ? "border-brand-blue bg-brand-blue/10 text-brand-blue-dark dark:text-white"
-                : "border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 hover:border-brand-blue/50"
+                ? "border-accent bg-accent-soft text-text"
+                : "border-border bg-surface text-text hover:border-accent hover:bg-accent-soft"
             )}
           >
             <span
               className={cn(
                 "w-7 h-7 rounded-lg border-2 border-current flex items-center justify-center transition-colors shrink-0",
-                isSel && "bg-brand-blue border-brand-blue"
+                isSel && "bg-accent border-accent"
               )}
             >
               <AnimatePresence>
@@ -175,9 +175,9 @@ export function ArrangeRenderer({
   return (
     <div className="space-y-4">
       {/* zona colocada */}
-      <div className="min-h-[72px] rounded-2xl border-2 border-dashed border-gray-200 dark:border-zinc-700 p-3 flex flex-wrap gap-2 bg-gray-50/50 dark:bg-zinc-800/40 items-center">
+      <div className="min-h-[72px] rounded-xl border-2 border-dashed border-border p-3 flex flex-wrap gap-2 bg-surface-hover/50 items-center">
         {order.length === 0 && (
-          <span className="text-sm text-gray-400 dark:text-zinc-500 px-2">
+          <span className="text-sm text-text-muted px-2">
             Toca los tokens de abajo en el orden correcto…
           </span>
         )}
@@ -194,7 +194,7 @@ export function ArrangeRenderer({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => removeAt(i)}
-                className="px-3 py-2 rounded-xl bg-white dark:bg-zinc-900 border-2 border-brand-blue text-gray-900 dark:text-white font-mono text-sm font-semibold shadow-sm hover:bg-red-50 dark:hover:bg-red-950/40 hover:border-red-400 transition-colors"
+                className="px-3 py-2 rounded-lg bg-surface border-2 border-accent text-text font-mono text-sm font-semibold shadow-sm hover:bg-danger-bg hover:border-danger transition-colors"
               >
                 {tok.text}
               </motion.button>
@@ -216,7 +216,7 @@ export function ArrangeRenderer({
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.92 }}
               onClick={() => add(tok.id)}
-              className="px-3 py-2 rounded-xl bg-gray-100 dark:bg-zinc-800 border-2 border-gray-200 dark:border-zinc-700 text-gray-700 dark:text-zinc-200 font-mono text-sm font-semibold hover:border-brand-blue hover:text-brand-blue transition-colors"
+              className="px-3 py-2 rounded-lg bg-surface-hover border-2 border-border text-text-secondary font-mono text-sm font-semibold hover:border-accent hover:text-text transition-colors"
             >
               {tok.text}
             </motion.button>
@@ -272,17 +272,17 @@ export function MatchPairsRenderer({
               className={cn(
                 "w-full px-4 py-4 rounded-2xl border-2 font-medium text-sm transition-all text-left",
                 activeLeft === l.id &&
-                  "border-brand-blue bg-brand-blue/10 scale-[1.03] shadow-sm",
+                  "border-accent bg-accent-soft scale-[1.03] shadow-sm",
                 matchedId &&
-                  "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300",
+                  "border-accent bg-accent-soft text-text",
                 !matchedId &&
                   activeLeft !== l.id &&
-                  "border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:border-brand-blue/50"
+                  "border-border bg-surface hover:border-accent"
               )}
             >
               <div className="flex items-center justify-between gap-2">
                 <span>{l.text}</span>
-                {matchedId && <Check className="w-4 h-4 text-emerald-500" />}
+                {matchedId && <Check className="w-4 h-4 text-text" />}
               </div>
             </motion.button>
           );
@@ -300,14 +300,14 @@ export function MatchPairsRenderer({
               className={cn(
                 "w-full px-4 py-4 rounded-2xl border-2 font-medium text-sm transition-all text-left",
                 used &&
-                  "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300",
+                  "border-accent bg-accent-soft text-text",
                 !used &&
-                  "border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:border-brand-blue/50"
+                  "border-border bg-surface hover:border-accent"
               )}
             >
               <div className="flex items-center justify-between gap-2">
                 <span>{r.text}</span>
-                {used && <Check className="w-4 h-4 text-emerald-500" />}
+                {used && <Check className="w-4 h-4 text-text" />}
               </div>
             </motion.button>
           );
@@ -348,10 +348,10 @@ export function FillBlankRenderer({
           // dobles eventos.
           if (e.key === "Enter") e.stopPropagation();
         }}
-        className="w-full px-4 py-4 rounded-2xl border-2 border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white text-[15px] font-medium outline-none focus:border-brand-blue focus:ring-4 focus:ring-brand-blue/15 transition-all"
+        className="w-full px-4 py-4 rounded-lg border-2 border-border bg-surface text-text text-[15px] font-medium outline-none focus:border-accent focus:ring-4 focus:ring-accent/15 transition-all"
       />
-      <p className="text-xs text-gray-400 mt-2 pl-1">
-        Pulsa <kbd className="px-1.5 py-0.5 bg-gray-100 dark:bg-zinc-800 rounded text-[10px] font-mono">Enter</kbd> para comprobar.
+      <p className="text-xs text-text-muted mt-2 pl-1">
+        Pulsa <kbd className="px-1.5 py-0.5 bg-surface-hover rounded text-[10px] font-mono text-text-secondary">Enter</kbd> para comprobar.
       </p>
     </div>
   );

@@ -78,16 +78,16 @@ export default function Practicar() {
       {/* ── Header ────────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-display font-black text-3xl sm:text-4xl text-gray-900 dark:text-white">
+          <h1 className="font-display font-black text-3xl sm:text-4xl text-text">
             Practica
           </h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-text-secondary mt-1">
             Micro-lecciones gamificadas. Gana XP y mantén tu racha.
           </p>
         </div>
         <div className="flex items-center gap-3">
           <StatBadge
-            icon={<Star className="w-4 h-4 fill-amber-400 text-amber-500" />}
+            icon={<Star className="w-4 h-4 fill-text text-text" />}
             label={`${progress.xpTotal}`}
             sub="XP"
             color="amber"
@@ -118,10 +118,10 @@ export default function Practicar() {
               whileTap={{ scale: 0.97 }}
               onClick={() => setActiveUnitId(u.id)}
               className={cn(
-                "group relative flex items-center gap-3 pl-3 pr-4 py-2.5 rounded-2xl border-2 transition-all",
+                "group relative flex items-center gap-3 pl-3 pr-4 py-2.5 rounded-xl border-2 transition-all",
                 isActive
-                  ? "shadow-md"
-                  : "border-gray-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-gray-200 dark:hover:border-zinc-700"
+                  ? "shadow-sm"
+                  : "border-border bg-surface hover:border-border-strong"
               )}
               style={
                 isActive
@@ -136,15 +136,15 @@ export default function Practicar() {
                 <Icon className="w-5 h-5" />
               </span>
               <div className="text-left">
-                <div className="font-semibold text-sm text-gray-900 dark:text-white leading-tight">
+                <div className="font-semibold text-sm text-text leading-tight">
                   {u.emoji ? `${u.emoji} ` : ""}
                   {u.title}
                 </div>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[11px] text-gray-400">
+                  <span className="text-[11px] text-text-muted">
                     {completedInUnit}/{total}
                   </span>
-                  <span className="w-12 h-1 rounded-full bg-gray-100 dark:bg-zinc-800 overflow-hidden">
+                  <span className="w-12 h-1 rounded-full bg-surface-hover overflow-hidden">
                     <span
                       className="block h-full rounded-full"
                       style={{ width: `${pct}%`, background: u.accentColor }}
@@ -211,13 +211,12 @@ function UnitHeader({ unit, completed }: { unit: Unit; completed: number }) {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="rounded-3xl p-6 mb-2 border flex items-center gap-5"
-      style={{ background: `${unit.accentColor}12`, borderColor: `${unit.accentColor}30` }}
+      className="rounded-xl p-6 mb-2 border border-border bg-surface flex items-center gap-5"
     >
       {/* anillo */}
       <div className="relative w-20 h-20 shrink-0">
         <svg className="w-20 h-20 -rotate-90" viewBox="0 0 70 70">
-          <circle cx="35" cy="35" r={R} fill="none" stroke="#e5e7eb" strokeWidth="7" className="dark:stroke-zinc-800" />
+          <circle cx="35" cy="35" r={R} fill="none" stroke="var(--border)" strokeWidth="7" />
           <motion.circle
             cx="35"
             cy="35"
@@ -243,16 +242,16 @@ function UnitHeader({ unit, completed }: { unit: Unit; completed: number }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-xl">{unit.emoji}</span>
-          <h2 className="font-display font-bold text-xl text-gray-900 dark:text-white">
+          <h2 className="font-display font-bold text-xl text-text">
             {unit.title}
           </h2>
         </div>
-        <p className="text-gray-600 dark:text-zinc-300 text-sm mb-2">{unit.description}</p>
+        <p className="text-text-secondary text-sm mb-2">{unit.description}</p>
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-gray-500 dark:text-zinc-400">
+          <span className="text-xs font-semibold text-text-secondary">
             {completed} de {total} niveles
           </span>
-          <span className="text-xs font-bold" style={{ color: unit.accentColor }}>
+          <span className="text-xs font-semibold text-text-muted">
             {Math.round(pct * 100)}%
           </span>
         </div>
@@ -356,11 +355,10 @@ function PathConnector({
       <path
         d={d}
         fill="none"
-        stroke="#e5e7eb"
+        stroke="var(--border)"
         strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
-        className="dark:stroke-zinc-800"
         vectorEffect="non-scaling-stroke"
       />
       {/* sendero completado en color */}
@@ -497,7 +495,7 @@ function PathNode({
       <span
         className={cn(
           "mt-3 text-xs font-semibold text-center max-w-[150px]",
-          locked ? "text-gray-300 dark:text-zinc-600" : "text-gray-600 dark:text-zinc-300"
+          locked ? "text-text-muted" : "text-text-secondary"
         )}
       >
         {level.title}
@@ -525,8 +523,8 @@ function StatBadge({
       className={cn(
         "flex items-center gap-2 px-3.5 h-10 rounded-full border text-sm font-bold",
         color === "amber"
-          ? "border-amber-200 bg-amber-50 text-amber-700"
-          : "border-rose-200 bg-rose-50 text-rose-700"
+          ? "border-border bg-surface-hover text-text"
+          : "border-border bg-surface-hover text-text"
       )}
     >
       {icon}

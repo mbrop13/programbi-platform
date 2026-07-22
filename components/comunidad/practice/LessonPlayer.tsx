@@ -205,7 +205,7 @@ export default function LessonPlayer({
             initial={{ scale: 0, rotate: -20 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ type: "spring", stiffness: 200, damping: 14 }}
-            className="w-20 h-20 rounded-3xl flex items-center justify-center mb-5"
+            className="w-20 h-20 rounded-xl flex items-center justify-center mb-5"
             style={{ background: `${unit.accentColor}20` }}
           >
             <BookOpen className="w-10 h-10" style={{ color: unit.accentColor }} />

@@ -5,7 +5,9 @@ import SubscriptionGate from "@/components/comunidad/SubscriptionGate";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import CommunityFeatures from "@/components/comunidad/CommunityFeatures";
+import CommunityBenefits from "@/components/comunidad/CommunityBenefits";
 import CommunityFaq from "@/components/comunidad/CommunityFaq";
+import CommunityCtaBanner from "@/components/comunidad/CommunityCtaBanner";
 import LogoSlider from "@/components/marketing/LogoSlider";
 import TestimonialsSection from "@/components/marketing/TestimonialsSection";
 import FounderSection from "@/components/marketing/FounderSection";
@@ -37,21 +39,33 @@ export default async function ComunidadPage() {
 
           <LogoSlider transparent />
         </div>
+
+        {/* ─── RAZONES Y BENEFICIOS ─── */}
+        <CommunityBenefits />
+
         {/* ─── FEATURES ZIGZAG (clases en vivo, material, IA) ─── */}
         <CommunityFeatures />
+
         {/* ─── PLANES Y PRECIOS ─── */}
         <SubscriptionGate 
           isLoggedIn={!!profile}
           currentPlanId={profile?.subscription_plan}
         />
+
         {/* ─── TESTIMONIOS ─── */}
         <TestimonialsSection />
+
         {/* ─── EL PROFESOR ─── */}
         <FounderSection />
+
         {/* ─── FAQ ─── */}
         <CommunityFaq />
+
+        {/* ─── BANNER FINAL DE CTA ─── */}
+        <CommunityCtaBanner isLoggedIn={!!profile} />
       </main>
       <Footer />
     </div>
   );
 }
+
