@@ -23,13 +23,13 @@ import {
 
 /* ── Notification type config ── */
 const NOTIF_CONFIG: Record<string, { icon: React.ElementType; color: string; bg: string }> = {
-  announcement: { icon: Star, color: "text-amber-500", bg: "bg-amber-50" },
-  live: { icon: Radio, color: "text-rose-500", bg: "bg-rose-50" },
-  lesson: { icon: BookOpen, color: "text-blue-500", bg: "bg-blue-50" },
-  achievement: { icon: Trophy, color: "text-purple-500", bg: "bg-purple-50" },
-  comment: { icon: MessageCircle, color: "text-emerald-500", bg: "bg-emerald-50" },
-  course: { icon: GraduationCap, color: "text-indigo-500", bg: "bg-indigo-50" },
-  default: { icon: Bell, color: "text-gray-500", bg: "bg-gray-50" },
+  announcement: { icon: Star, color: "text-text", bg: "bg-surface-hover" },
+  live: { icon: Radio, color: "text-rose-500", bg: "bg-rose-50/60 dark:bg-rose-950/20" },
+  lesson: { icon: BookOpen, color: "text-text", bg: "bg-surface-hover" },
+  achievement: { icon: Trophy, color: "text-text", bg: "bg-surface-hover" },
+  comment: { icon: MessageCircle, color: "text-text", bg: "bg-surface-hover" },
+  course: { icon: GraduationCap, color: "text-text", bg: "bg-surface-hover" },
+  default: { icon: Bell, color: "text-text-secondary", bg: "bg-surface-hover" },
 };
 
 interface Notification {
@@ -176,16 +176,16 @@ export default function NotificationCenter({ open, onClose, onUnreadChange, coll
           exit={{ opacity: 0, y: 8, scale: 0.96 }}
           transition={{ duration: 0.15 }}
           className={cn(
-            "fixed z-[100] flex flex-col bg-white rounded-2xl shadow-xl shadow-gray-250/50 border border-gray-150 overflow-hidden w-[360px] max-h-[500px]",
+            "fixed z-[100] flex flex-col bg-surface rounded-xl shadow-lift border border-border overflow-hidden w-[360px] max-h-[500px]",
             collapsed
               ? "bottom-16 left-4 md:left-[76px]"
               : "bottom-16 left-4 md:left-[264px]"
           )}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 shrink-0">
-            <h3 className="font-bold text-sm text-gray-900 flex items-center gap-2">
-              <Bell className="w-4 h-4 text-gray-400" />
+          <div className="flex items-center justify-between px-5 py-4 border-b border-border shrink-0">
+            <h3 className="font-bold text-sm text-text flex items-center gap-2">
+              <Bell className="w-4 h-4 text-text-muted" />
               Notificaciones
               {unreadCount > 0 && (
                 <span className="w-5 h-5 bg-rose-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
@@ -196,7 +196,7 @@ export default function NotificationCenter({ open, onClose, onUnreadChange, coll
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllRead}
-                className="flex items-center gap-1 text-xs font-semibold text-brand-blue hover:text-blue-600 transition-colors"
+                className="flex items-center gap-1 text-xs font-semibold text-text hover:text-text-secondary transition-colors"
               >
                 <CheckCheck className="w-3.5 h-3.5" />
                 Marcar todas
@@ -208,12 +208,12 @@ export default function NotificationCenter({ open, onClose, onUnreadChange, coll
           <div className="flex-1 overflow-y-auto">
             {loading ? (
               <div className="flex items-center justify-center py-12">
-                <Loader2 className="w-6 h-6 text-brand-blue animate-spin" />
+                <Loader2 className="w-6 h-6 text-text-muted animate-spin" />
               </div>
             ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12">
-                <Inbox className="w-10 h-10 text-gray-300 mb-2" />
-                <p className="text-sm text-gray-500">No tienes notificaciones</p>
+                <Inbox className="w-10 h-10 text-text-muted mb-2" />
+                <p className="text-sm text-text-secondary">No tienes notificaciones</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-50">
@@ -224,23 +224,23 @@ export default function NotificationCenter({ open, onClose, onUnreadChange, coll
                     <button
                       key={notif.id}
                       onClick={() => handleMarkRead(notif)}
-                      className={`w-full text-left px-5 py-4 hover:bg-gray-50 transition-colors flex gap-3.5
-                        ${!notif.read ? "bg-blue-50/30" : ""}`}
+                      className={`w-full text-left px-5 py-4 hover:bg-surface-hover transition-colors flex gap-3.5
+                        ${!notif.read ? "bg-accent-soft" : ""}`}
                     >
                       <div className={`w-9 h-9 rounded-xl ${config.bg} flex items-center justify-center shrink-0`}>
                         <Icon className={`w-4 h-4 ${config.color}`} />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <span className={`text-sm font-semibold truncate ${!notif.read ? "text-gray-900" : "text-gray-700"}`}>
+                          <span className={`text-sm font-semibold truncate ${!notif.read ? "text-text" : "text-text-secondary"}`}>
                             {notif.title}
                           </span>
                           {!notif.read && (
-                            <span className="w-2 h-2 rounded-full bg-brand-blue shrink-0" />
+                            <span className="w-2 h-2 rounded-full bg-accent shrink-0" />
                           )}
                         </div>
-                        <p className="text-xs text-gray-500 line-clamp-2">{notif.body}</p>
-                        <span className="text-[10px] text-gray-400 font-medium mt-1 block">
+                        <p className="text-xs text-text-secondary line-clamp-2">{notif.body}</p>
+                        <span className="text-[10px] text-text-muted font-medium mt-1 block">
                           {getNotifTime(notif.created_at)}
                         </span>
                       </div>

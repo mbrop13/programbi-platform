@@ -134,6 +134,9 @@
   --text-muted: #a1a1aa;
 
   /* Acentos — negro es la marca */
+  --accent: var(--accent-token);
+  --accent-foreground: var(--accent-foreground-token);
+  --accent-soft: var(--accent-soft-token);
   --accent-token: #0a0a0a;
   --accent-foreground-token: #ffffff;
   --accent-soft-token: rgba(10, 10, 10, 0.06);
@@ -165,6 +168,9 @@
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
 
+  --accent: var(--accent-token);
+  --accent-foreground: var(--accent-foreground-token);
+  --accent-soft: var(--accent-soft-token);
   --accent-token: #ffffff;
   --accent-foreground-token: #0a0a0a;
   --accent-soft-token: rgba(255, 255, 255, 0.08);
