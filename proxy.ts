@@ -7,12 +7,16 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const userAgent = request.headers.get('user-agent') || ''
 
+  // Bloqueo inmediato en Edge de bots agresivos en rutas sensibles (auth/registro/api)
   if (BAD_BOT_UA_REGEX.test(userAgent) && (pathname.startsWith('/registro') || pathname.startsWith('/login') || pathname.startsWith('/api'))) {
     return new NextResponse('Access Denied', { status: 403 })
   }
 
+  // Optimización de Active CPU: Si no hay cookies de sesión de Supabase (empiezan con sb-),
+  // evitamos inicializar el cliente de Supabase y validar la sesión.
   const hasSession = request.cookies.getAll().some(cookie => cookie.name.startsWith('sb-'))
   
+  // Redirección inmediata en Edge para ahorrar CPU en rutas privadas
   if (!hasSession && (pathname.startsWith('/comunidad') || pathname.startsWith('/admin'))) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
@@ -24,12 +28,16 @@ export async function proxy(request: NextRequest) {
   return await updateSession(request)
 }
 
-export async function middleware(request: NextRequest) {
-  return proxy(request)
-}
-
 export const config = {
   matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (api routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public assets (svg, png, jpg, etc.)
+     */
     '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

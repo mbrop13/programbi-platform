@@ -210,12 +210,12 @@ export default function LessonPlayer({
           >
             <BookOpen className="w-10 h-10" style={{ color: unit.accentColor }} />
           </motion.div>
-          <h2 className="font-display font-bold text-2xl mb-2 text-gray-900 dark:text-white">
+          <h2 className="font-display font-bold text-2xl mb-2 text-text">
             Nivel en preparación
           </h2>
-          <p className="text-gray-500 max-w-sm">
+          <p className="text-text-secondary max-w-sm">
             Este nivel todavía no tiene ejercicios. Agrégalos en
-            <code className="mx-1 px-1.5 py-0.5 bg-gray-100 dark:bg-zinc-800 rounded text-sm">
+            <code className="mx-1 px-1.5 py-0.5 bg-surface-hover rounded text-sm">
               lib/practice/levels.ts
             </code>
           </p>
@@ -241,7 +241,7 @@ export default function LessonPlayer({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -30 }}
             transition={{ duration: 0.25 }}
-            className="font-display font-bold text-2xl text-gray-900 dark:text-white"
+            className="font-display font-bold text-2xl text-text"
           >
             {current.prompt}
           </motion.h2>
@@ -311,19 +311,19 @@ function Shell({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-gray-50 dark:bg-zinc-950 flex flex-col"
+      className="fixed inset-0 z-[100] bg-bg flex flex-col"
     >
       <header className="w-full max-w-3xl mx-auto px-5 pt-5 flex items-center gap-4 w-full">
         <button
           onClick={onClose}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-zinc-200 hover:bg-gray-200/50 dark:hover:bg-zinc-800 transition-colors shrink-0"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-text-muted hover:text-text hover:bg-accent-soft transition-colors shrink-0"
           aria-label="Salir"
         >
           <X className="w-6 h-6" />
         </button>
 
         {/* barra de progreso */}
-        <div className="flex-1 h-4 rounded-full bg-gray-200/80 dark:bg-zinc-800 overflow-hidden relative">
+        <div className="flex-1 h-4 rounded-full bg-surface-hover overflow-hidden relative">
           <motion.div
             className="h-full rounded-full relative"
             style={{ background: accent }}
@@ -454,7 +454,7 @@ function FooterBar({
           transition={{ type: "spring", stiffness: 300, damping: 28 }}
         >
           <div className="w-full max-w-2xl mx-auto flex items-center gap-3">
-            <span className="text-xs text-gray-400 hidden sm:inline">
+            <span className="text-xs text-text-muted hidden sm:inline">
               Enter para comprobar
             </span>
             <button
@@ -520,7 +520,7 @@ function FooterBar({
                 {lastCorrect ? "¡Excelente!" : "Casi… inténtalo de nuevo"}
               </h3>
             </div>
-            <p className="text-sm text-gray-600 dark:text-zinc-300 mb-3 pl-[52px] pr-2">
+            <p className="text-sm text-text-secondary mb-3 pl-[52px] pr-2">
               {explanation}
             </p>
             <button
@@ -581,7 +581,7 @@ function FinalScreen({
       initial={{ opacity: 0, scale: 0.94 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-white dark:bg-zinc-950 flex flex-col items-center justify-center text-center p-6"
+      className="fixed inset-0 z-[100] bg-bg flex flex-col items-center justify-center text-center p-6"
     >
       {ok && <Confetti count={70} duration={1.8} />}
 
@@ -602,7 +602,7 @@ function FinalScreen({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="font-display font-black text-3xl sm:text-4xl text-gray-900 dark:text-white mb-2"
+        className="font-display font-black text-3xl sm:text-4xl text-text mb-2"
       >
         {title}
       </motion.h1>
@@ -610,7 +610,7 @@ function FinalScreen({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.25 }}
-        className="text-gray-500 mb-8"
+        className="text-text-secondary mb-8"
       >
         {subtitle}
       </motion.p>
@@ -639,7 +639,7 @@ function FinalScreen({
       <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
         <button
           onClick={onRestart}
-          className="flex-1 py-3.5 rounded-2xl border-2 border-gray-200 dark:border-zinc-700 font-bold text-gray-700 dark:text-zinc-200 flex items-center justify-center gap-2 hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors"
+          className="flex-1 py-3.5 rounded-lg border-2 border-border font-bold text-text flex items-center justify-center gap-2 hover:bg-surface-hover transition-colors"
         >
           <RotateCcw className="w-5 h-5" /> Reintentar
         </button>
@@ -667,14 +667,14 @@ function StatCard({
   color: string;
 }) {
   return (
-    <div className="rounded-2xl border-2 border-gray-100 dark:border-zinc-800 bg-gray-50/50 dark:bg-zinc-900/40 p-4 text-left">
+    <div className="rounded-lg border-2 border-border bg-surface-hover/40 p-4 text-left">
       <div className="flex items-center gap-1.5 mb-1" style={{ color }}>
         {icon}
-        <span className="text-[11px] uppercase tracking-wide text-gray-400 font-semibold">
+        <span className="text-[11px] uppercase tracking-wide text-text-muted font-semibold">
           {label}
         </span>
       </div>
-      <div className="text-2xl font-display font-black text-gray-900 dark:text-white">
+      <div className="text-2xl font-display font-black text-text">
         {value}
       </div>
     </div>

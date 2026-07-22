@@ -68,7 +68,7 @@
   --color-border-strong: var(--border-strong);
   --color-accent-soft: var(--accent-soft-token);
 
-  /* Herencia legacy: maps para surface-*/ text-* (algunos componentes usan
+  /* Herencia legacy: maps para surface- y text- (algunos componentes usan
      estas utilidades; apuntamos a la nueva escala monocroma). */
   --color-surface-0: var(--surface);
   --color-surface-1: var(--bg);
