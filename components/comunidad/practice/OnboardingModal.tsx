@@ -421,18 +421,18 @@ export default function OnboardingModal({
         </AnimatePresence>
       </div>
 
-      {/* Floating Bottom Action Area without heavy gray border bars */}
-      <div className="w-full px-6 py-5 flex items-center justify-end max-w-3xl mx-auto z-20">
+      {/* Botón "CONTINUAR" Sobrepuesto Flotante a la Derecha (Sin franjas ni scrollbar innecesario) */}
+      <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 pointer-events-auto">
         <motion.button
-          whileHover={!isNextDisabled ? { scale: 1.02 } : {}}
-          whileTap={!isNextDisabled ? { scale: 0.98 } : {}}
+          whileHover={!isNextDisabled ? { scale: 1.04 } : {}}
+          whileTap={!isNextDisabled ? { scale: 0.96 } : {}}
           onClick={handleNext}
           disabled={isNextDisabled}
           className={cn(
-            "px-9 py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-xl flex items-center gap-2",
+            "px-8 py-3.5 sm:px-9 sm:py-4 rounded-2xl font-black text-xs sm:text-sm uppercase tracking-wider transition-all shadow-2xl flex items-center gap-2 backdrop-blur-md",
             isNextDisabled
-              ? "bg-surface-hover text-text-muted cursor-not-allowed shadow-none border border-border"
-              : "bg-accent text-white shadow-accent/25 hover:bg-accent/90"
+              ? "bg-surface/90 text-text-muted cursor-not-allowed shadow-none border border-border"
+              : "bg-accent text-white shadow-accent/40 hover:bg-accent/90 ring-2 ring-accent/30"
           )}
         >
           {step === 4 ? "¡Empezar a Practicar!" : "Continuar"}
