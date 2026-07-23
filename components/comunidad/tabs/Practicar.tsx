@@ -34,6 +34,7 @@ import {
   ArrowLeft,
   Crown,
   Gift,
+  Zap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PRACTICE_UNITS } from "@/lib/practice/levels";
