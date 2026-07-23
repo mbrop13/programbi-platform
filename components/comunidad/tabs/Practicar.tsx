@@ -3,9 +3,9 @@
 // =============================================================================
 // Pestaña "Practicar" · Módulo de lecciones interactivas.
 //
-// Fiel a Duolingo Imagen 1: Discos 3D circulares (tipo ficha/torta), sin línea SVG,
-// animación flotante continua sin parpadeos, ícono de estrella iluminada
-// y barra superior flotante estilo juego AAA (sin fondos acartonados).
+// 100% Adaptado a dispositivos móviles (smartphones) y monitores de escritorio.
+// Discos 3D circulares, barra superior flotante estilo juego AAA y
+// mascota BIT transparente.
 // =============================================================================
 
 import { useState, useEffect } from "react";
@@ -66,8 +66,8 @@ const TIME_GOAL_MAP: Record<number, string> = {
   50: "25 min",
 };
 
-// Secuencia suave de posiciones % para la ruta de baldosas 3D.
-const LANE_POSITIONS = [50, 32, 18, 32, 50, 68, 82, 68];
+// Secuencia suave de posiciones % optimizada para evitar recortes en celulares.
+const LANE_POSITIONS = [50, 34, 22, 34, 50, 66, 78, 66];
 
 export default function Practicar() {
   const {
@@ -117,22 +117,87 @@ export default function Practicar() {
   const dailyTimeGoal = TIME_GOAL_MAP[progress.dailyGoalXP] || "10 min";
 
   return (
-    <div className="w-full max-w-[1300px] mx-auto pb-16">
-      {/* ── LAYOUT DE 2 COLUMNAS (Imagen 1 Duolingo) ─────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    <div className="w-full max-w-[1300px] mx-auto pb-16 px-1 sm:px-4">
+      {/* ── BARRA SUPERIOR FLOTANTE FLUIDA (En móviles se muestra primero) ─────── */}
+      <div className="w-full flex items-center justify-between gap-2 py-2 mb-4">
+        {/* Dropdown Ruta Flotante */}
+        <div className="relative">
+          <button
+            onClick={() => setTrackDropdownOpen(!trackDropdownOpen)}
+            className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-surface/80 hover:bg-surface border border-border/80 text-xs font-bold text-text transition-all shadow-sm backdrop-blur-md"
+          >
+            <span className="text-sm">{activeUnit.emoji}</span>
+            <span className="truncate max-w-[110px] sm:max-w-[160px]">{activeUnit.title}</span>
+            <ChevronDown className="w-3.5 h-3.5 text-text-muted shrink-0" />
+          </button>
+
+          <AnimatePresence>
+            {trackDropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                className="absolute left-0 top-full mt-2 w-60 bg-surface border border-border rounded-2xl shadow-xl p-2 z-40 space-y-1"
+              >
+                <div className="px-2 py-1 text-[10px] font-bold text-text-muted uppercase">
+                  Cambiar Tecnología
+                </div>
+                {PRACTICE_UNITS.map((u) => (
+                  <button
+                    key={u.id}
+                    onClick={() => handleSelectTrack(u.id)}
+                    className={cn(
+                      "w-full flex items-center justify-between p-2.5 rounded-xl text-left text-xs font-semibold transition-colors",
+                      u.id === activeUnit.id ? "bg-accent/10 text-accent font-bold" : "hover:bg-surface-hover text-text"
+                    )}
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      <span>{u.emoji}</span>
+                      <span className="truncate">{u.title}</span>
+                    </div>
+                  </button>
+                ))}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Racha & Vidas Pro Flotantes */}
+        <div className="flex items-center gap-3 sm:gap-4 shrink-0">
+          {/* Racha */}
+          <div className="flex items-center gap-1.5 text-amber-500" title="Racha Diaria">
+            <Flame className="w-5 h-5 fill-amber-500 drop-shadow-[0_2px_8px_rgba(245,158,11,0.5)] animate-pulse" />
+            <span className="font-black text-xs sm:text-sm text-text">{progress.streakDays || 1}</span>
+          </div>
+
+          {/* Corazón Pro AAA */}
+          <div className="flex items-center gap-1.5 text-rose-500" title="Vidas">
+            <motion.div
+              animate={{ scale: [1, 1.14, 1] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <Heart className="w-5 h-5 sm:w-6 sm:h-6 fill-rose-500 text-rose-500 drop-shadow-[0_4px_12px_rgba(244,63,94,0.6)]" />
+            </motion.div>
+            <span className="font-black text-xs sm:text-base text-text">{maxHearts}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── LAYOUT RESPONSIVO DE 2 COLUMNAS ───────────────────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
         
         {/* COLUMNA IZQUIERDA / CENTRAL: Ruta 3D de Balderas */}
-        <div className="lg:col-span-7 xl:col-span-8 flex flex-col items-center">
+        <div className="lg:col-span-7 xl:col-span-8 flex flex-col items-center w-full">
           
           {/* Banner de Sección Superior (Verde/Acento) */}
           <motion.div
             key={activeUnit.id}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-[620px] rounded-2xl p-4 sm:p-5 text-white shadow-lg flex items-center justify-between gap-4 mb-6 relative overflow-hidden"
+            className="w-full max-w-[620px] rounded-2xl p-4 sm:p-5 text-white shadow-lg flex items-center justify-between gap-3 mb-6 relative overflow-hidden"
             style={{ background: activeUnit.accentColor }}
           >
-            <div className="flex items-center gap-3 min-w-0">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
               <button
                 onClick={() => setTrackDropdownOpen(!trackDropdownOpen)}
                 className="w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors shrink-0 text-white"
@@ -145,7 +210,7 @@ export default function Practicar() {
                 <div className="text-[10px] font-black uppercase tracking-wider opacity-85">
                   ETAPA 1, SECCIÓN {PRACTICE_UNITS.findIndex((u) => u.id === activeUnit.id) + 1}
                 </div>
-                <h2 className="font-display font-black text-lg sm:text-xl truncate leading-tight">
+                <h2 className="font-display font-black text-base sm:text-xl truncate leading-tight">
                   {activeUnit.emoji} {activeUnit.title}
                 </h2>
               </div>
@@ -153,10 +218,10 @@ export default function Practicar() {
 
             <button
               onClick={() => activeLevel && setOpenLevel({ unit: activeUnit, level: activeLevel })}
-              className="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs flex items-center gap-1.5 backdrop-blur-sm shrink-0 transition-all border border-white/20"
+              className="px-3.5 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs flex items-center gap-1.5 backdrop-blur-sm shrink-0 transition-all border border-white/20"
             >
               <BookOpen className="w-4 h-4" />
-              <span>GUÍA</span>
+              <span className="hidden xs:inline">GUÍA</span>
             </button>
           </motion.div>
 
@@ -173,75 +238,10 @@ export default function Practicar() {
         </div>
 
         {/* COLUMNA DERECHA: Widgets Laterales */}
-        <div className="lg:col-span-5 xl:col-span-4 space-y-5 sticky top-6">
+        <div className="lg:col-span-5 xl:col-span-4 space-y-4 lg:sticky lg:top-6 w-full">
           
-          {/* Top Bar Flotante estilo AAA (Sin caja de fondo pesada ni bordes rígidos) */}
-          <div className="flex items-center justify-between gap-2 px-1 py-1">
-            {/* Dropdown Ruta Flotante */}
-            <div className="relative">
-              <button
-                onClick={() => setTrackDropdownOpen(!trackDropdownOpen)}
-                className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-2xl bg-surface/60 hover:bg-surface border border-transparent hover:border-border text-xs font-bold text-text transition-all shadow-sm backdrop-blur-md"
-              >
-                <span className="text-sm">{activeUnit.emoji}</span>
-                <span className="truncate max-w-[100px]">{activeUnit.title}</span>
-                <ChevronDown className="w-3.5 h-3.5 text-text-muted" />
-              </button>
-
-              <AnimatePresence>
-                {trackDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                    className="absolute left-0 top-full mt-2 w-56 bg-surface border border-border rounded-2xl shadow-xl p-2 z-40 space-y-1"
-                  >
-                    <div className="px-2 py-1 text-[10px] font-bold text-text-muted uppercase">
-                      Cambiar Tecnología
-                    </div>
-                    {PRACTICE_UNITS.map((u) => (
-                      <button
-                        key={u.id}
-                        onClick={() => handleSelectTrack(u.id)}
-                        className={cn(
-                          "w-full flex items-center justify-between p-2 rounded-xl text-left text-xs font-semibold transition-colors",
-                          u.id === activeUnit.id ? "bg-accent/10 text-accent font-bold" : "hover:bg-surface-hover text-text"
-                        )}
-                      >
-                        <div className="flex items-center gap-2 truncate">
-                          <span>{u.emoji}</span>
-                          <span className="truncate">{u.title}</span>
-                        </div>
-                      </button>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Racha & Vidas Pro Flotantes (Sin caja ni bordes) */}
-            <div className="flex items-center gap-4">
-              {/* Racha */}
-              <div className="flex items-center gap-1.5 text-amber-500" title="Racha Diaria">
-                <Flame className="w-5 h-5 fill-amber-500 drop-shadow-[0_2px_8px_rgba(245,158,11,0.5)] animate-pulse" />
-                <span className="font-black text-sm text-text">{progress.streakDays || 1}</span>
-              </div>
-
-              {/* Corazón Pro AAA */}
-              <div className="flex items-center gap-1.5 text-rose-500" title="Vidas">
-                <motion.div
-                  animate={{ scale: [1, 1.14, 1] }}
-                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
-                >
-                  <Heart className="w-6 h-6 fill-rose-500 text-rose-500 drop-shadow-[0_4px_12px_rgba(244,63,94,0.6)]" />
-                </motion.div>
-                <span className="font-black text-base text-text">{maxHearts}</span>
-              </div>
-            </div>
-          </div>
-
           {/* Tarjeta 1: Meta Diaria de Práctica */}
-          <div className="p-5 rounded-2xl bg-surface border border-border shadow-sm space-y-4">
+          <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-border shadow-sm space-y-3.5">
             <div className="flex items-center justify-between">
               <h3 className="font-display font-bold text-sm text-text flex items-center gap-2">
                 <Clock className="w-4 h-4 text-accent" />
@@ -250,9 +250,9 @@ export default function Practicar() {
               <span className="text-xs font-bold text-accent">{dailyTimeGoal} / día</span>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-surface-hover border border-border flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-accent/15 text-accent flex items-center justify-center shrink-0">
-                <Target className="w-5 h-5" />
+            <div className="p-3 rounded-xl bg-surface-hover border border-border flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-accent/15 text-accent flex items-center justify-center shrink-0">
+                <Target className="w-4 h-4" />
               </div>
 
               <div className="flex-1 min-w-0">
@@ -260,7 +260,7 @@ export default function Practicar() {
                   <span>Práctica de Hoy</span>
                   <Gift className="w-3.5 h-3.5 text-amber-500" />
                 </div>
-                <p className="text-[11px] text-text-muted mt-1">
+                <p className="text-[11px] text-text-muted mt-0.5">
                   Completa tu lección diaria para mantener tu racha activa.
                 </p>
               </div>
@@ -268,7 +268,7 @@ export default function Practicar() {
           </div>
 
           {/* Tarjeta 2: Avance en la Unidad */}
-          <div className="p-5 rounded-2xl bg-surface border border-border shadow-sm space-y-3">
+          <div className="p-4 sm:p-5 rounded-2xl bg-surface border border-border shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-display font-bold text-sm text-text flex items-center gap-2">
                 <Crown className="w-4 h-4 text-amber-500" />
@@ -397,7 +397,7 @@ function PathBoard({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Nodo Circular 3D estilo "Ficha / Torta" de Duolingo (Imagen 1).
+// Nodo Circular 3D adaptado a móviles.
 // ─────────────────────────────────────────────────────────────────────────────
 function PathNode({
   level,
@@ -423,17 +423,18 @@ function PathNode({
   const kindIcon = (kind: LevelKind) => {
     switch (kind) {
       case "bonus":
-        return <Star className="w-7 h-7 fill-amber-300 text-amber-300 drop-shadow-sm" />;
+        return <Star className="w-6 h-6 sm:w-7 sm:h-7 fill-amber-300 text-amber-300 drop-shadow-sm" />;
       case "checkpoint":
-        return <Shield className="w-7 h-7 text-indigo-300 drop-shadow-sm" />;
+        return <Shield className="w-6 h-6 sm:w-7 sm:h-7 text-indigo-300 drop-shadow-sm" />;
       case "trophy":
-        return <Trophy className="w-8 h-8 text-amber-300 drop-shadow-sm" />;
+        return <Trophy className="w-7 h-7 sm:w-8 sm:h-8 text-amber-300 drop-shadow-sm" />;
       default:
         return null;
     }
   };
 
-  const mascotOffset = xPct > 50 ? -85 : 85;
+  // Coordenada adaptativa para posicionar a BIT sin desbordar pantallas pequeñas
+  const mascotOffset = xPct > 50 ? -68 : 68;
   const shadowRimColor = done ? "#059669" : locked ? "rgba(0,0,0,0.25)" : `${accent}bb`;
 
   return (
@@ -455,13 +456,13 @@ function PathNode({
             initial={{ opacity: 0, y: 6, scale: 0.85 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 6 }}
-            className="absolute -top-12 z-20 pointer-events-none"
+            className="absolute -top-11 sm:-top-12 z-20 pointer-events-none"
           >
             <span
-              className="px-3.5 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider text-white shadow-xl flex items-center gap-1.5 whitespace-nowrap"
+              className="px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-xl text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-white shadow-xl flex items-center gap-1.5 whitespace-nowrap"
               style={{ background: accent }}
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Sparkles className="w-3 h-3" />
               EMPEZAR
               <span
                 className="absolute left-1/2 -translate-x-1/2 -bottom-1 w-2.5 h-2.5 rotate-45"
@@ -472,11 +473,11 @@ function PathNode({
         )}
       </AnimatePresence>
 
-      {/* BIT el Mapache junto al nodo activo (Chromakey Circular Transparente) */}
+      {/* BIT el Mapache junto al nodo activo */}
       {isActive && !done && (
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1, y: [0, -6, 0] }}
+          animate={{ opacity: 1, scale: 1, y: [0, -5, 0] }}
           transition={{
             opacity: { duration: 0.3 },
             y: { duration: 2, repeat: Infinity, ease: "easeInOut" },
@@ -484,17 +485,17 @@ function PathNode({
           className="absolute z-30 pointer-events-none"
           style={{
             left: `${mascotOffset}px`,
-            top: "-16px",
+            top: "-14px",
           }}
         >
-          <div className="relative w-22 h-22 sm:w-24 sm:h-24 rounded-full overflow-hidden flex items-center justify-center">
+          <div className="relative w-18 h-18 sm:w-24 sm:h-24 rounded-full overflow-hidden flex items-center justify-center">
             <ChromaVideo
               src={BIT_VIDEO_URL}
               className="w-full h-full object-cover"
               width={220}
               height={220}
             />
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-black/40 rounded-full blur-[3px]" />
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-10 h-2 bg-black/40 rounded-full blur-[3px]" />
           </div>
         </motion.div>
       )}
@@ -508,16 +509,16 @@ function PathNode({
         {/* Halo Suave Concéntrico para Nodo Activo */}
         {isActive && !done && (
           <motion.div
-            className="absolute -inset-2.5 rounded-full pointer-events-none"
+            className="absolute -inset-2 rounded-full pointer-events-none"
             style={{ background: accent }}
             animate={{ scale: [1, 1.25], opacity: [0.35, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
           />
         )}
 
-        {/* Base 3D de Profundidad / Borde Inferior */}
+        {/* Base 3D de Profundidad */}
         <div
-          className="relative w-20 h-20 sm:w-22 sm:h-22 rounded-full pt-1.5 px-0.5 pb-2.5 transition-transform active:translate-y-1 shadow-xl"
+          className="relative w-18 h-18 sm:w-22 sm:h-22 rounded-full pt-1.5 px-0.5 pb-2.5 transition-transform active:translate-y-1 shadow-xl"
           style={{
             background: shadowRimColor,
             boxShadow: isActive && !done ? `0 12px 28px -4px ${accent}60` : undefined,
@@ -541,12 +542,12 @@ function PathNode({
           >
             <span className="relative z-10 flex items-center justify-center">
               {locked ? (
-                <Lock className="w-7 h-7 text-text-muted" />
+                <Lock className="w-6 h-6 sm:w-7 sm:h-7 text-text-muted" />
               ) : done ? (
-                <Check className="w-8 h-8 stroke-[3]" />
+                <Check className="w-7 h-7 sm:w-8 sm:h-8 stroke-[3]" />
               ) : (
                 kindIcon(level.kind) ?? (
-                  <Star className="w-8 h-8 fill-white text-white drop-shadow-md" />
+                  <Star className="w-7 h-7 sm:w-8 sm:h-8 fill-white text-white drop-shadow-md" />
                 )
               )}
             </span>
@@ -555,10 +556,10 @@ function PathNode({
       </motion.div>
 
       {/* Título de Nivel */}
-      <div className="mt-3 flex flex-col items-center text-center max-w-[140px]">
+      <div className="mt-2.5 flex flex-col items-center text-center max-w-[130px] sm:max-w-[140px]">
         <span
           className={cn(
-            "text-xs font-semibold leading-tight line-clamp-2",
+            "text-[11px] sm:text-xs font-semibold leading-tight line-clamp-2",
             locked ? "text-text-muted" : "text-text"
           )}
         >
