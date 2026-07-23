@@ -345,10 +345,15 @@ function Shell({
           </motion.div>
         </div>
 
-        {/* vidas */}
-        <div className="flex items-center gap-1.5 text-rose-500 shrink-0">
-          <Heart className="w-6 h-6 fill-rose-500" />
-          <span className="font-bold text-lg w-5 text-center">{hearts}</span>
+        {/* vidas Pro AAA */}
+        <div className="flex items-center gap-2 text-rose-500 shrink-0" title="Vidas Restantes">
+          <motion.div
+            animate={{ scale: [1, 1.14, 1] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <Heart className="w-6 h-6 fill-rose-500 text-rose-500 drop-shadow-[0_4px_12px_rgba(244,63,94,0.6)]" />
+          </motion.div>
+          <span className="font-black text-base text-text">{hearts}</span>
         </div>
       </header>
 

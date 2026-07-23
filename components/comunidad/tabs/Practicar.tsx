@@ -4,7 +4,8 @@
 // Pestaña "Practicar" · Módulo de lecciones interactivas.
 //
 // Fiel a Duolingo Imagen 1: Discos 3D circulares (tipo ficha/torta), sin línea SVG,
-// animación flotante continua sin parpadeos e ícono de estrella iluminada.
+// animación flotante continua sin parpadeos, ícono de estrella iluminada
+// y barra superior flotante estilo juego AAA (sin fondos acartonados).
 // =============================================================================
 
 import { useState, useEffect } from "react";
@@ -171,16 +172,16 @@ export default function Practicar() {
         {/* COLUMNA DERECHA: Widgets Laterales */}
         <div className="lg:col-span-5 xl:col-span-4 space-y-5 sticky top-6">
           
-          {/* Top Bar Right Stats Widget (Flag / Flame / Hearts) */}
-          <div className="p-4 rounded-2xl bg-surface border border-border shadow-sm flex items-center justify-between gap-2">
-            {/* Dropdown Ruta */}
+          {/* Top Bar Flotante estilo AAA (Sin caja de fondo pesada ni bordes rígidos) */}
+          <div className="flex items-center justify-between gap-2 px-1 py-1">
+            {/* Dropdown Ruta Flotante */}
             <div className="relative">
               <button
                 onClick={() => setTrackDropdownOpen(!trackDropdownOpen)}
-                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-hover hover:border-border-strong border border-border text-xs font-bold text-text transition-all"
+                className="flex items-center gap-2.5 px-3.5 py-1.5 rounded-2xl bg-surface/60 hover:bg-surface border border-transparent hover:border-border text-xs font-bold text-text transition-all shadow-sm backdrop-blur-md"
               >
-                <span>{activeUnit.emoji}</span>
-                <span className="truncate max-w-[90px]">{activeUnit.title}</span>
+                <span className="text-sm">{activeUnit.emoji}</span>
+                <span className="truncate max-w-[100px]">{activeUnit.title}</span>
                 <ChevronDown className="w-3.5 h-3.5 text-text-muted" />
               </button>
 
@@ -215,16 +216,23 @@ export default function Practicar() {
               </AnimatePresence>
             </div>
 
-            {/* Racha & Vidas */}
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-500" title="Racha Diaria">
-                <Flame className="w-4 h-4 fill-amber-500" />
-                <span>{progress.streakDays || 1} {progress.streakDays === 1 ? "Día" : "Días"}</span>
+            {/* Racha & Vidas Pro Flotantes (Sin caja ni bordes) */}
+            <div className="flex items-center gap-4">
+              {/* Racha */}
+              <div className="flex items-center gap-1.5 text-amber-500" title="Racha Diaria">
+                <Flame className="w-5 h-5 fill-amber-500 drop-shadow-[0_2px_8px_rgba(245,158,11,0.5)] animate-pulse" />
+                <span className="font-black text-sm text-text">{progress.streakDays || 1}</span>
               </div>
 
-              <div className="flex items-center gap-1.5 text-xs font-bold text-rose-500" title="Vidas">
-                <Heart className="w-4 h-4 fill-rose-500" />
-                <span>{maxHearts}</span>
+              {/* Corazón Pro AAA */}
+              <div className="flex items-center gap-1.5 text-rose-500" title="Vidas">
+                <motion.div
+                  animate={{ scale: [1, 1.14, 1] }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+                >
+                  <Heart className="w-6 h-6 fill-rose-500 text-rose-500 drop-shadow-[0_4px_12px_rgba(244,63,94,0.6)]" />
+                </motion.div>
+                <span className="font-black text-base text-text">{maxHearts}</span>
               </div>
             </div>
           </div>
@@ -338,7 +346,7 @@ export default function Practicar() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Tablero de Baldosas Circulares 3D (Sin línea conectora SVG).
+// Tablero de Baldosas Circulares 3D.
 // ─────────────────────────────────────────────────────────────────────────────
 function PathBoard({
   unit,
@@ -485,13 +493,13 @@ function PathNode({
         </motion.div>
       )}
 
-      {/* BOTÓN CIRCULAR 3D TIPO FICHA/TORTA (Duolingo Imagen 1) */}
+      {/* BOTÓN CIRCULAR 3D TIPO FICHA/TORTA */}
       <motion.div
         animate={isActive && !done ? { y: [0, -6, 0] } : { y: 0 }}
         transition={isActive && !done ? { duration: 2, repeat: Infinity, ease: "easeInOut" } : { duration: 0.2 }}
         className="relative group cursor-pointer"
       >
-        {/* Halo Suave Concéntrico para Nodo Activo (Sin parpadeo brusco) */}
+        {/* Halo Suave Concéntrico para Nodo Activo */}
         {isActive && !done && (
           <motion.div
             className="absolute -inset-2.5 rounded-full pointer-events-none"
