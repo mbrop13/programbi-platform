@@ -3,7 +3,8 @@
 // =============================================================================
 // Pestaña "Practicar" · Módulo de lecciones interactivas.
 //
-// Adaptado a la paleta de colores de ProgramBI y sin referencias a XP.
+// Fiel a Duolingo Imagen 1: Discos 3D circulares (tipo ficha/torta), sin línea SVG,
+// animación flotante continua sin parpadeos e ícono de estrella iluminada.
 // =============================================================================
 
 import { useState, useEffect } from "react";
@@ -61,7 +62,7 @@ const TIME_GOAL_MAP: Record<number, string> = {
   50: "25 min",
 };
 
-// Secuencia suave de posiciones % para la ruta de niveles.
+// Secuencia suave de posiciones % para la ruta de baldosas 3D.
 const LANE_POSITIONS = [50, 32, 18, 32, 50, 68, 82, 68];
 
 export default function Practicar() {
@@ -113,13 +114,13 @@ export default function Practicar() {
 
   return (
     <div className="w-full max-w-[1300px] mx-auto pb-16">
-      {/* ── LAYOUT DE 2 COLUMNAS ─────────────────────────────────────────────── */}
+      {/* ── LAYOUT DE 2 COLUMNAS (Imagen 1 Duolingo) ─────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* COLUMNA IZQUIERDA / CENTRAL: Ruta de Aprendizaje (Path Board) */}
+        {/* COLUMNA IZQUIERDA / CENTRAL: Ruta 3D de Balderas */}
         <div className="lg:col-span-7 xl:col-span-8 flex flex-col items-center">
           
-          {/* Banner de Sección Superior */}
+          {/* Banner de Sección Superior (Verde/Acento) */}
           <motion.div
             key={activeUnit.id}
             initial={{ opacity: 0, y: -10 }}
@@ -155,7 +156,7 @@ export default function Practicar() {
             </button>
           </motion.div>
 
-          {/* Tablero Serpenteante con Mascota junto al Nodo Activo */}
+          {/* Tablero Serpenteante 3D (Sin línea conectora) */}
           <div className="w-full relative">
             <PathBoard
               unit={activeUnit}
@@ -214,7 +215,7 @@ export default function Practicar() {
               </AnimatePresence>
             </div>
 
-            {/* Racha & Vidas (Sin XP) */}
+            {/* Racha & Vidas */}
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-1.5 text-xs font-bold text-amber-500" title="Racha Diaria">
                 <Flame className="w-4 h-4 fill-amber-500" />
@@ -228,7 +229,7 @@ export default function Practicar() {
             </div>
           </div>
 
-          {/* Tarjeta 1: Meta Diaria de Práctica (Sin XP) */}
+          {/* Tarjeta 1: Meta Diaria de Práctica */}
           <div className="p-5 rounded-2xl bg-surface border border-border shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-display font-bold text-sm text-text flex items-center gap-2">
@@ -249,7 +250,7 @@ export default function Practicar() {
                   <Gift className="w-3.5 h-3.5 text-amber-500" />
                 </div>
                 <p className="text-[11px] text-text-muted mt-1">
-                  Completa tu lección para mantener tu racha activa.
+                  Completa tu lección diaria para mantener tu racha activa.
                 </p>
               </div>
             </div>
@@ -337,7 +338,7 @@ export default function Practicar() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Tablero de Ruta de Niveles con Mascota Avatar.
+// Tablero de Baldosas Circulares 3D (Sin línea conectora SVG).
 // ─────────────────────────────────────────────────────────────────────────────
 function PathBoard({
   unit,
@@ -353,7 +354,7 @@ function PathBoard({
   nextIdx: number;
 }) {
   const levels = unit.levels;
-  const ROW_HEIGHT = 135;
+  const ROW_HEIGHT = 130;
   const totalHeight = levels.length * ROW_HEIGHT + 40;
 
   return (
@@ -361,16 +362,7 @@ function PathBoard({
       className="relative w-full max-w-[620px] mx-auto"
       style={{ height: `${totalHeight}px` }}
     >
-      {/* Sendero SVG Conector */}
-      <PathConnector
-        count={levels.length}
-        accent={unit.accentColor}
-        nextIdx={nextIdx}
-        rowHeight={ROW_HEIGHT}
-        totalHeight={totalHeight}
-      />
-
-      {/* Nodos de Nivel */}
+      {/* Nodos de Nivel Circulares 3D */}
       {levels.map((lvl, i) => {
         const xPct = LANE_POSITIONS[i % LANE_POSITIONS.length];
         const yPx = i * ROW_HEIGHT + 70;
@@ -394,89 +386,7 @@ function PathBoard({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Conector SVG con curvas Bezier.
-// ─────────────────────────────────────────────────────────────────────────────
-function PathConnector({
-  count,
-  accent,
-  nextIdx,
-  rowHeight,
-  totalHeight,
-}: {
-  count: number;
-  accent: string;
-  nextIdx: number;
-  rowHeight: number;
-  totalHeight: number;
-}) {
-  if (count < 2) return null;
-
-  const pts = Array.from({ length: count }).map((_, i) => ({
-    x: LANE_POSITIONS[i % LANE_POSITIONS.length],
-    y: i * rowHeight + 70,
-  }));
-
-  let d = `M ${pts[0].x} ${pts[0].y}`;
-  for (let i = 1; i < pts.length; i++) {
-    const p0 = pts[i - 1];
-    const p1 = pts[i];
-    const cy = (p0.y + p1.y) / 2;
-    d += ` C ${p0.x} ${cy}, ${p1.x} ${cy}, ${p1.x} ${p1.y}`;
-  }
-
-  let dDone = `M ${pts[0].x} ${pts[0].y}`;
-  const endIdx = Math.min(nextIdx, pts.length - 1);
-  for (let i = 1; i <= endIdx; i++) {
-    const p0 = pts[i - 1];
-    const p1 = pts[i];
-    const cy = (p0.y + p1.y) / 2;
-    dDone += ` C ${p0.x} ${cy}, ${p1.x} ${cy}, ${p1.x} ${p1.y}`;
-  }
-
-  return (
-    <svg
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      viewBox={`0 0 100 ${totalHeight}`}
-      preserveAspectRatio="none"
-    >
-      <defs>
-        <filter id="path-glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="2.5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-      </defs>
-
-      <path
-        d={d}
-        fill="none"
-        stroke="var(--border)"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        vectorEffect="non-scaling-stroke"
-      />
-
-      {nextIdx > 0 && (
-        <motion.path
-          d={dDone}
-          fill="none"
-          stroke={accent}
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          vectorEffect="non-scaling-stroke"
-          filter="url(#path-glow)"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 0.8, ease: "easeOut" }}
-        />
-      )}
-    </svg>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Nodo individual (Sin badge de XP).
+// Nodo Circular 3D estilo "Ficha / Torta" de Duolingo (Imagen 1).
 // ─────────────────────────────────────────────────────────────────────────────
 function PathNode({
   level,
@@ -502,17 +412,18 @@ function PathNode({
   const kindIcon = (kind: LevelKind) => {
     switch (kind) {
       case "bonus":
-        return <Star className="w-6 h-6 fill-amber-400 text-amber-400" />;
+        return <Star className="w-7 h-7 fill-amber-300 text-amber-300 drop-shadow-sm" />;
       case "checkpoint":
-        return <Shield className="w-6 h-6 text-indigo-400" />;
+        return <Shield className="w-7 h-7 text-indigo-300 drop-shadow-sm" />;
       case "trophy":
-        return <Trophy className="w-7 h-7 text-amber-300" />;
+        return <Trophy className="w-8 h-8 text-amber-300 drop-shadow-sm" />;
       default:
         return null;
     }
   };
 
-  const mascotOffset = xPct > 50 ? -80 : 80;
+  const mascotOffset = xPct > 50 ? -85 : 85;
+  const shadowRimColor = done ? "#059669" : locked ? "rgba(0,0,0,0.25)" : `${accent}bb`;
 
   return (
     <motion.div
@@ -526,22 +437,23 @@ function PathNode({
         transform: "translate(-50%, -50%)",
       }}
     >
+      {/* Chip "EMPEZAR" para el nivel activo */}
       <AnimatePresence>
         {isActive && !done && (
           <motion.div
             initial={{ opacity: 0, y: 6, scale: 0.85 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 6 }}
-            className="absolute -top-11 z-20 pointer-events-none"
+            className="absolute -top-12 z-20 pointer-events-none"
           >
             <span
-              className="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider text-white shadow-lg flex items-center gap-1 whitespace-nowrap"
+              className="px-3.5 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider text-white shadow-xl flex items-center gap-1.5 whitespace-nowrap"
               style={{ background: accent }}
             >
-              <Sparkles className="w-3 h-3" />
+              <Sparkles className="w-3.5 h-3.5" />
               EMPEZAR
               <span
-                className="absolute left-1/2 -translate-x-1/2 -bottom-1 w-2 h-2 rotate-45"
+                className="absolute left-1/2 -translate-x-1/2 -bottom-1 w-2.5 h-2.5 rotate-45"
                 style={{ background: accent }}
               />
             </span>
@@ -549,10 +461,11 @@ function PathNode({
         )}
       </AnimatePresence>
 
+      {/* Mascota / Avatar junto al nodo activo */}
       {isActive && !done && (
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1, y: [0, -4, 0] }}
+          animate={{ opacity: 1, scale: 1, y: [0, -6, 0] }}
           transition={{
             opacity: { duration: 0.3 },
             y: { duration: 2, repeat: Infinity, ease: "easeInOut" },
@@ -560,74 +473,75 @@ function PathNode({
           className="absolute z-30 pointer-events-none"
           style={{
             left: `${mascotOffset}px`,
-            top: "-10px",
+            top: "-12px",
           }}
         >
-          <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-accent to-indigo-500 p-0.5 shadow-xl">
+          <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-accent to-indigo-500 p-0.5 shadow-2xl">
             <div className="w-full h-full rounded-2xl bg-surface flex items-center justify-center text-accent">
               <Sparkles className="w-7 h-7 animate-pulse" />
             </div>
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1.5 bg-black/30 rounded-full blur-[2px]" />
+            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-10 h-2 bg-black/40 rounded-full blur-[3px]" />
           </div>
         </motion.div>
       )}
 
-      <motion.button
-        animate={
-          isActive && !done
-            ? { y: [0, -6, 0] }
-            : { scale: 1 }
-        }
-        transition={
-          isActive && !done
-            ? { duration: 1.6, repeat: Infinity, ease: "easeInOut" }
-            : { duration: 0.3 }
-        }
-        whileHover={!locked ? { scale: 1.12 } : {}}
-        whileTap={!locked ? { scale: 0.92 } : {}}
-        onClick={onClick}
-        disabled={locked}
-        className={cn(
-          "relative w-16 h-16 sm:w-20 sm:h-20 rounded-2xl flex items-center justify-center font-bold text-white transition-all shadow-md",
-          locked && "opacity-60 cursor-not-allowed border border-border bg-surface-hover"
-        )}
-        style={{
-          background: locked
-            ? "var(--surface-hover)"
-            : done
-            ? "#10B981"
-            : accent,
-          boxShadow:
-            done
-              ? "0 8px 20px -4px rgba(16, 185, 129, 0.4)"
-              : locked
-              ? "none"
-              : `0 10px 24px -4px ${accent}60, 0 0 0 4px ${accent}20`,
-        }}
+      {/* BOTÓN CIRCULAR 3D TIPO FICHA/TORTA (Duolingo Imagen 1) */}
+      <motion.div
+        animate={isActive && !done ? { y: [0, -6, 0] } : { y: 0 }}
+        transition={isActive && !done ? { duration: 2, repeat: Infinity, ease: "easeInOut" } : { duration: 0.2 }}
+        className="relative group cursor-pointer"
       >
+        {/* Halo Suave Concéntrico para Nodo Activo (Sin parpadeo brusco) */}
         {isActive && !done && (
-          <motion.span
-            className="absolute inset-0 rounded-2xl"
+          <motion.div
+            className="absolute -inset-2.5 rounded-full pointer-events-none"
             style={{ background: accent }}
-            animate={{ scale: [1, 1.35], opacity: [0.4, 0] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: "easeOut" }}
+            animate={{ scale: [1, 1.25], opacity: [0.35, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
           />
         )}
 
-        <span className="relative z-10 flex flex-col items-center justify-center">
-          {locked ? (
-            <Lock className="w-6 h-6 text-text-muted" />
-          ) : done ? (
-            <Check className="w-7 h-7 stroke-[3]" />
-          ) : (
-            kindIcon(level.kind) ?? (
-              <span className="text-xl sm:text-2xl font-black">{index + 1}</span>
-            )
-          )}
-        </span>
-      </motion.button>
+        {/* Base 3D de Profundidad / Borde Inferior */}
+        <div
+          className="relative w-20 h-20 sm:w-22 sm:h-22 rounded-full pt-1.5 px-0.5 pb-2.5 transition-transform active:translate-y-1 shadow-xl"
+          style={{
+            background: shadowRimColor,
+            boxShadow: isActive && !done ? `0 12px 28px -4px ${accent}60` : undefined,
+          }}
+        >
+          {/* Cara Frontal del Botón 3D */}
+          <button
+            onClick={onClick}
+            disabled={locked}
+            className={cn(
+              "w-full h-full rounded-full flex items-center justify-center font-black text-white transition-all border-t border-white/30",
+              locked && "opacity-60 cursor-not-allowed border-none"
+            )}
+            style={{
+              background: locked
+                ? "var(--surface-hover)"
+                : done
+                ? "#10B981"
+                : accent,
+            }}
+          >
+            <span className="relative z-10 flex items-center justify-center">
+              {locked ? (
+                <Lock className="w-7 h-7 text-text-muted" />
+              ) : done ? (
+                <Check className="w-8 h-8 stroke-[3]" />
+              ) : (
+                kindIcon(level.kind) ?? (
+                  <Star className="w-8 h-8 fill-white text-white drop-shadow-md" />
+                )
+              )}
+            </span>
+          </button>
+        </div>
+      </motion.div>
 
-      <div className="mt-2.5 flex flex-col items-center text-center max-w-[140px]">
+      {/* Título de Nivel */}
+      <div className="mt-3 flex flex-col items-center text-center max-w-[140px]">
         <span
           className={cn(
             "text-xs font-semibold leading-tight line-clamp-2",
