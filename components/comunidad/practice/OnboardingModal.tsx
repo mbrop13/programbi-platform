@@ -142,13 +142,13 @@ export default function OnboardingModal({
 
       {/* ── CABECERA FIJA DE BIT EL MAPACHE (Alineado más a la izquierda estilo Duolingo) ── */}
       <div className="w-full max-w-3xl pl-4 sm:pl-8 pr-4 pt-2 pb-3 flex items-start gap-3 sm:gap-4 shrink-0 z-20">
-        {/* Contenedor Fijo de BIT: Ubicado a la izquierda */}
-        <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full shrink-0 flex items-center justify-center overflow-hidden -ml-1 sm:-ml-2">
+        {/* Contenedor Fijo de BIT: 40% más grande (w-36 h-36 sm:w-44 sm:h-44 = 176px) */}
+        <div className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-full shrink-0 flex items-center justify-center overflow-hidden -ml-2 sm:-ml-3">
           <ChromaVideo
             src={BIT_VIDEO_URL}
             className="w-full h-full object-cover"
-            width={260}
-            height={260}
+            width={360}
+            height={360}
           />
         </div>
 
