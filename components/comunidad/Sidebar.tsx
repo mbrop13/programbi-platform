@@ -32,7 +32,7 @@ import {
   ArrowUpCircle,
   ArrowRight,
   Loader2,
-  Dumbbell,
+  Target,
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
 import { getUnreadNotificationCount, getCoursesAndLessons, getPosts } from "@/lib/supabase/comunidad";
@@ -390,7 +390,7 @@ export default function Sidebar({
       { id: "live", label: t.live, icon: Radio, color: "text-rose-500", group: t.principal, showPing: hasUpcomingLives },
       { id: "buscar", label: "Buscar", icon: Search, color: "text-text-secondary", group: t.principal },
       { id: "ai", label: t.ai, icon: Sparkles, color: "text-text-secondary", group: t.principal },
-      { id: "practicar", label: t.practicar, icon: Dumbbell, color: "text-text-secondary", group: t.principal },
+      { id: "practicar", label: t.practicar, icon: Target, color: "text-text-secondary", group: t.principal },
     { id: "certificados", label: t.certificados, icon: Award, color: "text-amber-500", group: t.personal },
     ...(isOrgManager
       ? [{ id: "business", label: t.empresa, icon: Building2, color: "text-slate-500", group: t.gestion }]
