@@ -36,8 +36,12 @@ import {
   ArrangeRenderer,
   MatchPairsRenderer,
   FillBlankRenderer,
+  StoryRenderer,
 } from "./ExerciseRenderers";
 import Confetti from "./Confetti";
+import ChromaVideo from "./ChromaVideo";
+
+const BIT_VIDEO_URL = "https://mail.programbi.com/uploads/Mapache_saludando_a_c%C3%A1mara_con_202607222213.mp4";
 
 interface Props {
   unit: Unit;
@@ -232,29 +236,47 @@ export default function LessonPlayer({
         {burst > 0 && <Confetti key={burst} count={28} duration={1.1} />}
       </AnimatePresence>
 
-      {/* prompt */}
-      <div className="mt-6 mb-5">
-        <AnimatePresence mode="wait">
-          <motion.h2
-            key={current.id}
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -30 }}
-            transition={{ duration: 0.25 }}
-            className="font-display font-bold text-2xl text-text"
-          >
-            {current.prompt}
-          </motion.h2>
-        </AnimatePresence>
-        {current.hint && !checked && (
-          <motion.p
-            initial={{ opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-2 text-sm text-orange-500 flex items-center gap-1.5"
-          >
-            <BookOpen className="w-4 h-4" /> {current.hint}
-          </motion.p>
-        )}
+      {/* Prompt con BIT el Mapache en video Chromakey (Estilo Duolingo) */}
+      <div className="mt-4 mb-6">
+        <div className="flex items-start gap-3 sm:gap-4">
+          {/* BIT Avatar Chromakey */}
+          <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full shrink-0 flex items-center justify-center overflow-hidden -ml-1">
+            <ChromaVideo
+              src={BIT_VIDEO_URL}
+              className="w-full h-full object-cover"
+              width={200}
+              height={200}
+            />
+          </div>
+
+          {/* Globo de Diálogo Lateral con el Enunciado */}
+          <div className="relative bg-surface border-2 border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1 mt-1">
+            <div className="absolute left-[-9px] top-6 w-4 h-4 bg-surface border-l-2 border-b-2 border-border rotate-45" />
+
+            <AnimatePresence mode="wait">
+              <motion.h2
+                key={current.id}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
+                className="font-display font-bold text-base sm:text-xl text-text leading-snug"
+              >
+                {current.prompt}
+              </motion.h2>
+            </AnimatePresence>
+
+            {current.hint && !checked && (
+              <motion.p
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mt-2 text-xs sm:text-sm text-amber-500 font-semibold flex items-center gap-1.5"
+              >
+                <BookOpen className="w-4 h-4" /> {current.hint}
+              </motion.p>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* renderer */}
@@ -419,6 +441,14 @@ function ExerciseBody({
           ex={exercise}
           value={val}
           onChange={(v, isCorrect) => setState(v, isCorrect)}
+        />
+      );
+    }
+    case "story": {
+      return (
+        <StoryRenderer
+          ex={exercise}
+          onComplete={(isCorrect) => setState("story-read", isCorrect)}
         />
       );
     }

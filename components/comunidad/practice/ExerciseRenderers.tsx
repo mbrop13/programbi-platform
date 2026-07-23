@@ -8,7 +8,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check } from "lucide-react";
+import { Check, BookOpen, Sparkles, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type {
   Exercise,
@@ -17,6 +17,7 @@ import type {
   ArrangeData,
   MatchPairsData,
   FillBlankData,
+  StoryData,
 } from "@/lib/practice/types";
 
 // ─── multiple-choice ─────────────────────────────────────────────────────────
@@ -353,6 +354,91 @@ export function FillBlankRenderer({
       <p className="text-xs text-text-muted mt-2 pl-1">
         Pulsa <kbd className="px-1.5 py-0.5 bg-surface-hover rounded text-[10px] font-mono text-text-secondary">Enter</kbd> para comprobar.
       </p>
+    </div>
+  );
+}
+
+// ─── story / tutorial explicativo ───────────────────────────────────────────
+export function StoryRenderer({
+  ex,
+  onComplete,
+}: {
+  ex: Exercise;
+  onComplete: (isCorrect: boolean) => void;
+}) {
+  const data = ex.data as StoryData;
+  const [slideIdx, setSlideIdx] = useState(0);
+
+  const currentSlide = data.slides[slideIdx] || data.slides[0];
+
+  const handleNextSlide = () => {
+    if (slideIdx + 1 < data.slides.length) {
+      setSlideIdx(slideIdx + 1);
+    } else {
+      onComplete(true);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="p-5 rounded-2xl bg-surface border-2 border-accent/20 shadow-md space-y-3">
+        {currentSlide.title && (
+          <h3 className="font-display font-bold text-base text-accent flex items-center gap-2">
+            <Sparkles className="w-4.5 h-4.5" />
+            {currentSlide.title}
+          </h3>
+        )}
+
+        <p className="text-sm text-text leading-relaxed font-medium">
+          {currentSlide.text}
+        </p>
+
+        {currentSlide.highlightText && (
+          <div className="p-3.5 rounded-xl bg-accent/10 border border-accent/30 text-xs font-semibold text-accent leading-relaxed flex items-start gap-2">
+            <span>💡</span>
+            <span>{currentSlide.highlightText}</span>
+          </div>
+        )}
+
+        {currentSlide.codeSnippet && (
+          <div className="p-4 rounded-xl bg-slate-950 text-emerald-400 font-mono text-xs overflow-x-auto shadow-inner border border-white/10">
+            <pre className="whitespace-pre-wrap leading-relaxed">{currentSlide.codeSnippet}</pre>
+          </div>
+        )}
+      </div>
+
+      {/* Control de diapositivas de la historia */}
+      <div className="flex items-center justify-between pt-1">
+        <div className="flex items-center gap-1.5">
+          {data.slides.map((_, idx) => (
+            <span
+              key={idx}
+              className={cn(
+                "h-2 rounded-full transition-all duration-300",
+                idx === slideIdx ? "w-6 bg-accent" : "w-2 bg-border"
+              )}
+            />
+          ))}
+        </div>
+
+        {slideIdx + 1 < data.slides.length ? (
+          <button
+            onClick={handleNextSlide}
+            className="px-5 py-2.5 rounded-xl bg-accent text-white font-bold text-xs flex items-center gap-1.5 shadow-md hover:bg-accent/90 transition-all"
+          >
+            <span>Siguiente</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        ) : (
+          <button
+            onClick={() => onComplete(true)}
+            className="px-5 py-2.5 rounded-xl bg-emerald-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-md hover:bg-emerald-500 transition-all"
+          >
+            <span>¡Entendido!</span>
+            <Check className="w-4 h-4" />
+          </button>
+        )}
+      </div>
     </div>
   );
 }

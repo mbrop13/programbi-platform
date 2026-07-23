@@ -19,9 +19,10 @@
 export type ExerciseType =
   | "multiple-choice" // 1 opción correcta
   | "select-all" // N opciones correctas
-  | "arrange" // ordenar tokens (p.ej. armar una query SQL)
+  | "arrange" // ordenar tokens (p.ej. armar una query SQL o fórmula DAX)
   | "match-pairs" // emparejar dos columnas
-  | "fill-blank"; // escribir la respuesta
+  | "fill-blank" // escribir la respuesta
+  | "story"; // historia / tutorial explicativo narrado por BIT
 
 // ─── Variantes de "Level" (el nodo del camino) ───────────────────────────────
 export type LevelKind =
@@ -29,6 +30,16 @@ export type LevelKind =
   | "bonus" // lección de práctica extra (estrella)
   | "checkpoint" // punto de control / test (escudo)
   | "trophy"; // unidad completada (trofeo)
+
+export interface StoryData {
+  // Pasos o viñetas explicativas de la historia
+  slides: {
+    title?: string;
+    text: string;
+    codeSnippet?: string; // Ejemplo de código, fórmula DAX o tabla de datos
+    highlightText?: string; // Concepto clave para resaltar
+  }[];
+}
 
 // ─── Datos por tipo de ejercicio ─────────────────────────────────────────────
 export interface MultipleChoiceData {
@@ -73,7 +84,8 @@ export interface Exercise {
     | SelectAllData
     | ArrangeData
     | MatchPairsData
-    | FillBlankData;
+    | FillBlankData
+    | StoryData;
   // Explicación mostrada tras responder (refuerzo del aprendizaje).
   explanation: string;
 }
