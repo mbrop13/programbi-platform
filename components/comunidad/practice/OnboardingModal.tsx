@@ -113,8 +113,8 @@ export default function OnboardingModal({
     <div className="fixed inset-0 z-50 flex flex-col bg-background text-text overflow-hidden">
       {showConfetti && <Confetti />}
 
-      {/* Floating Header without heavy gray border bars */}
-      <div className="w-full flex items-center justify-between px-6 py-5 z-20 max-w-3xl mx-auto">
+      {/* Header Superior con Barra de Progreso Flotante */}
+      <div className="w-full flex items-center justify-between px-6 pt-5 pb-2 z-20 max-w-3xl mx-auto shrink-0">
         <button
           onClick={onClose}
           className="p-2 rounded-2xl text-text-secondary hover:text-text hover:bg-surface-hover transition-colors"
@@ -140,87 +140,94 @@ export default function OnboardingModal({
         </div>
       </div>
 
-      {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col items-center justify-center max-w-2xl mx-auto w-full">
+      {/* ── CABECERA FIJA DE BIT EL MAPACHE (Más arriba, en espacio 100% fijo sin adaptarse) ── */}
+      <div className="w-full max-w-2xl mx-auto px-4 pt-2 pb-3 flex items-start gap-4 shrink-0 z-20">
+        {/* Contenedor Fijo de BIT: No se desplaza ni adapta al cambiar de paso */}
+        <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
+          <ChromaVideo
+            src={BIT_VIDEO_URL}
+            className="w-full h-full object-cover"
+            width={260}
+            height={260}
+          />
+        </div>
+
+        {/* Globo de Diálogo Dinámico que actualiza el texto según el paso */}
+        <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1 mt-1">
+          <div className="absolute left-[-8px] top-6 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
+          <div className="text-[10px] font-black uppercase text-accent tracking-wider mb-0.5">
+            {step === 1 && "BIT · Guía de Práctica"}
+            {step === 2 && "BIT · Evaluación de Nivel"}
+            {step === 3 && "BIT · Compromiso Diario"}
+            {step === 4 && "BIT · Confirmación final"}
+          </div>
+          <h2 className="font-display font-bold text-base sm:text-lg text-text leading-tight">
+            {step === 1 && "¡Hola! Soy Bit 🦝 ¿Qué tecnología quieres dominar hoy?"}
+            {step === 2 && `¿Cuánto ${activeUnit.title} sabes?`}
+            {step === 3 && "¿Cuánto tiempo quieres practicar al día?"}
+            {step === 4 && "¡Tu Módulo de Práctica está listo! 🎉"}
+          </h2>
+          <p className="text-text-secondary text-xs mt-1 leading-snug">
+            {step === 1 && "Selecciona tu ruta principal. Podrás cambiar entre ellas cuando quieras."}
+            {step === 2 && "Adapta tu punto de partida para recibir ejercicios a tu medida."}
+            {step === 3 && "Elige una meta de práctica que encaje con tu rutina diaria."}
+            {step === 4 && `Aprenderás ${activeUnit.title} practicando ${activeGoal.time}.`}
+          </p>
+        </div>
+      </div>
+
+      {/* ── ÁREA DE CONTENIDO (Cuestionario y Opciones) ──────────────────────── */}
+      <div className="flex-1 overflow-y-auto px-4 py-2 flex flex-col items-center justify-start max-w-2xl mx-auto w-full">
         <AnimatePresence mode="wait">
-          {/* PASO 1: SELECCIONAR QUÉ APRENDER (BIT 40% más grande, sin ticket verde) */}
+          {/* PASO 1: SELECCIONAR QUÉ APRENDER */}
           {step === 1 && (
             <motion.div
               key="step-1"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              className="w-full space-y-6"
+              exit={{ opacity: 0, y: -10 }}
+              className="w-full space-y-3"
             >
-              {/* Mascot BIT & Speech Bubble Header */}
-              <div className="flex items-start gap-4 mb-6">
-                {/* BIT 40% más grande (w-28 h-28 = 112px), sin ticket verde */}
-                <div className="relative w-28 h-28 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
-                  <ChromaVideo
-                    src={BIT_VIDEO_URL}
-                    className="w-full h-full object-cover"
-                    width={240}
-                    height={240}
-                  />
-                </div>
-
-                <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1 mt-2">
-                  <div className="absolute left-[-8px] top-6 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
-                  <div className="text-[10px] font-black uppercase text-accent tracking-wider mb-0.5">
-                    BIT · Guía de Práctica
-                  </div>
-                  <h2 className="font-display font-bold text-lg sm:text-xl text-text leading-snug">
-                    ¡Hola! Soy Bit 🦝 ¿Qué tecnología quieres dominar hoy?
-                  </h2>
-                  <p className="text-text-secondary text-xs mt-1">
-                    Selecciona tu ruta principal. Podrás cambiar entre ellas cuando quieras.
-                  </p>
-                </div>
-              </div>
-
-              {/* Options List */}
-              <div className="space-y-3">
-                {PRACTICE_UNITS.map((unit) => {
-                  const Icon = ICON_MAP[unit.icon] ?? Database;
-                  const isSelected = unit.id === selectedUnitId;
-                  return (
-                    <button
-                      key={unit.id}
-                      onClick={() => setSelectedUnitId(unit.id)}
-                      className={cn(
-                        "w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all text-left",
-                        isSelected
-                          ? "border-accent bg-accent/10 shadow-md ring-1 ring-accent"
-                          : "border-border bg-surface hover:bg-surface-hover hover:border-border-strong"
-                      )}
-                    >
-                      <div className="flex items-center gap-3.5">
-                        <span
-                          className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm"
-                          style={{ background: unit.accentColor }}
-                        >
-                          <Icon className="w-5 h-5" />
-                        </span>
-                        <div>
-                          <div className="font-bold text-sm text-text flex items-center gap-1.5">
-                            <span>{unit.emoji}</span>
-                            <span>{unit.title}</span>
-                          </div>
-                          <div className="text-xs text-text-muted mt-0.5">
-                            {unit.levels.length} lecciones interactivas
-                          </div>
+              {PRACTICE_UNITS.map((unit) => {
+                const Icon = ICON_MAP[unit.icon] ?? Database;
+                const isSelected = unit.id === selectedUnitId;
+                return (
+                  <button
+                    key={unit.id}
+                    onClick={() => setSelectedUnitId(unit.id)}
+                    className={cn(
+                      "w-full flex items-center justify-between p-3.5 sm:p-4 rounded-2xl border-2 transition-all text-left",
+                      isSelected
+                        ? "border-accent bg-accent/10 shadow-md ring-1 ring-accent"
+                        : "border-border bg-surface hover:bg-surface-hover hover:border-border-strong"
+                    )}
+                  >
+                    <div className="flex items-center gap-3.5">
+                      <span
+                        className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm"
+                        style={{ background: unit.accentColor }}
+                      >
+                        <Icon className="w-5 h-5" />
+                      </span>
+                      <div>
+                        <div className="font-bold text-sm text-text flex items-center gap-1.5">
+                          <span>{unit.emoji}</span>
+                          <span>{unit.title}</span>
+                        </div>
+                        <div className="text-xs text-text-muted mt-0.5">
+                          {unit.levels.length} lecciones interactivas
                         </div>
                       </div>
+                    </div>
 
-                      {isSelected && (
-                        <div className="w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center">
-                          <Check className="w-3.5 h-3.5 stroke-[3]" />
-                        </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+                    {isSelected && (
+                      <div className="w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center">
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </motion.div>
           )}
 
@@ -228,86 +235,60 @@ export default function OnboardingModal({
           {step === 2 && (
             <motion.div
               key="step-2"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              className="w-full space-y-6"
+              exit={{ opacity: 0, y: -10 }}
+              className="w-full space-y-3"
             >
-              <div className="flex items-start gap-4 mb-6">
-                <div className="relative w-28 h-28 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
-                  <ChromaVideo
-                    src={BIT_VIDEO_URL}
-                    className="w-full h-full object-cover"
-                    width={240}
-                    height={240}
-                  />
-                </div>
-
-                <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1 mt-2">
-                  <div className="absolute left-[-8px] top-6 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
-                  <div className="text-[10px] font-black uppercase text-accent tracking-wider mb-0.5">
-                    BIT · Evaluación
-                  </div>
-                  <h2 className="font-display font-bold text-lg sm:text-xl text-text leading-snug">
-                    ¿Cuánto {activeUnit.title} sabes?
-                  </h2>
-                  <p className="text-text-secondary text-xs mt-1">
-                    Adapta tu punto de partida para recibir ejercicios a tu medida.
-                  </p>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                {KNOWLEDGE_LEVELS.map((lvl) => {
-                  const isSelected = lvl.id === selectedLevelId;
-                  return (
-                    <button
-                      key={lvl.id}
-                      onClick={() => setSelectedLevelId(lvl.id)}
-                      className={cn(
-                        "w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all text-left",
-                        isSelected
-                          ? "border-accent bg-accent/10 shadow-md ring-1 ring-accent"
-                          : "border-border bg-surface hover:bg-surface-hover hover:border-border-strong"
-                      )}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-end gap-1 h-6 w-7 justify-center shrink-0">
-                          {Array.from({ length: 4 }).map((_, i) => (
-                            <span
-                              key={i}
-                              className={cn(
-                                "w-1.5 rounded-full transition-colors",
-                                i < lvl.bars
-                                  ? isSelected
-                                    ? "bg-accent"
-                                    : "bg-text-secondary"
-                                  : "bg-border"
-                              )}
-                              style={{ height: `${(i + 1) * 25}%` }}
-                            />
-                          ))}
-                        </div>
-
-                        <div>
-                          <div className="font-bold text-sm text-text leading-tight">
-                            {lvl.title}
-                          </div>
-                          <div className="text-xs text-text-muted mt-1 leading-relaxed">
-                            {lvl.desc}
-                          </div>
-                        </div>
+              {KNOWLEDGE_LEVELS.map((lvl) => {
+                const isSelected = lvl.id === selectedLevelId;
+                return (
+                  <button
+                    key={lvl.id}
+                    onClick={() => setSelectedLevelId(lvl.id)}
+                    className={cn(
+                      "w-full flex items-center justify-between p-3.5 sm:p-4 rounded-2xl border-2 transition-all text-left",
+                      isSelected
+                        ? "border-accent bg-accent/10 shadow-md ring-1 ring-accent"
+                        : "border-border bg-surface hover:bg-surface-hover hover:border-border-strong"
+                    )}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="flex items-end gap-1 h-6 w-7 justify-center shrink-0">
+                        {Array.from({ length: 4 }).map((_, i) => (
+                          <span
+                            key={i}
+                            className={cn(
+                              "w-1.5 rounded-full transition-colors",
+                              i < lvl.bars
+                                ? isSelected
+                                  ? "bg-accent"
+                                  : "bg-text-secondary"
+                                : "bg-border"
+                            )}
+                            style={{ height: `${(i + 1) * 25}%` }}
+                          />
+                        ))}
                       </div>
 
-                      {isSelected && (
-                        <div className="w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center shrink-0 ml-2">
-                          <Check className="w-3.5 h-3.5 stroke-[3]" />
+                      <div>
+                        <div className="font-bold text-sm text-text leading-tight">
+                          {lvl.title}
                         </div>
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
+                        <div className="text-xs text-text-muted mt-0.5 leading-relaxed">
+                          {lvl.desc}
+                        </div>
+                      </div>
+                    </div>
+
+                    {isSelected && (
+                      <div className="w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center shrink-0 ml-2">
+                        <Check className="w-3.5 h-3.5 stroke-[3]" />
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </motion.div>
           )}
 
@@ -315,35 +296,11 @@ export default function OnboardingModal({
           {step === 3 && (
             <motion.div
               key="step-3"
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              className="w-full space-y-6"
+              exit={{ opacity: 0, y: -10 }}
+              className="w-full space-y-3"
             >
-              <div className="flex items-start gap-4 mb-6">
-                <div className="relative w-28 h-28 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
-                  <ChromaVideo
-                    src={BIT_VIDEO_URL}
-                    className="w-full h-full object-cover"
-                    width={240}
-                    height={240}
-                  />
-                </div>
-
-                <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1 mt-2">
-                  <div className="absolute left-[-8px] top-6 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
-                  <div className="text-[10px] font-black uppercase text-accent tracking-wider mb-0.5">
-                    BIT · Compromiso
-                  </div>
-                  <h2 className="font-display font-bold text-lg sm:text-xl text-text leading-snug">
-                    ¿Cuánto tiempo quieres practicar al día?
-                  </h2>
-                  <p className="text-text-secondary text-xs mt-1">
-                    Elige una meta de práctica que encaje con tu rutina diaria.
-                  </p>
-                </div>
-              </div>
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {DAILY_GOALS.map((goal) => {
                   const isSelected = goal.id === selectedGoalId;
@@ -362,7 +319,7 @@ export default function OnboardingModal({
                         <span className="font-bold text-sm text-text">{goal.title}</span>
                         <span className="text-xs font-bold text-accent">{goal.time}</span>
                       </div>
-                      <p className="text-xs text-text-muted leading-relaxed mt-1">
+                      <p className="text-xs text-text-muted leading-relaxed mt-0.5">
                         {goal.desc}
                       </p>
 
@@ -378,42 +335,24 @@ export default function OnboardingModal({
             </motion.div>
           )}
 
-          {/* PASO 4: CONFIRMACIÓN */}
+          {/* PASO 4: CONFIRMACIÓN Y CELEBRACIÓN */}
           {step === 4 && (
             <motion.div
               key="step-4"
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="w-full flex flex-col items-center text-center space-y-6 py-4"
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-full flex flex-col items-center text-center space-y-4 py-2"
             >
-              <div className="relative w-36 h-36 rounded-full overflow-hidden flex items-center justify-center">
-                <ChromaVideo
-                  src={BIT_VIDEO_URL}
-                  className="w-full h-full object-cover"
-                  width={300}
-                  height={300}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <h2 className="font-display font-black text-2xl sm:text-3xl text-text">
-                  ¡Tu Plataforma de Práctica está Lista! 🎉
-                </h2>
-                <p className="text-text-secondary text-sm max-w-md mx-auto leading-relaxed">
-                  Has elegido dominar <span className="font-bold text-text">{activeUnit.emoji} {activeUnit.title}</span> dedicando <span className="font-bold text-accent">{activeGoal.time}</span>.
-                </p>
-              </div>
-
-              <div className="p-4 rounded-2xl bg-surface border border-border w-full max-w-md flex items-center justify-around shadow-sm">
+              <div className="p-5 rounded-2xl bg-surface border border-border w-full max-w-md flex items-center justify-around shadow-sm">
                 <div className="text-center">
                   <span className="text-[11px] text-text-muted uppercase font-bold">Tecnología</span>
-                  <div className="font-bold text-sm text-text">{activeUnit.title}</div>
+                  <div className="font-bold text-sm text-text mt-0.5">{activeUnit.title}</div>
                 </div>
                 <div className="w-px h-8 bg-border" />
                 <div className="text-center">
                   <span className="text-[11px] text-text-muted uppercase font-bold">Meta Diaria</span>
-                  <div className="font-bold text-sm text-accent">{activeGoal.time}</div>
+                  <div className="font-bold text-sm text-accent mt-0.5">{activeGoal.time}</div>
                 </div>
               </div>
             </motion.div>
@@ -421,7 +360,7 @@ export default function OnboardingModal({
         </AnimatePresence>
       </div>
 
-      {/* Botón "CONTINUAR" Sobrepuesto Flotante a la Derecha (Sin franjas ni scrollbar innecesario) */}
+      {/* Botón "CONTINUAR" Sobrepuesto Flotante a la Derecha */}
       <div className="fixed bottom-6 right-6 sm:bottom-8 sm:right-8 z-50 pointer-events-auto">
         <motion.button
           whileHover={!isNextDisabled ? { scale: 1.04 } : {}}
