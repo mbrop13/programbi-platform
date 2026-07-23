@@ -3,22 +3,22 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
+  X,
   Sparkles,
-  Target,
-  Zap,
-  ShieldCheck,
-  ArrowRight,
   Check,
-  Trophy,
-  Star,
-  Flame,
-  Clock,
-  ChevronLeft,
+  SignalLow,
+  SignalMedium,
+  SignalHigh,
+  Signal,
   Database,
   BarChart3,
   Brain,
   Code2,
   FileSpreadsheet,
+  Zap,
+  Clock,
+  Award,
+  ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PRACTICE_UNITS } from "@/lib/practice/levels";
@@ -38,43 +38,44 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   FileSpreadsheet,
 };
 
+// Niveles de conocimiento estilo Duolingo (Imagen 2)
+const KNOWLEDGE_LEVELS = [
+  {
+    id: "zero",
+    title: "Estoy empezando a aprender desde cero",
+    desc: "Nunca he usado esta herramienta antes.",
+    icon: SignalLow,
+    bars: 1,
+  },
+  {
+    id: "basic",
+    title: "Conozco algunos conceptos básicos",
+    desc: "Sé qué es y he realizado consultas o fórmulas simples.",
+    icon: SignalMedium,
+    bars: 2,
+  },
+  {
+    id: "intermediate",
+    title: "Puedo desarrollar proyectos intermedios",
+    desc: "Trabajo habitualmente con esto en mi trabajo o estudios.",
+    icon: SignalHigh,
+    bars: 3,
+  },
+  {
+    id: "advanced",
+    title: "Nivel avanzado / Profesional",
+    desc: "Quiero perfeccionar mis habilidades y resolver retos complejos.",
+    icon: Signal,
+    bars: 4,
+  },
+];
+
+// Metas diarias de XP
 const DAILY_GOALS = [
-  {
-    id: 10,
-    title: "Relajado",
-    time: "5 min / día",
-    xp: 10,
-    desc: "Perfecto para practicar sin presiones.",
-    badge: "Fácil",
-    color: "emerald",
-  },
-  {
-    id: 20,
-    title: "Normal",
-    time: "10 min / día",
-    xp: 20,
-    desc: "Recomendado para mantener un ritmo constante.",
-    badge: "Recomendado",
-    color: "blue",
-  },
-  {
-    id: 30,
-    title: "Intenso",
-    time: "15 min / día",
-    xp: 30,
-    desc: "Acelera tu dominio técnico en datos.",
-    badge: "Avanzado",
-    color: "amber",
-  },
-  {
-    id: 50,
-    title: "Pro",
-    time: "25 min / día",
-    xp: 50,
-    desc: "Inmersión profesional completa diaria.",
-    badge: "Experto",
-    color: "rose",
-  },
+  { id: 10, title: "Relajado", time: "5 min / día", xp: 10, desc: "A tu propio ritmo sin presiones." },
+  { id: 20, title: "Normal", time: "10 min / día", xp: 20, desc: "Recomendado para aprendizaje constante." },
+  { id: 30, title: "Intenso", time: "15 min / día", xp: 30, desc: "Acelera tu dominio técnico." },
+  { id: 50, title: "Pro", time: "25 min / día", xp: 50, desc: "Inmersión total diaria en proyectos reales." },
 ];
 
 export default function OnboardingModal({
@@ -83,335 +84,344 @@ export default function OnboardingModal({
   onClose,
 }: OnboardingModalProps) {
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
-  const [selectedUnitId, setSelectedUnitId] = useState<string>(PRACTICE_UNITS[0].id);
-  const [selectedGoalXP, setSelectedGoalXP] = useState<number>(20);
+  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
+  const [selectedLevelId, setSelectedLevelId] = useState<string | null>(null);
+  const [selectedGoalXP, setSelectedGoalXP] = useState<number | null>(20);
   const [showConfetti, setShowConfetti] = useState(false);
 
   if (!isOpen) return null;
 
-  const selectedUnit = PRACTICE_UNITS.find((u) => u.id === selectedUnitId)!;
-  const selectedGoal = DAILY_GOALS.find((g) => g.xp === selectedGoalXP)!;
+  const activeUnit = PRACTICE_UNITS.find((u) => u.id === selectedUnitId) || PRACTICE_UNITS[0];
 
-  const handleFinish = () => {
-    onComplete(selectedUnitId, selectedGoalXP);
+  const handleNext = () => {
+    if (step === 1 && selectedUnitId) {
+      setStep(2);
+    } else if (step === 2 && selectedLevelId) {
+      setStep(3);
+    } else if (step === 3 && selectedGoalXP) {
+      setShowConfetti(true);
+      setStep(4);
+    } else if (step === 4) {
+      onComplete(selectedUnitId || PRACTICE_UNITS[0].id, selectedGoalXP || 20);
+    }
   };
 
+  const isNextDisabled =
+    (step === 1 && !selectedUnitId) ||
+    (step === 2 && !selectedLevelId) ||
+    (step === 3 && !selectedGoalXP);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex flex-col bg-background text-text overflow-hidden">
       {showConfetti && <Confetti />}
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        className="relative w-full max-w-2xl bg-surface border border-border rounded-3xl shadow-2xl overflow-hidden my-auto"
-      >
-        {/* Top Progress Bar */}
-        <div className="w-full bg-surface-hover h-2">
-          <div
-            className="h-full bg-accent transition-all duration-300"
-            style={{ width: `${(step / 4) * 100}%` }}
+      {/* Top Header Bar with Close & Progress Line */}
+      <div className="w-full flex items-center justify-between px-6 py-4 border-b border-border bg-surface/50 backdrop-blur-md">
+        <button
+          onClick={onClose}
+          className="p-2 rounded-xl text-text-secondary hover:text-text hover:bg-surface-hover transition-colors"
+          title="Cerrar tutorial"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {/* Progress Bar */}
+        <div className="w-48 sm:w-64 h-2.5 rounded-full bg-surface-hover overflow-hidden">
+          <motion.div
+            className="h-full bg-accent rounded-full"
+            initial={{ width: "25%" }}
+            animate={{ width: `${(step / 4) * 100}%` }}
+            transition={{ duration: 0.3 }}
           />
         </div>
 
-        {/* Modal Header Controls */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-2">
-          {step > 1 ? (
-            <button
-              onClick={() => setStep((s) => (s - 1) as 1 | 2 | 3 | 4)}
-              className="flex items-center gap-1 text-xs font-semibold text-text-secondary hover:text-text transition-colors"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Atrás
-            </button>
-          ) : (
-            <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-accent">
-              <Sparkles className="w-4 h-4" />
-              Onboarding Práctica
-            </div>
-          )}
-
-          <span className="text-xs font-bold text-text-muted">Paso {step} de 4</span>
+        <div className="text-xs font-bold text-text-muted">
+          Paso {step} de 4
         </div>
+      </div>
 
-        {/* Content Slides */}
-        <div className="p-6 sm:p-8">
-          <AnimatePresence mode="wait">
-            {/* PASO 1: BIENVENIDA & GAMIFICACIÓN */}
-            {step === 1 && (
-              <motion.div
-                key="step-1"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="flex flex-col items-center text-center space-y-6"
-              >
-                <div className="relative w-20 h-20 rounded-3xl bg-accent/15 flex items-center justify-center text-accent shadow-inner">
-                  <Target className="w-10 h-10" />
-                  <span className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-amber-500 text-white text-[10px] font-black flex items-center justify-center shadow-sm">
-                    XP
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-y-auto px-4 py-8 flex flex-col items-center justify-center max-w-2xl mx-auto w-full">
+        <AnimatePresence mode="wait">
+          {/* PASO 1: SELECCIONAR QUÉ APRENDER */}
+          {step === 1 && (
+            <motion.div
+              key="step-1"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="w-full space-y-6"
+            >
+              {/* Mascot & Speech Bubble Header */}
+              <div className="flex items-start gap-4 mb-8">
+                <div className="w-16 h-16 rounded-2xl bg-accent/15 border border-accent/20 flex items-center justify-center text-accent shrink-0 shadow-lg relative">
+                  <Sparkles className="w-8 h-8" />
+                  <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-black flex items-center justify-center">
+                    ✓
                   </span>
                 </div>
 
-                <div className="space-y-2">
-                  <h2 className="font-display font-black text-2xl sm:text-3xl text-text">
-                    ¡Bienvenido a la Ruta de Práctica! 🚀
+                <div className="relative bg-surface border border-border p-4 rounded-2xl shadow-md flex-1">
+                  <div className="absolute left-[-8px] top-5 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
+                  <h2 className="font-display font-bold text-lg sm:text-xl text-text leading-snug">
+                    ¡Hola! 👋 ¿Qué tecnología quieres dominar hoy?
                   </h2>
-                  <p className="text-text-secondary text-sm max-w-md mx-auto leading-relaxed">
-                    Aprende Power BI, SQL, Python, Excel e IA respondiendo micro-lecciones gamificadas diseñadas por expertos en datos.
+                  <p className="text-text-secondary text-xs mt-1">
+                    Selecciona tu ruta principal. Podrás cambiar entre ellas cuando quieras.
                   </p>
                 </div>
+              </div>
 
-                {/* Features Highlights */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full text-left pt-2">
-                  <div className="p-3.5 rounded-2xl bg-surface-hover border border-border flex items-start gap-3">
-                    <div className="p-2 rounded-xl bg-amber-500/15 text-amber-500 shrink-0">
-                      <Zap className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-xs text-text">Micro-Lecciones</div>
-                      <div className="text-[11px] text-text-muted">Desafíos rápidos de 3 min</div>
-                    </div>
-                  </div>
-
-                  <div className="p-3.5 rounded-2xl bg-surface-hover border border-border flex items-start gap-3">
-                    <div className="p-2 rounded-xl bg-rose-500/15 text-rose-500 shrink-0">
-                      <Flame className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-xs text-text">Mantén tu Racha</div>
-                      <div className="text-[11px] text-text-muted">Practica a diario</div>
-                    </div>
-                  </div>
-
-                  <div className="p-3.5 rounded-2xl bg-surface-hover border border-border flex items-start gap-3">
-                    <div className="p-2 rounded-xl bg-indigo-500/15 text-indigo-500 shrink-0">
-                      <Trophy className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="font-bold text-xs text-text">Gana XP y Niveles</div>
-                      <div className="text-[11px] text-text-muted">Domina cada módulo</div>
-                    </div>
-                  </div>
-                </div>
-
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setStep(2)}
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-2xl bg-accent text-white font-bold text-sm shadow-lg shadow-accent/25 flex items-center justify-center gap-2"
-                >
-                  ¡Configurar Mi Ruta!
-                  <ArrowRight className="w-4 h-4" />
-                </motion.button>
-              </motion.div>
-            )}
-
-            {/* PASO 2: SELECCIÓN DE RUTA DE APRENDIZAJE */}
-            {step === 2 && (
-              <motion.div
-                key="step-2"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <div className="text-center space-y-1">
-                  <h2 className="font-display font-black text-2xl text-text">
-                    ¿Qué quieres dominar primero?
-                  </h2>
-                  <p className="text-text-secondary text-xs">
-                    Elige tu tecnología principal. Podrás cambiar o explorar otras en cualquier momento.
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[320px] overflow-y-auto pr-1">
-                  {PRACTICE_UNITS.map((unit) => {
-                    const Icon = ICON_MAP[unit.icon] ?? Database;
-                    const isSelected = unit.id === selectedUnitId;
-                    return (
-                      <button
-                        key={unit.id}
-                        onClick={() => setSelectedUnitId(unit.id)}
-                        className={cn(
-                          "relative flex items-center gap-3.5 p-4 rounded-2xl border-2 transition-all text-left",
-                          isSelected
-                            ? "bg-surface shadow-md"
-                            : "border-border bg-surface-hover/50 hover:bg-surface-hover hover:border-border-strong"
-                        )}
-                        style={
-                          isSelected
-                            ? { borderColor: unit.accentColor }
-                            : undefined
-                        }
-                      >
-                        <div
-                          className="w-11 h-11 rounded-2xl flex items-center justify-center text-white shrink-0 shadow-sm"
+              {/* Options List */}
+              <div className="space-y-3">
+                {PRACTICE_UNITS.map((unit) => {
+                  const Icon = ICON_MAP[unit.icon] ?? Database;
+                  const isSelected = unit.id === selectedUnitId;
+                  return (
+                    <button
+                      key={unit.id}
+                      onClick={() => setSelectedUnitId(unit.id)}
+                      className={cn(
+                        "w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all text-left",
+                        isSelected
+                          ? "border-accent bg-accent/10 shadow-md ring-1 ring-accent"
+                          : "border-border bg-surface hover:bg-surface-hover hover:border-border-strong"
+                      )}
+                    >
+                      <div className="flex items-center gap-3.5">
+                        <span
+                          className="w-10 h-10 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm"
                           style={{ background: unit.accentColor }}
                         >
-                          <Icon className="w-6 h-6" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <span className="text-sm">{unit.emoji}</span>
-                            <span className="font-bold text-sm text-text truncate">
-                              {unit.title}
-                            </span>
+                          <Icon className="w-5 h-5" />
+                        </span>
+                        <div>
+                          <div className="font-bold text-sm text-text flex items-center gap-1.5">
+                            <span>{unit.emoji}</span>
+                            <span>{unit.title}</span>
                           </div>
-                          <p className="text-xs text-text-muted line-clamp-1 mt-0.5">
-                            {unit.levels.length} lecciones disponibles
-                          </p>
-                        </div>
-                        {isSelected && (
-                          <div
-                            className="w-6 h-6 rounded-full flex items-center justify-center text-white shrink-0"
-                            style={{ background: unit.accentColor }}
-                          >
-                            <Check className="w-3.5 h-3.5 stroke-[3]" />
+                          <div className="text-xs text-text-muted mt-0.5">
+                            {unit.levels.length} lecciones interactivas
                           </div>
-                        )}
-                      </button>
-                    );
-                  })}
+                        </div>
+                      </div>
+
+                      {isSelected && (
+                        <div className="w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center">
+                          <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+
+          {/* PASO 2: EVALUACIÓN DE NIVEL ESTILO DUOLINGO (Imagen 2) */}
+          {step === 2 && (
+            <motion.div
+              key="step-2"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="w-full space-y-6"
+            >
+              {/* Mascot & Speech Bubble Header */}
+              <div className="flex items-start gap-4 mb-6">
+                <div className="w-16 h-16 rounded-2xl bg-accent/15 border border-accent/20 flex items-center justify-center text-accent shrink-0 shadow-lg relative">
+                  <Sparkles className="w-8 h-8" />
                 </div>
 
-                <div className="flex justify-end pt-2">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => setStep(3)}
-                    className="px-7 py-3 rounded-2xl bg-accent text-white font-bold text-sm shadow-md flex items-center gap-2"
-                  >
-                    Continuar
-                    <ArrowRight className="w-4 h-4" />
-                  </motion.button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* PASO 3: SELECCIÓN DE META DIARIA (XP) */}
-            {step === 3 && (
-              <motion.div
-                key="step-3"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="space-y-6"
-              >
-                <div className="text-center space-y-1">
-                  <h2 className="font-display font-black text-2xl text-text">
-                    ¿Cuál es tu meta diaria?
+                <div className="relative bg-surface border border-border p-4 rounded-2xl shadow-md flex-1">
+                  <div className="absolute left-[-8px] top-5 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
+                  <h2 className="font-display font-bold text-lg sm:text-xl text-text leading-snug">
+                    ¿Cuánto {activeUnit.title} sabes?
                   </h2>
-                  <p className="text-text-secondary text-xs">
-                    Define tu compromiso diario de XP para mantener tu racha activa.
+                  <p className="text-text-secondary text-xs mt-1">
+                    Adapta tu punto de partida para recibir ejercicios a tu medida.
                   </p>
                 </div>
+              </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {DAILY_GOALS.map((goal) => {
-                    const isSelected = goal.xp === selectedGoalXP;
-                    return (
-                      <button
-                        key={goal.id}
-                        onClick={() => setSelectedGoalXP(goal.xp)}
-                        className={cn(
-                          "relative flex flex-col p-4 rounded-2xl border-2 transition-all text-left",
-                          isSelected
-                            ? "border-accent bg-accent/5 shadow-md ring-1 ring-accent"
-                            : "border-border bg-surface-hover/50 hover:bg-surface-hover"
-                        )}
-                      >
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="font-bold text-sm text-text">
-                            {goal.title}
-                          </span>
-                          <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-surface-hover text-text-muted">
-                            {goal.badge}
-                          </span>
+              {/* Level Assessment Options (Image 2 format) */}
+              <div className="space-y-3">
+                {KNOWLEDGE_LEVELS.map((lvl) => {
+                  const isSelected = lvl.id === selectedLevelId;
+                  const Icon = lvl.icon;
+                  return (
+                    <button
+                      key={lvl.id}
+                      onClick={() => setSelectedLevelId(lvl.id)}
+                      className={cn(
+                        "w-full flex items-center justify-between p-4 rounded-2xl border-2 transition-all text-left",
+                        isSelected
+                          ? "border-accent bg-accent/10 shadow-md ring-1 ring-accent"
+                          : "border-border bg-surface hover:bg-surface-hover hover:border-border-strong"
+                      )}
+                    >
+                      <div className="flex items-center gap-4">
+                        {/* Signal Bars Indicator */}
+                        <div className="flex items-end gap-1 h-6 w-7 justify-center shrink-0">
+                          {Array.from({ length: 4 }).map((_, i) => (
+                            <span
+                              key={i}
+                              className={cn(
+                                "w-1.5 rounded-full transition-colors",
+                                i < lvl.bars
+                                  ? isSelected
+                                    ? "bg-accent"
+                                    : "bg-text-secondary"
+                                  : "bg-border"
+                              )}
+                              style={{ height: `${(i + 1) * 25}%` }}
+                            />
+                          ))}
                         </div>
-                        <div className="flex items-center gap-2 text-xs font-semibold text-accent mb-1">
-                          <Clock className="w-3.5 h-3.5" />
-                          {goal.time} · <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400 inline" /> {goal.xp} XP
-                        </div>
-                        <p className="text-xs text-text-muted mt-1 leading-snug">
-                          {goal.desc}
-                        </p>
 
-                        {isSelected && (
-                          <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-accent text-white flex items-center justify-center">
-                            <Check className="w-3 h-3 stroke-[3]" />
+                        <div>
+                          <div className="font-bold text-sm text-text leading-tight">
+                            {lvl.title}
                           </div>
-                        )}
-                      </button>
-                    );
-                  })}
+                          <div className="text-xs text-text-muted mt-1 leading-relaxed">
+                            {lvl.desc}
+                          </div>
+                        </div>
+                      </div>
+
+                      {isSelected && (
+                        <div className="w-6 h-6 rounded-full bg-accent text-white flex items-center justify-center shrink-0 ml-2">
+                          <Check className="w-3.5 h-3.5 stroke-[3]" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+
+          {/* PASO 3: SELECCIONAR META DIARIA DE XP */}
+          {step === 3 && (
+            <motion.div
+              key="step-3"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              className="w-full space-y-6"
+            >
+              {/* Mascot Header */}
+              <div className="flex items-start gap-4 mb-6">
+                <div className="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/20 flex items-center justify-center text-amber-500 shrink-0 shadow-lg relative">
+                  <Zap className="w-8 h-8" />
                 </div>
 
-                <div className="flex justify-end pt-2">
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => {
-                      setShowConfetti(true);
-                      setStep(4);
-                    }}
-                    className="px-7 py-3 rounded-2xl bg-accent text-white font-bold text-sm shadow-md flex items-center gap-2"
-                  >
-                    Guardar Meta
-                    <ArrowRight className="w-4 h-4" />
-                  </motion.button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* PASO 4: CELEBRACIÓN Y CONFIRMACIÓN */}
-            {step === 4 && (
-              <motion.div
-                key="step-4"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="flex flex-col items-center text-center space-y-6 py-2"
-              >
-                <div className="w-20 h-20 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center shadow-lg">
-                  <Check className="w-10 h-10 stroke-[3]" />
-                </div>
-
-                <div className="space-y-2">
-                  <h2 className="font-display font-black text-2xl sm:text-3xl text-text">
-                    ¡Tu Ruta de Aprendizaje está Lista! 🎉
+                <div className="relative bg-surface border border-border p-4 rounded-2xl shadow-md flex-1">
+                  <div className="absolute left-[-8px] top-5 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
+                  <h2 className="font-display font-bold text-lg sm:text-xl text-text leading-snug">
+                    ¿Cuál es tu meta diaria de práctica?
                   </h2>
-                  <p className="text-text-secondary text-sm max-w-md mx-auto">
-                    Has elegido dominar <span className="font-bold text-text">{selectedUnit.emoji} {selectedUnit.title}</span> con una meta de <span className="font-bold text-accent">{selectedGoal.xp} XP diarios</span>.
+                  <p className="text-text-secondary text-xs mt-1">
+                    Mantén tu racha diaria activa acumulando XP cada día.
                   </p>
                 </div>
+              </div>
 
-                <div className="p-4 rounded-2xl bg-surface-hover border border-border w-full max-w-md flex items-center justify-around">
-                  <div className="text-center">
-                    <span className="text-xs text-text-muted">Ruta Inicial</span>
-                    <div className="font-bold text-sm text-text">{selectedUnit.title}</div>
-                  </div>
-                  <div className="w-px h-8 bg-border" />
-                  <div className="text-center">
-                    <span className="text-xs text-text-muted">Meta Diaria</span>
-                    <div className="font-bold text-sm text-accent">{selectedGoal.xp} XP / día</div>
-                  </div>
+              {/* Goal Options Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {DAILY_GOALS.map((goal) => {
+                  const isSelected = goal.xp === selectedGoalXP;
+                  return (
+                    <button
+                      key={goal.id}
+                      onClick={() => setSelectedGoalXP(goal.xp)}
+                      className={cn(
+                        "flex flex-col p-4 rounded-2xl border-2 transition-all text-left relative",
+                        isSelected
+                          ? "border-accent bg-accent/10 shadow-md ring-1 ring-accent"
+                          : "border-border bg-surface hover:bg-surface-hover"
+                      )}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-bold text-sm text-text">{goal.title}</span>
+                        <span className="text-xs font-black text-amber-500">{goal.xp} XP / día</span>
+                      </div>
+                      <div className="text-xs font-medium text-accent flex items-center gap-1 mb-1">
+                        <Clock className="w-3.5 h-3.5" />
+                        {goal.time}
+                      </div>
+                      <p className="text-xs text-text-muted leading-relaxed">
+                        {goal.desc}
+                      </p>
+
+                      {isSelected && (
+                        <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-accent text-white flex items-center justify-center">
+                          <Check className="w-3 h-3 stroke-[3]" />
+                        </div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+
+          {/* PASO 4: CONFIRMACIÓN Y CELEBRACIÓN */}
+          {step === 4 && (
+            <motion.div
+              key="step-4"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="w-full flex flex-col items-center text-center space-y-6 py-4"
+            >
+              <div className="w-20 h-20 rounded-3xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center shadow-xl">
+                <Check className="w-10 h-10 stroke-[3]" />
+              </div>
+
+              <div className="space-y-2">
+                <h2 className="font-display font-black text-2xl sm:text-3xl text-text">
+                  ¡Tu Plataforma de Práctica está Lista! 🎉
+                </h2>
+                <p className="text-text-secondary text-sm max-w-md mx-auto leading-relaxed">
+                  Comienzas con la ruta de <span className="font-bold text-text">{activeUnit.emoji} {activeUnit.title}</span> y una meta de <span className="font-bold text-accent">{selectedGoalXP} XP diarios</span>.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-surface border border-border w-full max-w-md flex items-center justify-around shadow-sm">
+                <div className="text-center">
+                  <span className="text-[11px] text-text-muted uppercase font-bold">Tecnología</span>
+                  <div className="font-bold text-sm text-text">{activeUnit.title}</div>
                 </div>
+                <div className="w-px h-8 bg-border" />
+                <div className="text-center">
+                  <span className="text-[11px] text-text-muted uppercase font-bold">Meta Diaria</span>
+                  <div className="font-bold text-sm text-accent">{selectedGoalXP} XP / día</div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={handleFinish}
-                  className="w-full sm:w-auto px-10 py-4 rounded-2xl bg-emerald-500 text-white font-black text-base shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2"
-                >
-                  ¡Empezar a Practicar Ahora!
-                  <Sparkles className="w-5 h-5" />
-                </motion.button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </motion.div>
+      {/* Sticky Bottom Bar with "CONTINUAR" button (Matching Duolingo Image 2 footer) */}
+      <div className="w-full border-t border-border bg-surface/80 backdrop-blur-md px-6 py-4 flex items-center justify-end">
+        <motion.button
+          whileHover={!isNextDisabled ? { scale: 1.02 } : {}}
+          whileTap={!isNextDisabled ? { scale: 0.98 } : {}}
+          onClick={handleNext}
+          disabled={isNextDisabled}
+          className={cn(
+            "px-8 py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-lg flex items-center gap-2",
+            isNextDisabled
+              ? "bg-surface-hover text-text-muted cursor-not-allowed shadow-none border border-border"
+              : "bg-accent text-white shadow-accent/25 hover:bg-accent/90"
+          )}
+        >
+          {step === 4 ? "¡Empezar a Practicar!" : "Continuar"}
+          <ArrowRight className="w-4 h-4" />
+        </motion.button>
+      </div>
     </div>
   );
 }

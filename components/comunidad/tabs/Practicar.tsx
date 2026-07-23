@@ -3,16 +3,8 @@
 // =============================================================================
 // Pestaña "Practicar" · Módulo de lecciones interactivas tipo Duolingo.
 //
-// Flujo de Usuario Nivel Producción / Empresarial:
-//  1) Detección automática de primera visita -> Tutorial Onboarding Modal.
-//  2) Barra Superior Estilo Juego (Game Header):
-//     - Desplegable de Ruta Activa (Power BI, SQL, Python, Excel, IA).
-//     - Medidor de Meta Diaria de XP.
-//     - Contador de Racha (Streak) & Vidas.
-//     - Botón de Configuración de Metas (⚙️).
-//  3) Banner de Inicio de Sección con Botón "Continuar Siguiente Lección".
-//  4) Ruta Serpenteante (Path Board) sincronizada con precisión SVG/HTML.
-//  5) LessonPlayer modal para responder las preguntas.
+// Fiel a la Imagen 1 de Duolingo (Ruta central + Panel de Widgets lateral derecho)
+// y paleta de colores oficial de ProgramBI.
 // =============================================================================
 
 import { useState, useEffect } from "react";
@@ -38,6 +30,10 @@ import {
   Settings,
   ChevronDown,
   Play,
+  BookOpen,
+  ArrowLeft,
+  Crown,
+  Gift,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PRACTICE_UNITS } from "@/lib/practice/levels";
@@ -57,7 +53,7 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Cpu,
 };
 
-// Secuencia suave y simétrica de posiciones % para la ruta de niveles.
+// Secuencia suave de posiciones % para la ruta de niveles.
 const LANE_POSITIONS = [50, 32, 18, 32, 50, 68, 82, 68];
 
 export default function Practicar() {
@@ -111,165 +107,212 @@ export default function Practicar() {
   );
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto pb-16">
-      {/* ── BARRA SUPERIOR ESTILO DUOLINGO (Game Header Bar) ───────────────────── */}
-      <div className="sticky top-0 z-30 bg-surface/90 backdrop-blur-md border-b border-border py-3 px-4 sm:px-6 -mx-4 sm:-mx-6 mb-8 rounded-b-2xl shadow-sm flex items-center justify-between gap-3">
-        {/* Selector Desplegable de Ruta Activa */}
-        <div className="relative">
-          <button
-            onClick={() => setTrackDropdownOpen(!trackDropdownOpen)}
-            className="flex items-center gap-2.5 px-3.5 py-2 rounded-2xl bg-surface-hover border border-border hover:border-border-strong transition-all text-left group"
+    <div className="w-full max-w-[1300px] mx-auto pb-16">
+      {/* ── LAYOUT DE 2 COLUMNAS (Estilo Duolingo Imagen 1) ────────────────────── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        {/* COLUMNA IZQUIERDA / CENTRAL: Ruta de Aprendizaje (Path Board) */}
+        <div className="lg:col-span-7 xl:col-span-8 flex flex-col items-center">
+          
+          {/* Banner de Sección Superior (Matching Duolingo Banner verde Imagen 1) */}
+          <motion.div
+            key={activeUnit.id}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-[620px] rounded-2xl p-4 sm:p-5 text-white shadow-lg flex items-center justify-between gap-4 mb-6 relative overflow-hidden"
+            style={{ background: activeUnit.accentColor }}
           >
-            <span
-              className="w-7 h-7 rounded-xl flex items-center justify-center text-white shrink-0 text-xs shadow-sm"
-              style={{ background: activeUnit.accentColor }}
-            >
-              {activeUnit.emoji || "🎯"}
-            </span>
-            <div className="hidden xs:block">
-              <div className="text-[10px] uppercase font-bold text-text-muted leading-none">
-                Ruta Actual
-              </div>
-              <div className="font-bold text-xs sm:text-sm text-text leading-tight flex items-center gap-1">
-                {activeUnit.title}
-                <ChevronDown className="w-3.5 h-3.5 text-text-muted group-hover:text-text transition-colors" />
-              </div>
-            </div>
-          </button>
-
-          {/* Menu Desplegable de Rutas */}
-          <AnimatePresence>
-            {trackDropdownOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                className="absolute left-0 top-full mt-2 w-64 bg-surface border border-border rounded-2xl shadow-xl p-2 z-40 space-y-1"
+            <div className="flex items-center gap-3 min-w-0">
+              <button
+                onClick={() => setTrackDropdownOpen(!trackDropdownOpen)}
+                className="w-8 h-8 rounded-xl bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors shrink-0 text-white"
+                title="Cambiar Ruta"
               >
-                <div className="px-3 py-1.5 text-[10px] uppercase font-bold text-text-muted">
-                  Cambiar Ruta de Aprendizaje
-                </div>
-                {PRACTICE_UNITS.map((u) => {
-                  const Icon = ICON_MAP[u.icon] ?? Database;
-                  const isCurrent = u.id === activeUnit.id;
-                  const completedInU = u.levels.filter((l) =>
-                    isLevelCompleted(u.id, l.id)
-                  ).length;
-                  const pct = Math.round((completedInU / u.levels.length) * 100);
+                <ArrowLeft className="w-4 h-4" />
+              </button>
 
-                  return (
-                    <button
-                      key={u.id}
-                      onClick={() => handleSelectTrack(u.id)}
-                      className={cn(
-                        "w-full flex items-center justify-between p-2.5 rounded-xl text-left transition-colors text-xs font-semibold",
-                        isCurrent
-                          ? "bg-accent/10 text-accent font-bold"
-                          : "hover:bg-surface-hover text-text"
-                      )}
-                    >
-                      <div className="flex items-center gap-2.5 truncate">
-                        <span
-                          className="w-6 h-6 rounded-lg flex items-center justify-center text-white shrink-0 text-[10px]"
-                          style={{ background: u.accentColor }}
-                        >
-                          <Icon className="w-3.5 h-3.5" />
-                        </span>
-                        <span className="truncate">{u.title}</span>
-                      </div>
-                      <span className="text-[11px] text-text-muted font-normal">
-                        {pct}%
-                      </span>
-                    </button>
-                  );
-                })}
-                <div className="pt-1 border-t border-border mt-1">
-                  <button
-                    onClick={() => {
-                      setTrackDropdownOpen(false);
-                      setShowOnboarding(true);
-                    }}
-                    className="w-full flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-surface-hover text-xs font-bold text-accent transition-colors"
-                  >
-                    <Settings className="w-3.5 h-3.5" />
-                    Ajustar Meta & Tutorial
-                  </button>
+              <div className="min-w-0">
+                <div className="text-[10px] font-black uppercase tracking-wider opacity-85">
+                  ETAPA 1, SECCIÓN {PRACTICE_UNITS.findIndex((u) => u.id === activeUnit.id) + 1}
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                <h2 className="font-display font-black text-lg sm:text-xl truncate leading-tight">
+                  {activeUnit.emoji} {activeUnit.title}
+                </h2>
+              </div>
+            </div>
+
+            <button
+              onClick={() => activeLevel && setOpenLevel({ unit: activeUnit, level: activeLevel })}
+              className="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs flex items-center gap-1.5 backdrop-blur-sm shrink-0 transition-all border border-white/20"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>GUÍA</span>
+            </button>
+          </motion.div>
+
+          {/* Tablero Serpenteante con Mascota junto al Nodo Activo */}
+          <div className="w-full relative">
+            <PathBoard
+              unit={activeUnit}
+              isDone={isDone}
+              isLocked={isLocked}
+              onOpen={(lvl) => setOpenLevel({ unit: activeUnit, level: lvl })}
+              nextIdx={nextIdx}
+            />
+          </div>
         </div>
 
-        {/* Stats & Game Widgets */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Medidor de Meta Diaria */}
-          <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-surface-hover border border-border text-xs">
-            <Target className="w-4 h-4 text-accent" />
-            <div>
-              <div className="flex items-center justify-between text-[10px] font-bold text-text-muted">
-                <span>Meta Diaria</span>
-                <span className="text-accent">{progress.todayXPEarned}/{progress.dailyGoalXP || 20} XP</span>
+        {/* COLUMNA DERECHA: Widgets Laterales Estilo Duolingo (Imagen 1 Panel Derecho) */}
+        <div className="lg:col-span-5 xl:col-span-4 space-y-5 sticky top-6">
+          
+          {/* Top Bar Right Stats Widget (Flag / Flame / Gems / Hearts) */}
+          <div className="p-4 rounded-2xl bg-surface border border-border shadow-sm flex items-center justify-between gap-2">
+            {/* Dropdown Ruta */}
+            <div className="relative">
+              <button
+                onClick={() => setTrackDropdownOpen(!trackDropdownOpen)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-hover hover:border-border-strong border border-border text-xs font-bold text-text transition-all"
+              >
+                <span>{activeUnit.emoji}</span>
+                <span className="truncate max-w-[90px]">{activeUnit.title}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-text-muted" />
+              </button>
+
+              <AnimatePresence>
+                {trackDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                    className="absolute left-0 top-full mt-2 w-56 bg-surface border border-border rounded-2xl shadow-xl p-2 z-40 space-y-1"
+                  >
+                    <div className="px-2 py-1 text-[10px] font-bold text-text-muted uppercase">
+                      Cambiar Tecnología
+                    </div>
+                    {PRACTICE_UNITS.map((u) => (
+                      <button
+                        key={u.id}
+                        onClick={() => handleSelectTrack(u.id)}
+                        className={cn(
+                          "w-full flex items-center justify-between p-2 rounded-xl text-left text-xs font-semibold transition-colors",
+                          u.id === activeUnit.id ? "bg-accent/10 text-accent font-bold" : "hover:bg-surface-hover text-text"
+                        )}
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <span>{u.emoji}</span>
+                          <span className="truncate">{u.title}</span>
+                        </div>
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Racha, XP, Vidas */}
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 text-xs font-bold text-amber-500" title="Racha Diaria">
+                <Flame className="w-4 h-4 fill-amber-500" />
+                <span>{progress.streakDays || 1}</span>
               </div>
-              <div className="w-24 h-1.5 rounded-full bg-border overflow-hidden mt-0.5">
-                <div
-                  className="h-full bg-accent rounded-full transition-all duration-500"
-                  style={{ width: `${todayXpPct}%` }}
-                />
+
+              <div className="flex items-center gap-1 text-xs font-bold text-text" title="XP Acumulado">
+                <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                <span>{progress.xpTotal}</span>
+              </div>
+
+              <div className="flex items-center gap-1 text-xs font-bold text-rose-500" title="Vidas">
+                <Heart className="w-4 h-4 fill-rose-500" />
+                <span>{maxHearts}</span>
               </div>
             </div>
           </div>
 
-          {/* Racha */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 text-xs font-bold shadow-sm">
-            <Flame className="w-4 h-4 fill-amber-500" />
-            <span>{progress.streakDays || 1} {progress.streakDays === 1 ? "Día" : "Días"}</span>
+          {/* Tarjeta 1: Desafíos del Día (Matching Duolingo Card "Desafíos del día" Imagen 1) */}
+          <div className="p-5 rounded-2xl bg-surface border border-border shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-display font-bold text-sm text-text flex items-center gap-2">
+                <Target className="w-4 h-4 text-accent" />
+                Desafíos del Día
+              </h3>
+              <span className="text-[11px] font-bold text-accent uppercase">Ver Todos</span>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-surface-hover border border-border flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center shrink-0">
+                <Zap className="w-5 h-5" />
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="font-bold text-xs text-text flex items-center justify-between">
+                  <span>Gana {progress.dailyGoalXP || 20} EXP</span>
+                  <Gift className="w-3.5 h-3.5 text-amber-500" />
+                </div>
+                <div className="w-full h-2 rounded-full bg-border overflow-hidden mt-2">
+                  <div
+                    className="h-full bg-amber-500 rounded-full transition-all duration-500"
+                    style={{ width: `${todayXpPct}%` }}
+                  />
+                </div>
+                <div className="text-[10px] text-text-muted mt-1 text-right font-bold">
+                  {progress.todayXPEarned} / {progress.dailyGoalXP || 20} EXP
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* XP Total */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-surface-hover border border-border text-xs font-bold text-text">
-            <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-            <span>{progress.xpTotal} XP</span>
+          {/* Tarjeta 2: Nivel & Progreso de la Unidad */}
+          <div className="p-5 rounded-2xl bg-surface border border-border shadow-sm space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-display font-bold text-sm text-text flex items-center gap-2">
+                <Crown className="w-4 h-4 text-amber-500" />
+                Avance en {activeUnit.title}
+              </h3>
+              <span className="text-xs font-bold text-text-muted">
+                {completedCount}/{activeUnit.levels.length}
+              </span>
+            </div>
+
+            <p className="text-xs text-text-secondary leading-relaxed">
+              Completa {activeUnit.levels.length - completedCount} lecciones más para desbloquear el trofeo final de esta unidad.
+            </p>
+
+            {activeLevel && (
+              <button
+                onClick={() => setOpenLevel({ unit: activeUnit, level: activeLevel })}
+                className="w-full py-2.5 rounded-xl bg-accent text-white font-bold text-xs shadow-md hover:bg-accent/90 transition-all flex items-center justify-center gap-2"
+              >
+                <Play className="w-3.5 h-3.5 fill-white" />
+                Siguiente: {activeLevel.title}
+              </button>
+            )}
           </div>
 
-          {/* Vidas */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-xs font-bold">
-            <Heart className="w-4 h-4 fill-rose-500" />
-            <span>{maxHearts}</span>
+          {/* Tarjeta 3: Reconfigurar Meta Diaria */}
+          <div className="p-4 rounded-2xl bg-surface-hover border border-border flex items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 rounded-xl bg-accent/15 text-accent">
+                <Settings className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="font-bold text-xs text-text">Meta Diaria: {progress.dailyGoalXP || 20} XP</div>
+                <div className="text-[11px] text-text-muted">Ajusta tu ritmo cuando quieras</div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowOnboarding(true)}
+              className="px-3 py-1.5 rounded-xl bg-surface border border-border text-xs font-bold text-text hover:bg-surface-hover transition-colors"
+            >
+              Cambiar
+            </button>
           </div>
 
-          {/* Settings Button */}
-          <button
-            onClick={() => setShowOnboarding(true)}
-            className="p-2 rounded-2xl bg-surface-hover border border-border hover:border-border-strong text-text-secondary hover:text-text transition-colors"
-            title="Configurar Meta Diaria"
-          >
-            <Settings className="w-4 h-4" />
-          </button>
         </div>
+
       </div>
 
-      {/* ── CABECERA DE INICIO DE SECCIÓN DUOLINGO (Section Home Banner) ────────── */}
-      <div className="mb-8">
-        <UnitHeader
-          unit={activeUnit}
-          completed={completedCount}
-          activeLevel={activeLevel}
-          onStartActiveLevel={() => setOpenLevel({ unit: activeUnit, level: activeLevel })}
-        />
-      </div>
-
-      {/* ── TABLERO DE RUTA DE NIVELES (Path Board) ─────────────────────────── */}
-      <div className="relative">
-        <PathBoard
-          unit={activeUnit}
-          isDone={isDone}
-          isLocked={isLocked}
-          onOpen={(lvl) => setOpenLevel({ unit: activeUnit, level: lvl })}
-          nextIdx={nextIdx}
-        />
-      </div>
-
-      {/* ── ONBOARDING TUTORIAL MODAL ─────────────────────────────────────── */}
+      {/* ── ONBOARDING TUTORIAL MODAL (Imagen 2) ──────────────────────────── */}
       <OnboardingModal
         isOpen={showOnboarding}
         onComplete={handleOnboardingComplete}
@@ -300,114 +343,7 @@ export default function Practicar() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Banner de Inicio de Unidad con Botón "Continuar Siguiente Lección".
-// ─────────────────────────────────────────────────────────────────────────────
-function UnitHeader({
-  unit,
-  completed,
-  activeLevel,
-  onStartActiveLevel,
-}: {
-  unit: Unit;
-  completed: number;
-  activeLevel?: Level;
-  onStartActiveLevel: () => void;
-}) {
-  const total = unit.levels.length;
-  const pct = total ? completed / total : 0;
-  const R = 32;
-  const C = 2 * Math.PI * R;
-
-  const Icon = ICON_MAP[unit.icon] ?? Database;
-
-  return (
-    <motion.div
-      key={unit.id}
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
-      className="rounded-3xl p-6 sm:p-8 border border-border bg-surface shadow-md flex flex-col md:flex-row items-center justify-between gap-6"
-    >
-      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 text-center sm:text-left flex-1 min-w-0">
-        {/* Anillo Circular SVG */}
-        <div className="relative w-22 h-22 shrink-0 flex items-center justify-center">
-          <svg className="w-22 h-22 -rotate-90 absolute" viewBox="0 0 80 80">
-            <circle cx="40" cy="40" r={R} fill="none" stroke="var(--border)" strokeWidth="6" />
-            <motion.circle
-              cx="40"
-              cy="40"
-              r={R}
-              fill="none"
-              stroke={unit.accentColor}
-              strokeWidth="6"
-              strokeLinecap="round"
-              strokeDasharray={C}
-              initial={{ strokeDashoffset: C }}
-              animate={{ strokeDashoffset: C * (1 - pct) }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-            />
-          </svg>
-          <div
-            className="w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg z-10"
-            style={{ background: unit.accentColor }}
-          >
-            <Icon className="w-8 h-8" />
-          </div>
-        </div>
-
-        <div className="space-y-1.5 min-w-0">
-          <div className="flex items-center justify-center sm:justify-start gap-2">
-            <span className="text-2xl">{unit.emoji}</span>
-            <h2 className="font-display font-black text-2xl text-text">
-              {unit.title}
-            </h2>
-          </div>
-          <p className="text-text-secondary text-sm max-w-xl leading-relaxed">
-            {unit.description}
-          </p>
-          <div className="flex items-center justify-center sm:justify-start gap-3 pt-1">
-            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-surface-hover text-text">
-              {completed} de {total} lecciones completadas
-            </span>
-            <span
-              className="text-xs font-bold px-2.5 py-0.5 rounded-full text-white"
-              style={{ background: unit.accentColor }}
-            >
-              {Math.round(pct * 100)}%
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* Primary Action Button */}
-      {activeLevel && (
-        <motion.button
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.96 }}
-          onClick={onStartActiveLevel}
-          className="w-full md:w-auto px-8 py-4 rounded-2xl text-white font-black text-sm shadow-xl flex items-center justify-center gap-3 shrink-0"
-          style={{
-            background: unit.accentColor,
-            boxShadow: `0 12px 28px -6px ${unit.accentColor}50`,
-          }}
-        >
-          <Play className="w-5 h-5 fill-white" />
-          <div className="text-left">
-            <div className="text-[10px] uppercase tracking-wider font-bold opacity-80">
-              Siguiente Lección
-            </div>
-            <div className="text-sm font-black leading-tight">
-              {activeLevel.title}
-            </div>
-          </div>
-        </motion.button>
-      )}
-    </motion.div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Tablero de Ruta de Niveles.
+// Tablero de Ruta de Niveles con Mascota Avatar en el Nodo Activo.
 // ─────────────────────────────────────────────────────────────────────────────
 function PathBoard({
   unit,
@@ -464,7 +400,7 @@ function PathBoard({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Conector SVG con curvas Bezier precisas.
+// Conector SVG con curvas Bezier.
 // ─────────────────────────────────────────────────────────────────────────────
 function PathConnector({
   count,
@@ -486,7 +422,6 @@ function PathConnector({
     y: i * rowHeight + 70,
   }));
 
-  // Sendero completo
   let d = `M ${pts[0].x} ${pts[0].y}`;
   for (let i = 1; i < pts.length; i++) {
     const p0 = pts[i - 1];
@@ -495,7 +430,6 @@ function PathConnector({
     d += ` C ${p0.x} ${cy}, ${p1.x} ${cy}, ${p1.x} ${p1.y}`;
   }
 
-  // Sendero completado
   let dDone = `M ${pts[0].x} ${pts[0].y}`;
   const endIdx = Math.min(nextIdx, pts.length - 1);
   for (let i = 1; i <= endIdx; i++) {
@@ -548,7 +482,7 @@ function PathConnector({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Nodo individual en (xPct%, yPx).
+// Nodo individual con Mascota / Avatar junto al nodo activo (Duolingo Style Imagen 1).
 // ─────────────────────────────────────────────────────────────────────────────
 function PathNode({
   level,
@@ -584,6 +518,9 @@ function PathNode({
     }
   };
 
+  // Coordenada offset para posicionar la Mascota al lado derecho del nodo activo
+  const mascotOffset = xPct > 50 ? -80 : 80;
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
@@ -596,6 +533,7 @@ function PathNode({
         transform: "translate(-50%, -50%)",
       }}
     >
+      {/* Floating chip "EMPEZAR" para el nivel activo */}
       <AnimatePresence>
         {isActive && !done && (
           <motion.div
@@ -619,6 +557,31 @@ function PathNode({
         )}
       </AnimatePresence>
 
+      {/* Mascota / Avatar junto al nodo activo (Duolingo Style Imagen 1) */}
+      {isActive && !done && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1, y: [0, -4, 0] }}
+          transition={{
+            opacity: { duration: 0.3 },
+            y: { duration: 2, repeat: Infinity, ease: "easeInOut" },
+          }}
+          className="absolute z-30 pointer-events-none"
+          style={{
+            left: `${mascotOffset}px`,
+            top: "-10px",
+          }}
+        >
+          <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-accent to-indigo-500 p-0.5 shadow-xl">
+            <div className="w-full h-full rounded-2xl bg-surface flex items-center justify-center text-accent">
+              <Sparkles className="w-7 h-7 animate-pulse" />
+            </div>
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-8 h-1.5 bg-black/30 rounded-full blur-[2px]" />
+          </div>
+        </motion.div>
+      )}
+
+      {/* Botón del Nodo */}
       <motion.button
         animate={
           isActive && !done
@@ -674,6 +637,7 @@ function PathNode({
         </span>
       </motion.button>
 
+      {/* Título de Nivel & Badge XP */}
       <div className="mt-2.5 flex flex-col items-center text-center max-w-[140px]">
         <span
           className={cn(
