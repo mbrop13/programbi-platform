@@ -29,7 +29,13 @@ interface Particle {
   shape: "rect" | "circle";
 }
 
-export default function Confetti({ duration = 2.5 }: { duration?: number }) {
+export default function Confetti({
+  count = 70,
+  duration = 2.5,
+}: {
+  count?: number;
+  duration?: number;
+}) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
@@ -48,8 +54,8 @@ export default function Confetti({ duration = 2.5 }: { duration?: number }) {
     };
     window.addEventListener("resize", handleResize);
 
-    // Generar 70 partículas con física inicial realista
-    const particles: Particle[] = Array.from({ length: 70 }).map(() => {
+    // Generar partículas con física inicial realista
+    const particles: Particle[] = Array.from({ length: count }).map(() => {
       const angle = Math.random() * Math.PI * 2;
       const speed = Math.random() * 8 + 4;
       return {
