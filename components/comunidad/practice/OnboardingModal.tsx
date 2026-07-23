@@ -140,10 +140,10 @@ export default function OnboardingModal({
         </div>
       </div>
 
-      {/* ── CABECERA FIJA DE BIT EL MAPACHE (Más arriba, en espacio 100% fijo sin adaptarse) ── */}
-      <div className="w-full max-w-2xl mx-auto px-4 pt-2 pb-3 flex items-start gap-4 shrink-0 z-20">
-        {/* Contenedor Fijo de BIT: No se desplaza ni adapta al cambiar de paso */}
-        <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
+      {/* ── CABECERA FIJA DE BIT EL MAPACHE (Alineado más a la izquierda estilo Duolingo) ── */}
+      <div className="w-full max-w-3xl pl-4 sm:pl-8 pr-4 pt-2 pb-3 flex items-start gap-3 sm:gap-4 shrink-0 z-20">
+        {/* Contenedor Fijo de BIT: Ubicado a la izquierda */}
+        <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-full shrink-0 flex items-center justify-center overflow-hidden -ml-1 sm:-ml-2">
           <ChromaVideo
             src={BIT_VIDEO_URL}
             className="w-full h-full object-cover"
@@ -152,7 +152,7 @@ export default function OnboardingModal({
           />
         </div>
 
-        {/* Globo de Diálogo Dinámico que actualiza el texto según el paso */}
+        {/* Globo de Diálogo Dinámico hacia la derecha */}
         <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1 mt-1">
           <div className="absolute left-[-8px] top-6 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
           <div className="text-[10px] font-black uppercase text-accent tracking-wider mb-0.5">
