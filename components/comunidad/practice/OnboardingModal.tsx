@@ -113,24 +113,26 @@ export default function OnboardingModal({
     <div className="fixed inset-0 z-50 flex flex-col bg-background text-text overflow-hidden">
       {showConfetti && <Confetti />}
 
-      {/* Top Header Bar */}
-      <div className="w-full flex items-center justify-between px-6 py-4 border-b border-border bg-surface/50 backdrop-blur-md">
+      {/* Floating Header without heavy gray border bars */}
+      <div className="w-full flex items-center justify-between px-6 py-5 z-20 max-w-3xl mx-auto">
         <button
           onClick={onClose}
-          className="p-2 rounded-xl text-text-secondary hover:text-text hover:bg-surface-hover transition-colors"
+          className="p-2 rounded-2xl text-text-secondary hover:text-text hover:bg-surface-hover transition-colors"
           title="Cerrar tutorial"
         >
           <X className="w-5 h-5" />
         </button>
 
-        {/* Progress Bar */}
-        <div className="w-48 sm:w-64 h-2.5 rounded-full bg-surface-hover overflow-hidden">
+        {/* Progress Bar con bordes claros y visibilidad perfecta */}
+        <div className="w-48 sm:w-72 h-3.5 rounded-full bg-surface-hover border border-border shadow-inner overflow-hidden relative p-0.5">
           <motion.div
-            className="h-full bg-accent rounded-full"
+            className="h-full bg-accent rounded-full relative shadow-sm"
             initial={{ width: "25%" }}
             animate={{ width: `${(step / 4) * 100}%` }}
             transition={{ duration: 0.3 }}
-          />
+          >
+            <span className="absolute inset-y-0 right-0 w-2 bg-white/40 rounded-full blur-[1px]" />
+          </motion.div>
         </div>
 
         <div className="text-xs font-bold text-text-muted">
@@ -139,9 +141,9 @@ export default function OnboardingModal({
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto px-4 py-8 flex flex-col items-center justify-center max-w-2xl mx-auto w-full">
+      <div className="flex-1 overflow-y-auto px-4 py-4 flex flex-col items-center justify-center max-w-2xl mx-auto w-full">
         <AnimatePresence mode="wait">
-          {/* PASO 1: SELECCIONAR QUÉ APRENDER (BIT Saludando) */}
+          {/* PASO 1: SELECCIONAR QUÉ APRENDER (BIT 40% más grande, sin ticket verde) */}
           {step === 1 && (
             <motion.div
               key="step-1"
@@ -151,21 +153,18 @@ export default function OnboardingModal({
               className="w-full space-y-6"
             >
               {/* Mascot BIT & Speech Bubble Header */}
-              <div className="flex items-start gap-4 mb-8">
-                {/* BIT Raccoon Circular Chromakey Avatar */}
-                <div className="relative w-20 h-20 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
+              <div className="flex items-start gap-4 mb-6">
+                {/* BIT 40% más grande (w-28 h-28 = 112px), sin ticket verde */}
+                <div className="relative w-28 h-28 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
                   <ChromaVideo
                     src={BIT_VIDEO_URL}
                     className="w-full h-full object-cover"
-                    width={200}
-                    height={200}
+                    width={240}
+                    height={240}
                   />
-                  <span className="absolute bottom-0 right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-black flex items-center justify-center shadow-md z-10">
-                    ✓
-                  </span>
                 </div>
 
-                <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1">
+                <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1 mt-2">
                   <div className="absolute left-[-8px] top-6 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
                   <div className="text-[10px] font-black uppercase text-accent tracking-wider mb-0.5">
                     BIT · Guía de Práctica
@@ -225,7 +224,7 @@ export default function OnboardingModal({
             </motion.div>
           )}
 
-          {/* PASO 2: EVALUACIÓN DE NIVEL (BIT Pensando) */}
+          {/* PASO 2: EVALUACIÓN DE NIVEL */}
           {step === 2 && (
             <motion.div
               key="step-2"
@@ -235,16 +234,16 @@ export default function OnboardingModal({
               className="w-full space-y-6"
             >
               <div className="flex items-start gap-4 mb-6">
-                <div className="relative w-20 h-20 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
+                <div className="relative w-28 h-28 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
                   <ChromaVideo
                     src={BIT_VIDEO_URL}
                     className="w-full h-full object-cover"
-                    width={200}
-                    height={200}
+                    width={240}
+                    height={240}
                   />
                 </div>
 
-                <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1">
+                <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1 mt-2">
                   <div className="absolute left-[-8px] top-6 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
                   <div className="text-[10px] font-black uppercase text-accent tracking-wider mb-0.5">
                     BIT · Evaluación
@@ -322,16 +321,16 @@ export default function OnboardingModal({
               className="w-full space-y-6"
             >
               <div className="flex items-start gap-4 mb-6">
-                <div className="relative w-20 h-20 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
+                <div className="relative w-28 h-28 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
                   <ChromaVideo
                     src={BIT_VIDEO_URL}
                     className="w-full h-full object-cover"
-                    width={200}
-                    height={200}
+                    width={240}
+                    height={240}
                   />
                 </div>
 
-                <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1">
+                <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1 mt-2">
                   <div className="absolute left-[-8px] top-6 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
                   <div className="text-[10px] font-black uppercase text-accent tracking-wider mb-0.5">
                     BIT · Compromiso
@@ -379,7 +378,7 @@ export default function OnboardingModal({
             </motion.div>
           )}
 
-          {/* PASO 4: CONFIRMACIÓN Y CELEBRACIÓN CON BIT */}
+          {/* PASO 4: CONFIRMACIÓN */}
           {step === 4 && (
             <motion.div
               key="step-4"
@@ -388,12 +387,12 @@ export default function OnboardingModal({
               exit={{ opacity: 0, scale: 0.9 }}
               className="w-full flex flex-col items-center text-center space-y-6 py-4"
             >
-              <div className="relative w-28 h-28 rounded-full bg-gradient-to-tr from-accent to-emerald-500 p-1 shadow-2xl overflow-hidden flex items-center justify-center">
+              <div className="relative w-36 h-36 rounded-full overflow-hidden flex items-center justify-center">
                 <ChromaVideo
                   src={BIT_VIDEO_URL}
-                  className="w-full h-full rounded-full object-cover"
-                  width={240}
-                  height={240}
+                  className="w-full h-full object-cover"
+                  width={300}
+                  height={300}
                 />
               </div>
 
@@ -422,15 +421,15 @@ export default function OnboardingModal({
         </AnimatePresence>
       </div>
 
-      {/* Sticky Bottom Bar */}
-      <div className="w-full border-t border-border bg-surface/80 backdrop-blur-md px-6 py-4 flex items-center justify-end">
+      {/* Floating Bottom Action Area without heavy gray border bars */}
+      <div className="w-full px-6 py-5 flex items-center justify-end max-w-3xl mx-auto z-20">
         <motion.button
           whileHover={!isNextDisabled ? { scale: 1.02 } : {}}
           whileTap={!isNextDisabled ? { scale: 0.98 } : {}}
           onClick={handleNext}
           disabled={isNextDisabled}
           className={cn(
-            "px-8 py-3.5 rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-lg flex items-center gap-2",
+            "px-9 py-4 rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-xl flex items-center gap-2",
             isNextDisabled
               ? "bg-surface-hover text-text-muted cursor-not-allowed shadow-none border border-border"
               : "bg-accent text-white shadow-accent/25 hover:bg-accent/90"

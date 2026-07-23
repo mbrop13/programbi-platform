@@ -487,14 +487,14 @@ function PathNode({
             top: "-16px",
           }}
         >
-          <div className="relative w-16 h-16 rounded-full overflow-hidden flex items-center justify-center">
+          <div className="relative w-22 h-22 sm:w-24 sm:h-24 rounded-full overflow-hidden flex items-center justify-center">
             <ChromaVideo
               src={BIT_VIDEO_URL}
               className="w-full h-full object-cover"
-              width={160}
-              height={160}
+              width={220}
+              height={220}
             />
-            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-10 h-2 bg-black/40 rounded-full blur-[3px]" />
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-12 h-2.5 bg-black/40 rounded-full blur-[3px]" />
           </div>
         </motion.div>
       )}
