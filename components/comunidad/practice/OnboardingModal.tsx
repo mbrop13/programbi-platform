@@ -15,9 +15,7 @@ import {
   Brain,
   Code2,
   FileSpreadsheet,
-  Zap,
   Clock,
-  Award,
   ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -38,44 +36,40 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   FileSpreadsheet,
 };
 
-// Niveles de conocimiento estilo Duolingo (Imagen 2)
+// Niveles de conocimiento estilo Duolingo
 const KNOWLEDGE_LEVELS = [
   {
     id: "zero",
     title: "Estoy empezando a aprender desde cero",
     desc: "Nunca he usado esta herramienta antes.",
-    icon: SignalLow,
     bars: 1,
   },
   {
     id: "basic",
     title: "Conozco algunos conceptos básicos",
     desc: "Sé qué es y he realizado consultas o fórmulas simples.",
-    icon: SignalMedium,
     bars: 2,
   },
   {
     id: "intermediate",
     title: "Puedo desarrollar proyectos intermedios",
     desc: "Trabajo habitualmente con esto en mi trabajo o estudios.",
-    icon: SignalHigh,
     bars: 3,
   },
   {
     id: "advanced",
     title: "Nivel avanzado / Profesional",
     desc: "Quiero perfeccionar mis habilidades y resolver retos complejos.",
-    icon: Signal,
     bars: 4,
   },
 ];
 
-// Metas diarias de XP
+// Metas de tiempo diario (Sin referencias a XP)
 const DAILY_GOALS = [
-  { id: 10, title: "Relajado", time: "5 min / día", xp: 10, desc: "A tu propio ritmo sin presiones." },
-  { id: 20, title: "Normal", time: "10 min / día", xp: 20, desc: "Recomendado para aprendizaje constante." },
-  { id: 30, title: "Intenso", time: "15 min / día", xp: 30, desc: "Acelera tu dominio técnico." },
-  { id: 50, title: "Pro", time: "25 min / día", xp: 50, desc: "Inmersión total diaria en proyectos reales." },
+  { id: 10, title: "Relajado", time: "5 min / día", desc: "A tu propio ritmo sin presiones." },
+  { id: 20, title: "Normal", time: "10 min / día", desc: "Recomendado para un avance constante." },
+  { id: 30, title: "Intenso", time: "15 min / día", desc: "Acelera tu dominio técnico." },
+  { id: 50, title: "Pro", time: "25 min / día", desc: "Inmersión total diaria en proyectos reales." },
 ];
 
 export default function OnboardingModal({
@@ -86,30 +80,31 @@ export default function OnboardingModal({
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
   const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
   const [selectedLevelId, setSelectedLevelId] = useState<string | null>(null);
-  const [selectedGoalXP, setSelectedGoalXP] = useState<number | null>(20);
+  const [selectedGoalId, setSelectedGoalId] = useState<number | null>(20);
   const [showConfetti, setShowConfetti] = useState(false);
 
   if (!isOpen) return null;
 
   const activeUnit = PRACTICE_UNITS.find((u) => u.id === selectedUnitId) || PRACTICE_UNITS[0];
+  const activeGoal = DAILY_GOALS.find((g) => g.id === selectedGoalId) || DAILY_GOALS[1];
 
   const handleNext = () => {
     if (step === 1 && selectedUnitId) {
       setStep(2);
     } else if (step === 2 && selectedLevelId) {
       setStep(3);
-    } else if (step === 3 && selectedGoalXP) {
+    } else if (step === 3 && selectedGoalId) {
       setShowConfetti(true);
       setStep(4);
     } else if (step === 4) {
-      onComplete(selectedUnitId || PRACTICE_UNITS[0].id, selectedGoalXP || 20);
+      onComplete(selectedUnitId || PRACTICE_UNITS[0].id, selectedGoalId || 20);
     }
   };
 
   const isNextDisabled =
     (step === 1 && !selectedUnitId) ||
     (step === 2 && !selectedLevelId) ||
-    (step === 3 && !selectedGoalXP);
+    (step === 3 && !selectedGoalId);
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background text-text overflow-hidden">
@@ -218,7 +213,7 @@ export default function OnboardingModal({
             </motion.div>
           )}
 
-          {/* PASO 2: EVALUACIÓN DE NIVEL ESTILO DUOLINGO (Imagen 2) */}
+          {/* PASO 2: EVALUACIÓN DE NIVEL */}
           {step === 2 && (
             <motion.div
               key="step-2"
@@ -227,7 +222,6 @@ export default function OnboardingModal({
               exit={{ opacity: 0, y: -15 }}
               className="w-full space-y-6"
             >
-              {/* Mascot & Speech Bubble Header */}
               <div className="flex items-start gap-4 mb-6">
                 <div className="w-16 h-16 rounded-2xl bg-accent/15 border border-accent/20 flex items-center justify-center text-accent shrink-0 shadow-lg relative">
                   <Sparkles className="w-8 h-8" />
@@ -244,11 +238,9 @@ export default function OnboardingModal({
                 </div>
               </div>
 
-              {/* Level Assessment Options (Image 2 format) */}
               <div className="space-y-3">
                 {KNOWLEDGE_LEVELS.map((lvl) => {
                   const isSelected = lvl.id === selectedLevelId;
-                  const Icon = lvl.icon;
                   return (
                     <button
                       key={lvl.id}
@@ -261,7 +253,6 @@ export default function OnboardingModal({
                       )}
                     >
                       <div className="flex items-center gap-4">
-                        {/* Signal Bars Indicator */}
                         <div className="flex items-end gap-1 h-6 w-7 justify-center shrink-0">
                           {Array.from({ length: 4 }).map((_, i) => (
                             <span
@@ -301,7 +292,7 @@ export default function OnboardingModal({
             </motion.div>
           )}
 
-          {/* PASO 3: SELECCIONAR META DIARIA DE XP */}
+          {/* PASO 3: SELECCIONAR TIEMPO DIARIO DE PRÁCTICA (SIN XP) */}
           {step === 3 && (
             <motion.div
               key="step-3"
@@ -310,31 +301,29 @@ export default function OnboardingModal({
               exit={{ opacity: 0, y: -15 }}
               className="w-full space-y-6"
             >
-              {/* Mascot Header */}
               <div className="flex items-start gap-4 mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/20 flex items-center justify-center text-amber-500 shrink-0 shadow-lg relative">
-                  <Zap className="w-8 h-8" />
+                <div className="w-16 h-16 rounded-2xl bg-accent/15 border border-accent/20 flex items-center justify-center text-accent shrink-0 shadow-lg relative">
+                  <Clock className="w-8 h-8" />
                 </div>
 
                 <div className="relative bg-surface border border-border p-4 rounded-2xl shadow-md flex-1">
                   <div className="absolute left-[-8px] top-5 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
                   <h2 className="font-display font-bold text-lg sm:text-xl text-text leading-snug">
-                    ¿Cuál es tu meta diaria de práctica?
+                    ¿Cuánto tiempo quieres practicar al día?
                   </h2>
                   <p className="text-text-secondary text-xs mt-1">
-                    Mantén tu racha diaria activa acumulando XP cada día.
+                    Elige una meta de práctica que encaje con tu rutina diaria.
                   </p>
                 </div>
               </div>
 
-              {/* Goal Options Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {DAILY_GOALS.map((goal) => {
-                  const isSelected = goal.xp === selectedGoalXP;
+                  const isSelected = goal.id === selectedGoalId;
                   return (
                     <button
                       key={goal.id}
-                      onClick={() => setSelectedGoalXP(goal.xp)}
+                      onClick={() => setSelectedGoalId(goal.id)}
                       className={cn(
                         "flex flex-col p-4 rounded-2xl border-2 transition-all text-left relative",
                         isSelected
@@ -344,13 +333,9 @@ export default function OnboardingModal({
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-bold text-sm text-text">{goal.title}</span>
-                        <span className="text-xs font-black text-amber-500">{goal.xp} XP / día</span>
+                        <span className="text-xs font-bold text-accent">{goal.time}</span>
                       </div>
-                      <div className="text-xs font-medium text-accent flex items-center gap-1 mb-1">
-                        <Clock className="w-3.5 h-3.5" />
-                        {goal.time}
-                      </div>
-                      <p className="text-xs text-text-muted leading-relaxed">
+                      <p className="text-xs text-text-muted leading-relaxed mt-1">
                         {goal.desc}
                       </p>
 
@@ -366,7 +351,7 @@ export default function OnboardingModal({
             </motion.div>
           )}
 
-          {/* PASO 4: CONFIRMACIÓN Y CELEBRACIÓN */}
+          {/* PASO 4: CONFIRMACIÓN */}
           {step === 4 && (
             <motion.div
               key="step-4"
@@ -384,7 +369,7 @@ export default function OnboardingModal({
                   ¡Tu Plataforma de Práctica está Lista! 🎉
                 </h2>
                 <p className="text-text-secondary text-sm max-w-md mx-auto leading-relaxed">
-                  Comienzas con la ruta de <span className="font-bold text-text">{activeUnit.emoji} {activeUnit.title}</span> y una meta de <span className="font-bold text-accent">{selectedGoalXP} XP diarios</span>.
+                  Has elegido dominar <span className="font-bold text-text">{activeUnit.emoji} {activeUnit.title}</span> dedicando <span className="font-bold text-accent">{activeGoal.time}</span>.
                 </p>
               </div>
 
@@ -396,7 +381,7 @@ export default function OnboardingModal({
                 <div className="w-px h-8 bg-border" />
                 <div className="text-center">
                   <span className="text-[11px] text-text-muted uppercase font-bold">Meta Diaria</span>
-                  <div className="font-bold text-sm text-accent">{selectedGoalXP} XP / día</div>
+                  <div className="font-bold text-sm text-accent">{activeGoal.time}</div>
                 </div>
               </div>
             </motion.div>
@@ -404,7 +389,7 @@ export default function OnboardingModal({
         </AnimatePresence>
       </div>
 
-      {/* Sticky Bottom Bar with "CONTINUAR" button (Matching Duolingo Image 2 footer) */}
+      {/* Sticky Bottom Bar */}
       <div className="w-full border-t border-border bg-surface/80 backdrop-blur-md px-6 py-4 flex items-center justify-end">
         <motion.button
           whileHover={!isNextDisabled ? { scale: 1.02 } : {}}

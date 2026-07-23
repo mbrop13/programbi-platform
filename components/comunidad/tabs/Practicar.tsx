@@ -1,10 +1,9 @@
 "use client";
 
 // =============================================================================
-// Pestaña "Practicar" · Módulo de lecciones interactivas tipo Duolingo.
+// Pestaña "Practicar" · Módulo de lecciones interactivas.
 //
-// Fiel a la Imagen 1 de Duolingo (Ruta central + Panel de Widgets lateral derecho)
-// y paleta de colores oficial de ProgramBI.
+// Adaptado a la paleta de colores de ProgramBI y sin referencias a XP.
 // =============================================================================
 
 import { useState, useEffect } from "react";
@@ -34,7 +33,7 @@ import {
   ArrowLeft,
   Crown,
   Gift,
-  Zap,
+  Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PRACTICE_UNITS } from "@/lib/practice/levels";
@@ -52,6 +51,14 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Table,
   Workflow,
   Cpu,
+};
+
+// Mapeo de tiempo objetivo por ID de meta
+const TIME_GOAL_MAP: Record<number, string> = {
+  10: "5 min",
+  20: "10 min",
+  30: "15 min",
+  50: "25 min",
 };
 
 // Secuencia suave de posiciones % para la ruta de niveles.
@@ -102,20 +109,17 @@ export default function Practicar() {
     setTrackDropdownOpen(false);
   };
 
-  const todayXpPct = Math.min(
-    100,
-    Math.round((progress.todayXPEarned / (progress.dailyGoalXP || 20)) * 100)
-  );
+  const dailyTimeGoal = TIME_GOAL_MAP[progress.dailyGoalXP] || "10 min";
 
   return (
     <div className="w-full max-w-[1300px] mx-auto pb-16">
-      {/* ── LAYOUT DE 2 COLUMNAS (Estilo Duolingo Imagen 1) ────────────────────── */}
+      {/* ── LAYOUT DE 2 COLUMNAS ─────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* COLUMNA IZQUIERDA / CENTRAL: Ruta de Aprendizaje (Path Board) */}
         <div className="lg:col-span-7 xl:col-span-8 flex flex-col items-center">
           
-          {/* Banner de Sección Superior (Matching Duolingo Banner verde Imagen 1) */}
+          {/* Banner de Sección Superior */}
           <motion.div
             key={activeUnit.id}
             initial={{ opacity: 0, y: -10 }}
@@ -163,10 +167,10 @@ export default function Practicar() {
           </div>
         </div>
 
-        {/* COLUMNA DERECHA: Widgets Laterales Estilo Duolingo (Imagen 1 Panel Derecho) */}
+        {/* COLUMNA DERECHA: Widgets Laterales */}
         <div className="lg:col-span-5 xl:col-span-4 space-y-5 sticky top-6">
           
-          {/* Top Bar Right Stats Widget (Flag / Flame / Gems / Hearts) */}
+          {/* Top Bar Right Stats Widget (Flag / Flame / Hearts) */}
           <div className="p-4 rounded-2xl bg-surface border border-border shadow-sm flex items-center justify-between gap-2">
             {/* Dropdown Ruta */}
             <div className="relative">
@@ -210,59 +214,48 @@ export default function Practicar() {
               </AnimatePresence>
             </div>
 
-            {/* Racha, XP, Vidas */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1 text-xs font-bold text-amber-500" title="Racha Diaria">
+            {/* Racha & Vidas (Sin XP) */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-500" title="Racha Diaria">
                 <Flame className="w-4 h-4 fill-amber-500" />
-                <span>{progress.streakDays || 1}</span>
+                <span>{progress.streakDays || 1} {progress.streakDays === 1 ? "Día" : "Días"}</span>
               </div>
 
-              <div className="flex items-center gap-1 text-xs font-bold text-text" title="XP Acumulado">
-                <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                <span>{progress.xpTotal}</span>
-              </div>
-
-              <div className="flex items-center gap-1 text-xs font-bold text-rose-500" title="Vidas">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-rose-500" title="Vidas">
                 <Heart className="w-4 h-4 fill-rose-500" />
                 <span>{maxHearts}</span>
               </div>
             </div>
           </div>
 
-          {/* Tarjeta 1: Desafíos del Día (Matching Duolingo Card "Desafíos del día" Imagen 1) */}
+          {/* Tarjeta 1: Meta Diaria de Práctica (Sin XP) */}
           <div className="p-5 rounded-2xl bg-surface border border-border shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <h3 className="font-display font-bold text-sm text-text flex items-center gap-2">
-                <Target className="w-4 h-4 text-accent" />
-                Desafíos del Día
+                <Clock className="w-4 h-4 text-accent" />
+                Meta Diaria de Práctica
               </h3>
-              <span className="text-[11px] font-bold text-accent uppercase">Ver Todos</span>
+              <span className="text-xs font-bold text-accent">{dailyTimeGoal} / día</span>
             </div>
 
             <div className="p-3.5 rounded-xl bg-surface-hover border border-border flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center shrink-0">
-                <Zap className="w-5 h-5" />
+              <div className="w-10 h-10 rounded-xl bg-accent/15 text-accent flex items-center justify-center shrink-0">
+                <Target className="w-5 h-5" />
               </div>
 
               <div className="flex-1 min-w-0">
                 <div className="font-bold text-xs text-text flex items-center justify-between">
-                  <span>Gana {progress.dailyGoalXP || 20} EXP</span>
+                  <span>Práctica de Hoy</span>
                   <Gift className="w-3.5 h-3.5 text-amber-500" />
                 </div>
-                <div className="w-full h-2 rounded-full bg-border overflow-hidden mt-2">
-                  <div
-                    className="h-full bg-amber-500 rounded-full transition-all duration-500"
-                    style={{ width: `${todayXpPct}%` }}
-                  />
-                </div>
-                <div className="text-[10px] text-text-muted mt-1 text-right font-bold">
-                  {progress.todayXPEarned} / {progress.dailyGoalXP || 20} EXP
-                </div>
+                <p className="text-[11px] text-text-muted mt-1">
+                  Completa tu lección para mantener tu racha activa.
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Tarjeta 2: Nivel & Progreso de la Unidad */}
+          {/* Tarjeta 2: Avance en la Unidad */}
           <div className="p-5 rounded-2xl bg-surface border border-border shadow-sm space-y-3">
             <div className="flex items-center justify-between">
               <h3 className="font-display font-bold text-sm text-text flex items-center gap-2">
@@ -289,15 +282,15 @@ export default function Practicar() {
             )}
           </div>
 
-          {/* Tarjeta 3: Reconfigurar Meta Diaria */}
+          {/* Tarjeta 3: Configuración de Meta */}
           <div className="p-4 rounded-2xl bg-surface-hover border border-border flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5">
               <div className="p-2 rounded-xl bg-accent/15 text-accent">
                 <Settings className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-bold text-xs text-text">Meta Diaria: {progress.dailyGoalXP || 20} XP</div>
-                <div className="text-[11px] text-text-muted">Ajusta tu ritmo cuando quieras</div>
+                <div className="font-bold text-xs text-text">Meta: {dailyTimeGoal} / día</div>
+                <div className="text-[11px] text-text-muted">Ajusta tu rutina diaria</div>
               </div>
             </div>
 
@@ -313,7 +306,7 @@ export default function Practicar() {
 
       </div>
 
-      {/* ── ONBOARDING TUTORIAL MODAL (Imagen 2) ──────────────────────────── */}
+      {/* ── ONBOARDING TUTORIAL MODAL ─────────────────────────────────────── */}
       <OnboardingModal
         isOpen={showOnboarding}
         onComplete={handleOnboardingComplete}
@@ -344,7 +337,7 @@ export default function Practicar() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Tablero de Ruta de Niveles con Mascota Avatar en el Nodo Activo.
+// Tablero de Ruta de Niveles con Mascota Avatar.
 // ─────────────────────────────────────────────────────────────────────────────
 function PathBoard({
   unit,
@@ -377,7 +370,7 @@ function PathBoard({
         totalHeight={totalHeight}
       />
 
-      {/* Nodos de Nivel en Coordenadas Exactas */}
+      {/* Nodos de Nivel */}
       {levels.map((lvl, i) => {
         const xPct = LANE_POSITIONS[i % LANE_POSITIONS.length];
         const yPx = i * ROW_HEIGHT + 70;
@@ -483,7 +476,7 @@ function PathConnector({
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Nodo individual con Mascota / Avatar junto al nodo activo (Duolingo Style Imagen 1).
+// Nodo individual (Sin badge de XP).
 // ─────────────────────────────────────────────────────────────────────────────
 function PathNode({
   level,
@@ -519,7 +512,6 @@ function PathNode({
     }
   };
 
-  // Coordenada offset para posicionar la Mascota al lado derecho del nodo activo
   const mascotOffset = xPct > 50 ? -80 : 80;
 
   return (
@@ -534,7 +526,6 @@ function PathNode({
         transform: "translate(-50%, -50%)",
       }}
     >
-      {/* Floating chip "EMPEZAR" para el nivel activo */}
       <AnimatePresence>
         {isActive && !done && (
           <motion.div
@@ -558,7 +549,6 @@ function PathNode({
         )}
       </AnimatePresence>
 
-      {/* Mascota / Avatar junto al nodo activo (Duolingo Style Imagen 1) */}
       {isActive && !done && (
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
@@ -582,7 +572,6 @@ function PathNode({
         </motion.div>
       )}
 
-      {/* Botón del Nodo */}
       <motion.button
         animate={
           isActive && !done
@@ -638,7 +627,6 @@ function PathNode({
         </span>
       </motion.button>
 
-      {/* Título de Nivel & Badge XP */}
       <div className="mt-2.5 flex flex-col items-center text-center max-w-[140px]">
         <span
           className={cn(
@@ -648,11 +636,6 @@ function PathNode({
         >
           {level.title}
         </span>
-        {level.xp > 0 && !locked && (
-          <span className="mt-0.5 inline-flex items-center gap-0.5 text-[10px] font-bold text-amber-500 bg-amber-500/10 px-1.5 py-0.5 rounded-full">
-            +{level.xp} XP
-          </span>
-        )}
       </div>
     </motion.div>
   );
