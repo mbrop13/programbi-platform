@@ -487,10 +487,10 @@ function PathNode({
             top: "-16px",
           }}
         >
-          <div className="relative w-16 h-16 rounded-full bg-gradient-to-tr from-accent/30 to-indigo-500/30 p-0.5 shadow-2xl overflow-hidden flex items-center justify-center border border-accent/40">
+          <div className="relative w-16 h-16 rounded-full overflow-hidden flex items-center justify-center">
             <ChromaVideo
               src={BIT_VIDEO_URL}
-              className="w-full h-full rounded-full object-cover"
+              className="w-full h-full object-cover"
               width={160}
               height={160}
             />

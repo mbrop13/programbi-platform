@@ -153,14 +153,14 @@ export default function OnboardingModal({
               {/* Mascot BIT & Speech Bubble Header */}
               <div className="flex items-start gap-4 mb-8">
                 {/* BIT Raccoon Circular Chromakey Avatar */}
-                <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-accent/20 to-indigo-500/20 border-2 border-accent/30 p-1 shrink-0 shadow-xl overflow-hidden flex items-center justify-center">
+                <div className="relative w-20 h-20 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
                   <ChromaVideo
                     src={BIT_VIDEO_URL}
-                    className="w-full h-full rounded-full object-cover"
+                    className="w-full h-full object-cover"
                     width={200}
                     height={200}
                   />
-                  <span className="absolute bottom-0 right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-black flex items-center justify-center shadow-md">
+                  <span className="absolute bottom-0 right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-black flex items-center justify-center shadow-md z-10">
                     ✓
                   </span>
                 </div>
@@ -235,10 +235,10 @@ export default function OnboardingModal({
               className="w-full space-y-6"
             >
               <div className="flex items-start gap-4 mb-6">
-                <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-accent/20 to-indigo-500/20 border-2 border-accent/30 p-1 shrink-0 shadow-xl overflow-hidden flex items-center justify-center">
+                <div className="relative w-20 h-20 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
                   <ChromaVideo
                     src={BIT_VIDEO_URL}
-                    className="w-full h-full rounded-full object-cover"
+                    className="w-full h-full object-cover"
                     width={200}
                     height={200}
                   />
@@ -322,10 +322,10 @@ export default function OnboardingModal({
               className="w-full space-y-6"
             >
               <div className="flex items-start gap-4 mb-6">
-                <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-accent/20 to-indigo-500/20 border-2 border-accent/30 p-1 shrink-0 shadow-xl overflow-hidden flex items-center justify-center">
+                <div className="relative w-20 h-20 rounded-full shrink-0 flex items-center justify-center overflow-hidden">
                   <ChromaVideo
                     src={BIT_VIDEO_URL}
-                    className="w-full h-full rounded-full object-cover"
+                    className="w-full h-full object-cover"
                     width={200}
                     height={200}
                   />
