@@ -43,6 +43,9 @@ import type { Level, LevelKind, Unit } from "@/lib/practice/types";
 import { usePracticeProgress } from "@/lib/practice/progress";
 import LessonPlayer from "../practice/LessonPlayer";
 import OnboardingModal from "../practice/OnboardingModal";
+import ChromaVideo from "../practice/ChromaVideo";
+
+const BIT_VIDEO_URL = "https://mail.programbi.com/uploads/Mapache_saludando_a_c%C3%A1mara_con_202607222213.mp4";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Database,
@@ -469,7 +472,7 @@ function PathNode({
         )}
       </AnimatePresence>
 
-      {/* Mascota / Avatar junto al nodo activo */}
+      {/* BIT el Mapache junto al nodo activo (Chromakey Circular Transparente) */}
       {isActive && !done && (
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
@@ -481,14 +484,17 @@ function PathNode({
           className="absolute z-30 pointer-events-none"
           style={{
             left: `${mascotOffset}px`,
-            top: "-12px",
+            top: "-16px",
           }}
         >
-          <div className="relative w-14 h-14 rounded-2xl bg-gradient-to-tr from-accent to-indigo-500 p-0.5 shadow-2xl">
-            <div className="w-full h-full rounded-2xl bg-surface flex items-center justify-center text-accent">
-              <Sparkles className="w-7 h-7 animate-pulse" />
-            </div>
-            <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-10 h-2 bg-black/40 rounded-full blur-[3px]" />
+          <div className="relative w-16 h-16 rounded-full bg-gradient-to-tr from-accent/30 to-indigo-500/30 p-0.5 shadow-2xl overflow-hidden flex items-center justify-center border border-accent/40">
+            <ChromaVideo
+              src={BIT_VIDEO_URL}
+              className="w-full h-full rounded-full object-cover"
+              width={160}
+              height={160}
+            />
+            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-10 h-2 bg-black/40 rounded-full blur-[3px]" />
           </div>
         </motion.div>
       )}

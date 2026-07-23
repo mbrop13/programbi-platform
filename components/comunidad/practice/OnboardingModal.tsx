@@ -21,12 +21,15 @@ import {
 import { cn } from "@/lib/utils";
 import { PRACTICE_UNITS } from "@/lib/practice/levels";
 import Confetti from "./Confetti";
+import ChromaVideo from "./ChromaVideo";
 
 interface OnboardingModalProps {
   isOpen: boolean;
   onComplete: (unitId: string, dailyGoalXP: number) => void;
   onClose?: () => void;
 }
+
+const BIT_VIDEO_URL = "https://mail.programbi.com/uploads/Mapache_saludando_a_c%C3%A1mara_con_202607222213.mp4";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Database,
@@ -64,7 +67,7 @@ const KNOWLEDGE_LEVELS = [
   },
 ];
 
-// Metas de tiempo diario (Sin referencias a XP)
+// Metas de tiempo diario
 const DAILY_GOALS = [
   { id: 10, title: "Relajado", time: "5 min / día", desc: "A tu propio ritmo sin presiones." },
   { id: 20, title: "Normal", time: "10 min / día", desc: "Recomendado para un avance constante." },
@@ -110,7 +113,7 @@ export default function OnboardingModal({
     <div className="fixed inset-0 z-50 flex flex-col bg-background text-text overflow-hidden">
       {showConfetti && <Confetti />}
 
-      {/* Top Header Bar with Close & Progress Line */}
+      {/* Top Header Bar */}
       <div className="w-full flex items-center justify-between px-6 py-4 border-b border-border bg-surface/50 backdrop-blur-md">
         <button
           onClick={onClose}
@@ -138,7 +141,7 @@ export default function OnboardingModal({
       {/* Main Content Area */}
       <div className="flex-1 overflow-y-auto px-4 py-8 flex flex-col items-center justify-center max-w-2xl mx-auto w-full">
         <AnimatePresence mode="wait">
-          {/* PASO 1: SELECCIONAR QUÉ APRENDER */}
+          {/* PASO 1: SELECCIONAR QUÉ APRENDER (BIT Saludando) */}
           {step === 1 && (
             <motion.div
               key="step-1"
@@ -147,19 +150,28 @@ export default function OnboardingModal({
               exit={{ opacity: 0, y: -15 }}
               className="w-full space-y-6"
             >
-              {/* Mascot & Speech Bubble Header */}
+              {/* Mascot BIT & Speech Bubble Header */}
               <div className="flex items-start gap-4 mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-accent/15 border border-accent/20 flex items-center justify-center text-accent shrink-0 shadow-lg relative">
-                  <Sparkles className="w-8 h-8" />
-                  <span className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-black flex items-center justify-center">
+                {/* BIT Raccoon Circular Chromakey Avatar */}
+                <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-accent/20 to-indigo-500/20 border-2 border-accent/30 p-1 shrink-0 shadow-xl overflow-hidden flex items-center justify-center">
+                  <ChromaVideo
+                    src={BIT_VIDEO_URL}
+                    className="w-full h-full rounded-full object-cover"
+                    width={200}
+                    height={200}
+                  />
+                  <span className="absolute bottom-0 right-1 w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] font-black flex items-center justify-center shadow-md">
                     ✓
                   </span>
                 </div>
 
-                <div className="relative bg-surface border border-border p-4 rounded-2xl shadow-md flex-1">
-                  <div className="absolute left-[-8px] top-5 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
+                <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1">
+                  <div className="absolute left-[-8px] top-6 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
+                  <div className="text-[10px] font-black uppercase text-accent tracking-wider mb-0.5">
+                    BIT · Guía de Práctica
+                  </div>
                   <h2 className="font-display font-bold text-lg sm:text-xl text-text leading-snug">
-                    ¡Hola! 👋 ¿Qué tecnología quieres dominar hoy?
+                    ¡Hola! Soy Bit 🦝 ¿Qué tecnología quieres dominar hoy?
                   </h2>
                   <p className="text-text-secondary text-xs mt-1">
                     Selecciona tu ruta principal. Podrás cambiar entre ellas cuando quieras.
@@ -213,7 +225,7 @@ export default function OnboardingModal({
             </motion.div>
           )}
 
-          {/* PASO 2: EVALUACIÓN DE NIVEL */}
+          {/* PASO 2: EVALUACIÓN DE NIVEL (BIT Pensando) */}
           {step === 2 && (
             <motion.div
               key="step-2"
@@ -223,12 +235,20 @@ export default function OnboardingModal({
               className="w-full space-y-6"
             >
               <div className="flex items-start gap-4 mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-accent/15 border border-accent/20 flex items-center justify-center text-accent shrink-0 shadow-lg relative">
-                  <Sparkles className="w-8 h-8" />
+                <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-accent/20 to-indigo-500/20 border-2 border-accent/30 p-1 shrink-0 shadow-xl overflow-hidden flex items-center justify-center">
+                  <ChromaVideo
+                    src={BIT_VIDEO_URL}
+                    className="w-full h-full rounded-full object-cover"
+                    width={200}
+                    height={200}
+                  />
                 </div>
 
-                <div className="relative bg-surface border border-border p-4 rounded-2xl shadow-md flex-1">
-                  <div className="absolute left-[-8px] top-5 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
+                <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1">
+                  <div className="absolute left-[-8px] top-6 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
+                  <div className="text-[10px] font-black uppercase text-accent tracking-wider mb-0.5">
+                    BIT · Evaluación
+                  </div>
                   <h2 className="font-display font-bold text-lg sm:text-xl text-text leading-snug">
                     ¿Cuánto {activeUnit.title} sabes?
                   </h2>
@@ -292,7 +312,7 @@ export default function OnboardingModal({
             </motion.div>
           )}
 
-          {/* PASO 3: SELECCIONAR TIEMPO DIARIO DE PRÁCTICA (SIN XP) */}
+          {/* PASO 3: SELECCIONAR TIEMPO DIARIO */}
           {step === 3 && (
             <motion.div
               key="step-3"
@@ -302,12 +322,20 @@ export default function OnboardingModal({
               className="w-full space-y-6"
             >
               <div className="flex items-start gap-4 mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-accent/15 border border-accent/20 flex items-center justify-center text-accent shrink-0 shadow-lg relative">
-                  <Clock className="w-8 h-8" />
+                <div className="relative w-20 h-20 rounded-full bg-gradient-to-tr from-accent/20 to-indigo-500/20 border-2 border-accent/30 p-1 shrink-0 shadow-xl overflow-hidden flex items-center justify-center">
+                  <ChromaVideo
+                    src={BIT_VIDEO_URL}
+                    className="w-full h-full rounded-full object-cover"
+                    width={200}
+                    height={200}
+                  />
                 </div>
 
-                <div className="relative bg-surface border border-border p-4 rounded-2xl shadow-md flex-1">
-                  <div className="absolute left-[-8px] top-5 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
+                <div className="relative bg-surface border border-border p-4 sm:p-5 rounded-2xl shadow-md flex-1">
+                  <div className="absolute left-[-8px] top-6 w-3 h-3 bg-surface border-l border-b border-border rotate-45" />
+                  <div className="text-[10px] font-black uppercase text-accent tracking-wider mb-0.5">
+                    BIT · Compromiso
+                  </div>
                   <h2 className="font-display font-bold text-lg sm:text-xl text-text leading-snug">
                     ¿Cuánto tiempo quieres practicar al día?
                   </h2>
@@ -351,7 +379,7 @@ export default function OnboardingModal({
             </motion.div>
           )}
 
-          {/* PASO 4: CONFIRMACIÓN */}
+          {/* PASO 4: CONFIRMACIÓN Y CELEBRACIÓN CON BIT */}
           {step === 4 && (
             <motion.div
               key="step-4"
@@ -360,8 +388,13 @@ export default function OnboardingModal({
               exit={{ opacity: 0, scale: 0.9 }}
               className="w-full flex flex-col items-center text-center space-y-6 py-4"
             >
-              <div className="w-20 h-20 rounded-3xl bg-emerald-500/20 text-emerald-500 flex items-center justify-center shadow-xl">
-                <Check className="w-10 h-10 stroke-[3]" />
+              <div className="relative w-28 h-28 rounded-full bg-gradient-to-tr from-accent to-emerald-500 p-1 shadow-2xl overflow-hidden flex items-center justify-center">
+                <ChromaVideo
+                  src={BIT_VIDEO_URL}
+                  className="w-full h-full rounded-full object-cover"
+                  width={240}
+                  height={240}
+                />
               </div>
 
               <div className="space-y-2">
