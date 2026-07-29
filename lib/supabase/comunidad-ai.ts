@@ -260,6 +260,44 @@ export async function adminGetAllUsers() {
   return profiles || [];
 }
 
+export async function adminDeleteUser(userId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  // Prevent self-deletion if current user is admin
+  const supabase = await createClient();
+  const { data: { user: currentUser } } = await supabase.auth.getUser();
+  if (currentUser?.id === userId) {
+    return { success: false, error: "No puedes eliminar tu propia cuenta de administrador." };
+  }
+
+  try {
+    // 1. Delete associated data to clean up FK relationships
+    await Promise.allSettled([
+      adminDb.from("enrollments").delete().eq("user_id", userId),
+      adminDb.from("user_subscriptions").delete().eq("user_id", userId),
+      adminDb.from("user_progress").delete().eq("user_id", userId),
+      adminDb.from("certificates").delete().eq("user_id", userId),
+      adminDb.from("support_tickets").delete().eq("user_id", userId),
+    ]);
+
+    // 2. Delete profile
+    const { error: profileErr } = await adminDb.from("profiles").delete().eq("id", userId);
+    if (profileErr) console.error("Error deleting user profile:", profileErr);
+
+    // 3. Delete auth user
+    const { error: authErr } = await adminDb.auth.admin.deleteUser(userId);
+    if (authErr) console.error("Error deleting user from Auth:", authErr);
+
+    revalidatePath("/(admin)", "layout");
+    return { success: true };
+  } catch (err: any) {
+    console.error("Error in adminDeleteUser:", err);
+    return { success: false, error: err.message || "Error al eliminar miembro." };
+  }
+}
+
 export async function adminGetUserEnrollments(userId: string) {
   const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();

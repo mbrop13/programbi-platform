@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Users, Building, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers, adminUpdateUserSubscription } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminUpdateLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon, adminGetCertificates, adminAddCertificate, adminImportCertificates, adminDeleteCertificate } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminUpdateLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminDeleteUser, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon, adminGetCertificates, adminAddCertificate, adminImportCertificates, adminDeleteCertificate } from "@/lib/supabase/comunidad-ai";
 import { Calendar, Radio, Film, Clock } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -920,6 +920,160 @@ function AdminAbandonedCarts() {
   );
 }
 
+// ─── HOLD TO DELETE BUTTON COMPONENT ───
+function HoldToDeleteButton({
+  onConfirm,
+  label = "Mantén presionado para eliminar",
+  compact = false,
+  disabled = false,
+  loading = false,
+}: {
+  onConfirm: () => void;
+  label?: string;
+  compact?: boolean;
+  disabled?: boolean;
+  loading?: boolean;
+}) {
+  const [progress, setProgress] = useState(0);
+  const [isHolding, setIsHolding] = useState(false);
+  const timerRef = useRef<any>(null);
+  const startTimeRef = useRef<number>(0);
+  const HOLD_DURATION = 1400; // 1.4 seconds
+
+  const startHold = (e: React.SyntheticEvent) => {
+    e.stopPropagation();
+    if (disabled || loading) return;
+    setIsHolding(true);
+    setProgress(0);
+    startTimeRef.current = Date.now();
+
+    timerRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTimeRef.current;
+      const pct = Math.min(100, (elapsed / HOLD_DURATION) * 100);
+      setProgress(pct);
+
+      if (pct >= 100) {
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = null;
+        setIsHolding(false);
+        setProgress(0);
+        onConfirm();
+      }
+    }, 20);
+  };
+
+  const endHold = (e: React.SyntheticEvent) => {
+    e.stopPropagation();
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+    setIsHolding(false);
+    setProgress(0);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, []);
+
+  if (compact) {
+    return (
+      <div className="relative inline-block" title="Mantén presionado 1.5s para eliminar miembro">
+        <button
+          type="button"
+          onMouseDown={startHold}
+          onMouseUp={endHold}
+          onMouseLeave={endHold}
+          onTouchStart={startHold}
+          onTouchEnd={endHold}
+          onTouchCancel={endHold}
+          onClick={(e) => e.stopPropagation()}
+          disabled={disabled || loading}
+          className={`relative overflow-hidden p-2 rounded-xl border transition-all select-none touch-none ${
+            isHolding
+              ? "border-red-500 bg-red-50 text-red-600 scale-110 shadow-md"
+              : "border-transparent text-gray-400 hover:text-red-500 hover:bg-red-50 hover:border-red-200"
+          } ${disabled || loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+        >
+          {isHolding && (
+            <div
+              className="absolute inset-0 bg-red-500/20 transition-all duration-75 ease-linear pointer-events-none"
+              style={{ width: `${progress}%` }}
+            />
+          )}
+
+          {loading ? (
+            <Loader2 className="w-4 h-4 animate-spin text-red-500 relative z-10" />
+          ) : (
+            <Trash2 className={`w-4 h-4 relative z-10 transition-transform ${isHolding ? "scale-110 text-red-600" : ""}`} />
+          )}
+        </button>
+
+        <AnimatePresence>
+          {isHolding && (
+            <motion.div
+              initial={{ opacity: 0, y: 4, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 4, scale: 0.95 }}
+              className="absolute right-0 top-full mt-1.5 z-50 whitespace-nowrap bg-red-950 text-white text-[10px] font-bold px-2.5 py-1 rounded-lg shadow-xl flex items-center gap-1.5 pointer-events-none border border-red-800"
+            >
+              <div className="w-2.5 h-2.5 rounded-full border-2 border-red-400 border-t-transparent animate-spin" />
+              <span>Mantén para eliminar ({Math.round(progress)}%)</span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative w-full">
+      <button
+        type="button"
+        onMouseDown={startHold}
+        onMouseUp={endHold}
+        onMouseLeave={endHold}
+        onTouchStart={startHold}
+        onTouchEnd={endHold}
+        onTouchCancel={endHold}
+        onClick={(e) => e.stopPropagation()}
+        disabled={disabled || loading}
+        className={`relative overflow-hidden w-full py-2.5 px-4 rounded-xl border text-sm font-bold transition-all select-none touch-none flex items-center justify-center gap-2 ${
+          isHolding
+            ? "border-red-600 bg-red-600 text-white shadow-lg scale-[1.01]"
+            : "border-red-200 bg-red-50 text-red-600 hover:bg-red-100 hover:border-red-300"
+        } ${disabled || loading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+      >
+        {isHolding && (
+          <div
+            className="absolute left-0 top-0 bottom-0 bg-red-700/40 transition-all duration-75 ease-linear pointer-events-none"
+            style={{ width: `${progress}%` }}
+          />
+        )}
+
+        {loading ? (
+          <>
+            <Loader2 className="w-4 h-4 animate-spin text-current relative z-10" />
+            <span className="relative z-10">Eliminando...</span>
+          </>
+        ) : (
+          <>
+            <Trash2 className="w-4 h-4 relative z-10" />
+            <span className="relative z-10">
+              {isHolding ? `¡Mantén presionado! (${Math.round(progress)}%)` : label}
+            </span>
+          </>
+        )}
+      </button>
+      <p className="text-[11px] text-gray-400 text-center mt-1.5 font-medium flex items-center justify-center gap-1">
+        <span>🔥 Mantén presionado 1.5s para eliminar permanentemente.</span>
+      </p>
+    </div>
+  );
+}
+
 // ─── MEMBERS ───
 function AdminMembers() {
   const [users, setUsers] = useState<any[]>([]);
@@ -934,8 +1088,31 @@ function AdminMembers() {
   const [subPlan, setSubPlan] = useState("none");
   const [subExpiresAt, setSubExpiresAt] = useState("");
   const [updatingSub, setUpdatingSub] = useState(false);
+  const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 50;
+
+  const handleDeleteUser = async (userId: string) => {
+    if (deletingUserId) return;
+    setDeletingUserId(userId);
+    try {
+      const res = await adminDeleteUser(userId);
+      if (res && !res.success) {
+        alert(res.error || "No se pudo eliminar el miembro.");
+        return;
+      }
+      setUsers(prev => prev.filter(u => u.id !== userId));
+      if (selectedUser?.id === userId) {
+        setSelectedUser(null);
+      }
+      alert("Miembro eliminado exitosamente.");
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Error al eliminar miembro.");
+    } finally {
+      setDeletingUserId(null);
+    }
+  };
 
   useEffect(() => {
     setCurrentPage(1);
@@ -1195,6 +1372,22 @@ function AdminMembers() {
                    </button>
                  </div>
                </div>
+
+                <hr className="my-5 border-gray-250" />
+                <div className="bg-red-50/60 border border-red-100 rounded-xl p-4">
+                  <h4 className="font-bold text-xs text-red-700 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                    <AlertCircle className="w-4 h-4 text-red-500" /> Eliminar Miembro
+                  </h4>
+                  <p className="text-xs text-gray-500 mb-3">
+                    Elimina permanentemente la cuenta de <span className="font-bold text-gray-800">{selectedUser.full_name || selectedUser.email}</span> y revoca todos sus accesos.
+                  </p>
+                  <HoldToDeleteButton
+                    onConfirm={() => handleDeleteUser(selectedUser.id)}
+                    label={`Mantén presionado para eliminar a ${selectedUser.full_name || selectedUser.email}`}
+                    loading={deletingUserId === selectedUser.id}
+                    disabled={deletingUserId !== null}
+                  />
+                </div>
              </div>
            </motion.div>
          )}
@@ -1255,9 +1448,17 @@ function AdminMembers() {
                           {u.created_at ? new Date(u.created_at).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" }) : '—'}
                        </td>
                        <td className="px-5 py-4 text-right">
-                          <button className="p-2 rounded-lg text-gray-300 hover:text-brand-blue hover:bg-blue-50 transition-colors" title="Ver detalles">
-                             <ChevronRight className="w-4 h-4" />
-                          </button>
+                          <div className="flex items-center justify-end gap-1" onClick={e => e.stopPropagation()}>
+                             <HoldToDeleteButton
+                                compact={true}
+                                onConfirm={() => handleDeleteUser(u.id)}
+                                loading={deletingUserId === u.id}
+                                disabled={deletingUserId !== null}
+                             />
+                             <button onClick={() => selectUser(u)} className="p-2 rounded-lg text-gray-300 hover:text-brand-blue hover:bg-blue-50 transition-colors" title="Ver detalles">
+                                <ChevronRight className="w-4 h-4" />
+                             </button>
+                          </div>
                        </td>
                     </motion.tr>
                  ))}
