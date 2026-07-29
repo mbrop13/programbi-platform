@@ -3460,6 +3460,8 @@ function AdminPrices() {
   const [couponMaxUses, setCouponMaxUses] = useState<number | "">("");
   const [couponValidUntil, setCouponValidUntil] = useState("");
   const [couponAllowStacking, setCouponAllowStacking] = useState(false);
+  const [couponApplicableCourses, setCouponApplicableCourses] = useState<string[]>([]);
+  const [availableCourses, setAvailableCourses] = useState<any[]>([]);
   const [editingCoupon, setEditingCoupon] = useState<any | null>(null);
 
   // Price editing
@@ -3473,14 +3475,16 @@ function AdminPrices() {
 
   async function loadData() {
     try {
-      const [promosData, overridesData, couponsData] = await Promise.all([
+      const [promosData, overridesData, couponsData, coursesData] = await Promise.all([
         adminGetPromotions(),
         adminGetPriceOverrides(),
-        adminGetCoupons()
+        adminGetCoupons(),
+        adminGetCourses()
       ]);
       setPromos(promosData);
       setPriceOverrides(overridesData);
       setCoupons(couponsData);
+      setAvailableCourses(coursesData || []);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   }
@@ -3520,7 +3524,8 @@ function AdminPrices() {
             discount_percentage: couponDiscount,
             max_uses: couponMaxUses === "" ? null : couponMaxUses,
             valid_until: couponValidUntil === "" ? null : new Date(couponValidUntil).toISOString(),
-            allow_stacking: couponAllowStacking
+            allow_stacking: couponAllowStacking,
+            applicable_courses: couponApplicableCourses.length > 0 ? couponApplicableCourses : null
           });
           setEditingCoupon(null);
         } else {
@@ -3530,7 +3535,8 @@ function AdminPrices() {
             max_uses: couponMaxUses === "" ? undefined : couponMaxUses,
             is_active: true,
             valid_until: couponValidUntil === "" ? undefined : new Date(couponValidUntil).toISOString(),
-            allow_stacking: couponAllowStacking
+            allow_stacking: couponAllowStacking,
+            applicable_courses: couponApplicableCourses.length > 0 ? couponApplicableCourses : null
           });
         }
         setShowAdd(false);
@@ -3539,6 +3545,7 @@ function AdminPrices() {
         setCouponMaxUses("");
         setCouponValidUntil("");
         setCouponAllowStacking(false);
+        setCouponApplicableCourses([]);
         loadData();
       } else {
         await adminCreatePromotion({
@@ -3601,6 +3608,7 @@ function AdminPrices() {
     setCouponMaxUses(coupon.max_uses === null ? "" : coupon.max_uses);
     setCouponValidUntil(coupon.valid_until ? new Date(coupon.valid_until).toISOString().substring(0, 16) : "");
     setCouponAllowStacking(!!coupon.allow_stacking);
+    setCouponApplicableCourses(coupon.applicable_courses || []);
     setShowAdd(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -3670,6 +3678,58 @@ function AdminPrices() {
                     <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1.5">Fecha de Vencimiento (Opcional)</label>
                     <input type="datetime-local" value={couponValidUntil} onChange={e => setCouponValidUntil(e.target.value)} className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-100 focus:border-brand-blue outline-none" />
                   </div>
+
+                  <div className="md:col-span-2 bg-white p-4 rounded-xl border border-gray-200">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+                      <div>
+                        <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider">
+                          Cursos Aplicables (Opcional)
+                        </label>
+                        <p className="text-xs text-gray-500">
+                          Selecciona los cursos en los que funcionará este cupón. <span className="font-semibold text-gray-700">Si no seleccionas ninguno (vacío), funcionará para TODOS los cursos.</span>
+                        </p>
+                      </div>
+                      <div className="text-xs font-bold shrink-0">
+                        {couponApplicableCourses.length === 0 ? (
+                          <span className="bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200">
+                            ✨ Aplica a TODOS los Cursos
+                          </span>
+                        ) : (
+                          <span className="bg-purple-50 text-purple-700 px-2.5 py-1 rounded-full border border-purple-200">
+                            🎯 Solo {couponApplicableCourses.length} curso(s) seleccionado(s)
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-2 mt-3 max-h-48 overflow-y-auto p-1">
+                      {availableCourses.map((course: any) => {
+                        const isSelected = couponApplicableCourses.includes(course.slug);
+                        return (
+                          <button
+                            key={course.id || course.slug}
+                            type="button"
+                            onClick={() => {
+                              setCouponApplicableCourses(prev =>
+                                isSelected
+                                  ? prev.filter(s => s !== course.slug)
+                                  : [...prev, course.slug]
+                              );
+                            }}
+                            className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 select-none ${
+                              isSelected
+                                ? "bg-brand-blue border-brand-blue text-white shadow-sm scale-[1.02]"
+                                : "bg-gray-50 border-gray-200 text-gray-700 hover:bg-gray-100 hover:border-gray-300"
+                            }`}
+                          >
+                            {isSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                            <span>{course.title}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   <div className="flex items-center gap-2 mt-2 md:col-span-2">
                     <input
                       type="checkbox"
@@ -3923,23 +3983,45 @@ function AdminPrices() {
                          </div>
                        </div>
                        
-                       <div className="mt-4 p-3 bg-gray-50 rounded-xl border border-gray-100 flex items-center justify-between">
-                         <div className="flex flex-col gap-0.5">
-                           <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Descuento</span>
-                           <span className="font-black text-xl text-emerald-600">{coupon.discount_percentage}%</span>
+                       <div className="mt-4 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                         <div className="flex items-center justify-between">
+                           <div className="flex flex-col gap-0.5">
+                             <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Descuento</span>
+                             <span className="font-black text-xl text-emerald-600">{coupon.discount_percentage}%</span>
+                           </div>
+                           <div className="text-right">
+                             <span className="block text-[9px] text-gray-400 font-bold uppercase tracking-wider">Vence</span>
+                             <span className="text-xs font-semibold text-gray-600">
+                               {coupon.valid_until ? new Date(coupon.valid_until).toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Sin vencimiento'}
+                             </span>
+                           </div>
                          </div>
-                         <div className="text-right">
-                           <span className="block text-[9px] text-gray-400 font-bold uppercase tracking-wider">Vence</span>
-                           <span className="text-xs font-semibold text-gray-600">
-                             {coupon.valid_until ? new Date(coupon.valid_until).toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Sin vencimiento'}
+                         <div className="mt-2 text-[10px] flex items-center justify-between border-t border-gray-200/60 pt-2">
+                           <span className="text-gray-400 font-semibold uppercase tracking-wider">Acumulable con ofertas:</span>
+                           <span className={`font-bold ${coupon.allow_stacking ? 'text-blue-600' : 'text-gray-500'}`}>
+                             {coupon.allow_stacking ? 'Sí' : 'No'}
                            </span>
                          </div>
-                        <div className="mt-2 text-[10px] flex items-center justify-between px-1">
-                          <span className="text-gray-400 font-semibold uppercase tracking-wider">Acumulable con otras ofertas:</span>
-                          <span className={`font-bold ${coupon.allow_stacking ? 'text-blue-600' : 'text-gray-500'}`}>
-                            {coupon.allow_stacking ? 'Sí' : 'No'}
-                          </span>
-                        </div>
+                       </div>
+
+                       <div className="mt-3 text-[11px] px-1">
+                         <span className="text-gray-400 font-bold uppercase tracking-wider block mb-1">Cursos Permitidos:</span>
+                         {(!coupon.applicable_courses || coupon.applicable_courses.length === 0) ? (
+                           <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-md border border-emerald-100 text-[10px]">
+                             ✨ Todos los Cursos
+                           </span>
+                         ) : (
+                           <div className="flex flex-wrap gap-1">
+                             {coupon.applicable_courses.map((slug: string) => {
+                               const courseObj = allCourses.find(c => c.slug === slug);
+                               return (
+                                 <span key={slug} className="inline-flex items-center gap-1 bg-purple-50 text-purple-700 font-bold px-2 py-0.5 rounded-md border border-purple-100 text-[10px]">
+                                   🎯 {courseObj?.title || slug}
+                                 </span>
+                               );
+                             })}
+                           </div>
+                         )}
                        </div>
                      </div>
                      <div className="flex items-center gap-2 mt-auto p-4 border-t border-gray-50 bg-gray-50/50">

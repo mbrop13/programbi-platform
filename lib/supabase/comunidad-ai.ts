@@ -1096,6 +1096,7 @@ export async function adminCreateCoupon(coupon: {
   is_active: boolean;
   valid_until?: string | null;
   allow_stacking?: boolean;
+  applicable_courses?: string[] | null;
 }) {
   const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
@@ -1107,7 +1108,8 @@ export async function adminCreateCoupon(coupon: {
     max_uses: coupon.max_uses || null,
     is_active: coupon.is_active,
     valid_until: coupon.valid_until || null,
-    allow_stacking: coupon.allow_stacking ?? false
+    allow_stacking: coupon.allow_stacking ?? false,
+    applicable_courses: (coupon.applicable_courses && coupon.applicable_courses.length > 0) ? coupon.applicable_courses : null
   };
 
   const { data, error } = await adminDb
@@ -1128,6 +1130,11 @@ export async function adminUpdateCoupon(couponId: string, updates: Record<string
   const cleanUpdates: any = { ...updates, updated_at: new Date().toISOString() };
   if (cleanUpdates.code) {
     cleanUpdates.code = cleanUpdates.code.trim().toUpperCase();
+  }
+  if (cleanUpdates.applicable_courses !== undefined) {
+    cleanUpdates.applicable_courses = (Array.isArray(cleanUpdates.applicable_courses) && cleanUpdates.applicable_courses.length > 0)
+      ? cleanUpdates.applicable_courses
+      : null;
   }
 
   const { error } = await adminDb
@@ -1163,7 +1170,7 @@ export async function adminDeleteCoupon(couponId: string) {
   if (error) throw new Error(error.message);
 }
 
-export async function validateCouponAction(code: string) {
+export async function validateCouponAction(code: string, itemSlugs?: string[]) {
   const supabase = createAdminClient();
   const cleanCode = code.trim().toUpperCase();
   if (!cleanCode) {
@@ -1197,12 +1204,23 @@ export async function validateCouponAction(code: string) {
     return { valid: false, message: "Este cupón ha agotado sus usos disponibles" };
   }
 
+  // Check course restriction if specified
+  if (coupon.applicable_courses && Array.isArray(coupon.applicable_courses) && coupon.applicable_courses.length > 0) {
+    if (itemSlugs && itemSlugs.length > 0) {
+      const hasMatchingCourse = itemSlugs.some((slug: string) => coupon.applicable_courses.includes(slug));
+      if (!hasMatchingCourse) {
+        return { valid: false, message: "Este cupón no es válido para los cursos seleccionados" };
+      }
+    }
+  }
+
   return {
     valid: true,
     code: coupon.code,
     discount_percentage: coupon.discount_percentage,
     id: coupon.id,
-    allow_stacking: coupon.allow_stacking
+    allow_stacking: coupon.allow_stacking,
+    applicable_courses: coupon.applicable_courses || null
   };
 }
 

@@ -150,7 +150,8 @@ export async function POST(req: NextRequest) {
     // Apply coupon discount if present
     if (couponCode) {
       const { validateCouponAction } = await import("@/lib/supabase/comunidad-ai");
-      const couponRes = await validateCouponAction(couponCode);
+      const itemSlugs = (items || []).map((i: any) => i.courseSlug || i.slug).filter(Boolean);
+      const couponRes = await validateCouponAction(couponCode, itemSlugs);
       if (!couponRes.valid) {
         return NextResponse.json({ error: couponRes.message || "Cupón inválido" }, { status: 400 });
       }
