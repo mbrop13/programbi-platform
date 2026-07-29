@@ -4013,7 +4013,7 @@ function AdminPrices() {
                          ) : (
                            <div className="flex flex-wrap gap-1">
                              {coupon.applicable_courses.map((slug: string) => {
-                               const courseObj = allCourses.find(c => c.slug === slug);
+                               const courseObj = availableCourses.find((c: any) => c.slug === slug);
                                return (
                                  <span key={slug} className="inline-flex items-center gap-1 bg-purple-50 text-purple-700 font-bold px-2 py-0.5 rounded-md border border-purple-100 text-[10px]">
                                    🎯 {courseObj?.title || slug}

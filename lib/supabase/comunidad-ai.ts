@@ -1118,7 +1118,12 @@ export async function adminCreateCoupon(coupon: {
     .select("id")
     .single();
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (error.message?.includes("applicable_courses") || error.code === "PGRST204" || error.code === "42703") {
+      throw new Error("La columna 'applicable_courses' no existe en la tabla 'coupons' de Supabase. Ejecuta en el SQL Editor de Supabase:\n\nALTER TABLE coupons ADD COLUMN IF NOT EXISTS applicable_courses text[];");
+    }
+    throw new Error(error.message);
+  }
   return data;
 }
 
@@ -1142,7 +1147,12 @@ export async function adminUpdateCoupon(couponId: string, updates: Record<string
     .update(cleanUpdates)
     .eq("id", couponId);
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    if (error.message?.includes("applicable_courses") || error.code === "PGRST204" || error.code === "42703") {
+      throw new Error("La columna 'applicable_courses' no existe en la tabla 'coupons' de Supabase. Ejecuta en el SQL Editor de Supabase:\n\nALTER TABLE coupons ADD COLUMN IF NOT EXISTS applicable_courses text[];");
+    }
+    throw new Error(error.message);
+  }
 }
 
 export async function adminToggleCoupon(couponId: string) {
