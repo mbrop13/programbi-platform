@@ -298,6 +298,49 @@ export async function adminDeleteUser(userId: string) {
   }
 }
 
+export async function adminBulkDeleteUsers(userIds: string[]) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  if (!userIds || userIds.length === 0) return { success: true, count: 0 };
+
+  // Prevent self-deletion if current user is admin
+  const supabase = await createClient();
+  const { data: { user: currentUser } } = await supabase.auth.getUser();
+  const safeUserIds = userIds.filter(id => id !== currentUser?.id);
+
+  if (safeUserIds.length === 0) {
+    return { success: false, error: "No se puede eliminar la propia cuenta de administrador." };
+  }
+
+  try {
+    // 1. Delete associated data for all selected user IDs
+    await Promise.allSettled([
+      adminDb.from("enrollments").delete().in("user_id", safeUserIds),
+      adminDb.from("user_subscriptions").delete().in("user_id", safeUserIds),
+      adminDb.from("user_progress").delete().in("user_id", safeUserIds),
+      adminDb.from("certificates").delete().in("user_id", safeUserIds),
+      adminDb.from("support_tickets").delete().in("user_id", safeUserIds),
+    ]);
+
+    // 2. Delete profiles
+    const { error: profileErr } = await adminDb.from("profiles").delete().in("id", safeUserIds);
+    if (profileErr) console.error("Error bulk deleting profiles:", profileErr);
+
+    // 3. Delete auth users
+    await Promise.allSettled(
+      safeUserIds.map(id => adminDb.auth.admin.deleteUser(id))
+    );
+
+    revalidatePath("/(admin)", "layout");
+    return { success: true, count: safeUserIds.length };
+  } catch (err: any) {
+    console.error("Error in adminBulkDeleteUsers:", err);
+    return { success: false, error: err.message || "Error al eliminar miembros en lote." };
+  }
+}
+
 export async function adminGetUserEnrollments(userId: string) {
   const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();

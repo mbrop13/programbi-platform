@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Users, Building, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers, adminUpdateUserSubscription } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminUpdateLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminDeleteUser, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon, adminGetCertificates, adminAddCertificate, adminImportCertificates, adminDeleteCertificate } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminUpdateLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminDeleteUser, adminBulkDeleteUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon, adminGetCertificates, adminAddCertificate, adminImportCertificates, adminDeleteCertificate } from "@/lib/supabase/comunidad-ai";
 import { Calendar, Radio, Film, Clock } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -1089,8 +1089,29 @@ function AdminMembers() {
   const [subExpiresAt, setSubExpiresAt] = useState("");
   const [updatingSub, setUpdatingSub] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 50;
+
+  const toggleSelectUser = (id: string, e?: React.SyntheticEvent) => {
+    if (e) e.stopPropagation();
+    setSelectedUserIds(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  const isAllSelected = displayedUsers.length > 0 && displayedUsers.every(u => selectedUserIds.includes(u.id));
+
+  const toggleSelectAll = () => {
+    if (isAllSelected) {
+      const currentIds = new Set(displayedUsers.map(u => u.id));
+      setSelectedUserIds(prev => prev.filter(id => !currentIds.has(id)));
+    } else {
+      const currentIds = displayedUsers.map(u => u.id);
+      setSelectedUserIds(prev => Array.from(new Set([...prev, ...currentIds])));
+    }
+  };
 
   const handleDeleteUser = async (userId: string) => {
     if (deletingUserId) return;
@@ -1102,6 +1123,7 @@ function AdminMembers() {
         return;
       }
       setUsers(prev => prev.filter(u => u.id !== userId));
+      setSelectedUserIds(prev => prev.filter(id => id !== userId));
       if (selectedUser?.id === userId) {
         setSelectedUser(null);
       }
@@ -1111,6 +1133,30 @@ function AdminMembers() {
       alert(err.message || "Error al eliminar miembro.");
     } finally {
       setDeletingUserId(null);
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedUserIds.length === 0 || isBulkDeleting) return;
+    setIsBulkDeleting(true);
+    try {
+      const res = await adminBulkDeleteUsers(selectedUserIds);
+      if (res && !res.success) {
+        alert(res.error || "Error al eliminar miembros.");
+        return;
+      }
+      const deletedCount = res.count || selectedUserIds.length;
+      setUsers(prev => prev.filter(u => !selectedUserIds.includes(u.id)));
+      if (selectedUser && selectedUserIds.includes(selectedUser.id)) {
+        setSelectedUser(null);
+      }
+      setSelectedUserIds([]);
+      alert(`¡${deletedCount} miembro(s) eliminado(s) exitosamente!`);
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Error al eliminar miembros.");
+    } finally {
+      setIsBulkDeleting(false);
     }
   };
 
@@ -1404,6 +1450,22 @@ function AdminMembers() {
           <table className="w-full text-left text-sm">
               <thead>
                  <tr className="bg-gray-50/80 text-gray-400 font-semibold text-xs uppercase tracking-wider">
+                    <th className="px-4 py-3.5 w-12 text-center">
+                       <div className="flex items-center justify-center">
+                          <button
+                             type="button"
+                             onClick={toggleSelectAll}
+                             className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
+                                isAllSelected
+                                   ? "bg-brand-blue border-brand-blue text-white shadow-sm"
+                                   : "border-gray-300 hover:border-brand-blue bg-white"
+                             }`}
+                             title={isAllSelected ? "Deseleccionar todos en esta página" : "Seleccionar todos en esta página"}
+                          >
+                             {isAllSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                          </button>
+                       </div>
+                    </th>
                     <th className="px-5 py-3.5">Usuario</th>
                     <th className="px-5 py-3.5">Contacto</th>
                     <th className="px-5 py-3.5">Rol</th>
@@ -1414,7 +1476,24 @@ function AdminMembers() {
               <tbody className="divide-y divide-gray-50">
                  {displayedUsers.map((u, i) => (
                     <motion.tr key={u.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.02 }}
-                      className="hover:bg-gray-50/50 transition-colors cursor-pointer" onClick={() => selectUser(u)}>
+                      className={`hover:bg-gray-50/50 transition-colors cursor-pointer ${selectedUserIds.includes(u.id) ? 'bg-blue-50/40' : ''}`}
+                      onClick={() => selectUser(u)}>
+                       <td className="px-4 py-4 w-12 text-center" onClick={(e) => e.stopPropagation()}>
+                          <div className="flex items-center justify-center">
+                             <button
+                                type="button"
+                                onClick={(e) => toggleSelectUser(u.id, e)}
+                                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
+                                   selectedUserIds.includes(u.id)
+                                      ? "bg-brand-blue border-brand-blue text-white shadow-sm scale-110"
+                                      : "border-gray-300 hover:border-brand-blue bg-white"
+                                }`}
+                                title="Seleccionar usuario"
+                             >
+                                {selectedUserIds.includes(u.id) && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                             </button>
+                          </div>
+                       </td>
                        <td className="px-5 py-4">
                          <div className="flex items-center gap-3">
                            <div className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center font-bold text-xs text-gray-600 shrink-0">
@@ -1453,7 +1532,7 @@ function AdminMembers() {
                                 compact={true}
                                 onConfirm={() => handleDeleteUser(u.id)}
                                 loading={deletingUserId === u.id}
-                                disabled={deletingUserId !== null}
+                                disabled={deletingUserId !== null || isBulkDeleting}
                              />
                              <button onClick={() => selectUser(u)} className="p-2 rounded-lg text-gray-300 hover:text-brand-blue hover:bg-blue-50 transition-colors" title="Ver detalles">
                                 <ChevronRight className="w-4 h-4" />
