@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Users, Building, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers, adminUpdateUserSubscription } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminUpdateLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminDeleteUser, adminBulkDeleteUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon, adminGetCertificates, adminAddCertificate, adminImportCertificates, adminDeleteCertificate } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminUpdateLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminDeleteUser, adminBulkDeleteUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminDeleteLead, adminBulkDeleteLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon, adminGetCertificates, adminAddCertificate, adminImportCertificates, adminDeleteCertificate } from "@/lib/supabase/comunidad-ai";
 import { Calendar, Radio, Film, Clock } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -635,6 +635,10 @@ function AdminLeads() {
   const [allLeads, setAllLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
+  const [deletingLeadId, setDeletingLeadId] = useState<string | null>(null);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [isExportingUnified, setIsExportingUnified] = useState(false);
   const ITEMS_PER_PAGE = 50;
 
   useEffect(() => {
@@ -670,6 +674,123 @@ function AdminLeads() {
   const leads = allLeads.filter(l => l.lead_type !== "abandoned_cart");
   const totalPages = Math.max(1, Math.ceil(leads.length / ITEMS_PER_PAGE));
   const displayedLeads = leads.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+  const toggleSelectLead = (id: string, e?: React.SyntheticEvent) => {
+    if (e) e.stopPropagation();
+    setSelectedLeadIds(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  const isAllLeadsSelected = displayedLeads.length > 0 && displayedLeads.every(l => selectedLeadIds.includes(l.id));
+
+  const toggleSelectAllLeads = () => {
+    if (isAllLeadsSelected) {
+      const currentIds = new Set(displayedLeads.map(l => l.id));
+      setSelectedLeadIds(prev => prev.filter(id => !currentIds.has(id)));
+    } else {
+      const currentIds = displayedLeads.map(l => l.id);
+      setSelectedLeadIds(prev => Array.from(new Set([...prev, ...currentIds])));
+    }
+  };
+
+  const handleDeleteLead = async (leadId: string) => {
+    if (deletingLeadId) return;
+    setDeletingLeadId(leadId);
+    try {
+      const res = await adminDeleteLead(leadId);
+      if (res && !res.success) {
+        alert(res.error || "No se pudo eliminar el contacto.");
+        return;
+      }
+      setAllLeads(prev => prev.filter(l => l.id !== leadId));
+      setSelectedLeadIds(prev => prev.filter(id => id !== leadId));
+      alert("Contacto eliminado exitosamente.");
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Error al eliminar contacto.");
+    } finally {
+      setDeletingLeadId(null);
+    }
+  };
+
+  const handleBulkDeleteLeads = async () => {
+    if (selectedLeadIds.length === 0 || isBulkDeleting) return;
+    setIsBulkDeleting(true);
+    try {
+      const res = await adminBulkDeleteLeads(selectedLeadIds);
+      if (res && !res.success) {
+        alert(res.error || "Error al eliminar contactos.");
+        return;
+      }
+      const count = res.count || selectedLeadIds.length;
+      setAllLeads(prev => prev.filter(l => !selectedLeadIds.includes(l.id)));
+      setSelectedLeadIds([]);
+      alert(`¡${count} contacto(s) eliminado(s) exitosamente!`);
+    } catch (err: any) {
+      console.error(err);
+      alert(err.message || "Error al eliminar contactos.");
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
+
+  const exportUnifiedEmailsToCSV = async () => {
+    if (isExportingUnified) return;
+    setIsExportingUnified(true);
+    try {
+      const [membersData, leadsData] = await Promise.all([adminGetAllUsers(), adminGetLeads()]);
+      
+      // email (lower) -> name
+      const emailMap = new Map<string, string>();
+
+      // 1. Process members first
+      for (const m of (membersData || [])) {
+        const email = (m.email || '').trim().toLowerCase();
+        if (!email) continue;
+        const name = (m.full_name || '').trim();
+        emailMap.set(email, name);
+      }
+
+      // 2. Process leads second (if member didn't have name or if lead has name)
+      for (const l of (leadsData || [])) {
+        const email = (l.email || '').trim().toLowerCase();
+        if (!email) continue;
+        const name = (l.name || '').trim();
+        const existingName = emailMap.get(email);
+        if (!emailMap.has(email) || (!existingName && name)) {
+          emailMap.set(email, name);
+        }
+      }
+
+      if (emailMap.size === 0) {
+        alert("No se encontraron contactos para exportar.");
+        return;
+      }
+
+      const rows: string[] = ["email,name"];
+      emailMap.forEach((name, email) => {
+        const cleanName = name ? `"${name.replace(/"/g, '""')}"` : '""';
+        rows.push(`${email},${cleanName}`);
+      });
+
+      const csvContent = "\uFEFF" + rows.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const encodedUri = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = encodedUri;
+      link.download = `programbi_todos_los_contactos_sin_duplicados_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err: any) {
+      console.error(err);
+      alert("Error al exportar contactos unificados.");
+    } finally {
+      setIsExportingUnified(false);
+    }
+  };
 
   const exportToCSV = () => {
     if (leads.length === 0) return alert("No hay contactos para exportar.");
@@ -717,9 +838,23 @@ function AdminLeads() {
            <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Contactos (Leads)</h2>
            <p className="text-sm text-gray-400">Solicitudes de información desde los cursos</p>
          </div>
-         <button onClick={exportToCSV} className="flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-2 rounded-xl text-sm font-bold hover:bg-emerald-100 transition-colors border-none cursor-pointer">
-           <Download className="w-4 h-4" /> Exportar a CSV
-         </button>
+         <div className="flex flex-wrap items-center gap-2.5">
+           <button 
+             onClick={exportUnifiedEmailsToCSV} 
+             disabled={isExportingUnified}
+             className="flex items-center justify-center gap-2 bg-purple-50 text-purple-700 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-purple-100 transition-colors border border-purple-100 cursor-pointer shadow-sm disabled:opacity-50"
+             title="Exporta miembros + contactos en formato email,name sin duplicados"
+           >
+             {isExportingUnified ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+             Exportar Todos (Sin Duplicados)
+           </button>
+           <button 
+             onClick={exportToCSV} 
+             className="flex items-center justify-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-emerald-100 transition-colors border border-emerald-100 cursor-pointer shadow-sm"
+           >
+             <Download className="w-4 h-4" /> Exportar Leads CSV
+           </button>
+         </div>
        </div>
 
        {leads.length === 0 ? (
@@ -733,16 +868,49 @@ function AdminLeads() {
            <table className="w-full text-left border-collapse">
              <thead>
                <tr className="bg-[#F8FAFC] border-b border-gray-200">
+                 <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider w-12 text-center">
+                   <div className="flex items-center justify-center">
+                     <button
+                       type="button"
+                       onClick={toggleSelectAllLeads}
+                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
+                         isAllLeadsSelected
+                           ? "bg-brand-blue border-brand-blue text-white shadow-sm"
+                           : "border-gray-300 hover:border-brand-blue bg-white"
+                       }`}
+                       title={isAllLeadsSelected ? "Deseleccionar todos" : "Seleccionar todos"}
+                     >
+                       {isAllLeadsSelected && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                     </button>
+                   </div>
+                 </th>
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Contacto</th>
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Tipo</th>
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Detalles</th>
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">Mensaje</th>
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Fecha</th>
+                 <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Acción</th>
                </tr>
              </thead>
              <tbody className="divide-y divide-gray-100 bg-white">
                 {displayedLeads.map(lead => (
-                  <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr key={lead.id} className={`hover:bg-gray-50/50 transition-colors ${selectedLeadIds.includes(lead.id) ? 'bg-blue-50/40' : ''}`}>
+                    <td className="px-4 py-4 w-12 text-center" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={(e) => toggleSelectLead(lead.id, e)}
+                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all cursor-pointer ${
+                            selectedLeadIds.includes(lead.id)
+                              ? "bg-brand-blue border-brand-blue text-white shadow-sm scale-110"
+                              : "border-gray-300 hover:border-brand-blue bg-white"
+                          }`}
+                          title="Seleccionar contacto"
+                        >
+                          {selectedLeadIds.includes(lead.id) && <CheckCircle className="w-3.5 h-3.5 text-white" />}
+                        </button>
+                      </div>
+                    </td>
                     <td className="px-4 py-4">
                       <div className="font-bold text-gray-900 text-sm">{lead.name}</div>
                       <div className="text-xs text-brand-blue">{lead.email}</div>
@@ -781,6 +949,14 @@ function AdminLeads() {
                       <div className="text-xs font-medium text-gray-900">{new Date(lead.created_at).toLocaleDateString('es-CL')}</div>
                       <div className="text-[10px] text-gray-400">{new Date(lead.created_at).toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' })}</div>
                     </td>
+                    <td className="px-4 py-4 whitespace-nowrap text-right">
+                      <HoldToDeleteButton
+                        compact={true}
+                        onConfirm={() => handleDeleteLead(lead.id)}
+                        loading={deletingLeadId === lead.id}
+                        disabled={deletingLeadId !== null || isBulkDeleting}
+                      />
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -813,7 +989,48 @@ function AdminLeads() {
            </div>
          </div>
        )}
-    </div>
+
+       {/* Floating Bulk Actions Bar */}
+       <AnimatePresence>
+         {selectedLeadIds.length > 0 && (
+           <motion.div
+             initial={{ opacity: 0, y: 50, scale: 0.95 }}
+             animate={{ opacity: 1, y: 0, scale: 1 }}
+             exit={{ opacity: 0, y: 50, scale: 0.95 }}
+             className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl border border-gray-800 flex items-center gap-4 sm:gap-6 max-w-xl w-[92vw] sm:w-auto"
+           >
+             <div className="flex items-center gap-2.5 shrink-0">
+               <span className="flex h-7 w-7 items-center justify-center rounded-full bg-brand-blue/30 text-brand-blue font-black text-xs border border-brand-blue/50">
+                 {selectedLeadIds.length}
+               </span>
+               <span className="text-xs sm:text-sm font-semibold text-gray-200">
+                 {selectedLeadIds.length === 1 ? "1 contacto seleccionado" : `${selectedLeadIds.length} contactos seleccionados`}
+               </span>
+             </div>
+
+             <div className="h-6 w-px bg-gray-800 hidden sm:block" />
+
+             <div className="flex items-center gap-2 shrink-0 ml-auto sm:ml-0">
+               <HoldToDeleteButton
+                 compact={false}
+                 label={`Eliminar (${selectedLeadIds.length})`}
+                 onConfirm={handleBulkDeleteLeads}
+                 loading={isBulkDeleting}
+                 disabled={isBulkDeleting}
+               />
+
+               <button
+                 type="button"
+                 onClick={() => setSelectedLeadIds([])}
+                 className="px-3.5 py-2 rounded-xl text-xs font-bold text-gray-400 hover:text-white hover:bg-gray-800 transition-colors cursor-pointer"
+               >
+                 Cancelar
+               </button>
+             </div>
+           </motion.div>
+         )}
+       </AnimatePresence>
+     </div>
   );
 }
 
@@ -1091,6 +1308,7 @@ function AdminMembers() {
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [isExportingUnified, setIsExportingUnified] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 50;
 
@@ -1264,6 +1482,60 @@ function AdminMembers() {
     } catch (err) { console.error(err); }
   };
 
+  const exportUnifiedEmailsToCSV = async () => {
+    if (isExportingUnified) return;
+    setIsExportingUnified(true);
+    try {
+      const [membersData, leadsData] = await Promise.all([adminGetAllUsers(), adminGetLeads()]);
+      
+      const emailMap = new Map<string, string>(); // email (lower) -> name
+
+      for (const m of (membersData || [])) {
+        const email = (m.email || '').trim().toLowerCase();
+        if (!email) continue;
+        const name = (m.full_name || '').trim();
+        emailMap.set(email, name);
+      }
+
+      for (const l of (leadsData || [])) {
+        const email = (l.email || '').trim().toLowerCase();
+        if (!email) continue;
+        const name = (l.name || '').trim();
+        const existingName = emailMap.get(email);
+        if (!emailMap.has(email) || (!existingName && name)) {
+          emailMap.set(email, name);
+        }
+      }
+
+      if (emailMap.size === 0) {
+        alert("No se encontraron contactos para exportar.");
+        return;
+      }
+
+      const rows: string[] = ["email,name"];
+      emailMap.forEach((name, email) => {
+        const cleanName = name ? `"${name.replace(/"/g, '""')}"` : '""';
+        rows.push(`${email},${cleanName}`);
+      });
+
+      const csvContent = "\uFEFF" + rows.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const encodedUri = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = encodedUri;
+      link.download = `programbi_todos_los_contactos_sin_duplicados_${new Date().toISOString().split('T')[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err: any) {
+      console.error(err);
+      alert("Error al exportar contactos unificados.");
+    } finally {
+      setIsExportingUnified(false);
+    }
+  };
+
   const exportToCSV = () => {
     if (filtered.length === 0) return alert("No hay miembros para exportar.");
     const head = ["email", "name", "ID", "Teléfono", "Rol", "Fecha Registro"];
@@ -1297,8 +1569,17 @@ function AdminMembers() {
             <p className="text-sm text-gray-400">{users.length} usuarios registrados</p>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+             <button
+               onClick={exportUnifiedEmailsToCSV}
+               disabled={isExportingUnified}
+               className="flex items-center justify-center gap-2 bg-purple-50 text-purple-700 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-purple-100 transition-colors border border-purple-100 cursor-pointer shadow-sm disabled:opacity-50"
+               title="Exporta miembros + contactos en formato email,name sin duplicados"
+             >
+               {isExportingUnified ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+               Exportar Todos (Sin Duplicados)
+             </button>
              <button onClick={exportToCSV} className="flex items-center justify-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-emerald-100 transition-colors border border-emerald-100 hover:border-emerald-250 cursor-pointer shadow-sm">
-               <Download className="w-4 h-4" /> Exportar
+               <Download className="w-4 h-4" /> Exportar Miembros
              </button>
              <div className="relative">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />

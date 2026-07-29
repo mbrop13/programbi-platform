@@ -20,6 +20,36 @@ export async function adminGetLeads() {
   return data || [];
 }
 
+export async function adminDeleteLead(leadId: string) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { error } = await adminDb.from("course_leads").delete().eq("id", leadId);
+  if (error) {
+    console.error("Error deleting lead:", error);
+    return { success: false, error: error.message };
+  }
+  revalidatePath("/(admin)", "layout");
+  return { success: true };
+}
+
+export async function adminBulkDeleteLeads(leadIds: string[]) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  if (!leadIds || leadIds.length === 0) return { success: true, count: 0 };
+
+  const { error } = await adminDb.from("course_leads").delete().in("id", leadIds);
+  if (error) {
+    console.error("Error bulk deleting leads:", error);
+    return { success: false, error: error.message };
+  }
+  revalidatePath("/(admin)", "layout");
+  return { success: true, count: leadIds.length };
+}
+
 // ─── ADMIN: COURSE MANAGEMENT ───
 
 export async function adminGetCourses() {
