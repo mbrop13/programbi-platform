@@ -1094,6 +1094,14 @@ function AdminMembers() {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 50;
 
+  const filtered = users.filter(u =>
+    (u.full_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (u.email || '').toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+  const displayedUsers = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
   const toggleSelectUser = (id: string, e?: React.SyntheticEvent) => {
     if (e) e.stopPropagation();
     setSelectedUserIds(prev =>
@@ -1255,14 +1263,6 @@ function AdminMembers() {
       setUsers(prev => prev.map(u => u.id === userId ? { ...u, role } : u));
     } catch (err) { console.error(err); }
   };
-
-  const filtered = users.filter(u =>
-    (u.full_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (u.email || '').toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
-  const displayedUsers = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
 
   const exportToCSV = () => {
     if (filtered.length === 0) return alert("No hay miembros para exportar.");
