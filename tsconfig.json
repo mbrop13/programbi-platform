@@ -1,4 +1,4 @@
-﻿{
+{
   "compilerOptions": {
     "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
@@ -38,4 +38,3 @@
     "lib/services/news-pipeline.ts"
   ]
 }
-
