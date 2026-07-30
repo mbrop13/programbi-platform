@@ -245,7 +245,8 @@ export function ChatInput({
   const MAX_FILES = userTier === "free" ? 1 : userTier === "pro" ? 3 : 10;
 
   const { isMobile } = useSidebar();
-  const openUpward = !isNewChat || isMobile;
+  // Siempre abrir hacia arriba: en chat nuevo el menú hacia abajo tapa el contenido / se ve mal
+  const openUpward = true;
 
   // Auto-resize the textarea as content grows
   const resizeTextarea = () => {
@@ -583,8 +584,8 @@ export function ChatInput({
         )}
 
         <div className={cn(
-          "rounded-xl p-2.5 bg-white dark:bg-[#1E1E20] border-[#DBDBDB] dark:border-[#2e2e2e] border",
-          "shadow-[inset_0_0_1px_0_rgba(0,0,0,1),0_1px_2px_0_rgba(0,0,0,0.04),0_2px_12px_0_rgba(0,0,0,0.03)] transition-all duration-300 relative group focus-within:border-zinc-400 dark:focus-within:border-zinc-600 focus-within:shadow-[inset_0_0_1px_0_rgba(0,0,0,1),0_1px_2px_0_rgba(0,0,0,0.04),0_4px_16px_0_rgba(0,0,0,0.06)]",
+          "rounded-xl p-2.5 bg-white dark:bg-[#1E1E20] border border-gray-200 dark:border-white/10",
+          "shadow-sm transition-all duration-300 relative group focus-within:border-gray-300 dark:focus-within:border-white/20 focus-within:shadow-md",
           isListening && "border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.15)]"
         )}>
           {/* Tarjeta de cambios (modo build) — integrada DENTRO de la barra de
@@ -861,12 +862,12 @@ export function ChatInput({
                           </>
                         )
                       ) : (
-                        // Desktop/default layout
+                        // Desktop/default: modos mutuamente excluyentes.
+                        // Si Build está activo → solo se muestra Builder (para poder desactivarlo).
+                        // Si no → se muestran las 3 opciones.
                         <>
+                          <WebBuilderPill onActivate={() => { setCodeInterpreter(false); setBrowser(false); useCanvasStore.getState().setOpen(false); }} />
                           {!isWebBuilderMode && (
-                            <WebBuilderPill onActivate={() => { setCodeInterpreter(false); setBrowser(false); useCanvasStore.getState().setOpen(false); }} />
-                          )}
-                          {(!isWebBuilderMode || messages.length === 0) && (
                             <>
                               <Pill
                                 active={codeInterpreter}
