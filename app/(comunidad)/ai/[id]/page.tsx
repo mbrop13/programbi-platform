@@ -1,43 +1,24 @@
 import { redirect } from "next/navigation";
-import { getCurrentUserProfile, isCurrentUserAdmin } from "@/lib/supabase/comunidad";
-import { getMyEnrollments } from "@/lib/supabase/comunidad-ai";
-import ChatShell from "@/components/comunidad/ai-v2/ChatShell";
+import { getCurrentUserProfile } from "@/lib/supabase/comunidad";
+import { AiChatShell } from "@/components/ai-chat-shell";
 
 interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+/**
+ * Deep-link to a chat id. ChatLanding + store load history from the URL / store;
+ * Maverlang also uses /ai/chat/[id] — we keep ProgramBI /ai/[id] and let the client hydrate.
+ */
 export default async function AiChatPage({ params }: PageProps) {
-  const { id } = await params;
   const profile = await getCurrentUserProfile();
-  const isAdmin = await isCurrentUserAdmin();
-  const enrollmentData = await getMyEnrollments();
-
-  // If not logged in, redirect to home/login
   if (!profile) {
-    redirect("/auth/login");
+    const { id } = await params;
+    redirect(`/auth/login?next=/ai/${id}`);
   }
 
-  const enrollments = Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments;
-  const hasCourses = enrollments && enrollments.length > 0;
-  const hasSubscription = !!profile?.subscription_plan && 
-    (!profile?.subscription_expires_at || new Date(profile.subscription_expires_at) >= new Date());
-  const canAccessFull = isAdmin || hasSubscription;
-  const isGuest = !canAccessFull && !hasCourses;
+  // Ensure params are resolved (Next 15+) without blocking shell
+  await params;
 
-  const restrictedView = !canAccessFull && hasCourses;
-
-  return (
-    <div className="w-full h-screen overflow-hidden bg-white dark:bg-black">
-      <ChatShell
-        isRestricted={restrictedView}
-        userName={profile.full_name}
-        avatarUrl={profile.avatar_url ?? null}
-        subscriptionPlan={profile.subscription_plan}
-        isAdmin={isAdmin}
-        initialChatId={id}
-        isGuest={isGuest}
-      />
-    </div>
-  );
+  return <AiChatShell />;
 }

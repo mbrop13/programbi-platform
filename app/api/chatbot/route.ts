@@ -215,15 +215,16 @@ ${dynamicContext}`
     const recentMessages = messages.slice(-6)
 
     // ─── Stream con el modelo primario ───
-    const result = streamText({
+    const result = await streamText({
       model: openrouter('deepseek/deepseek-v4-flash'),
       system: systemPrompt,
       messages: recentMessages as any,
-      maxOutputTokens: 1024,
+      maxTokens: 1024,
       onFinish: onFinishCallback,
     })
 
-    return result.toTextStreamResponse({
+    // AI SDK v3 stream response (compatible with marketing chatbot client)
+    return result.toDataStreamResponse({
       headers: {
         'X-Conversation-Id': conversationId || 'pending',
       },

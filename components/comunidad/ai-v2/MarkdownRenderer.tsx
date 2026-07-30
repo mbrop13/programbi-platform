@@ -5,7 +5,6 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
-import { CodeBlock } from "./code-block/CodeBlock";
 import { cn } from "@/lib/utils";
 
 /**
@@ -81,7 +80,13 @@ function MarkdownRendererBase({ content, className }: MarkdownRendererProps) {
             const text = String(children).replace(/\n$/, "");
             const isBlock = !!match || text.includes("\n");
             if (isBlock) {
-              return <CodeBlock code={text} language={match?.[1]} />;
+              return (
+                <pre className="my-3 overflow-x-auto rounded-xl border border-border bg-surface-hover p-3 text-[13px] leading-relaxed">
+                  <code className={cn("font-mono", match?.[1] && `language-${match[1]}`)}>
+                    {text}
+                  </code>
+                </pre>
+              );
             }
             return (
               <code

@@ -116,6 +116,18 @@
   --radius: 8px;
   --radius-lg: 12px;
   --radius-xl: 16px;
+  --radius-2xl: 16px;
+  --radius-3xl: 24px;
+
+  /* Sidebar tokens (chat Maverlang shell) */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
 /* ─── Design tokens (estilo Grok) ──────────────────────────────────────────── */
@@ -154,6 +166,16 @@
   --destructive: #dc2626;
   --input: #e4e4e7;
   --ring: #0a0a0a;
+
+  /* Sidebar (chat shell) */
+  --sidebar: #f4f4f5;
+  --sidebar-foreground: #0a0a0a;
+  --sidebar-primary: #0a0a0a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #ebebed;
+  --sidebar-accent-foreground: #0a0a0a;
+  --sidebar-border: #e4e4e7;
+  --sidebar-ring: #0a0a0a;
 }
 
 .dark {
@@ -186,6 +208,16 @@
   --destructive: #f87171;
   --input: #1f1f22;
   --ring: #ffffff;
+
+  /* Sidebar (chat shell) */
+  --sidebar: #000000;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #1890ff;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #0a0a0a;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-ring: #1890ff;
 }
 
 /* Keyframes */

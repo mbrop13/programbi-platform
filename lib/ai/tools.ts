@@ -9,7 +9,7 @@ import { z } from "zod";
 export const webSearchTool = tool({
   description:
     "Busca información actualizada en la web. Úsalo cuando el estudiante pregunte por datos actuales, eventos recientes, versiones de librerías, precios, o cualquier tema que requiera información al día. No lo uses para conceptos teóricos de Python/SQL/Power BI que ya dominas.",
-  inputSchema: z.object({
+  parameters: z.object({
     query: z
       .string()
       .describe(

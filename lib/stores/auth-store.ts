@@ -1,0 +1,53 @@
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  tier?: "free" | "pro" | "max" | "ultra";
+  role?: "admin" | "user";
+}
+
+interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoaded: boolean;
+  login: (userData: User) => void;
+  logout: () => void;
+  setUser: (user: User | null) => void;
+  setLoaded: (loaded: boolean) => void;
+}
+
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      isAuthenticated: false,
+      isLoaded: false,
+      login: (userData) => set({ user: userData, isAuthenticated: true }),
+      logout: () => set({ user: null, isAuthenticated: false }),
+      setUser: (user) => set({ user, isAuthenticated: !!user }),
+      setLoaded: (loaded) => set({ isLoaded: loaded }),
+    }),
+    {
+      name: 'auth-storage', // name of the item in the storage (must be unique)
+      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+    }
+  )
+);
+
+interface AuthModalState {
+  isOpen: boolean;
+  view: "login" | "register" | "forgot";
+  openModal: (view?: "login" | "register" | "forgot") => void;
+  closeModal: () => void;
+}
+
+export const useAuthModalStore = create<AuthModalState>((set) => ({
+  isOpen: false,
+  view: "login",
+  openModal: (view = "login") => set({ isOpen: true, view }),
+  closeModal: () => set({ isOpen: false }),
+}));

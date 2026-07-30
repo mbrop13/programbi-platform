@@ -104,7 +104,10 @@ const MisCursos = dynamic(() => import("./tabs/MisCursos"), {
   loading: MisCursosSkeleton,
 });
 const AulaVirtual = dynamic(() => import("./tabs/AulaVirtual"), { loading: InlineLoading });
-const ChatShell = dynamic(() => import("./ai-v2/ChatShell"), { loading: InlineLoading });
+const AiChatShell = dynamic(
+  () => import("@/components/ai-chat-shell").then((m) => m.AiChatShell),
+  { loading: InlineLoading }
+);
 const BusinessPortal = dynamic(() => import("./tabs/BusinessPortal"), { loading: InlineLoading });
 const LivePanel = dynamic(() => import("./tabs/LivePanel"), { loading: LivePanelSkeleton });
 const Certificates = dynamic(() => import("./tabs/Certificates"), { loading: InlineLoading });
@@ -272,13 +275,7 @@ export default function ComunidadPortal() {
                   transition={{ duration: 0.15 }}
                   className="flex-1 flex flex-col min-h-0"
                 >
-                  <ChatShell
-                    isRestricted={!!restrictedView}
-                    userName={userProfile?.full_name}
-                    avatarUrl={userProfile?.avatar_url ?? null}
-                    subscriptionPlan={userProfile?.subscription_plan}
-                    isAdmin={isAdmin}
-                  />
+                  <AiChatShell />
                 </motion.div>
               </AnimatePresence>
             ) : (activeTab === "cursos" && selectedCourseId) ? (
