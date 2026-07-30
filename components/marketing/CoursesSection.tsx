@@ -102,12 +102,15 @@ export default function CoursesSection() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Filter logic — destacados: máximo 4, sin Copilot
+  // Filter logic — destacados: máximo 4, sin Copilot / Copilot Studio
+  const isCopilotFamily = (slug: string) =>
+    slug === "copilot" || slug === "copilot-studio";
+
   const getFilteredCourses = () => {
     switch (selectedCat) {
       case "destacados":
         return courses
-          .filter((c) => c.isFeatured && c.slug !== "copilot")
+          .filter((c) => c.isFeatured && !isCopilotFamily(c.slug))
           .sort((a, b) => a.sortOrder - b.sortOrder)
           .slice(0, 4);
       case "datos":
@@ -122,11 +125,11 @@ export default function CoursesSection() {
         );
       case "auto":
         return courses.filter((c) =>
-          ["power-automate", "ia-productividad", "copilot"].includes(c.slug)
+          ["power-automate", "ia-productividad", "copilot", "copilot-studio"].includes(c.slug)
         );
       default:
         return courses
-          .filter((c) => c.isFeatured && c.slug !== "copilot")
+          .filter((c) => c.isFeatured && !isCopilotFamily(c.slug))
           .sort((a, b) => a.sortOrder - b.sortOrder)
           .slice(0, 4);
     }
