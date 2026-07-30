@@ -2759,16 +2759,16 @@ function AdminSchedules() {
     catch (err) { console.error(err); }
   };
 
-  const courseOptions = [
-    { slug: 'power-bi', name: 'Power BI' },
-    { slug: 'python', name: 'Python' },
-    { slug: 'sql-server', name: 'SQL Server' },
-    { slug: 'excel', name: 'Excel' },
-    { slug: 'analisis-de-datos', name: 'Análisis de Datos' },
-    { slug: 'machine-learning', name: 'Machine Learning' },
-    { slug: 'ia-productividad', name: 'IA en Productividad' },
-    { slug: 'power-automate', name: 'Power Automate' },
-  ];
+  // Catálogo completo (incluye copilot, copilot-studio, etc.)
+  const courseOptions = allCourses
+    .slice()
+    .sort((a, b) => a.title.localeCompare(b.title, "es"))
+    .map((c) => ({ slug: c.slug, name: c.title, levels: c.levels }));
+
+  const selectedCourse = courseOptions.find((c) => c.slug === newSchedule.course_slug);
+  const levelOptions = selectedCourse?.levels?.length
+    ? selectedCourse.levels.map((l) => l.name)
+    : ["Básico", "Intermedio", "Avanzado", "Único"];
 
   return (
     <div className="p-6 sm:p-8">
@@ -2790,16 +2790,23 @@ function AdminSchedules() {
              <div className="bg-blue-50/50 rounded-xl p-6 space-y-4">
                <h3 className="font-bold text-sm text-gray-900">Nuevo Horario</h3>
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                 <select value={newSchedule.course_slug} onChange={e => setNewSchedule(p => ({ ...p, course_slug: e.target.value }))}
+                 <select
+                   value={newSchedule.course_slug}
+                   onChange={e => {
+                     const slug = e.target.value;
+                     const course = courseOptions.find((c) => c.slug === slug);
+                     const defaultLevel = course?.levels?.[0]?.name || "Básico";
+                     setNewSchedule(p => ({ ...p, course_slug: slug, level_name: defaultLevel }));
+                   }}
                    className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none">
                    <option value="">Seleccionar curso...</option>
                    {courseOptions.map(c => (<option key={c.slug} value={c.slug}>{c.name}</option>))}
                  </select>
                  <select value={newSchedule.level_name} onChange={e => setNewSchedule(p => ({ ...p, level_name: e.target.value }))}
                    className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none">
-                   <option value="Básico">Básico</option>
-                   <option value="Intermedio">Intermedio</option>
-                   <option value="Avanzado">Avanzado</option>
+                   {levelOptions.map((level) => (
+                     <option key={level} value={level}>{level}</option>
+                   ))}
                  </select>
                  <input type="date" value={newSchedule.start_date} onChange={e => setNewSchedule(p => ({ ...p, start_date: e.target.value }))}
                    className="px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none" />
@@ -2851,7 +2858,9 @@ function AdminSchedules() {
                </div>
                <div className="flex-1 min-w-0">
                  <div className="flex items-center gap-2 mb-1">
-                   <span className="font-bold text-gray-900 text-sm capitalize">{sched.course_slug.replace(/-/g, ' ')}</span>
+                   <span className="font-bold text-gray-900 text-sm">
+                     {allCourses.find((c) => c.slug === sched.course_slug)?.title || sched.course_slug.replace(/-/g, " ")}
+                   </span>
                    <span className="text-[10px] font-bold bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full">{sched.level_name}</span>
                    {!sched.is_active && <span className="text-[10px] font-bold bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full">Inactivo</span>}
                  </div>
