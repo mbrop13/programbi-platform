@@ -149,7 +149,7 @@ export const courses: Course[] = [
     techStack: ["Copilot", "Microsoft 365", "Excel"],
     durationHours: 16,
     modality: "online",
-    level: "básico a intermedio",
+    level: "intermedio a avanzado",
     imageUrl:
       "https://mail.programbi.com/uploads/Copilot_course_cover_design_2K_202607150337.jpeg",
     icon: "Sparkles",
@@ -209,9 +209,10 @@ export const courses: Course[] = [
         hours: 4,
       },
     ],
+    // Un solo nivel (no Básico/Intermedio/Avanzado): curso intermedio-avanzado de 16h
     levels: [
       {
-        name: "Único",
+        name: "Intermedio-Avanzado",
         price: 199000,
         originalPrice: 249000,
         durationHours: 16,
@@ -238,7 +239,7 @@ export const courses: Course[] = [
     techStack: ["Copilot Studio", "Power Automate", "Power Platform"],
     durationHours: 16,
     modality: "online",
-    level: "intermedio",
+    level: "intermedio a avanzado",
     imageUrl:
       "https://mail.programbi.com/uploads/Copilot_course_cover_design_2K_202607150337.jpeg",
     icon: "Sparkles",
@@ -296,9 +297,10 @@ export const courses: Course[] = [
         hours: 4,
       },
     ],
+    // Un solo nivel (no Básico/Intermedio/Avanzado): curso intermedio-avanzado de 16h
     levels: [
       {
-        name: "Único",
+        name: "Intermedio-Avanzado",
         price: 199000,
         originalPrice: 249000,
         durationHours: 16,
