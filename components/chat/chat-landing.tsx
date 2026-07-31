@@ -41,7 +41,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { cn, formatDate as fmtDate, getFallbackImage, slugify, getCleanPathname } from "@/lib/utils"
-import { useLanguageStore } from "@/lib/stores/language-store"
 import { motion, AnimatePresence } from "framer-motion"
 import { Newspaper, Sparkles, Headphones, LineChart, Coins, Landmark, Briefcase, Shield, Lightbulb, Globe, Flame, Calendar, Cpu, ArrowUpRight, ArrowDownRight, MoreHorizontal, SquarePen, Trash2, FolderOpen, Code2, FileCode2, ChevronRight, Copy, Eye, Smartphone, Monitor, Share2 } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
@@ -574,8 +573,6 @@ function ChatLandingContent() {
     currentChatId: s.currentChatId,
   })))
 
-  const language = useLanguageStore((s) => s.language)
-
   const [activeMenu, setActiveMenu] = useState<'noticias' | 'mercados' | 'portafolio' | 'mundo' | null>(null);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(
@@ -703,7 +700,7 @@ function ChatLandingContent() {
       activeFilePath: "/App.tsx",
       pendingPlan: null
     })
-    router.push(`/${language}`)
+    router.push("/ai")
   }
 
   const handleDeleteCurrentChat = async () => {
@@ -721,7 +718,7 @@ function ChatLandingContent() {
           activeFilePath: "/App.tsx",
           pendingPlan: null
         })
-        router.push(`/${language}`)
+        router.push("/ai")
       }
     }
   }
@@ -1105,19 +1102,19 @@ function ChatLandingContent() {
     if (typeof window !== "undefined") {
       const currentPath = window.location.pathname;
       const cleanPath = getCleanPathname(currentPath);
-      let cleanTargetPath = '';
+      let targetPath = "/ai";
       if (currentChatId) {
         const firstUserMsg = storeMessages.find(m => m.role === 'user')?.content || '';
         const title = firstUserMsg.slice(0, 40) || 'Nuevo Chat';
         const slug = slugify(title);
-        cleanTargetPath = `/ai/chat/${slug ? `${slug}-` : ''}${currentChatId}`;
+        targetPath = `/ai/${slug ? `${slug}-` : ''}${currentChatId}`;
       }
-      const targetPath = cleanTargetPath ? `/${language}${cleanTargetPath}` : `/${language}`;
-      if ((cleanPath === '/ai' || cleanPath === '/' || cleanPath === '') && targetPath !== currentPath && !currentPath.startsWith('/share/')) {
+      // Solo reescribe cuando estamos en /ai (chat nuevo) y hay un chat activo
+      if ((cleanPath === '/ai' || cleanPath === '/') && targetPath !== cleanPath && !currentPath.startsWith('/share/')) {
         window.history.pushState(null, '', targetPath);
       }
     }
-  }, [currentChatId, storeMessages, language]);
+  }, [currentChatId, storeMessages]);
 
   // Listen for click-to-edit events from the Sandpack preview iframe
   useEffect(() => {

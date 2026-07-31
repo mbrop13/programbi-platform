@@ -463,17 +463,31 @@ img {
 /* ============================================ */
 /* Chat Premium — Tipografía y Canvas            */
 
-/* Quitar borde/outline azul por defecto al enfocar el textarea del chat */
-#composer-textarea:focus,
-#composer-textarea:focus-visible,
-#composer-textarea:active {
+/* Chat composer: sin borde/ring negro en el área de texto (legacy Maverlang usaba #composer-textarea) */
+#chat-input,
+#chat-input:focus,
+#chat-input:focus-visible,
+#chat-input:active,
+.chat-composer-textarea,
+.chat-composer-textarea:focus,
+.chat-composer-textarea:focus-visible,
+.chat-composer-textarea:active {
   outline: none !important;
   border: none !important;
   box-shadow: none !important;
-  ring: 0 !important;
   --tw-ring-offset-shadow: 0 0 #0000 !important;
   --tw-ring-shadow: 0 0 #0000 !important;
   --tw-shadow: 0 0 #0000 !important;
+  --tw-ring-width: 0 !important;
+  --tw-ring-color: transparent !important;
+}
+
+/* Contenedor del composer: sombra suave (sin inset negro del diseño Maverlang) */
+.chat-composer {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04), 0 2px 8px 0 rgba(0, 0, 0, 0.03);
+}
+.chat-composer:focus-within {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 4px 12px 0 rgba(0, 0, 0, 0.05);
 }
 
 /* Tipografía base del markdown del chat (referenciada por MarkdownRenderer) */

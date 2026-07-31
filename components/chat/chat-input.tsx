@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { useAIChatStore } from "@/lib/stores/ai-chat-store";
@@ -25,21 +24,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import {
   Plus,
   Mic,
-  Globe,
-  Image as ImageIcon,
-  Terminal,
   ArrowUp,
-  FileUp,
-  Camera,
   X,
   Star,
   PieChart,
@@ -48,9 +35,6 @@ import {
   AreaChart,
   Target,
   ChevronRight,
-  ChevronDown,
-  Check,
-  Zap,
   TrendingUp,
   Scale,
   Layers,
@@ -245,8 +229,6 @@ export function ChatInput({
   const MAX_FILES = userTier === "free" ? 1 : userTier === "pro" ? 3 : 10;
 
   const { isMobile } = useSidebar();
-  // Siempre abrir hacia arriba: en chat nuevo el menú hacia abajo tapa el contenido / se ve mal
-  const openUpward = true;
 
   // Auto-resize the textarea as content grows
   const resizeTextarea = () => {
@@ -584,18 +566,18 @@ export function ChatInput({
         )}
 
         <div className={cn(
-          "rounded-xl p-2.5 bg-white dark:bg-[#1E1E20] border border-gray-200 dark:border-white/10",
-          "shadow-sm transition-all duration-300 relative group focus-within:border-gray-300 dark:focus-within:border-white/20 focus-within:shadow-md",
-          isListening && "border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.15)]"
+          "chat-composer rounded-2xl p-2.5 bg-white dark:bg-[#1E1E20]",
+          "border border-black/[0.08] dark:border-white/10 shadow-sm",
+          "transition-all duration-300 relative group",
+          "focus-within:border-black/15 dark:focus-within:border-white/20",
+          isListening && "border-red-500/40 shadow-[0_0_15px_rgba(239,68,68,0.12)]"
         )}>
-          {/* Tarjeta de cambios (modo build) — integrada DENTRO de la barra de
-              input como su sección superior, fusionándose visualmente con la
-              barra (sin borde/fondo propios, separador sutil inferior). */}
+          {/* Tarjeta de cambios (modo build) — integrada DENTRO de la barra */}
           {isWebBuilderMode && !isStreaming && <BuildChangesCard />}
 
           {/* File Previews inside the input box */}
           {attachedFiles.length > 0 && (
-            <div className="flex flex-wrap gap-3 p-3 border-b border-border/20 mb-2">
+            <div className="flex flex-wrap gap-3 p-3 border-b border-black/[0.06] dark:border-white/10 mb-2">
               {attachedFiles.map(file => {
                 const isImage = file.type === "image" || file.content.startsWith("data:image/");
                 const isCodeFile = file.type === "code" || file.isPastedCode;
@@ -606,9 +588,8 @@ export function ChatInput({
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.9 }}
-                    className="relative group w-22 h-22 rounded-2xl overflow-hidden border border-border/40 bg-muted/30 dark:bg-white/[0.02] flex flex-col justify-between p-2 shadow-sm transition-all duration-300 hover:border-border/60"
+                    className="relative group w-22 h-22 rounded-2xl overflow-hidden border border-black/[0.08] dark:border-white/10 bg-muted/30 dark:bg-white/[0.02] flex flex-col justify-between p-2 shadow-sm transition-all duration-300"
                   >
-                    {/* Delete button floating in the corner */}
                     <button
                       type="button"
                       onClick={() => removeFile(file.id)}
@@ -619,7 +600,6 @@ export function ChatInput({
                     </button>
                     
                     {isImage ? (
-                      /* Image preview */
                       <div className="absolute inset-0 z-10 w-full h-full">
                         <img
                           src={file.content}
@@ -628,14 +608,12 @@ export function ChatInput({
                         />
                       </div>
                     ) : isCodeFile ? (
-                      /* Code preview card */
                       <div className="w-full h-full flex flex-col justify-between font-mono text-[7px] text-muted-foreground select-none leading-normal overflow-hidden p-0.5">
-                        <div className="truncate font-bold text-[9px] text-foreground mb-1 border-b border-border/20 pb-0.5 max-w-[80%]">{file.name}</div>
+                        <div className="truncate font-bold text-[9px] text-foreground mb-1 border-b border-black/[0.06] pb-0.5 max-w-[80%]">{file.name}</div>
                         <div className="line-clamp-4 break-all opacity-70 mb-1 leading-tight">{file.content}</div>
                         <div className="text-[7px] font-black uppercase text-blue-500 dark:text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded-md self-start tracking-wider">PASTED</div>
                       </div>
                     ) : (
-                      /* Regular file preview card */
                       <div className="w-full h-full flex flex-col justify-between p-0.5">
                         <div className="w-8 h-8 rounded-xl bg-green-500/10 flex items-center justify-center shrink-0">
                           <FileText className="w-4.5 h-4.5 text-green-500" />
@@ -652,9 +630,9 @@ export function ChatInput({
             </div>
           )}
 
-          {/* Textarea area */}
+          {/* Textarea — nativo, sin estilos shadcn de borde/ring negros */}
           <div className="flex items-center px-2 bg-transparent relative">
-            <Textarea
+            <textarea
               ref={textareaRef}
               value={value}
               onChange={(e) => setValue(e.target.value)}
@@ -667,9 +645,12 @@ export function ChatInput({
               name="input"
               rows={1}
               className={cn(
-                "min-h-12 max-h-72 text-[15px] md:!text-[15px] px-1",
-                "resize-none overflow-y-auto",
-                "border-0 bg-transparent dark:bg-transparent shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
+                "chat-composer-textarea w-full min-h-12 max-h-72 text-[15px] md:text-[15px] px-1 py-2",
+                "resize-none overflow-y-auto bg-transparent text-foreground",
+                "border-0 outline-none shadow-none ring-0",
+                "focus:outline-none focus:ring-0 focus:border-0 focus:shadow-none",
+                "focus-visible:outline-none focus-visible:ring-0 focus-visible:border-0 focus-visible:shadow-none",
+                "placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
               )}
             />
           </div>
@@ -692,14 +673,13 @@ export function ChatInput({
                 <AnimatePresence>
                   {showAttachMenu && (
                     <motion.div
-                      initial={{ opacity: 0, y: openUpward ? 10 : -10, scale: 0.95 }}
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: openUpward ? 10 : -10, scale: 0.95 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
                       transition={{ type: "spring", damping: 20, stiffness: 300 }}
                       className={cn(
-                        "absolute left-0 z-40 w-64 flex flex-col max-h-[350px] overflow-hidden rounded-2xl border shadow-2xl",
-                        openUpward ? "bottom-12" : "top-12",
-                        "bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-gray-200/50 dark:border-white/5 shadow-blue-500/5 dark:shadow-blue-900/10"
+                        "absolute left-0 bottom-12 z-40 w-64 flex flex-col max-h-[350px] overflow-hidden rounded-2xl border shadow-xl",
+                        "bg-white/95 dark:bg-zinc-950/95 backdrop-blur-xl border-black/[0.08] dark:border-white/10"
                       )}
                     >
                         <div className="flex-1 overflow-y-auto hidden-scrollbar p-2.5 space-y-3">

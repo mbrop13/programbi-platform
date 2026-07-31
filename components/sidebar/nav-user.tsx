@@ -54,7 +54,6 @@ import {
 import { useAuthStore, useAuthModalStore } from "@/lib/stores/auth-store"
 import { useLanguageStore } from "@/lib/stores/language-store"
 import { useTranslation, type TranslationKey } from "@/lib/translations"
-import { getCleanPathname } from "@/lib/utils"
 import Link from "next/link"
 import { useAssistantStore } from "@/lib/stores/assistant-store"
 import { NotificationBell } from "@/components/notification-bell"
@@ -124,25 +123,8 @@ export function NavUser() {
   const avatarSrc = user?.avatar
 
   const handleLanguageChange = (pref: "default" | "es" | "en") => {
+    // Solo actualiza preferencia en store (persistida). El idioma no va en la URL.
     setPreference(pref)
-    
-    // Determine the target locale to push to URL
-    let targetLang: "es" | "en" = "es"
-    if (pref === "default") {
-      const browserLang = typeof navigator !== "undefined" ? navigator.language : "es";
-      targetLang = browserLang.toLowerCase().startsWith("es") ? "es" : "en";
-    } else {
-      targetLang = pref
-    }
-
-    // Rewrite the browser URL
-    const rawPath = window.location.pathname
-    // Clean it of any es/en prefixes
-    const cleanPath = getCleanPathname(rawPath)
-    const search = window.location.search
-    const newPath = `/${targetLang}${cleanPath === '/' ? '' : cleanPath}${search}`
-    
-    router.push(newPath)
   }
 
   const handleSignOut = () => {

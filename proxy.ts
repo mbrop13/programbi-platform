@@ -7,6 +7,17 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const userAgent = request.headers.get('user-agent') || ''
 
+  // Legacy locale prefixes (/es, /en) from the old Maverlang merge — strip and redirect.
+  // Language is controlled only from user settings, not the URL.
+  const localeMatch = pathname.match(/^\/(es|en)(\/.*)?$/)
+  if (localeMatch) {
+    const rest = localeMatch[2] || '/'
+    const cleanPath = rest === '' ? '/' : rest
+    const url = request.nextUrl.clone()
+    url.pathname = cleanPath
+    return NextResponse.redirect(url)
+  }
+
   // Bloqueo inmediato en Edge de bots agresivos en rutas sensibles (auth/registro/api)
   if (BAD_BOT_UA_REGEX.test(userAgent) && (pathname.startsWith('/registro') || pathname.startsWith('/login') || pathname.startsWith('/api'))) {
     return new NextResponse('Access Denied', { status: 403 })
