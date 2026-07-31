@@ -598,6 +598,84 @@ img {
   animation: stream-caret-pulse 1s ease-in-out infinite;
 }
 
+/* ─── Practice path · nivel activo (halo sin flicker de fondo) ─────────────
+   Glow estático + anillos CSS. El halo ya no se reinicia con un salto de
+   opacidad sobre un círculo sólido (causa del parpadeo de la luz de fondo). */
+@keyframes practice-path-ring {
+  0% {
+    transform: translate3d(-50%, -50%, 0) scale(0.92);
+    opacity: 0.42;
+  }
+  70% {
+    opacity: 0.1;
+  }
+  100% {
+    transform: translate3d(-50%, -50%, 0) scale(1.55);
+    opacity: 0;
+  }
+}
+
+@keyframes practice-path-glow {
+  0%,
+  100% {
+    opacity: 0.28;
+    transform: translate3d(-50%, -50%, 0) scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: translate3d(-50%, -50%, 0) scale(1.06);
+  }
+}
+
+.practice-path-glow {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 112%;
+  height: 112%;
+  border-radius: 9999px;
+  pointer-events: none;
+  filter: blur(12px);
+  transform: translate3d(-50%, -50%, 0);
+  animation: practice-path-glow 2.4s ease-in-out infinite;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.practice-path-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 118%;
+  height: 118%;
+  border-radius: 9999px;
+  pointer-events: none;
+  filter: blur(6px);
+  transform: translate3d(-50%, -50%, 0) scale(0.92);
+  opacity: 0;
+  animation: practice-path-ring 2.2s ease-out infinite;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+.practice-path-ring--delay {
+  animation-delay: 1.1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .practice-path-glow,
+  .practice-path-ring {
+    animation: none;
+  }
+  .practice-path-glow {
+    opacity: 0.3;
+    transform: translate3d(-50%, -50%, 0);
+  }
+  .practice-path-ring {
+    opacity: 0;
+  }
+}
+
 /* ─── DARK MODE OVERRIDE SHEET (monocromo, sin azul) ─────────────────────
    Varias pestañas heredadas usan utilidades Tailwind crudas (`bg-white`,
    `border-gray-100`, `text-gray-900`) sin variantes `dark:`. Para no

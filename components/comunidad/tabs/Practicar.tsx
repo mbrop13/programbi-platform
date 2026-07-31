@@ -500,60 +500,84 @@ function PathNode({
         </motion.div>
       )}
 
-      {/* BOTÓN CIRCULAR 3D TIPO FICHA/TORTA */}
-      <motion.div
-        animate={isActive && !done ? { y: [0, -6, 0] } : { y: 0 }}
-        transition={isActive && !done ? { duration: 2, repeat: Infinity, ease: "easeInOut" } : { duration: 0.2 }}
-        className="relative group cursor-pointer"
-      >
-        {/* Halo Suave Concéntrico para Nodo Activo */}
+      {/* BOTÓN CIRCULAR 3D TIPO FICHA/TORTA
+          Halo fijo (sin bounce) para evitar que la luz de fondo parpadee al
+          combinar scale/opacity de framer-motion con el movimiento vertical. */}
+      <div className="relative group cursor-pointer">
         {isActive && !done && (
-          <motion.div
-            className="absolute -inset-2 rounded-full pointer-events-none"
-            style={{ background: accent }}
-            animate={{ scale: [1, 1.25], opacity: [0.35, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeOut" }}
-          />
+          <>
+            {/* Glow ambiente constante: base de luz sin saltos al reiniciar loop */}
+            <div
+              className="practice-path-glow"
+              style={{ background: accent }}
+              aria-hidden
+            />
+            {/* Anillos suaves con blur (CSS); se desvanecen a 0 antes de reiniciar */}
+            <div
+              className="practice-path-ring"
+              style={{ background: accent }}
+              aria-hidden
+            />
+            <div
+              className="practice-path-ring practice-path-ring--delay"
+              style={{ background: accent }}
+              aria-hidden
+            />
+          </>
         )}
 
-        {/* Base 3D de Profundidad */}
-        <div
-          className="relative w-18 h-18 sm:w-22 sm:h-22 rounded-full pt-1.5 px-0.5 pb-2.5 transition-transform active:translate-y-1 shadow-xl"
-          style={{
-            background: shadowRimColor,
-            boxShadow: isActive && !done ? `0 12px 28px -4px ${accent}60` : undefined,
-          }}
+        {/* Solo el botón flota; el halo permanece estable en su capa */}
+        <motion.div
+          animate={isActive && !done ? { y: [0, -6, 0] } : { y: 0 }}
+          transition={
+            isActive && !done
+              ? { duration: 2, repeat: Infinity, ease: "easeInOut" }
+              : { duration: 0.2 }
+          }
+          className="relative z-10"
         >
-          {/* Cara Frontal del Botón 3D */}
-          <button
-            onClick={onClick}
-            disabled={locked}
-            className={cn(
-              "w-full h-full rounded-full flex items-center justify-center font-black text-white transition-all border-t border-white/30",
-              locked && "opacity-60 cursor-not-allowed border-none"
-            )}
+          {/* Base 3D de Profundidad */}
+          <div
+            className="relative w-18 h-18 sm:w-22 sm:h-22 rounded-full pt-1.5 px-0.5 pb-2.5 transition-transform active:translate-y-1 shadow-xl"
             style={{
-              background: locked
-                ? "var(--surface-hover)"
-                : done
-                ? "#10B981"
-                : accent,
+              background: shadowRimColor,
+              boxShadow:
+                isActive && !done
+                  ? `0 10px 24px -6px ${accent}55, 0 0 0 1px ${accent}22`
+                  : undefined,
             }}
           >
-            <span className="relative z-10 flex items-center justify-center">
-              {locked ? (
-                <Lock className="w-6 h-6 sm:w-7 sm:h-7 text-text-muted" />
-              ) : done ? (
-                <Check className="w-7 h-7 sm:w-8 sm:h-8 stroke-[3]" />
-              ) : (
-                kindIcon(level.kind) ?? (
-                  <Star className="w-7 h-7 sm:w-8 sm:h-8 fill-white text-white drop-shadow-md" />
-                )
+            {/* Cara Frontal del Botón 3D */}
+            <button
+              onClick={onClick}
+              disabled={locked}
+              className={cn(
+                "w-full h-full rounded-full flex items-center justify-center font-black text-white transition-all border-t border-white/30",
+                locked && "opacity-60 cursor-not-allowed border-none"
               )}
-            </span>
-          </button>
-        </div>
-      </motion.div>
+              style={{
+                background: locked
+                  ? "var(--surface-hover)"
+                  : done
+                  ? "#10B981"
+                  : accent,
+              }}
+            >
+              <span className="relative z-10 flex items-center justify-center">
+                {locked ? (
+                  <Lock className="w-6 h-6 sm:w-7 sm:h-7 text-text-muted" />
+                ) : done ? (
+                  <Check className="w-7 h-7 sm:w-8 sm:h-8 stroke-[3]" />
+                ) : (
+                  kindIcon(level.kind) ?? (
+                    <Star className="w-7 h-7 sm:w-8 sm:h-8 fill-white text-white drop-shadow-md" />
+                  )
+                )}
+              </span>
+            </button>
+          </div>
+        </motion.div>
+      </div>
 
       {/* Título de Nivel */}
       <div className="mt-2.5 flex flex-col items-center text-center max-w-[130px] sm:max-w-[140px]">
