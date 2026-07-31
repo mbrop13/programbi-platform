@@ -6,11 +6,14 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
+  BarChart3,
   BookOpen,
   Bot,
   Check,
   Clock,
   Code2,
+  Database,
+  FileSpreadsheet,
   Flame,
   GraduationCap,
   Heart,
@@ -138,10 +141,10 @@ const practiceFeatures = [
 ];
 
 const stack = [
-  { name: "Power BI", icon: "https://cdn.simpleicons.org/powerbi/1890FF" },
-  { name: "SQL Server", icon: "https://cdn.simpleicons.org/microsoftsqlserver/CC2927" },
-  { name: "Python", icon: "https://cdn.simpleicons.org/python/3776AB" },
-  { name: "Excel", icon: "https://cdn.simpleicons.org/microsoftexcel/217346" },
+  { name: "Power BI", icon: BarChart3, color: "#F2C811" },
+  { name: "SQL Server", icon: Database, color: "#CC2927" },
+  { name: "Python", icon: Code2, color: "#3776AB" },
+  { name: "Excel", icon: FileSpreadsheet, color: "#217346" },
 ];
 
 const steps = [
@@ -737,16 +740,18 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
                 </p>
               </div>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                {stack.map((s) => (
-                  <div
-                    key={s.name}
-                    className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={s.icon} alt="" className="h-4 w-4" />
-                    <span className="text-xs font-semibold text-slate-200">{s.name}</span>
-                  </div>
-                ))}
+                {stack.map((s) => {
+                  const Icon = s.icon;
+                  return (
+                    <div
+                      key={s.name}
+                      className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5"
+                    >
+                      <Icon className="h-4 w-4 shrink-0" style={{ color: s.color }} strokeWidth={2} />
+                      <span className="text-xs font-semibold text-slate-200">{s.name}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </motion.div>
