@@ -11,11 +11,16 @@ import {
   Check,
   Clock,
   Code2,
+  Flame,
   GraduationCap,
+  Heart,
   Play,
   Radio,
   Shield,
   Sparkles,
+  Star,
+  Target,
+  Trophy,
   Users,
   Video,
   Zap,
@@ -32,18 +37,56 @@ const fadeUp = {
   transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] as const },
 };
 
+/** Full screenshot without side crop (contain + natural height). */
+function ProductShot({
+  src,
+  alt,
+  priority = false,
+  chrome = false,
+}: {
+  src: string;
+  alt: string;
+  priority?: boolean;
+  chrome?: boolean;
+}) {
+  return (
+    <div className="overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_20px_50px_-24px_rgba(15,23,42,0.22)]">
+      {chrome && (
+        <div className="flex items-center gap-2 border-b border-slate-100 bg-slate-50/90 px-4 py-3">
+          <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
+          <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
+          <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
+          <span className="ml-2 text-[11px] font-semibold text-slate-400">Campus ProgramBI</span>
+        </div>
+      )}
+      <div className="bg-slate-50">
+        <Image
+          src={src}
+          alt={alt}
+          width={1600}
+          height={900}
+          className="h-auto w-full object-contain object-center"
+          priority={priority}
+          unoptimized
+          sizes="(max-width: 1024px) 100vw, 560px"
+        />
+      </div>
+    </div>
+  );
+}
+
 /* ─── Content ─── */
 const pillars = [
+  {
+    icon: Target,
+    title: "Practica",
+    body: "Ruta estilo Duolingo: niveles, XP, rachas y ejercicios interactivos de datos.",
+    tone: "bg-[#1890FF] text-white",
+  },
   {
     icon: Video,
     title: "Clases en vivo",
     body: "Masterclasses semanales con casos reales de SQL, Python y Power BI.",
-    tone: "bg-[#1890FF] text-white",
-  },
-  {
-    icon: BookOpen,
-    title: "Campus grabado",
-    body: "Rutas estructuradas, material descargable y aulas interactivas 24/7.",
     tone: "bg-white text-slate-900 border border-slate-200",
   },
   {
@@ -57,6 +100,37 @@ const pillars = [
     title: "Comunidad",
     body: "Networking, muro de proyectos y apoyo entre analistas de datos.",
     tone: "bg-slate-100 text-slate-900",
+  },
+];
+
+const practiceTracks = [
+  { name: "Power BI", color: "#F2C811" },
+  { name: "SQL Server", color: "#CC2927" },
+  { name: "Python", color: "#3776AB" },
+  { name: "Excel", color: "#217346" },
+  { name: "IA", color: "#8B5CF6" },
+];
+
+const practiceFeatures = [
+  {
+    icon: Target,
+    title: "Ruta de niveles",
+    body: "Avanza lección a lección con desbloqueo progresivo, como en Duolingo.",
+  },
+  {
+    icon: Heart,
+    title: "Corazones y feedback",
+    body: "Practica sin miedo a equivocarte: feedback al instante y explicación de cada respuesta.",
+  },
+  {
+    icon: Flame,
+    title: "Meta diaria y XP",
+    body: "Elige tu ritmo (5 a 25 min) y construye hábito con puntos de experiencia.",
+  },
+  {
+    icon: BookOpen,
+    title: "Ejercicios reales",
+    body: "Opción múltiple, emparejar, ordenar SQL, rellenar espacios y más.",
   },
 ];
 
@@ -76,23 +150,27 @@ const steps = [
   {
     n: "02",
     title: "Entra al campus",
-    body: "Accede a cursos y a las clases gratuitas publicadas por el equipo.",
+    body: "Mira clases gratuitas y elige tu track de práctica (SQL, BI, Python…).",
   },
   {
     n: "03",
-    title: "Practica y avanza",
-    body: "Sigue las rutas, usa el mentor IA y participa de la comunidad.",
+    title: "Practica y sube de nivel",
+    body: "Completa ejercicios interactivos, gana XP y avanza en la ruta.",
   },
 ];
 
 const faqs = [
   {
     q: "¿Puedo entrar sin suscribirme?",
-    a: "Sí. Las suscripciones estarán disponibles próximamente. Mientras tanto puedes crear tu cuenta y ver las clases gratuitas del campus.",
+    a: "Sí. Las suscripciones estarán disponibles próximamente. Mientras tanto puedes crear tu cuenta, ver clases gratuitas y usar el módulo Practica.",
+  },
+  {
+    q: "¿Qué es Practica?",
+    a: "Es un módulo estilo Duolingo dentro de la comunidad: rutas por Power BI, SQL, Python, Excel e IA, con niveles, XP, metas diarias y ejercicios interactivos (opción múltiple, emparejar, ordenar consultas y más).",
   },
   {
     q: "¿Qué incluye la comunidad cuando abran las membresías?",
-    a: "Clases en vivo, grabaciones, material de estudio, mentoría con IA, muro de la comunidad y descuentos en cursos individuales.",
+    a: "Clases en vivo, grabaciones, material de estudio, mentoría con IA, Practica, muro de la comunidad y descuentos en cursos individuales.",
   },
   {
     q: "¿Las clases gratuitas son de verdad gratuitas?",
@@ -100,7 +178,7 @@ const faqs = [
   },
   {
     q: "¿Necesito experiencia previa?",
-    a: "No. Hay rutas desde cero y también material avanzado para quienes ya trabajan con datos.",
+    a: "No. Practica y las rutas del campus tienen caminos desde cero y también material avanzado.",
   },
   {
     q: "¿Puedo cancelar cuando quiera?",
@@ -132,15 +210,20 @@ interface Props {
 
 export default function CommunityLanding({ isLoggedIn }: Props) {
   const [authOpen, setAuthOpen] = useState(false);
+  const [authRedirect, setAuthRedirect] = useState("/comunidad/cursos");
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  const goCampus = () => {
+  const goTo = (path: string) => {
     if (isLoggedIn) {
-      window.location.href = "/comunidad/cursos";
+      window.location.href = path;
     } else {
+      setAuthRedirect(path);
       setAuthOpen(true);
     }
   };
+
+  const goCampus = () => goTo("/comunidad/cursos");
+  const goPractice = () => goTo("/comunidad/practicar");
 
   return (
     <div className="bg-[#FAFBFC] text-slate-900 antialiased">
@@ -148,7 +231,7 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
         isOpen={authOpen}
         onClose={() => setAuthOpen(false)}
         defaultTab="register"
-        redirectUrl="/comunidad/cursos"
+        redirectUrl={authRedirect}
       />
 
       {/* ═══ HERO ═══ */}
@@ -184,7 +267,7 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
               transition={{ duration: 0.45, delay: 0.1 }}
               className="mt-5 max-w-[42ch] text-base leading-relaxed text-slate-500 sm:text-lg"
             >
-              Aprende SQL, Power BI, Python y Excel con clases prácticas, mentoría IA y una comunidad profesional.
+              Clases reales, mentor IA y Practica estilo Duolingo para SQL, Power BI, Python y Excel.
             </motion.p>
 
             <motion.div
@@ -201,20 +284,26 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
                 <ArrowRight className="h-4 w-4" />
               </button>
 
-              {!SUBSCRIPTIONS_ENABLED ? (
-                <span className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-5 py-3.5 text-sm font-semibold text-slate-500">
-                  <Clock className="h-4 w-4 text-slate-400" />
-                  Suscripciones próximamente
-                </span>
-              ) : (
-                <a
-                  href="#membresia"
-                  className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-bold text-slate-800 no-underline transition hover:border-slate-300"
-                >
-                  Ver planes
-                </a>
-              )}
+              <button
+                onClick={goPractice}
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-bold text-slate-800 transition hover:border-slate-300 active:scale-[0.98] border-solid cursor-pointer"
+              >
+                <Target className="h-4 w-4 text-[#1890FF]" />
+                Probar Practica
+              </button>
             </motion.div>
+
+            {!SUBSCRIPTIONS_ENABLED && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-slate-400"
+              >
+                <Clock className="h-3.5 w-3.5" />
+                Suscripciones próximamente
+              </motion.p>
+            )}
 
             <motion.ul
               initial={{ opacity: 0 }}
@@ -222,7 +311,7 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
               transition={{ delay: 0.25 }}
               className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-[13px] font-medium text-slate-500"
             >
-              {["Clases gratuitas", "Sin tarjeta", "SQL · BI · Python · Excel"].map((item) => (
+              {["Clases gratuitas", "Practica interactiva", "Sin tarjeta"].map((item) => (
                 <li key={item} className="inline-flex items-center gap-1.5">
                   <Check className="h-3.5 w-3.5 text-[#1890FF]" strokeWidth={2.5} />
                   {item}
@@ -231,40 +320,28 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
             </motion.ul>
           </div>
 
-          {/* Product visual */}
+          {/* Product visual — full image, no side crop */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.12 }}
             className="relative lg:col-span-6"
           >
-            <div className="relative overflow-hidden rounded-2xl border border-slate-200/90 bg-white shadow-[0_24px_60px_-24px_rgba(15,23,42,0.25)]">
-              <div className="flex items-center gap-2 border-b border-slate-100 bg-slate-50/90 px-4 py-3">
-                <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
-                <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
-                <span className="h-2.5 w-2.5 rounded-full bg-slate-300" />
-                <span className="ml-2 text-[11px] font-semibold text-slate-400">Campus ProgramBI</span>
-              </div>
-              <div className="relative aspect-[16/10] w-full">
-                <Image
-                  src="https://mail.programbi.com/uploads/Captura-de-pantalla-2026-07-14-053709.png"
-                  alt="Vista del campus y dashboard Power BI"
-                  fill
-                  className="object-cover object-top"
-                  priority
-                  unoptimized
-                />
-              </div>
-            </div>
+            <ProductShot
+              src="https://mail.programbi.com/uploads/Captura-de-pantalla-2026-07-14-053709.png"
+              alt="Vista del campus y dashboard Power BI"
+              priority
+              chrome
+            />
 
-            <div className="absolute -bottom-4 left-4 right-4 flex gap-2 sm:left-auto sm:right-6 sm:w-auto">
-              <div className="rounded-xl border border-white/80 bg-white/95 px-3.5 py-2.5 shadow-lg backdrop-blur">
+            <div className="mt-3 flex flex-wrap gap-2">
+              <div className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-sm">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Stack</p>
                 <p className="text-sm font-bold text-slate-900">Power BI · SQL · Python</p>
               </div>
-              <div className="hidden rounded-xl border border-white/80 bg-white/95 px-3.5 py-2.5 shadow-lg backdrop-blur sm:block">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Modo</p>
-                <p className="text-sm font-bold text-slate-900">En vivo + a tu ritmo</p>
+              <div className="rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 shadow-sm">
+                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Nuevo</p>
+                <p className="text-sm font-bold text-slate-900">Practica · estilo Duolingo</p>
               </div>
             </div>
           </motion.div>
@@ -371,41 +448,185 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
           </motion.div>
 
           <motion.div {...fadeUp} className="relative">
-            <div className="overflow-hidden rounded-2xl border border-slate-200 shadow-[0_20px_50px_-20px_rgba(15,23,42,0.2)]">
-              <div className="relative aspect-[16/10]">
-                <Image
-                  src="https://mail.programbi.com/uploads/Captura-de-pantalla-2026-07-14-053922.png"
-                  alt="Material y modelado de datos en el campus"
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              </div>
-            </div>
-            <div className="absolute -left-3 top-6 hidden rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-md sm:block">
-              <div className="flex items-center gap-2">
-                <Play className="h-4 w-4 text-[#1890FF]" />
-                <span className="text-xs font-bold text-slate-800">Sesión en curso</span>
-              </div>
+            <ProductShot
+              src="https://mail.programbi.com/uploads/Captura-de-pantalla-2026-07-14-053922.png"
+              alt="Material y modelado de datos en el campus"
+            />
+            <div className="mt-3 inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 shadow-sm">
+              <Play className="h-4 w-4 text-[#1890FF]" />
+              <span className="text-xs font-bold text-slate-800">Sesión y material del campus</span>
             </div>
           </motion.div>
         </div>
       </section>
 
-      {/* ═══ IA + MATERIAL (2-col equal, different from zigzag) ═══ */}
-      <section className="py-20 lg:py-28">
+      {/* ═══ PRACTICA (Duolingo-style) ═══ */}
+      <section id="practica" className="relative overflow-hidden py-20 lg:py-28">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(24,144,255,0.08),transparent_50%)]" />
+        <div className="relative mx-auto max-w-[1180px] px-5 lg:px-8">
+          <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-12 lg:gap-14">
+            <motion.div {...fadeUp} className="lg:col-span-6">
+              <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-emerald-700">
+                <Flame className="h-3.5 w-3.5" />
+                Nuevo en el campus
+              </div>
+              <h2 className="font-display text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+                Practica como un juego,{" "}
+                <span className="text-[#1890FF]">aprende de verdad</span>
+              </h2>
+              <p className="mt-4 max-w-[48ch] text-base leading-relaxed text-slate-500">
+                Módulo interactivo estilo Duolingo: elige un track, completa niveles, gana XP y refuerza SQL, Power BI, Python, Excel e IA con ejercicios cortos.
+              </p>
+
+              <div className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {practiceFeatures.map((f) => {
+                  const Icon = f.icon;
+                  return (
+                    <div
+                      key={f.title}
+                      className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+                    >
+                      <div className="mb-2 flex h-8 w-8 items-center justify-center rounded-lg bg-[#1890FF]/10 text-[#1890FF]">
+                        <Icon className="h-4 w-4" />
+                      </div>
+                      <h3 className="text-sm font-bold text-slate-950">{f.title}</h3>
+                      <p className="mt-1 text-xs leading-relaxed text-slate-500">{f.body}</p>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-2">
+                {practiceTracks.map((t) => (
+                  <span
+                    key={t.name}
+                    className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700"
+                  >
+                    <span
+                      className="h-2 w-2 rounded-full"
+                      style={{ backgroundColor: t.color }}
+                    />
+                    {t.name}
+                  </span>
+                ))}
+              </div>
+
+              <button
+                onClick={goPractice}
+                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#1890FF] px-6 py-3.5 text-sm font-bold text-white shadow-[0_8px_24px_-8px_rgba(24,144,255,0.45)] transition hover:bg-[#0d7de0] active:scale-[0.98] border-0 cursor-pointer"
+              >
+                Empezar a practicar
+                <ArrowRight className="h-4 w-4" />
+              </button>
+            </motion.div>
+
+            {/* Path preview mock */}
+            <motion.div {...fadeUp} className="lg:col-span-6">
+              <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_24px_60px_-28px_rgba(15,23,42,0.2)] sm:p-8">
+                <div className="mb-6 flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                      Tu ruta
+                    </p>
+                    <p className="text-lg font-black text-slate-950">SQL Server · Nivel 3</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-600">
+                      <Heart className="h-3.5 w-3.5 fill-rose-500 text-rose-500" /> 5
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-700">
+                      <Zap className="h-3.5 w-3.5" /> 120 XP
+                    </span>
+                  </div>
+                </div>
+
+                <div className="relative mx-auto flex max-w-[280px] flex-col items-center gap-5 py-2">
+                  {[
+                    { label: "SELECT básico", done: true, kind: "done" as const },
+                    { label: "WHERE y filtros", done: true, kind: "done" as const },
+                    { label: "JOINs", done: false, kind: "active" as const },
+                    { label: "GROUP BY", done: false, kind: "locked" as const },
+                    { label: "Checkpoint", done: false, kind: "trophy" as const },
+                  ].map((node, i) => (
+                    <div key={node.label} className="relative flex w-full flex-col items-center">
+                      {i > 0 && (
+                        <div className="absolute -top-5 h-5 w-0.5 bg-slate-200" />
+                      )}
+                      <div
+                        className={`flex h-14 w-14 items-center justify-center rounded-full border-4 shadow-sm ${
+                          node.kind === "done"
+                            ? "border-emerald-400 bg-emerald-500 text-white"
+                            : node.kind === "active"
+                              ? "border-[#1890FF] bg-[#1890FF] text-white ring-4 ring-[#1890FF]/20"
+                              : node.kind === "trophy"
+                                ? "border-amber-300 bg-amber-100 text-amber-700"
+                                : "border-slate-200 bg-slate-100 text-slate-400"
+                        }`}
+                      >
+                        {node.kind === "done" ? (
+                          <Check className="h-6 w-6" strokeWidth={2.5} />
+                        ) : node.kind === "trophy" ? (
+                          <Trophy className="h-5 w-5" />
+                        ) : node.kind === "active" ? (
+                          <Star className="h-5 w-5 fill-white" />
+                        ) : (
+                          <span className="text-sm font-black">{i + 1}</span>
+                        )}
+                      </div>
+                      <p
+                        className={`mt-2 text-center text-xs font-bold ${
+                          node.kind === "locked" ? "text-slate-400" : "text-slate-800"
+                        }`}
+                      >
+                        {node.label}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-8 rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    Ejemplo de ejercicio
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-slate-900">
+                    ¿Qué JOIN devuelve solo filas con coincidencia en ambas tablas?
+                  </p>
+                  <div className="mt-3 grid grid-cols-2 gap-2">
+                    {["INNER JOIN", "LEFT JOIN", "FULL JOIN", "CROSS JOIN"].map((opt, i) => (
+                      <div
+                        key={opt}
+                        className={`rounded-xl border px-3 py-2 text-center text-xs font-bold ${
+                          i === 0
+                            ? "border-emerald-300 bg-emerald-50 text-emerald-800"
+                            : "border-slate-200 bg-white text-slate-600"
+                        }`}
+                      >
+                        {opt}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ IA + MATERIAL ═══ */}
+      <section className="border-y border-slate-200/80 bg-white py-20 lg:py-28">
         <div className="mx-auto max-w-[1180px] px-5 lg:px-8">
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <motion.article
               {...fadeUp}
               className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
             >
-              <div className="relative aspect-[16/9] border-b border-slate-100">
+              <div className="border-b border-slate-100 bg-slate-50">
                 <Image
                   src="https://mail.programbi.com/uploads/Captura-de-pantalla-2026-07-14-054229.png"
                   alt="Asistente IA en el campus"
-                  fill
-                  className="object-cover object-top"
+                  width={1200}
+                  height={700}
+                  className="h-auto w-full object-contain"
                   unoptimized
                 />
               </div>
@@ -512,12 +733,12 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
 
                 <ul className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {[
+                    "Practica estilo Duolingo",
                     "Clases en vivo semanales",
                     "Grabaciones y material",
                     "Mentor IA 24/7",
                     "Comunidad y networking",
                     "Descuentos en cursos",
-                    "Rutas guiadas de aprendizaje",
                   ].map((item) => (
                     <li key={item} className="flex items-center gap-2.5 text-sm font-medium text-slate-700">
                       <Check className="h-4 w-4 shrink-0 text-[#1890FF]" strokeWidth={2.5} />
@@ -533,16 +754,22 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
                     <Zap className="h-4 w-4" />
                     <span className="text-xs font-bold uppercase tracking-wider">Disponible ahora</span>
                   </div>
-                  <h3 className="text-xl font-bold text-slate-950">Clases gratuitas</h3>
+                  <h3 className="text-xl font-bold text-slate-950">Clases gratis + Practica</h3>
                   <p className="mt-2 text-sm leading-relaxed text-slate-500">
-                    Crea tu cuenta y mira las lecciones gratuitas que publicamos desde el panel admin.
+                    Crea tu cuenta, mira lecciones gratuitas y sube de nivel en el módulo interactivo.
                   </p>
                   <button
-                    onClick={goCampus}
+                    onClick={goPractice}
                     className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#1890FF] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#0d7de0] active:scale-[0.99] border-0 cursor-pointer"
                   >
-                    {isLoggedIn ? "Ir a mis cursos" : "Crear cuenta gratis"}
+                    {isLoggedIn ? "Ir a Practica" : "Crear cuenta y practicar"}
                     <ArrowRight className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={goCampus}
+                    className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 border-solid cursor-pointer"
+                  >
+                    Ver cursos
                   </button>
                   <p className="mt-3 text-center text-[11px] font-medium text-slate-400">
                     Sin tarjeta · Acceso inmediato
@@ -702,7 +929,7 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
               <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-slate-400 sm:text-base">
                 {SUBSCRIPTIONS_ENABLED
                   ? "Accede al campus y elige el plan que mejor te acomode."
-                  : "Suscripciones próximamente. Mientras tanto, entra y mira las clases gratuitas."}
+                  : "Suscripciones próximamente. Mientras tanto: clases gratis y Practica interactiva."}
               </p>
               <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
                 <button
@@ -712,11 +939,13 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
                   Acceder al campus
                   <ArrowRight className="h-4 w-4" />
                 </button>
-                {!SUBSCRIPTIONS_ENABLED && (
-                  <span className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-5 py-3.5 text-sm font-semibold text-slate-300">
-                    Suscripciones próximamente
-                  </span>
-                )}
+                <button
+                  onClick={goPractice}
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/10 border-solid cursor-pointer"
+                >
+                  <Target className="h-4 w-4" />
+                  Ir a Practica
+                </button>
               </div>
             </div>
           </motion.div>
