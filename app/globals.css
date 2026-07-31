@@ -737,4 +737,17 @@ html.dark .bg-white.rounded-2xl {
   border-color: var(--border) !important;
 }
 
+/* En oscuro brand-blue/accent = blanco. text-white sobre ese fondo se pierde. */
+html.dark .bg-brand-blue.text-white,
+html.dark .bg-accent.text-white,
+html.dark button.bg-brand-blue,
+html.dark a.bg-brand-blue {
+  color: #0a0a0a !important;
+}
+html.dark .bg-brand-blue .text-white,
+html.dark button.bg-brand-blue svg,
+html.dark a.bg-brand-blue svg {
+  color: #0a0a0a !important;
+}
+
 

@@ -456,15 +456,21 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          className="relative bg-white rounded-2xl p-6 sm:p-8 overflow-hidden shadow-sm border border-gray-100"
+          className="relative rounded-2xl p-6 sm:p-8 overflow-hidden shadow-lg border-0"
+          style={{
+            background:
+              "linear-gradient(135deg, #38bdf8 0%, #1890FF 45%, #0050b3 100%)",
+            backgroundSize: "200% 200%",
+          }}
         >
-          <div className="absolute inset-y-0 left-0 w-1 bg-brand-blue rounded-l-2xl" />
-          <div className="absolute top-0 right-0 w-48 h-48 bg-gray-50 rounded-full blur-3xl -mr-12 -mt-12 pointer-events-none" />
-          <div className="relative z-10 pl-2">
-            <h2 className="font-display font-black text-2xl sm:text-3xl tracking-tight leading-tight mb-2 text-gray-900">
+          <div className="absolute top-0 right-0 w-56 h-56 bg-white/15 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.18),transparent_50%)] pointer-events-none" />
+          <div className="relative z-10">
+            <h2 className="font-display font-black text-2xl sm:text-3xl tracking-tight leading-tight mb-2 text-white">
               {greeting}, {dashStats.userName?.split(" ")[0]}!
             </h2>
-            <p className="text-[14px] text-gray-600 font-medium max-w-lg leading-relaxed">
+            <p className="text-[14px] text-white/85 font-medium max-w-lg leading-relaxed">
               Nos alegra tenerte de vuelta en ProgramBI. Explora el contenido, interactúa en el foro y continúa tu especialización.
             </p>
           </div>
@@ -914,7 +920,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                       
                       <button
                         onClick={() => router.push(`/comunidad/cursos/${activeCourse.courseSlug}`)}
-                        className="w-full mt-4 py-2.5 bg-brand-blue hover:bg-gray-800 text-white text-xs font-black rounded-xl shadow-sm border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+                        className="w-full mt-4 py-2.5 bg-[#1890FF] hover:bg-[#0d7de0] text-white text-xs font-black rounded-xl shadow-sm border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
                       >
                         Continuar Clase
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -922,16 +928,16 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                     </>
                   ) : (
                     <>
-                      <h4 className="text-sm font-black mt-3 leading-snug text-gray-900">
+                      <h4 className="text-sm font-black mt-3 leading-snug text-gray-900 dark:text-white">
                         Comienza tu especialización
                       </h4>
-                      <p className="text-[12px] text-gray-600 mt-2 leading-relaxed">
+                      <p className="text-[12px] text-gray-600 dark:text-zinc-400 mt-2 leading-relaxed">
                         Explora nuestro plan de estudios completo, asiste a las lecciones de prueba y comienza tu camino profesional en datos.
                       </p>
                       
                       <button
                         onClick={() => router.push('/comunidad/cursos')}
-                        className="w-full mt-4 py-2.5 bg-brand-blue hover:bg-gray-800 text-white text-xs font-black rounded-xl shadow-sm border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+                        className="w-full mt-4 py-2.5 bg-[#1890FF] hover:bg-[#0d7de0] text-white text-xs font-black rounded-xl shadow-sm border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
                       >
                         Explorar Cursos
                         <ArrowRight className="w-3.5 h-3.5" />
