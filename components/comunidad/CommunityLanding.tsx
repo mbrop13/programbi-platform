@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -14,6 +14,7 @@ import {
   Flame,
   GraduationCap,
   Heart,
+  MessageSquare,
   Play,
   Radio,
   Shield,
@@ -26,8 +27,10 @@ import {
   Zap,
 } from "lucide-react";
 import AuthModal from "@/components/shared/AuthModal";
-import { companyLogos } from "@/lib/data/images";
+import LogoSlider from "@/components/marketing/LogoSlider";
 import { SUBSCRIPTIONS_ENABLED } from "@/lib/data/community-flags";
+import { communityPlans } from "@/lib/data/community_plans";
+import { testimonials } from "@/lib/data/testimonials";
 
 /* ─── Motion helpers ─── */
 const fadeUp = {
@@ -186,26 +189,85 @@ const faqs = [
   },
 ];
 
-const quotes = [
-  {
-    text: "Tremenda propuesta de valor para el desarrollo laboral, recomendable 100%.",
-    name: "Alexis Astudillo",
-    role: "SQL Server · ProgramBI",
-  },
-  {
-    text: "Power BI es una herramienta bastante necesaria y útil. Recomiendo ProgramBI con los ojos cerrados.",
-    name: "Jorge Kaisarieh",
-    role: "Diseño + BI",
-  },
-  {
-    text: "Excelente tutoría. Completé Big Query y Looker Studio y lo recomiendo totalmente.",
-    name: "Julio César Reyes",
-    role: "Big Data",
-  },
-];
-
 interface Props {
   isLoggedIn: boolean;
+}
+
+function TestimonialsMarquee() {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const rafRef = useRef(0);
+  const isPausedRef = useRef(false);
+  const [paused, setPaused] = useState(false);
+
+  useEffect(() => {
+    isPausedRef.current = paused;
+  }, [paused]);
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+    const SPEED = 0.55;
+    function tick() {
+      if (track && !isPausedRef.current) {
+        track.scrollLeft += SPEED;
+        const half = track.scrollWidth / 2;
+        if (track.scrollLeft >= half) track.scrollLeft -= half;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    }
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, []);
+
+  const items = [...testimonials, ...testimonials];
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div
+        ref={trackRef}
+        className="flex gap-4 overflow-x-auto pb-2 scrollbar-none"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {items.map((t, i) => {
+          const initials = t.name
+            .split(" ")
+            .map((w) => w[0])
+            .join("")
+            .slice(0, 2);
+          return (
+            <article
+              key={`${t.name}-${i}`}
+              className="w-[300px] shrink-0 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:w-[320px]"
+            >
+              <div className="mb-3 flex items-center gap-3">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#1890FF]/10 text-xs font-black text-[#1890FF]">
+                  {initials}
+                </div>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-bold text-slate-900">{t.name}</p>
+                  <p className="truncate text-[11px] font-medium text-slate-400">{t.role}</p>
+                </div>
+              </div>
+              <div className="mb-2 flex gap-0.5">
+                {Array.from({ length: 5 }).map((_, s) => (
+                  <Star key={s} className="h-3 w-3 fill-amber-400 text-amber-400" strokeWidth={0} />
+                ))}
+              </div>
+              <p className="line-clamp-5 text-[13px] leading-relaxed text-slate-600">
+                “{t.message}”
+              </p>
+            </article>
+          );
+        })}
+      </div>
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-[#FAFBFC] to-transparent sm:w-16" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-[#FAFBFC] to-transparent sm:w-16" />
+    </div>
+  );
 }
 
 export default function CommunityLanding({ isLoggedIn }: Props) {
@@ -348,27 +410,8 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
         </div>
       </section>
 
-      {/* ═══ LOGOS ═══ */}
-      <section className="border-b border-slate-200/70 bg-white py-10">
-        <div className="mx-auto max-w-[1180px] px-5 lg:px-8">
-          <p className="mb-6 text-center text-[11px] font-bold uppercase tracking-[0.2em] text-slate-400">
-            Profesionales de estas empresas confían en ProgramBI
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 opacity-70">
-            {companyLogos.slice(0, 8).map((logo) => (
-              <Image
-                key={logo.name}
-                src={logo.url}
-                alt={logo.name}
-                width={100}
-                height={32}
-                className="h-7 w-auto object-contain grayscale"
-                unoptimized
-              />
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ═══ LOGOS (carrusel como home) ═══ */}
+      <LogoSlider />
 
       {/* ═══ PILLARS / BENTO ═══ */}
       <section className="py-20 lg:py-28">
@@ -612,58 +655,92 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
         </div>
       </section>
 
-      {/* ═══ IA + MATERIAL ═══ */}
-      <section className="border-y border-slate-200/80 bg-white py-20 lg:py-28">
-        <div className="mx-auto max-w-[1180px] px-5 lg:px-8">
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-            <motion.article
-              {...fadeUp}
-              className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+      {/* ═══ MENTOR IA (feature principal) ═══ */}
+      <section className="relative overflow-hidden border-y border-slate-200/80 bg-white py-20 lg:py-28">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(24,144,255,0.07),transparent_55%)]" />
+        <div className="relative mx-auto grid max-w-[1180px] grid-cols-1 items-center gap-12 px-5 lg:grid-cols-2 lg:gap-16 lg:px-8">
+          <motion.div {...fadeUp}>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#1890FF]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#1890FF]">
+              <Sparkles className="h-3.5 w-3.5" />
+              Mentor IA 24/7
+            </div>
+            <h2 className="font-display text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              Mentor IA especializado{" "}
+              <span className="text-[#1890FF]">en datos</span>
+            </h2>
+            <p className="mt-4 max-w-[48ch] text-base leading-relaxed text-slate-500">
+              No es un chat genérico. Está entrenado para SQL, Python, Power BI y DAX: te ayuda a destrabar ejercicios, corregir código y entender el porqué de cada solución.
+            </p>
+            <ul className="mt-8 space-y-3">
+              {[
+                "Genera y explica consultas SQL y scripts de Python",
+                "Corrige errores y sugiere mejores prácticas",
+                "Aclara conceptos de modelado, DAX y visualización",
+                "Disponible cuando practicas, sin esperar al próximo live",
+                "Ideal para reforzar lo visto en clase o en Practica",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm font-medium text-slate-700">
+                  <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#1890FF]/10">
+                    <Check className="h-3 w-3 text-[#1890FF]" strokeWidth={2.5} />
+                  </span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+            <button
+              onClick={goCampus}
+              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-slate-950 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-slate-800 active:scale-[0.98] border-0 cursor-pointer"
             >
-              <div className="border-b border-slate-100 bg-slate-50">
-                <Image
-                  src="https://mail.programbi.com/uploads/Captura-de-pantalla-2026-07-14-054229.png"
-                  alt="Asistente IA en el campus"
-                  width={1200}
-                  height={700}
-                  className="h-auto w-full object-contain"
-                  unoptimized
-                />
-              </div>
-              <div className="p-7">
-                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-slate-950 text-white">
-                  <Sparkles className="h-4 w-4" />
-                </div>
-                <h3 className="text-xl font-bold tracking-tight text-slate-950">
-                  Mentor IA especializado en datos
-                </h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-500">
-                  Genera SQL y Python, corrige errores y aclara conceptos cuando te trabas en un ejercicio.
-                </p>
-              </div>
-            </motion.article>
+              Probar en el campus
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </motion.div>
 
-            <motion.article
-              {...fadeUp}
-              transition={{ ...fadeUp.transition, delay: 0.08 }}
-              className="flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-slate-950 p-7 text-white shadow-sm lg:p-8"
-            >
-              <div>
-                <div className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
+          <motion.div {...fadeUp} className="relative">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-[0_24px_60px_-28px_rgba(15,23,42,0.22)]">
+              <Image
+                src="https://mail.programbi.com/uploads/Captura-de-pantalla-2026-07-14-054229.png"
+                alt="Mentor IA especializado en datos en el campus ProgramBI"
+                width={1400}
+                height={900}
+                className="h-auto w-full object-contain"
+                unoptimized
+              />
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600">
+                <MessageSquare className="h-3.5 w-3.5 text-[#1890FF]" />
+                Chat de estudio
+              </span>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600">
+                <Code2 className="h-3.5 w-3.5 text-[#1890FF]" />
+                SQL · Python · DAX
+              </span>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Material secundario */}
+        <div className="relative mx-auto mt-14 max-w-[1180px] px-5 lg:px-8">
+          <motion.div
+            {...fadeUp}
+            className="rounded-2xl border border-slate-200 bg-slate-950 p-6 text-white sm:p-8"
+          >
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-xl">
+                <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-white/10">
                   <GraduationCap className="h-4 w-4" />
                 </div>
-                <h3 className="text-xl font-bold tracking-tight">
-                  Material completo a tu ritmo
-                </h3>
-                <p className="mt-2 max-w-[40ch] text-sm leading-relaxed text-slate-400">
+                <h3 className="text-xl font-bold tracking-tight">Material completo a tu ritmo</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-400">
                   Clases grabadas, guías, datasets y ejercicios. Estudia cuando puedas sin perder el hilo.
                 </p>
               </div>
-              <div className="mt-8 grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                 {stack.map((s) => (
                   <div
                     key={s.name}
-                    className="flex items-center gap-2.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5"
+                    className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2.5"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={s.icon} alt="" className="h-4 w-4" />
@@ -671,8 +748,8 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
                   </div>
                 ))}
               </div>
-            </motion.article>
-          </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -710,108 +787,106 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
         </div>
       </section>
 
-      {/* ═══ MEMBERSHIP / FREE ACCESS ═══ */}
+      {/* ═══ PLANES (sin precio) ═══ */}
       <section id="membresia" className="py-20 lg:py-28">
         <div className="mx-auto max-w-[1180px] px-5 lg:px-8">
-          <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_20px_50px_-28px_rgba(15,23,42,0.18)]">
-            <div className="grid grid-cols-1 lg:grid-cols-5">
-              <div className="border-b border-slate-100 p-8 sm:p-10 lg:col-span-3 lg:border-b-0 lg:border-r">
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-700">
-                  <Clock className="h-3.5 w-3.5" />
-                  {SUBSCRIPTIONS_ENABLED ? "Membresía" : "Suscripciones próximamente"}
-                </div>
-                <h2 className="font-display text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
-                  {SUBSCRIPTIONS_ENABLED
-                    ? "Elige el plan que se adapte a ti"
-                    : "La membresía completa llega pronto"}
-                </h2>
-                <p className="mt-3 max-w-[48ch] text-sm leading-relaxed text-slate-500 sm:text-base">
-                  {SUBSCRIPTIONS_ENABLED
-                    ? "Acceso a clases en vivo, campus completo, IA y comunidad."
-                    : "Estamos preparando los planes. Mientras tanto, entra al campus y aprovecha las clases gratuitas."}
-                </p>
-
-                <ul className="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {[
-                    "Practica estilo Duolingo",
-                    "Clases en vivo semanales",
-                    "Grabaciones y material",
-                    "Mentor IA 24/7",
-                    "Comunidad y networking",
-                    "Descuentos en cursos",
-                  ].map((item) => (
-                    <li key={item} className="flex items-center gap-2.5 text-sm font-medium text-slate-700">
-                      <Check className="h-4 w-4 shrink-0 text-[#1890FF]" strokeWidth={2.5} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="flex flex-col justify-center bg-slate-50 p-8 sm:p-10 lg:col-span-2">
-                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                  <div className="mb-1 flex items-center gap-2 text-[#1890FF]">
-                    <Zap className="h-4 w-4" />
-                    <span className="text-xs font-bold uppercase tracking-wider">Disponible ahora</span>
-                  </div>
-                  <h3 className="text-xl font-bold text-slate-950">Clases gratis + Practica</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-500">
-                    Crea tu cuenta, mira lecciones gratuitas y sube de nivel en el módulo interactivo.
-                  </p>
-                  <button
-                    onClick={goPractice}
-                    className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#1890FF] px-5 py-3.5 text-sm font-bold text-white transition hover:bg-[#0d7de0] active:scale-[0.99] border-0 cursor-pointer"
-                  >
-                    {isLoggedIn ? "Ir a Practica" : "Crear cuenta y practicar"}
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={goCampus}
-                    className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 border-solid cursor-pointer"
-                  >
-                    Ver cursos
-                  </button>
-                  <p className="mt-3 text-center text-[11px] font-medium text-slate-400">
-                    Sin tarjeta · Acceso inmediato
-                  </p>
-                </div>
-              </div>
+          <motion.div {...fadeUp} className="mb-10 max-w-2xl">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-700">
+              <Clock className="h-3.5 w-3.5" />
+              Suscripciones próximamente
             </div>
+            <h2 className="font-display text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              Planes de la comunidad
+            </h2>
+            <p className="mt-3 text-base leading-relaxed text-slate-500">
+              Así se verán las membresías. Por ahora no se puede comprar: los botones dicen próximamente. Mientras tanto, entra con clases gratis y Practica.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            {communityPlans.map((plan, i) => {
+              const isHighlight = !!plan.highlight;
+              return (
+                <motion.div
+                  key={plan.id}
+                  {...fadeUp}
+                  transition={{ ...fadeUp.transition, delay: i * 0.06 }}
+                  className={`relative flex flex-col rounded-2xl border bg-white p-6 shadow-sm ${
+                    isHighlight
+                      ? "border-[#1890FF]/40 shadow-[0_16px_40px_-20px_rgba(24,144,255,0.35)] ring-1 ring-[#1890FF]/20 md:scale-[1.02]"
+                      : "border-slate-200"
+                  }`}
+                >
+                  {plan.highlight && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#1890FF] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
+                      {plan.highlight}
+                    </span>
+                  )}
+                  <h3 className="text-lg font-black text-slate-950">{plan.name}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-500">{plan.description}</p>
+                  <ul className="mt-6 flex-1 space-y-2.5">
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex items-start gap-2.5 text-sm font-medium text-slate-700">
+                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1890FF]" strokeWidth={2.5} />
+                        <span>{f.replace(/^✓\s*|^💬\s*/u, "")}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <button
+                    type="button"
+                    disabled
+                    className="mt-8 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 py-3.5 text-sm font-bold text-slate-500"
+                  >
+                    Próximamente
+                  </button>
+                </motion.div>
+              );
+            })}
           </div>
+
+          <motion.div
+            {...fadeUp}
+            className="mt-8 flex flex-col items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6 sm:flex-row sm:items-center"
+          >
+            <div>
+              <p className="text-sm font-bold text-slate-950">Disponible ahora sin suscripción</p>
+              <p className="mt-1 text-sm text-slate-500">
+                Clases gratuitas y módulo Practica con tu cuenta.
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={goPractice}
+                className="inline-flex items-center gap-2 rounded-xl bg-[#1890FF] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#0d7de0] border-0 cursor-pointer"
+              >
+                Ir a Practica
+                <ArrowRight className="h-4 w-4" />
+              </button>
+              <button
+                onClick={goCampus}
+                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 border-solid cursor-pointer"
+              >
+                Ver cursos
+              </button>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* ═══ SOCIAL PROOF ═══ */}
-      <section className="border-y border-slate-200/80 bg-white py-20 lg:py-24">
+      {/* ═══ TESTIMONIOS ═══ */}
+      <section className="border-y border-slate-200/80 bg-[#FAFBFC] py-20 lg:py-24">
         <div className="mx-auto max-w-[1180px] px-5 lg:px-8">
           <motion.div {...fadeUp} className="mb-10 max-w-xl">
             <h2 className="font-display text-3xl font-black tracking-tight text-slate-950">
               Lo que dicen nuestros alumnos
             </h2>
+            <p className="mt-3 text-sm text-slate-500 sm:text-base">
+              Historias reales de profesionales que se formaron con ProgramBI.
+            </p>
           </motion.div>
-
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            {quotes.map((q, i) => (
-              <motion.blockquote
-                key={q.name}
-                {...fadeUp}
-                transition={{ ...fadeUp.transition, delay: i * 0.06 }}
-                className={`rounded-2xl border p-6 ${
-                  i === 0
-                    ? "border-[#1890FF]/20 bg-[#1890FF]/[0.04] md:col-span-1"
-                    : "border-slate-200 bg-[#FAFBFC]"
-                }`}
-              >
-                <p className="text-[15px] font-medium leading-relaxed text-slate-800">
-                  “{q.text}”
-                </p>
-                <footer className="mt-5 border-t border-slate-200/80 pt-4">
-                  <p className="text-sm font-bold text-slate-950">{q.name}</p>
-                  <p className="text-xs font-medium text-slate-400">{q.role}</p>
-                </footer>
-              </motion.blockquote>
-            ))}
-          </div>
+        </div>
+        <div className="mx-auto max-w-[1400px] px-0 sm:px-5 lg:px-8">
+          <TestimonialsMarquee />
         </div>
       </section>
 
