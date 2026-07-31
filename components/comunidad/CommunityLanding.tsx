@@ -787,58 +787,116 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
         </div>
       </section>
 
-      {/* ═══ PLANES (sin precio) ═══ */}
-      <section id="membresia" className="py-20 lg:py-28">
-        <div className="mx-auto max-w-[1180px] px-5 lg:px-8">
-          <motion.div {...fadeUp} className="mb-10 max-w-2xl">
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-amber-50 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-amber-700">
-              <Clock className="h-3.5 w-3.5" />
+      {/* ═══ PLANES (estilo SubscriptionGate, sin precio) ═══ */}
+      <section id="membresia" className="bg-white py-20 lg:py-28">
+        <div className="mx-auto max-w-[1400px] px-5 lg:px-8">
+          <motion.div {...fadeUp} className="mx-auto mb-14 max-w-2xl text-center">
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-[11px] font-black uppercase tracking-[0.15em] text-white shadow-lg shadow-blue-500/25">
               Suscripciones próximamente
             </div>
-            <h2 className="font-display text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              Planes de la comunidad
+            <h2 className="font-display text-3xl font-black tracking-tight text-slate-900 sm:text-4xl lg:text-[2.75rem]">
+              Membresía{" "}
+              <span className="bg-gradient-to-r from-[#1890FF] to-indigo-600 bg-clip-text text-transparent">
+                ProgramBI
+              </span>
             </h2>
-            <p className="mt-3 text-base leading-relaxed text-slate-500">
-              Así se verán las membresías. Por ahora no se puede comprar: los botones dicen próximamente. Mientras tanto, entra con clases gratis y Practica.
+            <p className="mx-auto mt-4 max-w-xl text-base font-medium leading-relaxed text-slate-500">
+              Elige el plan que se adapte a ti. Por ahora no se puede suscribir: los botones dicen próximamente.
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+          <div className="grid grid-cols-1 items-stretch gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {communityPlans.map((plan, i) => {
               const isHighlight = !!plan.highlight;
               return (
                 <motion.div
                   key={plan.id}
                   {...fadeUp}
-                  transition={{ ...fadeUp.transition, delay: i * 0.06 }}
-                  className={`relative flex flex-col rounded-2xl border bg-white p-6 shadow-sm ${
+                  transition={{ ...fadeUp.transition, delay: i * 0.1 }}
+                  className={`relative flex h-full flex-col rounded-[2.5rem] border transition-all duration-500 ${
                     isHighlight
-                      ? "border-[#1890FF]/40 shadow-[0_16px_40px_-20px_rgba(24,144,255,0.35)] ring-1 ring-[#1890FF]/20 md:scale-[1.02]"
-                      : "border-slate-200"
+                      ? "z-20 scale-[1.02] border-blue-500/80 bg-white shadow-[0_30px_60px_-15px_rgba(59,130,246,0.25)] ring-1 ring-blue-500/30"
+                      : "z-10 scale-[0.98] border-slate-200/90 bg-slate-50/80 shadow-sm hover:scale-[0.99] hover:border-slate-300/80 hover:bg-white hover:shadow-md"
                   }`}
                 >
                   {plan.highlight && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#1890FF] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-white">
+                    <div className="absolute -top-4 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1.5 whitespace-nowrap rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-blue-500/30">
+                      <Star className="h-3 w-3 fill-white text-white" />
                       {plan.highlight}
-                    </span>
+                    </div>
                   )}
-                  <h3 className="text-lg font-black text-slate-950">{plan.name}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-500">{plan.description}</p>
-                  <ul className="mt-6 flex-1 space-y-2.5">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2.5 text-sm font-medium text-slate-700">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#1890FF]" strokeWidth={2.5} />
-                        <span>{f.replace(/^✓\s*|^💬\s*/u, "")}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <button
-                    type="button"
-                    disabled
-                    className="mt-8 w-full cursor-not-allowed rounded-xl border border-slate-200 bg-slate-100 py-3.5 text-sm font-bold text-slate-500"
-                  >
-                    Próximamente
-                  </button>
+
+                  <div className="relative z-10 flex h-full flex-col p-6 pt-10 lg:p-8">
+                    <div className="mb-6">
+                      <h3 className="mb-2.5 text-xl font-black tracking-tight text-slate-900 lg:text-2xl">
+                        {plan.name}
+                      </h3>
+                      <p className="text-xs font-medium leading-snug text-slate-500 md:text-sm">
+                        {plan.description}
+                      </p>
+                    </div>
+
+                    {/* Espacio donde antes iba el precio — badge nivel de acceso */}
+                    <div className="mb-6 border-b border-slate-100 pb-6">
+                      <div className="inline-flex items-center rounded-xl bg-slate-100 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-slate-600">
+                        Nivel {plan.courseAccessLevel}
+                      </div>
+                      <p className="mt-3 text-sm font-semibold text-slate-400">
+                        Suscripción disponible próximamente
+                      </p>
+                    </div>
+
+                    <div className="mb-8 flex-grow space-y-3">
+                      <p className="mb-4 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                        Beneficios incluidos
+                      </p>
+                      {plan.features.map((feature) => {
+                        const clean = feature.replace(/^✓\s*|^💬\s*|^🎓\s*/u, "");
+                        const isSpecial =
+                          feature.startsWith("✓") ||
+                          feature.startsWith("💬") ||
+                          feature.startsWith("🎓");
+                        return (
+                          <div key={feature} className="group/item flex items-start gap-3">
+                            <div
+                              className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-transform duration-300 group-hover/item:scale-110"
+                              style={{ backgroundColor: `${plan.color}18` }}
+                            >
+                              <Check
+                                className="h-3 w-3 font-bold"
+                                style={{ color: plan.color }}
+                                strokeWidth={2.5}
+                              />
+                            </div>
+                            <span
+                              className={`text-[13px] leading-snug transition-colors md:text-sm ${
+                                isSpecial
+                                  ? "font-bold text-slate-900"
+                                  : "font-medium text-slate-600"
+                              }`}
+                            >
+                              {clean}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    <div className="mt-auto">
+                      <button
+                        type="button"
+                        disabled
+                        className={`flex w-full cursor-not-allowed items-center justify-center gap-2 rounded-2xl py-4 text-sm font-black transition-all ${
+                          isHighlight
+                            ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white/90 opacity-90 shadow-md shadow-blue-500/20"
+                            : "border border-slate-200/80 bg-slate-100 text-slate-500"
+                        }`}
+                      >
+                        <Clock className="h-4 w-4" />
+                        Próximamente
+                      </button>
+                    </div>
+                  </div>
                 </motion.div>
               );
             })}
@@ -846,25 +904,25 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
 
           <motion.div
             {...fadeUp}
-            className="mt-8 flex flex-col items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-6 sm:flex-row sm:items-center"
+            className="mt-12 flex flex-col items-center justify-between gap-4 rounded-[1.75rem] border border-slate-200 bg-slate-50 px-6 py-6 sm:flex-row sm:px-8"
           >
-            <div>
-              <p className="text-sm font-bold text-slate-950">Disponible ahora sin suscripción</p>
-              <p className="mt-1 text-sm text-slate-500">
+            <div className="text-center sm:text-left">
+              <p className="text-sm font-black text-slate-900">Disponible ahora sin suscripción</p>
+              <p className="mt-1 text-sm font-medium text-slate-500">
                 Clases gratuitas y módulo Practica con tu cuenta.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap justify-center gap-2">
               <button
                 onClick={goPractice}
-                className="inline-flex items-center gap-2 rounded-xl bg-[#1890FF] px-5 py-3 text-sm font-bold text-white transition hover:bg-[#0d7de0] border-0 cursor-pointer"
+                className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-3.5 text-sm font-black text-white shadow-md shadow-blue-500/20 transition hover:opacity-95 border-0 cursor-pointer"
               >
                 Ir a Practica
                 <ArrowRight className="h-4 w-4" />
               </button>
               <button
                 onClick={goCampus}
-                className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-slate-700 transition hover:bg-slate-50 border-solid cursor-pointer"
+                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 border-solid cursor-pointer"
               >
                 Ver cursos
               </button>
