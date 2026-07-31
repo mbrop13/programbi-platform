@@ -16,6 +16,8 @@ interface SubscriptionGateProps {
   heroOnly?: boolean;
   transparent?: boolean;
   currentPlanId?: string | null;
+  /** When false, hide pricing CTAs and promote free classes instead */
+  subscriptionsEnabled?: boolean;
 }
 
 type BillingPeriod = 'mensual' | 'semestral' | 'anual';
@@ -27,7 +29,8 @@ export default function SubscriptionGate({
   isLoading = false, 
   heroOnly = false, 
   transparent = false,
-  currentPlanId = null
+  currentPlanId = null,
+  subscriptionsEnabled = true,
 }: SubscriptionGateProps) {
   const [selectedPlanId, setSelectedPlanId] = useState<string>("max");
   const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>('mensual');
@@ -71,6 +74,10 @@ export default function SubscriptionGate({
   };
 
   const handleAction = async (planId: string) => {
+    if (!subscriptionsEnabled) {
+      alert("Suscripciones próximamente. Mientras tanto, puedes acceder a las clases gratuitas.");
+      return;
+    }
     if (!isLoggedIn) {
       setShowAuthModal(true);
       return;
@@ -101,12 +108,21 @@ export default function SubscriptionGate({
       setLoadingPlan(null);
     }
   };
+
+  const handleFreeAccess = () => {
+    if (isLoggedIn) {
+      window.location.href = "/comunidad/cursos";
+    } else {
+      setShowAuthModal(true);
+    }
+  };
   return (
     <div id={heroOnly ? "hero" : "pricing"} className={`w-full relative isolate flex flex-col items-center px-4 overflow-hidden top-0 ${heroOnly ? 'pt-14 sm:pt-18 pb-6 sm:pb-8' : 'pt-6 pb-12'}`}>
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         defaultTab="register"
+        redirectUrl="/comunidad/cursos"
       />
 
       {/* Background Video (Hero Only) or Engineering Grid & Orbs (Pricing Section) - Placed at -z-20 behind everything */}
@@ -139,7 +155,7 @@ export default function SubscriptionGate({
           >
             <Sparkles className="w-4 h-4 text-brand-blue animate-pulse" />
             <span className="text-xs font-black bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 uppercase tracking-[0.2em]">
-              Comunidad Premium
+              Comunidad ProgramBI
             </span>
           </motion.div>
         )}
@@ -184,7 +200,7 @@ export default function SubscriptionGate({
              transition={{ delay: 0.15 }}
              className="inline-block bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-[11px] sm:text-xs px-4 py-2 rounded-full mb-8 shadow-lg shadow-blue-500/25 tracking-[0.15em] uppercase"
           >
-            Pruébalo 7 días GRATIS
+            {subscriptionsEnabled ? "Pruébalo 7 días GRATIS" : "Suscripciones próximamente"}
           </motion.div>
         )}
         
@@ -194,10 +210,12 @@ export default function SubscriptionGate({
           transition={{ delay: 0.2 }}
           className="text-base md:text-lg text-slate-500 max-w-2xl mx-auto font-medium leading-relaxed mb-10"
         >
-          Elige tu plan. Accede a clases prácticas en vivo, mentoría de datos por IA y una comunidad de profesionales de élite.
+          {subscriptionsEnabled
+            ? "Elige tu plan. Accede a clases prácticas en vivo, mentoría de datos por IA y una comunidad de profesionales de élite."
+            : "Las suscripciones estarán disponibles pronto. Mientras tanto, puedes entrar y ver las clases gratuitas del campus."}
         </motion.p>
 
-        {/* Hero Actions (Ver Planes & Contactar) */}
+        {/* Hero Actions */}
         {heroOnly && (
           <motion.div
             initial={{ opacity: 0, y: 15 }}
@@ -205,27 +223,27 @@ export default function SubscriptionGate({
             transition={{ delay: 0.25 }}
             className="flex flex-wrap items-center justify-center gap-4 mb-0 relative z-20"
           >
-            <motion.a
-              href="#pricing"
-              onClick={(e) => {
-                e.preventDefault();
-                document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              whileHover={{ scale: 1.02, y: -1 }}
-              whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm px-8 py-4 rounded-2xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 transition-all duration-300 cursor-pointer"
-            >
-              Ver Planes
-              <ArrowRight className="w-4 h-4" />
-            </motion.a>
+            {subscriptionsEnabled ? (
+              <motion.a
+                href="#pricing"
+                onClick={(e) => {
+                  e.preventDefault();
+                  document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+                className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm px-8 py-4 rounded-2xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/35 transition-all duration-300 cursor-pointer"
+              >
+                Ver Planes
+                <ArrowRight className="w-4 h-4" />
+              </motion.a>
+            ) : (
+              <span className="inline-flex items-center gap-2 bg-slate-100 text-slate-500 border border-slate-200 font-black text-sm px-8 py-4 rounded-2xl cursor-default">
+                Suscripciones próximamente
+              </span>
+            )}
             <motion.button
-              onClick={() => {
-                if (isLoggedIn) {
-                  window.location.href = "/comunidad/inicio";
-                } else {
-                  setShowAuthModal(true);
-                }
-              }}
+              onClick={handleFreeAccess}
               whileHover={{ scale: 1.02, y: -1 }}
               whileTap={{ scale: 0.98 }}
               className="inline-flex items-center gap-2 bg-white text-slate-800 border border-slate-200 font-black text-sm px-8 py-4 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer"
@@ -236,7 +254,7 @@ export default function SubscriptionGate({
         )}
 
         {/* Billing Selector */}
-        {!heroOnly && (
+        {!heroOnly && subscriptionsEnabled && (
           <motion.div 
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
@@ -265,7 +283,33 @@ export default function SubscriptionGate({
         )}
       </div>
 
-      {!heroOnly && (
+      {!heroOnly && !subscriptionsEnabled && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-lg mx-auto w-full relative z-10 rounded-3xl border border-slate-200 bg-white shadow-sm px-8 py-12 text-center"
+        >
+          <div className="inline-flex items-center gap-2 bg-blue-50 text-blue-700 font-black text-[11px] px-4 py-1.5 rounded-full mb-5 uppercase tracking-wider">
+            <Sparkles className="w-3.5 h-3.5" />
+            Próximamente
+          </div>
+          <h3 className="font-display font-black text-2xl text-slate-900 mb-3">
+            Suscripciones próximamente
+          </h3>
+          <p className="text-slate-500 text-sm leading-relaxed mb-8">
+            Estamos preparando los planes de membresía. Mientras tanto, puedes acceder a la comunidad y ver las clases gratuitas.
+          </p>
+          <button
+            onClick={handleFreeAccess}
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black text-sm px-7 py-3.5 rounded-2xl shadow-lg shadow-blue-500/20 border-0 cursor-pointer hover:opacity-95 transition-opacity"
+          >
+            Acceder a la comunidad
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </motion.div>
+      )}
+
+      {!heroOnly && subscriptionsEnabled && (
         <div className="max-w-[1400px] mx-auto px-5 w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch relative z-10">
         {communityPlans.map((plan, i) => {
           const isActive = selectedPlanId === plan.id;
@@ -456,7 +500,7 @@ export default function SubscriptionGate({
         </div>
       )}
 
-      {!heroOnly && (
+      {!heroOnly && subscriptionsEnabled && (
         <>
           <div className="mt-10 flex flex-col sm:flex-row items-center gap-6 opacity-60 pb-4">
             <span className="text-sm font-black text-slate-500 uppercase tracking-widest flex items-center gap-2">

@@ -94,9 +94,9 @@ const ta = {
     newConversation: "Nueva conversación",
     aiPrompt: "Pregúntale al Asistente...",
     analyzing: "Analizando...",
-    courseLocked: "Clase Bloqueada (Periodo de Prueba)",
-    lockedDesc: "Estás en los 7 días de prueba. Para desbloquear todas las clases adicionales, puedes contratar el plan premium de la plataforma ahora.",
-    unlockCourse: "Desbloquear Curso Completo",
+    courseLocked: "Clase Bloqueada",
+    lockedDesc: "Esta clase requiere membresía. Las suscripciones estarán disponibles próximamente. Mientras tanto, puedes ver las clases gratuitas.",
+    unlockCourse: "Suscripciones próximamente",
     videoNotAvail: "Video no disponible en este momento",
     overviewTab: "Descripción general",
     notesTab: "Mis apuntes",
@@ -160,9 +160,9 @@ const ta = {
     newConversation: "New conversation",
     aiPrompt: "Ask the Assistant...",
     analyzing: "Analyzing...",
-    courseLocked: "Lesson Locked (Free Trial)",
-    lockedDesc: "You are currently in the 7-day trial period. To unlock all lessons and materials, upgrade to a premium plan today.",
-    unlockCourse: "Unlock Full Course",
+    courseLocked: "Lesson Locked",
+    lockedDesc: "This lesson requires a membership. Subscriptions are coming soon. Meanwhile, you can watch the free lessons.",
+    unlockCourse: "Subscriptions coming soon",
     videoNotAvail: "Video not available at the moment",
     overviewTab: "Overview",
     notesTab: "My notes",
@@ -727,7 +727,14 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
   };
 
   const selectedLessonGlobalIndex = selectedLesson ? modules.flatMap(m => m.lessons).findIndex(l => l.id === selectedLesson.id) : -1;
-  const isSelectedLessonLocked = accessType === "trial" && selectedLessonGlobalIndex >= 2;
+  const isLessonLocked = (lesson: Lesson | null | undefined, globalIndex: number) => {
+    if (!lesson) return true;
+    if (accessType === "full") return false;
+    if (accessType === "trial") return globalIndex >= 2;
+    if (accessType === "free") return !lesson.is_free_preview;
+    return true;
+  };
+  const isSelectedLessonLocked = isLessonLocked(selectedLesson, selectedLessonGlobalIndex);
   const selectedModuleOrder = selectedLesson ? modules.find(m => m.lessons.includes(selectedLesson))?.order || "" : "";
   const readableCourseName = courseSlug ? courseSlug.replace(/-/g, ' ').toUpperCase() : "CURSO";
 
@@ -1387,12 +1394,14 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                         <p className="text-neutral-400 text-xs max-w-xs text-center mb-5 leading-relaxed px-4 font-medium">
                           {t.lockedDesc}
                         </p>
-                        <button
-                          onClick={() => onUpgradeClick ? onUpgradeClick() : (window.location.href = `/api/mercadopago/upgrade-trial`)}
-                          className="px-5 py-2.5 bg-white text-black hover:bg-neutral-100 text-xs font-bold rounded-xl shadow-md flex items-center gap-1.5 border-0 transition-all cursor-pointer uppercase tracking-wider"
-                        >
-                          <Sparkles className="w-4 h-4 text-orange-600" /> {t.unlockCourse}
-                        </button>
+                        {onUpgradeClick && (
+                          <button
+                            onClick={() => onUpgradeClick()}
+                            className="px-5 py-2.5 bg-white text-black hover:bg-neutral-100 text-xs font-bold rounded-xl shadow-md flex items-center gap-1.5 border-0 transition-all cursor-pointer uppercase tracking-wider"
+                          >
+                            <Sparkles className="w-4 h-4 text-orange-600" /> {t.unlockCourse}
+                          </button>
+                        )}
                       </div>
                     ) : videoId ? (
                       <div id="video-container-wrapper" className="absolute inset-0 w-full h-full bg-black">
@@ -1721,7 +1730,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                             const isSelected = selectedLesson?.id === lesson.id;
                             const isCompleted = completedLessons.has(lesson.id);
                             const globalIndex = modules.flatMap(m => m.lessons).findIndex(l => l.id === lesson.id);
-                            const isLocked = accessType === "trial" && globalIndex >= 2;
+                            const isLocked = isLessonLocked(lesson, globalIndex);
                             const hasSuperClase = !!lesson.superclass_language;
 
                             return (

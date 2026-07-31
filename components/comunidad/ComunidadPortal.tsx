@@ -332,13 +332,13 @@ export default function ComunidadPortal() {
                               Sección Premium
                             </h3>
                             <p className="text-text-secondary text-center max-w-sm mb-6">
-                              Suscríbete a un plan de la comunidad para asistir a las Masterclasses semanales en vivo.
+                              Suscripciones próximamente. Mientras tanto, puedes ver las clases gratuitas en Cursos.
                             </p>
                             <button
-                              onClick={() => router.push("/comunidad")}
+                              onClick={() => router.push("/comunidad/cursos")}
                               className="bg-accent text-accent-foreground font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition-all"
                             >
-                              Ver Planes
+                              Ir a Cursos
                             </button>
                           </div>
                         )}

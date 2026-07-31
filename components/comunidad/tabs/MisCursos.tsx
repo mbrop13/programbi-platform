@@ -72,6 +72,7 @@ interface TranslationDict {
   allCourses: string;
   courseActive: string;
   courseTrial: string;
+  courseFree: string;
   courseLocked: string;
   coursePrep: string;
   comingSoon: string;
@@ -99,6 +100,7 @@ const tc: Record<'es' | 'en', TranslationDict> = {
     allCourses: "Todos los Cursos",
     courseActive: "Activo",
     courseTrial: "Prueba Gratuita",
+    courseFree: "Clases gratis",
     courseLocked: "Bloqueado",
     coursePrep: "En preparación",
     comingSoon: "Próximamente",
@@ -124,6 +126,7 @@ const tc: Record<'es' | 'en', TranslationDict> = {
     allCourses: "All Courses",
     courseActive: "Active",
     courseTrial: "Free Trial",
+    courseFree: "Free classes",
     courseLocked: "Locked",
     coursePrep: "In preparation",
     comingSoon: "Coming Soon",
@@ -537,6 +540,7 @@ function StandaloneCourseCard({ curso, onSelectCourse, onBuyCourse, buyingCourse
 }) {
   const isLocked = curso.access_type === null;
   const isTrial = curso.access_type === 'trial';
+  const isFree = curso.access_type === 'free';
 
   return (
     <div 
@@ -547,6 +551,8 @@ function StandaloneCourseCard({ curso, onSelectCourse, onBuyCourse, buyingCourse
           ? 'border-neutral-200/80 dark:border-neutral-800/80 opacity-75 hover:opacity-90' 
           : isTrial
             ? 'border-amber-200 hover:shadow-lg dark:border-amber-900/60 dark:hover:border-amber-800 cursor-pointer active:scale-[0.99]'
+            : isFree
+              ? 'border-emerald-200 hover:shadow-lg dark:border-emerald-900/60 dark:hover:border-emerald-800 cursor-pointer active:scale-[0.99]'
             : 'border-neutral-200/80 hover:shadow-lg hover:border-neutral-300 dark:border-neutral-800/80 dark:hover:border-neutral-700 cursor-pointer active:scale-[0.99]'
       )}
     >
@@ -581,12 +587,17 @@ function StandaloneCourseCard({ curso, onSelectCourse, onBuyCourse, buyingCourse
                 <Eye className="w-2.5 h-2.5" /> {translations.courseTrial}
               </span>
             )}
+            {isFree && (
+              <span className="bg-emerald-500 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-md">
+                <Eye className="w-2.5 h-2.5" /> {translations.courseFree}
+              </span>
+            )}
             {curso.access_type === 'full' && (
               <span className="bg-neutral-900 text-white dark:bg-white dark:text-black text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-md">
                 <CheckCircle className="w-2.5 h-2.5" /> {translations.courseActive.toUpperCase()}
               </span>
             )}
-            {curso.badge_label && !isTrial && (
+            {curso.badge_label && !isTrial && !isFree && (
               <span className="text-[9px] font-bold px-2.5 py-0.5 rounded-full shadow-md text-white"
                 style={{ backgroundColor: curso.badge_color || '#1890FF' }}>
                 {curso.badge_label}
@@ -648,6 +659,10 @@ function StandaloneCourseCard({ curso, onSelectCourse, onBuyCourse, buyingCourse
             ) : isTrial ? (
               <span className="text-[9px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/20 dark:text-amber-400 px-3 py-1.5 rounded-full">
                 {translations.courseTrial}
+              </span>
+            ) : isFree ? (
+              <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 dark:text-emerald-400 px-3 py-1.5 rounded-full">
+                {translations.courseFree}
               </span>
             ) : (
               <button className="text-[11px] font-bold text-neutral-900 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:text-white dark:hover:bg-neutral-800 px-3.5 py-1.5 rounded-full transition-colors border-0 cursor-pointer">

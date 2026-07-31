@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Check, Sparkles, Loader2, ArrowRight } from "lucide-react";
+import { X, Check, Sparkles, Loader2, ArrowRight, Lock } from "lucide-react";
 import { communityPlans } from "@/lib/data/community_plans";
 import { useGeoPricing } from "@/hooks/useGeoPricing";
+import { SUBSCRIPTIONS_ENABLED } from "@/lib/data/community-flags";
 
 interface SubscriptionModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
   const { formatGeoPrice } = useGeoPricing();
 
   const handleAction = async (planId: string) => {
+    if (!SUBSCRIPTIONS_ENABLED) return;
     setLoadingPlan(planId);
     try {
       const res = await fetch("/api/mercadopago/subscribe", {
@@ -85,10 +87,23 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
               </div>
               
               <h2 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-white tracking-tight leading-none mt-2">
-                Pruébalo por <span className="text-blue-600 dark:text-blue-400 font-extrabold">$0.00</span> durante 7 días
+                {SUBSCRIPTIONS_ENABLED ? (
+                  <>
+                    Pruébalo por <span className="text-blue-600 dark:text-blue-400 font-extrabold">$0.00</span> durante 7 días
+                  </>
+                ) : (
+                  <>Suscripciones <span className="text-blue-600 dark:text-blue-400 font-extrabold">próximamente</span></>
+                )}
               </h2>
 
+              {!SUBSCRIPTIONS_ENABLED && (
+                <p className="mt-4 max-w-lg text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                  Estamos preparando los planes de membresía. Mientras tanto, puedes ver las clases gratuitas del campus.
+                </p>
+              )}
+
               {/* User Type Switcher (Individual / Empresarial) */}
+              {SUBSCRIPTIONS_ENABLED && (
               <div className="mt-6 flex bg-neutral-100 dark:bg-neutral-900 p-0.5 rounded-full max-w-[240px] w-full border border-neutral-200/30 dark:border-neutral-800/40">
                 {(['individual', 'empresarial'] as const).map((type) => (
                   <button
@@ -103,9 +118,30 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
                   </button>
                 ))}
               </div>
+              )}
             </div>
 
-            {/* Plan Cards Grid */}
+            {!SUBSCRIPTIONS_ENABLED ? (
+              <div className="w-full max-w-md mx-auto flex flex-col items-center text-center gap-5 py-8">
+                <div className="w-16 h-16 rounded-2xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 flex items-center justify-center">
+                  <Lock className="w-7 h-7 text-neutral-500" />
+                </div>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                  Mientras tanto, puedes entrar a <strong className="text-neutral-800 dark:text-neutral-200">Cursos</strong> y ver las clases gratuitas.
+                </p>
+                <button
+                  onClick={() => {
+                    onClose();
+                    window.location.href = "/comunidad/cursos";
+                  }}
+                  className="inline-flex items-center gap-2 bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-sm px-6 py-3 rounded-xl border-0 cursor-pointer hover:opacity-90 transition-opacity"
+                >
+                  Ir a Cursos
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+            /* Plan Cards Grid */
             <motion.div
               key={`${userType}_${billingCycle}`}
               initial="hidden"
@@ -267,8 +303,10 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
                 );
               })}
             </motion.div>
+            )}
 
             {/* Bottom Toggle Switcher */}
+            {SUBSCRIPTIONS_ENABLED && (
             <div className="mt-8 flex flex-col items-center gap-2 shrink-0 select-none">
               <label className="inline-flex items-center gap-3 cursor-pointer select-none">
                 <span className="text-xs font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
@@ -285,12 +323,15 @@ export default function SubscriptionModal({ isOpen, onClose, currentPlanId = nul
                 </div>
               </label>
             </div>
+            )}
 
           </div>
 
           {/* Footer Notice */}
           <div className="bg-neutral-50 dark:bg-neutral-900/40 border-t border-neutral-200/60 dark:border-neutral-800/80 py-6 px-6 text-center text-[10px] text-neutral-400 dark:text-neutral-500 font-medium select-none mt-auto">
-            Puedes cancelar tu suscripción en cualquier momento desde tu perfil con un solo clic. Sin contratos a largo plazo.
+            {SUBSCRIPTIONS_ENABLED
+              ? "Puedes cancelar tu suscripción en cualquier momento desde tu perfil con un solo clic. Sin contratos a largo plazo."
+              : "Suscripciones próximamente. Mientras tanto, puedes ver las clases gratuitas del campus."}
           </div>
         </motion.div>
       )}

@@ -22,9 +22,10 @@ const navLinks = [
   { href: "/", label: "Inicio" },
   { href: "/cursos", label: "Cursos", hasMega: true },
   { href: "/empresas", label: "Empresas" },
-  { href: "/webinar", label: "Webinar" },
+  { href: "/comunidad", label: "Comunidad" },
   { href: "/blog", label: "Blog" },
-  // { href: "/comunidad", label: "Comunidad" },
+  // Webinar oculto temporalmente
+  // { href: "/webinar", label: "Webinar" },
 ];
 
 const featuredSlugs = ["analisis-de-datos", "power-bi", "sql-server"];

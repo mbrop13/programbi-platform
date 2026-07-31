@@ -27,8 +27,14 @@ export async function proxy(request: NextRequest) {
   // evitamos inicializar el cliente de Supabase y validar la sesión.
   const hasSession = request.cookies.getAll().some(cookie => cookie.name.startsWith('sb-'))
   
-  // Redirección inmediata en Edge para ahorrar CPU en rutas privadas
-  if (!hasSession && (pathname.startsWith('/comunidad') || pathname.startsWith('/admin'))) {
+  // Landing pública de comunidad; el resto del portal y admin requieren sesión
+  const isComunidadLanding =
+    pathname === '/comunidad' || pathname === '/comunidad/'
+  if (
+    !hasSession &&
+    ((pathname.startsWith('/comunidad') && !isComunidadLanding) ||
+      pathname.startsWith('/admin'))
+  ) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 

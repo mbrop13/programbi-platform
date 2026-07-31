@@ -5,6 +5,14 @@ import { communityPlans } from "@/lib/data/community_plans";
 
 export async function POST(req: NextRequest) {
   try {
+    const { SUBSCRIPTIONS_ENABLED } = await import("@/lib/data/community-flags");
+    if (!SUBSCRIPTIONS_ENABLED) {
+      return NextResponse.json(
+        { error: "Las suscripciones no están disponibles por el momento." },
+        { status: 403 }
+      );
+    }
+
     const { planId } = await req.json();
 
     if (!planId) {

@@ -564,8 +564,9 @@ export async function getMyEnrollments() {
 
   let data = [...dbEnrollments];
 
+  const communitySlugs = ["power-bi", "python", "sql-server", "excel"];
+
   if (hasActiveSubscription || isOnTrial) {
-    const communitySlugs = ["power-bi", "python", "sql-server", "excel"];
     const requiredAccess = hasActiveSubscription ? "full" : "trial";
 
     communitySlugs.forEach(slug => {
@@ -586,6 +587,22 @@ export async function getMyEnrollments() {
         });
       }
     });
+  } else {
+    // Free preview mode: logged-in users can browse community courses and watch
+    // lessons marked as free preview from the admin panel.
+    const { FREE_PREVIEW_ACCESS_ENABLED } = await import("@/lib/data/community-flags");
+    if (FREE_PREVIEW_ACCESS_ENABLED) {
+      communitySlugs.forEach(slug => {
+        if (!data.some(e => e.course_slug === slug)) {
+          data.push({
+            course_slug: slug,
+            status: "active",
+            access_type: "free",
+            enrolled_at: user.created_at || new Date().toISOString()
+          });
+        }
+      });
+    }
   }
 
   if (enrollmentsRes.error) { console.error("Error:", enrollmentsRes.error); return { enrollments: [], programSiblings: [] }; }
@@ -716,6 +733,15 @@ export async function getCourseLessons(courseId: string) {
     (!profile?.subscription_expires_at || new Date(profile.subscription_expires_at) >= new Date())) || isAdmin;
   if (!finalAccess && hasActiveSubscription) finalAccess = "full";
   if (isOnTrial) finalAccess = "trial";
+
+  // Without a plan, grant free-preview access so locked lessons are visible and
+  // free ones (is_free_preview) can be played.
+  if (!finalAccess || finalAccess === "free") {
+    const { FREE_PREVIEW_ACCESS_ENABLED } = await import("@/lib/data/community-flags");
+    if (FREE_PREVIEW_ACCESS_ENABLED && !hasActiveSubscription && !isOnTrial) {
+      finalAccess = "free";
+    }
+  }
 
   return {
     lessons,

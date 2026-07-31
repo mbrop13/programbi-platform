@@ -40,6 +40,7 @@ import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { useToast } from "./ui/Toast";
 import { Tooltip } from "./ai-v2/Tooltip";
+import { SUBSCRIPTIONS_ENABLED } from "@/lib/data/community-flags";
 
 const translations = {
   es: {
@@ -651,6 +652,7 @@ export default function Sidebar({
                     setUserMenuOpen(false);
                   }}
                 />
+                {SUBSCRIPTIONS_ENABLED && (
                 <MenuItem
                   icon={ArrowUpCircle}
                   label={t.upgradePlan}
@@ -660,6 +662,7 @@ export default function Sidebar({
                     setUserMenuOpen(false);
                   }}
                 />
+                )}
                 <MenuItem
                   icon={Download}
                   label={t.installApps}
