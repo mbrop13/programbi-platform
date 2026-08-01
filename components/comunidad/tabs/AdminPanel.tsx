@@ -1973,14 +1973,23 @@ function AdminCourses() {
   };
 
   const handleAddLesson = async () => {
-    if (!selectedCourse || !newLesson.title || !newLesson.video_url || savingLesson) return;
+    if (!selectedCourse) {
+      alert("No hay ningún curso seleccionado.");
+      return;
+    }
+    if (!newLesson.title.trim()) {
+      alert("Por favor ingresa el título de la lección.");
+      return;
+    }
+    if (savingLesson) return;
+
     setSavingLesson(true);
     const lessonPayload = {
-      title: newLesson.title,
-      module_name: newLesson.module_name,
-      module_order: newLesson.module_order,
-      lesson_order: newLesson.lesson_order,
-      video_url: newLesson.video_url,
+      title: newLesson.title.trim(),
+      module_name: newLesson.module_name.trim() || "Módulo 1",
+      module_order: newLesson.module_order || 1,
+      lesson_order: newLesson.lesson_order || 1,
+      video_url: newLesson.video_url.trim(),
       description: newLesson.description || '',
       is_free_preview: newLesson.is_free_preview,
       superclass_language: newLesson.superclass_language || null,
@@ -1998,8 +2007,10 @@ function AdminCourses() {
       setNewLesson({ title: '', module_name: '', video_url: '', description: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] });
       setEditingLesson(null);
       setShowAddLesson(false);
-    } catch (err) { 
-      console.error(err); 
+      alert(editingLesson ? "¡Lección actualizada exitosamente!" : "¡Lección creada exitosamente!");
+    } catch (err: any) { 
+      console.error("Error al guardar lección:", err); 
+      alert(`Error al guardar la lección: ${err.message || 'Ocurrió un error desonocido.'}`);
     } finally {
       setSavingLesson(false);
     }
@@ -2324,8 +2335,8 @@ function AdminCourses() {
                     setEditingLesson(null);
                     setNewLesson({ title: '', module_name: '', video_url: '', description: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] });
                   }} className="px-4 py-2 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors">Cancelar</button>
-                  <button onClick={handleAddLesson} disabled={!newLesson.title || !newLesson.video_url || savingLesson}
-                    className="px-5 py-2 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-all active:scale-[0.98] disabled:opacity-40 flex items-center gap-1.5">
+                  <button onClick={handleAddLesson} disabled={!newLesson.title.trim() || savingLesson}
+                    className="px-5 py-2 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-all active:scale-[0.98] disabled:opacity-40 flex items-center gap-1.5 cursor-pointer border-0">
                     {savingLesson && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                     Guardar Lección
                   </button>
