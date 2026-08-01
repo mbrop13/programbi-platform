@@ -227,6 +227,45 @@ export async function adminUpdateCourseShortDescription(courseId: string, shortD
   revalidatePath("/(comunidad)", "layout");
 }
 
+export async function adminUploadCourseResource(formData: FormData) {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const file = formData.get("file") as File;
+  if (!file) throw new Error("No se proporcionó ningún archivo.");
+
+  const ext = file.name.split(".").pop() || "bin";
+  const path = `lessons/${crypto.randomUUID()}.${ext}`;
+
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  const { error: uploadError } = await adminDb.storage
+    .from("course-resources")
+    .upload(path, buffer, {
+      contentType: file.type || "application/octet-stream",
+      cacheControl: "3600",
+      upsert: true,
+    });
+
+  if (uploadError) {
+    console.error("Error uploading file to storage:", uploadError);
+    throw new Error(uploadError.message);
+  }
+
+  const { data: { publicUrl } } = adminDb.storage
+    .from("course-resources")
+    .getPublicUrl(path);
+
+  return {
+    name: file.name,
+    url: publicUrl,
+    size: file.size,
+    path: path,
+  };
+}
+
 export async function getMarketingDescription(slug: string) {
   const adminDb = createAdminClient();
   const { data } = await adminDb.from("courses").select("description").eq("slug", slug).single();
