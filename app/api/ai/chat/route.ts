@@ -44,7 +44,7 @@ export async function POST(req: Request) {
 
     const { messages } = parseResult.data;
 
-    const result = streamText({
+    const result = await streamText({
       model: openrouter('meta-llama/llama-3.3-70b-instruct'),
       messages: messages.map(m => ({
         role: m.role,
