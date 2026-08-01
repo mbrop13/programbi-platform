@@ -731,11 +731,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
     if (!lesson) return true;
     if (accessType === "full") return false;
     if (accessType === "trial") return globalIndex >= 2;
-    if (lesson.is_free_preview === true) return false;
-    if (accessType === "free" || !accessType) {
-      return globalIndex >= 2;
-    }
-    return true;
+    return lesson.is_free_preview !== true;
   };
   const isSelectedLessonLocked = isLessonLocked(selectedLesson, selectedLessonGlobalIndex);
   const selectedModuleOrder = selectedLesson ? modules.find(m => m.lessons.includes(selectedLesson))?.order || "" : "";
