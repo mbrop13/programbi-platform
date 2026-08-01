@@ -89,33 +89,38 @@ export async function adminAddLesson(lessonData: {
   resources?: any[];
   description?: string;
 }) {
-  const adminDb = createAdminClient();
-  const admin = await isCurrentUserAdmin();
-  if (!admin) throw new Error("Solo administradores");
+  try {
+    const admin = await isCurrentUserAdmin();
+    if (!admin) return { success: false, error: "Permiso denegado: solo administradores." };
 
-  const { data, error } = await adminDb
-    .from("lessons").insert({
-      course_id: lessonData.course_id,
-      title: lessonData.title,
-      module_name: lessonData.module_name,
-      module_order: lessonData.module_order,
-      lesson_order: lessonData.lesson_order,
-      video_url: lessonData.video_url,
-      duration_minutes: lessonData.duration_minutes || 0,
-      content_type: "video",
-      is_free_preview: lessonData.is_free_preview || false,
-      superclass_language: lessonData.superclass_language || null,
-      resources: lessonData.resources || [],
-      description: lessonData.description || "",
-      content_markdown: lessonData.description || "",
-    }).select("id").single();
+    const adminDb = createAdminClient();
+    const { data, error } = await adminDb
+      .from("lessons").insert({
+        course_id: lessonData.course_id,
+        title: lessonData.title,
+        module_name: lessonData.module_name,
+        module_order: lessonData.module_order,
+        lesson_order: lessonData.lesson_order,
+        video_url: lessonData.video_url,
+        duration_minutes: lessonData.duration_minutes || 0,
+        content_type: "video",
+        is_free_preview: lessonData.is_free_preview || false,
+        superclass_language: lessonData.superclass_language || null,
+        resources: lessonData.resources || [],
+        description: lessonData.description || "",
+        content_markdown: lessonData.description || "",
+      }).select("id").single();
 
-  if (error) {
-    console.error("Error in adminAddLesson:", error);
-    throw new Error(error.message);
+    if (error) {
+      console.error("Error in adminAddLesson Supabase insert:", error);
+      return { success: false, error: error.message };
+    }
+    try { revalidatePath("/comunidad", "layout"); } catch {}
+    return { success: true, data };
+  } catch (err: any) {
+    console.error("Error in adminAddLesson exception:", err);
+    return { success: false, error: err?.message || "Ocurrió un error al crear la lección." };
   }
-  try { revalidatePath("/comunidad", "layout"); } catch {}
-  return data;
 }
 
 export async function adminUpdateLesson(lessonId: string, lessonData: {
@@ -126,48 +131,59 @@ export async function adminUpdateLesson(lessonId: string, lessonData: {
   resources?: any[];
   description?: string;
 }) {
-  const adminDb = createAdminClient();
-  const admin = await isCurrentUserAdmin();
-  if (!admin) throw new Error("Solo administradores");
+  try {
+    const admin = await isCurrentUserAdmin();
+    if (!admin) return { success: false, error: "Permiso denegado: solo administradores." };
 
-  const { error } = await adminDb
-    .from("lessons")
-    .update({
-      title: lessonData.title,
-      module_name: lessonData.module_name,
-      module_order: lessonData.module_order,
-      lesson_order: lessonData.lesson_order,
-      video_url: lessonData.video_url,
-      duration_minutes: lessonData.duration_minutes || 0,
-      is_free_preview: lessonData.is_free_preview || false,
-      superclass_language: lessonData.superclass_language || null,
-      resources: lessonData.resources || [],
-      description: lessonData.description || "",
-      content_markdown: lessonData.description || "",
-    })
-    .eq("id", lessonId);
+    const adminDb = createAdminClient();
+    const { error } = await adminDb
+      .from("lessons")
+      .update({
+        title: lessonData.title,
+        module_name: lessonData.module_name,
+        module_order: lessonData.module_order,
+        lesson_order: lessonData.lesson_order,
+        video_url: lessonData.video_url,
+        duration_minutes: lessonData.duration_minutes || 0,
+        is_free_preview: lessonData.is_free_preview || false,
+        superclass_language: lessonData.superclass_language || null,
+        resources: lessonData.resources || [],
+        description: lessonData.description || "",
+        content_markdown: lessonData.description || "",
+      })
+      .eq("id", lessonId);
 
-  if (error) {
-    console.error("Error in adminUpdateLesson:", error);
-    throw new Error(error.message);
+    if (error) {
+      console.error("Error in adminUpdateLesson Supabase update:", error);
+      return { success: false, error: error.message };
+    }
+    try { revalidatePath("/comunidad", "layout"); } catch {}
+    return { success: true };
+  } catch (err: any) {
+    console.error("Error in adminUpdateLesson exception:", err);
+    return { success: false, error: err?.message || "Ocurrió un error al actualizar la lección." };
   }
-  try { revalidatePath("/comunidad", "layout"); } catch {}
 }
 
 export async function adminGetLessons(courseId: string) {
-  const adminDb = createAdminClient();
-  const admin = await isCurrentUserAdmin();
-  if (!admin) throw new Error("Solo administradores");
+  try {
+    const admin = await isCurrentUserAdmin();
+    if (!admin) return [];
 
-  const { data, error } = await adminDb
-    .from("lessons")
-    .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources, description, content_markdown")
-    .eq("course_id", courseId)
-    .order("module_order", { ascending: true })
-    .order("lesson_order", { ascending: true });
+    const adminDb = createAdminClient();
+    const { data, error } = await adminDb
+      .from("lessons")
+      .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources, description, content_markdown")
+      .eq("course_id", courseId)
+      .order("module_order", { ascending: true })
+      .order("lesson_order", { ascending: true });
 
-  if (error) { console.error("Error:", error); return []; }
-  return data || [];
+    if (error) { console.error("Error fetching lessons:", error); return []; }
+    return data || [];
+  } catch (err) {
+    console.error("Exception in adminGetLessons:", err);
+    return [];
+  }
 }
 
 export async function adminTogglePublish(courseId: string) {

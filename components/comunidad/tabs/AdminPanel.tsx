@@ -1997,11 +1997,18 @@ function AdminCourses() {
     };
 
     try {
+      let res: any;
       if (editingLesson) {
-        await adminUpdateLesson(editingLesson.id, lessonPayload);
+        res = await adminUpdateLesson(editingLesson.id, lessonPayload);
       } else {
-        await adminAddLesson({ ...lessonPayload, course_id: selectedCourse.id });
+        res = await adminAddLesson({ ...lessonPayload, course_id: selectedCourse.id });
       }
+
+      if (res && res.success === false) {
+        alert(`Error al guardar la lección: ${res.error || 'Error desconocido'}`);
+        return;
+      }
+
       const data = await adminGetLessons(selectedCourse.id);
       setLessons(data);
       setNewLesson({ title: '', module_name: '', video_url: '', description: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] });
