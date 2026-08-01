@@ -1339,7 +1339,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
               <div className="flex flex-col h-full bg-white dark:bg-black overflow-y-auto no-scrollbar">
                 
                 {/* ─── LESSON HEADER ─── */}
-                <header className="flex-none h-[64px] bg-white dark:bg-black flex items-center justify-between px-6 border-b border-neutral-200/60 dark:border-neutral-800/80">
+                <header className="flex-none h-[64px] bg-white dark:bg-black flex items-center justify-between px-6">
                   <div className="flex items-center gap-4 min-w-0">
                     <div className="flex items-center shrink-0 select-none">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -1860,18 +1860,6 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                 {sidebarTab === 'ai' && (
                   <div className="flex flex-col h-full bg-white dark:bg-black">
                     <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-neutral-50/50 dark:bg-neutral-950/20 no-scrollbar">
-                      {chatMessages.length === 1 && (
-                        <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200/60 dark:border-neutral-800/80 p-4 rounded-2xl text-center shadow-sm mb-4 select-none">
-                          <div className="w-10 h-10 rounded-xl bg-neutral-900 dark:bg-white text-white dark:text-black flex items-center justify-center mx-auto mb-3 shadow-sm">
-                            <Sparkles className="w-5 h-5" />
-                          </div>
-                          <h4 className="text-xs font-bold text-neutral-900 dark:text-white leading-snug">Mentor IA de ProgramBI</h4>
-                          <p className="text-[10px] text-neutral-500 dark:text-neutral-400 leading-relaxed mt-1 font-medium">
-                            Pregúntame sobre los conceptos explicados en el video, ayuda con ejercicios prácticos o aclaraciones sobre el código de esta clase.
-                          </p>
-                        </div>
-                      )}
-
                       {chatMessages.map((msg, i) => (
                         <div
                           key={i}
