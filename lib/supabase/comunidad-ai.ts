@@ -89,11 +89,11 @@ export async function adminAddLesson(lessonData: {
   resources?: any[];
   description?: string;
 }) {
-  const supabase = await createClient();
+  const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { data, error } = await supabase
+  const { data, error } = await adminDb
     .from("lessons").insert({
       course_id: lessonData.course_id,
       title: lessonData.title,
@@ -110,8 +110,11 @@ export async function adminAddLesson(lessonData: {
       content_markdown: lessonData.description || "",
     }).select("id").single();
 
-  if (error) throw new Error(error.message);
-  revalidatePath("/(comunidad)", "layout");
+  if (error) {
+    console.error("Error in adminAddLesson:", error);
+    throw new Error(error.message);
+  }
+  try { revalidatePath("/comunidad", "layout"); } catch {}
   return data;
 }
 
@@ -123,11 +126,11 @@ export async function adminUpdateLesson(lessonId: string, lessonData: {
   resources?: any[];
   description?: string;
 }) {
-  const supabase = await createClient();
+  const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { error } = await supabase
+  const { error } = await adminDb
     .from("lessons")
     .update({
       title: lessonData.title,
@@ -144,16 +147,19 @@ export async function adminUpdateLesson(lessonId: string, lessonData: {
     })
     .eq("id", lessonId);
 
-  if (error) throw new Error(error.message);
-  revalidatePath("/(comunidad)", "layout");
+  if (error) {
+    console.error("Error in adminUpdateLesson:", error);
+    throw new Error(error.message);
+  }
+  try { revalidatePath("/comunidad", "layout"); } catch {}
 }
 
 export async function adminGetLessons(courseId: string) {
-  const supabase = await createClient();
+  const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { data, error } = await supabase
+  const { data, error } = await adminDb
     .from("lessons")
     .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources, description, content_markdown")
     .eq("course_id", courseId)
