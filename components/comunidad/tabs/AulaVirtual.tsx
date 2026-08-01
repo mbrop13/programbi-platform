@@ -1092,7 +1092,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                                                   </span>
                                                 )}
                                                 {isLocked && (
-                                                  <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:bg-amber-500/5 dark:text-amber-400 uppercase tracking-wide">
+                                                  <span className="text-[8px] font-bold px-2 py-0.5 rounded bg-[#1890FF]/10 text-[#1890FF] border border-[#1890FF]/20 uppercase tracking-wide">
                                                     Bloqueado
                                                   </span>
                                                 )}
@@ -1422,18 +1422,20 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                 <div className="flex-none w-full bg-neutral-50 dark:bg-neutral-950 flex justify-center items-center py-4 px-6 border-b border-neutral-150/70 dark:border-neutral-900">
                   <div className="relative w-full max-w-[1120px] aspect-video bg-neutral-950 rounded-2xl overflow-hidden shadow-md">
                     {isSelectedLessonLocked ? (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-black overflow-hidden select-none">
-                        <Lock className="w-10 h-10 text-orange-500 mb-3" />
-                        <h2 className="text-base font-bold text-white mb-1.5 text-center px-4">{t.courseLocked}</h2>
-                        <p className="text-neutral-400 text-xs max-w-xs text-center mb-5 leading-relaxed px-4 font-medium">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-950 overflow-hidden select-none p-6 text-center">
+                        <div className="w-14 h-14 rounded-2xl bg-[#1890FF]/10 border border-[#1890FF]/30 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(24,144,255,0.25)]">
+                          <Lock className="w-7 h-7 text-[#1890FF]" />
+                        </div>
+                        <h2 className="text-lg md:text-xl font-bold text-white mb-2 tracking-tight">{t.courseLocked}</h2>
+                        <p className="text-neutral-400 text-xs md:text-sm max-w-md text-center mb-6 leading-relaxed font-medium">
                           {t.lockedDesc}
                         </p>
                         {onUpgradeClick && (
                           <button
                             onClick={() => onUpgradeClick()}
-                            className="px-5 py-2.5 bg-white text-black hover:bg-neutral-100 text-xs font-bold rounded-xl shadow-md flex items-center gap-1.5 border-0 transition-all cursor-pointer uppercase tracking-wider"
+                            className="px-6 py-3 bg-[#1890FF] hover:bg-[#0076e4] text-white text-xs font-bold rounded-xl shadow-[0_4px_20px_rgba(24,144,255,0.35)] flex items-center gap-2 border-0 transition-all cursor-pointer uppercase tracking-wider active:scale-95"
                           >
-                            <Sparkles className="w-4 h-4 text-orange-600" /> {t.unlockCourse}
+                            <Sparkles className="w-4 h-4 text-white" /> {t.unlockCourse}
                           </button>
                         )}
                       </div>
