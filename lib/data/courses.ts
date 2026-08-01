@@ -35,7 +35,7 @@ export interface Course {
 export const courses: Course[] = [
   {
     slug: "analisis-de-datos",
-    title: "Curso de Análisis de Datos",
+    title: "Análisis de Datos",
     shortDescription:
       "Programa integral de 48 horas por nivel donde dominarás SQL Server, Power BI y Python.",
     description:

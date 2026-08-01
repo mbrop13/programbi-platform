@@ -5183,7 +5183,7 @@ function AdminDiplomas() {
   // Designer states
   const [studentName, setStudentName] = useState("Juan Pérez");
   const [studentRut, setStudentRut] = useState("12.345.678-9");
-  const [courseName, setCourseName] = useState("Power BI - Basico");
+  const [courseName, setCourseName] = useState("Power BI");
   const [issueDate, setIssueDate] = useState(new Date().toLocaleDateString("es-CL"));
   const [instructorName, setInstructorName] = useState("Manuel Oliva");
   
@@ -5359,7 +5359,7 @@ function AdminDiplomas() {
 
   const downloadCSVTemplate = () => {
     const headers = "Nombre Completo,Correo Electronico,Nombre Curso,Codigo Certificado,Fecha Emision\n";
-    const example1 = "Juan Pérez,juan.perez@example.com,Curso Power BI Básico,PBI-PBB-883K1,2026-07-08\n";
+    const example1 = "Juan Pérez,juan.perez@example.com,Power BI,PBI-PBB-883K1,2026-07-08\n";
     const example2 = "María Gómez,maria.gomez@example.com,SQL Server Avanzado,PBI-SQL-321L9,2026-07-07\n";
     const blob = new Blob([headers + example1 + example2], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);

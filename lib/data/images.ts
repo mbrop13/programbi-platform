@@ -106,5 +106,5 @@ export const founderImage =
 
 export const heroVideos = [
   { id: "LiupEKDc3Ms", title: "Análisis de Datos 360°" },
-  { id: "7197F-yNw04", title: "Power BI Experto" },
+  { id: "7197F-yNw04", title: "Power BI" },
 ];

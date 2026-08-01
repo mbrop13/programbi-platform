@@ -59,9 +59,9 @@ const quizSteps = [
 
 const results: Record<string, { title: string; desc: string; link: string }> = {
   "reportes-basico": { title: "Análisis de Datos 360°", desc: "El programa integral que te lleva de Excel a Power BI y Python.", link: "/cursos/analisis-de-datos" },
-  "reportes-medio": { title: "Power BI Expert", desc: "Ideal para dejar los reportes manuales y crear dashboards.", link: "/cursos/power-bi" },
+  "reportes-medio": { title: "Power BI", desc: "Ideal para dejar los reportes manuales y crear dashboards.", link: "/cursos/power-bi" },
   "reportes-avanzado": { title: "Analítica Financiera", desc: "Tu nivel te permite pasar directo a especialización.", link: "/cursos/analitica-financiera" },
-  "visual-basico": { title: "Power BI Expert", desc: "Aprende a transformar datos en visualizaciones impactantes.", link: "/cursos/power-bi" },
+  "visual-basico": { title: "Power BI", desc: "Aprende a transformar datos en visualizaciones impactantes.", link: "/cursos/power-bi" },
   "visual-medio": { title: "Python para Datos", desc: "Lleva tus visualizaciones al siguiente nivel con Python.", link: "/cursos/python" },
   "visual-avanzado": { title: "Machine Learning", desc: "Crea modelos predictivos con visualización avanzada.", link: "/cursos/machine-learning" },
   "auto-basico": { title: "Power Automate & RPA", desc: "El mejor primer paso para automatizar procesos.", link: "/cursos/power-automate" },

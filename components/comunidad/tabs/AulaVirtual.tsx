@@ -731,8 +731,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
     if (!lesson) return true;
     if (accessType === "full") return false;
     if (accessType === "trial") return globalIndex >= 2;
-    if (accessType === "free") return !lesson.is_free_preview;
-    return true;
+    return lesson.is_free_preview !== true;
   };
   const isSelectedLessonLocked = isLessonLocked(selectedLesson, selectedLessonGlobalIndex);
   const selectedModuleOrder = selectedLesson ? modules.find(m => m.lessons.includes(selectedLesson))?.order || "" : "";
@@ -1480,7 +1479,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                             </h2>
                           </div>
                           
-                          {selectedLesson.superclass_language && (
+                          {selectedLesson.superclass_language && !isSelectedLessonLocked && (
                             <button
                               onClick={() => setSuperClaseActive(true)}
                               className="px-4 py-2 rounded-xl bg-neutral-900 hover:bg-black text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-sm cursor-pointer border-0 active:scale-98 transition-colors select-none"
@@ -1775,7 +1774,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
 
                                 {/* Text & Duration Details (Clickable row area) */}
                                 <div 
-                                  onClick={() => !isLocked && handleSelectLesson(lesson)}
+                                  onClick={() => handleSelectLesson(lesson)}
                                   className="flex-1 min-w-0 cursor-pointer"
                                 >
                                   <h5 className={cn(

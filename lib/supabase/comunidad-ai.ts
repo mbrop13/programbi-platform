@@ -743,8 +743,24 @@ export async function getCourseLessons(courseId: string) {
     }
   }
 
+  const sanitizedLessons = lessons.map((l: any, index: number) => {
+    let isUnlocked = false;
+    if (isAdmin || hasActiveSubscription || finalAccess === "full") {
+      isUnlocked = true;
+    } else if (finalAccess === "trial") {
+      isUnlocked = index < 2;
+    } else if (finalAccess === "free") {
+      isUnlocked = l.is_free_preview === true;
+    }
+
+    return {
+      ...l,
+      video_url: isUnlocked ? (l.video_url || "") : "",
+    };
+  });
+
   return {
-    lessons,
+    lessons: sanitizedLessons,
     access: finalAccess,
     isOnTrial,
     completedLessonIds,
