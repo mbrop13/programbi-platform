@@ -2035,12 +2035,13 @@ function AdminCourses() {
 
   const handleStartEditLesson = (lesson: any) => {
     setEditingLesson(lesson);
+    const globalIdx = lessons.findIndex(l => l.id === lesson.id);
     setNewLesson({
       title: lesson.title || '',
       module_name: lesson.module_name || '',
       video_url: lesson.video_url || '',
       module_order: lesson.module_order || 1,
-      lesson_order: lesson.lesson_order || 1,
+      lesson_order: lesson.lesson_order || (globalIdx >= 0 ? globalIdx + 1 : 1),
       is_free_preview: !!lesson.is_free_preview,
       superclass_language: lesson.superclass_language || '',
       resources: lesson.resources || [],
@@ -2364,9 +2365,13 @@ function AdminCourses() {
                   <FileText className="w-4 h-4 text-gray-400" /> {moduleName || "Sin módulo"}
                 </div>
                 <div className="divide-y divide-gray-100/60">
-                  {moduleLessons.map((lesson: any, idx: number) => (
-                    <div key={lesson.id} className="flex items-center gap-4 px-5 py-3 hover:bg-gray-100/60 transition-colors">
-                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">{lesson.lesson_order || (idx + 1)}</div>
+                  {moduleLessons.map((lesson: any, idx: number) => {
+                    const globalIdx = lessons.findIndex((l: any) => l.id === lesson.id);
+                    const displayIndex = globalIdx >= 0 ? globalIdx + 1 : (idx + 1);
+
+                    return (
+                      <div key={lesson.id} className="flex items-center gap-4 px-5 py-3 hover:bg-gray-100/60 transition-colors">
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">{displayIndex}</div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-semibold text-gray-800 truncate">{lesson.title}</span>
@@ -2393,7 +2398,8 @@ function AdminCourses() {
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
-                  ))}
+                  );
+                })}
                 </div>
               </div>
             ))}
