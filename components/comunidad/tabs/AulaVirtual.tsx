@@ -6,7 +6,7 @@ import {
   Play, Code, CheckCircle, Terminal, PlayCircle, Loader2,
   ChevronLeft, Lock, Sparkles, X, Layers,
   Share2, Star, HelpCircle, StickyNote, Download, Trash2, Send,
-  Check, BookOpen, Clock, FileText, MessageSquarePlus
+  Check, BookOpen, Clock, FileText, MessageSquarePlus, Copy
 } from "lucide-react";
 import Editor from "@monaco-editor/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -233,6 +233,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
   // Text Notes States
   const [notes, setNotes] = useState("");
   const [notesSaving, setNotesSaving] = useState(false);
+  const [copiedNotes, setCopiedNotes] = useState(false);
 
   // Interactive AI Assistant States
   const [chatMessages, setChatMessages] = useState<{ role: 'user' | 'assistant', text: string }[]>([]);
@@ -1424,8 +1425,8 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                 </header>
                 
                 {/* Cinema Screen Frame for Video */}
-                <div className="flex-none w-full bg-neutral-50 dark:bg-neutral-950 flex justify-center items-center py-4 px-6 border-b border-neutral-150/70 dark:border-neutral-900">
-                  <div className="relative w-full max-w-[1120px] aspect-video bg-neutral-950 rounded-2xl overflow-hidden shadow-md">
+                <div className="flex-none w-full bg-white dark:bg-black flex justify-center items-center py-4 px-6">
+                  <div className="relative w-full max-w-[1120px] aspect-video bg-neutral-950 rounded-2xl overflow-hidden shadow-xl border border-neutral-800/40">
                     {isSelectedLessonLocked ? (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-950 overflow-hidden select-none p-6 text-center">
                         <div className="w-14 h-14 rounded-2xl bg-[#1890FF]/10 border border-[#1890FF]/30 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(24,144,255,0.25)]">
@@ -1531,31 +1532,6 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                           )}
                         </div>
 
-                        {/* Ratings & statistics overview */}
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 bg-neutral-50 dark:bg-neutral-950 p-5 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 select-none">
-                          <div className="text-left">
-                            <span className="text-[9px] text-neutral-400 font-bold uppercase block tracking-wider">{t.rating}</span>
-                            <div className="flex items-center gap-1.5 mt-1.5">
-                              <span className="text-base font-bold text-neutral-900 dark:text-white">4.8</span>
-                              <div className="flex text-amber-500">
-                                {Array.from({ length: 5 }).map((_, i) => <Star key={i} className="w-3 h-3 fill-amber-500 stroke-none" />)}
-                              </div>
-                            </div>
-                          </div>
-                          <div className="text-left">
-                            <span className="text-[9px] text-neutral-400 font-bold uppercase block tracking-wider">{t.students}</span>
-                            <span className="text-base font-bold text-neutral-900 dark:text-white mt-1.5 block">15k+</span>
-                          </div>
-                          <div className="text-left">
-                            <span className="text-[9px] text-neutral-400 font-bold uppercase block tracking-wider">{t.duration}</span>
-                            <span className="text-base font-bold text-neutral-900 dark:text-white mt-1.5 block">{totalLessons} clases</span>
-                          </div>
-                          <div className="text-left">
-                            <span className="text-[9px] text-neutral-400 font-bold uppercase block tracking-wider">{t.access}</span>
-                            <span className="text-base font-bold text-emerald-600 dark:text-emerald-400 mt-1.5 block uppercase">Premium</span>
-                          </div>
-                        </div>
-
                         <div>
                           <h3 className="font-bold text-xs text-neutral-900 dark:text-white uppercase tracking-wider mb-2 select-none">{t.aboutLesson}</h3>
                           <p className="text-xs text-neutral-600 dark:text-neutral-450 leading-relaxed font-medium">
@@ -1581,18 +1557,39 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
 
                     {/* Tab 2: NOTES */}
                     {activeTab === 'notes' && (
-                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                        <div className="flex items-center justify-between border-b border-neutral-150 dark:border-neutral-900 pb-3 select-none">
-                          <div>
-                            <h3 className="font-bold text-xs text-neutral-900 dark:text-white uppercase tracking-wider">{t.personalNotes}</h3>
-                            <p className="text-[10px] text-neutral-450 dark:text-neutral-500 font-medium mt-0.5">{t.notesSavedLocal}</p>
+                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-150 dark:border-neutral-900 pb-4 select-none">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-xl bg-[#1890FF]/10 text-[#1890FF] flex items-center justify-center shrink-0 border border-[#1890FF]/20">
+                              <StickyNote className="w-4 h-4" />
+                            </div>
+                            <div>
+                              <h3 className="font-bold text-sm text-neutral-900 dark:text-white flex items-center gap-2">
+                                {t.personalNotes}
+                              </h3>
+                              <p className="text-[11px] text-neutral-500 font-medium mt-0.5">{t.notesSavedLocal}</p>
+                            </div>
                           </div>
+
                           <div className="flex items-center gap-2">
+                            {notes.trim() && (
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(notes);
+                                  setCopiedNotes(true);
+                                  setTimeout(() => setCopiedNotes(false), 2000);
+                                }}
+                                className="px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-0 cursor-pointer transition-all flex items-center gap-1.5 text-[11px] font-bold"
+                              >
+                                {copiedNotes ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                                {copiedNotes ? "¡Copiado!" : "Copiar"}
+                              </button>
+                            )}
                             <button
                               onClick={handleDownloadNotes}
                               disabled={!notes.trim()}
-                              className="px-3.5 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-850 text-neutral-850 dark:text-neutral-200 border-0 cursor-pointer disabled:opacity-40 transition-colors flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider"
-                              title="Descargar apuntes .txt"
+                              className="px-3.5 py-1.5 rounded-xl bg-[#1890FF] hover:bg-[#0076e4] text-white border-0 cursor-pointer disabled:opacity-40 transition-all shadow-sm flex items-center gap-1.5 text-[11px] font-bold active:scale-95"
+                              title="Descargar apuntes en archivo .txt"
                             >
                               <Download className="w-3.5 h-3.5" />
                               {t.downloadNotes}
@@ -1600,7 +1597,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                             <button
                               onClick={() => { if (confirm("¿Seguro que deseas eliminar tus apuntes de esta clase?")) setNotes(""); }}
                               disabled={!notes.trim()}
-                              className="p-1.5 rounded-lg bg-rose-500/10 text-rose-600 border-0 cursor-pointer disabled:opacity-40 transition-colors"
+                              className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border-0 cursor-pointer disabled:opacity-40 transition-colors"
                               title="Limpiar apuntes"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -1608,21 +1605,29 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                           </div>
                         </div>
 
-                        <div className="relative">
-                          <textarea
-                            value={notes}
-                            onChange={(e) => setNotes(e.target.value)}
-                            placeholder={t.notesPlaceholder}
-                            className="w-full min-h-[160px] bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-850 rounded-xl p-4 text-xs text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 focus:outline-none focus:ring-1 focus:ring-neutral-200 dark:focus:ring-neutral-800 leading-relaxed shadow-sm resize-y"
-                          />
-                          <div className="absolute bottom-3 right-3 text-[9px] font-bold select-none">
-                            {notesSaving ? (
-                              <span className="flex items-center gap-1 text-neutral-405"><Loader2 className="w-3 h-3 animate-spin" /> {t.saving}</span>
-                            ) : notes ? (
-                              <span className="text-emerald-600 flex items-center gap-1"><Check className="w-3 h-3" /> {t.autoSaved}</span>
-                            ) : (
-                              <span className="text-neutral-400">{t.emptyNotes}</span>
-                            )}
+                        {/* Notes Editor Container */}
+                        <div className="space-y-2">
+                          <div className="relative rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-850 focus-within:border-[#1890FF]/60 focus-within:ring-2 focus-within:ring-[#1890FF]/20 p-4 transition-all shadow-sm">
+                            <textarea
+                              value={notes}
+                              onChange={(e) => setNotes(e.target.value)}
+                              placeholder={t.notesPlaceholder}
+                              className="w-full min-h-[220px] bg-transparent text-xs md:text-sm text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none leading-relaxed resize-y font-normal"
+                            />
+                            <div className="flex items-center justify-between pt-3 border-t border-neutral-150/60 dark:border-neutral-900 text-[10px] font-bold text-neutral-400 select-none">
+                              <span>
+                                {notes.trim() ? `${notes.trim().split(/\s+/).length} palabras · ${notes.length} caracteres` : "0 palabras"}
+                              </span>
+                              <div>
+                                {notesSaving ? (
+                                  <span className="flex items-center gap-1 text-amber-500"><Loader2 className="w-3 h-3 animate-spin" /> {t.saving}</span>
+                                ) : notes ? (
+                                  <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1"><Check className="w-3.5 h-3.5" /> {t.autoSaved}</span>
+                                ) : (
+                                  <span className="text-neutral-400">{t.emptyNotes}</span>
+                                )}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </motion.div>
