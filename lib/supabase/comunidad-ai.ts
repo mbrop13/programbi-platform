@@ -749,8 +749,8 @@ export async function getCourseLessons(courseId: string) {
       isUnlocked = true;
     } else if (finalAccess === "trial") {
       isUnlocked = index < 2;
-    } else if (finalAccess === "free") {
-      isUnlocked = l.is_free_preview === true;
+    } else if (finalAccess === "free" || !finalAccess) {
+      isUnlocked = l.is_free_preview === true || index < 2;
     }
 
     return {

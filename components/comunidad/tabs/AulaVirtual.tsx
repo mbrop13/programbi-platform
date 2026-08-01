@@ -95,8 +95,8 @@ const ta = {
     aiPrompt: "Pregúntale al Asistente...",
     analyzing: "Analizando...",
     courseLocked: "Clase Bloqueada",
-    lockedDesc: "Esta clase requiere membresía. Las suscripciones estarán disponibles próximamente. Mientras tanto, puedes ver las clases gratuitas.",
-    unlockCourse: "Suscripciones próximamente",
+    lockedDesc: "Para acceder a esta lección y desbloquear el curso completo, suscríbete a un plan de la comunidad.",
+    unlockCourse: "Próximamente Planes de Suscripción",
     videoNotAvail: "Video no disponible en este momento",
     overviewTab: "Descripción general",
     notesTab: "Mis apuntes",
@@ -161,8 +161,8 @@ const ta = {
     aiPrompt: "Ask the Assistant...",
     analyzing: "Analyzing...",
     courseLocked: "Lesson Locked",
-    lockedDesc: "This lesson requires a membership. Subscriptions are coming soon. Meanwhile, you can watch the free lessons.",
-    unlockCourse: "Subscriptions coming soon",
+    lockedDesc: "To access this lesson and unlock the full course, subscribe to a community plan.",
+    unlockCourse: "Subscription Plans Coming Soon",
     videoNotAvail: "Video not available at the moment",
     overviewTab: "Overview",
     notesTab: "My notes",
@@ -731,7 +731,11 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
     if (!lesson) return true;
     if (accessType === "full") return false;
     if (accessType === "trial") return globalIndex >= 2;
-    return lesson.is_free_preview !== true;
+    if (lesson.is_free_preview === true) return false;
+    if (accessType === "free" || !accessType) {
+      return globalIndex >= 2;
+    }
+    return true;
   };
   const isSelectedLessonLocked = isLessonLocked(selectedLesson, selectedLessonGlobalIndex);
   const selectedModuleOrder = selectedLesson ? modules.find(m => m.lessons.includes(selectedLesson))?.order || "" : "";
