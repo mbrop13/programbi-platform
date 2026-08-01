@@ -616,17 +616,20 @@ export async function getMyEnrollments() {
     .select("id, slug, title, short_description, category, badge_label, badge_color, tech_stack, duration_hours, level, image_url, icon, accent_color, is_featured, sort_order, price_clp")
     .in("slug", slugs);
 
-  // Count lessons per course
+  // Count lessons per course and check for free preview lessons
   const { data: lessonCounts } = await supabase
     .from("lessons")
-    .select("course_id, created_at")
+    .select("course_id, created_at, is_free_preview")
     .in("course_id", (courses || []).map(c => c.id));
 
   // Build lesson stats per course id
-  const lessonStats: Record<string, { count: number; latest: string | null }> = {};
+  const lessonStats: Record<string, { count: number; latest: string | null; hasFreePreview: boolean }> = {};
   (lessonCounts || []).forEach((l: any) => {
-    if (!lessonStats[l.course_id]) lessonStats[l.course_id] = { count: 0, latest: null };
+    if (!lessonStats[l.course_id]) lessonStats[l.course_id] = { count: 0, latest: null, hasFreePreview: false };
     lessonStats[l.course_id].count++;
+    if (l.is_free_preview === true) {
+      lessonStats[l.course_id].hasFreePreview = true;
+    }
     if (!lessonStats[l.course_id].latest || l.created_at > lessonStats[l.course_id].latest!) {
       lessonStats[l.course_id].latest = l.created_at;
     }
@@ -637,7 +640,12 @@ export async function getMyEnrollments() {
     const stats = c ? lessonStats[c.id] : null;
     return {
       ...e,
-      course: c ? { ...c, lesson_count: stats?.count || 0, latest_lesson_at: stats?.latest || null } : null
+      course: c ? {
+        ...c,
+        lesson_count: stats?.count || 0,
+        latest_lesson_at: stats?.latest || null,
+        has_free_preview: stats?.hasFreePreview || false,
+      } : null
     };
   });
 
@@ -660,13 +668,16 @@ export async function getMyEnrollments() {
     const siblingIds = (siblings || []).map(s => s.id);
     const { data: sibLessonCounts } = await supabase
       .from("lessons")
-      .select("course_id, created_at")
+      .select("course_id, created_at, is_free_preview")
       .in("course_id", siblingIds);
 
-    const sibStats: Record<string, { count: number; latest: string | null }> = {};
+    const sibStats: Record<string, { count: number; latest: string | null; hasFreePreview: boolean }> = {};
     (sibLessonCounts || []).forEach((l: any) => {
-      if (!sibStats[l.course_id]) sibStats[l.course_id] = { count: 0, latest: null };
+      if (!sibStats[l.course_id]) sibStats[l.course_id] = { count: 0, latest: null, hasFreePreview: false };
       sibStats[l.course_id].count++;
+      if (l.is_free_preview === true) {
+        sibStats[l.course_id].hasFreePreview = true;
+      }
       if (!sibStats[l.course_id].latest || l.created_at > sibStats[l.course_id].latest!) {
         sibStats[l.course_id].latest = l.created_at;
       }
@@ -676,6 +687,7 @@ export async function getMyEnrollments() {
       ...s,
       lesson_count: sibStats[s.id]?.count || 0,
       latest_lesson_at: sibStats[s.id]?.latest || null,
+      has_free_preview: sibStats[s.id]?.hasFreePreview || false,
     }));
   }
 

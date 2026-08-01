@@ -2364,9 +2364,9 @@ function AdminCourses() {
                   <FileText className="w-4 h-4 text-gray-400" /> {moduleName || "Sin módulo"}
                 </div>
                 <div className="divide-y divide-gray-100/60">
-                  {moduleLessons.map((lesson: any) => (
+                  {moduleLessons.map((lesson: any, idx: number) => (
                     <div key={lesson.id} className="flex items-center gap-4 px-5 py-3 hover:bg-gray-100/60 transition-colors">
-                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">{lesson.lesson_order}</div>
+                      <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500">{lesson.lesson_order || (idx + 1)}</div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-semibold text-gray-800 truncate">{lesson.title}</span>

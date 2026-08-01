@@ -27,6 +27,7 @@ interface CourseWithAccess {
   price_clp: number;
   lesson_count?: number;
   latest_lesson_at?: string | null;
+  has_free_preview?: boolean;
 }
 
 interface ProgramGroup {
@@ -63,6 +64,7 @@ interface PublicCourse {
   is_featured: boolean;
   sort_order: number;
   price_clp: number;
+  has_free_preview?: boolean;
 }
 
 interface TranslationDict {
@@ -540,7 +542,7 @@ function StandaloneCourseCard({ curso, onSelectCourse, onBuyCourse, buyingCourse
 }) {
   const isLocked = curso.access_type === null;
   const isTrial = curso.access_type === 'trial';
-  const isFree = curso.access_type === 'free';
+  const isFree = curso.access_type === 'free' && curso.has_free_preview === true;
 
   return (
     <div 

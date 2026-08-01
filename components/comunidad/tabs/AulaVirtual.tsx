@@ -1083,7 +1083,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                                                     <Check className="w-2.5 h-2.5 stroke-[3px]" />
                                                   </div>
                                                 )}
-                                                <span className="font-bold truncate">{lesson.lesson_order}. {lesson.title}</span>
+                                                <span className="font-bold truncate">{(globalIndex >= 0 ? globalIndex + 1 : lesson.lesson_order)}. {lesson.title}</span>
                                               </div>
                                               <div className="flex items-center gap-2 shrink-0 ml-3">
                                                 {lesson.is_free_preview && (
@@ -1505,7 +1505,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                           <div>
                             <div className="flex items-center gap-2 mb-2 select-none">
                               <span className="text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-neutral-100 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 uppercase tracking-wider border border-neutral-250/20 dark:border-neutral-800/40">
-                                Módulo {selectedModuleOrder} • Clase {selectedLesson.lesson_order}
+                                Módulo {selectedModuleOrder} • Clase {selectedLessonGlobalIndex >= 0 ? selectedLessonGlobalIndex + 1 : selectedLesson.lesson_order}
                               </span>
                               <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-neutral-50 text-neutral-500 dark:bg-neutral-950 dark:text-neutral-450 uppercase tracking-wider flex items-center gap-1 border border-neutral-150/40 dark:border-neutral-900">
                                 <Clock className="w-2.5 h-2.5" /> {selectedLesson.duration_minutes} {t.lessonsDuration}
@@ -1816,9 +1816,9 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                                 >
                                   <h5 className={cn(
                                     "text-[12px] leading-snug font-bold line-clamp-2 transition-colors",
-                                    isSelected ? 'text-neutral-950 dark:text-white font-bold' : 'text-neutral-700 dark:text-neutral-350 group-hover:text-neutral-950 dark:group-hover:text-white'
+                                    isSelected ? 'text-neutral-950 dark:text-white font-bold' : 'text-neutral-700 dark:text-neutral-355 group-hover:text-neutral-950 dark:group-hover:text-white'
                                   )}>
-                                    {lesson.lesson_order}. {lesson.title}
+                                    {(globalIndex >= 0 ? globalIndex + 1 : lesson.lesson_order)}. {lesson.title}
                                   </h5>
                                   <div className="flex flex-wrap items-center gap-2 mt-1.5 select-none">
                                     <span className="text-[9px] text-neutral-400 font-bold flex items-center gap-1 leading-none">
