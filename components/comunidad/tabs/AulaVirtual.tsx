@@ -417,7 +417,8 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
       }
     }
     load();
-  }, [courseId, courseSlug, selectedLessonSlug]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [courseId]);
 
   // Load Super Clase notes & set language on lesson change
   useEffect(() => {
@@ -723,7 +724,11 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
 
   const handleSelectLesson = (lesson: Lesson) => {
     setSelectedLesson(lesson);
-    router.push(`/comunidad/cursos/${courseSlug}/${slugify(lesson.title)}`);
+    const targetSlug = slugify(lesson.title);
+    const newPath = courseSlug ? `/comunidad/cursos/${courseSlug}/${targetSlug}` : `/comunidad/cursos/${targetSlug}`;
+    if (typeof window !== "undefined") {
+      window.history.pushState({}, "", newPath);
+    }
   };
 
   const selectedLessonGlobalIndex = selectedLesson ? modules.flatMap(m => m.lessons).findIndex(l => l.id === selectedLesson.id) : -1;
