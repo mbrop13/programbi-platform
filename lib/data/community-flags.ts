@@ -4,7 +4,7 @@
  */
 
 /** When false, pricing, checkout and upgrade CTAs are hidden/disabled. */
-export const SUBSCRIPTIONS_ENABLED = false;
+export const SUBSCRIPTIONS_ENABLED = true;
 
 /**
  * When true (and subscriptions are off), any logged-in user can enter

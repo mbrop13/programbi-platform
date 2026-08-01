@@ -1061,6 +1061,9 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                                       <div className="divide-y divide-neutral-100 dark:divide-neutral-900 bg-white dark:bg-neutral-950">
                                         {mod.lessons.map((lesson) => {
                                           const isCompleted = completedLessons.has(lesson.id);
+                                          const globalIndex = modules.flatMap(m => m.lessons).findIndex(l => l.id === lesson.id);
+                                          const isLocked = isLessonLocked(lesson, globalIndex);
+
                                           return (
                                             <div
                                               key={lesson.id}
@@ -1068,15 +1071,33 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                                               className="px-4 py-3.5 flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-900/30 cursor-pointer transition-colors text-xs text-neutral-700 dark:text-neutral-300"
                                             >
                                               <div className="flex items-center gap-3 min-w-0">
-                                                <div className={cn(
-                                                  "w-4 h-4 rounded-full border flex items-center justify-center shrink-0",
-                                                  isCompleted ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-white dark:border-white dark:text-black' : 'border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 text-transparent'
-                                                )}>
-                                                  <Check className="w-2.5 h-2.5 stroke-[3px]" />
-                                                </div>
+                                                {isLocked ? (
+                                                  <div className="w-4 h-4 rounded-full flex items-center justify-center text-neutral-400 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shrink-0">
+                                                    <Lock className="w-2.5 h-2.5" />
+                                                  </div>
+                                                ) : (
+                                                  <div className={cn(
+                                                    "w-4 h-4 rounded-full border flex items-center justify-center shrink-0",
+                                                    isCompleted ? 'bg-neutral-900 border-neutral-900 text-white dark:bg-white dark:border-white dark:text-black' : 'border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-950 text-transparent'
+                                                  )}>
+                                                    <Check className="w-2.5 h-2.5 stroke-[3px]" />
+                                                  </div>
+                                                )}
                                                 <span className="font-bold truncate">{lesson.lesson_order}. {lesson.title}</span>
                                               </div>
-                                              <span className="text-[10px] text-neutral-400 font-bold shrink-0 ml-3">{lesson.duration_minutes || 0} min</span>
+                                              <div className="flex items-center gap-2 shrink-0 ml-3">
+                                                {lesson.is_free_preview && (
+                                                  <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/5 dark:text-emerald-400 uppercase tracking-wide">
+                                                    Gratis
+                                                  </span>
+                                                )}
+                                                {isLocked && (
+                                                  <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:bg-amber-500/5 dark:text-amber-400 uppercase tracking-wide">
+                                                    Bloqueado
+                                                  </span>
+                                                )}
+                                                <span className="text-[10px] text-neutral-400 font-bold">{lesson.duration_minutes || 0} min</span>
+                                              </div>
                                             </div>
                                           );
                                         })}
@@ -1093,47 +1114,61 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                               <h2 className="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2 select-none">
                                   <FileText className="w-4 h-4 text-neutral-500" /> Todos los recursos descargables
                               </h2>
-                              {allResources.length === 0 ? (
-                                <div className="text-center py-12 text-neutral-400 dark:text-neutral-500 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-2xl select-none">
-                                  <FileText className="w-8 h-8 text-neutral-350 dark:text-neutral-700 mx-auto mb-2" />
-                                  <p className="text-[11px] leading-relaxed px-4">{t.noResources}</p>
-                                </div>
-                              ) : (
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                  {allResources.map((res: { name: string; url: string; lessonTitle: string }, idx: number) => {
-                                    const isExcel = res.name.endsWith('.xlsx') || res.name.endsWith('.xls') || res.name.endsWith('.csv');
-                                    const isPdf = res.name.endsWith('.pdf');
-                                    const isZip = res.name.endsWith('.zip') || res.name.endsWith('.rar');
+                              {(() => {
+                                const accessibleResources = accessType === "full" || accessType === "trial"
+                                  ? allResources
+                                  : allResources.filter((res: any) => {
+                                      const matchingLesson = modules.flatMap(m => m.lessons).find(l => l.title === res.lessonTitle);
+                                      return matchingLesson?.is_free_preview === true;
+                                    });
 
-                                    return (
-                                      <a
-                                        key={idx}
-                                        href={res.url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-start justify-between p-4 bg-neutral-50/50 hover:bg-neutral-50 dark:bg-neutral-900/20 dark:hover:bg-neutral-900/60 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 transition-all text-xs font-semibold text-neutral-700 hover:text-neutral-950 dark:text-neutral-300 dark:hover:text-white shadow-sm group text-left"
-                                      >
-                                        <div className="flex items-center gap-2.5 min-w-0">
-                                          <div className={cn(
-                                            "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
-                                            isExcel ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/5 dark:text-emerald-400' :
-                                            isPdf ? 'bg-rose-500/10 text-rose-600 dark:bg-rose-500/5 dark:text-rose-400' :
-                                            isZip ? 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/5 dark:text-amber-400' :
-                                            'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200'
-                                          )}>
-                                            <FileText className="w-4 h-4" />
+                                if (accessibleResources.length === 0) {
+                                  return (
+                                    <div className="text-center py-12 text-neutral-400 dark:text-neutral-500 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-2xl select-none">
+                                      <Lock className="w-8 h-8 text-orange-500 mx-auto mb-2" />
+                                      <p className="text-[11px] font-bold text-neutral-700 dark:text-neutral-300">Archivos restringidos</p>
+                                      <p className="text-[11px] leading-relaxed px-4 mt-1">Los archivos y materiales de descarga requieren una suscripción activa.</p>
+                                    </div>
+                                  );
+                                }
+
+                                return (
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {accessibleResources.map((res: { name: string; url: string; lessonTitle: string }, idx: number) => {
+                                      const isExcel = res.name.endsWith('.xlsx') || res.name.endsWith('.xls') || res.name.endsWith('.csv');
+                                      const isPdf = res.name.endsWith('.pdf');
+                                      const isZip = res.name.endsWith('.zip') || res.name.endsWith('.rar');
+
+                                      return (
+                                        <a
+                                          key={idx}
+                                          href={res.url}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex items-start justify-between p-4 bg-neutral-50/50 hover:bg-neutral-50 dark:bg-neutral-900/20 dark:hover:bg-neutral-900/60 rounded-2xl border border-neutral-200/80 dark:border-neutral-800/80 transition-all text-xs font-semibold text-neutral-700 hover:text-neutral-950 dark:text-neutral-300 dark:hover:text-white shadow-sm group text-left"
+                                        >
+                                          <div className="flex items-center gap-2.5 min-w-0">
+                                            <div className={cn(
+                                              "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
+                                              isExcel ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/5 dark:text-emerald-400' :
+                                              isPdf ? 'bg-rose-500/10 text-rose-600 dark:bg-rose-500/5 dark:text-rose-400' :
+                                              isZip ? 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/5 dark:text-amber-400' :
+                                              'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200'
+                                            )}>
+                                              <FileText className="w-4 h-4" />
+                                            </div>
+                                            <div className="min-w-0">
+                                              <span className="block truncate font-bold text-neutral-800 dark:text-neutral-200 leading-none">{res.name}</span>
+                                              <span className="block text-[8px] text-neutral-400 font-bold mt-1.5 truncate">Clase: {res.lessonTitle}</span>
+                                            </div>
                                           </div>
-                                          <div className="min-w-0">
-                                            <span className="block truncate font-bold text-neutral-800 dark:text-neutral-200 leading-none">{res.name}</span>
-                                            <span className="block text-[8px] text-neutral-400 font-bold mt-1.5 truncate">Clase: {res.lessonTitle}</span>
-                                          </div>
-                                        </div>
-                                        <Download className="w-4 h-4 text-neutral-400 group-hover:text-neutral-950 dark:group-hover:text-white shrink-0 ml-1.5 mt-2" />
-                                      </a>
-                                    );
-                                  })}
-                                </div>
-                              )}
+                                          <Download className="w-4 h-4 text-neutral-400 group-hover:text-neutral-950 dark:group-hover:text-white shrink-0 ml-1.5 mt-2" />
+                                        </a>
+                                      );
+                                    })}
+                                  </div>
+                                );
+                              })()}
                             </div>
                           )}
 
