@@ -26,6 +26,8 @@ interface Lesson {
   is_free_preview: boolean;
   superclass_language?: string | null;
   resources?: { name: string; url: string; size?: number }[];
+  description?: string;
+  content_markdown?: string;
 }
 
 interface Module {
@@ -1534,8 +1536,8 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
 
                         <div>
                           <h3 className="font-bold text-xs text-neutral-900 dark:text-white uppercase tracking-wider mb-2 select-none">{t.aboutLesson}</h3>
-                          <p className="text-xs text-neutral-600 dark:text-neutral-450 leading-relaxed font-medium">
-                            {t.aboutLessonDesc}
+                          <p className="text-xs md:text-sm text-neutral-600 dark:text-neutral-350 leading-relaxed font-medium whitespace-pre-line">
+                            {selectedLesson.description || selectedLesson.content_markdown || t.aboutLessonDesc}
                           </p>
                         </div>
 

@@ -1918,7 +1918,7 @@ function AdminCourses() {
   const [lessons, setLessons] = useState<any[]>([]);
   const [loadingLessons, setLoadingLessons] = useState(false);
   const [showAddLesson, setShowAddLesson] = useState(false);
-  const [newLesson, setNewLesson] = useState({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] as any[] });
+  const [newLesson, setNewLesson] = useState({ title: '', module_name: '', video_url: '', description: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] as any[] });
   const [editingLesson, setEditingLesson] = useState<any>(null);
   const [showMarketingEdits, setShowMarketingEdits] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
@@ -2003,6 +2003,7 @@ function AdminCourses() {
       module_order: newLesson.module_order,
       lesson_order: newLesson.lesson_order,
       video_url: newLesson.video_url,
+      description: newLesson.description || '',
       is_free_preview: newLesson.is_free_preview,
       superclass_language: newLesson.superclass_language || null,
       resources: newLesson.resources || [],
@@ -2016,7 +2017,7 @@ function AdminCourses() {
       }
       const data = await adminGetLessons(selectedCourse.id);
       setLessons(data);
-      setNewLesson({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] });
+      setNewLesson({ title: '', module_name: '', video_url: '', description: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] });
       setEditingLesson(null);
       setShowAddLesson(false);
     } catch (err) { 
@@ -2040,6 +2041,7 @@ function AdminCourses() {
       title: lesson.title || '',
       module_name: lesson.module_name || '',
       video_url: lesson.video_url || '',
+      description: lesson.description || lesson.content_markdown || '',
       module_order: lesson.module_order || 1,
       lesson_order: lesson.lesson_order || (globalIdx >= 0 ? globalIdx + 1 : 1),
       is_free_preview: !!lesson.is_free_preview,
@@ -2248,6 +2250,12 @@ function AdminCourses() {
                         className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none" />
                     </div>
                   </div>
+
+                  <div className="sm:col-span-2">
+                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">Descripción de la lección</label>
+                    <textarea rows={3} placeholder="Resumen o detalles explicativos que verán los alumnos en esta clase..." value={newLesson.description || ''} onChange={e => setNewLesson(p => ({ ...p, description: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none resize-y" />
+                  </div>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <label className="text-xs font-semibold text-gray-500">Módulo #</label>
@@ -2336,7 +2344,7 @@ function AdminCourses() {
                   <button onClick={() => {
                     setShowAddLesson(false);
                     setEditingLesson(null);
-                    setNewLesson({ title: '', module_name: '', video_url: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] });
+                    setNewLesson({ title: '', module_name: '', video_url: '', description: '', module_order: 1, lesson_order: 1, is_free_preview: false, superclass_language: '', resources: [] });
                   }} className="px-4 py-2 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors">Cancelar</button>
                   <button onClick={handleAddLesson} disabled={!newLesson.title || !newLesson.video_url || savingLesson}
                     className="px-5 py-2 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-all active:scale-[0.98] disabled:opacity-40 flex items-center gap-1.5">

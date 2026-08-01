@@ -87,6 +87,7 @@ export async function adminAddLesson(lessonData: {
   duration_minutes?: number; is_free_preview?: boolean;
   superclass_language?: string | null;
   resources?: any[];
+  description?: string;
 }) {
   const supabase = await createClient();
   const admin = await isCurrentUserAdmin();
@@ -105,6 +106,8 @@ export async function adminAddLesson(lessonData: {
       is_free_preview: lessonData.is_free_preview || false,
       superclass_language: lessonData.superclass_language || null,
       resources: lessonData.resources || [],
+      description: lessonData.description || "",
+      content_markdown: lessonData.description || "",
     }).select("id").single();
 
   if (error) throw new Error(error.message);
@@ -118,6 +121,7 @@ export async function adminUpdateLesson(lessonId: string, lessonData: {
   duration_minutes?: number; is_free_preview?: boolean;
   superclass_language?: string | null;
   resources?: any[];
+  description?: string;
 }) {
   const supabase = await createClient();
   const admin = await isCurrentUserAdmin();
@@ -135,6 +139,8 @@ export async function adminUpdateLesson(lessonId: string, lessonData: {
       is_free_preview: lessonData.is_free_preview || false,
       superclass_language: lessonData.superclass_language || null,
       resources: lessonData.resources || [],
+      description: lessonData.description || "",
+      content_markdown: lessonData.description || "",
     })
     .eq("id", lessonId);
 
@@ -149,7 +155,7 @@ export async function adminGetLessons(courseId: string) {
 
   const { data, error } = await supabase
     .from("lessons")
-    .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources")
+    .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources, description, content_markdown")
     .eq("course_id", courseId)
     .order("module_order", { ascending: true })
     .order("lesson_order", { ascending: true });
@@ -709,7 +715,7 @@ export async function getCourseLessons(courseId: string) {
     adminDb.from("profiles").select("is_on_trial, subscription_plan, subscription_expires_at, role").eq("id", user.id).maybeSingle(),
     adminDb.from("courses").select("slug").eq("id", courseId).maybeSingle(),
     adminDb.from("lessons")
-      .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources")
+      .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources, description, content_markdown")
       .eq("course_id", courseId)
       .order("module_order", { ascending: true })
       .order("lesson_order", { ascending: true }),
