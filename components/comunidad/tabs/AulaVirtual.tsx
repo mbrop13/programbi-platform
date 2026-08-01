@@ -1773,10 +1773,10 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                               <div
                                 key={lesson.id}
                                 className={cn(
-                                  "w-full flex items-start gap-3.5 px-5 py-4 transition-all group relative border-l-4",
+                                  "w-full flex items-start gap-3.5 px-5 py-3.5 transition-all group relative",
                                   isSelected 
-                                    ? 'bg-neutral-50/70 border-neutral-900 dark:bg-neutral-900/40 dark:border-white' 
-                                    : 'border-transparent hover:bg-neutral-50/60 dark:hover:bg-neutral-900/10'
+                                    ? 'bg-neutral-100 dark:bg-neutral-900' 
+                                    : 'bg-transparent hover:bg-neutral-50 dark:hover:bg-neutral-900/40'
                                 )}
                               >
                                 {/* Checkbox / Lock Selector (Left) */}
