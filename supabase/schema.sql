@@ -19,6 +19,7 @@ CREATE TABLE public.profiles (
   avatar_url TEXT,
   subscription_plan TEXT DEFAULT NULL,
   subscription_expires_at TIMESTAMPTZ DEFAULT NULL,
+  registration_source TEXT, -- ruta desde la que se registró (ej. /comunidad, /cursos/...)
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -27,11 +28,14 @@ CREATE TABLE public.profiles (
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, full_name, email)
+  INSERT INTO public.profiles (id, full_name, email, phone, company, registration_source)
   VALUES (
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
-    NEW.email
+    NEW.email,
+    NULLIF(TRIM(COALESCE(NEW.raw_user_meta_data->>'whatsapp', NEW.raw_user_meta_data->>'phone')), ''),
+    NULLIF(TRIM(NEW.raw_user_meta_data->>'company'), ''),
+    NULLIF(TRIM(NEW.raw_user_meta_data->>'registration_source'), '')
   );
   RETURN NEW;
 END;
@@ -613,13 +617,16 @@ BEGIN
   END IF;
 
   -- 3. Insert profile with organization details if found
-  INSERT INTO public.profiles (id, full_name, email, organization_id, department)
+  INSERT INTO public.profiles (id, full_name, email, organization_id, department, phone, company, registration_source)
   VALUES (
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
     NEW.email,
     org_id,
-    COALESCE(dept, 'General')
+    COALESCE(dept, 'General'),
+    NULLIF(TRIM(COALESCE(NEW.raw_user_meta_data->>'whatsapp', NEW.raw_user_meta_data->>'phone')), ''),
+    NULLIF(TRIM(NEW.raw_user_meta_data->>'company'), ''),
+    NULLIF(TRIM(NEW.raw_user_meta_data->>'registration_source'), '')
   );
 
   -- 4. Delete the invitation if it was used

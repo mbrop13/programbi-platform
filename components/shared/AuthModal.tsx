@@ -11,6 +11,7 @@ import { validatePassword, isBreachedPassword } from "@/lib/security/password";
 import { useCountry } from "@/lib/context/CountryContext";
 import { subscribeToNewsletter } from "@/lib/supabase/comunidad-ai";
 import { honeypotStyle } from "@/lib/antibot";
+import { persistRegistrationSource } from "@/lib/registration-source";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -175,6 +176,8 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     }
 
     try {
+      const registrationSource = persistRegistrationSource();
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -182,6 +185,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           data: {
             full_name: fullName,
             whatsapp: whatsapp ? `${phonePrefix}${whatsapp}` : null,
+            registration_source: registrationSource,
           },
         },
       });
@@ -199,8 +203,15 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           password,
         });
 
-        if (data?.user?.id && whatsapp) {
-           await supabase.from("profiles").update({ phone: `${phonePrefix}${whatsapp}` }).eq("id", data.user.id);
+        // Guardar teléfono y origen en el perfil (backup si el trigger no lo copió)
+        if (data?.user?.id) {
+          const profileUpdates: Record<string, string> = {
+            registration_source: registrationSource,
+          };
+          if (whatsapp) {
+            profileUpdates.phone = `${phonePrefix}${whatsapp}`;
+          }
+          await supabase.from("profiles").update(profileUpdates).eq("id", data.user.id);
         }
 
         if (loginError) {
@@ -248,10 +259,18 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     setError(null);
     setLoading(true);
     try {
+      // Persistir origen para el callback OAuth (nuevos registros con Google)
+      const registrationSource = persistRegistrationSource();
+      const nextPath = redirectUrl || "/";
+      const callbackParams = new URLSearchParams({
+        next: nextPath,
+        reg_source: registrationSource,
+      });
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: redirectUrl ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectUrl)}` : `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback?${callbackParams.toString()}`,
         },
       });
       if (error) setError(error.message);

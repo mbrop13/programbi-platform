@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -8,6 +8,15 @@ import { Mail, Lock, User, Phone, Building, Eye, EyeOff, UserPlus, Loader2 } fro
 import { createClient } from "@/lib/supabase/client";
 import { validatePassword, isBreachedPassword } from "@/lib/security/password";
 import { honeypotStyle } from "@/lib/antibot";
+import {
+  persistRegistrationSource,
+  readRegistrationSource,
+} from "@/lib/registration-source";
+
+function getFromQueryParam(): string | null {
+  if (typeof window === "undefined") return null;
+  return new URLSearchParams(window.location.search).get("from");
+}
 
 export default function RegistroPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +25,17 @@ export default function RegistroPage() {
   const [loading, setLoading] = useState(false);
   const [honeypot, setHoneypot] = useState("");
   const formLoadedAt = useRef<number>(Date.now());
+
+  // Si llegaron con ?from=/cursos/... guardar ese origen
+  useEffect(() => {
+    const from = getFromQueryParam();
+    if (from) {
+      persistRegistrationSource(from.startsWith("/") ? from : `/${from}`);
+    } else {
+      // Mantener un origen previo (ej. vinieron desde un curso) o usar /registro
+      persistRegistrationSource(readRegistrationSource() || "/registro");
+    }
+  }, []);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -74,7 +94,14 @@ export default function RegistroPage() {
 
     try {
       const supabase = createClient();
-      const { error: signUpError } = await supabase.auth.signUp({
+      const fromParam = getFromQueryParam();
+      const registrationSource = persistRegistrationSource(
+        fromParam
+          ? (fromParam.startsWith("/") ? fromParam : `/${fromParam}`)
+          : readRegistrationSource() || "/registro"
+      );
+
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
@@ -82,14 +109,27 @@ export default function RegistroPage() {
             full_name: formData.name,
             whatsapp: formData.phone,
             company: formData.company,
+            registration_source: registrationSource,
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=/comunidad/inicio`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/comunidad/inicio")}&reg_source=${encodeURIComponent(registrationSource)}`,
         },
       });
 
       if (signUpError) {
         setError(signUpError.message);
         return;
+      }
+
+      // Backup: escribir origen en el perfil si el usuario ya quedó creado
+      if (data?.user?.id) {
+        await supabase
+          .from("profiles")
+          .update({
+            registration_source: registrationSource,
+            phone: formData.phone || undefined,
+            company: formData.company || undefined,
+          })
+          .eq("id", data.user.id);
       }
 
       router.push("/login?registered=true");

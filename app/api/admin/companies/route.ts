@@ -213,6 +213,7 @@ export async function POST(req: NextRequest) {
             password: password,
             user_metadata: {
               full_name: employee.name,
+              registration_source: "admin/empresas",
             },
           });
 
@@ -248,6 +249,7 @@ export async function POST(req: NextRequest) {
             full_name: employee.name,
             organization_id: organizationId,
             role: "student", // default role in the platform
+            ...(isNewUser ? { registration_source: "admin/empresas" } : {}),
           });
 
         if (profileError) {

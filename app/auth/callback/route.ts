@@ -6,6 +6,7 @@ export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/'
+  const regSource = searchParams.get('reg_source')
 
   if (code) {
     const supabase = await createClient()
@@ -30,6 +31,18 @@ export async function GET(request: Request) {
           const isNewUser = (now - createdAt) < 60_000 // within 60 seconds
 
           if (isNewUser) {
+            // Guardar origen de registro solo en usuarios nuevos (OAuth o confirmación de email)
+            const sourceFromMeta = user.user_metadata?.registration_source as string | undefined
+            const finalSource = (regSource || sourceFromMeta || "").slice(0, 500)
+            if (finalSource) {
+              const { error: srcErr } = await supabase
+                .from("profiles")
+                .update({ registration_source: finalSource })
+                .eq("id", user.id)
+                .is("registration_source", null)
+              if (srcErr) console.error("❌ registration_source update:", srcErr.message)
+            }
+
             const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0] || "Usuario"
             await sendNewMemberNotification({
               name,

@@ -10,6 +10,12 @@ import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
 import ArticleBlockEditor from "@/components/shared/ArticleBlockEditor";
 import AdminOverview from "./admin/AdminOverview";
+import {
+  formatRegistrationSource,
+  matchesRegistrationSourceFilter,
+  REGISTRATION_SOURCE_FILTERS,
+  type RegistrationSourceCategory,
+} from "@/lib/registration-source";
 
 export default function AdminPanel() {
   const [activeTab, setActiveTab] = useState("overview");
@@ -1296,6 +1302,7 @@ function AdminMembers() {
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
+  const [sourceFilter, setSourceFilter] = useState<RegistrationSourceCategory>("all");
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [userEnrollments, setUserEnrollments] = useState<any[]>([]);
   const [courses, setCourses] = useState<any[]>([]);
@@ -1312,10 +1319,15 @@ function AdminMembers() {
   const [currentPage, setCurrentPage] = useState(1);
   const ITEMS_PER_PAGE = 50;
 
-  const filtered = users.filter(u =>
-    (u.full_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (u.email || '').toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filtered = users.filter(u => {
+    const q = searchQuery.toLowerCase();
+    const matchesSearch =
+      (u.full_name || '').toLowerCase().includes(q) ||
+      (u.email || '').toLowerCase().includes(q) ||
+      formatRegistrationSource(u.registration_source).toLowerCase().includes(q);
+    const matchesSource = matchesRegistrationSourceFilter(u.registration_source, sourceFilter);
+    return matchesSearch && matchesSource;
+  });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
   const displayedUsers = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
@@ -1388,7 +1400,7 @@ function AdminMembers() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery]);
+  }, [searchQuery, sourceFilter]);
 
   useEffect(() => {
     async function load() {
@@ -1538,13 +1550,15 @@ function AdminMembers() {
 
   const exportToCSV = () => {
     if (filtered.length === 0) return alert("No hay miembros para exportar.");
-    const head = ["email", "name", "ID", "Teléfono", "Rol", "Fecha Registro"];
+    const head = ["email", "name", "ID", "Teléfono", "Rol", "Origen Registro", "Ruta Origen", "Fecha Registro"];
     const rows = filtered.map(u => [
       u.email || '',
       `"${(u.full_name || '').replace(/"/g, '""')}"`,
       u.id,
       u.phone || '',
       u.role || 'student',
+      `"${formatRegistrationSource(u.registration_source).replace(/"/g, '""')}"`,
+      `"${(u.registration_source || '').replace(/"/g, '""')}"`,
       u.created_at ? new Date(u.created_at).toLocaleDateString("es-CL") : ''
     ].join(','));
 
@@ -1566,7 +1580,11 @@ function AdminMembers() {
        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Miembros</h2>
-            <p className="text-sm text-gray-400">{users.length} usuarios registrados</p>
+            <p className="text-sm text-gray-400">
+              {filtered.length === users.length
+                ? `${users.length} usuarios registrados`
+                : `${filtered.length} de ${users.length} usuarios`}
+            </p>
           </div>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
              <button
@@ -1581,6 +1599,16 @@ function AdminMembers() {
              <button onClick={exportToCSV} className="flex items-center justify-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-2.5 rounded-xl text-sm font-bold hover:bg-emerald-100 transition-colors border border-emerald-100 hover:border-emerald-250 cursor-pointer shadow-sm">
                <Download className="w-4 h-4" /> Exportar Miembros
              </button>
+             <select
+               value={sourceFilter}
+               onChange={(e) => setSourceFilter(e.target.value as RegistrationSourceCategory)}
+               className="px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 focus:bg-white outline-none transition-all cursor-pointer"
+               title="Filtrar por origen de registro"
+             >
+               {REGISTRATION_SOURCE_FILTERS.map((f) => (
+                 <option key={f.value} value={f.value}>{f.label}</option>
+               ))}
+             </select>
              <div className="relative">
                 <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input type="text" placeholder="Buscar usuario..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
@@ -1607,6 +1635,18 @@ function AdminMembers() {
                      {selectedUser.phone && (
                        <p className="text-xs text-brand-blue font-medium mt-0.5">{selectedUser.phone}</p>
                      )}
+                     <p className="text-xs text-gray-500 mt-1.5 flex items-center gap-1.5">
+                       <Globe className="w-3 h-3 text-gray-400" />
+                       <span className="font-semibold text-gray-600">Origen:</span>
+                       <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-bold text-[11px] border border-indigo-100">
+                         {formatRegistrationSource(selectedUser.registration_source)}
+                       </span>
+                       {selectedUser.registration_source && (
+                         <span className="text-gray-400 font-mono text-[10px] truncate max-w-[200px]" title={selectedUser.registration_source}>
+                           ({selectedUser.registration_source})
+                         </span>
+                       )}
+                     </p>
                    </div>
                  </div>
                  <div className="flex items-center gap-2">
@@ -1750,6 +1790,7 @@ function AdminMembers() {
                     <th className="px-5 py-3.5">Usuario</th>
                     <th className="px-5 py-3.5">Contacto</th>
                     <th className="px-5 py-3.5">Rol</th>
+                    <th className="px-5 py-3.5 hidden md:table-cell">Origen</th>
                     <th className="px-5 py-3.5 hidden sm:table-cell">Registrado</th>
                     <th className="px-5 py-3.5 text-right">Acciones</th>
                  </tr>
@@ -1802,6 +1843,18 @@ function AdminMembers() {
                               'bg-gray-100 text-gray-600'}`}>
                              {u.role === 'admin' && <ShieldCheck className="w-3 h-3" />}
                              {(u.role || 'student').charAt(0).toUpperCase() + (u.role || 'student').slice(1)}
+                          </span>
+                       </td>
+                       <td className="px-5 py-4 hidden md:table-cell">
+                          <span
+                            className={`inline-flex items-center gap-1 max-w-[180px] px-2 py-1 rounded-lg text-[11px] font-bold truncate
+                              ${u.registration_source
+                                ? 'bg-indigo-50 text-indigo-700 border border-indigo-100'
+                                : 'bg-gray-50 text-gray-400 border border-gray-100'}`}
+                            title={u.registration_source || 'Sin origen registrado'}
+                          >
+                            <Globe className="w-3 h-3 shrink-0 opacity-70" />
+                            <span className="truncate">{formatRegistrationSource(u.registration_source)}</span>
                           </span>
                        </td>
                        <td className="px-5 py-4 text-gray-400 hidden sm:table-cell">
