@@ -94,8 +94,11 @@ export async function adminAddLesson(lessonData: {
     if (!admin) return { success: false, error: "Permiso denegado: solo administradores." };
 
     const adminDb = createAdminClient();
+    // La descripción del admin se persiste en content_markdown (columna real en BD).
+    // No usamos lessons.description: esa columna no existe aún en producción.
     const { data, error } = await adminDb
-      .from("lessons").insert({
+      .from("lessons")
+      .insert({
         course_id: lessonData.course_id,
         title: lessonData.title,
         module_name: lessonData.module_name,
@@ -107,9 +110,10 @@ export async function adminAddLesson(lessonData: {
         is_free_preview: lessonData.is_free_preview || false,
         superclass_language: lessonData.superclass_language || null,
         resources: lessonData.resources || [],
-        description: lessonData.description || "",
         content_markdown: lessonData.description || "",
-      }).select("id").single();
+      })
+      .select("id")
+      .single();
 
     if (error) {
       console.error("Error in adminAddLesson Supabase insert:", error);
@@ -148,7 +152,6 @@ export async function adminUpdateLesson(lessonId: string, lessonData: {
         is_free_preview: lessonData.is_free_preview || false,
         superclass_language: lessonData.superclass_language || null,
         resources: lessonData.resources || [],
-        description: lessonData.description || "",
         content_markdown: lessonData.description || "",
       })
       .eq("id", lessonId);
@@ -179,7 +182,11 @@ export async function adminGetLessons(courseId: string) {
       .order("lesson_order", { ascending: true });
 
     if (error) { console.error("Error fetching lessons:", error); return []; }
-    return data || [];
+    // Exponemos description en la UI a partir de content_markdown
+    return (data || []).map((l: any) => ({
+      ...l,
+      description: l.content_markdown || "",
+    }));
   } catch (err) {
     console.error("Exception in adminGetLessons:", err);
     return [];
@@ -789,7 +796,11 @@ export async function getCourseLessons(courseId: string) {
 
   const profile = profileRes.data;
   const courseData = courseDataRes.data;
-  const lessons = lessonsRes.data || [];
+  // Map content_markdown -> description para la UI (columna description puede no existir aún)
+  const lessons = (lessonsRes.data || []).map((l: any) => ({
+    ...l,
+    description: l.description || l.content_markdown || "",
+  }));
   const progressData = progressDataRes.data || [];
   const completedLessonIds = progressData.map((p) => p.lesson_id);
 

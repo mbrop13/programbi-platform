@@ -93,6 +93,8 @@ CREATE TABLE public.lessons (
   video_url TEXT,
   duration_minutes INTEGER,
   content_markdown TEXT,
+  description TEXT,
+  superclass_language TEXT,
   resources JSONB,
   is_free_preview BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW()
