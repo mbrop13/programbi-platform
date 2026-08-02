@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lock, Menu } from "lucide-react";
-import { Loader2 } from "lucide-react";
+import { Lock, Menu, Loader2, LayoutDashboard, GraduationCap, Radio, Sparkles, Target } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import Sidebar from "./Sidebar";
 import { ToastProvider } from "./ui/Toast";
@@ -296,7 +296,7 @@ export default function ComunidadPortal() {
                 </motion.div>
               </AnimatePresence>
             ) : (
-              <div className="flex-1 p-4 sm:p-6 lg:p-8 w-full max-w-[1600px] mx-auto">
+              <div className="flex-1 p-3 sm:p-6 lg:p-8 pb-20 lg:pb-8 w-full max-w-[1600px] mx-auto">
                 <AnimatePresence mode="wait">
                   <motion.div
                     key={activeTab}
@@ -385,6 +385,49 @@ export default function ComunidadPortal() {
               </div>
             )}
           </main>
+
+          {/* ─── MOBILE BOTTOM NAVIGATION BAR ─── */}
+          {(activeTab !== "ai" && !(activeTab === "cursos" && selectedCourseId)) && (
+            <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/90 backdrop-blur-lg border-t border-border flex items-center justify-around py-2 px-1 shadow-lg transition-colors duration-200">
+              {[
+                { id: "inicio", label: language === 'en' ? "Feed" : "Inicio", icon: LayoutDashboard },
+                { id: "cursos", label: language === 'en' ? "Courses" : "Cursos", icon: GraduationCap },
+                { id: "live", label: language === 'en' ? "Live" : "En Vivo", icon: Radio, showPing: true },
+                { id: "ai", label: "IA", icon: Sparkles, color: "text-[#1890FF]" },
+                { id: "practicar", label: language === 'en' ? "Practice" : "Práctica", icon: Target },
+              ].map((item) => {
+                const Icon = item.icon;
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => handleTabChange(item.id)}
+                    className={cn(
+                      "flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all duration-150 border-none bg-transparent cursor-pointer relative min-w-[54px]",
+                      isActive ? "text-text font-bold" : "text-text-muted hover:text-text"
+                    )}
+                  >
+                    <span className="relative flex items-center justify-center mb-1">
+                      <Icon className={cn("w-5 h-5 transition-transform", isActive && "scale-110 text-accent", item.color && !isActive && item.color)} />
+                      {item.showPing && (
+                        <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+                      )}
+                    </span>
+                    <span className="text-[10px] leading-none tracking-tight">
+                      {item.label}
+                    </span>
+                    {isActive && (
+                      <motion.div
+                        layoutId="activeBottomTab"
+                        className="absolute -bottom-1 w-6 h-0.5 bg-accent rounded-full"
+                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      />
+                    )}
+                  </button>
+                );
+              })}
+            </nav>
+          )}
         </div>
 
         {/* ─── MODALS ─── */}

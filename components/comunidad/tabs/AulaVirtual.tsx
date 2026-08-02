@@ -1341,51 +1341,51 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
               <div className="flex flex-col h-full bg-white dark:bg-black overflow-y-auto no-scrollbar">
                 
                 {/* ─── LESSON HEADER ─── */}
-                <header className="flex-none h-[64px] bg-white dark:bg-black flex items-center justify-between px-6">
-                  <div className="flex items-center gap-4 min-w-0">
+                <header className="flex-none min-h-[56px] lg:h-[64px] bg-white dark:bg-black flex items-center justify-between px-3 sm:px-6 py-2 border-b border-neutral-200/60 dark:border-neutral-800/80">
+                  <div className="flex items-center gap-2 sm:gap-4 min-w-0">
                     <div className="flex items-center shrink-0 select-none">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
                         alt="ProgramBI Logo"
-                        className="h-7 w-auto object-contain cursor-pointer dark:invert"
+                        className="h-6 sm:h-7 w-auto object-contain cursor-pointer dark:invert"
                         onClick={onBack}
                         title={t.backToCourses}
                       />
                     </div>
 
-                    <div className="h-6 w-px bg-neutral-200 dark:bg-neutral-800 shrink-0" />
+                    <div className="h-5 sm:h-6 w-px bg-neutral-200 dark:bg-neutral-800 shrink-0" />
 
                     <button
                       onClick={onBack}
-                      className="w-9 h-9 flex items-center justify-center rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-all cursor-pointer border-0 shrink-0"
+                      className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-all cursor-pointer border-0 shrink-0"
                       title={t.backToCourses}
                     >
-                      <ChevronLeft className="w-5 h-5" />
+                      <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
                     </button>
                     
                     <div className="h-6 w-px bg-neutral-200 dark:bg-neutral-800 hidden sm:block shrink-0" />
                     
                     <div
                       onClick={() => router.push(`/comunidad/cursos/${courseSlug}`)}
-                      className="min-w-0 cursor-pointer group select-none"
+                      className="min-w-0 cursor-pointer group select-none flex-1"
                       title={t.courseHome}
                     >
-                      <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block leading-none mb-1 group-hover:underline transition-all">
+                      <span className="text-[9px] sm:text-[10px] font-bold text-neutral-400 uppercase tracking-widest block leading-none mb-1 group-hover:underline transition-all truncate">
                         {readableCourseName}
                       </span>
-                      <h1 className="text-sm font-bold text-neutral-900 dark:text-white leading-none line-clamp-1 group-hover:text-neutral-950 dark:group-hover:text-neutral-200 transition-colors">
+                      <h1 className="text-xs sm:text-sm font-bold text-neutral-900 dark:text-white leading-none truncate group-hover:text-neutral-950 dark:group-hover:text-neutral-200 transition-colors">
                         {selectedLesson?.title || "Aula Virtual"}
                       </h1>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4 flex-none">
+                  <div className="flex items-center gap-2 sm:gap-4 flex-none ml-2">
                     {/* Share Button */}
                     <button
                       onClick={handleShare}
                       className={cn(
-                        "px-3 py-1.5 rounded-xl text-[11px] font-bold transition-colors border cursor-pointer flex items-center gap-1.5",
+                        "p-2 sm:px-3 sm:py-1.5 rounded-xl text-[11px] font-bold transition-colors border cursor-pointer flex items-center gap-1.5",
                         copiedShare 
                           ? "bg-emerald-500/10 text-emerald-600 border-emerald-300 dark:bg-emerald-500/5 dark:text-emerald-400 dark:border-emerald-900/60" 
                           : "bg-neutral-100 hover:bg-neutral-200 text-neutral-750 border-neutral-250/30 hover:border-neutral-300 dark:bg-neutral-900 dark:hover:bg-neutral-850 dark:text-neutral-300 dark:border-neutral-800/80 dark:hover:border-neutral-700"
@@ -1395,14 +1395,14 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                       <span className="hidden sm:inline">{copiedShare ? "¡Copiado!" : "Compartir"}</span>
                     </button>
 
-                    <div className="h-6 w-px bg-neutral-200 dark:bg-neutral-800" />
-                    <div className="flex items-center gap-3 bg-neutral-55 dark:bg-neutral-900/60 border border-neutral-200/40 dark:border-neutral-800/40 rounded-2xl px-3.5 py-1.5 shadow-sm select-none">
+                    <div className="h-6 w-px bg-neutral-200 dark:bg-neutral-800 hidden xs:block" />
+                    <div className="hidden xs:flex items-center gap-2 sm:gap-3 bg-neutral-55 dark:bg-neutral-900/60 border border-neutral-200/40 dark:border-neutral-800/40 rounded-2xl px-2.5 sm:px-3.5 py-1 sm:py-1.5 shadow-sm select-none">
                       <div className="hidden md:block text-right leading-none">
                         <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider block">{t.progress}</span>
                         <span className="text-[10px] font-bold text-neutral-900 dark:text-white mt-0.5 block">{completedLessons.size} de {totalLessons}</span>
                       </div>
                       
-                      <div className="w-16 h-1.5 bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden hidden sm:block">
+                      <div className="w-12 sm:w-16 h-1.5 bg-neutral-200 dark:bg-neutral-800 rounded-full overflow-hidden hidden sm:block">
                         <div
                           className="h-full bg-neutral-900 dark:bg-white transition-all duration-500"
                           style={{ width: `${progress}%` }}
@@ -1414,34 +1414,38 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                       </div>
                     </div>
 
-                    {!sidebarOpen && (
-                      <button
-                        onClick={() => setSidebarOpen(true)}
-                        className="w-9 h-9 flex items-center justify-center rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-all cursor-pointer border-0 ml-2"
-                        title={t.courseContent}
-                      >
-                        <BookOpen className="w-4 h-4" />
-                      </button>
-                    )}
+                    <button
+                      onClick={() => setSidebarOpen((open) => !open)}
+                      className={cn(
+                        "h-8 sm:h-9 px-2.5 sm:px-3 flex items-center gap-1.5 rounded-xl transition-all cursor-pointer border-0 text-xs font-bold shrink-0",
+                        sidebarOpen 
+                          ? "bg-neutral-900 text-white dark:bg-white dark:text-black" 
+                          : "bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
+                      )}
+                      title={t.courseContent}
+                    >
+                      <BookOpen className="w-4 h-4 text-[#1890FF]" />
+                      <span className="hidden sm:inline">{t.courseContent}</span>
+                    </button>
                   </div>
                 </header>
                 
                 {/* Cinema Screen Frame for Video */}
-                <div className="flex-none w-full bg-white dark:bg-black flex justify-center items-center py-4 px-6">
-                  <div className="relative w-full max-w-[1120px] aspect-video bg-neutral-950 rounded-2xl overflow-hidden shadow-xl border border-neutral-800/40">
+                <div className="flex-none w-full bg-white dark:bg-black flex justify-center items-center py-2 sm:py-4 px-2 sm:px-6">
+                  <div className="relative w-full max-w-[1120px] aspect-video bg-neutral-950 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-neutral-800/40">
                     {isSelectedLessonLocked ? (
-                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-950 overflow-hidden select-none p-6 text-center">
-                        <div className="w-14 h-14 rounded-2xl bg-[#1890FF]/10 border border-[#1890FF]/30 flex items-center justify-center mb-4 shadow-[0_0_30px_rgba(24,144,255,0.25)]">
-                          <Lock className="w-7 h-7 text-[#1890FF]" />
+                      <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-950 overflow-hidden select-none p-4 sm:p-6 text-center">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#1890FF]/10 border border-[#1890FF]/30 flex items-center justify-center mb-3 sm:mb-4 shadow-[0_0_30px_rgba(24,144,255,0.25)]">
+                          <Lock className="w-6 h-6 sm:w-7 sm:h-7 text-[#1890FF]" />
                         </div>
-                        <h2 className="text-lg md:text-xl font-bold text-white mb-2 tracking-tight">{t.courseLocked}</h2>
-                        <p className="text-neutral-400 text-xs md:text-sm max-w-md text-center mb-6 leading-relaxed font-medium">
+                        <h2 className="text-base sm:text-lg md:text-xl font-bold text-white mb-2 tracking-tight">{t.courseLocked}</h2>
+                        <p className="text-neutral-400 text-xs sm:text-sm max-w-md text-center mb-5 sm:mb-6 leading-relaxed font-medium">
                           {t.lockedDesc}
                         </p>
                         {onUpgradeClick && (
                           <button
                             onClick={() => onUpgradeClick()}
-                            className="px-6 py-3 bg-[#1890FF] hover:bg-[#0076e4] text-white text-xs font-bold rounded-xl shadow-[0_4px_20px_rgba(24,144,255,0.35)] flex items-center gap-2 border-0 transition-all cursor-pointer uppercase tracking-wider active:scale-95"
+                            className="px-5 sm:px-6 py-2.5 sm:py-3 bg-[#1890FF] hover:bg-[#0076e4] text-white text-xs font-bold rounded-xl shadow-[0_4px_20px_rgba(24,144,255,0.35)] flex items-center gap-2 border-0 transition-all cursor-pointer uppercase tracking-wider active:scale-95"
                           >
                             <Sparkles className="w-4 h-4 text-white" /> {t.unlockCourse}
                           </button>
@@ -1467,10 +1471,10 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                 </div>
 
                 {/* Details & Interactive Tabs */}
-                <div className="flex-1 w-full max-w-[1120px] mx-auto px-6 py-8 bg-white dark:bg-black">
+                <div className="flex-1 w-full max-w-[1120px] mx-auto px-4 sm:px-6 py-4 sm:py-8 bg-white dark:bg-black">
                   
                   {/* Tabs Navbar */}
-                  <div className="flex items-center gap-6 mb-6 overflow-x-auto scrollbar-hide border-b border-neutral-150 dark:border-neutral-900 select-none">
+                  <div className="flex items-center gap-4 sm:gap-6 mb-6 overflow-x-auto scrollbar-hide border-b border-neutral-150 dark:border-neutral-900 select-none pb-0.5">
                     {[
                       { id: 'overview', label: t.overviewTab, icon: FileText },
                       { id: 'notes', label: t.notesTab, icon: StickyNote },
@@ -1485,7 +1489,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                         <button
                           key={tab.id}
                           onClick={() => setActiveTab(tab.id as 'overview' | 'notes' | 'faq' | 'resources')}
-                          className={`flex items-center gap-1.5 pb-3.5 text-xs font-bold transition-all uppercase tracking-wider relative border-0 bg-transparent cursor-pointer whitespace-nowrap ${
+                          className={`flex items-center gap-1.5 pb-3 text-xs font-bold transition-all uppercase tracking-wider relative border-0 bg-transparent cursor-pointer whitespace-nowrap ${
                             isActive ? 'text-neutral-900 dark:text-white' : 'text-neutral-400 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300'
                           }`}
                         >
@@ -1509,9 +1513,9 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                     {/* Tab 1: OVERVIEW */}
                     {activeTab === 'overview' && (
                       <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-neutral-100 dark:border-neutral-900 pb-5">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 dark:border-neutral-900 pb-5">
                           <div>
-                            <div className="flex items-center gap-2 mb-2 select-none">
+                            <div className="flex flex-wrap items-center gap-2 mb-2 select-none">
                               <span className="text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-neutral-100 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 uppercase tracking-wider border border-neutral-250/20 dark:border-neutral-800/40">
                                 Módulo {selectedModuleOrder} • Clase {selectedLessonGlobalIndex >= 0 ? selectedLessonGlobalIndex + 1 : selectedLesson.lesson_order}
                               </span>
@@ -1519,7 +1523,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                                 <Clock className="w-2.5 h-2.5" /> {selectedLesson.duration_minutes} {t.lessonsDuration}
                               </span>
                             </div>
-                            <h2 className="text-xl md:text-2xl font-bold text-neutral-900 dark:text-white leading-tight">
+                            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-neutral-900 dark:text-white leading-tight">
                               {selectedLesson.title}
                             </h2>
                           </div>
@@ -1527,7 +1531,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                           {selectedLesson.superclass_language && !isSelectedLessonLocked && (
                             <button
                               onClick={() => setSuperClaseActive(true)}
-                              className="px-4 py-2 rounded-xl bg-neutral-900 hover:bg-black text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-sm cursor-pointer border-0 active:scale-98 transition-colors select-none"
+                              className="px-4 py-2.5 rounded-xl bg-neutral-900 hover:bg-black text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm cursor-pointer border-0 active:scale-98 transition-colors select-none self-start sm:self-auto"
                             >
                               <Sparkles className="w-4 h-4 text-orange-500" /> {t.superClaseBtn} ({selectedLesson.superclass_language.toUpperCase()})
                             </button>
@@ -1539,7 +1543,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                             <FileText className="w-3.5 h-3.5 text-[#1890FF]" />
                             {t.aboutLesson}
                           </h3>
-                          <div className="bg-neutral-50/60 dark:bg-neutral-950/40 p-5 rounded-2xl border border-neutral-200/60 dark:border-neutral-850/80 shadow-sm">
+                          <div className="bg-neutral-50/60 dark:bg-neutral-950/40 p-4 sm:p-5 rounded-2xl border border-neutral-200/60 dark:border-neutral-850/80 shadow-sm">
                             <MarkdownRenderer 
                               content={selectedLesson.description || selectedLesson.content_markdown || t.aboutLessonDesc} 
                               className="prose dark:prose-invert max-w-none text-xs md:text-sm text-neutral-800 dark:text-neutral-200 leading-relaxed font-normal prose-a:text-[#1890FF] hover:prose-a:underline prose-a:font-bold"
@@ -1566,7 +1570,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                     {/* Tab 2: NOTES */}
                     {activeTab === 'notes' && (
                       <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
-                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-150 dark:border-neutral-900 pb-4 select-none">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-150 dark:border-neutral-900 pb-4 select-none">
                           <div className="flex items-center gap-2.5">
                             <div className="w-8 h-8 rounded-xl bg-[#1890FF]/10 text-[#1890FF] flex items-center justify-center shrink-0 border border-[#1890FF]/20">
                               <StickyNote className="w-4 h-4" />
@@ -1579,7 +1583,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                             </div>
                           </div>
 
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             {notes.trim() && (
                               <button
                                 onClick={() => {
@@ -1620,7 +1624,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                               value={notes}
                               onChange={(e) => setNotes(e.target.value)}
                               placeholder={t.notesPlaceholder}
-                              className="w-full min-h-[220px] bg-transparent text-xs md:text-sm text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none leading-relaxed resize-y font-normal"
+                              className="w-full min-h-[180px] sm:min-h-[220px] bg-transparent text-xs md:text-sm text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none leading-relaxed resize-y font-normal"
                             />
                             <div className="flex items-center justify-between pt-3 border-t border-neutral-150/60 dark:border-neutral-900 text-[10px] font-bold text-neutral-400 select-none">
                               <span>
@@ -1713,220 +1717,439 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
           </div>
         </div>
 
-        {/* ─── RIGHT PANE: Collapsible Sidebar ─── */}
+        {/* ─── RIGHT PANE: Collapsible Sidebar & Mobile Slide-Over Drawer ─── */}
         <AnimatePresence>
           {sidebarOpen && (
-            <motion.aside
-              initial={{ width: 0, opacity: 0 }}
-              animate={{ width: 340, opacity: 1 }}
-              exit={{ width: 0, opacity: 0 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
-              className="flex-none h-full border-l border-neutral-200/80 dark:border-neutral-800/80 flex flex-col bg-white dark:bg-black overflow-hidden relative z-10"
-            >
-              {/* Sidebar Header & Tabs */}
-              <div className="flex-none border-b border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-black select-none">
-                <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
-                  <div className="flex items-center gap-1.5">
-                    {[
-                      { id: 'content', label: t.courseContent },
-                      { id: 'ai', label: t.aiAssistant, sparkles: true },
-                    ].map(tab => (
-                      <button
-                        key={tab.id}
-                        onClick={() => setSidebarTab(tab.id as 'content' | 'ai')}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border-0 ${
-                          sidebarTab === tab.id
-                            ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-900 dark:text-white'
-                            : 'bg-transparent text-neutral-450 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300'
-                        }`}
-                      >
-                        {tab.sparkles && <Sparkles className="w-3 h-3 inline mr-1 text-orange-500" />}
-                        {tab.label}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {sidebarTab === 'ai' && (
-                      <button
-                        onClick={handleResetChat}
-                        className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-lg transition-colors border-0 bg-transparent cursor-pointer text-neutral-400 hover:text-neutral-900 dark:text-neutral-500 dark:hover:text-white"
-                        title={t.newConversation}
-                      >
-                        <MessageSquarePlus className="w-4 h-4" />
-                      </button>
-                    )}
-                    <button
-                      onClick={() => setSidebarOpen(false)}
-                      className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-lg transition-colors border-0 bg-transparent cursor-pointer text-neutral-400 hover:text-neutral-900 dark:text-neutral-500 dark:hover:text-white"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Sidebar Workspace Area */}
-              <div className="flex-1 overflow-y-auto min-h-0 no-scrollbar bg-white dark:bg-black">
-                
-                {/* Mode A: COURSE CONTENT */}
-                {sidebarTab === 'content' && (
-                  <div className="divide-y divide-neutral-100 dark:divide-neutral-900 bg-white dark:bg-black">
-                    {modules.map((mod) => (
-                      <div key={mod.name} className="bg-transparent">
-                        <div className="px-5 py-3 bg-neutral-50/50 dark:bg-neutral-900/20 border-b border-neutral-100 dark:border-neutral-900 select-none">
-                          <span className="text-[9px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest block">
-                            Módulo {mod.order}
-                          </span>
-                          <h4 className="text-xs font-bold text-neutral-950 dark:text-neutral-200 mt-0.5 leading-snug">{mod.name}</h4>
-                        </div>
-                        <div className="divide-y divide-neutral-100/40 dark:divide-neutral-900/60">
-                          {mod.lessons.map((lesson) => {
-                            const isSelected = selectedLesson?.id === lesson.id;
-                            const isCompleted = completedLessons.has(lesson.id);
-                            const globalIndex = modules.flatMap(m => m.lessons).findIndex(l => l.id === lesson.id);
-                            const isLocked = isLessonLocked(lesson, globalIndex);
-                            const hasSuperClase = !!lesson.superclass_language;
-
-                            return (
-                              <div
-                                key={lesson.id}
-                                className={cn(
-                                  "w-full flex items-start gap-3.5 px-5 py-3.5 transition-all group relative",
-                                  isSelected 
-                                    ? 'bg-neutral-100 dark:bg-neutral-900' 
-                                    : 'bg-transparent hover:bg-neutral-50 dark:hover:bg-neutral-900/40'
-                                )}
-                              >
-                                {/* Checkbox / Lock Selector (Left) */}
-                                <div className="flex-none mt-0.5 select-none">
-                                  {isLocked ? (
-                                    <div className="w-5 h-5 rounded-full flex items-center justify-center text-neutral-400 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
-                                      <Lock className="w-2.5 h-2.5" />
-                                    </div>
-                                  ) : isSelected && !isCompleted ? (
-                                    <button
-                                      onClick={(e) => { e.stopPropagation(); toggleComplete(lesson.id); }}
-                                      className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition-all border border-neutral-900 bg-neutral-50 dark:border-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm animate-pulse"
-                                    >
-                                      <Play className="w-2 h-2 text-neutral-900 fill-neutral-900 dark:text-white dark:fill-white" />
-                                    </button>
-                                  ) : isCompleted ? (
-                                    <button
-                                      onClick={(e) => { e.stopPropagation(); toggleComplete(lesson.id); }}
-                                      className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition-all border border-emerald-500 bg-emerald-500 text-white shadow-sm"
-                                    >
-                                      <Check className="w-3 h-3 stroke-[3px]" />
-                                    </button>
-                                  ) : (
-                                    <button
-                                      onClick={(e) => { e.stopPropagation(); toggleComplete(lesson.id); }}
-                                      className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition-all border border-neutral-300 dark:border-neutral-700 text-transparent bg-white dark:bg-neutral-950 shadow-sm"
-                                    >
-                                      <Check className="w-3 h-3 stroke-[3px]" />
-                                    </button>
-                                  )}
-                                </div>
-
-                                {/* Text & Duration Details (Clickable row area) */}
-                                <div 
-                                  onClick={() => handleSelectLesson(lesson)}
-                                  className="flex-1 min-w-0 cursor-pointer"
-                                >
-                                  <h5 className={cn(
-                                    "text-[12px] leading-snug font-bold line-clamp-2 transition-colors",
-                                    isSelected ? 'text-neutral-950 dark:text-white font-bold' : 'text-neutral-700 dark:text-neutral-355 group-hover:text-neutral-950 dark:group-hover:text-white'
-                                  )}>
-                                    {(globalIndex >= 0 ? globalIndex + 1 : lesson.lesson_order)}. {lesson.title}
-                                  </h5>
-                                  <div className="flex flex-wrap items-center gap-2 mt-1.5 select-none">
-                                    <span className="text-[9px] text-neutral-400 font-bold flex items-center gap-1 leading-none">
-                                      <Clock className="w-2.5 h-2.5" />
-                                      {lesson.duration_minutes || 0} min
-                                    </span>
-                                    {hasSuperClase && (
-                                      <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 uppercase tracking-wide">
-                                        Super Clase
-                                      </span>
-                                    )}
-                                    {lesson.is_free_preview && (
-                                      <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/5 dark:text-emerald-400 uppercase tracking-wide">
-                                        Gratis
-                                      </span>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Mode B: AI ASSISTANT CHAT */}
-                {sidebarTab === 'ai' && (
-                  <div className="flex flex-col h-full bg-white dark:bg-black">
-                    <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-neutral-50/50 dark:bg-neutral-950/20 no-scrollbar">
-                      {chatMessages.map((msg, i) => (
-                        <div
-                          key={i}
-                          className={`flex gap-2.5 max-w-[85%] ${
-                            msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
+            <>
+              {/* Mobile Slide-Over Drawer with Backdrop */}
+              <motion.div
+                key="aula-sidebar-backdrop-mobile"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSidebarOpen(false)}
+                className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+              />
+              <motion.aside
+                key="aula-sidebar-drawer-mobile"
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                className="fixed top-0 right-0 bottom-0 w-[88vw] max-w-[360px] z-50 flex flex-col bg-white dark:bg-black border-l border-neutral-200/80 dark:border-neutral-800/80 shadow-2xl lg:hidden overflow-hidden"
+              >
+                {/* Sidebar Header & Tabs */}
+                <div className="flex-none border-b border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-black select-none">
+                  <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
+                    <div className="flex items-center gap-1.5">
+                      {[
+                        { id: 'content', label: t.courseContent },
+                        { id: 'ai', label: t.aiAssistant, sparkles: true },
+                      ].map(tab => (
+                        <button
+                          key={tab.id}
+                          onClick={() => setSidebarTab(tab.id as 'content' | 'ai')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border-0 ${
+                            sidebarTab === tab.id
+                              ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-900 dark:text-white'
+                              : 'bg-transparent text-neutral-450 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300'
                           }`}
                         >
-                          <div className={cn(
-                            "w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-[9px] font-bold select-none",
-                            msg.role === 'user' ? 'bg-neutral-900 text-white dark:bg-white dark:text-black' : 'bg-neutral-200 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200'
-                          )}>
-                            {msg.role === 'user' ? 'Tú' : 'IA'}
+                          {tab.sparkles && <Sparkles className="w-3 h-3 inline mr-1 text-orange-500" />}
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {sidebarTab === 'ai' && (
+                        <button
+                          onClick={handleResetChat}
+                          className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-lg transition-colors border-0 bg-transparent cursor-pointer text-neutral-400 hover:text-neutral-900 dark:text-neutral-500 dark:hover:text-white"
+                          title={t.newConversation}
+                        >
+                          <MessageSquarePlus className="w-4 h-4" />
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setSidebarOpen(false)}
+                        className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-lg transition-colors border-0 bg-transparent cursor-pointer text-neutral-400 hover:text-neutral-900 dark:text-neutral-500 dark:hover:text-white"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Sidebar Content Workspace */}
+                <div className="flex-1 overflow-y-auto min-h-0 no-scrollbar bg-white dark:bg-black">
+                  {sidebarTab === 'content' && (
+                    <div className="divide-y divide-neutral-100 dark:divide-neutral-900 bg-white dark:bg-black">
+                      {modules.map((mod) => (
+                        <div key={mod.name} className="bg-transparent">
+                          <div className="px-5 py-3 bg-neutral-50/50 dark:bg-neutral-900/20 border-b border-neutral-100 dark:border-neutral-900 select-none">
+                            <span className="text-[9px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest block">
+                              Módulo {mod.order}
+                            </span>
+                            <h4 className="text-xs font-bold text-neutral-950 dark:text-neutral-200 mt-0.5 leading-snug">{mod.name}</h4>
                           </div>
-                          <div className={cn(
-                            "p-3 rounded-2xl text-[12px] leading-relaxed",
-                            msg.role === 'user'
-                              ? 'bg-neutral-900 text-white dark:bg-white dark:text-black rounded-tr-none shadow-sm font-medium'
-                              : 'bg-white text-neutral-800 dark:bg-neutral-950 dark:text-neutral-200 rounded-tl-none border border-neutral-200/80 dark:border-neutral-800/80 shadow-sm'
-                          )}>
-                            {msg.role === 'user' ? (
-                              msg.text
-                            ) : (
-                              <MarkdownRenderer content={msg.text} />
-                            )}
+                          <div className="divide-y divide-neutral-100/40 dark:divide-neutral-900/60">
+                            {mod.lessons.map((lesson) => {
+                              const isSelected = selectedLesson?.id === lesson.id;
+                              const isCompleted = completedLessons.has(lesson.id);
+                              const globalIndex = modules.flatMap(m => m.lessons).findIndex(l => l.id === lesson.id);
+                              const isLocked = isLessonLocked(lesson, globalIndex);
+                              const hasSuperClase = !!lesson.superclass_language;
+
+                              return (
+                                <div
+                                  key={lesson.id}
+                                  className={cn(
+                                    "w-full flex items-start gap-3.5 px-5 py-3.5 transition-all group relative",
+                                    isSelected 
+                                      ? 'bg-neutral-100 dark:bg-neutral-900' 
+                                      : 'bg-transparent hover:bg-neutral-50 dark:hover:bg-neutral-900/40'
+                                  )}
+                                >
+                                  <div className="flex-none mt-0.5 select-none">
+                                    {isLocked ? (
+                                      <div className="w-5 h-5 rounded-full flex items-center justify-center text-neutral-400 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
+                                        <Lock className="w-2.5 h-2.5" />
+                                      </div>
+                                    ) : isSelected && !isCompleted ? (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); toggleComplete(lesson.id); }}
+                                        className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition-all border border-neutral-900 bg-neutral-50 dark:border-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm animate-pulse"
+                                      >
+                                        <Play className="w-2 h-2 text-neutral-900 fill-neutral-900 dark:text-white dark:fill-white" />
+                                      </button>
+                                    ) : isCompleted ? (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); toggleComplete(lesson.id); }}
+                                        className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition-all border border-emerald-500 bg-emerald-500 text-white shadow-sm"
+                                      >
+                                        <Check className="w-3 h-3 stroke-[3px]" />
+                                      </button>
+                                    ) : (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); toggleComplete(lesson.id); }}
+                                        className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition-all border border-neutral-300 dark:border-neutral-700 text-transparent bg-white dark:bg-neutral-950 shadow-sm"
+                                      >
+                                        <Check className="w-3 h-3 stroke-[3px]" />
+                                      </button>
+                                    )}
+                                  </div>
+
+                                  <div 
+                                    onClick={() => {
+                                      handleSelectLesson(lesson);
+                                      setSidebarOpen(false);
+                                    }}
+                                    className="flex-1 min-w-0 cursor-pointer"
+                                  >
+                                    <h5 className={cn(
+                                      "text-[12px] leading-snug font-bold line-clamp-2 transition-colors",
+                                      isSelected ? 'text-neutral-950 dark:text-white font-bold' : 'text-neutral-700 dark:text-neutral-355 group-hover:text-neutral-950 dark:group-hover:text-white'
+                                    )}>
+                                      {(globalIndex >= 0 ? globalIndex + 1 : lesson.lesson_order)}. {lesson.title}
+                                    </h5>
+                                    <div className="flex flex-wrap items-center gap-2 mt-1.5 select-none">
+                                      <span className="text-[9px] text-neutral-400 font-bold flex items-center gap-1 leading-none">
+                                        <Clock className="w-2.5 h-2.5" />
+                                        {lesson.duration_minutes || 0} min
+                                      </span>
+                                      {hasSuperClase && (
+                                        <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 uppercase tracking-wide">
+                                          Super Clase
+                                        </span>
+                                      )}
+                                      {lesson.is_free_preview && (
+                                        <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/5 dark:text-emerald-400 uppercase tracking-wide">
+                                          Gratis
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       ))}
-
-                      {chatLoading && (
-                        <div className="flex gap-2.5 mr-auto max-w-[85%] animate-pulse select-none">
-                          <div className="w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center text-[9px] font-bold text-neutral-800 dark:text-neutral-200 shadow-sm">IA</div>
-                          <div className="p-3 bg-white dark:bg-neutral-950 text-neutral-500 dark:text-neutral-450 rounded-2xl rounded-tl-none text-[12px] flex items-center gap-1.5 border border-neutral-200/80 dark:border-neutral-800/80 shadow-sm leading-relaxed font-semibold">
-                            <Loader2 className="w-3.5 h-3.5 animate-spin text-neutral-600 dark:text-neutral-400 shrink-0" /> {t.analyzing}
-                          </div>
-                        </div>
-                      )}
-                      <div ref={chatEndRef} />
                     </div>
+                  )}
 
-                    <div className="flex-none p-3 border-t border-neutral-150 dark:border-neutral-900 bg-white dark:bg-black flex items-center gap-2">
-                      <input
-                        type="text"
-                        value={chatInput}
-                        onChange={(e) => setChatInput(e.target.value)}
-                        onKeyDown={(e) => { if (e.key === 'Enter') handleSendChatMessage(); }}
-                        placeholder={t.aiPrompt}
-                        className="flex-1 bg-neutral-50 dark:bg-neutral-950 border border-neutral-250 dark:border-neutral-850 rounded-xl px-3 py-2 text-xs text-neutral-900 dark:text-white placeholder:text-neutral-400 outline-none focus:ring-1 focus:ring-neutral-250 dark:focus:ring-neutral-800 transition-all"
-                      />
+                  {sidebarTab === 'ai' && (
+                    <div className="flex flex-col h-full bg-white dark:bg-black">
+                      <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-neutral-50/50 dark:bg-neutral-950/20 no-scrollbar">
+                        {chatMessages.map((msg, i) => (
+                          <div
+                            key={i}
+                            className={`flex gap-2.5 max-w-[85%] ${
+                              msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
+                            }`}
+                          >
+                            <div className={cn(
+                              "w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-[9px] font-bold select-none",
+                              msg.role === 'user' ? 'bg-neutral-900 text-white dark:bg-white dark:text-black' : 'bg-neutral-200 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200'
+                            )}>
+                              {msg.role === 'user' ? 'Tú' : 'IA'}
+                            </div>
+                            <div className={cn(
+                              "p-3 rounded-2xl text-[12px] leading-relaxed",
+                              msg.role === 'user'
+                                ? 'bg-neutral-900 text-white dark:bg-white dark:text-black rounded-tr-none shadow-sm font-medium'
+                                : 'bg-white text-neutral-800 dark:bg-neutral-950 dark:text-neutral-200 rounded-tl-none border border-neutral-200/80 dark:border-neutral-800/80 shadow-sm'
+                            )}>
+                              {msg.role === 'user' ? (
+                                msg.text
+                              ) : (
+                                <MarkdownRenderer content={msg.text} />
+                              )}
+                            </div>
+                          </div>
+                        ))}
+
+                        {chatLoading && (
+                          <div className="flex gap-2.5 mr-auto max-w-[85%] animate-pulse select-none">
+                            <div className="w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center text-[9px] font-bold text-neutral-800 dark:text-neutral-200 shadow-sm">IA</div>
+                            <div className="p-3 bg-white dark:bg-neutral-950 text-neutral-500 dark:text-neutral-450 rounded-2xl rounded-tl-none text-[12px] flex items-center gap-1.5 border border-neutral-200/80 dark:border-neutral-800/80 shadow-sm leading-relaxed font-semibold">
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-neutral-600 dark:text-neutral-400 shrink-0" /> {t.analyzing}
+                            </div>
+                          </div>
+                        )}
+                        <div ref={chatEndRef} />
+                      </div>
+
+                      <div className="flex-none p-3 border-t border-neutral-150 dark:border-neutral-900 bg-white dark:bg-black flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={chatInput}
+                          onChange={(e) => setChatInput(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') handleSendChatMessage(); }}
+                          placeholder={t.aiPrompt}
+                          className="flex-1 bg-neutral-50 dark:bg-neutral-950 border border-neutral-250 dark:border-neutral-850 rounded-xl px-3 py-2 text-xs text-neutral-900 dark:text-white placeholder:text-neutral-400 outline-none focus:ring-1 focus:ring-neutral-250 dark:focus:ring-neutral-800 transition-all"
+                        />
+                        <button
+                          onClick={handleSendChatMessage}
+                          className="w-8 h-8 rounded-xl bg-neutral-900 hover:bg-black text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 flex items-center justify-center cursor-pointer border-0 shrink-0 transition-all shadow-sm"
+                        >
+                          <Send className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.aside>
+
+              {/* Desktop Inline Collapsible Pane */}
+              <motion.aside
+                key="aula-sidebar-pane-desktop"
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: 340, opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="hidden lg:flex flex-none h-full border-l border-neutral-200/80 dark:border-neutral-800/80 flex-col bg-white dark:bg-black overflow-hidden relative z-10"
+              >
+                {/* Sidebar Header & Tabs */}
+                <div className="flex-none border-b border-neutral-200/80 dark:border-neutral-800/80 bg-white dark:bg-black select-none">
+                  <div className="flex items-center justify-between px-4 pt-3.5 pb-2">
+                    <div className="flex items-center gap-1.5">
+                      {[
+                        { id: 'content', label: t.courseContent },
+                        { id: 'ai', label: t.aiAssistant, sparkles: true },
+                      ].map(tab => (
+                        <button
+                          key={tab.id}
+                          onClick={() => setSidebarTab(tab.id as 'content' | 'ai')}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer border-0 ${
+                            sidebarTab === tab.id
+                              ? 'bg-neutral-100 text-neutral-900 dark:bg-neutral-900 dark:text-white'
+                              : 'bg-transparent text-neutral-450 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300'
+                          }`}
+                        >
+                          {tab.sparkles && <Sparkles className="w-3 h-3 inline mr-1 text-orange-500" />}
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {sidebarTab === 'ai' && (
+                        <button
+                          onClick={handleResetChat}
+                          className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-lg transition-colors border-0 bg-transparent cursor-pointer text-neutral-400 hover:text-neutral-900 dark:text-neutral-500 dark:hover:text-white"
+                          title={t.newConversation}
+                        >
+                          <MessageSquarePlus className="w-4 h-4" />
+                        </button>
+                      )}
                       <button
-                        onClick={handleSendChatMessage}
-                        className="w-8 h-8 rounded-xl bg-neutral-900 hover:bg-black text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 flex items-center justify-center cursor-pointer border-0 shrink-0 transition-all shadow-sm"
+                        onClick={() => setSidebarOpen(false)}
+                        className="p-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-900 rounded-lg transition-colors border-0 bg-transparent cursor-pointer text-neutral-400 hover:text-neutral-900 dark:text-neutral-500 dark:hover:text-white"
                       >
-                        <Send className="w-3.5 h-3.5" />
+                        <X className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
-                )}
-              </div>
-            </motion.aside>
+                </div>
+
+                {/* Sidebar Content Workspace */}
+                <div className="flex-1 overflow-y-auto min-h-0 no-scrollbar bg-white dark:bg-black">
+                  {sidebarTab === 'content' && (
+                    <div className="divide-y divide-neutral-100 dark:divide-neutral-900 bg-white dark:bg-black">
+                      {modules.map((mod) => (
+                        <div key={mod.name} className="bg-transparent">
+                          <div className="px-5 py-3 bg-neutral-50/50 dark:bg-neutral-900/20 border-b border-neutral-100 dark:border-neutral-900 select-none">
+                            <span className="text-[9px] font-bold text-neutral-400 dark:text-neutral-500 uppercase tracking-widest block">
+                              Módulo {mod.order}
+                            </span>
+                            <h4 className="text-xs font-bold text-neutral-950 dark:text-neutral-200 mt-0.5 leading-snug">{mod.name}</h4>
+                          </div>
+                          <div className="divide-y divide-neutral-100/40 dark:divide-neutral-900/60">
+                            {mod.lessons.map((lesson) => {
+                              const isSelected = selectedLesson?.id === lesson.id;
+                              const isCompleted = completedLessons.has(lesson.id);
+                              const globalIndex = modules.flatMap(m => m.lessons).findIndex(l => l.id === lesson.id);
+                              const isLocked = isLessonLocked(lesson, globalIndex);
+                              const hasSuperClase = !!lesson.superclass_language;
+
+                              return (
+                                <div
+                                  key={lesson.id}
+                                  className={cn(
+                                    "w-full flex items-start gap-3.5 px-5 py-3.5 transition-all group relative",
+                                    isSelected 
+                                      ? 'bg-neutral-100 dark:bg-neutral-900' 
+                                      : 'bg-transparent hover:bg-neutral-50 dark:hover:bg-neutral-900/40'
+                                  )}
+                                >
+                                  <div className="flex-none mt-0.5 select-none">
+                                    {isLocked ? (
+                                      <div className="w-5 h-5 rounded-full flex items-center justify-center text-neutral-400 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800">
+                                        <Lock className="w-2.5 h-2.5" />
+                                      </div>
+                                    ) : isSelected && !isCompleted ? (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); toggleComplete(lesson.id); }}
+                                        className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition-all border border-neutral-900 bg-neutral-50 dark:border-white dark:bg-neutral-900 text-neutral-900 dark:text-white shadow-sm animate-pulse"
+                                      >
+                                        <Play className="w-2 h-2 text-neutral-900 fill-neutral-900 dark:text-white dark:fill-white" />
+                                      </button>
+                                    ) : isCompleted ? (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); toggleComplete(lesson.id); }}
+                                        className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition-all border border-emerald-500 bg-emerald-500 text-white shadow-sm"
+                                      >
+                                        <Check className="w-3 h-3 stroke-[3px]" />
+                                      </button>
+                                    ) : (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); toggleComplete(lesson.id); }}
+                                        className="w-5 h-5 rounded-full flex items-center justify-center cursor-pointer transition-all border border-neutral-300 dark:border-neutral-700 text-transparent bg-white dark:bg-neutral-950 shadow-sm"
+                                      >
+                                        <Check className="w-3 h-3 stroke-[3px]" />
+                                      </button>
+                                    )}
+                                  </div>
+
+                                  <div 
+                                    onClick={() => handleSelectLesson(lesson)}
+                                    className="flex-1 min-w-0 cursor-pointer"
+                                  >
+                                    <h5 className={cn(
+                                      "text-[12px] leading-snug font-bold line-clamp-2 transition-colors",
+                                      isSelected ? 'text-neutral-950 dark:text-white font-bold' : 'text-neutral-700 dark:text-neutral-355 group-hover:text-neutral-950 dark:group-hover:text-white'
+                                    )}>
+                                      {(globalIndex >= 0 ? globalIndex + 1 : lesson.lesson_order)}. {lesson.title}
+                                    </h5>
+                                    <div className="flex flex-wrap items-center gap-2 mt-1.5 select-none">
+                                      <span className="text-[9px] text-neutral-400 font-bold flex items-center gap-1 leading-none">
+                                        <Clock className="w-2.5 h-2.5" />
+                                        {lesson.duration_minutes || 0} min
+                                      </span>
+                                      {hasSuperClase && (
+                                        <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 uppercase tracking-wide">
+                                          Super Clase
+                                        </span>
+                                      )}
+                                      {lesson.is_free_preview && (
+                                        <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/5 dark:text-emerald-400 uppercase tracking-wide">
+                                          Gratis
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {sidebarTab === 'ai' && (
+                    <div className="flex flex-col h-full bg-white dark:bg-black">
+                      <div className="flex-1 p-4 overflow-y-auto space-y-4 bg-neutral-50/50 dark:bg-neutral-950/20 no-scrollbar">
+                        {chatMessages.map((msg, i) => (
+                          <div
+                            key={i}
+                            className={`flex gap-2.5 max-w-[85%] ${
+                              msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
+                            }`}
+                          >
+                            <div className={cn(
+                              "w-6 h-6 rounded-full shrink-0 flex items-center justify-center text-[9px] font-bold select-none",
+                              msg.role === 'user' ? 'bg-neutral-900 text-white dark:bg-white dark:text-black' : 'bg-neutral-200 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200'
+                            )}>
+                              {msg.role === 'user' ? 'Tú' : 'IA'}
+                            </div>
+                            <div className={cn(
+                              "p-3 rounded-2xl text-[12px] leading-relaxed",
+                              msg.role === 'user'
+                                ? 'bg-neutral-900 text-white dark:bg-white dark:text-black rounded-tr-none shadow-sm font-medium'
+                                : 'bg-white text-neutral-800 dark:bg-neutral-950 dark:text-neutral-200 rounded-tl-none border border-neutral-200/80 dark:border-neutral-800/80 shadow-sm'
+                            )}>
+                              {msg.role === 'user' ? (
+                                msg.text
+                              ) : (
+                                <MarkdownRenderer content={msg.text} />
+                              )}
+                            </div>
+                          </div>
+                        ))}
+
+                        {chatLoading && (
+                          <div className="flex gap-2.5 mr-auto max-w-[85%] animate-pulse select-none">
+                            <div className="w-6 h-6 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center text-[9px] font-bold text-neutral-800 dark:text-neutral-200 shadow-sm">IA</div>
+                            <div className="p-3 bg-white dark:bg-neutral-950 text-neutral-500 dark:text-neutral-450 rounded-2xl rounded-tl-none text-[12px] flex items-center gap-1.5 border border-neutral-200/80 dark:border-neutral-800/80 shadow-sm leading-relaxed font-semibold">
+                              <Loader2 className="w-3.5 h-3.5 animate-spin text-neutral-600 dark:text-neutral-400 shrink-0" /> {t.analyzing}
+                            </div>
+                          </div>
+                        )}
+                        <div ref={chatEndRef} />
+                      </div>
+
+                      <div className="flex-none p-3 border-t border-neutral-150 dark:border-neutral-900 bg-white dark:bg-black flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={chatInput}
+                          onChange={(e) => setChatInput(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === 'Enter') handleSendChatMessage(); }}
+                          placeholder={t.aiPrompt}
+                          className="flex-1 bg-neutral-50 dark:bg-neutral-950 border border-neutral-250 dark:border-neutral-850 rounded-xl px-3 py-2 text-xs text-neutral-900 dark:text-white placeholder:text-neutral-400 outline-none focus:ring-1 focus:ring-neutral-250 dark:focus:ring-neutral-800 transition-all"
+                        />
+                        <button
+                          onClick={handleSendChatMessage}
+                          className="w-8 h-8 rounded-xl bg-neutral-900 hover:bg-black text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 flex items-center justify-center cursor-pointer border-0 shrink-0 transition-all shadow-sm"
+                        >
+                          <Send className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </motion.aside>
+            </>
           )}
         </AnimatePresence>
       </div>
