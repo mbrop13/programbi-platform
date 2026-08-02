@@ -2248,9 +2248,12 @@ function AdminCourses() {
                   </div>
 
                   <div className="sm:col-span-2">
-                    <label className="block text-xs font-semibold text-gray-500 mb-1.5">Descripción de la lección</label>
-                    <textarea rows={3} placeholder="Resumen o detalles explicativos que verán los alumnos en esta clase..." value={newLesson.description || ''} onChange={e => setNewLesson(p => ({ ...p, description: e.target.value }))}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none resize-y" />
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="block text-xs font-semibold text-gray-500">Descripción de la lección</label>
+                      <span className="text-[10px] text-gray-400 font-medium">Soporta Markdown completo y enlaces</span>
+                    </div>
+                    <textarea rows={4} placeholder="Resumen o detalles explicativos en Markdown. Ej: **Conceptos Clave**, listas - punto, o [enlace](https://...)" value={newLesson.description || ''} onChange={e => setNewLesson(p => ({ ...p, description: e.target.value }))}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-xs focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none resize-y font-mono" />
                   </div>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">

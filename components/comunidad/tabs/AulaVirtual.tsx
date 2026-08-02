@@ -1535,10 +1535,16 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                         </div>
 
                         <div>
-                          <h3 className="font-bold text-xs text-neutral-900 dark:text-white uppercase tracking-wider mb-2 select-none">{t.aboutLesson}</h3>
-                          <p className="text-xs md:text-sm text-neutral-600 dark:text-neutral-350 leading-relaxed font-medium whitespace-pre-line">
-                            {selectedLesson.description || selectedLesson.content_markdown || t.aboutLessonDesc}
-                          </p>
+                          <h3 className="font-bold text-xs text-neutral-900 dark:text-white uppercase tracking-wider mb-3 select-none flex items-center gap-1.5">
+                            <FileText className="w-3.5 h-3.5 text-[#1890FF]" />
+                            {t.aboutLesson}
+                          </h3>
+                          <div className="bg-neutral-50/60 dark:bg-neutral-950/40 p-5 rounded-2xl border border-neutral-200/60 dark:border-neutral-850/80 shadow-sm">
+                            <MarkdownRenderer 
+                              content={selectedLesson.description || selectedLesson.content_markdown || t.aboutLessonDesc} 
+                              className="prose dark:prose-invert max-w-none text-xs md:text-sm text-neutral-800 dark:text-neutral-200 leading-relaxed font-normal prose-a:text-[#1890FF] hover:prose-a:underline prose-a:font-bold"
+                            />
+                          </div>
                         </div>
 
                         {/* Instructor Profile Card */}
