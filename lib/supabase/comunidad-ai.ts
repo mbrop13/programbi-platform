@@ -595,17 +595,30 @@ export async function adminBulkImport(rows: { email: string; curso_slug: string;
 export async function getAllPublishedCourses() {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const { data: courses, error } = await supabase
     .from("courses")
     .select("id, slug, title, short_description, category, badge_label, badge_color, tech_stack, duration_hours, level, image_url, icon, accent_color, is_featured, sort_order, price_clp")
     .eq("is_published", true)
     .eq("is_hidden", false)
     .order("sort_order", { ascending: true });
 
-  if (error) { console.error("Error:", error); return []; }
-  
-  const allowedSlugs = ["power-bi", "python", "sql-server", "excel"];
-  return (data || []).filter((c: any) => allowedSlugs.includes(c.slug));
+  if (error || !courses || courses.length === 0) {
+    if (error) console.error("Error fetching published courses:", error);
+    return [];
+  }
+
+  // Filtrar solo cursos que tengan al menos 1 lección creada desde el panel de admin
+  const { data: lessons } = await supabase
+    .from("lessons")
+    .select("course_id")
+    .in("course_id", courses.map(c => c.id));
+
+  const lessonCounts: Record<string, number> = {};
+  (lessons || []).forEach((l: any) => {
+    lessonCounts[l.course_id] = (lessonCounts[l.course_id] || 0) + 1;
+  });
+
+  return courses.filter((c: any) => (lessonCounts[c.id] || 0) > 0);
 }
 
 export async function getMyEnrollments() {
@@ -615,7 +628,7 @@ export async function getMyEnrollments() {
 
   const adminDb = createAdminClient();
 
-  const [enrollmentsRes, profileRes, isAdmin] = await Promise.all([
+  const [enrollmentsRes, profileRes, isAdmin, publishedCoursesRes, allLessonsRes] = await Promise.all([
     supabase
       .from("enrollments")
       .select("course_slug, status, access_type, enrolled_at")
@@ -626,7 +639,15 @@ export async function getMyEnrollments() {
       .select("is_on_trial, subscription_plan, subscription_expires_at, role")
       .eq("id", user.id)
       .maybeSingle(),
-    isCurrentUserAdmin().catch(() => false)
+    isCurrentUserAdmin().catch(() => false),
+    adminDb
+      .from("courses")
+      .select("id, slug")
+      .eq("is_published", true)
+      .eq("is_hidden", false),
+    adminDb
+      .from("lessons")
+      .select("course_id")
   ]);
 
   const dbEnrollments = enrollmentsRes.data || [];
@@ -638,7 +659,10 @@ export async function getMyEnrollments() {
 
   let data = [...dbEnrollments];
 
-  const communitySlugs = ["power-bi", "python", "sql-server", "excel"];
+  // Obtener únicamente los slugs de cursos verdaderamente publicados y que tienen al menos 1 lección creada
+  const validCourseIds = new Set((allLessonsRes.data || []).map((l: any) => l.course_id));
+  const validPublishedCourses = (publishedCoursesRes.data || []).filter((c: any) => validCourseIds.has(c.id));
+  const communitySlugs = validPublishedCourses.map((c: any) => c.slug);
 
   if (hasActiveSubscription || isOnTrial) {
     const requiredAccess = hasActiveSubscription ? "full" : "trial";

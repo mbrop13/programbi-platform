@@ -1470,18 +1470,66 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                   </div>
                 </div>
 
-                {/* Details & Interactive Tabs */}
-                <div className="flex-1 w-full max-w-[1120px] mx-auto px-4 sm:px-6 py-4 sm:py-8 bg-white dark:bg-black">
+                {/* Details & Interactive Tabs (Diseño Simplificado y Elegante) */}
+                <div className="flex-1 w-full max-w-[1120px] mx-auto px-4 sm:px-6 py-6 bg-white dark:bg-black">
                   
-                  {/* Tabs Navbar */}
-                  <div className="flex items-center gap-4 sm:gap-6 mb-6 overflow-x-auto scrollbar-hide border-b border-neutral-150 dark:border-neutral-900 select-none pb-0.5">
+                  {/* Title & Primary Action Header */}
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-neutral-150 dark:border-neutral-850">
+                    <div className="space-y-2 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 select-none">
+                        <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-neutral-100 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 uppercase tracking-wider">
+                          Módulo {selectedModuleOrder} • Clase {selectedLessonGlobalIndex >= 0 ? selectedLessonGlobalIndex + 1 : selectedLesson.lesson_order}
+                        </span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-neutral-50 text-neutral-500 dark:bg-neutral-950 dark:text-neutral-400 uppercase tracking-wider flex items-center gap-1 border border-neutral-200/50 dark:border-neutral-800/50">
+                          <Clock className="w-3 h-3 text-neutral-400" /> {selectedLesson.duration_minutes} {t.lessonsDuration}
+                        </span>
+                        {completedLessons.has(selectedLesson.id) && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 uppercase tracking-wider flex items-center gap-1">
+                            <Check className="w-3 h-3 stroke-[3px]" /> Completada
+                          </span>
+                        )}
+                      </div>
+
+                      <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-neutral-900 dark:text-white leading-tight tracking-tight">
+                        {selectedLesson.title}
+                      </h2>
+                    </div>
+
+                    {/* Quick Actions Row */}
+                    <div className="flex items-center gap-2 flex-wrap shrink-0">
+                      <button
+                        onClick={() => toggleComplete(selectedLesson.id)}
+                        className={cn(
+                          "px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border flex items-center gap-1.5 active:scale-95 shadow-sm",
+                          completedLessons.has(selectedLesson.id)
+                            ? "bg-emerald-500 text-white border-emerald-500 hover:bg-emerald-600"
+                            : "bg-neutral-100 hover:bg-neutral-200 text-neutral-800 border-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-850 dark:text-neutral-200 dark:border-neutral-800"
+                        )}
+                      >
+                        <Check className="w-3.5 h-3.5 stroke-[3px]" />
+                        <span>{completedLessons.has(selectedLesson.id) ? "Completada" : "Marcar completada"}</span>
+                      </button>
+
+                      {selectedLesson.superclass_language && !isSelectedLessonLocked && (
+                        <button
+                          onClick={() => setSuperClaseActive(true)}
+                          className="px-4 py-2 rounded-xl bg-neutral-900 hover:bg-black text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 shadow-sm cursor-pointer border-0 active:scale-95 transition-colors select-none"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-orange-500" /> {t.superClaseBtn}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Clean Navigation Tabs */}
+                  <div className="flex items-center gap-6 my-6 overflow-x-auto scrollbar-hide border-b border-neutral-150 dark:border-neutral-900 select-none pb-0.5">
                     {[
                       { id: 'overview', label: t.overviewTab, icon: FileText },
+                      ...(selectedLesson?.resources && Array.isArray(selectedLesson.resources) && selectedLesson.resources.length > 0
+                        ? [{ id: 'resources', label: t.filesTab, icon: Download, count: selectedLesson.resources.length }]
+                        : []),
                       { id: 'notes', label: t.notesTab, icon: StickyNote },
                       { id: 'faq', label: t.faqTab, icon: HelpCircle },
-                      ...(selectedLesson?.resources && Array.isArray(selectedLesson.resources) && selectedLesson.resources.length > 0
-                        ? [{ id: 'resources', label: t.filesTab, icon: Download }]
-                        : [])
                     ].map(tab => {
                       const Icon = tab.icon;
                       const isActive = activeTab === tab.id;
@@ -1489,12 +1537,20 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                         <button
                           key={tab.id}
                           onClick={() => setActiveTab(tab.id as 'overview' | 'notes' | 'faq' | 'resources')}
-                          className={`flex items-center gap-1.5 pb-3 text-xs font-bold transition-all uppercase tracking-wider relative border-0 bg-transparent cursor-pointer whitespace-nowrap ${
+                          className={`flex items-center gap-2 pb-3 text-xs font-bold transition-all uppercase tracking-wider relative border-0 bg-transparent cursor-pointer whitespace-nowrap ${
                             isActive ? 'text-neutral-900 dark:text-white' : 'text-neutral-400 hover:text-neutral-700 dark:text-neutral-500 dark:hover:text-neutral-300'
                           }`}
                         >
                           <Icon className="w-4 h-4" />
-                          {tab.label}
+                          <span>{tab.label}</span>
+                          {tab.count !== undefined && (
+                            <span className={cn(
+                              "text-[10px] font-bold px-1.5 py-0.2 rounded-full shrink-0",
+                              isActive ? "bg-neutral-900 text-white dark:bg-white dark:text-black" : "bg-neutral-100 text-neutral-500 dark:bg-neutral-900 dark:text-neutral-400"
+                            )}>
+                              {tab.count}
+                            </span>
+                          )}
                           {isActive && (
                             <motion.div
                               layoutId="activeWorkspaceTab"
@@ -1507,174 +1563,63 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                     })}
                   </div>
 
-                  {/* Tabs Workspace content */}
-                  <div className="text-left min-h-[300px]">
+                  {/* Tab Content Areas (Simplificados & Minimalistas) */}
+                  <div className="text-left min-h-[260px] pt-2">
                     
                     {/* Tab 1: OVERVIEW */}
                     {activeTab === 'overview' && (
-                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 dark:border-neutral-900 pb-5">
-                          <div>
-                            <div className="flex flex-wrap items-center gap-2 mb-2 select-none">
-                              <span className="text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-neutral-100 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 uppercase tracking-wider border border-neutral-250/20 dark:border-neutral-800/40">
-                                Módulo {selectedModuleOrder} • Clase {selectedLessonGlobalIndex >= 0 ? selectedLessonGlobalIndex + 1 : selectedLesson.lesson_order}
-                              </span>
-                              <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-neutral-50 text-neutral-500 dark:bg-neutral-950 dark:text-neutral-450 uppercase tracking-wider flex items-center gap-1 border border-neutral-150/40 dark:border-neutral-900">
-                                <Clock className="w-2.5 h-2.5" /> {selectedLesson.duration_minutes} {t.lessonsDuration}
-                              </span>
+                      <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
+                        {/* Clean Description Text */}
+                        <div className="prose dark:prose-invert max-w-none text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed font-normal">
+                          <MarkdownRenderer 
+                            content={selectedLesson.description || selectedLesson.content_markdown || t.aboutLessonDesc} 
+                            className="space-y-4"
+                          />
+                        </div>
+
+                        {/* Direct Resource Access Chips (si existen archivos) */}
+                        {selectedLesson.resources && Array.isArray(selectedLesson.resources) && selectedLesson.resources.length > 0 && (
+                          <div className="pt-4 border-t border-neutral-100 dark:border-neutral-900">
+                            <h4 className="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider mb-3 flex items-center gap-1.5 select-none">
+                              <Download className="w-3.5 h-3.5 text-[#1890FF]" /> Material Descargable de la Clase
+                            </h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                              {selectedLesson.resources.map((res, idx) => (
+                                <a
+                                  key={idx}
+                                  href={res.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center justify-between p-3 rounded-xl bg-neutral-50 hover:bg-neutral-100 dark:bg-neutral-900/40 dark:hover:bg-neutral-900/80 border border-neutral-200/60 dark:border-neutral-800/60 transition-all text-xs font-semibold text-neutral-800 dark:text-neutral-200 group"
+                                >
+                                  <div className="flex items-center gap-2.5 min-w-0">
+                                    <FileText className="w-4 h-4 text-[#1890FF] shrink-0" />
+                                    <span className="truncate font-bold">{res.name}</span>
+                                  </div>
+                                  <Download className="w-4 h-4 text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white shrink-0 ml-2" />
+                                </a>
+                              ))}
                             </div>
-                            <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-neutral-900 dark:text-white leading-tight">
-                              {selectedLesson.title}
-                            </h2>
                           </div>
-                          
-                          {selectedLesson.superclass_language && !isSelectedLessonLocked && (
-                            <button
-                              onClick={() => setSuperClaseActive(true)}
-                              className="px-4 py-2.5 rounded-xl bg-neutral-900 hover:bg-black text-white dark:bg-white dark:text-black dark:hover:bg-neutral-100 font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-1.5 shadow-sm cursor-pointer border-0 active:scale-98 transition-colors select-none self-start sm:self-auto"
-                            >
-                              <Sparkles className="w-4 h-4 text-orange-500" /> {t.superClaseBtn} ({selectedLesson.superclass_language.toUpperCase()})
-                            </button>
-                          )}
-                        </div>
+                        )}
 
-                        <div>
-                          <h3 className="font-bold text-xs text-neutral-900 dark:text-white uppercase tracking-wider mb-3 select-none flex items-center gap-1.5">
-                            <FileText className="w-3.5 h-3.5 text-[#1890FF]" />
-                            {t.aboutLesson}
-                          </h3>
-                          <div className="bg-neutral-50/60 dark:bg-neutral-950/40 p-4 sm:p-5 rounded-2xl border border-neutral-200/60 dark:border-neutral-850/80 shadow-sm">
-                            <MarkdownRenderer 
-                              content={selectedLesson.description || selectedLesson.content_markdown || t.aboutLessonDesc} 
-                              className="prose dark:prose-invert max-w-none text-xs md:text-sm text-neutral-800 dark:text-neutral-200 leading-relaxed font-normal prose-a:text-[#1890FF] hover:prose-a:underline prose-a:font-bold"
-                            />
-                          </div>
-                        </div>
-
-                        {/* Instructor Profile Card */}
-                        <div className="pt-6 border-t border-neutral-100 dark:border-neutral-900 flex items-start gap-4 select-none">
-                          <div className="w-10 h-10 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black font-bold text-xs flex items-center justify-center shrink-0 border border-neutral-200 dark:border-neutral-800">
+                        {/* Minimalist Instructor Line */}
+                        <div className="pt-6 border-t border-neutral-100 dark:border-neutral-900 flex items-center gap-3 select-none">
+                          <div className="w-8 h-8 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black font-bold text-[11px] flex items-center justify-center shrink-0">
                             MO
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <span className="text-[9px] text-neutral-400 font-bold uppercase block tracking-wider">{t.instructor}</span>
-                            <span className="text-xs font-bold text-neutral-900 dark:text-white mt-0.5 block">Manuel Oliva</span>
-                            <p className="text-[10px] text-neutral-500 dark:text-neutral-450 leading-relaxed mt-1">
-                              Lidero un equipo dedicado a empoderar empresas con herramientas de datos avanzadas. Con años de experiencia como consultor en análisis y visualización, he desarrollado dashboards personalizados integrando web, servidores y bases de datos.
-                            </p>
+                          <div className="text-xs">
+                            <span className="font-bold text-neutral-900 dark:text-white">Manuel Oliva</span>
+                            <span className="text-neutral-400 dark:text-neutral-500 ml-2">· Instructor y Mentor ProgramBI</span>
                           </div>
                         </div>
                       </motion.div>
                     )}
 
-                    {/* Tab 2: NOTES */}
-                    {activeTab === 'notes' && (
-                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-5">
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-150 dark:border-neutral-900 pb-4 select-none">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-xl bg-[#1890FF]/10 text-[#1890FF] flex items-center justify-center shrink-0 border border-[#1890FF]/20">
-                              <StickyNote className="w-4 h-4" />
-                            </div>
-                            <div>
-                              <h3 className="font-bold text-sm text-neutral-900 dark:text-white flex items-center gap-2">
-                                {t.personalNotes}
-                              </h3>
-                              <p className="text-[11px] text-neutral-500 font-medium mt-0.5">{t.notesSavedLocal}</p>
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-2 flex-wrap">
-                            {notes.trim() && (
-                              <button
-                                onClick={() => {
-                                  navigator.clipboard.writeText(notes);
-                                  setCopiedNotes(true);
-                                  setTimeout(() => setCopiedNotes(false), 2000);
-                                }}
-                                className="px-3 py-1.5 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-0 cursor-pointer transition-all flex items-center gap-1.5 text-[11px] font-bold"
-                              >
-                                {copiedNotes ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
-                                {copiedNotes ? "¡Copiado!" : "Copiar"}
-                              </button>
-                            )}
-                            <button
-                              onClick={handleDownloadNotes}
-                              disabled={!notes.trim()}
-                              className="px-3.5 py-1.5 rounded-xl bg-[#1890FF] hover:bg-[#0076e4] text-white border-0 cursor-pointer disabled:opacity-40 transition-all shadow-sm flex items-center gap-1.5 text-[11px] font-bold active:scale-95"
-                              title="Descargar apuntes en archivo .txt"
-                            >
-                              <Download className="w-3.5 h-3.5" />
-                              {t.downloadNotes}
-                            </button>
-                            <button
-                              onClick={() => { if (confirm("¿Seguro que deseas eliminar tus apuntes de esta clase?")) setNotes(""); }}
-                              disabled={!notes.trim()}
-                              className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border-0 cursor-pointer disabled:opacity-40 transition-colors"
-                              title="Limpiar apuntes"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Notes Editor Container */}
-                        <div className="space-y-2">
-                          <div className="relative rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-850 focus-within:border-[#1890FF]/60 focus-within:ring-2 focus-within:ring-[#1890FF]/20 p-4 transition-all shadow-sm">
-                            <textarea
-                              value={notes}
-                              onChange={(e) => setNotes(e.target.value)}
-                              placeholder={t.notesPlaceholder}
-                              className="w-full min-h-[180px] sm:min-h-[220px] bg-transparent text-xs md:text-sm text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none leading-relaxed resize-y font-normal"
-                            />
-                            <div className="flex items-center justify-between pt-3 border-t border-neutral-150/60 dark:border-neutral-900 text-[10px] font-bold text-neutral-400 select-none">
-                              <span>
-                                {notes.trim() ? `${notes.trim().split(/\s+/).length} palabras · ${notes.length} caracteres` : "0 palabras"}
-                              </span>
-                              <div>
-                                {notesSaving ? (
-                                  <span className="flex items-center gap-1 text-amber-500"><Loader2 className="w-3 h-3 animate-spin" /> {t.saving}</span>
-                                ) : notes ? (
-                                  <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1"><Check className="w-3.5 h-3.5" /> {t.autoSaved}</span>
-                                ) : (
-                                  <span className="text-neutral-400">{t.emptyNotes}</span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {/* Tab 3: FAQ */}
-                    {activeTab === 'faq' && (
-                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                        <h3 className="font-bold text-xs text-neutral-900 dark:text-white uppercase tracking-wider border-b border-neutral-100 dark:border-neutral-900 pb-3 select-none">{t.faqTitle}</h3>
-                        <div className="space-y-3">
-                          {[
-                            { q: "¿Cómo descargo los archivos y recursos del curso?", a: "Puedes encontrar los recursos descargables en la pestaña general de cada módulo o solicitarlos directamente al Asistente de IA en el panel lateral." },
-                            { q: "¿Tengo acceso ilimitado a las clases y Playground?", a: "Sí, todos los usuarios suscritos en planes premium tienen acceso total a todos los videos y herramientas de ejecución de código sin restricciones." },
-                            { q: "¿Qué hago si mi código en el Playground arroja error?", a: "Asegúrate de que estás usando el lenguaje adecuado en la pestaña superior (por ejemplo, Python para sintaxis de Python) y lee el mensaje que arroja la Consola de Salida." }
-                          ].map((item, idx) => (
-                            <div key={idx} className="bg-neutral-50/50 dark:bg-neutral-900/20 p-4 rounded-xl border border-neutral-200/80 dark:border-neutral-800/80">
-                              <h4 className="text-xs font-bold text-neutral-900 dark:text-neutral-250 flex items-center gap-2">
-                                <HelpCircle className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                                {item.q}
-                              </h4>
-                              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2 leading-relaxed font-medium pl-5">
-                                {item.a}
-                              </p>
-                            </div>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {/* Tab 4: RESOURCES */}
+                    {/* Tab 2: RESOURCES */}
                     {activeTab === 'resources' && selectedLesson && (
-                      <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-                        <h3 className="font-bold text-xs text-neutral-900 dark:text-white uppercase tracking-wider border-b border-neutral-100 dark:border-neutral-900 pb-3 select-none">Archivos y Recursos descargables</h3>
-                        <p className="text-xs text-neutral-550 dark:text-neutral-400 font-medium select-none">Haz clic en los enlaces a continuación para descargar el material complementario para esta clase.</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                      <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {selectedLesson.resources && Array.isArray(selectedLesson.resources) && selectedLesson.resources.map((res, idx) => {
                             const isExcel = res.name.endsWith('.xlsx') || res.name.endsWith('.xls') || res.name.endsWith('.csv');
                             const isPdf = res.name.endsWith('.pdf');
@@ -1686,28 +1631,119 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                                 href={res.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="flex items-center justify-between p-3.5 bg-neutral-50/50 hover:bg-neutral-50 dark:bg-neutral-900/20 dark:hover:bg-neutral-900/60 rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 transition-all text-xs font-semibold text-neutral-700 hover:text-neutral-950 dark:text-neutral-300 dark:hover:text-white shadow-sm group"
+                                className="flex items-center justify-between p-4 bg-neutral-50 hover:bg-neutral-100 dark:bg-neutral-900/40 dark:hover:bg-neutral-900/80 rounded-2xl border border-neutral-200/60 dark:border-neutral-800/60 transition-all text-xs font-semibold text-neutral-800 dark:text-neutral-200 group shadow-sm"
                               >
-                                <div className="flex items-center gap-2.5 min-w-0">
+                                <div className="flex items-center gap-3 min-w-0">
                                   <div className={cn(
-                                    "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
-                                    isExcel ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/5 dark:text-emerald-400' :
-                                    isPdf ? 'bg-rose-500/10 text-rose-600 dark:bg-rose-500/5 dark:text-rose-400' :
-                                    isZip ? 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/5 dark:text-amber-400' :
-                                    'bg-neutral-100 text-neutral-850 dark:bg-neutral-800 dark:text-neutral-250'
+                                    "w-9 h-9 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
+                                    isExcel ? 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400' :
+                                    isPdf ? 'bg-rose-500/10 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400' :
+                                    isZip ? 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400' :
+                                    'bg-neutral-100 text-neutral-800 dark:bg-neutral-800 dark:text-neutral-200'
                                   )}>
                                     <FileText className="w-4 h-4" />
                                   </div>
                                   <div className="text-left min-w-0">
-                                    <span className="block truncate font-bold text-neutral-800 dark:text-neutral-200">{res.name}</span>
-                                    <span className="block text-[10px] text-neutral-400 font-bold mt-0.5">{res.size ? `${(res.size / 1024 / 1024).toFixed(2)} MB` : "Recurso"}</span>
+                                    <span className="block truncate font-bold text-neutral-900 dark:text-white text-xs">{res.name}</span>
+                                    <span className="block text-[10px] text-neutral-400 font-medium mt-0.5">
+                                      {res.size ? `${(res.size / 1024 / 1024).toFixed(2)} MB` : "Archivo adjunto"}
+                                    </span>
                                   </div>
                                 </div>
-                                <Download className="w-4 h-4 text-neutral-400 group-hover:text-neutral-950 dark:group-hover:text-white shrink-0" />
+                                <Download className="w-4 h-4 text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white shrink-0 ml-2" />
                               </a>
                             );
                           })}
                         </div>
+                      </motion.div>
+                    )}
+
+                    {/* Tab 3: NOTES */}
+                    {activeTab === 'notes' && (
+                      <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-150 dark:border-neutral-900 select-none">
+                          <div className="flex items-center gap-2">
+                            <StickyNote className="w-4 h-4 text-[#1890FF]" />
+                            <h3 className="font-bold text-xs text-neutral-900 dark:text-white uppercase tracking-wider">
+                              {t.personalNotes}
+                            </h3>
+                          </div>
+
+                          <div className="flex items-center gap-2">
+                            {notes.trim() && (
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(notes);
+                                  setCopiedNotes(true);
+                                  setTimeout(() => setCopiedNotes(false), 2000);
+                                }}
+                                className="px-3 py-1.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border-0 cursor-pointer transition-all flex items-center gap-1.5 text-[11px] font-bold"
+                              >
+                                {copiedNotes ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+                                {copiedNotes ? "¡Copiado!" : "Copiar"}
+                              </button>
+                            )}
+                            <button
+                              onClick={handleDownloadNotes}
+                              disabled={!notes.trim()}
+                              className="px-3.5 py-1.5 rounded-lg bg-[#1890FF] hover:bg-[#0076e4] text-white border-0 cursor-pointer disabled:opacity-40 transition-all shadow-sm flex items-center gap-1.5 text-[11px] font-bold active:scale-95"
+                            >
+                              <Download className="w-3.5 h-3.5" />
+                              {t.downloadNotes}
+                            </button>
+                            <button
+                              onClick={() => { if (confirm("¿Seguro que deseas eliminar tus apuntes de esta clase?")) setNotes(""); }}
+                              disabled={!notes.trim()}
+                              className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border-0 cursor-pointer disabled:opacity-40 transition-colors"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="relative rounded-2xl bg-neutral-50 dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-850 focus-within:border-[#1890FF]/60 focus-within:ring-2 focus-within:ring-[#1890FF]/20 p-4 transition-all shadow-sm">
+                          <textarea
+                            value={notes}
+                            onChange={(e) => setNotes(e.target.value)}
+                            placeholder={t.notesPlaceholder}
+                            className="w-full min-h-[180px] bg-transparent text-xs md:text-sm text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-600 focus:outline-none leading-relaxed resize-y font-normal"
+                          />
+                          <div className="flex items-center justify-between pt-3 border-t border-neutral-150/60 dark:border-neutral-900 text-[10px] font-bold text-neutral-400 select-none">
+                            <span>
+                              {notes.trim() ? `${notes.trim().split(/\s+/).length} palabras` : "0 palabras"}
+                            </span>
+                            <div>
+                              {notesSaving ? (
+                                <span className="flex items-center gap-1 text-amber-500"><Loader2 className="w-3 h-3 animate-spin" /> {t.saving}</span>
+                              ) : notes ? (
+                                <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1"><Check className="w-3.5 h-3.5" /> {t.autoSaved}</span>
+                              ) : (
+                                <span className="text-neutral-400">{t.emptyNotes}</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Tab 4: FAQ */}
+                    {activeTab === 'faq' && (
+                      <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+                        {[
+                          { q: "¿Cómo descargo los archivos y recursos del curso?", a: "Puedes encontrar los recursos descargables directamente en la pestaña 'Archivos' o en los accesos directos al final de la descripción." },
+                          { q: "¿Tengo acceso ilimitado a las clases y ejercicios?", a: "Sí, todos los usuarios de la comunidad tienen acceso total a los videos y herramientas de práctica sin restricciones." },
+                          { q: "¿Qué hago si mi código en la Super Clase arroja un error?", a: "Asegúrate de seleccionar el lenguaje correcto en la pestaña del editor y consulta a tu Asistente de IA en el panel lateral." }
+                        ].map((item, idx) => (
+                          <div key={idx} className="bg-neutral-50 dark:bg-neutral-900/30 p-4 rounded-xl border border-neutral-200/60 dark:border-neutral-800/60">
+                            <h4 className="text-xs font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                              <HelpCircle className="w-3.5 h-3.5 text-[#1890FF] shrink-0" />
+                              {item.q}
+                            </h4>
+                            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1.5 leading-relaxed font-normal pl-5">
+                              {item.a}
+                            </p>
+                          </div>
+                        ))}
                       </motion.div>
                     )}
                   </div>
