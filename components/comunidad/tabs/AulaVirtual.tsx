@@ -1431,8 +1431,8 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                 </header>
                 
                 {/* Cinema Screen Frame for Video */}
-                <div className="flex-none w-full bg-white dark:bg-black flex justify-center items-center py-2 sm:py-4 px-2 sm:px-6">
-                  <div className="relative w-full max-w-[1120px] aspect-video bg-neutral-950 rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-neutral-800/40">
+                <div className="flex-none w-full bg-neutral-100/60 dark:bg-black flex justify-center items-center py-3 sm:py-6 px-3 sm:px-6 border-b border-neutral-200/60 dark:border-neutral-850">
+                  <div className="relative w-full max-w-[1120px] aspect-video bg-black rounded-2xl overflow-hidden shadow-lg border border-neutral-300/70 dark:border-neutral-800">
                     {isSelectedLessonLocked ? (
                       <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-950 overflow-hidden select-none p-4 sm:p-6 text-center">
                         <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-[#1890FF]/10 border border-[#1890FF]/30 flex items-center justify-center mb-3 sm:mb-4 shadow-[0_0_30px_rgba(24,144,255,0.25)]">
@@ -1470,11 +1470,11 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                   </div>
                 </div>
 
-                {/* Details & Interactive Tabs (Diseño Simplificado y Elegante) */}
+                {/* Details & Interactive Tabs */}
                 <div className="flex-1 w-full max-w-[1120px] mx-auto px-4 sm:px-6 py-6 bg-white dark:bg-black">
                   
                   {/* Title & Primary Action Header */}
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-neutral-150 dark:border-neutral-850">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-2">
                     <div className="space-y-2 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 select-none">
                         <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-neutral-100 text-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 uppercase tracking-wider">
@@ -1522,7 +1522,7 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                   </div>
 
                   {/* Clean Navigation Tabs */}
-                  <div className="flex items-center gap-6 my-6 overflow-x-auto scrollbar-hide border-b border-neutral-150 dark:border-neutral-900 select-none pb-0.5">
+                  <div className="flex items-center gap-6 my-5 overflow-x-auto scrollbar-hide border-b border-neutral-200/80 dark:border-neutral-850 select-none pb-0.5">
                     {[
                       { id: 'overview', label: t.overviewTab, icon: FileText },
                       ...(selectedLesson?.resources && Array.isArray(selectedLesson.resources) && selectedLesson.resources.length > 0
@@ -1563,48 +1563,71 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                     })}
                   </div>
 
-                  {/* Tab Content Areas (Simplificados & Minimalistas) */}
+                  {/* Tab Content Areas */}
                   <div className="text-left min-h-[260px] pt-2">
                     
                     {/* Tab 1: OVERVIEW */}
                     {activeTab === 'overview' && (
-                      <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
-                        {/* Clean Description Text */}
-                        <div className="prose dark:prose-invert max-w-none text-xs sm:text-sm text-neutral-700 dark:text-neutral-300 leading-relaxed font-normal">
-                          <MarkdownRenderer 
-                            content={selectedLesson.description || selectedLesson.content_markdown || t.aboutLessonDesc} 
-                            className="space-y-4"
-                          />
+                      <motion.div initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                        {/* Formatted Description Card */}
+                        <div className="rounded-2xl bg-neutral-50/70 dark:bg-neutral-900/30 border border-neutral-200/80 dark:border-neutral-800/80 p-5 sm:p-6 shadow-sm space-y-3">
+                          <h3 className="font-bold text-xs text-neutral-900 dark:text-white uppercase tracking-wider select-none flex items-center gap-1.5">
+                            <FileText className="w-3.5 h-3.5 text-[#1890FF]" />
+                            {t.aboutLesson}
+                          </h3>
+                          <div className="prose dark:prose-invert max-w-none text-xs sm:text-sm text-neutral-800 dark:text-neutral-200 leading-relaxed font-normal space-y-3">
+                            <MarkdownRenderer 
+                              content={selectedLesson.description || selectedLesson.content_markdown || t.aboutLessonDesc} 
+                              className="space-y-3"
+                            />
+                          </div>
                         </div>
 
-                        {/* Direct Resource Access Chips (si existen archivos) */}
+                        {/* Direct Resource Access Card */}
                         {selectedLesson.resources && Array.isArray(selectedLesson.resources) && selectedLesson.resources.length > 0 && (
-                          <div className="pt-4 border-t border-neutral-100 dark:border-neutral-900">
-                            <h4 className="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider mb-3 flex items-center gap-1.5 select-none">
+                          <div className="rounded-2xl bg-neutral-50/70 dark:bg-neutral-900/30 border border-neutral-200/80 dark:border-neutral-800/80 p-5 sm:p-6 shadow-sm space-y-3">
+                            <h4 className="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-1.5 select-none">
                               <Download className="w-3.5 h-3.5 text-[#1890FF]" /> Material Descargable de la Clase
                             </h4>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                              {selectedLesson.resources.map((res, idx) => (
-                                <a
-                                  key={idx}
-                                  href={res.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="flex items-center justify-between p-3 rounded-xl bg-neutral-50 hover:bg-neutral-100 dark:bg-neutral-900/40 dark:hover:bg-neutral-900/80 border border-neutral-200/60 dark:border-neutral-800/60 transition-all text-xs font-semibold text-neutral-800 dark:text-neutral-200 group"
-                                >
-                                  <div className="flex items-center gap-2.5 min-w-0">
-                                    <FileText className="w-4 h-4 text-[#1890FF] shrink-0" />
-                                    <span className="truncate font-bold">{res.name}</span>
-                                  </div>
-                                  <Download className="w-4 h-4 text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white shrink-0 ml-2" />
-                                </a>
-                              ))}
+                              {selectedLesson.resources.map((res, idx) => {
+                                const isPbix = res.name.endsWith('.pbix');
+                                const isExcel = res.name.endsWith('.xlsx') || res.name.endsWith('.xls') || res.name.endsWith('.csv');
+                                const isPdf = res.name.endsWith('.pdf');
+
+                                return (
+                                  <a
+                                    key={idx}
+                                    href={res.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center justify-between p-3.5 rounded-xl bg-white dark:bg-neutral-900 hover:bg-neutral-100 dark:hover:bg-neutral-850 border border-neutral-200/80 dark:border-neutral-800 transition-all text-xs font-semibold text-neutral-800 dark:text-neutral-200 shadow-sm group"
+                                  >
+                                    <div className="flex items-center gap-3 min-w-0">
+                                      <div className={cn(
+                                        "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm font-bold text-[10px]",
+                                        isPbix ? "bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400" :
+                                        isExcel ? "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400" :
+                                        isPdf ? "bg-rose-500/10 text-rose-600 dark:bg-rose-500/20 dark:text-rose-400" :
+                                        "bg-[#1890FF]/10 text-[#1890FF]"
+                                      )}>
+                                        <FileText className="w-4 h-4" />
+                                      </div>
+                                      <div className="min-w-0">
+                                        <span className="truncate font-bold text-neutral-900 dark:text-white block">{res.name}</span>
+                                        <span className="text-[10px] text-neutral-400 font-normal block">Haz clic para descargar</span>
+                                      </div>
+                                    </div>
+                                    <Download className="w-4 h-4 text-neutral-400 group-hover:text-neutral-900 dark:group-hover:text-white shrink-0 ml-2" />
+                                  </a>
+                                );
+                              })}
                             </div>
                           </div>
                         )}
 
                         {/* Minimalist Instructor Line */}
-                        <div className="pt-6 border-t border-neutral-100 dark:border-neutral-900 flex items-center gap-3 select-none">
+                        <div className="pt-2 flex items-center gap-3 select-none">
                           <div className="w-8 h-8 rounded-full bg-neutral-900 text-white dark:bg-white dark:text-black font-bold text-[11px] flex items-center justify-center shrink-0">
                             MO
                           </div>
