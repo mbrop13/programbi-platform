@@ -386,47 +386,49 @@ export default function ComunidadPortal() {
             )}
           </main>
 
-          {/* ─── MOBILE BOTTOM NAVIGATION BAR ─── */}
+          {/* ─── MOBILE FLOATING OVAL NAVIGATION BAR ─── */}
           {(activeTab !== "ai" && !(activeTab === "cursos" && selectedCourseId)) && (
-            <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface/90 backdrop-blur-lg border-t border-border flex items-center justify-around py-2 px-1 shadow-lg transition-colors duration-200">
-              {[
-                { id: "inicio", label: language === 'en' ? "Feed" : "Inicio", icon: LayoutDashboard },
-                { id: "cursos", label: language === 'en' ? "Courses" : "Cursos", icon: GraduationCap },
-                { id: "live", label: language === 'en' ? "Live" : "En Vivo", icon: Radio, showPing: true },
-                { id: "ai", label: "IA", icon: Sparkles, color: "text-[#1890FF]" },
-                { id: "practicar", label: language === 'en' ? "Practice" : "Práctica", icon: Target },
-              ].map((item) => {
-                const Icon = item.icon;
-                const isActive = activeTab === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleTabChange(item.id)}
-                    className={cn(
-                      "flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all duration-150 border-none bg-transparent cursor-pointer relative min-w-[54px]",
-                      isActive ? "text-text font-bold" : "text-text-muted hover:text-text"
-                    )}
-                  >
-                    <span className="relative flex items-center justify-center mb-1">
-                      <Icon className={cn("w-5 h-5 transition-transform", isActive && "scale-110 text-accent", item.color && !isActive && item.color)} />
-                      {item.showPing && (
-                        <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+            <div className="lg:hidden fixed bottom-4 left-4 right-4 z-40 max-w-md mx-auto pointer-events-auto">
+              <nav className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl border border-neutral-200/90 dark:border-neutral-800 rounded-full px-2 py-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.15)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.6)] flex items-center justify-around transition-all duration-200">
+                {[
+                  { id: "inicio", label: language === 'en' ? "Feed" : "Inicio", icon: LayoutDashboard },
+                  { id: "cursos", label: language === 'en' ? "Courses" : "Cursos", icon: GraduationCap },
+                  { id: "live", label: language === 'en' ? "Live" : "En Vivo", icon: Radio, showPing: true },
+                  { id: "ai", label: "IA", icon: Sparkles, color: "text-[#1890FF]" },
+                  { id: "practicar", label: language === 'en' ? "Practice" : "Práctica", icon: Target },
+                ].map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleTabChange(item.id)}
+                      className={cn(
+                        "flex flex-col items-center justify-center py-1 px-3 rounded-full transition-all duration-200 border-none bg-transparent cursor-pointer relative min-w-[50px]",
+                        isActive ? "text-neutral-950 dark:text-white font-bold" : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200"
                       )}
-                    </span>
-                    <span className="text-[10px] leading-none tracking-tight">
-                      {item.label}
-                    </span>
-                    {isActive && (
-                      <motion.div
-                        layoutId="activeBottomTab"
-                        className="absolute -bottom-1 w-6 h-0.5 bg-accent rounded-full"
-                        transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </nav>
+                    >
+                      <span className="relative flex items-center justify-center mb-0.5">
+                        <Icon className={cn("w-4.5 h-4.5 transition-transform duration-200", isActive && "scale-110 text-[#1890FF]", item.color && !isActive && item.color)} />
+                        {item.showPing && (
+                          <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+                        )}
+                      </span>
+                      <span className="text-[9.5px] font-medium leading-none tracking-tight">
+                        {item.label}
+                      </span>
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeBottomTab"
+                          className="absolute -bottom-0.5 w-5 h-0.5 bg-[#1890FF] rounded-full"
+                          transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
           )}
         </div>
 

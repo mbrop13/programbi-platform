@@ -587,17 +587,12 @@ function StandaloneCourseCard({ curso, onSelectCourse, onBuyCourse, buyingCourse
 
           {/* Badges */}
           <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 flex-wrap">
-            {curso.has_free_preview && (
-              <span className="bg-emerald-500 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-lg animate-pulse">
-                <Sparkles className="w-2.5 h-2.5" /> {translations.containsFreeLesson}
-              </span>
-            )}
-            {isTrial && !curso.has_free_preview && (
+            {isTrial && (
               <span className="bg-amber-500 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-md">
                 <Eye className="w-2.5 h-2.5" /> {translations.courseTrial}
               </span>
             )}
-            {isFree && !curso.has_free_preview && (
+            {isFree && (
               <span className="bg-emerald-500 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-md">
                 <Eye className="w-2.5 h-2.5" /> {translations.courseFree}
               </span>
@@ -607,7 +602,7 @@ function StandaloneCourseCard({ curso, onSelectCourse, onBuyCourse, buyingCourse
                 <CheckCircle className="w-2.5 h-2.5" /> {translations.courseActive.toUpperCase()}
               </span>
             )}
-            {curso.badge_label && !isTrial && !isFree && !curso.has_free_preview && (
+            {curso.badge_label && !isTrial && !isFree && (
               <span className="text-[9px] font-bold px-2.5 py-0.5 rounded-full shadow-md text-white"
                 style={{ backgroundColor: curso.badge_color || '#1890FF' }}>
                 {curso.badge_label}
