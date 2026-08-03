@@ -92,6 +92,7 @@ interface TranslationDict {
   lockedSubtitle: string;
   preparationText: string;
   turnText: string;
+  containsFreeLesson: string;
 }
 
 const tc: Record<'es' | 'en', TranslationDict> = {
@@ -119,7 +120,8 @@ const tc: Record<'es' | 'en', TranslationDict> = {
     loadingText: "Cargando catálogo...",
     lockedSubtitle: "Solicita acceso al administrador",
     preparationText: "Las clases llegarán pronto",
-    turnText: "Se desbloqueará en tu turno"
+    turnText: "Se desbloqueará en tu turno",
+    containsFreeLesson: "Incluye clase gratis"
   },
   en: {
     title: "My Learning",
@@ -143,9 +145,10 @@ const tc: Record<'es' | 'en', TranslationDict> = {
     emptyBtn: "View catalog",
     recentNew: "New",
     loadingText: "Loading catalog...",
-    lockedSubtitle: "Request access from the administrator",
-    preparationText: "Classes coming soon",
-    turnText: "Will unlock in your turn"
+    lockedSubtitle: "Request access from admin",
+    preparationText: "Lessons coming soon",
+    turnText: "Will unlock on your turn",
+    containsFreeLesson: "Free lesson inside"
   }
 };
 
@@ -583,13 +586,18 @@ function StandaloneCourseCard({ curso, onSelectCourse, onBuyCourse, buyingCourse
           />
 
           {/* Badges */}
-          <div className="absolute top-3 left-3 z-20 flex items-center gap-2">
-            {isTrial && (
+          <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 flex-wrap">
+            {curso.has_free_preview && (
+              <span className="bg-emerald-500 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-lg animate-pulse">
+                <Sparkles className="w-2.5 h-2.5" /> {translations.containsFreeLesson}
+              </span>
+            )}
+            {isTrial && !curso.has_free_preview && (
               <span className="bg-amber-500 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-md">
                 <Eye className="w-2.5 h-2.5" /> {translations.courseTrial}
               </span>
             )}
-            {isFree && (
+            {isFree && !curso.has_free_preview && (
               <span className="bg-emerald-500 text-white text-[9px] font-bold px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-md">
                 <Eye className="w-2.5 h-2.5" /> {translations.courseFree}
               </span>
@@ -599,7 +607,7 @@ function StandaloneCourseCard({ curso, onSelectCourse, onBuyCourse, buyingCourse
                 <CheckCircle className="w-2.5 h-2.5" /> {translations.courseActive.toUpperCase()}
               </span>
             )}
-            {curso.badge_label && !isTrial && !isFree && (
+            {curso.badge_label && !isTrial && !isFree && !curso.has_free_preview && (
               <span className="text-[9px] font-bold px-2.5 py-0.5 rounded-full shadow-md text-white"
                 style={{ backgroundColor: curso.badge_color || '#1890FF' }}>
                 {curso.badge_label}
@@ -618,6 +626,15 @@ function StandaloneCourseCard({ curso, onSelectCourse, onBuyCourse, buyingCourse
 
        {/* Info */}
        <div className="p-5 flex flex-col flex-1">
+          {curso.has_free_preview && (
+            <div className="mb-2.5 select-none">
+              <span className="text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-md flex items-center gap-1.5 w-fit border border-emerald-500/20">
+                <Sparkles className="w-3 h-3 text-emerald-500 shrink-0" />
+                {translations.containsFreeLesson}
+              </span>
+            </div>
+          )}
+
           {curso.tech_stack && curso.tech_stack.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-3 select-none">
               {curso.tech_stack.map((tech: string, i: number) => (

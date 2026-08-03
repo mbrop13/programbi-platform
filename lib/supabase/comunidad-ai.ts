@@ -607,18 +607,26 @@ export async function getAllPublishedCourses() {
     return [];
   }
 
-  // Filtrar solo cursos que tengan al menos 1 lección creada desde el panel de admin
+  // Obtener lecciones para contar y detectar si tienen clase gratuita activada desde admin
   const { data: lessons } = await supabase
     .from("lessons")
-    .select("course_id")
+    .select("course_id, is_free_preview")
     .in("course_id", courses.map(c => c.id));
 
-  const lessonCounts: Record<string, number> = {};
+  const lessonStats: Record<string, { count: number; hasFreePreview: boolean }> = {};
   (lessons || []).forEach((l: any) => {
-    lessonCounts[l.course_id] = (lessonCounts[l.course_id] || 0) + 1;
+    if (!lessonStats[l.course_id]) lessonStats[l.course_id] = { count: 0, hasFreePreview: false };
+    lessonStats[l.course_id].count++;
+    if (l.is_free_preview === true) lessonStats[l.course_id].hasFreePreview = true;
   });
 
-  return courses.filter((c: any) => (lessonCounts[c.id] || 0) > 0);
+  return courses
+    .filter((c: any) => (lessonStats[c.id]?.count || 0) > 0)
+    .map((c: any) => ({
+      ...c,
+      lesson_count: lessonStats[c.id]?.count || 0,
+      has_free_preview: lessonStats[c.id]?.hasFreePreview || false,
+    }));
 }
 
 export async function getMyEnrollments() {
