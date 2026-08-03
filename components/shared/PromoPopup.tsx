@@ -347,7 +347,7 @@ export default function PromoPopup() {
 
             {/* Main card */}
             <div
-              className="relative overflow-hidden rounded-[1.75rem] border border-white/[0.08]"
+              className="relative overflow-hidden rounded-2xl border border-white/[0.08]"
               style={{
                 background: "linear-gradient(160deg, #0c1220 0%, #111827 40%, #0f172a 100%)",
               }}
@@ -355,22 +355,17 @@ export default function PromoPopup() {
               <FloatingOrbs color={color} />
               <Sparkles color={color} />
 
-              {/* Top accent line */}
-              <div className="absolute top-0 left-0 right-0 h-[2px]"
-                style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
-              />
-
               {/* Content */}
-              <div className="relative z-10 p-8">
+              <div className="relative z-10 p-5 sm:p-6">
                 {/* Close button */}
                 {visiblePopup.dismissible && (
                   <motion.button
                     onClick={handleDismiss}
-                    className="absolute top-5 right-5 p-2 rounded-full bg-white/[0.05] hover:bg-white/[0.12] border border-white/[0.06] transition-all duration-300 cursor-pointer group"
+                    className="absolute top-4 right-4 p-1.5 rounded-full bg-white/[0.05] hover:bg-white/[0.12] border border-white/[0.06] transition-all duration-300 cursor-pointer group"
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
                   >
-                    <X className="w-4 h-4 text-white/40 group-hover:text-white/80 transition-colors" />
+                    <X className="w-3.5 h-3.5 text-white/50 group-hover:text-white transition-colors" />
                   </motion.button>
                 )}
 
@@ -380,14 +375,14 @@ export default function PromoPopup() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
-                    className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] mb-5"
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.15em] mb-2.5"
                     style={{
                       background: `linear-gradient(135deg, ${color}20, ${color}10)`,
                       border: `1px solid ${color}30`,
                       color: color,
                     }}
                   >
-                    <Zap className="w-3 h-3" />
+                    <Zap className="w-2.5 h-2.5" />
                     {visiblePopup.badge_text}
                   </motion.div>
                 )}
@@ -397,7 +392,7 @@ export default function PromoPopup() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="text-2xl sm:text-3xl font-black text-white leading-tight tracking-tight pr-8"
+                  className="text-base sm:text-lg font-bold text-white leading-snug tracking-tight pr-6"
                 >
                   {visiblePopup.title}
                 </motion.h2>
@@ -407,7 +402,7 @@ export default function PromoPopup() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="mt-3 text-[15px] font-medium text-white/50 leading-relaxed max-w-md"
+                  className="mt-2 text-xs text-white/60 leading-relaxed"
                 >
                   {cleanDescription}
                 </motion.p>
@@ -418,16 +413,16 @@ export default function PromoPopup() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}
-                    className="mt-6 p-5 rounded-2xl border border-white/[0.06]"
+                    className="mt-4 p-4 rounded-xl border border-white/[0.06]"
                     style={{ background: `linear-gradient(135deg, ${color}08, transparent)` }}
                   >
-                    <div className="text-[11px] font-bold text-white/30 uppercase tracking-[0.15em] mb-2">
+                    <div className="text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] mb-1.5">
                       Precio promocional
                     </div>
                     <PriceDisplay oldPrice={oldPrice} newPrice={newPrice} color={color} />
-                    <div className="flex items-center gap-2 mt-3 text-white/30">
-                      <Clock className="w-3.5 h-3.5 animate-pulse" />
-                      <span className="text-[11px] font-bold uppercase tracking-wider">
+                    <div className="flex items-center gap-2 mt-2 text-white/30">
+                      <Clock className="w-3 h-3 animate-pulse" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider">
                         Oferta por tiempo limitado
                       </span>
                     </div>
@@ -440,45 +435,45 @@ export default function PromoPopup() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.6 }}
-                    className="mt-5 rounded-xl overflow-hidden border border-white/[0.06]"
+                    className="mt-4 rounded-xl overflow-hidden border border-white/[0.06]"
                   >
                     <img
                       src={visiblePopup.image_url}
                       alt="promo"
-                      className="w-full h-40 object-cover"
+                      className="w-full h-32 object-cover"
                     />
                   </motion.div>
                 )}
 
                 {/* Feature pills */}
-                {isDiscount ? <FeaturePills /> : <FreeClassesFeaturePills />}
+                {isDiscount && <FeaturePills />}
 
                 {/* CTA Button */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.5 }}
-                  className="mt-7 flex flex-col sm:flex-row items-start sm:items-center gap-4"
+                  transition={{ delay: 0.5 }}
+                  className="mt-4 flex items-center gap-3 flex-wrap"
                 >
                   <a
                     href={visiblePopup.cta_url}
                     onClick={handleDismiss}
-                    className="group relative inline-flex items-center gap-3 px-8 py-4 rounded-2xl text-white font-bold text-[15px] no-underline overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                    className="group relative inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-white font-bold text-xs no-underline overflow-hidden transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
                     style={{
                       background: `linear-gradient(135deg, ${color}, ${color}cc)`,
-                      boxShadow: `0 8px 32px ${color}40, 0 0 0 1px ${color}20 inset`,
+                      boxShadow: `0 4px 16px ${color}30, 0 0 0 1px ${color}20 inset`,
                     }}
                   >
                     {/* Shine effect on hover */}
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
                     <span className="relative z-10">{visiblePopup.cta_text || "Ver Oferta"}</span>
-                    <ArrowRight className="relative z-10 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="relative z-10 w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
                   </a>
 
                   {visiblePopup.dismissible && (
                     <button
                       onClick={handleDismiss}
-                      className="text-white/30 hover:text-white/60 text-sm font-medium transition-colors cursor-pointer"
+                      className="text-white/40 hover:text-white/70 text-xs font-medium transition-colors cursor-pointer"
                     >
                       Ahora no, gracias
                     </button>
