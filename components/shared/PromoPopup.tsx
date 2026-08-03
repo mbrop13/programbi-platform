@@ -172,6 +172,48 @@ function FeaturePills() {
   );
 }
 
+const DEFAULT_FREE_CLASSES_POPUP: PromoPopupData = {
+  id: "free_3_classes_invite",
+  title: "¡Prueba 3 Clases Gratis en la Comunidad!",
+  description: "Accede de inmediato a lecciones completas de Power BI, Python y SQL Server. Aprende a construir dashboards profesionales y consultar bases de datos desde cero sin costo ni compromisos.",
+  cta_text: "Empezar Mis Clases Gratis",
+  cta_url: "/comunidad/cursos",
+  badge_text: "🎉 ACCESO GRATUITO",
+  popup_type: "promo",
+  accent_color: "#1890FF",
+  image_url: null,
+  display_delay_seconds: 3,
+  dismissible: true,
+  show_once_per_session: true,
+  show_to: "all",
+  custom_html: null
+};
+
+function FreeClassesFeaturePills() {
+  const features = [
+    { label: "📊 Power BI desde cero" },
+    { label: "🐍 Python para Datos" },
+    { label: "🛢️ SQL Server" },
+    { label: "✨ Acceso Inmediato" },
+  ];
+
+  return (
+    <div className="flex flex-wrap gap-2 mt-4">
+      {features.map((f, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 + i * 0.1 }}
+          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.07] border border-white/[0.1] text-white/80 text-[11px] sm:text-[12px] font-bold backdrop-blur-sm shadow-sm"
+        >
+          {f.label}
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 /* ─── Main Popup ───────────────────────────────────────────────── */
 export default function PromoPopup() {
   const [popups, setPopups] = useState<PromoPopupData[]>([]);
@@ -200,9 +242,22 @@ export default function PromoPopup() {
           return true;
         });
 
-        setPopups(sessionFiltered);
+        if (sessionFiltered.length === 0) {
+          const dismissedDefault = sessionStorage.getItem(`popup_dismissed_${DEFAULT_FREE_CLASSES_POPUP.id}`);
+          if (!dismissedDefault) {
+            setPopups([DEFAULT_FREE_CLASSES_POPUP]);
+          } else {
+            setPopups([]);
+          }
+        } else {
+          setPopups(sessionFiltered);
+        }
       } catch (err) {
         console.error("Error loading popups:", err);
+        const dismissedDefault = sessionStorage.getItem(`popup_dismissed_${DEFAULT_FREE_CLASSES_POPUP.id}`);
+        if (!dismissedDefault) {
+          setPopups([DEFAULT_FREE_CLASSES_POPUP]);
+        }
       }
     }
     loadPopups();
@@ -259,28 +314,13 @@ export default function PromoPopup() {
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          className="fixed bottom-5 left-5 z-[9999] w-[calc(100%-2.5rem)] sm:w-[400px] pointer-events-auto"
+          initial={{ opacity: 0, x: -30, y: 30, scale: 0.95 }}
+          animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+          exit={{ opacity: 0, x: -30, y: 30, scale: 0.95 }}
+          transition={{ type: "spring", damping: 25, stiffness: 350 }}
         >
-          {/* Backdrop */}
-          <motion.div
-            className="absolute inset-0 bg-black/60 backdrop-blur-md"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={visiblePopup.dismissible ? handleDismiss : undefined}
-          />
-
-          {/* Card */}
-          <motion.div
-            className="relative w-full max-w-lg"
-            initial={{ opacity: 0, scale: 0.8, y: 40 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          >
+          {/* Custom HTML Mode */}
             {/* Custom HTML Mode */}
             {visiblePopup.custom_html ? (
               <div className="relative">
@@ -411,7 +451,7 @@ export default function PromoPopup() {
                 )}
 
                 {/* Feature pills */}
-                {isDiscount && <FeaturePills />}
+                {isDiscount ? <FeaturePills /> : <FreeClassesFeaturePills />}
 
                 {/* CTA Button */}
                 <motion.div
@@ -456,7 +496,6 @@ export default function PromoPopup() {
             </div>
             </>
             )}
-          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>

@@ -20,17 +20,17 @@ export async function GET(req: NextRequest) {
       .single();
 
     if (!profile || !profile.is_on_trial) {
-      return NextResponse.redirect(new URL("/comunidad/mis-cursos", req.url));
+      return NextResponse.redirect(new URL("/comunidad/cursos", req.url));
     }
 
     const basePlanId = profile.subscription_plan;
     if (!basePlanId) {
-      return NextResponse.redirect(new URL("/comunidad/mis-cursos", req.url));
+      return NextResponse.redirect(new URL("/comunidad/cursos", req.url));
     }
 
     const planInfo = communityPlans.find(p => p.id === basePlanId);
     if (!planInfo) {
-      return NextResponse.redirect(new URL("/comunidad/mis-cursos", req.url));
+      return NextResponse.redirect(new URL("/comunidad/cursos", req.url));
     }
 
     // Cancel old trial subscription directly in MP to prevent double charging
