@@ -897,14 +897,30 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
                         </span>
                       </div>
                       
-                      <div className="flex items-center gap-3 bg-neutral-55 dark:bg-neutral-900/60 border border-neutral-200/40 dark:border-neutral-800/40 rounded-2xl px-3.5 py-1.5 shadow-sm">
-                        <div className="text-right leading-none hidden md:block">
-                          <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider block">{t.progress}</span>
-                          <span className="text-[10px] font-bold text-neutral-900 dark:text-white mt-0.5 block">{completedLessons.size} de {totalLessons} {t.lessonsCount}</span>
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="flex items-center gap-2 sm:gap-3 bg-neutral-55 dark:bg-neutral-900/60 border border-neutral-200/40 dark:border-neutral-800/40 rounded-2xl px-2.5 sm:px-3.5 py-1 sm:py-1.5 shadow-sm">
+                          <div className="text-right leading-none hidden md:block">
+                            <span className="text-[9px] text-neutral-400 font-bold uppercase tracking-wider block">{t.progress}</span>
+                            <span className="text-[10px] font-bold text-neutral-900 dark:text-white mt-0.5 block">{completedLessons.size} de {totalLessons} {t.lessonsCount}</span>
+                          </div>
+                          <div className="bg-neutral-900 text-white dark:bg-white dark:text-black text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
+                            {progress}%
+                          </div>
                         </div>
-                        <div className="bg-neutral-900 text-white dark:bg-white dark:text-black text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
-                          {progress}%
-                        </div>
+
+                        <button
+                          onClick={() => setSidebarOpen((open) => !open)}
+                          className={cn(
+                            "h-8 sm:h-9 px-2.5 sm:px-3 flex items-center gap-1.5 rounded-xl transition-all cursor-pointer border-0 text-xs font-bold shrink-0",
+                            sidebarOpen 
+                              ? "bg-neutral-900 text-white dark:bg-white dark:text-black" 
+                              : "bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
+                          )}
+                          title={t.courseContent}
+                        >
+                          <BookOpen className="w-4 h-4 text-[#1890FF]" />
+                          <span className="hidden sm:inline">{t.courseContent}</span>
+                        </button>
                       </div>
                     </header>
 

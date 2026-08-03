@@ -202,15 +202,21 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
         className="relative bg-white dark:bg-zinc-950 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.12)] w-full max-w-4xl overflow-hidden flex flex-col md:flex-row max-h-[85vh] border border-neutral-100 dark:border-zinc-800/80"
       >
         {/* ─── COLUMNA IZQUIERDA (Sidebar de Navegación) ─── */}
-        <div className="w-full md:w-[240px] bg-neutral-50/50 dark:bg-zinc-900 border-r border-neutral-100 dark:border-zinc-800 p-5 shrink-0 flex flex-col justify-between">
+        <div className="w-full md:w-[240px] bg-neutral-50/50 dark:bg-zinc-900 border-b md:border-b-0 md:border-r border-neutral-100 dark:border-zinc-800 p-4 md:p-5 shrink-0 flex flex-col justify-between">
           <div>
             {/* Título de la barra */}
-            <div className="mb-6 px-1">
-              <h3 className="font-display font-black text-slate-900 dark:text-white text-lg tracking-tight">{st.settings}</h3>
+            <div className="mb-3 md:mb-6 px-1 flex items-center justify-between">
+              <h3 className="font-display font-black text-slate-900 dark:text-white text-base md:text-lg tracking-tight">{st.settings}</h3>
+              <button 
+                onClick={onClose} 
+                className="md:hidden w-7 h-7 flex items-center justify-center rounded-full hover:bg-neutral-200/60 dark:hover:bg-zinc-800 text-slate-500 dark:text-zinc-400 transition-colors border-0 bg-transparent cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
-            {/* Pestañas de Navegación */}
-            <div className="flex flex-col gap-1.5">
+            {/* Pestañas de Navegación: Horizontal scroll en móvil, Vertical en desktop */}
+            <div className="flex flex-row md:flex-col gap-1.5 overflow-x-auto scrollbar-hide pb-1 md:pb-0 select-none">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeTab === tab.id;
@@ -219,13 +225,13 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
                     className={cn(
-                      "w-full text-left px-3.5 py-2.5 rounded-xl transition-all text-[13px] flex items-center gap-3 cursor-pointer border-0 font-medium select-none",
+                      "whitespace-nowrap text-left px-3.5 py-2 md:py-2.5 rounded-xl transition-all text-[12px] md:text-[13px] flex items-center gap-2 cursor-pointer border-0 font-medium select-none shrink-0",
                       isActive
-                        ? "bg-neutral-100 dark:bg-zinc-800 text-slate-900 dark:text-white"
-                        : "text-slate-500 dark:text-zinc-400 bg-transparent hover:bg-neutral-100/50 dark:hover:bg-zinc-800/40 hover:text-slate-900 dark:hover:text-white"
+                        ? "bg-neutral-900 text-white dark:bg-zinc-100 dark:text-zinc-950 font-bold shadow-sm"
+                        : "text-slate-600 dark:text-zinc-400 bg-white/60 dark:bg-zinc-800/40 hover:bg-neutral-100 dark:hover:bg-zinc-800 hover:text-slate-900 dark:hover:text-white"
                     )}
                   >
-                    <Icon className={cn("w-4.5 h-4.5 shrink-0", isActive ? "text-slate-800 dark:text-white" : "text-slate-400 dark:text-zinc-500")} />
+                    <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-white dark:text-zinc-950" : "text-slate-400 dark:text-zinc-500")} />
                     <span>{tab.label}</span>
                   </button>
                 );
@@ -234,14 +240,14 @@ export default function SettingsModal({ onClose, userProfile, onUpgradeClick, la
           </div>
 
           {/* Tarjeta del usuario en el footer del sidebar */}
-          <div className="pt-4 border-t border-neutral-100 mt-8 hidden md:block">
+          <div className="pt-4 border-t border-neutral-100 dark:border-zinc-800/80 mt-8 hidden md:block">
             <div className="flex items-center gap-3 px-1.5">
-              <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-xs shrink-0 select-none">
+              <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-zinc-800 text-indigo-700 dark:text-zinc-200 flex items-center justify-center font-bold text-xs shrink-0 select-none">
                 {initials}
               </div>
               <div className="min-w-0">
-                <div className="font-semibold text-xs text-slate-800 truncate leading-snug">{userProfile?.full_name || "Usuario"}</div>
-                <div className="text-[10px] text-slate-400 truncate leading-none mt-0.5">{userProfile?.email}</div>
+                <div className="font-semibold text-xs text-slate-800 dark:text-zinc-200 truncate leading-snug">{userProfile?.full_name || "Usuario"}</div>
+                <div className="text-[10px] text-slate-400 dark:text-zinc-500 truncate leading-none mt-0.5">{userProfile?.email}</div>
               </div>
             </div>
           </div>

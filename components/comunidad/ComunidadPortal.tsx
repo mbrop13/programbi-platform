@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lock, Menu, Loader2, LayoutDashboard, GraduationCap, Radio, Sparkles, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase/client";
 
 import Sidebar from "./Sidebar";
 import { ToastProvider } from "./ui/Toast";
@@ -185,15 +186,46 @@ export default function ComunidadPortal() {
     }
   }, [authLoading, isCheckingPlan, userProfile, router]);
 
+  const [hasActiveLive, setHasActiveLive] = useState(false);
+  const [showAiToast, setShowAiToast] = useState(false);
+
+  // Check if a live session is currently active or starting within 60 minutes
+  useEffect(() => {
+    const checkLives = async () => {
+      try {
+        const supabase = createClient();
+        const now = new Date();
+        const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000).toISOString();
+        const { data } = await supabase
+          .from("live_classes")
+          .select("id, status, scheduled_at")
+          .or(`status.eq.active,and(status.eq.scheduled,scheduled_at.lte.${oneHourFromNow})`)
+          .limit(1);
+
+        if (data && data.length > 0) {
+          setHasActiveLive(true);
+        } else {
+          setHasActiveLive(false);
+        }
+      } catch {
+        setHasActiveLive(false);
+      }
+    };
+    checkLives();
+    const interval = setInterval(checkLives, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
   const restrictedView = !canAccessFull && hasCourses && activeTab !== "cursos";
 
   const handleTabChange = (tabId: string) => {
-    handleSelectCourse(null);
     if (tabId === "ai") {
-      router.push("/ai");
-    } else {
-      router.push(`/comunidad/${tabId}`);
+      setShowAiToast(true);
+      setTimeout(() => setShowAiToast(false), 3500);
+      return;
     }
+    handleSelectCourse(null);
+    router.push(`/comunidad/${tabId}`);
   };
 
   return (
@@ -386,15 +418,15 @@ export default function ComunidadPortal() {
             )}
           </main>
 
-          {/* ─── MOBILE FLOATING OVAL NAVIGATION BAR ─── */}
+          {/* ─── MOBILE FLOATING LIQUID GLASS OVAL NAVIGATION BAR ─── */}
           {(activeTab !== "ai" && !(activeTab === "cursos" && selectedCourseId)) && (
-            <div className="lg:hidden fixed bottom-4 left-4 right-4 z-40 max-w-md mx-auto pointer-events-auto">
-              <nav className="bg-white/90 dark:bg-neutral-900/90 backdrop-blur-xl border border-neutral-200/90 dark:border-neutral-800 rounded-full px-2 py-1.5 shadow-[0_12px_36px_rgba(0,0,0,0.15)] dark:shadow-[0_12px_36px_rgba(0,0,0,0.6)] flex items-center justify-around transition-all duration-200">
+            <div className="lg:hidden fixed bottom-5 left-4 right-4 z-40 max-w-md mx-auto pointer-events-auto select-none">
+              <nav className="bg-white/75 dark:bg-neutral-900/80 backdrop-blur-2xl backdrop-saturate-150 border border-white/60 dark:border-white/10 rounded-full px-3 py-2.5 shadow-[0_16px_40px_rgba(0,0,0,0.16),0_2px_8px_rgba(255,255,255,0.4)_inset] dark:shadow-[0_16px_40px_rgba(0,0,0,0.7),0_1px_0_rgba(255,255,255,0.1)_inset] flex items-center justify-around transition-all duration-300">
                 {[
                   { id: "inicio", label: language === 'en' ? "Feed" : "Inicio", icon: LayoutDashboard },
                   { id: "cursos", label: language === 'en' ? "Courses" : "Cursos", icon: GraduationCap },
-                  { id: "live", label: language === 'en' ? "Live" : "En Vivo", icon: Radio, showPing: true },
-                  { id: "ai", label: "IA", icon: Sparkles, color: "text-[#1890FF]" },
+                  { id: "live", label: language === 'en' ? "Live" : "En Vivo", icon: Radio, showPing: hasActiveLive },
+                  { id: "ai", label: "IA", icon: Sparkles },
                   { id: "practicar", label: language === 'en' ? "Practice" : "Práctica", icon: Target },
                 ].map((item) => {
                   const Icon = item.icon;
@@ -404,23 +436,23 @@ export default function ComunidadPortal() {
                       key={item.id}
                       onClick={() => handleTabChange(item.id)}
                       className={cn(
-                        "flex flex-col items-center justify-center py-1 px-3 rounded-full transition-all duration-200 border-none bg-transparent cursor-pointer relative min-w-[50px]",
-                        isActive ? "text-neutral-950 dark:text-white font-bold" : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200"
+                        "flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all duration-200 border-none bg-transparent cursor-pointer relative min-w-[54px]",
+                        isActive ? "text-neutral-950 dark:text-white font-bold" : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-200 font-medium"
                       )}
                     >
-                      <span className="relative flex items-center justify-center mb-0.5">
-                        <Icon className={cn("w-4.5 h-4.5 transition-transform duration-200", isActive && "scale-110 text-[#1890FF]", item.color && !isActive && item.color)} />
+                      <span className="relative flex items-center justify-center mb-1">
+                        <Icon className={cn("w-5 h-5 transition-transform duration-200", isActive && "scale-110 text-[#1890FF]")} />
                         {item.showPing && (
-                          <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
+                          <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5 rounded-full bg-rose-500 animate-pulse shadow-sm" />
                         )}
                       </span>
-                      <span className="text-[9.5px] font-medium leading-none tracking-tight">
+                      <span className="text-[10px] leading-none tracking-tight">
                         {item.label}
                       </span>
                       {isActive && (
                         <motion.div
                           layoutId="activeBottomTab"
-                          className="absolute -bottom-0.5 w-5 h-0.5 bg-[#1890FF] rounded-full"
+                          className="absolute -bottom-1 w-5 h-0.5 bg-[#1890FF] rounded-full"
                           transition={{ type: "spring", stiffness: 400, damping: 30 }}
                         />
                       )}
@@ -430,6 +462,21 @@ export default function ComunidadPortal() {
               </nav>
             </div>
           )}
+
+          {/* Toast Notification for AI coming soon */}
+          <AnimatePresence>
+            {showAiToast && (
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.95 }}
+                className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 bg-neutral-900/95 text-white px-5 py-3 rounded-2xl shadow-2xl border border-neutral-800 flex items-center gap-2.5 text-xs font-bold backdrop-blur-xl"
+              >
+                <Sparkles className="w-4 h-4 text-[#1890FF] shrink-0" />
+                <span>{language === 'en' ? "✨ AI Assistant update coming soon! We are improving the AI features." : "✨ Asistente IA en optimización: Estamos preparando nuevas funciones para lanzarlo muy pronto."}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* ─── MODALS ─── */}
