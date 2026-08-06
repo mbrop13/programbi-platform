@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Users, Building, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers, adminUpdateUserSubscription } from "@/lib/supabase/comunidad";
-import { adminGetCourses, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminUpdateLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminDeleteUser, adminBulkDeleteUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminDeleteLead, adminBulkDeleteLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon, adminGetCertificates, adminAddCertificate, adminImportCertificates, adminDeleteCertificate, adminUploadCourseResource } from "@/lib/supabase/comunidad-ai";
+import { adminGetCourses, adminCreateCourse, adminUpdateCourseDescription, adminUpdateCourseShortDescription, adminGetLessons, adminAddLesson, adminUpdateLesson, adminTogglePublish, adminToggleHidden, adminDeleteLesson, adminToggleFreePreview, adminGetAllUsers, adminDeleteUser, adminBulkDeleteUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminGetCourseEnrollments, adminBulkEnrollByEmails, adminBulkRemoveCourseEnrollments, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminDeleteLead, adminBulkDeleteLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon, adminGetCertificates, adminAddCertificate, adminImportCertificates, adminDeleteCertificate, adminUploadCourseResource } from "@/lib/supabase/comunidad-ai";
 import { Calendar, Radio, Film, Clock } from "lucide-react";
 import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
@@ -96,7 +96,7 @@ export default function AdminPanel() {
     { id: "chatbot", label: "Chatbot IA", icon: Sparkles },
     { id: "prices", label: "Precios y Promos", icon: DollarSign },
     { id: "cart", label: "Carritos", icon: ShoppingCart },
-    { id: "courses", label: "Cursos", icon: GraduationCap },
+    { id: "courses", label: "Cursos / Campus", icon: GraduationCap },
     { id: "asesorias", label: "Asesorías", icon: Video, badgeCount: unreadAsesoriasCount },
     { id: "live_admin", label: "Clases En Vivo", icon: Radio },
     { id: "schedules", label: "Horarios", icon: Calendar },
@@ -1911,10 +1911,21 @@ function AdminMembers() {
 }
 
 // ─── COURSES ───
+function slugifyCourseTitle(title: string) {
+  return title
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
 function AdminCourses() {
   const [courses, setCourses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [courseViewTab, setCourseViewTab] = useState<"lessons" | "access">("lessons");
   const [lessons, setLessons] = useState<any[]>([]);
   const [loadingLessons, setLoadingLessons] = useState(false);
   const [showAddLesson, setShowAddLesson] = useState(false);
@@ -1929,26 +1940,197 @@ function AdminCourses() {
   const [editShortDescription, setEditShortDescription] = useState("");
   const [savingShortDescription, setSavingShortDescription] = useState(false);
 
+  // Create course (campus virtual / cohorte)
+  const [showCreateCourse, setShowCreateCourse] = useState(false);
+  const [creatingCourse, setCreatingCourse] = useState(false);
+  const [newCourse, setNewCourse] = useState({
+    title: "",
+    slug: "",
+    category: "Campus Virtual",
+    short_description: "",
+    level: "principiante",
+    is_hidden: true,
+    is_published: false,
+    badge_label: "Campus",
+    tech_stack: "",
+  });
+  const [slugManual, setSlugManual] = useState(false);
+  const [courseListFilter, setCourseListFilter] = useState<"all" | "campus" | "catalog">("all");
+
+  // Course access management
+  const [courseEnrollments, setCourseEnrollments] = useState<any[]>([]);
+  const [loadingEnrollments, setLoadingEnrollments] = useState(false);
+  const [bulkEmails, setBulkEmails] = useState("");
+  const [bulkAccessType, setBulkAccessType] = useState("full");
+  const [grantingAccess, setGrantingAccess] = useState(false);
+  const [bulkGrantResult, setBulkGrantResult] = useState<{ success: number; failed: number; notFound: string[]; errors: string[] } | null>(null);
+  const [accessSearch, setAccessSearch] = useState("");
+  const [selectedEnrollIds, setSelectedEnrollIds] = useState<string[]>([]);
+  const [removingAccess, setRemovingAccess] = useState(false);
+
+  const reloadCourses = async () => {
+    const data = await adminGetCourses();
+    setCourses(data);
+    return data;
+  };
+
   useEffect(() => {
     async function load() {
-      try { const data = await adminGetCourses(); setCourses(data); }
+      try { await reloadCourses(); }
       catch (err) { console.error(err); }
       finally { setLoading(false); }
     }
     load();
   }, []);
 
+  const loadCourseEnrollments = async (slug: string) => {
+    setLoadingEnrollments(true);
+    try {
+      const data = await adminGetCourseEnrollments(slug);
+      setCourseEnrollments(data);
+      setSelectedEnrollIds([]);
+    } catch (err) {
+      console.error(err);
+      setCourseEnrollments([]);
+    } finally {
+      setLoadingEnrollments(false);
+    }
+  };
+
   const selectCourse = async (course: any) => {
     setSelectedCourse(course);
+    setCourseViewTab("lessons");
     setEditDescription(course.description || "");
     setEditShortDescription(course.short_description || "");
+    setShowAddLesson(false);
+    setEditingLesson(null);
+    setBulkEmails("");
+    setBulkGrantResult(null);
+    setAccessSearch("");
     setLoadingLessons(true);
     try {
       const data = await adminGetLessons(course.id);
       setLessons(data);
+      // Preload enrollments in background
+      loadCourseEnrollments(course.slug);
     } catch (err) { console.error(err); }
     finally { setLoading(false); setLoadingLessons(false); }
   };
+
+  const handleCreateCourse = async () => {
+    if (!newCourse.title.trim()) {
+      alert("Ingresa el título del curso (ej. SQL Server Junio 2026).");
+      return;
+    }
+    const slug = (newCourse.slug || slugifyCourseTitle(newCourse.title)).trim();
+    if (!slug) {
+      alert("El slug del curso no es válido.");
+      return;
+    }
+    if (creatingCourse) return;
+    setCreatingCourse(true);
+    try {
+      const tech = newCourse.tech_stack
+        .split(",")
+        .map((t) => t.trim())
+        .filter(Boolean);
+      const created = await adminCreateCourse({
+        title: newCourse.title.trim(),
+        slug,
+        description: newCourse.short_description.trim() || `Grabaciones del curso ${newCourse.title.trim()}`,
+        short_description: newCourse.short_description.trim() || `Acceso a las clases grabadas de ${newCourse.title.trim()}`,
+        category: newCourse.category.trim() || "Campus Virtual",
+        level: newCourse.level,
+        is_hidden: newCourse.is_hidden,
+        is_published: newCourse.is_published,
+        badge_label: newCourse.badge_label || "Campus",
+        tech_stack: tech,
+      });
+      const list = await reloadCourses();
+      const full = list.find((c: any) => c.id === created.id) || created;
+      setShowCreateCourse(false);
+      setSlugManual(false);
+      setNewCourse({
+        title: "",
+        slug: "",
+        category: "Campus Virtual",
+        short_description: "",
+        level: "principiante",
+        is_hidden: true,
+        is_published: false,
+        badge_label: "Campus",
+        tech_stack: "",
+      });
+      await selectCourse(full);
+      alert(`Curso "${full.title}" creado. Ahora sube las clases grabadas y otorga accesos.`);
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.message || "Error al crear el curso.");
+    } finally {
+      setCreatingCourse(false);
+    }
+  };
+
+  const handleBulkGrantAccess = async () => {
+    if (!selectedCourse?.slug) return;
+    if (!bulkEmails.trim()) {
+      alert("Pega los emails de las personas a las que quieres dar acceso.");
+      return;
+    }
+    setGrantingAccess(true);
+    setBulkGrantResult(null);
+    try {
+      const res = await adminBulkEnrollByEmails(selectedCourse.slug, bulkEmails, bulkAccessType);
+      setBulkGrantResult(res);
+      await loadCourseEnrollments(selectedCourse.slug);
+      if (res.success > 0) setBulkEmails("");
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.message || "Error al otorgar accesos.");
+    } finally {
+      setGrantingAccess(false);
+    }
+  };
+
+  const handleRemoveSelectedAccess = async () => {
+    if (!selectedCourse?.slug || selectedEnrollIds.length === 0) return;
+    if (!confirm(`¿Quitar acceso a ${selectedEnrollIds.length} persona(s)?`)) return;
+    setRemovingAccess(true);
+    try {
+      await adminBulkRemoveCourseEnrollments(selectedCourse.slug, selectedEnrollIds);
+      await loadCourseEnrollments(selectedCourse.slug);
+    } catch (err: any) {
+      console.error(err);
+      alert(err?.message || "Error al quitar accesos.");
+    } finally {
+      setRemovingAccess(false);
+    }
+  };
+
+  const handleRemoveOneAccess = async (userId: string) => {
+    if (!selectedCourse?.slug) return;
+    try {
+      await adminRemoveEnrollment(userId, selectedCourse.slug);
+      setCourseEnrollments((prev) => prev.filter((e) => e.user_id !== userId));
+      setSelectedEnrollIds((prev) => prev.filter((id) => id !== userId));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const filteredCourseEnrollments = courseEnrollments.filter((e) => {
+    if (!accessSearch.trim()) return true;
+    const q = accessSearch.toLowerCase();
+    const name = (e.profile?.full_name || "").toLowerCase();
+    const email = (e.profile?.email || "").toLowerCase();
+    return name.includes(q) || email.includes(q);
+  });
+
+  const filteredCoursesList = courses.filter((c) => {
+    if (courseListFilter === "campus") return c.is_hidden;
+    if (courseListFilter === "catalog") return !c.is_hidden;
+    return true;
+  });
 
   const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -2058,6 +2240,7 @@ function AdminCourses() {
     try {
       await adminTogglePublish(courseId);
       setCourses(prev => prev.map(c => c.id === courseId ? { ...c, is_published: !c.is_published } : c));
+      setSelectedCourse((prev: any) => prev && prev.id === courseId ? { ...prev, is_published: !prev.is_published } : prev);
     } catch (err) { console.error(err); }
   };
 
@@ -2065,6 +2248,7 @@ function AdminCourses() {
     try {
       await adminToggleHidden(courseId);
       setCourses(prev => prev.map(c => c.id === courseId ? { ...c, is_hidden: !c.is_hidden } : c));
+      setSelectedCourse((prev: any) => prev && prev.id === courseId ? { ...prev, is_hidden: !prev.is_hidden } : prev);
     } catch (err) { console.error(err); }
   };
 
@@ -2113,12 +2297,261 @@ function AdminCourses() {
         <button onClick={() => setSelectedCourse(null)} className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 font-medium mb-4 transition-colors">
           ← Volver a cursos
         </button>
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
-            <h2 className="font-display font-black text-2xl text-gray-900 mb-1">{selectedCourse.title}</h2>
-            <p className="text-sm text-gray-400">{lessons.length} lecciones · {selectedCourse.duration_hours || selectedCourse.duration_hours === 0 ? selectedCourse.duration_hours : 0}h</p>
+            <div className="flex items-center gap-2 flex-wrap mb-1">
+              <h2 className="font-display font-black text-2xl text-gray-900">{selectedCourse.title}</h2>
+              {selectedCourse.is_hidden ? (
+                <span className="text-[10px] font-bold text-violet-700 bg-violet-50 px-2 py-0.5 rounded-lg flex items-center gap-1">
+                  <Lock className="w-3 h-3" /> Campus / Solo invitados
+                </span>
+              ) : (
+                <span className="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-lg">Catálogo público</span>
+              )}
+              {selectedCourse.is_published ? (
+                <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg">Publicado</span>
+              ) : (
+                <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-lg">Borrador</span>
+              )}
+            </div>
+            <p className="text-sm text-gray-400">
+              <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs mr-2">{selectedCourse.slug}</code>
+              {lessons.length} lecciones · {courseEnrollments.length} con acceso
+            </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 flex-wrap">
+            <button onClick={() => handleTogglePublish(selectedCourse.id)}
+              className={`px-3 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                selectedCourse.is_published
+                  ? "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
+                  : "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+              }`}>
+              {selectedCourse.is_published ? "Pasar a borrador" : "Publicar curso"}
+            </button>
+            <button onClick={() => handleToggleHidden(selectedCourse.id)}
+              className={`px-3 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                selectedCourse.is_hidden
+                  ? "bg-violet-50 border-violet-200 text-violet-700 hover:bg-violet-100"
+                  : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"
+              }`}>
+              {selectedCourse.is_hidden ? "Es campus (oculto)" : "Ocultar del catálogo"}
+            </button>
+          </div>
+        </div>
+
+        {/* Course sub-tabs */}
+        <div className="flex items-center gap-2 mb-6 p-1 bg-gray-100 rounded-xl w-fit">
+          <button
+            onClick={() => setCourseViewTab("lessons")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer border-0 ${
+              courseViewTab === "lessons" ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            <Play className="w-4 h-4" /> Clases grabadas
+          </button>
+          <button
+            onClick={() => {
+              setCourseViewTab("access");
+              if (courseEnrollments.length === 0) loadCourseEnrollments(selectedCourse.slug);
+            }}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-bold transition-all cursor-pointer border-0 ${
+              courseViewTab === "access" ? "bg-white text-gray-900 shadow-sm" : "bg-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            <UserPlus className="w-4 h-4" /> Accesos
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-md font-black ${
+              courseViewTab === "access" ? "bg-brand-blue/10 text-brand-blue" : "bg-gray-200 text-gray-600"
+            }`}>
+              {courseEnrollments.length}
+            </span>
+          </button>
+        </div>
+
+        {/* ─── ACCESS TAB ─── */}
+        {courseViewTab === "access" && (
+          <div className="space-y-6">
+            <div className="rounded-2xl border border-violet-100 bg-gradient-to-br from-violet-50/80 to-white p-5 sm:p-6">
+              <div className="flex items-start gap-3 mb-4">
+                <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
+                  <UserPlus className="w-5 h-5 text-violet-600" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 text-base">Otorgar acceso masivo</h3>
+                  <p className="text-xs text-gray-500 mt-0.5 leading-relaxed">
+                    Pega los emails de quienes compraron o deben ver este curso (ej. cohorte de junio).
+                    Uno por línea, o separados por coma. Solo funciona con usuarios ya registrados en la plataforma.
+                  </p>
+                </div>
+              </div>
+              <textarea
+                value={bulkEmails}
+                onChange={(e) => setBulkEmails(e.target.value)}
+                rows={6}
+                placeholder={"maria@empresa.com\npedro@gmail.com\nana@corporacion.cl"}
+                className="w-full px-4 py-3 rounded-xl border border-violet-200/80 bg-white text-sm font-mono focus:border-violet-400 focus:ring-4 focus:ring-violet-100 outline-none resize-y mb-3"
+              />
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                <select
+                  value={bulkAccessType}
+                  onChange={(e) => setBulkAccessType(e.target.value)}
+                  className="text-sm px-3 py-2.5 rounded-xl border border-gray-200 bg-white focus:outline-none w-full sm:w-40"
+                >
+                  <option value="full">Acceso completo</option>
+                  <option value="trial">Prueba</option>
+                  <option value="free">Gratis</option>
+                </select>
+                <button
+                  onClick={handleBulkGrantAccess}
+                  disabled={grantingAccess || !bulkEmails.trim()}
+                  className="flex items-center justify-center gap-2 px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white font-bold rounded-xl text-sm transition-colors disabled:opacity-40 cursor-pointer border-0"
+                >
+                  {grantingAccess ? <Loader2 className="w-4 h-4 animate-spin" /> : <UserPlus className="w-4 h-4" />}
+                  {grantingAccess ? "Otorgando..." : "Dar acceso a todos"}
+                </button>
+              </div>
+
+              {bulkGrantResult && (
+                <div className={`mt-4 rounded-xl p-4 border ${
+                  bulkGrantResult.notFound.length > 0 || bulkGrantResult.errors.length > 0
+                    ? "bg-amber-50 border-amber-200"
+                    : "bg-emerald-50 border-emerald-200"
+                }`}>
+                  <p className="text-sm font-bold text-gray-900 mb-1">
+                    {bulkGrantResult.success} accesos otorgados
+                    {(bulkGrantResult.notFound.length > 0 || bulkGrantResult.failed > 0) && (
+                      <span className="text-amber-700 font-semibold"> · {bulkGrantResult.notFound.length || bulkGrantResult.failed} sin registrar / fallidos</span>
+                    )}
+                  </p>
+                  {bulkGrantResult.notFound.length > 0 && (
+                    <div className="mt-2 max-h-28 overflow-y-auto">
+                      <p className="text-[11px] font-semibold text-amber-800 mb-1">Emails no encontrados (deben registrarse primero):</p>
+                      {bulkGrantResult.notFound.map((email) => (
+                        <div key={email} className="text-[11px] text-amber-700 font-mono">• {email}</div>
+                      ))}
+                    </div>
+                  )}
+                  {bulkGrantResult.errors.length > 0 && (
+                    <div className="mt-2">
+                      {bulkGrantResult.errors.map((err, i) => (
+                        <div key={i} className="text-[11px] text-red-600">• {err}</div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-2xl border border-gray-100 overflow-hidden">
+              <div className="px-5 py-4 bg-gray-50/80 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="font-bold text-sm text-gray-900">Personas con acceso</h3>
+                  <p className="text-xs text-gray-400">{courseEnrollments.length} en total</p>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <div className="relative">
+                    <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      value={accessSearch}
+                      onChange={(e) => setAccessSearch(e.target.value)}
+                      placeholder="Buscar nombre o email..."
+                      className="pl-8 pr-3 py-2 rounded-xl border border-gray-200 text-xs w-52 focus:border-brand-blue/40 outline-none"
+                    />
+                  </div>
+                  {selectedEnrollIds.length > 0 && (
+                    <button
+                      onClick={handleRemoveSelectedAccess}
+                      disabled={removingAccess}
+                      className="flex items-center gap-1.5 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-xl text-xs transition-colors cursor-pointer border-0 disabled:opacity-50"
+                    >
+                      {removingAccess ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                      Quitar ({selectedEnrollIds.length})
+                    </button>
+                  )}
+                  <button
+                    onClick={() => loadCourseEnrollments(selectedCourse.slug)}
+                    className="px-3 py-2 text-xs font-bold text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-xl transition-colors cursor-pointer border-0"
+                  >
+                    Actualizar
+                  </button>
+                </div>
+              </div>
+
+              {loadingEnrollments ? (
+                <div className="py-12 flex justify-center"><Loader2 className="w-6 h-6 text-gray-400 animate-spin" /></div>
+              ) : filteredCourseEnrollments.length === 0 ? (
+                <div className="py-12 text-center px-6">
+                  <Users className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+                  <p className="text-sm text-gray-500 font-medium">
+                    {courseEnrollments.length === 0
+                      ? "Nadie tiene acceso todavía. Pega emails arriba para dar acceso masivo."
+                      : "No hay resultados para esa búsqueda."}
+                  </p>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-50 max-h-[420px] overflow-y-auto">
+                  <div className="flex items-center gap-3 px-5 py-2.5 bg-gray-50/50 sticky top-0">
+                    <input
+                      type="checkbox"
+                      checked={selectedEnrollIds.length > 0 && selectedEnrollIds.length === filteredCourseEnrollments.length}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedEnrollIds(filteredCourseEnrollments.map((x) => x.user_id));
+                        } else {
+                          setSelectedEnrollIds([]);
+                        }
+                      }}
+                      className="w-4 h-4 rounded border-gray-300 text-brand-blue"
+                    />
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide">Seleccionar todos los visibles</span>
+                  </div>
+                  {filteredCourseEnrollments.map((e) => (
+                    <div key={e.id || e.user_id} className="flex items-center gap-3 px-5 py-3 hover:bg-gray-50/80 transition-colors">
+                      <input
+                        type="checkbox"
+                        checked={selectedEnrollIds.includes(e.user_id)}
+                        onChange={(ev) => {
+                          if (ev.target.checked) setSelectedEnrollIds((prev) => [...prev, e.user_id]);
+                          else setSelectedEnrollIds((prev) => prev.filter((id) => id !== e.user_id));
+                        }}
+                        className="w-4 h-4 rounded border-gray-300 text-brand-blue"
+                      />
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-blue/20 to-indigo-100 flex items-center justify-center text-xs font-black text-brand-blue shrink-0">
+                        {(e.profile?.full_name || e.profile?.email || "?").charAt(0).toUpperCase()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-gray-900 truncate">{e.profile?.full_name || "Sin nombre"}</div>
+                        <div className="text-xs text-gray-400 truncate">{e.profile?.email || e.user_id}</div>
+                      </div>
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                        e.access_type === "full" ? "bg-emerald-100 text-emerald-700" :
+                        e.access_type === "trial" ? "bg-amber-100 text-amber-700" : "bg-blue-100 text-blue-700"
+                      }`}>
+                        {e.access_type === "full" ? "Completo" : e.access_type === "trial" ? "Prueba" : "Gratis"}
+                      </span>
+                      <button
+                        onClick={() => handleRemoveOneAccess(e.user_id)}
+                        className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors cursor-pointer border-0 bg-transparent"
+                        title="Quitar acceso"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ─── LESSONS TAB ─── */}
+        {courseViewTab === "lessons" && (
+        <>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+          <p className="text-sm text-gray-500">
+            Sube cada clase grabada con su URL de YouTube (o video). Los alumnos con acceso las verán en Mi Aprendizaje.
+          </p>
+          <div className="flex items-center gap-2">
             <button onClick={() => setShowMarketingEdits(!showMarketingEdits)}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold border transition-colors cursor-pointer ${
                 showMarketingEdits 
@@ -2127,11 +2560,11 @@ function AdminCourses() {
               }`}
             >
               <Settings className="w-4 h-4" />
-              {showMarketingEdits ? "Ocultar Descripciones" : "Configurar Descripciones"}
+              {showMarketingEdits ? "Ocultar Descripciones" : "Descripciones"}
             </button>
             <button onClick={() => { setShowAddLesson(!showAddLesson); setEditingLesson(null); }}
-              className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors shadow-sm">
-              <Plus className="w-4 h-4" /> Agregar Lección
+              className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors shadow-sm cursor-pointer border-0">
+              <Plus className="w-4 h-4" /> Agregar clase
             </button>
           </div>
         </div>
@@ -2412,17 +2845,181 @@ function AdminCourses() {
             ))}
           </div>
         )}
+        </>
+        )}
       </div>
     );
   }
 
   return (
     <div className="p-6 sm:p-8">
-       <div className="flex items-center justify-between mb-8">
+       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
          <div>
-           <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Cursos</h2>
-           <p className="text-sm text-gray-400">{courses.length} cursos en la plataforma</p>
+           <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Cursos y Campus Virtual</h2>
+           <p className="text-sm text-gray-400">
+             {courses.length} cursos · Crea cohortes (ej. SQL Server Junio), sube grabaciones y da acceso masivo
+           </p>
          </div>
+         <button
+           onClick={() => setShowCreateCourse(!showCreateCourse)}
+           className="flex items-center gap-2 px-4 py-2.5 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors shadow-sm cursor-pointer border-0"
+         >
+           <Plus className="w-4 h-4" /> Crear curso
+         </button>
+       </div>
+
+       {/* Create course form */}
+       <AnimatePresence>
+         {showCreateCourse && (
+           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mb-6">
+             <div className="rounded-2xl border border-brand-blue/20 bg-gradient-to-br from-blue-50/60 to-white p-5 sm:p-6 space-y-4">
+               <div>
+                 <h3 className="font-bold text-gray-900 text-base">Nuevo curso / cohorte</h3>
+                 <p className="text-xs text-gray-500 mt-0.5">
+                   Ideal para clases en vivo grabadas por mes: &quot;SQL Server Junio&quot;, &quot;Power BI Mayo&quot;, etc.
+                   Márcalo como <strong>Campus (solo invitados)</strong> para que no aparezca en el catálogo público.
+                 </p>
+               </div>
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                 <div className="sm:col-span-2">
+                   <label className="block text-xs font-semibold text-gray-500 mb-1.5">Título</label>
+                   <input
+                     type="text"
+                     value={newCourse.title}
+                     onChange={(e) => {
+                       const title = e.target.value;
+                       setNewCourse((p) => ({
+                         ...p,
+                         title,
+                         slug: slugManual ? p.slug : slugifyCourseTitle(title),
+                       }));
+                     }}
+                     placeholder="Ej. SQL Server Junio 2026"
+                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none"
+                   />
+                 </div>
+                 <div>
+                   <label className="block text-xs font-semibold text-gray-500 mb-1.5">Slug (identificador)</label>
+                   <input
+                     type="text"
+                     value={newCourse.slug}
+                     onChange={(e) => {
+                       setSlugManual(true);
+                       setNewCourse((p) => ({ ...p, slug: slugifyCourseTitle(e.target.value) }));
+                     }}
+                     placeholder="sql-server-junio-2026"
+                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm font-mono focus:border-brand-blue/40 focus:ring-2 focus:ring-brand-blue/10 outline-none"
+                   />
+                 </div>
+                 <div>
+                   <label className="block text-xs font-semibold text-gray-500 mb-1.5">Categoría</label>
+                   <input
+                     type="text"
+                     value={newCourse.category}
+                     onChange={(e) => setNewCourse((p) => ({ ...p, category: e.target.value }))}
+                     placeholder="Campus Virtual"
+                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 outline-none"
+                   />
+                 </div>
+                 <div className="sm:col-span-2">
+                   <label className="block text-xs font-semibold text-gray-500 mb-1.5">Descripción corta</label>
+                   <input
+                     type="text"
+                     value={newCourse.short_description}
+                     onChange={(e) => setNewCourse((p) => ({ ...p, short_description: e.target.value }))}
+                     placeholder="Grabaciones de las clases en vivo de junio + material"
+                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 outline-none"
+                   />
+                 </div>
+                 <div>
+                   <label className="block text-xs font-semibold text-gray-500 mb-1.5">Nivel</label>
+                   <select
+                     value={newCourse.level}
+                     onChange={(e) => setNewCourse((p) => ({ ...p, level: e.target.value }))}
+                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm bg-white outline-none"
+                   >
+                     <option value="principiante">Principiante</option>
+                     <option value="intermedio">Intermedio</option>
+                     <option value="avanzado">Avanzado</option>
+                   </select>
+                 </div>
+                 <div>
+                   <label className="block text-xs font-semibold text-gray-500 mb-1.5">Tech stack (coma)</label>
+                   <input
+                     type="text"
+                     value={newCourse.tech_stack}
+                     onChange={(e) => setNewCourse((p) => ({ ...p, tech_stack: e.target.value }))}
+                     placeholder="SQL, SSMS, Power BI"
+                     className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:border-brand-blue/40 outline-none"
+                   />
+                 </div>
+                 <div className="sm:col-span-2 flex flex-col sm:flex-row gap-3">
+                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer bg-white border border-gray-200 rounded-xl px-4 py-2.5 flex-1">
+                     <input
+                       type="checkbox"
+                       checked={newCourse.is_hidden}
+                       onChange={(e) => setNewCourse((p) => ({ ...p, is_hidden: e.target.checked }))}
+                       className="w-4 h-4 rounded border-gray-300 text-violet-600"
+                     />
+                     <span>
+                       <span className="font-bold text-violet-700">Campus (solo invitados)</span>
+                       <span className="block text-[11px] text-gray-400 font-normal">No aparece en catálogo; solo quien tenga acceso</span>
+                     </span>
+                   </label>
+                   <label className="flex items-center gap-2 text-sm font-medium text-gray-700 cursor-pointer bg-white border border-gray-200 rounded-xl px-4 py-2.5 flex-1">
+                     <input
+                       type="checkbox"
+                       checked={newCourse.is_published}
+                       onChange={(e) => setNewCourse((p) => ({ ...p, is_published: e.target.checked }))}
+                       className="w-4 h-4 rounded border-gray-300 text-emerald-600"
+                     />
+                     <span>
+                       <span className="font-bold text-emerald-700">Publicar al crear</span>
+                       <span className="block text-[11px] text-gray-400 font-normal">Si no, queda en borrador hasta que lo publiques</span>
+                     </span>
+                   </label>
+                 </div>
+               </div>
+               <div className="flex justify-end gap-2 pt-1">
+                 <button
+                   onClick={() => setShowCreateCourse(false)}
+                   className="px-4 py-2 text-sm font-semibold text-gray-500 hover:text-gray-700 transition-colors cursor-pointer border-0 bg-transparent"
+                 >
+                   Cancelar
+                 </button>
+                 <button
+                   onClick={handleCreateCourse}
+                   disabled={creatingCourse || !newCourse.title.trim()}
+                   className="flex items-center gap-2 px-5 py-2.5 bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl text-sm transition-colors disabled:opacity-40 cursor-pointer border-0"
+                 >
+                   {creatingCourse ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                   Crear curso
+                 </button>
+               </div>
+             </div>
+           </motion.div>
+         )}
+       </AnimatePresence>
+
+       {/* Filters */}
+       <div className="flex items-center gap-2 mb-5">
+         {([
+           { id: "all" as const, label: "Todos" },
+           { id: "campus" as const, label: "Campus / Cohortes" },
+           { id: "catalog" as const, label: "Catálogo público" },
+         ]).map((f) => (
+           <button
+             key={f.id}
+             onClick={() => setCourseListFilter(f.id)}
+             className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border-0 ${
+               courseListFilter === f.id
+                 ? "bg-gray-900 text-white"
+                 : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+             }`}
+           >
+             {f.label}
+           </button>
+         ))}
        </div>
 
        {loading ? (
@@ -2430,16 +3027,27 @@ function AdminCourses() {
            <Loader2 className="w-8 h-8 text-brand-blue animate-spin" />
            <span className="text-sm text-gray-400">Cargando cursos...</span>
          </div>
+       ) : filteredCoursesList.length === 0 ? (
+         <div className="py-16 text-center rounded-2xl border border-dashed border-gray-200 bg-gray-50/50">
+           <GraduationCap className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+           <p className="text-sm text-gray-500 mb-4">No hay cursos en este filtro.</p>
+           <button
+             onClick={() => setShowCreateCourse(true)}
+             className="px-4 py-2 bg-brand-blue text-white text-sm font-bold rounded-xl cursor-pointer border-0"
+           >
+             Crear el primero
+           </button>
+         </div>
        ) : (
          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-           {courses.map((course: any) => (
+           {filteredCoursesList.map((course: any) => (
              <motion.div key={course.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
                onClick={() => selectCourse(course)}
                className="border border-gray-100 rounded-2xl p-5 hover:shadow-md transition-all cursor-pointer group relative overflow-hidden">
-               <div className="absolute top-4 right-4 flex items-center gap-2">
+               <div className="absolute top-4 right-4 flex items-center gap-2 flex-wrap justify-end max-w-[50%]">
                  {course.is_hidden ? (
-                   <span className="text-[10px] font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-lg flex items-center gap-1">
-                     <EyeOff className="w-3 h-3" /> Oculto Catálogo
+                   <span className="text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-lg flex items-center gap-1">
+                     <Lock className="w-3 h-3" /> Campus
                    </span>
                  ) : null}
                  {course.is_published ? (
@@ -2452,14 +3060,16 @@ function AdminCourses() {
                    </span>
                  )}
                </div>
-               <div className="flex items-start gap-4">
-                 <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: course.accent_color + '15' }}>
-                   <GraduationCap className="w-6 h-6" style={{ color: course.accent_color }} />
+               <div className="flex items-start gap-4 pr-20">
+                 <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: (course.accent_color || '#1890FF') + '15' }}>
+                   <GraduationCap className="w-6 h-6" style={{ color: course.accent_color || '#1890FF' }} />
                  </div>
                  <div className="flex-1 min-w-0">
                    <h3 className="font-bold text-gray-900 text-sm group-hover:text-brand-blue transition-colors truncate">{course.title}</h3>
-                   <p className="text-xs text-gray-400 mt-0.5">{course.duration_hours}h · {course.level}</p>
-                   {course.tech_stack && (
+                   <p className="text-xs text-gray-400 mt-0.5">
+                     {course.lesson_count || 0} clases · {course.category || "Sin categoría"}
+                   </p>
+                   {course.tech_stack && course.tech_stack.length > 0 && (
                      <div className="flex flex-wrap gap-1 mt-2">
                        {course.tech_stack.slice(0, 3).map((t: string, i: number) => (
                          <span key={i} className="text-[10px] font-semibold bg-gray-100 text-gray-500 px-2 py-0.5 rounded">{t}</span>
@@ -2470,15 +3080,16 @@ function AdminCourses() {
                </div>
                <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-50">
                  <button onClick={(e) => { e.stopPropagation(); handleTogglePublish(course.id); }}
-                   className={`flex-1 py-1.5 rounded-xl text-[11px] font-bold transition-colors ${course.is_published ? 'bg-gray-50 text-gray-500 hover:bg-gray-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}>
+                   className={`flex-1 py-1.5 rounded-xl text-[11px] font-bold transition-colors cursor-pointer border-0 ${course.is_published ? 'bg-gray-50 text-gray-500 hover:bg-gray-100' : 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'}`}>
                    {course.is_published ? 'Borrador' : 'Publicar'}
                  </button>
                  <button onClick={(e) => { e.stopPropagation(); handleToggleHidden(course.id); }}
-                   className={`flex-1 py-1.5 rounded-xl text-[11px] font-bold transition-colors border ${course.is_hidden ? 'bg-white border-blue-200 text-brand-blue hover:bg-blue-50' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}>
-                   {course.is_hidden ? 'Mostrar Catálogo' : 'Ocultar Catálogo'}
+                   className={`flex-1 py-1.5 rounded-xl text-[11px] font-bold transition-colors border cursor-pointer ${course.is_hidden ? 'bg-violet-50 border-violet-200 text-violet-700 hover:bg-violet-100' : 'bg-white border-gray-200 text-gray-500 hover:bg-gray-50'}`}>
+                   {course.is_hidden ? 'Es Campus' : 'Ocultar'}
                  </button>
                  <button onClick={(e) => { e.stopPropagation(); selectCourse(course); }}
-                   className="py-1.5 px-3 rounded-xl text-[11px] font-bold bg-blue-50 text-brand-blue hover:bg-blue-100 transition-colors">
+                   className="py-1.5 px-3 rounded-xl text-[11px] font-bold bg-blue-50 text-brand-blue hover:bg-blue-100 transition-colors cursor-pointer border-0"
+                   title="Gestionar clases y accesos">
                    <Play className="w-4 h-4" />
                  </button>
                </div>

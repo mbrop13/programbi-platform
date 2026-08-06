@@ -53,32 +53,111 @@ export async function adminBulkDeleteLeads(leadIds: string[]) {
 // ─── ADMIN: COURSE MANAGEMENT ───
 
 export async function adminGetCourses() {
-  const supabase = await createClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { data, error } = await supabase
+  const adminDb = createAdminClient();
+  const { data, error } = await adminDb
     .from("courses")
-    .select("id, slug, title, description, short_description, category, level, is_published, is_featured, image_url, accent_color, badge_label, duration_hours, tech_stack, created_at, lessons(id)")
-    .order("sort_order", { ascending: true });
+    .select("id, slug, title, description, short_description, category, level, is_published, is_hidden, is_featured, image_url, accent_color, badge_label, duration_hours, tech_stack, created_at, lessons(id)")
+    .order("created_at", { ascending: false });
 
   if (error) { console.error("Error:", error); return []; }
   return (data || []).map((c: any) => ({ ...c, lesson_count: c.lessons?.length || 0, lessons: undefined }));
 }
 
 export async function adminCreateCourse(courseData: {
-  title: string; slug: string; description: string; category: string;
-  level?: string; image_url?: string; short_description?: string;
+  title: string;
+  slug: string;
+  description: string;
+  category: string;
+  level?: string;
+  image_url?: string;
+  short_description?: string;
+  is_hidden?: boolean;
+  is_published?: boolean;
+  tech_stack?: string[];
+  accent_color?: string;
+  badge_label?: string;
+  duration_hours?: number;
 }) {
-  const supabase = await createClient();
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { data, error } = await supabase
-    .from("courses").insert({ ...courseData, is_published: false }).select("id, slug").single();
+  const title = (courseData.title || "").trim();
+  const slug = (courseData.slug || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  const description = (courseData.description || "").trim() || title;
+  const category = (courseData.category || "Campus Virtual").trim();
+
+  if (!title) throw new Error("El título del curso es obligatorio.");
+  if (!slug) throw new Error("El slug del curso es obligatorio.");
+
+  const adminDb = createAdminClient();
+  const { data, error } = await adminDb
+    .from("courses")
+    .insert({
+      title,
+      slug,
+      description,
+      category,
+      short_description: (courseData.short_description || "").trim() || `Grabaciones y material de ${title}`,
+      level: courseData.level || "principiante",
+      image_url: courseData.image_url || null,
+      is_hidden: courseData.is_hidden ?? true,
+      is_published: courseData.is_published ?? false,
+      tech_stack: courseData.tech_stack || [],
+      accent_color: courseData.accent_color || "#1890FF",
+      badge_label: courseData.badge_label || "Campus",
+      duration_hours: courseData.duration_hours ?? 0,
+      sort_order: 999,
+    })
+    .select("id, slug, title, category, is_hidden, is_published, short_description, level, accent_color, badge_label, duration_hours, tech_stack, description, created_at")
+    .single();
+
+  if (error) {
+    if (error.code === "23505") throw new Error(`Ya existe un curso con el slug "${slug}".`);
+    throw new Error(error.message);
+  }
+
+  revalidatePath("/(comunidad)", "layout");
+  return { ...data, lesson_count: 0 };
+}
+
+export async function adminUpdateCourseMeta(
+  courseId: string,
+  updates: {
+    title?: string;
+    short_description?: string;
+    category?: string;
+    level?: string;
+    badge_label?: string | null;
+    accent_color?: string;
+    tech_stack?: string[];
+    duration_hours?: number;
+  }
+) {
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const adminDb = createAdminClient();
+  const payload: Record<string, unknown> = {};
+  if (updates.title !== undefined) payload.title = updates.title.trim();
+  if (updates.short_description !== undefined) payload.short_description = updates.short_description.trim();
+  if (updates.category !== undefined) payload.category = updates.category.trim();
+  if (updates.level !== undefined) payload.level = updates.level;
+  if (updates.badge_label !== undefined) payload.badge_label = updates.badge_label;
+  if (updates.accent_color !== undefined) payload.accent_color = updates.accent_color;
+  if (updates.tech_stack !== undefined) payload.tech_stack = updates.tech_stack;
+  if (updates.duration_hours !== undefined) payload.duration_hours = updates.duration_hours;
+
+  const { error } = await adminDb.from("courses").update(payload).eq("id", courseId);
   if (error) throw new Error(error.message);
   revalidatePath("/(comunidad)", "layout");
-  return data;
+  return { success: true };
 }
 
 export async function adminAddLesson(lessonData: {
@@ -491,6 +570,159 @@ export async function adminRemoveEnrollment(userId: string, courseSlug: string) 
   revalidatePath("/(comunidad)", "layout");
 }
 
+/** Lista de alumnos con acceso a un curso (campus virtual / cohorte). */
+export async function adminGetCourseEnrollments(courseSlug: string) {
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const adminDb = createAdminClient();
+  const { data, error } = await adminDb
+    .from("enrollments")
+    .select("id, user_id, course_slug, status, access_type, enrolled_at")
+    .eq("course_slug", courseSlug)
+    .order("enrolled_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching course enrollments:", error);
+    return [];
+  }
+  if (!data || data.length === 0) return [];
+
+  const userIds = [...new Set(data.map((e: any) => e.user_id))];
+  const { data: profiles } = await adminDb
+    .from("profiles")
+    .select("id, full_name, email, avatar_url, role")
+    .in("id", userIds);
+
+  const profileMap = Object.fromEntries((profiles || []).map((p: any) => [p.id, p]));
+  return data.map((e: any) => ({
+    ...e,
+    profile: profileMap[e.user_id] || { id: e.user_id, full_name: "Usuario", email: "", avatar_url: null, role: "student" },
+  }));
+}
+
+/**
+ * Otorga acceso masivo a un curso por lista de emails (uno por línea o separados por coma).
+ * Ideal para cohortes tipo "SQL Server Junio".
+ */
+export async function adminBulkEnrollByEmails(
+  courseSlug: string,
+  emailsInput: string,
+  accessType: string = "full"
+) {
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const adminDb = createAdminClient();
+  const slug = (courseSlug || "").trim();
+  if (!slug) return { success: 0, failed: 0, notFound: [] as string[], errors: ["Falta el slug del curso."] };
+
+  const { data: course } = await adminDb.from("courses").select("id, slug, title").eq("slug", slug).maybeSingle();
+  if (!course) {
+    return { success: 0, failed: 1, notFound: [] as string[], errors: [`Curso no encontrado: ${slug}`] };
+  }
+
+  const rawEmails = emailsInput
+    .split(/[\n,;]+/)
+    .map((e) => e.trim().toLowerCase())
+    .filter((e) => e && e.includes("@"));
+
+  const uniqueEmails = [...new Set(rawEmails)];
+  if (uniqueEmails.length === 0) {
+    return { success: 0, failed: 0, notFound: [] as string[], errors: ["No se encontraron emails válidos."] };
+  }
+
+  // Fetch matching profiles in chunks (case-insensitive)
+  const profileByEmail = new Map<string, { id: string; email: string }>();
+  const chunkSize = 40;
+  for (let i = 0; i < uniqueEmails.length; i += chunkSize) {
+    const chunk = uniqueEmails.slice(i, i + chunkSize);
+    // PostgREST: email.ilike."user@domain.com" for special characters
+    const orFilter = chunk
+      .map((e) => `email.ilike."${e.replace(/"/g, "")}"`)
+      .join(",");
+    const { data: profiles, error: profileErr } = await adminDb
+      .from("profiles")
+      .select("id, email")
+      .or(orFilter);
+    if (profileErr) {
+      // Fallback: exact match (lowercase list)
+      const { data: fallback } = await adminDb
+        .from("profiles")
+        .select("id, email")
+        .in("email", chunk);
+      for (const p of fallback || []) {
+        if (p.email) profileByEmail.set(p.email.toLowerCase(), { id: p.id, email: p.email });
+      }
+    } else {
+      for (const p of profiles || []) {
+        if (p.email) profileByEmail.set(p.email.toLowerCase(), { id: p.id, email: p.email });
+      }
+    }
+  }
+
+  const notFound: string[] = [];
+  const enrollRows: { user_id: string; course_slug: string; status: string; access_type: string }[] = [];
+
+  for (const email of uniqueEmails) {
+    const profile = profileByEmail.get(email);
+    if (!profile) {
+      notFound.push(email);
+      continue;
+    }
+    enrollRows.push({
+      user_id: profile.id,
+      course_slug: slug,
+      status: "active",
+      access_type: accessType || "full",
+    });
+  }
+
+  let success = 0;
+  const errors: string[] = [];
+
+  // Upsert in batches
+  for (let i = 0; i < enrollRows.length; i += 200) {
+    const batch = enrollRows.slice(i, i + 200);
+    const { error } = await adminDb
+      .from("enrollments")
+      .upsert(batch, { onConflict: "user_id,course_slug" });
+    if (error) {
+      errors.push(error.message);
+    } else {
+      success += batch.length;
+    }
+  }
+
+  revalidatePath("/(comunidad)", "layout");
+  return {
+    success,
+    failed: notFound.length + (errors.length > 0 ? Math.max(0, enrollRows.length - success) : 0),
+    notFound,
+    errors,
+    courseTitle: course.title,
+  };
+}
+
+/** Revoca acceso a un curso para varios usuarios a la vez. */
+export async function adminBulkRemoveCourseEnrollments(courseSlug: string, userIds: string[]) {
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  if (!userIds || userIds.length === 0) return { success: true, count: 0 };
+
+  const adminDb = createAdminClient();
+  const { error } = await adminDb
+    .from("enrollments")
+    .delete()
+    .eq("course_slug", courseSlug)
+    .in("user_id", userIds);
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/(comunidad)", "layout");
+  return { success: true, count: userIds.length };
+}
+
 export async function adminUpdateUserRole(userId: string, role: string) {
   const adminDb = createAdminClient();
   const admin = await isCurrentUserAdmin();
@@ -766,9 +998,10 @@ export async function getMyEnrollments() {
   if (enrolledCategories.length > 0) {
     const { data: siblings } = await supabase
       .from("courses")
-      .select("id, slug, title, short_description, category, badge_label, badge_color, tech_stack, duration_hours, level, image_url, icon, accent_color, is_featured, sort_order, price_clp")
+      .select("id, slug, title, short_description, category, badge_label, badge_color, tech_stack, duration_hours, level, image_url, icon, accent_color, is_featured, sort_order, price_clp, is_hidden")
       .in("category", enrolledCategories)
-      .eq("is_published", true);
+      .eq("is_published", true)
+      .eq("is_hidden", false);
 
     // Enrich siblings with lesson counts too
     const siblingIds = (siblings || []).map(s => s.id);
@@ -797,11 +1030,15 @@ export async function getMyEnrollments() {
     }));
   }
 
-  const allowedSlugs = ["power-bi", "python", "sql-server", "excel"];
-  const filteredEnrollments = enrichedEnrollments.filter((e: any) => allowedSlugs.includes(e.course_slug));
-  const filteredSiblings = programSiblings.filter((s: any) => allowedSlugs.includes(s.slug));
+  // Mostrar TODOS los cursos con enrollment real (incluye cohortes de campus
+  // virtual como "sql-server-junio"), no solo el catálogo principal.
+  // Los siblings de programa se limitan a cursos públicos no ocultos.
+  const filteredSiblings = programSiblings.filter((s: any) => !s.is_hidden);
 
-  return { enrollments: filteredEnrollments, programSiblings: filteredSiblings };
+  return {
+    enrollments: enrichedEnrollments.filter((e: any) => e.course),
+    programSiblings: filteredSiblings,
+  };
 }
 
 export async function getCourseLessons(courseId: string) {
@@ -813,7 +1050,7 @@ export async function getCourseLessons(courseId: string) {
 
   const [profileRes, courseDataRes, lessonsRes, progressDataRes] = await Promise.all([
     adminDb.from("profiles").select("is_on_trial, subscription_plan, subscription_expires_at, role").eq("id", user.id).maybeSingle(),
-    adminDb.from("courses").select("slug").eq("id", courseId).maybeSingle(),
+    adminDb.from("courses").select("slug, is_hidden").eq("id", courseId).maybeSingle(),
     adminDb.from("lessons")
       .select("id, title, module_name, module_order, lesson_order, video_url, duration_minutes, is_free_preview, superclass_language, resources, description, content_markdown")
       .eq("course_id", courseId)
@@ -836,6 +1073,10 @@ export async function getCourseLessons(courseId: string) {
   const progressData = progressDataRes.data || [];
   const completedLessonIds = progressData.map((p) => p.lesson_id);
 
+  // Cursos de campus (is_hidden) solo se desbloquean con enrollment explícito.
+  // Suscripción/trial/preview NO abren cohortes tipo "SQL Server Junio".
+  const isCampusCourse = courseData?.is_hidden === true;
+
   let enrollment = null;
   if (courseData?.slug) {
     const { data } = await adminDb
@@ -851,14 +1092,15 @@ export async function getCourseLessons(courseId: string) {
   const isAdmin = profile?.role === "admin" || (await isCurrentUserAdmin().catch(() => false));
   const isOnTrial = profile?.is_on_trial === true;
   let finalAccess = enrollment?.access_type || null;
-  const hasActiveSubscription = (profile?.subscription_plan && 
+  const hasActiveSubscription = !!(profile?.subscription_plan &&
     (!profile?.subscription_expires_at || new Date(profile.subscription_expires_at) >= new Date())) || isAdmin;
-  if (!finalAccess && hasActiveSubscription) finalAccess = "full";
-  if (isOnTrial) finalAccess = "trial";
 
-  // Without a plan, grant free-preview access so locked lessons are visible and
-  // free ones (is_free_preview) can be played.
-  if (!finalAccess || finalAccess === "free") {
+  if (!finalAccess && !isCampusCourse && hasActiveSubscription) finalAccess = "full";
+  // Trial solo si no hay enrollment y el curso no es de campus privado
+  if (!finalAccess && !isCampusCourse && isOnTrial) finalAccess = "trial";
+
+  // Free-preview solo en catálogo público (no campus oculto)
+  if ((!finalAccess || finalAccess === "free") && !isCampusCourse) {
     const { FREE_PREVIEW_ACCESS_ENABLED } = await import("@/lib/data/community-flags");
     if (FREE_PREVIEW_ACCESS_ENABLED && !hasActiveSubscription && !isOnTrial) {
       finalAccess = "free";
@@ -867,12 +1109,14 @@ export async function getCourseLessons(courseId: string) {
 
   const sanitizedLessons = lessons.map((l: any, index: number) => {
     let isUnlocked = false;
-    if (isAdmin || hasActiveSubscription || finalAccess === "full") {
+    if (isAdmin || finalAccess === "full") {
+      isUnlocked = true;
+    } else if (!isCampusCourse && hasActiveSubscription) {
       isUnlocked = true;
     } else if (finalAccess === "trial") {
       isUnlocked = index < 2;
     } else if (finalAccess === "free" || !finalAccess) {
-      isUnlocked = l.is_free_preview === true;
+      isUnlocked = !isCampusCourse && l.is_free_preview === true;
     }
 
     return {
