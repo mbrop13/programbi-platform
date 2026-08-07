@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, LogIn, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { persistRegistrationSource } from "@/lib/registration-source";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -70,10 +71,16 @@ export default function LoginPage() {
     setSuccess(null);
     try {
       const supabase = createClient();
+      const registrationSource = persistRegistrationSource();
+      const callbackParams = new URLSearchParams({
+        next: "/comunidad/inicio",
+        reg_source: registrationSource,
+      });
+
       const { error: authError } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: `${window.location.origin}/auth/callback?${callbackParams.toString()}`,
         },
       });
       if (authError) setError(authError.message);

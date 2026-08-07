@@ -5,7 +5,8 @@ import { sendNewMemberNotification } from '@/lib/email/mailersend'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/'
+  const nextParam = searchParams.get('next')
+  const next = (nextParam && nextParam !== '/') ? nextParam : '/comunidad/inicio'
   const regSource = searchParams.get('reg_source')
 
   if (code) {
@@ -26,6 +27,17 @@ export async function GET(request: Request) {
             return NextResponse.redirect(`${origin}/comunidad/business`)
           }
 
+          const googleName = user.user_metadata?.full_name || user.user_metadata?.name
+          const avatarUrl = user.user_metadata?.avatar_url || user.user_metadata?.picture
+
+          // Actualizar perfil si proviene de Google OAuth con nombre o avatar
+          if (googleName || avatarUrl) {
+            const updates: Record<string, any> = {}
+            if (googleName) updates.full_name = googleName
+            if (avatarUrl) updates.avatar_url = avatarUrl
+            await supabase.from("profiles").update(updates).eq("id", user.id)
+          }
+
           const createdAt = new Date(user.created_at).getTime()
           const now = Date.now()
           const isNewUser = (now - createdAt) < 60_000 // within 60 seconds
@@ -43,7 +55,7 @@ export async function GET(request: Request) {
               if (srcErr) console.error("❌ registration_source update:", srcErr.message)
             }
 
-            const name = user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0] || "Usuario"
+            const name = googleName || user.email?.split("@")[0] || "Usuario"
             await sendNewMemberNotification({
               name,
               email: user.email || "",

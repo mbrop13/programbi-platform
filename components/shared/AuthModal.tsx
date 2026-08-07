@@ -177,13 +177,14 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
 
     try {
       const registrationSource = persistRegistrationSource();
+      const defaultName = fullName.trim() || email.split("@")[0] || "Usuario";
 
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            full_name: fullName,
+            full_name: defaultName,
             whatsapp: whatsapp ? `${phonePrefix}${whatsapp}` : null,
             registration_source: registrationSource,
           },
@@ -231,7 +232,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              name: fullName,
+              name: defaultName,
               email,
               phone: whatsapp ? `${phonePrefix}${whatsapp}` : undefined,
             }),
@@ -242,7 +243,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
             if (redirectUrl) {
               window.location.href = redirectUrl;
             } else {
-              window.location.reload();
+              window.location.href = "/comunidad/inicio";
             }
           }, 1200);
         }
@@ -261,7 +262,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     try {
       // Persistir origen para el callback OAuth (nuevos registros con Google)
       const registrationSource = persistRegistrationSource();
-      const nextPath = redirectUrl || "/";
+      const nextPath = redirectUrl || "/comunidad/inicio";
       const callbackParams = new URLSearchParams({
         next: nextPath,
         reg_source: registrationSource,
