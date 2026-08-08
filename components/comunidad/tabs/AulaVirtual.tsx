@@ -277,6 +277,41 @@ export default function AulaVirtual({ courseId, onBack, onUpgradeClick, interfac
     completedLessonsRef.current = completedLessons;
   }, [completedLessons]);
 
+  // ─── Lesson Video Watch Tracking ───
+  useEffect(() => {
+    if (!selectedLesson || !courseId) return;
+
+    fetch("/api/tracking/lesson", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        lessonId: selectedLesson.id,
+        courseId,
+        incrementWatchSeconds: 10,
+        lastPositionSeconds: 0,
+        isCompleted: completedLessons.has(selectedLesson.id),
+      }),
+    }).catch((err) => console.error("Error sending initial lesson view tracking:", err));
+
+    const trackingInterval = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        fetch("/api/tracking/lesson", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            lessonId: selectedLesson.id,
+            courseId,
+            incrementWatchSeconds: 20,
+            lastPositionSeconds: 0,
+            isCompleted: completedLessons.has(selectedLesson.id),
+          }),
+        }).catch((err) => console.error("Error sending lesson view heartbeat:", err));
+      }
+    }, 20_000);
+
+    return () => clearInterval(trackingInterval);
+  }, [selectedLesson?.id, courseId, completedLessons]);
+
   // YouTube Player tracking and auto-complete logic at 70% watch time
   useEffect(() => {
     if (!videoId || !selectedLesson) return;

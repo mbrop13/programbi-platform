@@ -290,6 +290,29 @@ export default function LivePanel() {
     };
   }, [isWatchingLive, activeClass?.status, fetchClassInfo]);
 
+  // ─── Live Class Attendance Tracking ───
+  useEffect(() => {
+    if (!activeClass || activeClass.status !== "active" || !isWatchingLive) return;
+
+    fetch("/api/tracking/live", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ classId: activeClass.id, incrementSeconds: 30 }),
+    }).catch((err) => console.error("Error sending initial live attendance:", err));
+
+    const heartbeatInterval = setInterval(() => {
+      if (document.visibilityState === "visible") {
+        fetch("/api/tracking/live", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ classId: activeClass.id, incrementSeconds: 30 }),
+        }).catch((err) => console.error("Error sending live heartbeat:", err));
+      }
+    }, 30_000);
+
+    return () => clearInterval(heartbeatInterval);
+  }, [activeClass?.id, activeClass?.status, isWatchingLive]);
+
   const handleStartClass = async () => {
     if (!activeClass) return;
     setLoading(true);

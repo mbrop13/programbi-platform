@@ -10,6 +10,7 @@ import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
 import ArticleBlockEditor from "@/components/shared/ArticleBlockEditor";
 import AdminOverview from "./admin/AdminOverview";
+import ClassTrackingTab from "./admin/ClassTrackingTab";
 import {
   formatRegistrationSource,
   matchesRegistrationSourceFilter,
@@ -89,6 +90,7 @@ export default function AdminPanel() {
 
   const sidebarItems = [
     { id: "overview", label: "Estadísticas", icon: BarChart3 },
+    { id: "class_tracking", label: "Asistencia y Métricas", icon: Activity },
     { id: "support", label: "Soporte", icon: MessageSquare, badgeCount: unreadSupportCount },
     { id: "companies", label: "Empresas", icon: Building },
     { id: "members", label: "Miembros", icon: Users, badgeCount: unreadMembersCount },
@@ -136,15 +138,22 @@ export default function AdminPanel() {
                      handleTabChange(item.id);
                    }
                  }}
-                 className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all relative border-none cursor-pointer
-                   ${activeTab === item.id 
+                 className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-all border-none cursor-pointer ${
+                   activeTab === item.id 
                      ? "bg-brand-blue text-white shadow-md shadow-brand-blue/20" 
-                     : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-850 border border-neutral-100 dark:border-neutral-800/60 hover:border-neutral-200 dark:hover:border-neutral-700"}
-                 `}
+                     : "text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 hover:text-neutral-900 dark:hover:text-white bg-transparent"
+                 }`}
                >
-                  <Icon className="w-4 h-4" /> {item.label}
+                  <div className="flex items-center gap-2.5">
+                    <Icon className="w-4 h-4" />
+                    <span>{item.label}</span>
+                  </div>
                   {item.badgeCount && item.badgeCount > 0 ? (
-                    <span className="absolute top-1/2 -translate-y-1/2 right-3 min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-black shadow-sm" style={{ paddingBottom: '0.5px' }}>
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
+                      activeTab === item.id 
+                        ? "bg-white text-brand-blue" 
+                        : "bg-rose-500 text-white"
+                    }`}>
                       {item.badgeCount > 99 ? '99+' : item.badgeCount}
                     </span>
                   ) : null}
@@ -161,6 +170,7 @@ export default function AdminPanel() {
               transition={{ duration: 0.2 }}
             >
               { activeTab === "overview" && <AdminOverview /> }
+              { activeTab === "class_tracking" && <ClassTrackingTab /> }
               { activeTab === "companies" && <AdminCompanies /> }
               { activeTab === "members" && <AdminMembers /> }
               { activeTab === "leads" && <AdminLeads /> }
