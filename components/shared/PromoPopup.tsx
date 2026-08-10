@@ -172,48 +172,6 @@ function FeaturePills() {
   );
 }
 
-const DEFAULT_FREE_CLASSES_POPUP: PromoPopupData = {
-  id: "free_3_classes_invite",
-  title: "¡Prueba 3 Clases Gratis en la Comunidad!",
-  description: "Accede de inmediato a lecciones completas de Power BI, Python y SQL Server. Aprende a construir dashboards profesionales y consultar bases de datos desde cero sin costo ni compromisos.",
-  cta_text: "Empezar Mis Clases Gratis",
-  cta_url: "/comunidad/cursos",
-  badge_text: "🎉 ACCESO GRATUITO",
-  popup_type: "promo",
-  accent_color: "#1890FF",
-  image_url: null,
-  display_delay_seconds: 3,
-  dismissible: true,
-  show_once_per_session: true,
-  show_to: "all",
-  custom_html: null
-};
-
-function FreeClassesFeaturePills() {
-  const features = [
-    { label: "📊 Power BI desde cero" },
-    { label: "🐍 Python para Datos" },
-    { label: "🛢️ SQL Server" },
-    { label: "✨ Acceso Inmediato" },
-  ];
-
-  return (
-    <div className="flex flex-wrap gap-2 mt-4">
-      {features.map((f, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 + i * 0.1 }}
-          className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white/[0.07] border border-white/[0.1] text-white/80 text-[11px] sm:text-[12px] font-bold backdrop-blur-sm shadow-sm"
-        >
-          {f.label}
-        </motion.div>
-      ))}
-    </div>
-  );
-}
-
 /* ─── Main Popup ───────────────────────────────────────────────── */
 export default function PromoPopup() {
   const [popups, setPopups] = useState<PromoPopupData[]>([]);
@@ -234,6 +192,7 @@ export default function PromoPopup() {
           return false;
         });
 
+        // Solo popups activos del admin. Sin fallback de "3 clases gratis".
         const sessionFiltered = filtered.filter((p: PromoPopupData) => {
           if (p.show_once_per_session) {
             const dismissed = sessionStorage.getItem(`popup_dismissed_${p.id}`);
@@ -242,22 +201,10 @@ export default function PromoPopup() {
           return true;
         });
 
-        if (sessionFiltered.length === 0) {
-          const dismissedDefault = sessionStorage.getItem(`popup_dismissed_${DEFAULT_FREE_CLASSES_POPUP.id}`);
-          if (!dismissedDefault) {
-            setPopups([DEFAULT_FREE_CLASSES_POPUP]);
-          } else {
-            setPopups([]);
-          }
-        } else {
-          setPopups(sessionFiltered);
-        }
+        setPopups(sessionFiltered);
       } catch (err) {
         console.error("Error loading popups:", err);
-        const dismissedDefault = sessionStorage.getItem(`popup_dismissed_${DEFAULT_FREE_CLASSES_POPUP.id}`);
-        if (!dismissedDefault) {
-          setPopups([DEFAULT_FREE_CLASSES_POPUP]);
-        }
+        setPopups([]);
       }
     }
     loadPopups();

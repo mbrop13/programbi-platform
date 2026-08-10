@@ -245,8 +245,10 @@ export default function CoursesSection() {
                       }}
                     />
 
-                    <div
-                      className="relative h-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white flex flex-col transition-all duration-500 group-hover:border-slate-300/90 group-hover:shadow-xl"
+                    {/* Toda la tarjeta es clickeable hacia el curso */}
+                    <Link
+                      href={`/cursos/${course.slug}`}
+                      className="relative h-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white flex flex-col transition-all duration-500 group-hover:border-slate-300/90 group-hover:shadow-xl no-underline text-inherit cursor-pointer"
                       style={{
                         boxShadow:
                           "0 12px 36px -16px rgba(15,23,42,0.1), 0 1px 0 0 rgba(255,255,255,0.9)",
@@ -294,11 +296,9 @@ export default function CoursesSection() {
                           ))}
                         </div>
 
-                        <Link href={`/cursos/${course.slug}`} className="block no-underline">
-                          <h3 className="font-display text-base font-bold text-slate-900 mb-2 leading-snug group-hover:text-[#1890FF] transition-colors text-left line-clamp-2">
-                            {course.title}
-                          </h3>
-                        </Link>
+                        <h3 className="font-display text-base font-bold text-slate-900 mb-2 leading-snug group-hover:text-[#1890FF] transition-colors text-left line-clamp-2">
+                          {course.title}
+                        </h3>
 
                         <p className="text-slate-500 text-xs leading-relaxed mb-4 text-left line-clamp-3 flex-1">
                           {course.shortDescription}
@@ -348,9 +348,8 @@ export default function CoursesSection() {
                             )}
                           </div>
 
-                          <Link
-                            href={`/cursos/${course.slug}`}
-                            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 shadow-sm transition-all duration-300 text-xs font-bold font-sans group/btn no-underline shrink-0"
+                          <span
+                            className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 shadow-sm transition-all duration-300 text-xs font-bold font-sans group-hover:brightness-95 shrink-0"
                             style={{
                               backgroundColor: `${accent}14`,
                               color: accent,
@@ -359,12 +358,12 @@ export default function CoursesSection() {
                             <span>Ver temario</span>
                             <ArrowRight
                               size={13}
-                              className="transition-transform group-hover/btn:translate-x-0.5"
+                              className="transition-transform group-hover:translate-x-0.5"
                             />
-                          </Link>
+                          </span>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </motion.div>
                 );
               })}
