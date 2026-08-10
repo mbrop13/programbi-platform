@@ -9,6 +9,7 @@ import * as LucideIcons from "lucide-react";
 import React from "react";
 import { courses, getFeaturedCourses } from "@/lib/data/courses";
 import { FadeIn, StaggerChildren, StaggerItem, TiltCard } from "@/components/shared/AnimatedComponents";
+import { trackCourseCardClick } from "@/lib/analytics/marketing";
 
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
@@ -112,7 +113,11 @@ export default function CursosPageClient() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.06 }}
                 >
-                  <Link href={`/cursos/${course.slug}`} className="group block no-underline h-full">
+                  <Link
+                    href={`/cursos/${course.slug}`}
+                    onClick={() => trackCourseCardClick(course.slug, "cursos_catalog")}
+                    className="group block no-underline h-full"
+                  >
                     <motion.div
                       className="bg-white rounded-2xl overflow-hidden border border-gray-100 h-full flex flex-col transition-colors hover:border-[#BAE7FF]"
                       whileHover={{ y: -8, boxShadow: "0 20px 40px -10px rgba(15,23,42,0.08)" }}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { trackWhatsAppClick } from "@/lib/analytics/marketing";
 
 export default function WhatsAppButton() {
   const pathname = usePathname();
@@ -21,6 +22,11 @@ export default function WhatsAppButton() {
   const whatsappUrl =
     "https://wa.me/56935409699?text=Hola!%20Me%20gustar%C3%ADa%20recibir%20m%C3%A1s%20informaci%C3%B3n%20sobre%20los%20cursos%20de%20ProgramBI.";
 
+  const handleWhatsAppClick = () => {
+    const courseMatch = pathname?.match(/^\/cursos\/([^/?#]+)/);
+    trackWhatsAppClick(pathname || "unknown", courseMatch?.[1]);
+  };
+
   if (pathname?.startsWith("/blog")) return null;
 
   return (
@@ -33,7 +39,10 @@ export default function WhatsAppButton() {
             exit={{ opacity: 0, x: 8 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
             className="relative mr-3 bg-slate-900 text-white text-[13px] font-semibold px-3.5 py-2 rounded-lg shadow-lg flex items-center gap-2 pointer-events-auto cursor-pointer"
-            onClick={() => window.open(whatsappUrl, "_blank", "noopener,noreferrer")}
+            onClick={() => {
+              handleWhatsAppClick();
+              window.open(whatsappUrl, "_blank", "noopener,noreferrer");
+            }}
           >
             <span>¿Dudas? Escríbenos</span>
             <div className="absolute right-[-4px] top-1/2 -translate-y-1/2 w-2 h-2 bg-slate-900 rotate-45" />
@@ -58,6 +67,7 @@ export default function WhatsAppButton() {
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={handleWhatsAppClick}
           className="relative w-14 h-14 rounded-full flex items-center justify-center bg-[#25D366] hover:bg-[#20ba5a] transition-transform duration-200 hover:scale-105 active:scale-95"
           style={{ boxShadow: "0 6px 18px rgba(37, 211, 102, 0.32)" }}
           aria-label="Contactar por WhatsApp"

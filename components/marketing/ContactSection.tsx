@@ -8,6 +8,7 @@ import { Send, Lock, ArrowRight } from "lucide-react";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { contactGallery } from "@/lib/data/images";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
+import { trackLeadSubmit } from "@/lib/analytics/marketing";
 
 const interestChips = [
   "Análisis de Datos", "Power BI", "Python", "SQL Server", "Excel",
@@ -74,6 +75,7 @@ export default function ContactSection() {
 
       const matchedChip = selectedChips.find(chip => courseSlugMap[chip]);
       const destSlug = matchedChip ? courseSlugMap[matchedChip] : "";
+      trackLeadSubmit("contact", "home_contact_section", destSlug || undefined);
 
       setTimeout(() => {
         if (destSlug) {

@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Inter, Poppins, Caveat, Playfair_Display, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import { Analytics } from "@vercel/analytics/react";
+import MarketingAnalytics from "@/components/shared/MarketingAnalytics";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -214,6 +216,9 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
+        <Suspense fallback={null}>
+          <MarketingAnalytics />
+        </Suspense>
         <Analytics />
       </body>
     </html>

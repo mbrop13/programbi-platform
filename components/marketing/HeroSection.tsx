@@ -5,6 +5,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Briefcase, Database, Code, CheckCircle, BarChart2, Sparkles, Terminal, Play, Server, FileText } from "lucide-react";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
+import { trackCtaClick } from "@/lib/analytics/marketing";
 
 /* ─── Modern Widescreen Data Visual (Video Pipeline) ─── */
 const VIDEOS = [
@@ -190,6 +191,7 @@ export default function HeroSection() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Link
                   href="/cursos/analisis-de-datos"
+                  onClick={() => trackCtaClick("Cotiza Ahora", "home_hero", { course_slug: "analisis-de-datos" })}
                   className="group px-8 py-4 sm:px-10 sm:py-4 rounded-xl text-white font-bold text-base sm:text-lg flex items-center justify-center gap-3 no-underline transition-all duration-300 hover:-translate-y-1 shadow-lg"
                   style={{
                     background: "linear-gradient(135deg, #1890FF 0%, #0050b3 100%)",
@@ -201,6 +203,7 @@ export default function HeroSection() {
                 </Link>
                 <Link
                   href="/cursos"
+                  onClick={() => trackCtaClick("Ver Cursos", "home_hero")}
                   className="px-8 py-4 sm:px-10 sm:py-4 rounded-xl bg-white text-gray-700 font-bold text-base sm:text-lg border border-gray-200 hover:border-[#1890FF] hover:text-[#1890FF] transition-all flex items-center justify-center gap-3 no-underline hover:-translate-y-1 shadow-sm hover:shadow"
                 >
                   <span>Ver Cursos</span>

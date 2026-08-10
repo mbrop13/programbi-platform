@@ -19,6 +19,12 @@ import TemarioSection from "@/components/marketing/temario/TemarioSection";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { type CourseSchedule, SCHEDULE_COUNTRIES, convertSchedule, getNearestSchedule, getAllActiveSchedules, staticSchedules } from "@/lib/data/course-schedules";
 import { useCountry } from "@/lib/context/CountryContext";
+import {
+  trackCheckoutStart,
+  trackCourseView,
+  trackCtaClick,
+  trackWhatsAppClick,
+} from "@/lib/analytics/marketing";
 
 function DynamicIcon({ name, className }: { name: string; className?: string }) {
   const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
@@ -80,6 +86,12 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   };
 
   const handleCheckoutCTA = async () => {
+     trackCtaClick(
+       isLoggedIn ? "Inscribirse y pagar" : "Registrarse para cotizar",
+       "course_detail_sidebar",
+       { course_slug: course.slug }
+     );
+
      if (!isLoggedIn) {
         setShowAuthModal(true);
         return;
@@ -102,6 +114,11 @@ export default function CourseDetailClient({ course }: { course: Course }) {
      } catch(e) {}
      window.location.href = `/pago?curso=${course.slug}`;
   };
+
+  // Marketing: course detail view
+  useEffect(() => {
+    trackCourseView(course.slug, course.title);
+  }, [course.slug, course.title]);
 
   // Check auth state + listen for changes
   useEffect(() => {
@@ -230,10 +247,18 @@ export default function CourseDetailClient({ course }: { course: Course }) {
     : 0;
 
   const handleCheckout = async () => {
+    trackCtaClick("Pagar ahora", "course_detail_checkout", { course_slug: course.slug });
+
     if (!isLoggedIn) {
       setShowAuthModal(true);
       return;
     }
+
+    trackCheckoutStart({
+      courseSlugs: [course.slug, ...bumpSelections.map((b) => b.slug)].filter(Boolean),
+      value: grandTotal ?? undefined,
+      location: "course_detail",
+    });
     
     try {
       const res = await fetch("/api/mp/create", {
@@ -605,6 +630,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                           href={`https://wa.me/56935409699?text=Hola!%20Me%20gustar%C3%ADa%20consultar%20por%20las%20pr%C3%B3ximas%20fechas%20y%20horarios%20del%20curso%20${encodeURIComponent(course.title)}%20-${encodeURIComponent(activeLevel?.name || "Básico")}`}
                           target="_blank"
                           rel="noopener noreferrer"
+                          onClick={() => trackWhatsAppClick("course_detail_no_schedule", course.slug)}
                           className="w-full py-3.5 sm:py-4 rounded-xl text-white font-bold text-xs sm:text-sm flex justify-center items-center gap-1.5 sm:gap-2 transition-all cursor-pointer border-none shadow-md hover:shadow-lg hover:-translate-y-0.5 no-underline bg-[#25D366] hover:bg-[#20ba5a]"
                         >
                           <LucideIcons.MessageCircle className="w-4 h-4 text-white flex-shrink-0" />

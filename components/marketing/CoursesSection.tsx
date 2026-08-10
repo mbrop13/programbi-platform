@@ -13,6 +13,7 @@ import { courses, type Course } from "@/lib/data/courses";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import SectionHeader from "@/components/shared/SectionHeader";
 import { createClient } from "@/lib/supabase/client";
+import { trackCourseCardClick, trackCtaClick } from "@/lib/analytics/marketing";
 
 const categories = [
   { id: "destacados", label: "Programas Destacados", desc: "Nuestros bootcamps de élite más populares" },
@@ -248,6 +249,7 @@ export default function CoursesSection() {
                     {/* Toda la tarjeta es clickeable hacia el curso */}
                     <Link
                       href={`/cursos/${course.slug}`}
+                      onClick={() => trackCourseCardClick(course.slug, "home_courses_section")}
                       className="relative h-full rounded-2xl overflow-hidden border border-slate-200/80 bg-white flex flex-col transition-all duration-500 group-hover:border-slate-300/90 group-hover:shadow-xl no-underline text-inherit cursor-pointer"
                       style={{
                         boxShadow:
@@ -376,6 +378,7 @@ export default function CoursesSection() {
           <div className="mt-8 flex justify-center w-full">
             <Link
               href="/cursos"
+              onClick={() => trackCtaClick("Ver todos los cursos", "home_courses_section")}
               className="inline-flex items-center gap-2.5 bg-white border border-slate-200 text-slate-700 font-bold text-[13px] px-8 py-3.5 rounded-xl hover:bg-[#1890FF] hover:text-white hover:border-[#1890FF] transition-all no-underline group shadow-sm hover:shadow-md hover:shadow-blue-500/10 cursor-pointer"
             >
               <span>Ver todos los cursos</span> 

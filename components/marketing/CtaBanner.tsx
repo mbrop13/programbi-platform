@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
+import { trackCtaClick } from "@/lib/analytics/marketing";
 
 export default function CtaBanner() {
   return (
@@ -47,6 +48,7 @@ export default function CtaBanner() {
           <div className="flex flex-col sm:flex-row gap-5 justify-center">
             <Link
               href="#contacto"
+              onClick={() => trackCtaClick("Solicitar Información", "home_cta_banner")}
               className="group px-10 py-5 rounded-2xl bg-white text-[#1890FF] font-bold text-xl inline-flex items-center justify-center gap-3 no-underline hover:-translate-y-1 transition-all shadow-2xl"
             >
               Solicitar Información
@@ -54,6 +56,7 @@ export default function CtaBanner() {
             </Link>
             <Link
               href="/cursos"
+              onClick={() => trackCtaClick("Ver Catálogo", "home_cta_banner")}
               className="px-10 py-5 rounded-2xl border-2 border-white/30 text-white font-bold text-xl inline-flex items-center justify-center gap-3 no-underline hover:bg-white/10 hover:-translate-y-1 transition-all"
             >
               Ver Catálogo

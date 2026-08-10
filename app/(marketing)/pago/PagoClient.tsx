@@ -16,6 +16,7 @@ import { type CourseSchedule, analisisDeDatosSlugs, formatScheduleDate, getNeare
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { useCountry } from "@/lib/context/CountryContext";
 import { validateCouponAction } from "@/lib/supabase/comunidad-ai";
+import { trackCheckoutStart, trackLeadSubmit } from "@/lib/analytics/marketing";
 
 type Mode = "individual" | "enterprise";
 
@@ -424,6 +425,11 @@ export default function PagoClient() {
   const handleCheckout = async () => {
     if (cartItems.length === 0) return;
     setIsCheckingOut(true);
+    trackCheckoutStart({
+      courseSlugs: cartItems.map((item) => item.slug),
+      value: finalPriceWithCoupon,
+      location: "pago_page",
+    });
     try {
       // In a real multi-item implementation, we modify backend to accept `items` array.
       // Below is the mapped array to pass to the updated Flow creation logic.
@@ -474,6 +480,7 @@ export default function PagoClient() {
           leadType: "enterprise",
         }),
       });
+      trackLeadSubmit("enterprise", "pago_page");
       setEnterpriseSuccess(true);
     } catch (err) {
       alert("Error al enviar la solicitud.");
