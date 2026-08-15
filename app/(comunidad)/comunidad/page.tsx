@@ -10,7 +10,7 @@ export default async function ComunidadPage() {
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
-      <main>
+      <main className="page-reveal" data-page-reveal>
         <CommunityLanding isLoggedIn={!!profile} />
       </main>
       <Footer />

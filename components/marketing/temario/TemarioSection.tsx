@@ -465,7 +465,7 @@ export default function TemarioSection({
           backgroundSize: "48px 48px",
         }}
       />
-      {course.slug === "copilot" || course.slug === "copilot-studio" ? (
+      {course.slug === "copilot" ? (
         <>
           {/* Copilot Brand Spectrum Ambient Glow Lights */}
           <div className="pointer-events-none absolute -top-20 left-1/4 h-[450px] w-[500px] rounded-full bg-gradient-to-tr from-[#00A4EF]/20 to-[#8661C5]/20 blur-[130px]" />

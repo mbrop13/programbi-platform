@@ -103,9 +103,8 @@ export default function CoursesSection() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Filter logic — destacados: máximo 4, sin Copilot / Copilot Studio
-  const isCopilotFamily = (slug: string) =>
-    slug === "copilot" || slug === "copilot-studio";
+  // Filter logic — destacados: máximo 4, sin Copilot
+  const isCopilotFamily = (slug: string) => slug === "copilot";
 
   const getFilteredCourses = () => {
     switch (selectedCat) {
@@ -126,7 +125,7 @@ export default function CoursesSection() {
         );
       case "auto":
         return courses.filter((c) =>
-          ["power-automate", "ia-productividad", "copilot", "copilot-studio"].includes(c.slug)
+          ["power-automate", "ia-productividad", "copilot"].includes(c.slug)
         );
       default:
         return courses

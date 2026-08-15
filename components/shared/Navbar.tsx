@@ -40,6 +40,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(false);
   const [isMegaOpen, setIsMegaOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [authModal, setAuthModal] = useState<{ isOpen: boolean, tab: "login" | "register" }>({ isOpen: false, tab: "login" });
@@ -54,6 +55,7 @@ export default function Navbar() {
   const megaTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const userMenuTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastScrollY = useRef(0);
+  const isMobileOpenRef = useRef(false);
   const supabase = createClient();
   const pathname = usePathname();
   const isNewsletter = pathname?.startsWith("/newsletter");
@@ -70,7 +72,7 @@ export default function Navbar() {
 
     // Hide on scroll down, show on scroll up (only after 100px)
     if (latest > 100) {
-      if (diff > 5) {
+      if (diff > 5 && !isMobileOpenRef.current) {
         setIsHidden(true);
         setIsMegaOpen(false);
         setIsUserMenuOpen(false);
@@ -153,6 +155,11 @@ export default function Navbar() {
   }, [user]);
 
   useEffect(() => {
+    isMobileOpenRef.current = isMobileOpen;
+    if (!isMobileOpen) setIsMobileCoursesOpen(false);
+  }, [isMobileOpen]);
+
+  useEffect(() => {
     if (isMobileOpen || authModal.isOpen) {
       document.body.style.overflow = "hidden";
     } else {
@@ -160,6 +167,20 @@ export default function Navbar() {
     }
     return () => { document.body.style.overflow = ""; };
   }, [isMobileOpen, authModal.isOpen]);
+
+  useEffect(() => {
+    if (!isMobileOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsMobileOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [isMobileOpen]);
+
+  const toggleMobileMenu = () => {
+    setIsHidden(false);
+    setIsMobileOpen((open) => !open);
+  };
 
   const handleMegaEnter = () => {
     if (megaTimeout.current) clearTimeout(megaTimeout.current);
@@ -202,7 +223,7 @@ export default function Navbar() {
       <SupportModal isOpen={isSupportModalOpen} onClose={() => setIsSupportModalOpen(false)} userEmail={user?.email || ""} />
       
       <motion.nav
-        animate={{ y: isHidden ? "-100%" : "0%" }}
+        animate={{ y: isHidden && !isMobileOpen ? "-100%" : "0%" }}
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
@@ -432,8 +453,15 @@ export default function Navbar() {
             )}
           </div>
 
-          <button onClick={() => setIsMobileOpen(true)} className="lg:hidden text-gray-800 bg-transparent border-none cursor-pointer p-2 rounded-xl hover:bg-gray-100 transition-colors ml-auto">
-            <Menu size={26} />
+          <button
+            type="button"
+            onClick={toggleMobileMenu}
+            aria-expanded={isMobileOpen}
+            aria-controls="mobile-nav"
+            aria-label={isMobileOpen ? "Cerrar menú" : "Abrir menú"}
+            className="lg:hidden ml-auto inline-flex h-11 w-11 items-center justify-center rounded-xl border-none bg-neutral-900 text-white cursor-pointer active:scale-[0.96]"
+          >
+            {isMobileOpen ? <X size={20} strokeWidth={2.2} /> : <Menu size={20} strokeWidth={2.2} />}
           </button>
         </div>
 
@@ -480,72 +508,152 @@ export default function Navbar() {
       <AnimatePresence>
         {isMobileOpen && (
           <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9999]" onClick={() => setIsMobileOpen(false)} />
-            <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }} transition={{ type: "spring", stiffness: 300, damping: 30 }} className="fixed top-0 right-0 bottom-0 w-[85%] max-w-[400px] z-[10000] bg-white flex flex-col shadow-2xl">
-              <div className="flex items-center justify-between p-5 border-b border-gray-100">
-                <Image src={LOGO_URL} alt="ProgramBI" width={140} height={40} className="h-8 w-auto" unoptimized />
-                <button onClick={() => setIsMobileOpen(false)} className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-600 border-none cursor-pointer hover:bg-gray-100">
-                  <X size={22} />
-                </button>
-              </div>
-
-              <div className="flex-1 overflow-auto p-5 space-y-1">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className={`lg:hidden fixed inset-0 z-[49] bg-black/25 ${isNewsletter ? "top-[88px]" : "top-16"}`}
+              onClick={() => setIsMobileOpen(false)}
+            />
+            <motion.div
+              id="mobile-nav"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
+              className={`lg:hidden fixed inset-x-0 bottom-0 z-[49] flex flex-col bg-white ${isNewsletter ? "top-[88px]" : "top-16"}`}
+            >
+              <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-3">
                 {user && (
-                   <div className="mb-6 p-4 rounded-3xl bg-slate-50 border border-slate-100">
-                      <div className="flex items-center gap-4 mb-4">
-                         <div className="w-12 h-12 rounded-2xl bg-[#1890FF] flex items-center justify-center text-white font-bold text-lg">
-                            {getInitials(user.user_metadata?.full_name || user.email)}
-                         </div>
-                         <div>
-                            <p className="font-bold text-slate-900 leading-tight">{user.user_metadata?.full_name || "Estudiante"}</p>
-                            <p className="text-xs text-slate-400 truncate max-w-[180px]">{user.email}</p>
-                         </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                         <Link href="/comunidad/mis-cursos" onClick={() => setIsMobileOpen(false)} className="flex flex-col items-center gap-2 p-3 rounded-2xl bg-white border border-slate-100 text-[#1890FF] no-underline">
-                            <LayoutDashboard size={20} />
-                            <span className="text-[10px] font-bold uppercase">Comunidad</span>
-                         </Link>
-                          <button
-                             onClick={() => { setIsMobileOpen(false); setProfileModal({ isOpen: true, tab: "profile" }); }}
-                             className="flex flex-col items-center gap-2 p-3 rounded-2xl bg-white border border-slate-100 text-slate-500 bg-transparent cursor-pointer font-sans"
-                          >
-                             <UserCircle size={20} />
-                             <span className="text-[10px] font-bold uppercase">Perfil</span>
-                          </button>
-                         {isAdmin && (
-                           <Link href="/comunidad/admin" onClick={() => setIsMobileOpen(false)} className="flex flex-col items-center gap-2 p-3 rounded-2xl bg-amber-50 border border-amber-100 text-amber-600 no-underline col-span-2">
-                              <ShieldAlert size={20} />
-                              <span className="text-[10px] font-bold uppercase">Panel Admin</span>
-                           </Link>
-                         )}
-                      </div>
-                   </div>
-                )}
-              
-                {navLinks.map((link, i) => (
-                  <motion.div key={link.href} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}>
-                    <Link href={link.href} onClick={() => setIsMobileOpen(false)} className="block py-4 px-4 text-lg font-bold text-gray-800 hover:text-[#1890FF] hover:bg-blue-50 rounded-xl transition-all no-underline">
-                      {link.label}
+                  <div className="mb-3 flex items-center gap-3 rounded-2xl bg-neutral-50 px-3 py-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-sm font-semibold text-white">
+                      {getInitials(user.user_metadata?.full_name || user.email)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-neutral-900">
+                        {user.user_metadata?.full_name || "Estudiante"}
+                      </p>
+                      <p className="truncate text-xs text-neutral-500">{user.email}</p>
+                    </div>
+                    <Link
+                      href="/comunidad/cursos"
+                      onClick={() => setIsMobileOpen(false)}
+                      className="shrink-0 text-xs font-semibold text-neutral-900 no-underline"
+                    >
+                      Comunidad
                     </Link>
-                  </motion.div>
-                ))}
+                  </div>
+                )}
+
+                <nav className="flex flex-col">
+                  {navLinks.map((link) =>
+                    link.hasMega ? (
+                      <div key={link.href} className="border-b border-neutral-100">
+                        <div className="flex items-center">
+                          <Link
+                            href={link.href}
+                            onClick={() => setIsMobileOpen(false)}
+                            className="flex-1 py-3.5 text-[17px] font-semibold text-neutral-900 no-underline"
+                          >
+                            {link.label}
+                          </Link>
+                          <button
+                            type="button"
+                            onClick={() => setIsMobileCoursesOpen((v) => !v)}
+                            aria-expanded={isMobileCoursesOpen}
+                            aria-label={isMobileCoursesOpen ? "Ocultar cursos" : "Ver cursos"}
+                            className="flex h-11 w-11 items-center justify-center rounded-xl border-none bg-transparent text-neutral-500 cursor-pointer"
+                          >
+                            <ChevronDown
+                              size={18}
+                              className={`transition-transform duration-150 ${isMobileCoursesOpen ? "rotate-180" : ""}`}
+                            />
+                          </button>
+                        </div>
+                        {isMobileCoursesOpen && (
+                          <div className="pb-2">
+                            {courses.map((course) => (
+                              <Link
+                                key={course.slug}
+                                href={`/cursos/${course.slug}`}
+                                onClick={() => setIsMobileOpen(false)}
+                                className="flex items-center justify-between gap-3 py-2.5 pl-1 pr-1 text-[15px] text-neutral-600 no-underline active:text-neutral-900"
+                              >
+                                <span>{course.title}</span>
+                                <ArrowRight size={14} className="shrink-0 text-neutral-300" />
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        onClick={() => setIsMobileOpen(false)}
+                        className="border-b border-neutral-100 py-3.5 text-[17px] font-semibold text-neutral-900 no-underline"
+                      >
+                        {link.label}
+                      </Link>
+                    )
+                  )}
+                </nav>
               </div>
 
-              <div className="p-5 space-y-3 border-t border-gray-100 bg-slate-50">
+              <div className="shrink-0 border-t border-neutral-100 bg-white px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
                 {user ? (
-                   <button onClick={handleLogout} className="w-full flex items-center justify-center gap-2 py-4 rounded-xl text-red-500 font-bold text-base no-underline bg-red-50 hover:bg-red-100 border-none cursor-pointer shadow-sm">
-                      <LogOut size={18} /> Cerrar Sesión
-                   </button>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMobileOpen(false);
+                        setProfileModal({ isOpen: true, tab: "profile" });
+                      }}
+                      className="flex-1 rounded-xl border border-neutral-200 bg-white py-3 text-sm font-semibold text-neutral-800 cursor-pointer"
+                    >
+                      Perfil
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="flex-1 rounded-xl border-none bg-neutral-100 py-3 text-sm font-semibold text-neutral-800 cursor-pointer"
+                    >
+                      Cerrar sesión
+                    </button>
+                  </div>
                 ) : (
-                   <>
-                    <button onClick={() => { setIsMobileOpen(false); setAuthModal({ isOpen: true, tab: "register" }); }} className="w-full flex items-center justify-center gap-2 py-4 rounded-xl text-white font-bold text-base no-underline bg-[#1890FF] hover:bg-[#1177d1] border-none cursor-pointer shadow-lg shadow-blue-500/20">
-                      <Sparkles size={18} className="text-white"/> Regístrate
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMobileOpen(false);
+                        setAuthModal({ isOpen: true, tab: "login" });
+                      }}
+                      className="flex-1 rounded-xl border border-neutral-200 bg-white py-3 text-sm font-semibold text-neutral-800 cursor-pointer"
+                    >
+                      Entrar
                     </button>
-                    <button onClick={() => { setIsMobileOpen(false); setAuthModal({ isOpen: true, tab: "login" }); }} className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-white text-slate-700 font-bold text-base no-underline border border-slate-200 cursor-pointer hover:bg-slate-50">
-                      <LogIn size={18} className="text-slate-400" /> Iniciar Sesión
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMobileOpen(false);
+                        setAuthModal({ isOpen: true, tab: "register" });
+                      }}
+                      className="flex-1 rounded-xl border-none bg-neutral-900 py-3 text-sm font-semibold text-white cursor-pointer"
+                    >
+                      Regístrate
                     </button>
-                   </>
+                  </div>
+                )}
+                {isAdmin && (
+                  <Link
+                    href="/comunidad/admin"
+                    onClick={() => setIsMobileOpen(false)}
+                    className="mt-2 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-neutral-500 no-underline"
+                  >
+                    <ShieldAlert size={14} /> Panel admin
+                  </Link>
                 )}
               </div>
             </motion.div>

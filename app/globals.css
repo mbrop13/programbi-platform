@@ -828,4 +828,179 @@ html.dark a.bg-brand-blue svg {
   color: #0a0a0a !important;
 }
 
+/* ============================================ */
+/* Reveal footer + liquid glass                  */
+/* Aproximación web de Apple Liquid Glass.       */
+/* ============================================ */
+
+:root {
+  --page-reveal-bg: #ffffff;
+  --page-reveal-radius: 2rem;
+}
+
+.page-reveal {
+  position: relative;
+  z-index: 20;
+  isolation: isolate;
+  border-radius: 0 0 var(--page-reveal-radius) var(--page-reveal-radius);
+  box-shadow: 0 30px 80px -20px rgba(15, 15, 40, 0.18);
+  background-color: var(--page-reveal-bg);
+  background: var(--page-reveal-bg);
+}
+
+.site-footer {
+  position: relative;
+  z-index: 0;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #0a0c14;
+  color: #fff;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.site-footer.is-armed {
+  position: sticky;
+  bottom: 0;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.site-footer__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.7s ease;
+}
+
+.site-footer__video.is-on {
+  opacity: 1;
+}
+
+.site-footer__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, transparent 0%, rgba(10, 12, 20, 0.55) 100%);
+  pointer-events: none;
+}
+
+.site-footer__veil {
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(38vh, 18rem);
+  pointer-events: none;
+  background: linear-gradient(180deg, var(--page-reveal-bg) 0%, transparent 100%);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  -webkit-mask-image: linear-gradient(#000, transparent);
+  mask-image: linear-gradient(#000, transparent);
+}
+
+.site-footer__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 100svh;
+  padding: 7rem 1.25rem 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .site-footer__content {
+    padding: 8rem 2.5rem 1.75rem;
+  }
+}
+
+.liquid-glass {
+  position: relative;
+  isolation: isolate;
+  border-radius: 1.75rem;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.03));
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    inset 0 -18px 36px rgba(0, 0, 0, 0.22),
+    0 24px 64px rgba(0, 0, 0, 0.32);
+}
+
+.liquid-glass.pill {
+  border-radius: 999px;
+}
+
+.liquid-glass.dense {
+  background: linear-gradient(165deg, rgba(16, 18, 26, 0.52), rgba(16, 18, 26, 0.32));
+}
+
+.liquid-glass.light {
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.64), rgba(255, 255, 255, 0.22));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.88),
+    inset 0 -14px 28px rgba(0, 0, 0, 0.12),
+    0 10px 28px rgba(15, 15, 40, 0.16);
+}
+
+.liquid-glass.logo {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border-radius: 1rem;
+  padding: 0.55rem 0.85rem;
+}
+
+.liquid-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.72),
+    rgba(255, 255, 255, 0.04) 58%,
+    rgba(255, 255, 255, 0.32)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .liquid-glass {
+    background: rgba(18, 20, 28, 0.94);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .site-footer__veil {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-footer__video {
+    display: none;
+  }
+}
+
+body.footer-revealed nav.fixed {
+  transform: translateY(-100%) !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.footer-revealed [class*="z-[9998]"] {
+  opacity: 0;
+  pointer-events: none;
+}
+
 

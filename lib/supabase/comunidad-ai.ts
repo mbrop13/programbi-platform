@@ -63,7 +63,26 @@ export async function adminGetCourses() {
     .order("created_at", { ascending: false });
 
   if (error) { console.error("Error:", error); return []; }
-  return (data || []).map((c: any) => ({ ...c, lesson_count: c.lessons?.length || 0, lessons: undefined }));
+  const courses = (data || []).map((c: any) => ({ ...c, lesson_count: c.lessons?.length || 0, lessons: undefined, enrollment_count: 0 }));
+
+  const slugs = courses.map((c: { slug: string }) => c.slug).filter(Boolean);
+  if (slugs.length === 0) return courses;
+
+  const counts: Record<string, number> = {};
+  for (let i = 0; i < slugs.length; i += 80) {
+    const chunk = slugs.slice(i, i + 80);
+    const { data: enrolls } = await adminDb
+      .from("enrollments")
+      .select("course_slug")
+      .in("course_slug", chunk)
+      .eq("status", "active");
+    for (const e of enrolls || []) {
+      if (!e.course_slug) continue;
+      counts[e.course_slug] = (counts[e.course_slug] || 0) + 1;
+    }
+  }
+
+  return courses.map((c: any) => ({ ...c, enrollment_count: counts[c.slug] || 0 }));
 }
 
 export async function adminCreateCourse(courseData: {
@@ -702,6 +721,59 @@ export async function adminBulkEnrollByEmails(
     errors,
     courseTitle: course.title,
   };
+}
+
+/** Busca miembros registrados por nombre o email para otorgar acceso. */
+export async function adminSearchMembers(query: string) {
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const q = (query || "").trim().replace(/[%_,()]/g, " ").replace(/\s+/g, " ");
+  if (q.length < 2) return [];
+
+  const adminDb = createAdminClient();
+  const { data, error } = await adminDb
+    .from("profiles")
+    .select("id, full_name, email, avatar_url")
+    .or(`full_name.ilike.%${q}%,email.ilike.%${q}%`)
+    .order("full_name", { ascending: true })
+    .limit(20);
+
+  if (error) {
+    console.error("Error searching members:", error);
+    return [];
+  }
+  return data || [];
+}
+
+/** Otorga acceso a un curso a varios usuarios ya identificados. */
+export async function adminBulkEnrollByUserIds(
+  courseSlug: string,
+  userIds: string[],
+  accessType: string = "full"
+) {
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const slug = (courseSlug || "").trim();
+  const ids = [...new Set((userIds || []).filter(Boolean))];
+  if (!slug || ids.length === 0) return { success: 0 };
+
+  const adminDb = createAdminClient();
+  const rows = ids.map((user_id) => ({
+    user_id,
+    course_slug: slug,
+    status: "active",
+    access_type: accessType || "full",
+  }));
+
+  const { error } = await adminDb
+    .from("enrollments")
+    .upsert(rows, { onConflict: "user_id,course_slug" });
+
+  if (error) throw new Error(error.message);
+  revalidatePath("/(comunidad)", "layout");
+  return { success: ids.length };
 }
 
 /** Revoca acceso a un curso para varios usuarios a la vez. */

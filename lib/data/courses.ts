@@ -137,16 +137,16 @@ export const courses: Course[] = [
   },
   {
     slug: "copilot",
-    title: "Curso de Microsoft Copilot",
+    title: "Copilot y Copilot Studio",
     shortDescription:
-      "Domina Copilot en Microsoft 365: Outlook, Teams, Word, PowerPoint y Excel. Productividad, prompting y análisis de datos con IA corporativa.",
+      "Curso de 16 horas: Copilot en Excel, Outlook, PowerPoint y Word, y Copilot Studio para crear agentes a la medida.",
     description:
-      "Programa de 16 horas para dominar Microsoft 365 Copilot de extremo a extremo. Aprende a potenciar tu día a día en Outlook, Teams, Word, PowerPoint y Excel, aplicar prompting efectivo, analizar datos y adoptar Copilot con criterios de seguridad y gobernanza empresarial.",
+      "Programa de 16 horas que une Microsoft Copilot en Office con Microsoft Copilot Studio. Primero aplicas IA en Excel, Outlook, PowerPoint y Word. Después diseñas, entrenas y publicas un agente propio: conocimiento, temas, entidades y diseño conversacional.",
     category: "automatizacion",
     categoryLabel: "NUEVO 2026",
     badgeLabel: "NUEVO 2026",
     badgeColor: "#0078D4",
-    techStack: ["Copilot", "Microsoft 365", "Excel"],
+    techStack: ["Copilot", "Copilot Studio", "Microsoft 365"],
     durationHours: 16,
     modality: "online",
     level: "intermedio a avanzado",
@@ -157,59 +157,58 @@ export const courses: Course[] = [
     isFeatured: false,
     sortOrder: 2,
     whatYouLearn: [
-      "Usar Copilot de forma productiva en Outlook, Teams, Word, PowerPoint y Excel",
-      "Aplicar prompting efectivo y gobernanza de datos en Microsoft 365",
-      "Analizar datos y generar reportes con Copilot",
-      "Adoptar Copilot con criterios de seguridad y mejores prácticas corporativas",
+      "Usar Copilot en Excel, Outlook, PowerPoint y Word para datos, correos, presentaciones y documentos",
+      "Entender Copilot Studio, Power Platform y cómo se diferencia de Copilot M365 y Copilot Cowork",
+      "Crear un agente a la medida: entornos, conocimiento, temas, acciones y canales",
+      "Diseñar conversaciones con entidades, variables, condiciones y tarjetas adaptables",
     ],
     syllabus: [
       {
-        module: "Módulo 1: Ecosistema Copilot y fundamentos",
+        module: "Módulo 1: Copilot en las herramientas de Office",
         topics: [
-          "Qué es Microsoft Copilot y cómo se diferencia de Copilot Studio y GitHub Copilot",
-          "Rol de Copilot en la empresa y el ecosistema Microsoft 365",
-          "Licenciamiento, requisitos y acceso en organizaciones",
-          "Seguridad, privacidad y gobernanza de datos con Copilot",
-          "Limitaciones, buenas prácticas y criterios de uso responsable",
-          "Casos de uso reales por área: proyectos, finanzas, comercial e informática",
+          "Copilot en Excel: procesar datos, gráficos y tablas con resúmenes automáticos, limpiezas y conexiones a la medida",
+          "Copilot en Outlook: resumir y analizar múltiples correos, redacción automatizada y organización de la información",
+          "Copilot en PowerPoint: presentaciones de alto impacto, analizar y resumir documentos, datos de distintas fuentes",
+          "Copilot en Word: documentos automatizados, resumir múltiples archivos y analizar información de varias fuentes",
         ],
         hours: 4,
       },
       {
-        module: "Módulo 2: Copilot en comunicación y colaboración",
+        module: "Módulo 2: Copilot Studio e IA generativa",
         topics: [
-          "Copilot en Outlook: redacción, resúmenes, priorización y seguimiento de correos",
-          "Copilot en Teams: reuniones, actas, acciones y colaboración en chat",
-          "Copilot en Word: generación, reescritura y plantillas de documentos",
-          "Copilot en PowerPoint: creación y mejora de presentaciones profesionales",
-          "Taller práctico: flujo diario de trabajo multi-app (correo → documento → presentación)",
+          "Qué es Microsoft Copilot Studio y qué es Microsoft Power Platform",
+          "Copilot Studio vs Copilot M365 vs Copilot Cowork",
+          "Fundamentos de IA generativa: impacto, profesiones, TIC y casos de uso",
+          "Deep learning, foundational models, LLMs, fine-tuning, prompts y prompt engineering",
+          "Inicializar Copilot Studio, nomenclatura de copilotos y agentes, plantillas y gestión",
+          "Diseñar soluciones con lenguaje natural",
         ],
         hours: 4,
       },
       {
-        module: "Módulo 3: Copilot en Excel y análisis de datos",
+        module: "Módulo 3: Primer agente y bases de conocimiento",
         topics: [
-          "Fórmulas, insights y exploración de tablas con lenguaje natural",
-          "Limpieza, análisis y resúmenes ejecutivos en Excel con Copilot",
-          "Consultas en lenguaje natural e integración conceptual con Power BI",
-          "Copilot + datos empresariales: mejores prácticas para reportes de negocio",
-          "Taller práctico: análisis de un dataset de negocio y reporte para gerencia",
+          "Entornos de Power Platform, desplegar el copiloto y aislamiento de datos",
+          "Fuentes de conocimiento, temas, acciones, herramientas y análisis de rendimiento",
+          "Canales de distribución, configuración y parámetros del copiloto",
+          "Datos externos, sitios web, Word, PDF, texto, presentaciones y SharePoint",
+          "Tablas de Dataverse, lectura de datos estructurados y orígenes alternativos",
         ],
         hours: 4,
       },
       {
-        module: "Módulo 4: Prompting avanzado, casos reales y adopción",
+        module: "Módulo 4: Temas, lógica y diseño conversacional",
         topics: [
-          "Prompt engineering para Microsoft 365: patrones reutilizables por rol",
-          "Automatización ligera del día a día con Copilot (sin Copilot Studio)",
-          "Métricas de adopción, ROI y criterios de éxito en la organización",
-          "Limitaciones avanzadas, riesgos y checklist de gobernanza",
-          "Taller final integrador: caso multi-app de punta a punta",
+          "Desencadenadores, combinación y creación de temas; IA y comportamiento del agente",
+          "Área de diseño, cálculos, recopilar información del usuario y bloques de condición",
+          "Entidades, extracción de valores, entidades personalizadas y expresiones regulares",
+          "Variables de entrada, salida, sistema y globales; redirección de temas",
+          "Conversaciones enriquecidas, multimedia, variaciones de mensajes y respuestas rápidas",
+          "Tarjetas básicas, tarjetas adaptables y obtención de datos en formulario",
         ],
         hours: 4,
       },
     ],
-    // Un solo nivel (no Básico/Intermedio/Avanzado): curso intermedio-avanzado de 16h
     levels: [
       {
         name: "Intermedio-Avanzado",
@@ -217,98 +216,10 @@ export const courses: Course[] = [
         originalPrice: 249000,
         durationHours: 16,
         whatYouLearn: [
-          "Usar Copilot en Outlook, Teams, Word, PowerPoint y Excel",
-          "Aplicar prompting efectivo y gobernanza en M365",
-          "Analizar datos y generar reportes con Copilot",
-          "Adoptar Copilot con seguridad y mejores prácticas",
-        ],
-      },
-    ],
-  },
-  {
-    slug: "copilot-studio",
-    title: "Curso de Copilot Studio",
-    shortDescription:
-      "Diseña y construye agentes inteligentes corporativos. Integra Copilot Studio con Microsoft 365, Power Automate y fuentes de datos empresariales.",
-    description:
-      "Programa de 16 horas para dominar Microsoft Copilot Studio de extremo a extremo. Aprende a construir asistentes personalizados, integrarlos con flujos low-code, conectar datos y APIs, y desplegar agentes seguros alineados a la gobernanza TI.",
-    category: "automatizacion",
-    categoryLabel: "NUEVO 2026",
-    badgeLabel: "NUEVO 2026",
-    badgeColor: "#0078D4",
-    techStack: ["Copilot Studio", "Power Automate", "Power Platform"],
-    durationHours: 16,
-    modality: "online",
-    level: "intermedio a avanzado",
-    imageUrl:
-      "https://mail.programbi.com/uploads/Copilot_course_cover_design_2K_202607150337.jpeg",
-    icon: "Sparkles",
-    accentColor: "#0078D4",
-    isFeatured: false,
-    sortOrder: 3,
-    whatYouLearn: [
-      "Diseñar y construir agentes inteligentes corporativos",
-      "Integrar Copilot Studio con datos, APIs y automatizaciones",
-      "Crear flujos low-code que optimicen procesos internos",
-      "Desplegar agentes seguros y alineados a la gobernanza TI",
-    ],
-    syllabus: [
-      {
-        module: "Módulo 1: Fundamentos de Copilot Studio y arquitectura de agentes",
-        topics: [
-          "Copilot Studio como plataforma estándar corporativa",
-          "Arquitectura de un agente: temas, flujos, conectores, acciones y conocimiento",
-          "Entornos, seguridad, permisos y gobernanza básica",
-          "Integración con Microsoft 365, Power Platform y el ecosistema Microsoft",
-          "Primer agente práctico: de la idea al prototipo funcional",
-        ],
-        hours: 4,
-      },
-      {
-        module: "Módulo 2: Diseño conversacional y construcción de asistentes",
-        topics: [
-          "Diseño conversacional avanzado: prompting para agentes, intenciones, entidades y manejo de contexto",
-          "Uso de memoria y personalización de respuestas",
-          "Fuentes de conocimiento: SharePoint, documentos y sitios internos",
-          "Integración con datos empresariales: conectores estándar y personalizados",
-          "Taller práctico: asistente para el área de proyectos (hitos, estados y reportes automáticos)",
-        ],
-        hours: 4,
-      },
-      {
-        module: "Módulo 3: Automatización Low-Code con Power Automate",
-        topics: [
-          "Integración con Power Automate: flujos automatizados y triggers desde agentes",
-          "Automatización de tareas repetitivas y procesos internos",
-          "Acciones personalizadas y lógica empresarial: APIs, condiciones, bucles, errores y reglas de negocio",
-          "Taller práctico: solicitudes de soporte, aprobaciones y notificaciones inteligentes",
-        ],
-        hours: 4,
-      },
-      {
-        module: "Módulo 4: Datos, APIs, monitoreo y despliegue productivo",
-        topics: [
-          "Conectores avanzados, SQL y APIs internas",
-          "Agente analítico: consultas a bases de datos, insights y resúmenes automáticos para gerencia",
-          "Monitoreo, métricas, evaluación de calidad conversacional y optimización continua",
-          "Despliegue seguro, gobernanza TI y checklist de producción",
-          "Taller final: agente de negocio listo para entorno corporativo",
-        ],
-        hours: 4,
-      },
-    ],
-    // Un solo nivel (no Básico/Intermedio/Avanzado): curso intermedio-avanzado de 16h
-    levels: [
-      {
-        name: "Intermedio-Avanzado",
-        price: 199000,
-        originalPrice: 249000,
-        durationHours: 16,
-        whatYouLearn: [
-          "Diseñar y construir agentes inteligentes corporativos",
-          "Integrar Copilot Studio con datos, APIs y automatizaciones",
-          "Crear flujos low-code que optimicen procesos internos",
-          "Desplegar agentes seguros y alineados a la gobernanza TI",
+          "Aplicar Copilot en Excel, Outlook, PowerPoint y Word",
+          "Crear un agente en Copilot Studio con conocimiento propio",
+          "Diseñar temas, entidades, variables y condiciones",
+          "Publicar el copiloto con estilo conversacional y tarjetas",
         ],
       },
     ],
@@ -882,7 +793,8 @@ export const courses: Course[] = [
 ];
 
 export function getCourseBySlug(slug: string): Course | undefined {
-  return courses.find((c) => c.slug === slug);
+  const resolved = slug === "copilot-studio" ? "copilot" : slug;
+  return courses.find((c) => c.slug === resolved);
 }
 
 export function getFeaturedCourses(): Course[] {

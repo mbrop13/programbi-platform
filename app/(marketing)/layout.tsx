@@ -12,7 +12,9 @@ export default function MarketingLayout({
   return (
     <>
       <Navbar />
-      <main className="flex-1">{children}</main>
+      <main className="page-reveal flex-1" data-page-reveal>
+        {children}
+      </main>
       <Footer />
       <PromoPopup />
       <WhatsAppButton />

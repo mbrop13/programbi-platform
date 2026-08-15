@@ -21,6 +21,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/cursos/copilot-studio",
+        destination: "/cursos/copilot",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

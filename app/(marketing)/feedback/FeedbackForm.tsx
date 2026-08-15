@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { submitCourseFeedback } from "@/lib/supabase/feedback";
 import Navbar from "@/components/shared/Navbar";
-import Footer from "@/components/shared/Footer";
 
 // ============================================
 // Catálogos
@@ -42,7 +41,7 @@ const APPLIED_OPTIONS: { value: string; label: string }[] = [
 
 const AI_COURSES = [
   "ChatGPT, Claude y OpenAI en Análisis de Datos",
-  "Microsoft Copilot para Power BI, Excel y Office 365",
+  "Copilot y Copilot Studio",
   "Prompt Engineering (prompts efectivos)",
   "Automatización Inteligente con IA (Python + IA)",
   "Generative AI para Business Intelligence",
@@ -257,7 +256,6 @@ export default function FeedbackForm() {
             </div>
           </motion.div>
         </main>
-        <Footer />
       </>
     );
   }
@@ -663,7 +661,6 @@ export default function FeedbackForm() {
           </form>
         </div>
       </main>
-      <Footer />
     </>
   );
 }
