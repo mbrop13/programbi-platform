@@ -53,11 +53,18 @@ export default function LeadForm() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (honeypot) return;
     const next = validate();
     setErrors(next);
     if (Object.keys(next).length) {
       setStatus("error");
+      return;
+    }
+
+    // Autocomplete sometimes fills a "company" field; only treat clearly
+    // bot-like values as honeypot hits so real quotes still send.
+    const trap = honeypot.trim();
+    if (trap && (trap.startsWith("http") || trap.length > 80 || /<script/i.test(trap))) {
+      setStatus("success");
       return;
     }
 
@@ -75,11 +82,16 @@ export default function LeadForm() {
           message: message.trim() || null,
           selectedCourses: selected,
           leadType: "contact",
-          ...getAntiBotFields(formLoadedAt.current, honeypot),
+          ...getAntiBotFields(formLoadedAt.current, ""),
         }),
       });
 
-      const data = await res.json();
+      let data: { error?: string } = {};
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error("No se pudo enviar. Intenta de nuevo.");
+      }
       if (!res.ok) throw new Error(data.error || "Error al enviar");
 
       const destSlug = courseSlugMap[selected[0]] || "";
@@ -111,18 +123,19 @@ export default function LeadForm() {
               Recibimos tu cotización. En un momento te llevamos al pago, o escríbenos al +56 9 3540 9699.
             </p>
           ) : (
-            <form onSubmit={onSubmit} className="mt-10 max-w-[36rem] space-y-5" noValidate>
-              <label className="sr-only" htmlFor="company">
-                Empresa
-              </label>
-              <input
-                id="company"
-                tabIndex={-1}
-                autoComplete="off"
-                value={honeypot}
-                onChange={(e) => setHoneypot(e.target.value)}
-                className="absolute left-[-9999px] h-0 w-0 opacity-0"
-              />
+            <form onSubmit={onSubmit} className="relative mt-10 max-w-[36rem] space-y-5" noValidate>
+              <div aria-hidden="true" className="pointer-events-none absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0">
+                <label htmlFor="lead-website">Sitio web</label>
+                <input
+                  id="lead-website"
+                  name="_website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={honeypot}
+                  onChange={(e) => setHoneypot(e.target.value)}
+                />
+              </div>
 
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                 <Field id="name" label="Nombre" value={name} onChange={setName} error={errors.name} autoComplete="name" />

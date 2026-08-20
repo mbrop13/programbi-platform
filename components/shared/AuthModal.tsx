@@ -300,7 +300,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-[100001] w-[calc(100%-2rem)] max-w-[900px] overflow-hidden"
+            className="fixed left-1/2 top-1/2 z-[100001] max-h-[calc(100dvh-1.5rem)] w-[calc(100%-2rem)] max-w-[900px] -translate-x-1/2 -translate-y-1/2 overflow-y-auto"
           >
             <div className="bg-white rounded-3xl shadow-2xl flex flex-col md:flex-row overflow-hidden border border-gray-100 min-h-[500px]">
               {/* Left Side: Art/Info */}
@@ -410,7 +410,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                             name="email"
                             className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
                           />
-                          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                          <Mail className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                         </div>
                       </div>
                       <div>
@@ -427,11 +427,13 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                             name="password"
                             className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
                           />
-                          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                          <Lock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                         </div>
                       </div>
                       <div className="flex justify-end">
-                        <span className="text-xs font-semibold text-blue-500 hover:text-blue-600 cursor-pointer">¿Olvidaste tu contraseña?</span>
+                        <Link href="/recuperar" className="text-xs font-semibold text-ink no-underline hover:underline">
+                          ¿Olvidaste tu contraseña?
+                        </Link>
                       </div>
                       <button
                         type="submit"
@@ -492,7 +494,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                             name="email"
                             className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
                           />
-                          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                          <Mail className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                         </div>
                       </div>
                       <div>
@@ -573,7 +575,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                             name="new-password"
                             className="w-full pl-10 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
                           />
-                          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
+                          <Lock className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                           <button 
                              type="button"
                              onClick={() => setShowPassword(!showPassword)}
