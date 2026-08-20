@@ -111,7 +111,7 @@ const services = [
     ],
     cta: "Ver programas",
     href: "#programas",
-    accent: "#1890FF",
+    accent: "#171716",
   },
   {
     id: "implementacion",
@@ -293,21 +293,9 @@ export default function EmpresasClient() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-canvas min-h-dvh">
       {/* ─── 1. HERO ─── */}
-      <section className="relative -mt-20 lg:-mt-24 pt-32 lg:pt-40 pb-16 lg:pb-20 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div
-            className="absolute inset-0 opacity-40"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 1px 1px, #e2e8f0 1px, transparent 0)",
-              backgroundSize: "28px 28px",
-            }}
-          />
-          <div className="absolute top-0 right-0 w-[520px] h-[520px] bg-blue-100/50 rounded-full blur-[120px]" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-100/40 rounded-full blur-[100px]" />
-        </div>
+      <section className="relative pt-16 pb-16 lg:pt-20 lg:pb-20 overflow-hidden">
 
         <div className="max-w-6xl mx-auto px-5 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
@@ -338,14 +326,14 @@ export default function EmpresasClient() {
                 <div className="flex flex-col sm:flex-row gap-3 mb-8">
                   <a
                     href="#contacto"
-                    className="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-[15px] px-6 py-3.5 rounded-xl no-underline transition-colors"
+                    className="inline-flex items-center justify-center gap-2 bg-ink text-canvas font-semibold text-[15px] px-7 h-12 rounded-full no-underline transition-transform active:scale-[0.98]"
                   >
                     Agendar diagnóstico gratis
                     <ArrowRight className="w-4 h-4" />
                   </a>
                   <a
                     href="#oferta"
-                    className="inline-flex items-center justify-center gap-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-800 font-bold text-[15px] px-6 py-3.5 rounded-xl no-underline transition-colors"
+                    className="inline-flex items-center justify-center gap-2 bg-paper border border-line text-ink font-medium text-[15px] px-7 h-12 rounded-full no-underline transition-colors hover:bg-wash"
                   >
                     Ver cómo trabajamos
                   </a>

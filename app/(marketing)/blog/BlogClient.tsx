@@ -200,7 +200,7 @@ function BlogSlider({ articles }: { articles: any[] }) {
                   setIndex(i);
                 }}
                 className={`w-2 h-2 rounded-full transition-all cursor-pointer p-0 border-none ${
-                  i === index ? "bg-[#1890FF] w-6" : "bg-white/40 hover:bg-white/60"
+                  i === index ? "bg-[#171716] w-6" : "bg-white/40 hover:bg-white/60"
                 }`}
               />
             ))}
@@ -256,10 +256,10 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
 
         {/* Content */}
         <div className="py-6 flex flex-col flex-1">
-          <span className="text-[9px] font-bold tracking-widest text-[#1890FF] uppercase mb-2.5">
+          <span className="text-[9px] font-bold tracking-widest text-[#171716] uppercase mb-2.5">
             {categoryLabel}
           </span>
-          <h3 className="font-serif font-bold text-xl lg:text-2xl text-slate-950 leading-snug mb-3 group-hover:underline decoration-[#1890FF] decoration-2 underline-offset-4 transition-all">
+          <h3 className="font-serif font-bold text-xl lg:text-2xl text-slate-950 leading-snug mb-3 group-hover:underline decoration-[#171716] decoration-2 underline-offset-4 transition-all">
             {article.title}
           </h3>
           {article.excerpt && (
@@ -397,7 +397,7 @@ export default function BlogClient({ articles }: { articles: any[] }) {
             <button 
               onClick={() => setIsSearchActive(!isSearchActive)}
               className={`hover:text-black transition-colors cursor-pointer bg-transparent border-none font-bold text-[10px] tracking-widest flex items-center gap-1.5 ${
-                isSearchActive ? "text-[#1890FF]" : "text-slate-500"
+                isSearchActive ? "text-[#171716]" : "text-slate-500"
               }`}
             >
               <Search className="w-3.5 h-3.5" />
@@ -505,7 +505,7 @@ export default function BlogClient({ articles }: { articles: any[] }) {
               {isActive && (
                 <motion.div
                   layoutId="activeMobileTab"
-                  className="absolute inset-0 bg-gradient-to-r from-[#1890FF]/25 to-indigo-500/25 border border-[#1890FF]/35 rounded-full -z-10 shadow-[0_2px_10px_rgba(24,144,255,0.15)]"
+                  className="absolute inset-0 bg-gradient-to-r from-[#171716]/25 to-indigo-500/25 border border-[#171716]/35 rounded-full -z-10 shadow-[0_2px_10px_rgba(24,144,255,0.15)]"
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                 />
               )}

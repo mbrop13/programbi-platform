@@ -48,7 +48,12 @@ import {
   deletePost,
   updatePost,
 } from "@/lib/supabase/comunidad";
-import { MarkdownRenderer } from "@/components/comunidad/ai-v2/MarkdownRenderer";
+import dynamic from "next/dynamic";
+
+const MarkdownRenderer = dynamic(
+  () => import("@/components/comunidad/ai-v2/MarkdownRenderer").then((m) => m.MarkdownRenderer),
+  { ssr: false }
+);
 
 const PRESET_IMAGES = [
   {

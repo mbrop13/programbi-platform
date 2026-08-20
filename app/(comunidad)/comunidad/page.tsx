@@ -8,9 +8,9 @@ export default async function ComunidadPage() {
 
   // /comunidad siempre muestra la landing (no redirige al portal)
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-dvh bg-canvas">
       <Navbar />
-      <main className="page-reveal" data-page-reveal>
+      <main>
         <CommunityLanding isLoggedIn={!!profile} />
       </main>
       <Footer />

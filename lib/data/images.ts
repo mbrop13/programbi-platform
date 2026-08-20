@@ -82,22 +82,25 @@ export const galleryImages = [
 
 export const contactGallery = [
   {
+    label: "Visualización",
+    subtitle: "Power BI Avanzado",
+    url: "/images/chv.jpg",
+    tall: true,
+    object: "object-[center_82%]",
+  },
+  {
     label: "Ecosistema Completo",
     subtitle: "SQL + PBI + Python + IA",
-    url: "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/Alumnos_curso_de_computacion_a_Tottus.jpg?v=1763500918",
-    tall: true,
+    url: "/images/tottus.jpg",
+    tall: false,
+    object: "object-[70%_42%]",
   },
   {
     label: "Automatización",
     subtitle: "Python & SQL Server",
     url: "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/Image_202511181532.png?v=1763500891",
     tall: false,
-  },
-  {
-    label: "Visualización",
-    subtitle: "Power BI Avanzado",
-    url: "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/CHV_5.jpg?v=1763500892",
-    tall: false,
+    object: "object-top",
   },
 ];
 

@@ -48,67 +48,6 @@ function CustomHtmlRenderer({ html, onDismiss }: { html: string, onDismiss: () =
   );
 }
 
-/* ─── Floating orbs background ─────────────────────────────────── */
-function FloatingOrbs({ color }: { color: string }) {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(5)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            width: 120 + i * 60,
-            height: 120 + i * 60,
-            background: `radial-gradient(circle, ${color}15, transparent 70%)`,
-            left: `${10 + i * 18}%`,
-            top: `${10 + (i % 3) * 25}%`,
-          }}
-          animate={{
-            x: [0, 30 * (i % 2 === 0 ? 1 : -1), 0],
-            y: [0, -20 * (i % 2 === 0 ? -1 : 1), 0],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 6 + i * 2,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
-/* ─── Sparkle particles ────────────────────────────────────────── */
-function Sparkles({ color }: { color: string }) {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(12)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-1 h-1 rounded-full"
-          style={{
-            backgroundColor: color,
-            left: `${5 + Math.random() * 90}%`,
-            top: `${5 + Math.random() * 90}%`,
-          }}
-          animate={{
-            opacity: [0, 1, 0],
-            scale: [0, 1.5, 0],
-            y: [0, -30, -60],
-          }}
-          transition={{
-            duration: 2 + Math.random() * 2,
-            repeat: Infinity,
-            delay: Math.random() * 4,
-            ease: "easeOut",
-          }}
-        />
-      ))}
-    </div>
-  );
-}
-
 /* ─── Price comparator ─────────────────────────────────────────── */
 function PriceDisplay({ oldPrice, newPrice, color }: { oldPrice: string; newPrice: string; color: string }) {
   return (
@@ -299,8 +238,7 @@ export default function PromoPopup() {
                 background: "linear-gradient(160deg, #0c1220 0%, #111827 40%, #0f172a 100%)",
               }}
             >
-              <FloatingOrbs color={color} />
-              <Sparkles color={color} />
+
 
               {/* Content */}
               <div className="relative z-10 p-5 sm:p-6">

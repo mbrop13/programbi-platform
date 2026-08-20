@@ -4,30 +4,34 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
-import { motion, AnimatePresence, useMotionValueEvent, useScroll } from "framer-motion";
-import { Menu, X, ChevronDown, LogIn, UserPlus, ArrowRight, Clock, Users, Sparkles, BookOpen, LogOut, LayoutDashboard, UserCircle, Settings, LifeBuoy, ShieldAlert } from "lucide-react";
-import React from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  Menu,
+  X,
+  ChevronDown,
+  ArrowRight,
+  LogOut,
+  LayoutDashboard,
+  UserCircle,
+  Settings,
+  LifeBuoy,
+  ShieldAlert,
+} from "lucide-react";
 import { courses } from "@/lib/data/courses";
 import { createClient } from "@/lib/supabase/client";
+import CourseImage from "./CourseImage";
 import AuthModal from "./AuthModal";
 import SupportModal from "./SupportModal";
 import ProfileSettingsModal from "./ProfileSettingsModal";
 import { getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
 import { isCurrentUserAdmin } from "@/lib/supabase/comunidad";
 
-const LOGO_URL = "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974";
-
 const navLinks = [
-  { href: "/", label: "Inicio" },
-  { href: "/cursos", label: "Cursos", hasMega: true },
+  { href: "/cursos", label: "Ver Cursos", hasMega: true },
   { href: "/empresas", label: "Empresas" },
   { href: "/comunidad", label: "Comunidad" },
   { href: "/blog", label: "Blog" },
-  // Webinar oculto temporalmente
-  // { href: "/webinar", label: "Webinar" },
 ];
-
-const featuredSlugs = ["analisis-de-datos", "power-bi", "sql-server"];
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -36,67 +40,91 @@ export default function Navbar() {
   const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(false);
   const [isMegaOpen, setIsMegaOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [authModal, setAuthModal] = useState<{ isOpen: boolean, tab: "login" | "register" }>({ isOpen: false, tab: "login" });
-  const [profileModal, setProfileModal] = useState<{ isOpen: boolean, tab: "profile" | "settings" }>({ isOpen: false, tab: "profile" });
+  const [authModal, setAuthModal] = useState<{ isOpen: boolean; tab: "login" | "register" }>({
+    isOpen: false,
+    tab: "login",
+  });
+  const [profileModal, setProfileModal] = useState<{ isOpen: boolean; tab: "profile" | "settings" }>({
+    isOpen: false,
+    tab: "profile",
+  });
   const [isSupportModalOpen, setIsSupportModalOpen] = useState(false);
-  
-  // Auth state
+
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
-  
+
   const megaTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const userMenuTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastScrollY = useRef(0);
-  const isMobileOpenRef = useRef(false);
   const supabase = createClient();
   const pathname = usePathname();
   const isNewsletter = pathname?.startsWith("/newsletter");
 
-  // Newsletter categories
   const [nlCategories, setNlCategories] = useState<any[]>([]);
   const [nlActiveCategory, setNlActiveCategory] = useState("all");
 
-  const { scrollY } = useScroll();
+  const keepVisible =
+    isMobileOpen || authModal.isOpen || profileModal.isOpen || isSupportModalOpen;
 
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const diff = latest - lastScrollY.current;
-    setIsScrolled(latest > 20);
+  useEffect(() => {
+    let lastY = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setIsScrolled(y > 20);
 
-    // Hide on scroll down, show on scroll up (only after 100px)
-    if (latest > 100) {
-      if (diff > 5 && !isMobileOpenRef.current) {
+      if (keepVisible) {
+        setIsHidden(false);
+        lastY = y;
+        return;
+      }
+
+      const delta = y - lastY;
+      if (y < 16) {
+        setIsHidden(false);
+      } else if (delta > 8) {
         setIsHidden(true);
-        setIsMegaOpen(false);
-        setIsUserMenuOpen(false);
-      } else if (diff < -5) {
+      } else if (delta < -8) {
         setIsHidden(false);
       }
-    } else {
-      setIsHidden(false);
-    }
-    lastScrollY.current = latest;
-  });
+      lastY = y;
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [keepVisible]);
+
+  useEffect(() => {
+    if (!isHidden) return;
+    setIsMegaOpen(false);
+    setIsUserMenuOpen(false);
+  }, [isHidden]);
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
       if (session?.user) {
-        isCurrentUserAdmin().then(admin => setIsAdmin(admin)).catch(() => {});
+        isCurrentUserAdmin()
+          .then((admin) => setIsAdmin(admin))
+          .catch(() => {});
       } else {
         setIsAdmin(false);
       }
       setLoading(false);
     };
-    
+
     checkUser();
 
-    // Listen for changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        isCurrentUserAdmin().then(admin => setIsAdmin(admin)).catch(() => {});
+        isCurrentUserAdmin()
+          .then((admin) => setIsAdmin(admin))
+          .catch(() => {});
       } else {
         setIsAdmin(false);
       }
@@ -105,20 +133,16 @@ export default function Navbar() {
     return () => subscription.unsubscribe();
   }, [supabase.auth]);
 
-
-
-  // Load newsletter categories when on newsletter page
   useEffect(() => {
     if (!isNewsletter) return;
-    getNewsletterCategories().then(cats => setNlCategories(cats)).catch(() => {});
+    getNewsletterCategories()
+      .then((cats) => setNlCategories(cats))
+      .catch(() => {});
   }, [isNewsletter]);
 
-  // Listen for open-subscribe and open-auth-modal events from any page
   useEffect(() => {
     const handleOpen = () => {
-      if (!user) {
-        setAuthModal({ isOpen: true, tab: "register" });
-      }
+      if (!user) setAuthModal({ isOpen: true, tab: "register" });
     };
     const handleOpenAuth = (e?: Event) => {
       if (!user) {
@@ -131,7 +155,6 @@ export default function Navbar() {
     window.addEventListener("open-nl-subscribe-auth", handleOpen);
     window.addEventListener("open-auth-modal", handleOpenAuth);
 
-    // Auto-open modal if URL query parameter contains ?auth=register or ?auth=login
     if (typeof window !== "undefined" && !user) {
       const params = new URLSearchParams(window.location.search);
       const authParam = params.get("auth");
@@ -148,17 +171,14 @@ export default function Navbar() {
   }, [user]);
 
   useEffect(() => {
-    isMobileOpenRef.current = isMobileOpen;
     if (!isMobileOpen) setIsMobileCoursesOpen(false);
   }, [isMobileOpen]);
 
   useEffect(() => {
-    if (isMobileOpen || authModal.isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
+    document.body.style.overflow = isMobileOpen || authModal.isOpen ? "hidden" : "";
+    return () => {
       document.body.style.overflow = "";
-    }
-    return () => { document.body.style.overflow = ""; };
+    };
   }, [isMobileOpen, authModal.isOpen]);
 
   useEffect(() => {
@@ -169,11 +189,6 @@ export default function Navbar() {
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [isMobileOpen]);
-
-  const toggleMobileMenu = () => {
-    setIsHidden(false);
-    setIsMobileOpen((open) => !open);
-  };
 
   const handleMegaEnter = () => {
     if (megaTimeout.current) clearTimeout(megaTimeout.current);
@@ -194,53 +209,56 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
-    // A-08 (OWASP ASVS L3): revoke ALL sessions for the user (not just the
-    // current device), then redirect with replace() to avoid serving cached
-    // authenticated content from the browser.
     await supabase.auth.signOut({ scope: "global" });
     window.location.replace("/");
   };
 
   const getInitials = (name: string) => {
     if (!name) return "U";
-    return name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
-
-  const featured = courses.filter((c) => featuredSlugs.includes(c.slug));
-  const otherCourses = courses.filter((c) => !featuredSlugs.includes(c.slug));
 
   return (
     <>
-      <AuthModal isOpen={authModal.isOpen} onClose={() => setAuthModal(prev => ({ ...prev, isOpen: false }))} defaultTab={authModal.tab} />
-      <ProfileSettingsModal isOpen={profileModal.isOpen} onClose={() => setProfileModal(prev => ({ ...prev, isOpen: false }))} defaultTab={profileModal.tab} />
+      <AuthModal
+        isOpen={authModal.isOpen}
+        onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
+        defaultTab={authModal.tab}
+      />
+      <ProfileSettingsModal
+        isOpen={profileModal.isOpen}
+        onClose={() => setProfileModal((prev) => ({ ...prev, isOpen: false }))}
+        defaultTab={profileModal.tab}
+      />
       <SupportModal isOpen={isSupportModalOpen} onClose={() => setIsSupportModalOpen(false)} userEmail={user?.email || ""} />
-      
-      <motion.nav
-        animate={{ y: isHidden && !isMobileOpen ? "-100%" : "0%" }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? "bg-white/95 backdrop-blur-2xl shadow-[0_1px_3px_rgba(0,0,0,0.05),0_8px_30px_rgba(0,0,0,0.04)] py-2"
-            : "bg-white/60 backdrop-blur-lg py-3 lg:py-4"
+
+      <header
+        className={`fixed inset-x-0 top-0 z-50 h-[72px] transition-[transform,background-color,border-color,box-shadow] duration-300 ease-out motion-reduce:transition-none ${
+          isHidden ? "-translate-y-full" : "translate-y-0"
+        } ${
+          isScrolled || isMobileOpen
+            ? "border-b border-line bg-canvas/85 shadow-xs backdrop-blur-xl"
+            : "border-b border-transparent bg-transparent"
         }`}
       >
-        <div className="max-w-[1300px] mx-auto px-5 lg:px-12 xl:px-16 flex items-center justify-between xl:justify-start gap-4 lg:gap-8">
-          <div className="flex items-center gap-2.5 lg:gap-3">
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-0 no-underline group flex-shrink-0">
-              <Image
-                src={LOGO_URL}
-                alt="ProgramBI"
-                width={180}
-                height={48}
-                className="h-8 lg:h-11 w-auto object-contain transition-transform group-hover:scale-[1.02]"
-                priority
-              />
-            </Link>
-          </div>
+        <div className="mx-auto flex h-full max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="relative h-8 w-[150px]" aria-label="ProgramBI">
+            <Image
+              src="/images/logo.png"
+              alt="ProgramBI"
+              fill
+              sizes="150px"
+              className="object-contain object-left"
+              priority
+            />
+          </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-1 ml-auto">
+          <nav className="hidden items-center gap-7 text-[14.5px] font-medium text-mute lg:flex" aria-label="Principal">
             {navLinks.map((link) =>
               link.hasMega ? (
                 <div
@@ -249,172 +267,146 @@ export default function Navbar() {
                   onMouseEnter={handleMegaEnter}
                   onMouseLeave={handleMegaLeave}
                 >
-                  <Link
-                    href={link.href}
-                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-[#334155] font-semibold text-[15px] hover:text-[#1890FF] transition-all no-underline relative group"
-                  >
+                  <Link href={link.href} className="inline-flex items-center gap-1 transition-colors hover:text-ink no-underline">
                     {link.label}
-                    <ChevronDown
-                      size={15}
-                      className={`transition-transform duration-200 group-hover:text-[#1890FF] ${isMegaOpen ? "rotate-180 text-[#1890FF]" : "text-gray-400"}`}
-                    />
-
+                    <ChevronDown size={14} className={isMegaOpen ? "rotate-180" : ""} />
                   </Link>
 
                   <AnimatePresence>
                     {isMegaOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 15, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-                        className="absolute top-[calc(100%+10px)] left-1/2 -translate-x-1/2 w-[880px] bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-[0_40px_100px_-20px_rgba(0,0,0,0.15),0_0_0_1px_rgba(0,0,0,0.02)]"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        transition={{ duration: 0.18 }}
+                        className="absolute top-[calc(100%+18px)] left-1/2 w-[720px] -translate-x-1/2 overflow-hidden rounded-[26px] border border-line bg-paper shadow-[0_25px_80px_rgba(23,23,22,0.10)]"
                         onMouseEnter={handleMegaEnter}
                         onMouseLeave={handleMegaLeave}
                       >
-                        <div className="p-8 bg-white relative">
-                          <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100/50 rounded-full blur-3xl opacity-50 -mt-20 -mr-20 pointer-events-none" />
-                          <div className="grid grid-cols-2 gap-4 relative z-10">
-                            {courses.map((course) => (
-                              <Link
-                                key={course.slug}
-                                href={`/cursos/${course.slug}`}
-                                onClick={() => setIsMegaOpen(false)}
-                                className="group/item flex gap-4 p-3 rounded-2xl hover:bg-slate-50 hover:shadow-lg hover:shadow-slate-200/40 transition-all no-underline border border-transparent hover:border-slate-100/60 items-center relative overflow-hidden bg-white"
-                              >
-                                <div className="w-28 aspect-[16/9] rounded-xl overflow-hidden flex-shrink-0 relative bg-slate-50 border border-slate-100/80 shadow-sm">
-                                  <Image
-                                    src={course.imageUrl}
-                                    alt={course.title}
-                                    fill
-                                    sizes="120px"
-                                    className="object-cover transition-transform duration-500 group-hover/item:scale-[1.03]"
-                                  />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="font-bold text-[14px] text-slate-900 group-hover/item:text-[#1890FF] transition-colors truncate mb-0.5">{course.title}</h4>
-                                  <p className="text-[11px] text-slate-500 line-clamp-2 leading-snug">{course.shortDescription}</p>
-                                </div>
-                                <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center flex-shrink-0 group-hover/item:bg-[#1890FF] group-hover/item:border-[#1890FF] group-hover/item:text-white transition-all text-slate-400 opacity-0 group-hover/item:opacity-100 -translate-x-2 group-hover/item:translate-x-0">
-                                   <ArrowRight size={14} />
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
-                          <div className="flex justify-center items-center mt-6 pt-5 border-t border-slate-100 relative z-10">
+                        <div className="grid grid-cols-2 gap-1 p-3">
+                          {courses.map((course) => (
                             <Link
-                              href="/cursos"
+                              key={course.slug}
+                              href={`/cursos/${course.slug}`}
                               onClick={() => setIsMegaOpen(false)}
-                              className="text-xs font-bold text-[#1890FF] hover:text-blue-700 bg-blue-50 hover:bg-blue-100 px-5 py-2.5 rounded-xl transition-all duration-300 no-underline flex items-center gap-1.5 shadow-sm hover:shadow"
+                              className="flex items-center gap-3 rounded-2xl p-3 no-underline transition-colors hover:bg-surface"
                             >
-                              Explorar todo el catálogo <ArrowRight size={12} />
+                              <div className="relative h-12 w-20 shrink-0 overflow-hidden rounded-xl bg-surface">
+                                <CourseImage src={course.imageUrl} alt="" fill sizes="80px" className="object-cover" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-semibold text-ink">{course.title}</p>
+                                <p className="truncate text-xs text-mute">{course.shortDescription}</p>
+                              </div>
                             </Link>
-                          </div>
+                          ))}
+                        </div>
+                        <div className="border-t border-line px-4 py-3">
+                          <Link
+                            href="/cursos"
+                            onClick={() => setIsMegaOpen(false)}
+                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline"
+                          >
+                            Ver todos los cursos <ArrowRight size={14} />
+                          </Link>
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </div>
               ) : (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="px-4 py-2 rounded-xl text-[#334155] font-semibold text-[15px] hover:text-[#1890FF] transition-colors no-underline"
-                >
+                <Link key={link.href} href={link.href} className="transition-colors hover:text-ink no-underline">
                   {link.label}
                 </Link>
               )
             )}
-          </div>
+          </nav>
 
-          {/* Premium Auth / User Section */}
-          <div className="hidden lg:flex items-center gap-4 ml-auto lg:ml-0">
+          <div className="flex items-center gap-2">
             {loading ? (
-              <div className="w-10 h-10 rounded-full bg-slate-100 animate-pulse" />
+              <div className="hidden h-10 w-10 rounded-full bg-surface sm:block" />
             ) : user ? (
-              <div className="relative" onMouseEnter={handleUserMenuEnter} onMouseLeave={handleUserMenuLeave}>
-                <button className="flex items-center gap-3 p-1.5 pr-4 rounded-2xl bg-white border border-slate-200 hover:border-[#1890FF] transition-all cursor-pointer group">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#1890FF] to-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md shadow-blue-500/20">
+              <div className="relative hidden sm:block" onMouseEnter={handleUserMenuEnter} onMouseLeave={handleUserMenuLeave}>
+                <button
+                  type="button"
+                  className="inline-flex h-10 items-center gap-2 rounded-full border border-line bg-paper px-2 pr-3 text-sm font-semibold text-ink"
+                >
+                  <span className="flex size-7 items-center justify-center rounded-full bg-ink text-[11px] font-bold text-canvas">
                     {getInitials(user.user_metadata?.full_name || user.email)}
-                  </div>
-                  <div className="text-left">
-                    <p className="text-[13px] font-bold text-slate-800 leading-none mb-1 truncate max-w-[100px]">
-                      {user.user_metadata?.full_name?.split(" ")[0] || "Usuario"}
-                    </p>
-                    <p className="text-[10px] font-medium text-slate-400 leading-none">Mi Cuenta</p>
-                  </div>
-                  <ChevronDown size={14} className={`text-slate-400 transition-transform ${isUserMenuOpen ? "rotate-180" : ""}`} />
+                  </span>
+                  <span className="max-w-[90px] truncate">
+                    {user.user_metadata?.full_name?.split(" ")[0] || "Cuenta"}
+                  </span>
                 </button>
 
                 <AnimatePresence>
                   {isUserMenuOpen && (
                     <motion.div
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 28 }}
-                      className="absolute top-[calc(100%+8px)] right-0 w-[260px] bg-white rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.08)] border border-neutral-100/80 overflow-hidden"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      className="absolute right-0 top-[calc(100%+8px)] w-[240px] overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_16px_40px_rgba(23,23,22,0.08)]"
                     >
-                      <div className="px-4 py-3 border-b border-neutral-100 flex items-center gap-2.5 min-w-0">
-                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white flex items-center justify-center font-bold text-[10px] shrink-0">
-                          {getInitials(user.user_metadata?.full_name || user.email)}
-                        </div>
-                        <span className="text-[13px] font-normal text-neutral-600 truncate min-w-0 flex-1">
-                          {user.email}
-                        </span>
+                      <div className="border-b border-line px-4 py-3">
+                        <p className="truncate text-xs text-mute">{user.email}</p>
                       </div>
-
-                      <div className="p-1.5 space-y-0.5">
+                      <div className="p-1.5">
                         <Link
                           href="/comunidad/cursos"
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-neutral-50 hover:text-slate-900 transition-colors font-medium no-underline"
+                          className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-ink no-underline hover:bg-surface"
                         >
-                          <LayoutDashboard className="w-4 h-4 shrink-0 text-neutral-400" />
-                          <span>Comunidad</span>
+                          <LayoutDashboard className="h-4 w-4 text-mute" />
+                          Comunidad
                         </Link>
                         <button
-                          onClick={() => { setIsUserMenuOpen(false); setProfileModal({ isOpen: true, tab: "profile" }); }}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-neutral-50 hover:text-slate-900 transition-colors font-medium border-0 bg-transparent cursor-pointer text-left"
+                          type="button"
+                          onClick={() => {
+                            setIsUserMenuOpen(false);
+                            setProfileModal({ isOpen: true, tab: "profile" });
+                          }}
+                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-ink hover:bg-surface"
                         >
-                          <UserCircle className="w-4 h-4 shrink-0 text-neutral-400" />
-                          <span>Ver perfil</span>
+                          <UserCircle className="h-4 w-4 text-mute" />
+                          Ver perfil
                         </button>
                         <button
-                          onClick={() => { setIsUserMenuOpen(false); setProfileModal({ isOpen: true, tab: "settings" }); }}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-neutral-50 hover:text-slate-900 transition-colors font-medium border-0 bg-transparent cursor-pointer text-left"
+                          type="button"
+                          onClick={() => {
+                            setIsUserMenuOpen(false);
+                            setProfileModal({ isOpen: true, tab: "settings" });
+                          }}
+                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-ink hover:bg-surface"
                         >
-                          <Settings className="w-4 h-4 shrink-0 text-neutral-400" />
-                          <span>Ajustes</span>
+                          <Settings className="h-4 w-4 text-mute" />
+                          Ajustes
                         </button>
                         <button
-                          onClick={() => { setIsUserMenuOpen(false); setIsSupportModalOpen(true); }}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-neutral-50 hover:text-slate-900 transition-colors font-medium border-0 bg-transparent cursor-pointer text-left"
+                          type="button"
+                          onClick={() => {
+                            setIsUserMenuOpen(false);
+                            setIsSupportModalOpen(true);
+                          }}
+                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-ink hover:bg-surface"
                         >
-                          <LifeBuoy className="w-4 h-4 shrink-0 text-neutral-400" />
-                          <span>Soporte</span>
+                          <LifeBuoy className="h-4 w-4 text-mute" />
+                          Soporte
                         </button>
-
                         {isAdmin && (
-                          <>
-                            <div className="my-1 h-px bg-neutral-100" />
-                            <Link
-                              href="/comunidad/admin"
-                              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-amber-600 hover:bg-amber-50 transition-colors font-medium no-underline"
-                            >
-                              <ShieldAlert className="w-4 h-4 shrink-0" />
-                              <span>Panel Admin</span>
-                            </Link>
-                          </>
+                          <Link
+                            href="/comunidad/admin"
+                            className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-ink no-underline hover:bg-surface"
+                          >
+                            <ShieldAlert className="h-4 w-4 text-mute" />
+                            Panel Admin
+                          </Link>
                         )}
-
-                        <div className="my-1 h-px bg-neutral-100" />
-
                         <button
+                          type="button"
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-neutral-600 hover:bg-red-50 hover:text-red-600 transition-colors font-medium border-0 bg-transparent cursor-pointer text-left"
+                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-left text-sm text-ink hover:bg-surface"
                         >
-                          <LogOut className="w-4 h-4 shrink-0 text-neutral-400" />
-                          <span>Cerrar sesión</span>
+                          <LogOut className="h-4 w-4 text-mute" />
+                          Cerrar sesión
                         </button>
                       </div>
                     </motion.div>
@@ -422,238 +414,173 @@ export default function Navbar() {
                 </AnimatePresence>
               </div>
             ) : (
-              <>
-                <button
-                  onClick={() => setAuthModal({ isOpen: true, tab: "login" })}
-                  className="flex items-center gap-2 group text-slate-500 font-semibold text-[14px] hover:text-slate-900 transition-colors bg-transparent border-none cursor-pointer"
-                >
-                  Iniciar Sesión
-                  <span className="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-slate-200 transition-colors">
-                    <LogIn size={13} className="text-slate-600" />
-                  </span>
-                </button>
-                <div className="w-[1px] h-6 bg-slate-200"></div>
-                <button
-                  onClick={() => setAuthModal({ isOpen: true, tab: "register" })}
-                  className="relative flex items-center gap-2 px-6 py-2.5 rounded-xl text-white font-bold text-[14px] no-underline transition-all hover:scale-105 cursor-pointer bg-[#1890FF] shadow-lg shadow-blue-500/20 group overflow-hidden border-none"
-                >
-                  <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover/btn:animate-shimmer" />
-                  <span>Regístrate</span>
-                  <UserPlus size={15} className="ml-1 opacity-80" />
-                </button>
-              </>
+              <button
+                type="button"
+                onClick={() => setAuthModal({ isOpen: true, tab: "login" })}
+                className="hidden text-[14.5px] font-medium text-mute transition-colors hover:text-ink sm:inline"
+              >
+                Iniciar sesión
+              </button>
             )}
-          </div>
 
-          <button
-            type="button"
-            onClick={toggleMobileMenu}
-            aria-expanded={isMobileOpen}
-            aria-controls="mobile-nav"
-            aria-label={isMobileOpen ? "Cerrar menú" : "Abrir menú"}
-            className="lg:hidden ml-auto inline-flex h-11 w-11 items-center justify-center rounded-xl border-none bg-neutral-900 text-white cursor-pointer active:scale-[0.96]"
-          >
-            {isMobileOpen ? <X size={20} strokeWidth={2.2} /> : <Menu size={20} strokeWidth={2.2} />}
-          </button>
+            {!user && !loading ? (
+              <button
+                type="button"
+                onClick={() => setAuthModal({ isOpen: true, tab: "register" })}
+                className="hidden h-10 items-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas transition-transform active:scale-95 sm:inline-flex"
+              >
+                Registrarse
+              </button>
+            ) : null}
+
+            <button
+              type="button"
+              className="inline-flex size-10 items-center justify-center rounded-full text-ink lg:hidden"
+              onClick={() => setIsMobileOpen((v) => !v)}
+              aria-expanded={isMobileOpen}
+              aria-controls="mobile-nav"
+              aria-label={isMobileOpen ? "Cerrar menú" : "Abrir menú"}
+            >
+              {isMobileOpen ? <X size={22} /> : <Menu size={22} />}
+            </button>
+          </div>
         </div>
 
-        {/* Newsletter subnav — integrated into navbar only on /newsletter */}
         {isNewsletter && (
-          <div className="border-t border-gray-200/60">
-            <div className="max-w-[1300px] mx-auto px-8 lg:px-12 xl:px-16 flex items-center justify-between">
-              <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide -mb-[1px]">
+          <div className="border-t border-line bg-canvas">
+            <div className="mx-auto flex max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center gap-0 overflow-x-auto scrollbar-hide">
                 <button
-                  onClick={() => { setNlActiveCategory("all"); window.dispatchEvent(new CustomEvent("nl-category", { detail: "all" })); }}
-                  className={`px-4 lg:px-5 py-2.5 text-[11px] font-bold tracking-[0.12em] whitespace-nowrap transition-all border-none cursor-pointer bg-transparent border-b-2 ${nlActiveCategory === "all" ? "border-b-black text-black" : "border-b-transparent text-gray-400 hover:text-gray-700"}`}
+                  type="button"
+                  onClick={() => {
+                    setNlActiveCategory("all");
+                    window.dispatchEvent(new CustomEvent("nl-category", { detail: "all" }));
+                  }}
+                  className={`px-4 py-2.5 text-[11px] font-semibold tracking-[0.12em] whitespace-nowrap ${
+                    nlActiveCategory === "all" ? "text-ink" : "text-faint"
+                  }`}
                 >
                   TODOS
                 </button>
-                {nlCategories.map(cat => (
+                {nlCategories.map((cat) => (
                   <button
                     key={cat.id}
-                    onClick={() => { setNlActiveCategory(cat.slug); window.dispatchEvent(new CustomEvent("nl-category", { detail: cat.slug })); }}
-                    className={`px-4 lg:px-5 py-2.5 text-[11px] font-bold tracking-[0.12em] whitespace-nowrap transition-all border-none cursor-pointer bg-transparent border-b-2 ${nlActiveCategory === cat.slug ? "border-b-black text-black" : "border-b-transparent text-gray-400 hover:text-gray-700"}`}
+                    type="button"
+                    onClick={() => {
+                      setNlActiveCategory(cat.slug);
+                      window.dispatchEvent(new CustomEvent("nl-category", { detail: cat.slug }));
+                    }}
+                    className={`px-4 py-2.5 text-[11px] font-semibold tracking-[0.12em] whitespace-nowrap ${
+                      nlActiveCategory === cat.slug ? "text-ink" : "text-faint"
+                    }`}
                   >
                     {cat.name.toUpperCase()}
                   </button>
                 ))}
               </div>
-              {user ? (
-                <span className="hidden lg:block text-[10px] font-bold tracking-[0.12em] text-emerald-500 uppercase whitespace-nowrap">
-                  ✓ Ya estás suscrito
-                </span>
-              ) : (
-                <button
-                  onClick={() => {
-                    setAuthModal({ isOpen: true, tab: "register" });
-                  }}
-                  className="hidden lg:block text-[10px] font-bold tracking-[0.12em] text-gray-400 hover:text-black uppercase whitespace-nowrap bg-transparent border-none cursor-pointer transition-colors"
-                >
-                  Suscríbete al Newsletter
-                </button>
-              )}
             </div>
           </div>
         )}
-      </motion.nav>
 
-      <AnimatePresence>
-        {isMobileOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-              className={`lg:hidden fixed inset-0 z-[49] bg-black/25 ${isNewsletter ? "top-[88px]" : "top-16"}`}
-              onClick={() => setIsMobileOpen(false)}
-            />
-            <motion.div
-              id="mobile-nav"
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.16, ease: [0.16, 1, 0.3, 1] }}
-              className={`lg:hidden fixed inset-x-0 bottom-0 z-[49] flex flex-col bg-white ${isNewsletter ? "top-[88px]" : "top-16"}`}
-            >
-              <div className="flex-1 overflow-y-auto overscroll-contain px-4 py-3">
-                {user && (
-                  <div className="mb-3 flex items-center gap-3 rounded-2xl bg-neutral-50 px-3 py-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-sm font-semibold text-white">
-                      {getInitials(user.user_metadata?.full_name || user.email)}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-neutral-900">
-                        {user.user_metadata?.full_name || "Estudiante"}
-                      </p>
-                      <p className="truncate text-xs text-neutral-500">{user.email}</p>
-                    </div>
-                    <Link
-                      href="/comunidad/cursos"
-                      onClick={() => setIsMobileOpen(false)}
-                      className="shrink-0 text-xs font-semibold text-neutral-900 no-underline"
-                    >
-                      Comunidad
-                    </Link>
-                  </div>
-                )}
-
-                <nav className="flex flex-col">
-                  {navLinks.map((link) =>
-                    link.hasMega ? (
-                      <div key={link.href} className="border-b border-neutral-100">
-                        <div className="flex items-center">
-                          <Link
-                            href={link.href}
-                            onClick={() => setIsMobileOpen(false)}
-                            className="flex-1 py-3.5 text-[17px] font-semibold text-neutral-900 no-underline"
-                          >
-                            {link.label}
-                          </Link>
-                          <button
-                            type="button"
-                            onClick={() => setIsMobileCoursesOpen((v) => !v)}
-                            aria-expanded={isMobileCoursesOpen}
-                            aria-label={isMobileCoursesOpen ? "Ocultar cursos" : "Ver cursos"}
-                            className="flex h-11 w-11 items-center justify-center rounded-xl border-none bg-transparent text-neutral-500 cursor-pointer"
-                          >
-                            <ChevronDown
-                              size={18}
-                              className={`transition-transform duration-150 ${isMobileCoursesOpen ? "rotate-180" : ""}`}
-                            />
-                          </button>
-                        </div>
-                        {isMobileCoursesOpen && (
-                          <div className="pb-2">
-                            {courses.map((course) => (
-                              <Link
-                                key={course.slug}
-                                href={`/cursos/${course.slug}`}
-                                onClick={() => setIsMobileOpen(false)}
-                                className="flex items-center justify-between gap-3 py-2.5 pl-1 pr-1 text-[15px] text-neutral-600 no-underline active:text-neutral-900"
-                              >
-                                <span>{course.title}</span>
-                                <ArrowRight size={14} className="shrink-0 text-neutral-300" />
-                              </Link>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    ) : (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={() => setIsMobileOpen(false)}
-                        className="border-b border-neutral-100 py-3.5 text-[17px] font-semibold text-neutral-900 no-underline"
-                      >
+        {isMobileOpen ? (
+          <div
+            id="mobile-nav"
+            className="absolute inset-x-0 top-[72px] border-b border-line bg-canvas px-4 py-6 lg:hidden"
+          >
+            <nav className="flex flex-col gap-4" aria-label="Móvil">
+              {navLinks.map((link) =>
+                link.hasMega ? (
+                  <div key={link.href}>
+                    <div className="flex items-center justify-between">
+                      <Link href={link.href} onClick={() => setIsMobileOpen(false)} className="text-lg font-medium text-ink no-underline">
                         {link.label}
                       </Link>
-                    )
-                  )}
-                </nav>
-              </div>
-
-              <div className="shrink-0 border-t border-neutral-100 bg-white px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
-                {user ? (
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsMobileOpen(false);
-                        setProfileModal({ isOpen: true, tab: "profile" });
-                      }}
-                      className="flex-1 rounded-xl border border-neutral-200 bg-white py-3 text-sm font-semibold text-neutral-800 cursor-pointer"
-                    >
-                      Perfil
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleLogout}
-                      className="flex-1 rounded-xl border-none bg-neutral-100 py-3 text-sm font-semibold text-neutral-800 cursor-pointer"
-                    >
-                      Cerrar sesión
-                    </button>
+                      <button
+                        type="button"
+                        onClick={() => setIsMobileCoursesOpen((v) => !v)}
+                        aria-label="Ver cursos"
+                        className="size-10 text-mute"
+                      >
+                        <ChevronDown size={18} className={isMobileCoursesOpen ? "rotate-180" : ""} />
+                      </button>
+                    </div>
+                    {isMobileCoursesOpen && (
+                      <div className="mt-2 flex flex-col gap-2">
+                        {courses.map((course) => (
+                          <Link
+                            key={course.slug}
+                            href={`/cursos/${course.slug}`}
+                            onClick={() => setIsMobileOpen(false)}
+                            className="text-[15px] text-mute no-underline"
+                          >
+                            {course.title}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className="flex gap-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsMobileOpen(false);
-                        setAuthModal({ isOpen: true, tab: "login" });
-                      }}
-                      className="flex-1 rounded-xl border border-neutral-200 bg-white py-3 text-sm font-semibold text-neutral-800 cursor-pointer"
-                    >
-                      Entrar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsMobileOpen(false);
-                        setAuthModal({ isOpen: true, tab: "register" });
-                      }}
-                      className="flex-1 rounded-xl border-none bg-neutral-900 py-3 text-sm font-semibold text-white cursor-pointer"
-                    >
-                      Regístrate
-                    </button>
-                  </div>
-                )}
-                {isAdmin && (
                   <Link
-                    href="/comunidad/admin"
+                    key={link.href}
+                    href={link.href}
                     onClick={() => setIsMobileOpen(false)}
-                    className="mt-2 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-neutral-500 no-underline"
+                    className="text-lg font-medium text-ink no-underline"
                   >
-                    <ShieldAlert size={14} /> Panel admin
+                    {link.label}
                   </Link>
-                )}
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+                )
+              )}
 
-      <div className={isNewsletter ? "h-[88px] lg:h-[104px]" : "h-16 lg:h-20"} />
+              {user ? (
+                <>
+                  <Link href="/comunidad/cursos" onClick={() => setIsMobileOpen(false)} className="text-lg font-medium text-ink no-underline">
+                    Campus
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileOpen(false);
+                      setProfileModal({ isOpen: true, tab: "profile" });
+                    }}
+                    className="text-left text-lg font-medium text-ink"
+                  >
+                    Perfil
+                  </button>
+                  <button type="button" onClick={handleLogout} className="text-left text-lg font-medium text-ink">
+                    Cerrar sesión
+                  </button>
+                </>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileOpen(false);
+                    setAuthModal({ isOpen: true, tab: "login" });
+                  }}
+                  className="text-left text-lg font-medium text-ink"
+                >
+                  Iniciar sesión
+                </button>
+              )}
+
+              {!user ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsMobileOpen(false);
+                    setAuthModal({ isOpen: true, tab: "register" });
+                  }}
+                  className="inline-flex h-11 items-center justify-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas"
+                >
+                  Registrarse
+                </button>
+              ) : null}
+            </nav>
+          </div>
+        ) : null}
+      </header>
+
+      <div className={isNewsletter ? "h-[112px]" : "h-[72px]"} />
     </>
   );
 }

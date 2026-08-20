@@ -9,11 +9,11 @@ export default function TerminosPage() {
   const lastUpdated = "15 de julio de 2026";
 
   return (
-    <section className="min-h-screen bg-white py-20 lg:py-32">
+    <section className="min-h-screen bg-canvas py-20 lg:py-32">
       <div className="max-w-[800px] mx-auto px-5 lg:px-10">
         {/* Header */}
         <div className="mb-16 text-center">
-          <span className="text-[#1890FF] font-bold tracking-widest uppercase text-xs block mb-4">Legal</span>
+          <span className="text-[#171716] font-bold tracking-widest uppercase text-xs block mb-4">Legal</span>
           <h1 className="font-display text-4xl md:text-5xl font-black text-[#0F172A] mb-4">Términos y Condiciones de Uso</h1>
           <p className="text-gray-400 text-sm">Última actualización: {lastUpdated}</p>
         </div>
@@ -46,7 +46,7 @@ export default function TerminosPage() {
                 ["Notificación", "Informarnos de inmediato a contacto@programbi.cl sobre cualquier uso no autorizado de tu cuenta."],
               ].map(([title, desc]) => (
                 <li key={title} className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#1890FF] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#171716] mt-2 flex-shrink-0" />
                   <span><strong className="text-[#0F172A]">{title}:</strong> {desc}</span>
                 </li>
               ))}
@@ -104,7 +104,7 @@ export default function TerminosPage() {
                 "Abuse o intente corromper el funcionamiento de nuestras herramientas de IA (mediante inyección de prompts u otras prácticas maliciosas).",
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#1890FF] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#171716] mt-2 flex-shrink-0" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -156,9 +156,9 @@ export default function TerminosPage() {
               <p className="font-bold text-[#0F172A] mb-1">ProgramBI SpA</p>
               <p className="text-sm text-gray-500">Alonso de Córdova 5870, Oficina 724, Las Condes, Santiago, Chile</p>
               <p className="text-sm text-gray-500 mt-1">
-                <a href="mailto:contacto@programbi.cl" className="text-[#1890FF] no-underline hover:underline">contacto@programbi.cl</a>
+                <a href="mailto:contacto@programbi.cl" className="text-[#171716] no-underline hover:underline">contacto@programbi.cl</a>
                 {" • "}
-                <a href="tel:+56935409699" className="text-[#1890FF] no-underline hover:underline">+56 9 3540 9699</a>
+                <a href="tel:+56935409699" className="text-[#171716] no-underline hover:underline">+56 9 3540 9699</a>
               </p>
             </div>
           </section>

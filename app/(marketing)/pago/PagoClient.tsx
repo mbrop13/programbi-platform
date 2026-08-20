@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
+import CourseImage from "@/components/shared/CourseImage";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, ArrowLeft, Clock, Calendar, Building2, User, Users,
@@ -525,7 +525,7 @@ export default function PagoClient() {
         <FadeIn>
           <div className="text-center mb-10">
             <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-[#0F172A] mb-4 tracking-tight">
-              Selecciona tus <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">Cursos</span>
+              Selecciona tus <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#171716] to-indigo-600">Cursos</span>
             </h1>
             <p className="text-gray-500 text-lg max-w-[600px] mx-auto">
               Elige los programas y niveles que deseas cursar. También puedes añadir cupos extra para tu equipo.
@@ -585,13 +585,13 @@ export default function PagoClient() {
 
                return (
                  <FadeIn key={course.slug} delay={0.2}>
-                    <div className={`bg-white rounded-3xl border ${itemQty > 0 || entSelected ? 'border-[#1890FF] ring-1 ring-[#1890FF]/30' : 'border-gray-200'} p-4 lg:p-6 transition-all hover:shadow-lg flex flex-col sm:flex-row gap-6 items-start sm:items-center`}>
+                    <div className={`bg-white rounded-3xl border ${itemQty > 0 || entSelected ? 'border-[#171716] ring-1 ring-[#171716]/30' : 'border-gray-200'} p-4 lg:p-6 transition-all hover:shadow-lg flex flex-col sm:flex-row gap-6 items-start sm:items-center`}>
                        
                        {/* Left Image */}
                        <div className="w-full sm:w-56 h-48 sm:h-40 shrink-0 relative rounded-2xl overflow-hidden border border-gray-100 bg-gray-50">
-                          <Image src={course.imageUrl} alt={course.title} fill sizes="(max-width: 640px) 100vw, 224px" className="object-cover" />
+                          <CourseImage src={course.imageUrl} alt={course.title} fill sizes="(max-width: 640px) 100vw, 224px" className="object-cover" />
                           {isBundle && mode === "individual" && (
-                             <div className="absolute top-2 left-2 bg-[#1890FF] text-white text-[10px] font-black uppercase px-2 py-1 rounded-md shadow-md">
+                             <div className="absolute top-2 left-2 bg-[#171716] text-white text-[10px] font-black uppercase px-2 py-1 rounded-md shadow-md">
                                PROMOCIÓN 3x2
                              </div>
                           )}
@@ -602,7 +602,7 @@ export default function PagoClient() {
                           <div>
                             <h3 className="font-bold text-[#0F172A] text-lg lg:text-xl line-clamp-1">{course.title}</h3>
                             {isBundle && (
-                               <p className="text-[11px] font-bold text-[#1890FF] mt-0.5">(Incluye Power BI + Python + SQL Server)</p>
+                               <p className="text-[11px] font-bold text-[#171716] mt-0.5">(Incluye Power BI + Python + SQL Server)</p>
                              )}
                             <p className="text-xs text-gray-500 line-clamp-2 mt-1">{getCourseDescription(course)}</p>
                           </div>
@@ -614,7 +614,7 @@ export default function PagoClient() {
                                  <button 
                                    key={lvl.name} 
                                    onClick={() => changeLevel(course.slug, lvl.name)}
-                                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border outline-none ${activeLevel === lvl.name ? 'border-[#1890FF]/30 bg-blue-50 text-[#1890FF]' : 'border-gray-200 bg-gray-50 text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
+                                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border outline-none ${activeLevel === lvl.name ? 'border-[#171716]/30 bg-blue-50 text-[#171716]' : 'border-gray-200 bg-gray-50 text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
                                  >
                                     {lvl.name}
                                  </button>
@@ -658,17 +658,17 @@ export default function PagoClient() {
                                                 <button
                                                   type="button"
                                                   onClick={() => setOpenDropdownKey(isDropdownOpen ? null : dropdownKey)}
-                                                  className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:border-gray-300 hover:bg-slate-50 transition-all flex items-center justify-between cursor-pointer shadow-sm select-none outline-none focus:border-[#1890FF] focus:ring-2 focus:ring-blue-100"
+                                                  className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:border-gray-300 hover:bg-slate-50 transition-all flex items-center justify-between cursor-pointer shadow-sm select-none outline-none focus:border-[#171716] focus:ring-2 focus:ring-blue-100"
                                                 >
                                                   <span className="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-0.5 text-left min-w-0 flex-1">
                                                     <span className="flex items-center gap-2 text-slate-800 font-bold shrink-0">
-                                                      <Calendar className="w-3.5 h-3.5 text-[#1890FF] shrink-0" />
+                                                      <Calendar className="w-3.5 h-3.5 text-[#171716] shrink-0" />
                                                       <span className="capitalize">{selectedConverted.dateFormatted}</span>
                                                     </span>
                                                     <span className="hidden sm:inline text-slate-400 font-semibold shrink-0">·</span>
                                                     <span className="text-blue-600 truncate font-semibold text-[11px]">{selectedConverted.days} {selectedConverted.time}</span>
                                                   </span>
-                                                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0 ${isDropdownOpen ? "rotate-180 text-[#1890FF]" : ""}`} />
+                                                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0 ${isDropdownOpen ? "rotate-180 text-[#171716]" : ""}`} />
                                                 </button>
 
                                                 <AnimatePresence>
@@ -700,7 +700,7 @@ export default function PagoClient() {
                                                             className={`w-full px-4 py-2.5 text-left transition-colors flex items-center justify-between gap-3 cursor-pointer select-none hover:bg-blue-50/50 ${isSelected ? "bg-blue-50/30 font-bold" : ""}`}
                                                           >
                                                             <div className="truncate">
-                                                              <span className={`block text-xs font-black capitalize ${isSelected ? "text-[#1890FF]" : "text-slate-800"}`}>
+                                                              <span className={`block text-xs font-black capitalize ${isSelected ? "text-[#171716]" : "text-slate-800"}`}>
                                                                 {converted.dateFormatted}
                                                               </span>
                                                               <span className="block text-[10.5px] text-slate-500 font-bold mt-0.5 truncate">
@@ -708,7 +708,7 @@ export default function PagoClient() {
                                                               </span>
                                                             </div>
                                                             {isSelected && (
-                                                              <Check className="w-3.5 h-3.5 text-[#1890FF] shrink-0" />
+                                                              <Check className="w-3.5 h-3.5 text-[#171716] shrink-0" />
                                                             )}
                                                           </button>
                                                         );
@@ -840,7 +840,7 @@ export default function PagoClient() {
                                           chosenSchedule?.schedule_time
                                         );
                                       }}
-                                      className="w-10 h-full flex items-center justify-center text-[#1890FF] hover:bg-blue-50"
+                                      className="w-10 h-full flex items-center justify-center text-[#171716] hover:bg-blue-50"
                                     >
                                        <Plus className="w-4 h-4" />
                                     </button>

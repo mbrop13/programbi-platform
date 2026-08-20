@@ -189,43 +189,30 @@ export default function ComunidadPortal() {
   const [hasActiveLive, setHasActiveLive] = useState(false);
   const [showAiToast, setShowAiToast] = useState(false);
 
-  // Check if a live session is currently active or starting within 60 minutes
   useEffect(() => {
+    let cancelled = false;
     const checkLives = async () => {
-      if (typeof document !== "undefined" && document.hidden) return;
       try {
         const supabase = createClient();
-        const now = new Date();
-        const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000).toISOString();
+        const oneHourFromNow = new Date(Date.now() + 60 * 60 * 1000).toISOString();
         const { data } = await supabase
           .from("live_classes")
-          .select("id, status, scheduled_at")
+          .select("id")
           .or(`status.eq.active,and(status.eq.scheduled,scheduled_at.lte.${oneHourFromNow})`)
           .limit(1);
-
-        if (data && data.length > 0) {
-          setHasActiveLive(true);
-        } else {
-          setHasActiveLive(false);
-        }
+        if (!cancelled) setHasActiveLive(!!data?.length);
       } catch {
-        setHasActiveLive(false);
+        if (!cancelled) setHasActiveLive(false);
       }
     };
     checkLives();
-
-    const handleVisibility = () => {
-      if (!document.hidden) checkLives();
-    };
-    document.addEventListener("visibilitychange", handleVisibility);
-
-    // Refresh every 60s instead of aggressive 30s when tab is active
-    const interval = setInterval(checkLives, 60000);
+    if (activeTab !== "live") return () => { cancelled = true; };
+    const interval = setInterval(checkLives, 60_000);
     return () => {
+      cancelled = true;
       clearInterval(interval);
-      document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, []);
+  }, [activeTab]);
 
   const restrictedView = !canAccessFull && hasCourses && activeTab !== "cursos";
 

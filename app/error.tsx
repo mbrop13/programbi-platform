@@ -1,47 +1,50 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
+import { useEffect } from "react";
+import Link from "next/link";
+import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
+import StatusPage from "@/components/shared/StatusPage";
 
 export default function Error({
   error,
   reset,
 }: {
-  error: Error & { digest?: string }
-  reset: () => void
+  error: Error & { digest?: string };
+  reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Global UI Error captured:", error)
-  }, [error])
+    console.error("UI error:", error);
+  }, [error]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 text-slate-900 px-4">
-      <div className="max-w-md w-full text-center space-y-6">
-        <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-          <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-        </div>
-        <h2 className="text-2xl font-black text-slate-800">
-          Ocurrió un error inesperado
-        </h2>
-        <p className="text-slate-500 text-sm max-w-sm mx-auto">
-          Lo sentimos, ha ocurrido un error al cargar esta página. Se ha registrado el incidente. Por favor, intenta de nuevo o vuelve al inicio.
-        </p>
-        <div className="flex justify-center gap-4">
-          <button
-            onClick={() => window.location.href = '/'}
-            className="px-5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl font-semibold text-sm transition-all"
-          >
-            Ir al Inicio
-          </button>
-          <button
-            onClick={() => reset()}
-            className="px-5 py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-xl font-semibold text-sm transition-all"
-          >
-            Reintentar
-          </button>
-        </div>
-      </div>
-    </div>
-  )
+    <>
+      <Navbar />
+      <main>
+        <StatusPage
+          code="500"
+          title="No pudimos cargar esta página"
+          description="Ocurrió un error inesperado. Reintenta o vuelve al inicio."
+          actions={
+            <>
+              <button
+                type="button"
+                onClick={() => reset()}
+                className="inline-flex h-12 items-center rounded-full bg-ink px-7 text-base font-semibold text-canvas transition-transform active:scale-[0.98]"
+              >
+                Reintentar
+              </button>
+              <Link
+                href="/"
+                className="inline-flex h-12 items-center rounded-full border border-line bg-paper px-7 text-base font-medium text-ink no-underline transition-colors hover:bg-wash active:scale-[0.98]"
+              >
+                Ir al inicio
+              </Link>
+            </>
+          }
+        />
+      </main>
+      <Footer />
+    </>
+  );
 }

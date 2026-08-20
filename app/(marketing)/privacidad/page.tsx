@@ -9,11 +9,11 @@ export default function PrivacidadPage() {
   const lastUpdated = "15 de julio de 2026";
 
   return (
-    <section className="min-h-screen bg-white py-20 lg:py-32">
+    <section className="min-h-dvh bg-canvas py-20 lg:py-32">
       <div className="max-w-[800px] mx-auto px-5 lg:px-10">
         {/* Header */}
         <div className="mb-16 text-center">
-          <span className="text-[#1890FF] font-bold tracking-widest uppercase text-xs block mb-4">Legal</span>
+          <span className="text-[#171716] font-bold tracking-widest uppercase text-xs block mb-4">Legal</span>
           <h1 className="font-display text-4xl md:text-5xl font-black text-[#0F172A] mb-4">Política de Privacidad</h1>
           <p className="text-gray-400 text-sm">Última actualización: {lastUpdated}</p>
         </div>
@@ -27,8 +27,8 @@ export default function PrivacidadPage() {
             <p>
               El responsable de la recopilación y tratamiento de los datos personales es <strong>ProgramBI SpA</strong>, con domicilio en
               Alonso de Córdova 5870, Oficina 724, Las Condes, Santiago, Chile, correo electrónico{" "}
-              <a href="mailto:contacto@programbi.cl" className="text-[#1890FF] no-underline hover:underline font-medium">contacto@programbi.cl</a> y
-              teléfono <a href="tel:+56935409699" className="text-[#1890FF] no-underline hover:underline font-medium">+56 9 3540 9699</a>.
+              <a href="mailto:contacto@programbi.cl" className="text-[#171716] no-underline hover:underline font-medium">contacto@programbi.cl</a> y
+              teléfono <a href="tel:+56935409699" className="text-[#171716] no-underline hover:underline font-medium">+56 9 3540 9699</a>.
             </p>
           </section>
 
@@ -45,7 +45,7 @@ export default function PrivacidadPage() {
                 ["Datos de pago", "procesados íntegramente por Flow.cl; ProgramBI no almacena datos de tarjeta."],
               ].map(([title, desc]) => (
                 <li key={title} className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#1890FF] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#171716] mt-2 flex-shrink-0" />
                   <span><strong className="text-[#0F172A]">{title}:</strong> {desc}</span>
                 </li>
               ))}
@@ -66,7 +66,7 @@ export default function PrivacidadPage() {
                 "Cumplir obligaciones legales, tributarias y contractuales.",
               ].map((item, i) => (
                 <li key={i} className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#1890FF] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#171716] mt-2 flex-shrink-0" />
                   <span>{item}</span>
                 </li>
               ))}
@@ -100,7 +100,7 @@ export default function PrivacidadPage() {
                 ["Vercel", "hosting de la aplicación web."],
               ].map(([provider, desc]) => (
                 <li key={provider} className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#1890FF] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#171716] mt-2 flex-shrink-0" />
                   <span><strong className="text-[#0F172A]">{provider}:</strong> {desc}</span>
                 </li>
               ))}
@@ -130,14 +130,14 @@ export default function PrivacidadPage() {
                 ["Oposición", "oponerte al tratamiento de tus datos para ciertos fines."],
               ].map(([right, desc]) => (
                 <li key={right} className="flex items-start gap-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#1890FF] mt-2 flex-shrink-0" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#171716] mt-2 flex-shrink-0" />
                   <span><strong className="text-[#0F172A]">{right}:</strong> {desc}</span>
                 </li>
               ))}
             </ul>
             <p className="mt-4">
               Para ejercer tus derechos, escríbenos a{" "}
-              <a href="mailto:contacto@programbi.cl" className="text-[#1890FF] no-underline hover:underline font-medium">contacto@programbi.cl</a>{" "}
+              <a href="mailto:contacto@programbi.cl" className="text-[#171716] no-underline hover:underline font-medium">contacto@programbi.cl</a>{" "}
               indicando tu nombre, RUT y derecho que deseas ejercer. Responderemos en un plazo máximo de 15 días hábiles.
             </p>
           </section>
@@ -192,9 +192,9 @@ export default function PrivacidadPage() {
               <p className="font-bold text-[#0F172A] mb-1">ProgramBI SpA</p>
               <p className="text-sm text-gray-500">Alonso de Córdova 5870, Oficina 724, Las Condes, Santiago, Chile</p>
               <p className="text-sm text-gray-500 mt-1">
-                <a href="mailto:contacto@programbi.cl" className="text-[#1890FF] no-underline hover:underline">contacto@programbi.cl</a>
+                <a href="mailto:contacto@programbi.cl" className="text-[#171716] no-underline hover:underline">contacto@programbi.cl</a>
                 {" • "}
-                <a href="tel:+56935409699" className="text-[#1890FF] no-underline hover:underline">+56 9 3540 9699</a>
+                <a href="tel:+56935409699" className="text-[#171716] no-underline hover:underline">+56 9 3540 9699</a>
               </p>
             </div>
           </section>

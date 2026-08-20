@@ -17,6 +17,7 @@ import {
   Lock,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCommunity } from "@/components/comunidad/CommunityProvider";
 
 interface LiveClass {
   id: string;
@@ -26,7 +27,6 @@ interface LiveClass {
   status: "scheduled" | "active" | "completed";
   youtube_stream_key: string | null;
   youtube_video_id: string | null;
-  livekit_egress_id: string | null;
   scheduled_at: string;
 }
 
@@ -136,8 +136,8 @@ function HeroThumbnail({
 }
 
 export default function LivePanel() {
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [adminChecked, setAdminChecked] = useState(false);
+  const { isAdmin } = useCommunity();
+  const adminChecked = true;
   const [activeClass, setActiveClass] = useState<LiveClass | null>(null);
   const [completedClasses, setCompletedClasses] = useState<LiveClass[]>([]);
   const [loading, setLoading] = useState(true);
@@ -149,13 +149,11 @@ export default function LivePanel() {
   const [notes, setNotes] = useState<Record<string, string>>({});
   const [nowMs, setNowMs] = useState(Date.now());
 
-  // Clock ticker to reactively update countdowns and join buttons
   useEffect(() => {
-    const clock = setInterval(() => {
-      setNowMs(Date.now());
-    }, 1000);
+    if (activeClass?.status !== "scheduled" && activeClass?.status !== "active") return;
+    const clock = setInterval(() => setNowMs(Date.now()), 1000);
     return () => clearInterval(clock);
-  }, []);
+  }, [activeClass?.status]);
 
   // Load notes
   useEffect(() => {
@@ -178,21 +176,6 @@ export default function LivePanel() {
   };
 
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // ─── Reliable admin check via server API (bypasses RLS) ───
-  const checkAdmin = useCallback(async () => {
-    try {
-      const res = await fetch("/api/live/check-admin");
-      const data = await res.json();
-      setIsAdmin(!!data.isAdmin);
-      setAdminChecked(true);
-      return !!data.isAdmin;
-    } catch (err) {
-      console.error("Error checking admin status:", err);
-      setAdminChecked(true);
-      return false;
-    }
-  }, []);
 
   // ─── Fetch active/scheduled live classes ───
   const fetchClassInfo = useCallback(async () => {
@@ -253,15 +236,14 @@ export default function LivePanel() {
     return () => clearInterval(timer);
   }, [activeClass, fetchClassInfo]);
 
-  // ─── Initial load: check admin + fetch classes ───
   useEffect(() => {
     const init = async () => {
       setLoading(true);
-      await Promise.all([checkAdmin(), fetchClassInfo()]);
+      await fetchClassInfo();
       setLoading(false);
     };
     init();
-  }, [checkAdmin, fetchClassInfo]);
+  }, [fetchClassInfo]);
 
   // ─── Auto-polling to detect class status changes (only if visible) ───
   useEffect(() => {

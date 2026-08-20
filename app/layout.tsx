@@ -1,37 +1,15 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Inter, Poppins, Caveat, Playfair_Display, JetBrains_Mono } from "next/font/google";
+import { Geist, JetBrains_Mono, Dancing_Script } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import { Analytics } from "@vercel/analytics/react";
 import MarketingAnalytics from "@/components/shared/MarketingAnalytics";
 
-const inter = Inter({
+const geist = Geist({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
-});
-
-const poppins = Poppins({
-  variable: "--font-display",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["600", "700", "800"],
-});
-
-const caveat = Caveat({
-  variable: "--font-caveat",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["500", "700"],
-});
-
-const playfair = Playfair_Display({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "700"],
 });
 
 const jetbrainsMono = JetBrains_Mono({
@@ -39,6 +17,14 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
   weight: ["400", "600"],
+});
+
+const dancing = Dancing_Script({
+  variable: "--font-dancing",
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["700"],
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -205,14 +191,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${inter.variable} ${poppins.variable} ${caveat.variable} ${playfair.variable} ${jetbrainsMono.variable}`}>
+    <html lang="es" className={`${geist.variable} ${jetbrainsMono.variable} ${dancing.variable}`}>
       <head>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-screen bg-white text-text-primary font-sans antialiased">
+      <body className="min-h-dvh bg-canvas text-ink font-sans antialiased">
         <Providers>
           {children}
         </Providers>

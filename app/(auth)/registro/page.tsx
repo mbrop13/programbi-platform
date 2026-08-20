@@ -270,11 +270,11 @@ export default function RegistroPage() {
                 onChange={(e) => setAcceptsPrivacy(e.target.checked)}
                 required
                 disabled={loading}
-                className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-[#1890FF] cursor-pointer flex-shrink-0 disabled:opacity-50"
+                className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-[#171716] cursor-pointer flex-shrink-0 disabled:opacity-50"
               />
               <label htmlFor="privacy-registro" className="text-xs text-gray-500 cursor-pointer leading-relaxed">
                 Acepto la{" "}
-                <Link href="/privacidad" className="text-[#1890FF] font-semibold no-underline hover:underline" target="_blank">Política de Privacidad</Link>{" "}
+                <Link href="/privacidad" className="text-[#171716] font-semibold no-underline hover:underline" target="_blank">Política de Privacidad</Link>{" "}
                 y autorizo el tratamiento de mis datos personales.
               </label>
             </div>

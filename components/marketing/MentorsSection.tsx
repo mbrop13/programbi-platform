@@ -14,10 +14,10 @@ const LinkedinIcon = ({ className }: { className?: string }) => (
 );
 
 const avatarGradients: Record<string, string> = {
-  UserCheck: "from-blue-500 to-indigo-600",
-  BarChart3: "from-emerald-400 to-emerald-600",
-  Brain: "from-purple-500 to-indigo-600",
-  Monitor: "from-amber-400 to-amber-600",
+  UserCheck: "from-[#171716] to-[#0f7ae5]",
+  BarChart3: "from-zinc-700 to-zinc-900",
+  Brain: "from-[#171716] to-[#0050b3]",
+  Monitor: "from-zinc-600 to-zinc-800",
 };
 
 const getInitials = (name: string) => {
@@ -40,7 +40,7 @@ export default function MentorsSection() {
   }, []);
 
   return (
-    <section className="py-16 lg:py-24 bg-white relative overflow-hidden flex justify-center items-center">
+    <section className="py-16 lg:py-24 bg-canvas relative overflow-hidden flex justify-center items-center">
       {/* Premium background accents */}
       <div
         className="absolute inset-0 opacity-20 pointer-events-none z-0"
@@ -60,8 +60,8 @@ export default function MentorsSection() {
           {/* Header Column (Premium Glass Panel) */}
           <div className="lg:col-span-4 flex flex-col justify-between text-white rounded-[2rem] p-8 lg:p-10 relative overflow-hidden select-none border border-white/10"
             style={{
-              background: "linear-gradient(135deg, #1890FF 0%, #0050b3 50%, #1e3a8a 100%)",
-              boxShadow: "0 24px 60px -20px rgba(24,144,255,0.45), inset 0 1px 0 0 rgba(255,255,255,0.15)",
+              background: "#171716",
+              boxShadow: "0 24px 60px -20px rgba(23,23,22,0.35), inset 0 1px 0 0 rgba(255,255,255,0.08)",
             }}
           >
             {/* Glass mesh overlay */}
@@ -115,7 +115,7 @@ export default function MentorsSection() {
                     onMouseEnter={() => setActiveIndex(index)}
                     className={`relative overflow-hidden rounded-[2rem] border backdrop-blur-md transition-all duration-500 cursor-pointer group flex flex-col justify-end snap-start shrink-0 ${
                       isCardExpanded
-                        ? "border-[#1890FF]/40 bg-white/10"
+                        ? "border-[#171716]/40 bg-white/10"
                         : "border-white/50 bg-white/30 hover:bg-white/50"
                     } w-[290px] sm:w-[320px] lg:flex-[3.5] h-[380px] sm:h-[410px] lg:h-full`}
                     style={isCardExpanded
@@ -163,7 +163,7 @@ export default function MentorsSection() {
                       {/* Name & LinkedIn */}
                       <div className="flex items-center justify-between w-full mb-1 pointer-events-auto min-w-0">
                         <h3 className={`font-display text-lg lg:text-xl font-black tracking-tight truncate ${
-                          isCardExpanded ? "text-[#1890FF]" : "text-white"
+                          isCardExpanded ? "text-[#171716]" : "text-white"
                         } transition-colors leading-none`}>
                           {mentor.name}
                         </h3>
@@ -237,7 +237,7 @@ export default function MentorsSection() {
                         <div className="pt-1 flex justify-start">
                           <Link
                             href={mentor.isFounder ? "/nosotros" : "/cursos"}
-                            className="inline-flex items-center gap-1 text-[11px] font-black text-[#1890FF] hover:text-blue-400 transition-colors group/cta leading-none"
+                            className="inline-flex items-center gap-1 text-[11px] font-black text-[#171716] hover:text-blue-400 transition-colors group/cta leading-none"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <span>{mentor.isFounder ? "Ver perfil completo" : `Ver cursos de ${mentor.name.split(" ")[0]}`}</span>

@@ -18,7 +18,6 @@ import {
   Network,
   Play,
   Server,
-  Sparkles,
   Star,
   Target,
   TrendingUp,
@@ -55,21 +54,6 @@ const ICON_MAP: Record<SyllabusModuleIcon, LucideIcon> = {
   trending: TrendingUp,
 };
 
-const ICON_COLORS: Partial<Record<SyllabusModuleIcon, string>> = {
-  powerbi: "#F2C811",
-  sql: "#1890FF",
-  python: "#6366F1",
-  excel: "#107C41",
-  star: "#1890FF",
-  bot: "#6366F1",
-  chart: "#F59E0B",
-  server: "#1890FF",
-  network: "#6366F1",
-  bolt: "#F59E0B",
-  finance: "#1D4ED8",
-  trending: "#059669",
-};
-
 function hexToRgba(hex: string, alpha: number) {
   const clean = hex.replace("#", "");
   const full = clean.length === 3 ? clean.split("").map((c) => c + c).join("") : clean;
@@ -98,12 +82,11 @@ function topicBadge(topic: SyllabusTopic): string | null {
 
 function TopicRow({
   topic,
-  accent,
   locked,
   delay,
 }: {
   topic: SyllabusTopic;
-  accent: string;
+  accent?: string;
   locked?: boolean;
   delay: number;
 }) {
@@ -117,15 +100,13 @@ function TopicRow({
       transition={{ delay, duration: 0.2 }}
       className={cn(
         "group/topic flex items-start gap-3 text-sm",
-        locked ? "text-gray-400" : "text-slate-600"
+        locked ? "text-faint" : "text-mute"
       )}
     >
       <span
-        className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg"
-        style={{
-          background: locked ? "#F1F5F9" : hexToRgba(accent, 0.1),
-          color: locked ? "#94A3B8" : accent,
-        }}
+        className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg ${
+          locked ? "bg-wash text-faint" : "bg-wash text-ink"
+        }`}
       >
         {locked ? (
           <Lock className="h-3 w-3" />
@@ -138,7 +119,7 @@ function TopicRow({
           <span className="italic">Bloqueado por Prueba Gratuita</span>
         ) : isSpecial && badge ? (
           <>
-            <strong className="text-slate-900 font-bold">{badge}: </strong>
+            <strong className="text-ink font-semibold">{badge}: </strong>
             {topic.title}
           </>
         ) : (
@@ -146,10 +127,7 @@ function TopicRow({
         )}
       </span>
       {!locked && badge && !isSpecial && (
-        <span
-          className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide"
-          style={{ background: hexToRgba(accent, 0.1), color: accent }}
-        >
+        <span className="shrink-0 rounded-full border border-line px-2 py-0.5 text-[10px] font-semibold text-mute">
           {badge}
         </span>
       )}
@@ -175,9 +153,9 @@ function ModuleCard({
   isPowerBiTrial?: boolean;
 }) {
   const Icon = module.icon ? ICON_MAP[module.icon] : null;
-  const iconColor = (module.icon && ICON_COLORS[module.icon]) || accent;
   const topics = module.topics.map(normalizeTopic);
   const hours = module.hours;
+  const isIa = module.highlight || module.icon === "star" || module.icon === "bot";
 
   return (
     <motion.div
@@ -185,79 +163,40 @@ function ModuleCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04, duration: 0.3 }}
-      className={cn(
-        "relative overflow-hidden rounded-2xl border bg-white transition-all duration-300",
-        module.highlight
-          ? "border-transparent shadow-md"
-          : "border-slate-200/80 hover:shadow-[0_12px_40px_-16px_rgba(15,23,42,0.12)]"
-      )}
-      style={
-        module.highlight
-          ? {
-              borderColor: hexToRgba(accent, 0.35),
-              background: `linear-gradient(135deg, ${hexToRgba(accent, 0.06)} 0%, #FFFFFF 55%)`,
-              boxShadow: isOpen ? `0 12px 40px -12px ${hexToRgba(accent, 0.25)}` : undefined,
-            }
-          : {
-              borderColor: isOpen ? hexToRgba(accent, 0.45) : undefined,
-              boxShadow: isOpen ? `0 12px 40px -12px ${hexToRgba(accent, 0.2)}` : undefined,
-            }
-      }
+      className={`group/module relative overflow-hidden rounded-[22px] border bg-paper transition-colors ${
+        isOpen ? "border-ink" : "border-line hover:border-ink"
+      }`}
     >
-      {module.highlight && (
-        <div
-          className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full blur-3xl"
-          style={{ background: hexToRgba(accent, 0.15) }}
-        />
-      )}
-
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={isOpen}
         className="relative z-10 flex w-full cursor-pointer items-center gap-3 border-0 bg-transparent p-4 text-left sm:gap-4 sm:p-5 lg:px-6"
       >
-        {/* Journey node */}
         <div className="relative shrink-0">
           <div
-            className={cn(
-              "flex h-11 w-11 items-center justify-center rounded-xl text-sm font-black transition-all duration-300 sm:h-12 sm:w-12 sm:rounded-2xl",
-              isOpen ? "text-white shadow-md" : "text-slate-700"
-            )}
-            style={{
-              background: isOpen
-                ? iconColor
-                : module.highlight
-                  ? "#FFFFFF"
-                  : hexToRgba(iconColor, 0.1),
-              color: isOpen ? "#FFFFFF" : iconColor,
-              border: !isOpen && module.highlight ? `1px solid ${hexToRgba(iconColor, 0.25)}` : undefined,
-            }}
+            className={`flex h-11 w-11 items-center justify-center rounded-xl text-sm font-bold sm:h-12 sm:w-12 ${
+              isOpen ? "bg-ink text-canvas" : "border border-line bg-wash text-ink"
+            }`}
           >
-            {Icon ? <Icon className={cn("h-5 w-5", module.icon === "star" && "fill-current")} /> : index + 1}
+            {Icon ? <Icon className="h-5 w-5" /> : index + 1}
           </div>
         </div>
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <h4 className="font-display text-sm font-bold leading-snug text-slate-900 sm:text-base">
+            <h4 className="text-sm font-bold leading-snug text-ink sm:text-base">
               {module.title}
             </h4>
-            {module.highlight && (
-              <span
-                className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide"
-                style={{ background: hexToRgba(accent, 0.12), color: accent }}
-              >
-                <Sparkles className="h-3 w-3" /> Destacado
+            {isIa && (
+              <span className="rounded-full border border-line px-2 py-0.5 text-[10px] font-semibold text-mute">
+                IA
               </span>
             )}
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] font-semibold text-slate-400 sm:text-xs">
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] font-medium text-mute sm:text-xs">
             {hours != null && hours > 0 && (
-              <span
-                className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5"
-                style={{ background: hexToRgba(accent, 0.08), color: accent }}
-              >
+              <span className="inline-flex items-center gap-1">
                 <Clock className="h-3 w-3" />
                 {hours}h
               </span>
@@ -305,7 +244,6 @@ function ModuleCard({
                   <TopicRow
                     key={`${module.id}-${ti}`}
                     topic={topic}
-                    accent={iconColor}
                     locked={locked}
                     delay={ti * 0.03}
                   />
@@ -335,16 +273,16 @@ function ContextCards({
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-5 md:gap-5">
       {audience && (
-        <div className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)] sm:rounded-[1.75rem] sm:p-7 md:col-span-2">
+        <div className="relative overflow-hidden rounded-[22px] border border-line bg-paper p-5 sm:p-7 md:col-span-2">
           <div
             className="pointer-events-none absolute -bottom-10 -right-10 h-32 w-32 rounded-full blur-2xl"
             style={{ background: hexToRgba(accent, 0.12) }}
           />
-          <h3 className="mb-3 flex items-center gap-2 text-base font-bold text-slate-900 sm:text-lg">
+          <h3 className="mb-3 flex items-center gap-2 text-base font-bold text-ink sm:text-lg">
             <Target className="h-5 w-5 shrink-0" style={{ color: accent }} />
             Dirigido a
           </h3>
-          <p className="relative z-10 text-sm leading-relaxed text-slate-600">{audience}</p>
+          <p className="relative z-10 text-sm leading-relaxed text-mute">{audience}</p>
           {audienceNote && (
             <div
               className="relative z-10 mt-5 rounded-xl border p-3.5 text-xs font-medium leading-relaxed sm:text-sm"
@@ -421,7 +359,7 @@ export default function TemarioSection({
     [syllabus, selectedLevel]
   );
 
-  const accent = level.theme || syllabus.accent || course.accentColor || "#1890FF";
+  const accent = "#171716";
   const hours = levelHours(level) || course.levels?.[selectedLevel]?.durationHours || course.durationHours;
   const modules = level.modules;
 
@@ -452,121 +390,25 @@ export default function TemarioSection({
     course.levels?.[selectedLevel]?.whatYouLearn ?? course.whatYouLearn;
 
   return (
-    <section
-      id="temario"
-      className="relative z-10 overflow-hidden border-t border-slate-100 bg-white py-12 lg:py-24"
-    >
-      {/* Background décor */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-40"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(24,144,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(24,144,255,0.04) 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-        }}
-      />
-      {course.slug === "copilot" ? (
-        <>
-          {/* Copilot Brand Spectrum Ambient Glow Lights */}
-          <div className="pointer-events-none absolute -top-20 left-1/4 h-[450px] w-[500px] rounded-full bg-gradient-to-tr from-[#00A4EF]/20 to-[#8661C5]/20 blur-[130px]" />
-          <div className="pointer-events-none absolute top-1/3 right-1/4 h-[400px] w-[450px] rounded-full bg-gradient-to-bl from-[#C239B3]/15 via-[#F25022]/10 to-transparent blur-[140px]" />
-          <div className="pointer-events-none absolute bottom-0 left-1/3 h-[350px] w-[600px] rounded-full bg-gradient-to-r from-[#0078D4]/15 to-[#00A4EF]/15 blur-[120px]" />
-        </>
-      ) : (
-        <div
-          className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[720px] -translate-x-1/2 rounded-full blur-[120px]"
-          style={{ background: hexToRgba(accent, 0.12) }}
-        />
-      )}
+    <section id="temario" className="border-t border-line bg-canvas py-16 lg:py-24">
+      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+        <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Temario</h2>
+        <p className="mt-3 max-w-[40rem] text-base leading-relaxed text-mute">
+          {hours} horas · {modules.length} módulos · certificado al completar.
+        </p>
 
-      <div className="relative z-10 mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-10">
-        {/* Header */}
-        <div className="mb-8 text-center sm:mb-12">
-          <span
-            className="mb-4 inline-flex items-center justify-center rounded-full border px-4 py-1.5 text-xs font-bold uppercase tracking-wide shadow-sm backdrop-blur-sm"
-            style={{
-              background: hexToRgba(accent, 0.08),
-              borderColor: hexToRgba(accent, 0.2),
-              color: accent,
-            }}
-          >
-            Plan de estudios {syllabus.programYear || "2026"}
-          </span>
-          <h2 className="font-display text-2xl font-black tracking-tight text-[#0F172A] sm:text-4xl lg:text-5xl">
-            Temario y Plan de Estudios
-          </h2>
-          <p className="mx-auto mt-3 max-w-2xl px-2 text-sm font-medium text-slate-500 sm:mt-4 sm:text-lg">
-            Recorrido estructurado del nivel actual: domina cada módulo a tu ritmo con contenido 100% práctico.
-          </p>
-        </div>
-
-        {/* Stats strip */}
-        <div className="mx-auto mb-8 grid max-w-4xl grid-cols-1 gap-3 sm:mb-12 sm:grid-cols-3 sm:gap-4">
-          {[
-            { icon: Clock, label: "Horas del nivel", value: `${hours}h` },
-            { icon: Layers, label: "Módulos", value: String(modules.length) },
-            { icon: Award, label: "Al completar", value: "Certificado" },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="flex items-center gap-3 rounded-2xl border border-white/80 bg-white/90 p-3.5 shadow-[0_4px_24px_-8px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-4"
-            >
-              <span
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                style={{ background: hexToRgba(accent, 0.1), color: accent }}
-              >
-                <stat.icon className="h-5 w-5" />
-              </span>
-              <div className="min-w-0">
-                <p className="font-display text-lg font-black leading-none text-slate-900 sm:text-xl">
-                  {stat.value}
-                </p>
-                <p className="mt-1 truncate text-[10px] font-semibold uppercase tracking-wide text-slate-400 sm:text-[11px]">
-                  {stat.label}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mx-auto max-w-4xl space-y-8 sm:space-y-10">
-            {/* Outcomes */}
+        <div className="mt-12 max-w-[860px] space-y-10">
             {whatYouLearn && whatYouLearn.length > 0 && (
-              <div className="rounded-2xl border border-slate-200/80 bg-white/80 p-4 shadow-sm backdrop-blur-sm sm:rounded-3xl sm:p-8">
-                <h3 className="mb-5 flex items-start gap-2.5 font-display text-lg font-black text-[#0F172A] sm:mb-6 sm:text-xl">
-                  <span
-                    className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg"
-                    style={{ background: hexToRgba(accent, 0.12), color: accent }}
-                  >
-                    <Check className="h-4 w-4" strokeWidth={3} />
-                  </span>
-                  <span>¿Qué aprenderás en este nivel?</span>
-                </h3>
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={selectedLevel}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -8 }}
-                    transition={{ duration: 0.22 }}
-                    className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4"
-                  >
-                    {whatYouLearn.map((item, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.04 }}
-                        className="flex items-start gap-2.5 rounded-xl border border-transparent bg-slate-50/80 p-3 transition-colors hover:border-slate-200 hover:bg-white sm:gap-3"
-                      >
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500" />
-                        <span className="text-[13px] font-semibold leading-relaxed text-slate-700 sm:text-sm">
-                          {item}
-                        </span>
-                      </motion.div>
-                    ))}
-                  </motion.div>
-                </AnimatePresence>
+              <div>
+                <h3 className="text-xl font-bold tracking-tight text-ink">En este nivel</h3>
+                <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  {whatYouLearn.map((item) => (
+                    <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-ink">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2.2} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 
@@ -581,22 +423,19 @@ export default function TemarioSection({
             {/* Journey */}
             <div>
               {level.intro && (
-                <p className="mb-6 text-center text-sm italic leading-relaxed text-slate-500 sm:mb-8 sm:text-base">
+                <p className="mb-6 max-w-[62ch] text-sm leading-relaxed text-mute sm:text-base">
                   {level.intro}
                 </p>
               )}
 
               <div className="mb-4 flex items-center justify-between gap-3">
-                <h3 className="flex items-center gap-2 font-display text-base font-bold text-slate-800 sm:text-lg">
-                  <span className="h-5 w-1.5 rounded-full" style={{ background: accent }} />
-                  Ruta de módulos
-                </h3>
+                <h3 className="text-xl font-bold tracking-tight text-ink">Módulos</h3>
                 <button
                   type="button"
                   onClick={allOpen ? collapseAll : expandAll}
-                  className="cursor-pointer rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-bold text-slate-500 transition-colors hover:border-slate-300 hover:text-slate-800 sm:text-xs"
+                  className="rounded-full border border-line bg-paper px-3 py-1.5 text-xs font-semibold text-ink"
                 >
-                  {allOpen ? "Colapsar todo" : "Expandir todo"}
+                  {allOpen ? "Cerrar todos" : "Abrir todos"}
                 </button>
               </div>
 

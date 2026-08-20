@@ -38,14 +38,14 @@ export default function WhatsAppButton() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 8 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="relative mr-3 bg-slate-900 text-white text-[13px] font-semibold px-3.5 py-2 rounded-lg shadow-lg flex items-center gap-2 pointer-events-auto cursor-pointer"
+            className="relative mr-3 bg-ink text-canvas text-[13px] font-semibold px-3.5 py-2 rounded-full shadow-lg flex items-center gap-2 pointer-events-auto cursor-pointer"
             onClick={() => {
               handleWhatsAppClick();
               window.open(whatsappUrl, "_blank", "noopener,noreferrer");
             }}
           >
             <span>¿Dudas? Escríbenos</span>
-            <div className="absolute right-[-4px] top-1/2 -translate-y-1/2 w-2 h-2 bg-slate-900 rotate-45" />
+            <div className="absolute right-[-4px] top-1/2 -translate-y-1/2 w-2 h-2 bg-ink rotate-45" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -55,21 +55,13 @@ export default function WhatsAppButton() {
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
       >
-        {/* Soft blur glow only — no expanding border rings */}
-        <motion.div
-          className="absolute inset-0 rounded-full bg-[#25D366] blur-xl pointer-events-none"
-          animate={{ opacity: [0.22, 0.38, 0.22], scale: [1.05, 1.18, 1.05] }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-          aria-hidden
-        />
-
         <a
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleWhatsAppClick}
-          className="relative w-14 h-14 rounded-full flex items-center justify-center bg-[#25D366] hover:bg-[#20ba5a] transition-transform duration-200 hover:scale-105 active:scale-95"
-          style={{ boxShadow: "0 6px 18px rgba(37, 211, 102, 0.32)" }}
+          className="relative w-14 h-14 rounded-full flex items-center justify-center bg-[#25D366] hover:bg-[#20ba5a] transition-transform duration-200 active:scale-95"
+          style={{ boxShadow: "0 6px 18px rgba(37, 211, 102, 0.28)" }}
           aria-label="Contactar por WhatsApp"
         >
           <svg

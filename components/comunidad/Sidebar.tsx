@@ -34,7 +34,9 @@ import {
   Loader2,
   Target,
 } from "lucide-react";
-import NotificationCenter from "./NotificationCenter";
+import dynamic from "next/dynamic";
+
+const NotificationCenter = dynamic(() => import("./NotificationCenter"), { ssr: false });
 import { getUnreadNotificationCount, getCoursesAndLessons, getPosts } from "@/lib/supabase/comunidad";
 import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";

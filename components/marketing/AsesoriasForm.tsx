@@ -84,11 +84,8 @@ export default function AsesoriasForm({ type }: AsesoriasFormProps) {
 
   return (
     <div className="bg-white border border-gray-100 rounded-[2.5rem] p-8 md:p-10 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.05)] relative overflow-hidden">
-      {/* Glow background effect */}
-      <div className={`absolute top-0 right-0 w-64 h-64 opacity-20 rounded-full blur-[80px] pointer-events-none ${isB2B ? "bg-blue-400" : "bg-indigo-400"}`}></div>
-      
       <div className="flex items-center gap-4 mb-8 relative z-10">
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${isB2B ? "bg-blue-50 text-blue-600" : "bg-indigo-50 text-indigo-600"}`}>
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-blue-50 text-[#171716]">
           {isB2B ? <Building2 className="w-6 h-6" /> : <User className="w-6 h-6" />}
         </div>
         <div>
@@ -190,11 +187,7 @@ export default function AsesoriasForm({ type }: AsesoriasFormProps) {
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full py-4 rounded-xl font-black text-white text-base transition-all hover:-translate-y-1 flex items-center justify-center gap-2 shadow-lg disabled:opacity-70 ${
-            isB2B 
-              ? "bg-gradient-to-r from-blue-600 to-indigo-600 shadow-blue-500/30" 
-              : "bg-gradient-to-r from-indigo-600 to-purple-600 shadow-indigo-500/30"
-          }`}
+          className="w-full py-4 rounded-full font-semibold text-canvas text-base bg-ink transition-transform flex items-center justify-center gap-2 disabled:opacity-70 active:scale-[0.98]"
         >
           {isSubmitting ? (
             <span className="animate-pulse">Enviando...</span>

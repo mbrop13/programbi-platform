@@ -49,7 +49,7 @@ export const courses: Course[] = [
     modality: "online",
     level: "principiante",
     imageUrl:
-      "https://mail.programbi.com/uploads/dise%C3%B1a_una_imagen_similar_a_202605311714.jpeg",
+      "https://mail.programbi.com/uploads/diseña_una_imagen_similar_a_202605311714.jpeg",
     icon: "BarChart3",
     accentColor: "#1890FF",
     isFeatured: true,

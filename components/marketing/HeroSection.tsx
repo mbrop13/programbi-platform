@@ -1,250 +1,47 @@
-"use client";
-
-import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, Briefcase, Database, Code, CheckCircle, BarChart2, Sparkles, Terminal, Play, Server, FileText } from "lucide-react";
-import { FadeIn } from "@/components/shared/AnimatedComponents";
-import { trackCtaClick } from "@/lib/analytics/marketing";
+import { ArrowRight } from "lucide-react";
+import RegisterCta from "@/components/marketing/RegisterCta";
+import HeroPreview from "@/components/marketing/HeroPreview";
 
-/* ─── Modern Widescreen Data Visual (Video Pipeline) ─── */
-const VIDEOS = [
-  {
-    id: "bi",
-    title: "Power BI",
-    icon: BarChart2,
-    url: "https://mail.programbi.com/uploads/Dashboard_Power_BI_looks_better_202606112131.mp4",
-    color: "text-emerald-600 border-emerald-500",
-  },
-  {
-    id: "sql",
-    title: "SQL Server",
-    icon: Database,
-    url: "https://mail.programbi.com/uploads/Base_de_datos_SQL_funcionando_202606112131.mp4",
-    color: "text-blue-600 border-blue-500",
-  },
-  {
-    id: "python",
-    title: "Python Analytics",
-    icon: Code,
-    url: "https://mail.programbi.com/uploads/Python_code_looking_better_202606112131.mp4",
-    color: "text-indigo-600 border-indigo-500",
-  },
-];
-
-function ModernDataVisual() {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  const handleVideoEnded = () => {
-    setActiveIndex((prev) => (prev + 1) % VIDEOS.length);
-  };
-
-  const handleTabClick = (index: number) => {
-    setActiveIndex(index);
-  };
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.play().catch((err) => {
-        console.log("Autoplay was prevented or video is loading:", err);
-      });
-    }
-  }, [activeIndex]);
-
-  const activeVideo = VIDEOS[activeIndex];
-
-  return (
-    <div className="relative w-full flex items-center justify-center lg:justify-end select-none">
-      {/* Ambient background glowing blobs */}
-      <motion.div
-        animate={{ scale: [1, 1.15, 1], x: [0, 10, 0], y: [0, -10, 0] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute left-10 lg:left-0 top-0 z-0 w-52 h-52 bg-gradient-to-tr from-blue-300/20 to-indigo-300/20 rounded-full blur-3xl pointer-events-none"
-      />
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], x: [0, -15, 0], y: [0, 15, 0] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-        className="absolute right-10 bottom-0 z-0 w-56 h-56 bg-gradient-to-tr from-cyan-300/15 to-blue-300/15 rounded-full blur-3xl pointer-events-none"
-      />
-
-      {/* Wrapper of Video + Controls */}
-      <div className="relative z-10 w-full max-w-[680px] flex flex-col items-center gap-5">
-        {/* Video Container */}
-        <div className="w-full aspect-video rounded-3xl overflow-hidden bg-transparent">
-          <div className="w-full h-full relative">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={activeIndex}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.35 }}
-                className="w-full h-full"
-              >
-                <video
-                  ref={videoRef}
-                  src={activeVideo.url}
-                  preload="metadata"
-                  autoPlay
-                  muted
-                  playsInline
-                  onEnded={handleVideoEnded}
-                  className="w-full h-full object-cover mix-blend-multiply bg-transparent scale-[1.20] origin-center"
-                />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* Liquid Glass Navigation Controls */}
-        <div className="flex gap-1 bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-full p-1 shadow-[0_8px_32px_rgba(31,38,135,0.06)] w-max">
-          {VIDEOS.map((video, idx) => {
-            const Icon = video.icon;
-            const isActive = activeIndex === idx;
-            return (
-              <button
-                key={video.id}
-                type="button"
-                onClick={() => handleTabClick(idx)}
-                className={`relative py-1.5 px-3.5 sm:px-5 rounded-full text-[10px] sm:text-xs font-bold transition-all duration-300 flex items-center gap-1.5 whitespace-nowrap z-10 ${
-                  isActive
-                    ? "text-white"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                {isActive && (
-                  <motion.div
-                    layoutId="activeTabGlow"
-                    className="absolute inset-0 bg-gradient-to-r from-[#1890FF] to-blue-500 rounded-full -z-10 shadow-[0_4px_12px_rgba(24,144,255,0.25),inset_0_1px_1px_rgba(255,255,255,0.3)]"
-                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                  />
-                )}
-                <Icon className="w-3.5 h-3.5" />
-                <span>{video.title}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-
-/* ─── MAIN HERO ─── */
 export default function HeroSection() {
   return (
-    <section className="relative overflow-hidden pt-6 pb-10 lg:pt-12 lg:pb-16">
-      {/* Bg decorations */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundSize: "60px 60px",
-            backgroundImage:
-              "linear-gradient(to right, rgba(24,144,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(24,144,255,0.03) 1px, transparent 1px)",
-          }}
-        />
-        <motion.div
-          animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-[10%] right-[10%] w-[600px] h-[600px] lg:w-[800px] lg:h-[800px] bg-blue-50 rounded-full blur-[120px]"
-        />
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 lg:px-6 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-          {/* ── Left Column (6/12) ── */}
-          <div className="lg:col-span-6 text-center lg:text-left relative z-20">
-            {/* Pill Badge */}
-            <FadeIn delay={0}>
-              <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-blue-50 border border-blue-100 text-[#1890FF] text-xs sm:text-sm font-bold mb-6">
-                <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-[#1890FF]" />
-                </span>
-                <span>Clases en vivo online y presencial</span>
-              </div>
-            </FadeIn>
-
-            {/* Main Title */}
-            <FadeIn delay={0.15}>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-gray-900 tracking-tight leading-[1.1] lg:leading-[1.08] mb-6 font-display">
-                Aprende Análisis de <br className="hidden lg:block" />
-                Datos con{" "}
-                <span className="font-serif italic font-normal text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-indigo-600">
-                  Expertos
-                </span>
-              </h1>
-            </FadeIn>
-
-            {/* Subtitle */}
-            <FadeIn delay={0.3}>
-              <p className="text-lg lg:text-xl text-gray-500 mb-8 font-light leading-relaxed max-w-2xl mx-auto lg:mx-0 font-sans">
-                Capacitaciones diseñadas para profesionales que buscan potenciar su carrera con{" "}
-                <strong className="text-gray-900 font-semibold">Power BI, Python, SQL, Excel y Big Data</strong>.
-              </p>
-            </FadeIn>
-
-            {/* CTAs */}
-            <FadeIn delay={0.45}>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link
-                  href="/cursos/analisis-de-datos"
-                  onClick={() => trackCtaClick("Cotiza Ahora", "home_hero", { course_slug: "analisis-de-datos" })}
-                  className="group px-8 py-4 sm:px-10 sm:py-4 rounded-xl text-white font-bold text-base sm:text-lg flex items-center justify-center gap-3 no-underline transition-all duration-300 hover:-translate-y-1 shadow-lg"
-                  style={{
-                    background: "linear-gradient(135deg, #1890FF 0%, #0050b3 100%)",
-                    boxShadow: "0 12px 35px -8px rgba(24,144,255,0.4)",
-                  }}
-                >
-                  <span>Cotiza Ahora</span>
-                  <Briefcase className="w-5 h-5 group-hover:rotate-12 transition-transform text-white" />
-                </Link>
-                <Link
-                  href="/cursos"
-                  onClick={() => trackCtaClick("Ver Cursos", "home_hero")}
-                  className="px-8 py-4 sm:px-10 sm:py-4 rounded-xl bg-white text-gray-700 font-bold text-base sm:text-lg border border-gray-200 hover:border-[#1890FF] hover:text-[#1890FF] transition-all flex items-center justify-center gap-3 no-underline hover:-translate-y-1 shadow-sm hover:shadow"
-                >
-                  <span>Ver Cursos</span>
-                  <ArrowRight className="w-5 h-5 text-gray-400" />
-                </Link>
-              </div>
-            </FadeIn>
-
-            {/* Stats consolidadas (única fuente en la home) */}
-            <FadeIn delay={0.6}>
-              <div className="flex flex-wrap gap-8 lg:gap-10 mt-12 justify-center lg:justify-start border-t border-slate-100 pt-8">
-                <div>
-                  <div className="text-3xl lg:text-4xl font-black text-gray-900 font-mono tracking-tight">
-                    +5000
-                  </div>
-                  <p className="text-xs text-gray-500 font-medium mt-1 uppercase tracking-wider">Estudiantes egresados</p>
-                </div>
-                <div>
-                  <div className="text-3xl lg:text-4xl font-black text-gray-900 font-mono tracking-tight">
-                    +10
-                  </div>
-                  <p className="text-xs text-gray-500 font-medium mt-1 uppercase tracking-wider">Programas activos</p>
-                </div>
-                <div>
-                  <div className="text-3xl lg:text-4xl font-black text-gray-900 font-mono tracking-tight">
-                    98%
-                  </div>
-                  <p className="text-xs text-gray-500 font-medium mt-1 uppercase tracking-wider">Tasa de satisfacción</p>
-                </div>
-              </div>
-            </FadeIn>
+    <section id="inicio" className="relative min-h-[calc(100dvh-72px)] overflow-hidden">
+      <div className="relative z-10 mx-auto grid max-w-[1400px] items-center gap-10 px-4 pt-24 pb-12 sm:px-6 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:gap-12 lg:pt-24 lg:pb-16 xl:gap-14">
+        <div className="min-w-0">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-ink/[0.03] px-3 py-1 text-xs font-semibold text-mute">
+            <span className="relative flex size-2">
+              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-70" />
+              <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
+            </span>
+            Clases en vivo online y presencial
           </div>
 
-          {/* ── Right Column (6/12) ── */}
-          <div className="lg:col-span-6 relative w-full flex justify-center lg:justify-end z-10">
-            <FadeIn delay={0.4} direction="left" className="w-full">
-              <ModernDataVisual />
-            </FadeIn>
+          <h1 className="text-4xl font-bold leading-[1.12] tracking-tight text-ink sm:text-5xl lg:text-[3.5rem] lg:leading-[1.12]">
+            Aprende Análisis de
+            <br />
+            Datos con <em className="italic font-semibold">Expertos</em>
+          </h1>
+
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-mute sm:text-lg">
+            Capacitaciones diseñadas para profesionales que buscan potenciar su carrera con Power
+            BI, Python, SQL, Excel y Big Data.
+          </p>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <RegisterCta className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-7 text-base font-semibold text-canvas shadow-md shadow-ink/10 transition-transform active:scale-[0.98]">
+              Registrarse
+              <ArrowRight size={17} strokeWidth={2.4} />
+            </RegisterCta>
+            <Link
+              href="#programas"
+              className="inline-flex h-12 items-center rounded-full border border-line bg-paper px-7 text-base font-medium text-ink no-underline transition-colors hover:bg-wash active:scale-[0.98]"
+            >
+              Ver Cursos
+            </Link>
           </div>
         </div>
+
+        <HeroPreview />
       </div>
     </section>
   );

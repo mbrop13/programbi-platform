@@ -307,19 +307,19 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
               <div 
                 className="hidden md:flex flex-col justify-between w-5/12 p-10 relative overflow-hidden bg-slate-50 text-slate-900"
               >
-                <div className="absolute top-0 right-0 w-64 h-64 bg-[#1890FF] rounded-full blur-[100px] opacity-10 -mr-20 -mt-20"></div>
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#6366F1] rounded-full blur-[100px] opacity-10 -ml-20 -mb-20"></div>
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#171716] rounded-full blur-[100px] opacity-10 -mr-20 -mt-20"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-ink rounded-full blur-[100px] opacity-10 -ml-20 -mb-20"></div>
 
                 <div className="relative z-10">
                   <Image
-                    src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
+                    src="/images/logo.png"
                     alt="ProgramBI"
                     width={160}
                     height={40}
                     className="h-8 w-auto mb-8"
                   />
                   <h3 className="text-3xl font-bold mb-4 leading-tight text-slate-900">
-                    El futuro del <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-[#6366F1]">Análisis de Datos</span>
+                    El futuro del <em className="italic font-semibold">Análisis de Datos</em>
                   </h3>
                   <p className="text-slate-500 text-sm leading-relaxed mb-6">
                     Únete a más de 5,000 profesionales que están transformando sus carreras con ProgramBI. Domina SQL, Power BI, Python y AI.
@@ -355,14 +355,14 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                     <button
                       onClick={() => setTab("login")}
                       className={`pb-2 text-lg font-bold transition-colors bg-transparent border-none cursor-pointer ${tab === "login" ? "text-slate-900 border-b-2 border-blue-500" : "text-slate-400 hover:text-slate-600"}`}
-                      style={tab === "login" ? { borderBottom: "2px solid #1890FF" } : {}}
+                      style={tab === "login" ? { borderBottom: "2px solid #171716" } : {}}
                     >
                       Iniciar Sesión
                     </button>
                     <button
                       onClick={() => setTab("register")}
                       className={`pb-2 text-lg font-bold transition-colors bg-transparent border-none cursor-pointer ${tab === "register" ? "text-slate-900" : "text-slate-400 hover:text-slate-600"}`}
-                      style={tab === "register" ? { borderBottom: "2px solid #1890FF" } : {}}
+                      style={tab === "register" ? { borderBottom: "2px solid #171716" } : {}}
                     >
                       Crear Cuenta
                     </button>
@@ -436,7 +436,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                       <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3.5 mt-2 bg-gradient-to-r from-[#1890FF] to-[#0050b3] hover:from-blue-600 hover:to-blue-800 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-500/25 group border-none cursor-pointer disabled:opacity-50 disabled:hover:translate-y-0"
+                        className="w-full py-3.5 mt-2 bg-ink text-canvas font-semibold rounded-full flex items-center justify-center gap-2 transition-transform active:scale-[0.98] group border-none cursor-pointer disabled:opacity-50"
                       >
                         {loading ? (
                           <Loader2 size={18} className="animate-spin" />
@@ -592,11 +592,11 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                           checked={acceptsPrivacy}
                           onChange={(e) => setAcceptsPrivacy(e.target.checked)}
                           required
-                          className="mt-0.5 w-3.5 h-3.5 rounded border-gray-300 accent-[#1890FF] cursor-pointer flex-shrink-0"
+                          className="mt-0.5 w-3.5 h-3.5 rounded border-gray-300 accent-[#171716] cursor-pointer flex-shrink-0"
                         />
                         <label htmlFor="privacy-auth" className="text-[10px] text-slate-400 cursor-pointer leading-relaxed">
                           Acepto la{" "}
-                          <Link href="/privacidad" className="text-[#1890FF] font-semibold no-underline hover:underline" target="_blank">Política de Privacidad</Link>
+                          <Link href="/privacidad" className="text-[#171716] font-semibold no-underline hover:underline" target="_blank">Política de Privacidad</Link>
                         </label>
                       </div>
 
@@ -607,7 +607,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                           id="subscribe-blog"
                           checked={subscribeToBlog}
                           onChange={(e) => setSubscribeToBlog(e.target.checked)}
-                          className="mt-0.5 w-3.5 h-3.5 rounded border-gray-300 accent-[#1890FF] cursor-pointer flex-shrink-0"
+                          className="mt-0.5 w-3.5 h-3.5 rounded border-gray-300 accent-[#171716] cursor-pointer flex-shrink-0"
                         />
                         <label htmlFor="subscribe-blog" className="text-[10px] text-slate-400 cursor-pointer leading-relaxed">
                           Suscribirse al blog para recibir la mejor información gratis (marcado por defecto)
@@ -616,7 +616,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                       <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-3.5 mt-2 bg-gradient-to-r from-[#1890FF] to-[#0050b3] hover:from-blue-600 hover:to-blue-800 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-all hover:-translate-y-0.5 shadow-lg shadow-blue-500/25 group border-none cursor-pointer disabled:opacity-50 disabled:hover:translate-y-0"
+                        className="w-full py-3.5 mt-2 bg-ink text-canvas font-semibold rounded-full flex items-center justify-center gap-2 transition-transform active:scale-[0.98] group border-none cursor-pointer disabled:opacity-50"
                       >
                         {loading ? (
                           <Loader2 size={18} className="animate-spin" />
