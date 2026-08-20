@@ -89,10 +89,12 @@ export default function HeroPreview() {
         </div>
       </div>
 
-      <div className="relative mt-3 flex overflow-hidden rounded-lg border-2 border-line-strong bg-canvas" suppressHydrationWarning>
-        {TABS.map((tab) => {
+      <div className="relative mt-3 flex rounded-md bg-canvas" suppressHydrationWarning>
+        {TABS.map((tab, i) => {
           const Icon = tab.icon;
           const isActive = tab.id === active;
+          const round =
+            i === 0 ? "rounded-l-md" : i === TABS.length - 1 ? "rounded-r-md" : "";
           return (
             <button
               key={tab.id}
@@ -101,11 +103,13 @@ export default function HeroPreview() {
                 setActive(tab.id);
                 pause();
               }}
-              className={`flex flex-1 items-center justify-center gap-1.5 py-1.5 text-[11px] font-semibold transition-colors ${
-                isActive ? "bg-paper text-ink" : "text-mute hover:text-ink"
+              className={`flex flex-1 items-center justify-center gap-2 border-2 py-2.5 text-sm font-semibold transition-colors ${round} ${
+                isActive
+                  ? "border-[rgb(23_23_22_/_0.28)] bg-paper text-ink"
+                  : "border-transparent text-mute hover:text-ink"
               }`}
             >
-              <Icon size={15} strokeWidth={isActive ? 2.2 : 1.8} />
+              <Icon size={18} strokeWidth={isActive ? 2.2 : 1.8} />
               <span>{tab.title}</span>
             </button>
           );

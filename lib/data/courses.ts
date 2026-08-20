@@ -792,6 +792,34 @@ export const courses: Course[] = [
   },
 ];
 
+export const COURSE_NAV_GROUPS = [
+  { id: "herramientas", label: "Herramientas", slugs: ["excel", "sql-server", "power-bi", "python"] },
+  {
+    id: "especializacion",
+    label: "Especializaciones",
+    slugs: ["analisis-de-datos", "analitica-mineria", "analitica-financiera"],
+  },
+  {
+    id: "ia",
+    label: "IA",
+    slugs: ["ia-productividad", "copilot", "power-automate", "machine-learning"],
+  },
+] as const;
+
+export function getCoursesBySlugs(slugs: readonly string[]): Course[] {
+  return slugs
+    .map((slug) => courses.find((c) => c.slug === slug))
+    .filter((c): c is Course => Boolean(c));
+}
+
+export function getGroupedCourses() {
+  return COURSE_NAV_GROUPS.map((group) => ({
+    id: group.id,
+    label: group.label,
+    items: getCoursesBySlugs(group.slugs),
+  }));
+}
+
 export function getCourseBySlug(slug: string): Course | undefined {
   const resolved = slug === "copilot-studio" ? "copilot" : slug;
   return courses.find((c) => c.slug === resolved);

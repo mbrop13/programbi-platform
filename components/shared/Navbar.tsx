@@ -17,9 +17,8 @@ import {
   LifeBuoy,
   ShieldAlert,
 } from "lucide-react";
-import { courses } from "@/lib/data/courses";
+import { getGroupedCourses } from "@/lib/data/courses";
 import { createClient } from "@/lib/supabase/client";
-import CourseImage from "./CourseImage";
 import AuthModal from "./AuthModal";
 import SupportModal from "./SupportModal";
 import ProfileSettingsModal from "./ProfileSettingsModal";
@@ -33,11 +32,13 @@ const navLinks = [
   { href: "/blog", label: "Blog" },
 ];
 
+const courseGroups = getGroupedCourses();
+
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(false);
+  const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(true);
   const [isMegaOpen, setIsMegaOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; tab: "login" | "register" }>({
@@ -171,7 +172,7 @@ export default function Navbar() {
   }, [user]);
 
   useEffect(() => {
-    if (!isMobileOpen) setIsMobileCoursesOpen(false);
+    if (!isMobileOpen) setIsMobileCoursesOpen(true);
   }, [isMobileOpen]);
 
   useEffect(() => {
@@ -246,8 +247,8 @@ export default function Navbar() {
             : "border-b border-transparent bg-transparent"
         }`}
       >
-        <div className="mx-auto flex h-full max-w-[1400px] items-center justify-between px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="relative h-8 w-[150px]" aria-label="ProgramBI">
+        <div className="relative mx-auto flex h-full max-w-[1400px] items-center px-4 sm:px-6 lg:px-8">
+          <Link href="/" className="relative z-10 h-8 w-[150px] shrink-0" aria-label="ProgramBI">
             <Image
               src="/images/logo.png"
               alt="ProgramBI"
@@ -258,7 +259,7 @@ export default function Navbar() {
             />
           </Link>
 
-          <nav className="hidden items-center gap-7 text-[14.5px] font-medium text-mute lg:flex" aria-label="Principal">
+          <nav className="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-7 text-[14.5px] font-medium text-mute lg:flex" aria-label="Principal">
             {navLinks.map((link) =>
               link.hasMega ? (
                 <div
@@ -279,29 +280,34 @@ export default function Navbar() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 8 }}
                         transition={{ duration: 0.18 }}
-                        className="absolute top-[calc(100%+18px)] left-1/2 w-[720px] -translate-x-1/2 overflow-hidden rounded-[26px] border border-line bg-paper shadow-[0_25px_80px_rgba(23,23,22,0.10)]"
+                        className="absolute top-[calc(100%+14px)] left-1/2 w-[680px] -translate-x-1/2 overflow-hidden rounded-[22px] border border-line bg-paper shadow-[0_25px_80px_rgba(23,23,22,0.10)]"
                         onMouseEnter={handleMegaEnter}
                         onMouseLeave={handleMegaLeave}
                       >
-                        <div className="grid grid-cols-2 gap-1 p-3">
-                          {courses.map((course) => (
-                            <Link
-                              key={course.slug}
-                              href={`/cursos/${course.slug}`}
-                              onClick={() => setIsMegaOpen(false)}
-                              className="flex items-center gap-3 rounded-2xl p-3 no-underline transition-colors hover:bg-surface"
-                            >
-                              <div className="relative h-12 w-20 shrink-0 overflow-hidden rounded-xl bg-surface">
-                                <CourseImage src={course.imageUrl} alt="" fill sizes="80px" className="object-cover" />
-                              </div>
-                              <div className="min-w-0">
-                                <p className="truncate text-sm font-semibold text-ink">{course.title}</p>
-                                <p className="truncate text-xs text-mute">{course.shortDescription}</p>
-                              </div>
-                            </Link>
+                        <div className="grid grid-cols-3 gap-6 px-5 py-5">
+                          {courseGroups.map((group) => (
+                            <div key={group.id}>
+                              <p className="text-xs font-semibold text-mute">{group.label}</p>
+                              <ul className="mt-2">
+                                {group.items.map((course) => (
+                                  <li key={course.slug}>
+                                    <Link
+                                      href={`/cursos/${course.slug}`}
+                                      onClick={() => setIsMegaOpen(false)}
+                                      className="flex items-baseline justify-between gap-3 rounded-md px-1 py-2 no-underline transition-colors hover:bg-wash"
+                                    >
+                                      <span className="text-sm font-semibold text-ink">{course.title}</span>
+                                      <span className="shrink-0 text-[11px] tabular-nums text-faint">
+                                        {course.durationHours} h
+                                      </span>
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
                           ))}
                         </div>
-                        <div className="border-t border-line px-4 py-3">
+                        <div className="border-t border-line px-5 py-3">
                           <Link
                             href="/cursos"
                             onClick={() => setIsMegaOpen(false)}
@@ -322,9 +328,9 @@ export default function Navbar() {
             )}
           </nav>
 
-          <div className="flex items-center gap-2">
+          <div className="relative z-10 ml-auto flex items-center justify-end gap-5 lg:min-w-[17.5rem]">
             {loading ? (
-              <div className="hidden h-10 w-10 rounded-full bg-surface sm:block" />
+              <div className="hidden h-10 w-28 rounded-full bg-surface sm:block" />
             ) : user ? (
               <div className="relative hidden sm:block" onMouseEnter={handleUserMenuEnter} onMouseLeave={handleUserMenuLeave}>
                 <button
@@ -417,7 +423,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={() => setAuthModal({ isOpen: true, tab: "login" })}
-                className="hidden text-[14.5px] font-medium text-mute transition-colors hover:text-ink sm:inline"
+                className="hidden h-10 items-center px-1 text-[14.5px] font-medium text-mute transition-colors hover:text-ink sm:inline-flex"
               >
                 Iniciar sesión
               </button>
@@ -485,96 +491,123 @@ export default function Navbar() {
         {isMobileOpen ? (
           <div
             id="mobile-nav"
-            className="absolute inset-x-0 top-[72px] border-b border-line bg-canvas px-4 py-6 lg:hidden"
+            className="absolute inset-x-0 top-[72px] max-h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain border-b border-line bg-canvas px-4 py-5 lg:hidden"
           >
-            <nav className="flex flex-col gap-4" aria-label="Móvil">
+            <nav className="flex flex-col" aria-label="Móvil">
               {navLinks.map((link) =>
                 link.hasMega ? (
-                  <div key={link.href}>
-                    <div className="flex items-center justify-between">
-                      <Link href={link.href} onClick={() => setIsMobileOpen(false)} className="text-lg font-medium text-ink no-underline">
-                        {link.label}
-                      </Link>
-                      <button
-                        type="button"
-                        onClick={() => setIsMobileCoursesOpen((v) => !v)}
-                        aria-label="Ver cursos"
-                        className="size-10 text-mute"
-                      >
-                        <ChevronDown size={18} className={isMobileCoursesOpen ? "rotate-180" : ""} />
-                      </button>
-                    </div>
-                    {isMobileCoursesOpen && (
-                      <div className="mt-2 flex flex-col gap-2">
-                        {courses.map((course) => (
-                          <Link
-                            key={course.slug}
-                            href={`/cursos/${course.slug}`}
-                            onClick={() => setIsMobileOpen(false)}
-                            className="text-[15px] text-mute no-underline"
-                          >
-                            {course.title}
-                          </Link>
+                  <div key={link.href} className="border-b border-line py-1">
+                    <button
+                      type="button"
+                      onClick={() => setIsMobileCoursesOpen((v) => !v)}
+                      aria-expanded={isMobileCoursesOpen}
+                      className="flex w-full items-center justify-between py-3 text-left"
+                    >
+                      <span className="text-lg font-medium text-ink">Cursos</span>
+                      <ChevronDown
+                        size={18}
+                        className={`text-mute transition-transform ${isMobileCoursesOpen ? "rotate-180" : ""}`}
+                      />
+                    </button>
+                    {isMobileCoursesOpen ? (
+                      <div className="pb-3">
+                        {courseGroups.map((group) => (
+                          <div key={group.id} className="mt-3 first:mt-0">
+                            <p className="px-1 text-xs font-semibold text-faint">{group.label}</p>
+                            <ul className="mt-1">
+                              {group.items.map((course) => (
+                                <li key={course.slug}>
+                                  <Link
+                                    href={`/cursos/${course.slug}`}
+                                    onClick={() => setIsMobileOpen(false)}
+                                    className="flex items-baseline justify-between gap-3 rounded-md px-1 py-2.5 no-underline"
+                                  >
+                                    <span className="text-[15px] font-medium text-ink">{course.title}</span>
+                                    <span className="shrink-0 text-xs tabular-nums text-faint">
+                                      {course.durationHours} h
+                                    </span>
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
                         ))}
+                        <Link
+                          href="/cursos"
+                          onClick={() => setIsMobileOpen(false)}
+                          className="mt-2 inline-flex items-center gap-1.5 px-1 py-2 text-sm font-semibold text-ink no-underline"
+                        >
+                          Ver todos los cursos <ArrowRight size={14} />
+                        </Link>
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 ) : (
                   <Link
                     key={link.href}
                     href={link.href}
                     onClick={() => setIsMobileOpen(false)}
-                    className="text-lg font-medium text-ink no-underline"
+                    className="border-b border-line py-3 text-lg font-medium text-ink no-underline"
                   >
                     {link.label}
                   </Link>
                 )
               )}
 
-              {user ? (
-                <>
-                  <Link href="/comunidad/cursos" onClick={() => setIsMobileOpen(false)} className="text-lg font-medium text-ink no-underline">
-                    Campus
-                  </Link>
+              <div className="flex flex-col gap-1 pt-4">
+                {user ? (
+                  <>
+                    <Link
+                      href="/comunidad/cursos"
+                      onClick={() => setIsMobileOpen(false)}
+                      className="py-3 text-lg font-medium text-ink no-underline"
+                    >
+                      Campus
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsMobileOpen(false);
+                        setProfileModal({ isOpen: true, tab: "profile" });
+                      }}
+                      className="py-3 text-left text-lg font-medium text-ink"
+                    >
+                      Perfil
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="py-3 text-left text-lg font-medium text-ink"
+                    >
+                      Cerrar sesión
+                    </button>
+                  </>
+                ) : (
                   <button
                     type="button"
                     onClick={() => {
                       setIsMobileOpen(false);
-                      setProfileModal({ isOpen: true, tab: "profile" });
+                      setAuthModal({ isOpen: true, tab: "login" });
                     }}
-                    className="text-left text-lg font-medium text-ink"
+                    className="py-3 text-left text-lg font-medium text-ink"
                   >
-                    Perfil
+                    Iniciar sesión
                   </button>
-                  <button type="button" onClick={handleLogout} className="text-left text-lg font-medium text-ink">
-                    Cerrar sesión
-                  </button>
-                </>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMobileOpen(false);
-                    setAuthModal({ isOpen: true, tab: "login" });
-                  }}
-                  className="text-left text-lg font-medium text-ink"
-                >
-                  Iniciar sesión
-                </button>
-              )}
+                )}
 
-              {!user ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsMobileOpen(false);
-                    setAuthModal({ isOpen: true, tab: "register" });
-                  }}
-                  className="inline-flex h-11 items-center justify-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas"
-                >
-                  Registrarse
-                </button>
-              ) : null}
+                {!user ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileOpen(false);
+                      setAuthModal({ isOpen: true, tab: "register" });
+                    }}
+                    className="mt-2 inline-flex h-12 w-full items-center justify-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas"
+                  >
+                    Registrarse
+                  </button>
+                ) : null}
+              </div>
             </nav>
           </div>
         ) : null}

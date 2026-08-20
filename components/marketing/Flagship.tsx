@@ -1,11 +1,19 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import RegisterCta from "@/components/marketing/RegisterCta";
 import CourseImage from "@/components/shared/CourseImage";
 import { courses } from "@/lib/data/courses";
+import { useAuthStore } from "@/lib/stores/auth-store";
 
 const analisis = courses.find((c) => c.slug === "analisis-de-datos");
 
 export default function Flagship() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   return (
     <section className="py-20 lg:py-28">
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-10 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
@@ -16,7 +24,9 @@ export default function Flagship() {
           <p className="mt-5 max-w-[38rem] text-base leading-relaxed text-mute lg:text-lg">
             SQL Server, Power BI y Python. Tres niveles de 48 horas, proyectos reales y certificado por módulo.
           </p>
-          <p className="mt-4 text-sm font-medium text-ink">Desde $299.000 CLP el nivel básico.</p>
+          {mounted && isAuthenticated && (
+            <p className="mt-4 text-sm font-medium text-ink">Desde $299.000 CLP el nivel básico.</p>
+          )}
           <div className="mt-8 flex flex-wrap gap-3">
             <RegisterCta className="inline-flex h-12 items-center rounded-full bg-ink px-7 text-base font-semibold text-canvas transition-transform active:scale-[0.98]">
               Registrarse
