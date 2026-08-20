@@ -108,14 +108,22 @@ interface MuroFeedProps {
   isRestricted?: boolean;
 }
 
+import { useCommunity } from "../CommunityProvider";
+
 export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
   const router = useRouter();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const { isAdmin: ctxIsAdmin, userProfile: ctxUserProfile } = useCommunity();
+  const [isAdmin, setIsAdmin] = useState(ctxIsAdmin);
   const [posts, setPosts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [userProfile, setUserProfile] = useState<any>(null);
+  const [userProfile, setUserProfile] = useState<any>(ctxUserProfile);
   const [dashStats, setDashStats] = useState<any>(null);
   const [activeGuide, setActiveGuide] = useState<'primeros-pasos' | 'roadmap' | 'normas' | null>(null);
+
+  useEffect(() => {
+    setIsAdmin(ctxIsAdmin);
+    if (ctxUserProfile) setUserProfile(ctxUserProfile);
+  }, [ctxIsAdmin, ctxUserProfile]);
 
   // Start Guide States
   const [showStartGuide, setShowStartGuide] = useState(() => {
@@ -205,15 +213,11 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
   useEffect(() => {
     async function init() {
       try {
-        const [adminCheck, data, profile, stats] = await Promise.all([
-          isCurrentUserAdmin(),
+        const [data, stats] = await Promise.all([
           getPosts(),
-          getCurrentUserProfile(),
           getDashboardStats(),
         ]);
-        setIsAdmin(adminCheck);
         setPosts(data);
-        setUserProfile(profile);
         setDashStats(stats);
       } catch (err) {
         console.error("Failed fetching dashboard", err);

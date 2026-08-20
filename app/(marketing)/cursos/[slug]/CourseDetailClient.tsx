@@ -6,9 +6,9 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight, ChevronDown, Clock,
-  BookOpen, Lock, FileText, Calendar, Check,
+  BookOpen, Lock, FileText, Calendar, Check, MessageCircle,
+  BarChart3, Sparkles, Zap, HardHat, PieChart, Code, Database, FileSpreadsheet, TrendingUp, Brain
 } from "lucide-react";
-import * as LucideIcons from "lucide-react";
 import React from "react";
 import { type Course, courses } from "@/lib/data/courses";
 import { founderImage } from "@/lib/data/images";
@@ -26,9 +26,12 @@ import {
   trackWhatsAppClick,
 } from "@/lib/analytics/marketing";
 
-function DynamicIcon({ name, className }: { name: string; className?: string }) {
-  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
-  if (!Icon) return <LucideIcons.BookOpen className={className} />;
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  BarChart3, Sparkles, Zap, HardHat, PieChart, Code, Database, FileSpreadsheet, TrendingUp, Brain, BookOpen
+};
+
+function CourseBadgeIcon({ name, className }: { name: string; className?: string }) {
+  const Icon = ICON_MAP[name] || BookOpen;
   return <Icon className={className} />;
 }
 
@@ -311,7 +314,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
           <div className="block lg:hidden text-left mb-6">
             {course.badgeLabel && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[0.65rem] font-black tracking-wider uppercase text-white shadow-sm mb-4 bg-[#1890FF]">
-                <DynamicIcon name={course.icon} className="w-3.5 h-3.5" />
+                <CourseBadgeIcon name={course.icon} className="w-3.5 h-3.5" />
                 {course.badgeLabel}
               </span>
             )}
@@ -334,7 +337,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                   {/* Category / Badge Label */}
                   {course.badgeLabel && (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[0.65rem] font-black tracking-wider uppercase text-white shadow-sm mb-4 bg-[#1890FF]">
-                      <DynamicIcon name={course.icon} className="w-3.5 h-3.5" />
+                      <CourseBadgeIcon name={course.icon} className="w-3.5 h-3.5" />
                       {course.badgeLabel}
                     </span>
                   )}
@@ -633,7 +636,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                           onClick={() => trackWhatsAppClick("course_detail_no_schedule", course.slug)}
                           className="w-full py-3.5 sm:py-4 rounded-xl text-white font-bold text-xs sm:text-sm flex justify-center items-center gap-1.5 sm:gap-2 transition-all cursor-pointer border-none shadow-md hover:shadow-lg hover:-translate-y-0.5 no-underline bg-[#25D366] hover:bg-[#20ba5a]"
                         >
-                          <LucideIcons.MessageCircle className="w-4 h-4 text-white flex-shrink-0" />
+                          <MessageCircle className="w-4 h-4 text-white flex-shrink-0" />
                           Consultar fecha de inicio
                         </a>
                       ) : (
@@ -694,7 +697,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               <div className="w-40 h-40 md:w-48 md:h-48 shrink-0 relative group">
                 <div className="absolute inset-0 bg-gradient-to-tr from-blue-100 to-blue-50 rounded-3xl -rotate-6 group-hover:-rotate-3 transition-transform duration-300 z-0" style={{ backgroundColor: "#1890FF20" }} />
                 <div className="relative w-full h-full rounded-3xl overflow-hidden border-4 border-white shadow-xl z-10 bg-white transition-transform duration-300 group-hover:scale-[1.02]">
-                  <Image src={founderImage} alt="Manuel Oliva" fill className="object-cover" unoptimized />
+                  <Image src={founderImage} alt="Manuel Oliva" fill sizes="192px" className="object-cover" />
                 </div>
               </div>
               <div>
@@ -737,7 +740,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                     whileHover={{ y: -8, boxShadow: "0 20px 40px -10px rgba(15,23,42,0.08)" }}
                   >
                     <div className="h-[180px] relative overflow-hidden">
-                      <Image src={rc.imageUrl} alt={rc.title} fill className="object-cover transition-transform duration-600 group-hover:scale-110" unoptimized />
+                      <Image src={rc.imageUrl} alt={rc.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-600 group-hover:scale-110" />
                     </div>
                     <div className="p-6">
                       <span className="text-[11px] font-extrabold uppercase tracking-widest text-gray-400">{rc.categoryLabel}</span>

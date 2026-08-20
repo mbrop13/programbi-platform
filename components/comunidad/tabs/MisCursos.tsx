@@ -152,14 +152,65 @@ const tc: Record<'es' | 'en', TranslationDict> = {
   }
 };
 
+import { useCommunity } from "../CommunityProvider";
+
+function processMergedCourses(allCourses: any[], enrollmentData: any): CourseWithAccess[] {
+  if (!allCourses || allCourses.length === 0) return [];
+  const myEnrollments = (Array.isArray(enrollmentData) ? enrollmentData : enrollmentData?.enrollments || []) as EnrollmentItem[];
+  const programSiblings = (Array.isArray(enrollmentData) ? [] : enrollmentData?.programSiblings || []) as PublicCourse[];
+
+  const merged: CourseWithAccess[] = (allCourses as PublicCourse[]).map((course) => {
+    const enrollment = myEnrollments.find((e) => e.course_slug === course.slug);
+    return {
+      ...course,
+      access_type: enrollment?.access_type || null,
+      lesson_count: enrollment?.course?.lesson_count || 0,
+      latest_lesson_at: enrollment?.course?.latest_lesson_at || null,
+    };
+  });
+
+  for (const e of myEnrollments) {
+    if (!merged.some(c => c.slug === e.course_slug) && e.course) {
+      const mappedCourse = e.course as unknown as PublicCourse;
+      merged.push({
+        ...mappedCourse,
+        access_type: e.access_type,
+        lesson_count: e.course.lesson_count || 0,
+        latest_lesson_at: e.course.latest_lesson_at || null,
+      });
+    }
+  }
+
+  for (const sib of programSiblings) {
+    if (!merged.some(c => c.slug === sib.slug)) {
+      const hasEnrolledSibling = myEnrollments.some(
+        (e) => e.course?.category === sib.category
+      );
+      if (hasEnrolledSibling) {
+        merged.push({
+          ...sib,
+          access_type: null,
+        } as unknown as CourseWithAccess);
+      }
+    }
+  }
+
+  return merged;
+}
+
 export default function MisCursos({ onSelectCourse, language }: { onSelectCourse: (id: string) => void; language?: 'es' | 'en' }) {
   const activeLanguage = language || "es";
   const t = tc[activeLanguage];
+  const { allCourses: ctxCourses, enrollmentData: ctxEnrollments } = useCommunity();
 
-  const [standaloneCourses, setStandaloneCourses] = useState<CourseWithAccess[]>([]);
+  const initialMerged = (ctxCourses?.length > 0 && ctxEnrollments)
+    ? processMergedCourses(ctxCourses, ctxEnrollments)
+    : [];
+
+  const [standaloneCourses, setStandaloneCourses] = useState<CourseWithAccess[]>(initialMerged);
   const [programs, setPrograms] = useState<ProgramGroup[]>([]);
-  const [allCoursesFlat, setAllCoursesFlat] = useState<CourseWithAccess[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [allCoursesFlat, setAllCoursesFlat] = useState<CourseWithAccess[]>(initialMerged);
+  const [loading, setLoading] = useState(initialMerged.length === 0);
   const [filter, setFilter] = useState<'all' | 'active'>('active');
   const [buyingCourseId, setBuyingCourseId] = useState<string | null>(null);
   const searchParams = useSearchParams();
@@ -167,6 +218,7 @@ export default function MisCursos({ onSelectCourse, language }: { onSelectCourse
   const paymentStatus = searchParams.get('payment');
 
   useEffect(() => {
+     // If already initialized with server-preloaded data, do not show blocking loader
      async function loadData() {
          try {
              const [allCourses, enrollmentData] = await Promise.all([
@@ -174,49 +226,7 @@ export default function MisCursos({ onSelectCourse, language }: { onSelectCourse
                getMyEnrollments(),
              ]);
 
-             // Handle both old (array) and new (object) return format
-             const myEnrollments = (Array.isArray(enrollmentData) ? enrollmentData : enrollmentData.enrollments) as EnrollmentItem[];
-             const programSiblings = (Array.isArray(enrollmentData) ? [] : enrollmentData.programSiblings) as PublicCourse[];
-
-             // Merge public courses with enrollment data
-             const merged: CourseWithAccess[] = (allCourses as PublicCourse[]).map((course) => {
-               const enrollment = myEnrollments.find((e) => e.course_slug === course.slug);
-               return {
-                 ...course,
-                 access_type: enrollment?.access_type || null,
-                 lesson_count: enrollment?.course?.lesson_count || 0,
-                 latest_lesson_at: enrollment?.course?.latest_lesson_at || null,
-               };
-             });
-
-             // Inject hidden enrolled courses (not in public catalog)
-             for (const e of myEnrollments) {
-               if (!merged.some(c => c.slug === e.course_slug) && e.course) {
-                 const mappedCourse = e.course as unknown as PublicCourse;
-                 merged.push({
-                   ...mappedCourse,
-                   access_type: e.access_type,
-                   lesson_count: e.course.lesson_count || 0,
-                   latest_lesson_at: e.course.latest_lesson_at || null,
-                 });
-               }
-             }
-
-             // Inject program siblings that the user is NOT enrolled in (for "Próximamente" cards)
-             for (const sib of programSiblings) {
-               if (!merged.some(c => c.slug === sib.slug)) {
-                 const hasEnrolledSibling = myEnrollments.some(
-                   (e) => e.course?.category === sib.category
-                 );
-                 if (hasEnrolledSibling) {
-                   merged.push({
-                     ...sib,
-                     access_type: null,
-                   } as unknown as CourseWithAccess);
-                 }
-               }
-             }
-
+             const merged = processMergedCourses(allCourses, enrollmentData);
              setPrograms([]);
              setStandaloneCourses(merged);
              setAllCoursesFlat(merged);

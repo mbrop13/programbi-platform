@@ -93,11 +93,10 @@ export default function NewsletterClient({
 
   return (
     <div className="newsletter-page bg-white min-h-screen">
-      {/* Editorial serif font */}
+      {/* Editorial serif font inheriting from layout */}
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&display=swap');
-        .newsletter-page .serif { font-family: 'Playfair Display', 'Georgia', serif; }
-        .newsletter-page .serif-body { font-family: 'Source Serif 4', 'Georgia', serif; }
+        .newsletter-page .serif { font-family: var(--font-serif), 'Playfair Display', 'Georgia', serif; }
+        .newsletter-page .serif-body { font-family: var(--font-serif), 'Georgia', serif; }
       `}</style>
 
       {loading ? (
@@ -135,8 +134,8 @@ export default function NewsletterClient({
                       src={featured.cover_image}
                       alt={featured.title}
                       fill
+                      sizes="(max-width: 1024px) 100vw, 1200px"
                       className="object-cover transition-transform duration-700 group-hover:scale-[1.02]"
-                      unoptimized
                       priority
                     />
                   )
@@ -192,8 +191,8 @@ export default function NewsletterClient({
                             src={article.cover_image}
                             alt={article.title}
                             fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
-                            unoptimized
                           />
                         )
                       ) : (
@@ -273,8 +272,8 @@ export default function NewsletterClient({
                             src={catArticles[0].cover_image}
                             alt={catArticles[0].title}
                             fill
+                            sizes="(max-width: 1024px) 100vw, 600px"
                             className="object-cover group-hover:scale-105 transition-transform duration-500"
-                            unoptimized
                           />
                         )
                       ) : (
@@ -320,8 +319,8 @@ export default function NewsletterClient({
                                 src={article.cover_image}
                                 alt={article.title}
                                 fill
+                                sizes="96px"
                                 className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                unoptimized
                               />
                             )
                           ) : (

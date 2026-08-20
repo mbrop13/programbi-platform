@@ -2,18 +2,27 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
+import dynamic from "next/dynamic";
 import {
   Play, Code, CheckCircle, Terminal, PlayCircle, Loader2,
   ChevronLeft, Lock, Sparkles, X, Layers,
   Share2, Star, HelpCircle, StickyNote, Download, Trash2, Send,
   Check, BookOpen, Clock, FileText, MessageSquarePlus, Copy
 } from "lucide-react";
-import Editor from "@monaco-editor/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCourseLessons, toggleLessonProgress, getLessonNote, saveLessonNote } from "@/lib/supabase/comunidad-ai";
 import { getChatMessages } from "@/lib/supabase/ai";
 import { MarkdownRenderer } from "@/components/comunidad/ai-v2/MarkdownRenderer";
 import { cn } from "@/lib/utils";
+
+const Editor = dynamic(() => import("@monaco-editor/react"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex-1 flex items-center justify-center py-20 bg-surface">
+      <Loader2 className="w-6 h-6 text-brand-blue animate-spin" />
+    </div>
+  ),
+});
 
 interface Lesson {
   id: string;

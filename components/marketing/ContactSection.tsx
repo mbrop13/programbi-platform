@@ -125,8 +125,8 @@ export default function ContactSection() {
                       src={img.url}
                       alt={img.label}
                       fill
+                      sizes="(max-width: 1024px) 100vw, 500px"
                       className="object-cover transition-transform duration-700 group-hover:scale-110"
-                      unoptimized
                     />
                     <div className={`absolute inset-0 flex flex-col justify-end p-6 transition-opacity duration-300 ${
                       img.tall ? "opacity-100" : "opacity-0 group-hover:opacity-100"

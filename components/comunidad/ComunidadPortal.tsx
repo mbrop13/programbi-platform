@@ -192,6 +192,7 @@ export default function ComunidadPortal() {
   // Check if a live session is currently active or starting within 60 minutes
   useEffect(() => {
     const checkLives = async () => {
+      if (typeof document !== "undefined" && document.hidden) return;
       try {
         const supabase = createClient();
         const now = new Date();
@@ -212,8 +213,18 @@ export default function ComunidadPortal() {
       }
     };
     checkLives();
-    const interval = setInterval(checkLives, 30000);
-    return () => clearInterval(interval);
+
+    const handleVisibility = () => {
+      if (!document.hidden) checkLives();
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    // Refresh every 60s instead of aggressive 30s when tab is active
+    const interval = setInterval(checkLives, 60000);
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
   }, []);
 
   const restrictedView = !canAccessFull && hasCourses && activeTab !== "cursos";
@@ -251,6 +262,7 @@ export default function ComunidadPortal() {
             onLanguageChange={setLanguage}
             onOpenSettings={() => setShowSettingsModal(true)}
             onUpgradeClick={() => setShowUpgradeModal(true)}
+            hasActiveLive={hasActiveLive}
           />
         )}
 

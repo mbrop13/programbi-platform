@@ -657,7 +657,6 @@ export default function GranPartidoClient() {
                                 src={c.imageUrl}
                                 alt={c.title}
                                 fill
-                                unoptimized
                                 className="object-cover transition-transform duration-500 group-hover:scale-110"
                                 sizes="(max-width: 640px) 100vw, 400px"
                               />

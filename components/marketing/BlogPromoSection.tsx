@@ -130,8 +130,8 @@ export default function BlogPromoSection({ articles }: BlogPromoSectionProps) {
                       src={posterUrl}
                       alt={current.title}
                       fill
+                      sizes="(max-width: 1024px) 100vw, 900px"
                       className="object-cover opacity-60 transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
-                      unoptimized
                       priority
                     />
                   ) : (

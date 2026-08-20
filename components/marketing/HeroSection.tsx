@@ -85,6 +85,7 @@ function ModernDataVisual() {
                 <video
                   ref={videoRef}
                   src={activeVideo.url}
+                  preload="metadata"
                   autoPlay
                   muted
                   playsInline

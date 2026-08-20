@@ -81,6 +81,7 @@ export default function ChromaVideo({
       <video
         ref={videoRef}
         src={src}
+        preload="metadata"
         autoPlay={autoPlay}
         loop={loop}
         muted={muted}

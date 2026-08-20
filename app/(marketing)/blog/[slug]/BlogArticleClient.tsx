@@ -317,8 +317,8 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
                     src={article.cover_image}
                     alt={article.title}
                     fill
+                    sizes="(max-width: 1024px) 100vw, 850px"
                     className="object-cover"
-                    unoptimized
                     priority
                   />
                 );
@@ -582,8 +582,8 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
                           src={art.cover_image}
                           alt={art.title}
                           fill
+                          sizes="150px"
                           className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                          unoptimized
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">

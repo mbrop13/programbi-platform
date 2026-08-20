@@ -421,7 +421,6 @@ export default function WebinarClient() {
                   alt={logo.name} 
                   width={180} 
                   height={70} 
-                  unoptimized
                   className="grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-400 max-h-[40px] lg:max-h-[50px] w-auto object-contain" 
                 />
               </div>

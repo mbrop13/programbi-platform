@@ -141,6 +141,7 @@ interface SidebarProps {
   onThemeChange?: (theme: 'claro' | 'oscuro' | 'sistema') => void;
   language?: 'es' | 'en';
   onLanguageChange?: (lang: 'es' | 'en') => void;
+  hasActiveLive?: boolean;
 }
 
 interface CourseSearchResult {
@@ -187,6 +188,7 @@ export default function Sidebar({
   onThemeChange,
   language,
   onLanguageChange,
+  hasActiveLive = false,
 }: SidebarProps) {
   const router = useRouter();
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -195,7 +197,6 @@ export default function Sidebar({
   const [searchQuery, setSearchQuery] = useState("");
   const [notifOpen, setNotifOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [hasUpcomingLives, setHasUpcomingLives] = useState(false);
   const [activeSubmenu, setActiveSubmenu] = useState<"apariencia" | "idioma" | null>(null);
   
   // Search Modal States
@@ -270,27 +271,6 @@ export default function Sidebar({
   // Fetch unread count on mount
   useEffect(() => {
     getUnreadNotificationCount().then(setUnreadCount);
-  }, []);
-
-  // Check for upcoming live classes to display the Live tab
-  useEffect(() => {
-    const checkLives = async () => {
-      try {
-        const supabase = createClient();
-        const { data } = await supabase
-          .from("live_classes")
-          .select("id")
-          .eq("status", "scheduled")
-          .gte("scheduled_at", new Date().toISOString())
-          .limit(1);
-        if (data && data.length > 0) {
-          setHasUpcomingLives(true);
-        }
-      } catch (err) {
-        console.error("Error checking upcoming lives:", err);
-      }
-    };
-    checkLives();
   }, []);
 
   const handleKeyDown = useCallback(
@@ -388,7 +368,7 @@ export default function Sidebar({
     const tabs: SidebarTab[] = [
       { id: "inicio", label: t.inicio, icon: LayoutDashboard, color: "text-text-secondary", group: t.principal },
       { id: "cursos", label: t.cursos, icon: GraduationCap, color: "text-text-secondary", group: t.principal },
-      { id: "live", label: t.live, icon: Radio, color: "text-rose-500", group: t.principal, showPing: hasUpcomingLives },
+      { id: "live", label: t.live, icon: Radio, color: "text-rose-500", group: t.principal, showPing: hasActiveLive },
       { id: "buscar", label: "Buscar", icon: Search, color: "text-text-secondary", group: t.principal },
       { id: "ai", label: t.ai, icon: Sparkles, color: "text-text-secondary", group: t.principal },
       { id: "practicar", label: t.practicar, icon: Target, color: "text-text-secondary", group: t.principal },

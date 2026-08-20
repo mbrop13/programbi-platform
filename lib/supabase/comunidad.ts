@@ -77,11 +77,11 @@ export async function isCurrentUserAdmin() {
  * Obtener todos los posts del muro de la comunidad. 
  * Se trae likes y profiles (autores).
  */
-export async function getPosts(communityId: string = "default") {
+export async function getPosts(communityId: string = "default", limit: number = 20, offset: number = 0) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   
-  // Realiza inner join a profiles para el autor
+  // Realiza inner join a profiles para el autor con paginación
   const { data: posts, error } = await supabase
     .from("posts")
     .select(`
@@ -93,7 +93,9 @@ export async function getPosts(communityId: string = "default") {
       author:profiles(id, full_name, avatar_url),
       comments(id, content, created_at, author:profiles(id, full_name, avatar_url))
     `)
-    .order("created_at", { ascending: false });
+    .order("is_pinned", { ascending: false })
+    .order("created_at", { ascending: false })
+    .range(offset, offset + limit - 1);
 
   if (error) {
     console.error("Error fetching posts:", error);
@@ -331,27 +333,35 @@ export async function getDashboardStats() {
   const completedLessons = progress.data?.length || 0;
   const studyHours = Math.round(completedLessons * 0.5 * 10) / 10; // ~30min per lesson
 
-  // Calculate progress for each enrolled course
+  // Calculate progress for each enrolled course in a single batch query (eliminates N+1 DB calls)
   let courseProgress: { title: string; progress: number; courseId: string; courseSlug: string }[] = [];
-  if (enrollments.data?.length) {
-    for (const enr of enrollments.data as any[]) {
-      const { data: lessons } = await adminDb
-        .from("lessons")
-        .select("id")
-        .eq("course_id", enr.course_id);
-      
-      if (!lessons?.length) continue;
+  const enrolledCourseIds = (enrollments.data || []).map((e: any) => e.course_id).filter(Boolean);
 
-      const lessonIds = lessons.map((l: any) => l.id);
-      const completedInCourse = (progress.data || []).filter(
-        (p: any) => lessonIds.includes(p.lesson_id)
-      ).length;
+  if (enrolledCourseIds.length > 0) {
+    const { data: allLessons } = await adminDb
+      .from("lessons")
+      .select("id, course_id")
+      .in("course_id", enrolledCourseIds);
+
+    const completedLessonIds = new Set((progress.data || []).map((p: any) => p.lesson_id));
+
+    const lessonsByCourse: Record<string, string[]> = {};
+    (allLessons || []).forEach((l: any) => {
+      if (!lessonsByCourse[l.course_id]) lessonsByCourse[l.course_id] = [];
+      lessonsByCourse[l.course_id].push(l.id);
+    });
+
+    for (const enr of enrollments.data as any[]) {
+      const lessonIds = lessonsByCourse[enr.course_id] || [];
+      if (!lessonIds.length) continue;
+
+      const completedInCourse = lessonIds.filter((id) => completedLessonIds.has(id)).length;
 
       courseProgress.push({
         title: enr.courses?.title || "Curso",
         courseId: enr.course_id,
         courseSlug: enr.courses?.slug || enr.course_id,
-        progress: Math.round((completedInCourse / lessons.length) * 100),
+        progress: Math.round((completedInCourse / lessonIds.length) * 100),
       });
     }
   }

@@ -28,7 +28,6 @@ export default function LogoSlider({ transparent = false }: { transparent?: bool
                 width={180}
                 height={70}
                 className="logo-img"
-                unoptimized
               />
             </div>
           ))}

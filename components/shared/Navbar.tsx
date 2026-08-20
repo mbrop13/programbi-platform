@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence, useMotionValueEvent, useScroll } from "framer-motion";
 import { Menu, X, ChevronDown, LogIn, UserPlus, ArrowRight, Clock, Users, Sparkles, BookOpen, LogOut, LayoutDashboard, UserCircle, Settings, LifeBuoy, ShieldAlert } from "lucide-react";
-import * as LucideIcons from "lucide-react";
 import React from "react";
 import { courses } from "@/lib/data/courses";
 import { createClient } from "@/lib/supabase/client";
@@ -29,12 +28,6 @@ const navLinks = [
 ];
 
 const featuredSlugs = ["analisis-de-datos", "power-bi", "sql-server"];
-
-function CourseIcon({ name, className }: { name: string; className?: string }) {
-  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
-  if (!Icon) return <LucideIcons.BookOpen className={className} />;
-  return <Icon className={className} />;
-}
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -241,7 +234,6 @@ export default function Navbar() {
                 width={180}
                 height={48}
                 className="h-8 lg:h-11 w-auto object-contain transition-transform group-hover:scale-[1.02]"
-                unoptimized
                 priority
               />
             </Link>
@@ -295,8 +287,8 @@ export default function Navbar() {
                                     src={course.imageUrl}
                                     alt={course.title}
                                     fill
+                                    sizes="120px"
                                     className="object-cover transition-transform duration-500 group-hover/item:scale-[1.03]"
-                                    unoptimized
                                   />
                                 </div>
                                 <div className="flex-1 min-w-0">

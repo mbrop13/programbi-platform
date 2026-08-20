@@ -589,7 +589,7 @@ export default function PagoClient() {
                        
                        {/* Left Image */}
                        <div className="w-full sm:w-56 h-48 sm:h-40 shrink-0 relative rounded-2xl overflow-hidden border border-gray-100 bg-gray-50">
-                          <Image src={course.imageUrl} alt={course.title} fill className="object-cover" unoptimized />
+                          <Image src={course.imageUrl} alt={course.title} fill sizes="(max-width: 640px) 100vw, 224px" className="object-cover" />
                           {isBundle && mode === "individual" && (
                              <div className="absolute top-2 left-2 bg-[#1890FF] text-white text-[10px] font-black uppercase px-2 py-1 rounded-md shadow-md">
                                PROMOCIÓN 3x2

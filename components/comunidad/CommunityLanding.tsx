@@ -73,7 +73,6 @@ function ProductShot({
           height={900}
           className="h-auto w-full object-contain object-center"
           priority={priority}
-          unoptimized
           sizes="(max-width: 1024px) 100vw, 560px"
         />
       </div>
@@ -706,8 +705,8 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
                 alt="Mentor IA especializado en datos en el campus ProgramBI"
                 width={1400}
                 height={900}
+                sizes="(max-width: 1024px) 100vw, 700px"
                 className="h-auto w-full object-contain"
-                unoptimized
               />
             </div>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -963,8 +962,8 @@ export default function CommunityLanding({ isLoggedIn }: Props) {
                 alt="Manuel Oliva, fundador de ProgramBI"
                 width={560}
                 height={680}
+                sizes="(max-width: 1024px) 100vw, 560px"
                 className="h-auto w-full object-cover"
-                unoptimized
               />
             </div>
           </motion.div>

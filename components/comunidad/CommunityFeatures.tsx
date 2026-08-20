@@ -201,8 +201,8 @@ export default function CommunityFeatures() {
                           src={f.image}
                           alt={f.imageLabel}
                           fill
+                          sizes="(max-width: 1024px) 100vw, 620px"
                           className="object-cover rounded-2xl"
-                          unoptimized
                         />
                         {/* Soft overlay gradient */}
                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/15 via-transparent to-transparent pointer-events-none" />
@@ -286,8 +286,8 @@ export default function CommunityFeatures() {
                         src={f.image}
                         alt={f.imageLabel}
                         fill
+                        sizes="(max-width: 1024px) 100vw, 620px"
                         className="object-cover rounded-2xl"
-                        unoptimized
                       />
                       {/* Soft overlay gradient */}
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-955/15 via-transparent to-transparent pointer-events-none" />
@@ -332,8 +332,8 @@ export default function CommunityFeatures() {
                 src={selectedImage.src}
                 alt={selectedImage.label}
                 fill
+                sizes="(max-width: 1200px) 100vw, 1200px"
                 className="object-contain"
-                unoptimized
               />
             </motion.div>
           </motion.div>

@@ -147,8 +147,8 @@ export default function ArticleClient({
                 src={article.cover_image}
                 alt={article.title}
                 fill
+                sizes="(max-width: 1024px) 100vw, 900px"
                 className="object-cover"
-                unoptimized
                 priority
               />
             );
@@ -286,8 +286,8 @@ export default function ArticleClient({
                             src={r.cover_image}
                             alt={r.title}
                             fill
+                            sizes="120px"
                             className="object-cover group-hover:scale-105 transition-transform duration-500"
-                            unoptimized
                           />
                         )
                       ) : (

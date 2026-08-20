@@ -693,7 +693,6 @@ export default function EmpresasClient() {
                       alt={course.title}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-                      unoptimized
                       sizes="(max-width: 768px) 100vw, 33vw"
                     />
                   </div>

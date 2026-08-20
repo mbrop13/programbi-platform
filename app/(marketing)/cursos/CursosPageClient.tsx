@@ -5,17 +5,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Clock, Users, ChevronRight, Search, Filter, Sparkles } from "lucide-react";
-import * as LucideIcons from "lucide-react";
 import React from "react";
 import { courses, getFeaturedCourses } from "@/lib/data/courses";
 import { FadeIn, StaggerChildren, StaggerItem, TiltCard } from "@/components/shared/AnimatedComponents";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
-
-function DynamicIcon({ name, className }: { name: string; className?: string }) {
-  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[name];
-  if (!Icon) return <LucideIcons.BookOpen className={className} />;
-  return <Icon className={className} />;
-}
 
 export default function CursosPageClient() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -32,13 +25,6 @@ export default function CursosPageClient() {
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap');
-        .font-handwritten {
-          font-family: 'Caveat', cursive;
-          font-weight: 500;
-        }
-      `}} />
 
       {/* ════ PREMIUM HERO & SEARCH ════ */}
       <section className="relative -mt-20 lg:-mt-24 pt-24 lg:pt-32 pb-6 lg:pb-8 overflow-hidden bg-white">
@@ -124,7 +110,7 @@ export default function CursosPageClient() {
                       transition={{ type: "spring", stiffness: 300, damping: 25 }}
                     >
                       <div className="h-[180px] relative overflow-hidden bg-slate-50">
-                        <Image src={course.imageUrl} alt={course.title} fill className="object-cover transition-transform duration-600 group-hover:scale-110" unoptimized />
+                        <Image src={course.imageUrl} alt={course.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-600 group-hover:scale-110" />
                         {course.badgeLabel && (
                           <div className="absolute top-4 left-4 px-3 py-1 rounded-lg text-white text-[10px] font-bold"
                             style={{ backgroundColor: course.badgeColor || course.accentColor }}>

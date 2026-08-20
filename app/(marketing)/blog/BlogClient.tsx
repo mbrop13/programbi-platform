@@ -147,8 +147,8 @@ function BlogSlider({ articles }: { articles: any[] }) {
                       src={current.cover_image}
                       alt={current.title}
                       fill
+                      sizes="(max-width: 1024px) 100vw, 1200px"
                       className="object-cover opacity-60 transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
-                      unoptimized
                       priority
                     />
                   );
@@ -243,8 +243,8 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
                 src={displayImage}
                 alt={article.title}
                 fill
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.02]"
-                unoptimized
               />
             )
           ) : (

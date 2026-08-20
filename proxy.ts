@@ -42,6 +42,23 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Rutas que requieren refresco y validación activa de sesión de Supabase en el servidor:
+  // /comunidad/*, /admin/*, /login, /registro, /pago, /auth/*
+  const requiresSessionUpdate =
+    (pathname.startsWith('/comunidad') && !isComunidadLanding) ||
+    pathname.startsWith('/admin') ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/registro') ||
+    pathname.startsWith('/pago') ||
+    pathname.startsWith('/auth');
+
+  if (!requiresSessionUpdate) {
+    // Para rutas públicas de marketing (home, cursos, blog, empresas, etc.), dejamos pasar
+    // la petición de inmediato con TTFB mínimo. El Navbar y componentes de cliente leen
+    // la sesión asíncronamente desde el cliente sin bloquear la entrega de la página.
+    return NextResponse.next()
+  }
+
   return await updateSession(request)
 }
 

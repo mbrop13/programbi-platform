@@ -317,7 +317,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                     width={160}
                     height={40}
                     className="h-8 w-auto mb-8"
-                    unoptimized
                   />
                   <h3 className="text-3xl font-bold mb-4 leading-tight text-slate-900">
                     El futuro del <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1890FF] to-[#6366F1]">Análisis de Datos</span>

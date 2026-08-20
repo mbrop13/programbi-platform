@@ -21,6 +21,8 @@ export interface CommunityContextValue {
   isCheckingPlan: boolean;
   hasCourses: boolean | null;
   courseSlugMap: Record<string, string>;
+  allCourses: any[];
+  enrollmentData: any;
   hasSubscription: boolean;
   canAccessFull: boolean;
   theme: "claro" | "oscuro" | "sistema";
@@ -70,6 +72,8 @@ export function CommunityProvider({
   );
   const [authLoading, setAuthLoading] = useState(!serverData);
   const [isCheckingPlan, setIsCheckingPlan] = useState(!serverData);
+  const [allCourses, setAllCourses] = useState<any[]>(serverData?.allCourses || []);
+  const [enrollmentData, setEnrollmentData] = useState<any>(serverData?.enrollmentData || null);
   const [hasCourses, setHasCourses] = useState<boolean | null>(() => {
     if (!serverData) return null;
     const enrolls = Array.isArray(serverData.enrollmentData)
@@ -180,6 +184,8 @@ export function CommunityProvider({
           }
           setUserProfile(profileData);
         }
+        setAllCourses(Array.isArray(allCourses) ? allCourses : []);
+        setEnrollmentData(enrollmentData);
         setHasCourses(
           (Array.isArray(enrollmentData)
             ? enrollmentData
@@ -231,6 +237,8 @@ export function CommunityProvider({
         isCheckingPlan,
         hasCourses,
         courseSlugMap,
+        allCourses,
+        enrollmentData,
         hasSubscription,
         canAccessFull,
         theme,

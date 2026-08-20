@@ -67,36 +67,41 @@ const renderCardGraphic = (theme: string) => {
 function CaseCard({ item }: { item: CaseStudy }) {
   const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
+  const [isInViewport, setIsInViewport] = useState(false);
+  const cardRef = useRef<HTMLAnchorElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // Autoplay when the card enters the viewport (more reliable than raw autoPlay)
+  // Lazy-load video strictly when card enters viewport
   useEffect(() => {
-    const el = videoRef.current;
-    if (!el || !item.videoUrl || videoFailed) return;
-
-    const tryPlay = () => {
-      el.muted = true;
-      const p = el.play();
-      if (p) p.catch(() => {});
-    };
+    const el = cardRef.current;
+    if (!el || !item.videoUrl) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = entries[0];
         if (!entry) return;
-        if (entry.isIntersecting) tryPlay();
-        else el.pause();
+        if (entry.isIntersecting) {
+          setIsInViewport(true);
+          if (videoRef.current) {
+            videoRef.current.muted = true;
+            videoRef.current.play().catch(() => {});
+          }
+        } else {
+          if (videoRef.current) {
+            videoRef.current.pause();
+          }
+        }
       },
-      { threshold: 0.35 }
+      { threshold: 0.15, rootMargin: "100px" }
     );
 
     observer.observe(el);
-    tryPlay();
     return () => observer.disconnect();
-  }, [item.videoUrl, videoFailed]);
+  }, [item.videoUrl]);
 
   return (
     <Link
+      ref={cardRef}
       href={`/casos/${item.slug}`}
       className="snap-start shrink-0 flex flex-col group w-[300px] hover:w-[360px] transition-all duration-500 ease-out no-underline"
     >
@@ -111,7 +116,7 @@ function CaseCard({ item }: { item: CaseStudy }) {
 
         {item.videoUrl && !videoFailed ? (
           <div className="absolute inset-0">
-            {/* Placeholder while loading */}
+            {/* Placeholder while loading / not in viewport */}
             <div
               className={`absolute inset-0 bg-gradient-to-tr from-[#0F172A] via-[#1E293B] to-[#0B0F19] flex items-center justify-center pointer-events-none transition-opacity duration-700 z-[1] ${
                 isVideoLoaded ? "opacity-0" : "opacity-100"
@@ -120,21 +125,23 @@ function CaseCard({ item }: { item: CaseStudy }) {
               <div className="opacity-40 scale-75">{renderCardGraphic(item.theme)}</div>
             </div>
 
-            <video
-              ref={videoRef}
-              src={item.videoUrl}
-              poster={item.posterUrl}
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
-              onLoadedData={() => setIsVideoLoaded(true)}
-              onCanPlay={() => setIsVideoLoaded(true)}
-              onPlaying={() => setIsVideoLoaded(true)}
-              onError={() => setVideoFailed(true)}
-              className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-out pointer-events-none z-0"
-            />
+            {isInViewport && (
+              <video
+                ref={videoRef}
+                src={item.videoUrl}
+                poster={item.posterUrl}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+                onLoadedData={() => setIsVideoLoaded(true)}
+                onCanPlay={() => setIsVideoLoaded(true)}
+                onPlaying={() => setIsVideoLoaded(true)}
+                onError={() => setVideoFailed(true)}
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-out pointer-events-none z-0"
+              />
+            )}
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/55 via-slate-950/10 to-slate-950/25 pointer-events-none z-[2]" />
           </div>
         ) : (

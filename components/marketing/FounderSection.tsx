@@ -32,8 +32,8 @@ export default function FounderSection() {
                     alt="Manuel Oliva - CEO ProgramBI"
                     width={600}
                     height={750}
+                    sizes="(max-width: 1024px) 100vw, 500px"
                     className="w-full h-auto block transition-transform duration-700 group-hover:scale-[1.03]"
-                    unoptimized
                   />
                   
                   {/* Floating Badge (Glassmorphic) */}
