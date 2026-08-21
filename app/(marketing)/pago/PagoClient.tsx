@@ -6,12 +6,25 @@ import Link from "next/link";
 import CourseImage from "@/components/shared/CourseImage";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  ArrowRight, ArrowLeft, Clock, Calendar, Building2, User, Users,
+  Clock, Calendar, Building2, User, Users,
   CheckCircle2, Bell, Loader2, ShoppingCart, Check, Plus, Minus,
-  X, BadgeCheck, ChevronUp, ChevronDown, FileText, ExternalLink,
+  X, BadgeCheck, ChevronUp, ChevronDown,
   Info, Globe, Tag
 } from "lucide-react";
-import { courses as allCourses, Course } from "@/lib/data/courses";
+import { courses as allCourses, Course, COURSE_NAV_GROUPS } from "@/lib/data/courses";
+
+const CATALOG_FILTERS = [{ id: "todos" as const, label: "Todos" }, ...COURSE_NAV_GROUPS];
+type CatalogFilter = (typeof CATALOG_FILTERS)[number]["id"];
+
+const chipClass = (on: boolean) =>
+  `rounded-md border-2 px-3.5 py-2 text-sm font-semibold transition-colors ${
+    on
+      ? "border-[rgb(23_23_22_/_0.28)] bg-paper text-ink"
+      : "border-transparent bg-wash text-mute hover:text-ink"
+  }`;
+
+const fieldClass =
+  "w-full rounded-md border border-line bg-wash px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-[rgb(23_23_22_/_0.28)] focus:bg-paper";
 import { type CourseSchedule, analisisDeDatosSlugs, formatScheduleDate, getNearestSchedule, getAllActiveSchedules, convertSchedule, SCHEDULE_COUNTRIES } from "@/lib/data/course-schedules";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { useCountry } from "@/lib/context/CountryContext";
@@ -45,6 +58,7 @@ export default function PagoClient() {
   const scheduleCountry = useMemo(() => SCHEDULE_COUNTRIES.find(c => c.code === country.iso) || SCHEDULE_COUNTRIES[0], [country.iso]);
 
   const [mode, setMode] = useState<Mode>("individual");
+  const [catalogFilter, setCatalogFilter] = useState<CatalogFilter>("todos");
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
   const [promotions, setPromotions] = useState<any[]>([]);
   const [priceOverrides, setPriceOverrides] = useState<any[]>([]);
@@ -513,45 +527,93 @@ export default function PagoClient() {
     });
   }, [schedules, initialSlug]);
 
+  const catalogSections = useMemo(() => {
+    const pinned = initialSlug ? sortedCourses.find((c) => c.slug === initialSlug) : undefined;
+    const source = pinned ? sortedCourses.filter((c) => c.slug !== initialSlug) : sortedCourses;
+    const groups =
+      catalogFilter === "todos"
+        ? COURSE_NAV_GROUPS
+        : COURSE_NAV_GROUPS.filter((g) => g.id === catalogFilter);
+    const groupedSlugs = new Set<string>(COURSE_NAV_GROUPS.flatMap((g) => [...g.slugs]));
+    const sections: { id: string; label: string; courses: Course[] }[] = groups
+      .map((g) => ({
+        id: g.id,
+        label: g.label,
+        courses: source.filter((c) => (g.slugs as readonly string[]).includes(c.slug)),
+      }))
+      .filter((s) => s.courses.length > 0);
+
+    if (catalogFilter === "todos") {
+      const rest = source.filter((c) => !groupedSlugs.has(c.slug));
+      if (rest.length) sections.push({ id: "otros", label: "Otros", courses: rest });
+    }
+
+    const pinVisible =
+      pinned &&
+      (catalogFilter === "todos" ||
+        (COURSE_NAV_GROUPS.find((g) => g.id === catalogFilter)?.slugs as readonly string[] | undefined)?.includes(
+          pinned.slug
+        ));
+    if (pinVisible && pinned) {
+      return [{ id: "seleccion", label: "Tu selección", courses: [pinned] }, ...sections];
+    }
+    return sections;
+  }, [sortedCourses, catalogFilter, initialSlug]);
+
   return (
     <>
-    <section className="relative -mt-20 lg:-mt-24 pt-28 lg:pt-36 pb-32 min-h-screen overflow-x-hidden" style={{ background: "linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 60%)" }}>
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-400/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-400/5 rounded-full blur-[100px] pointer-events-none" />
-
-      <div className="max-w-[1400px] mx-auto px-5 lg:px-10 relative z-10">
-        <div className="pt-4" />
-
+    <section className="relative overflow-x-hidden bg-canvas pb-32 pt-10 lg:pt-14">
+      <div className="relative mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <FadeIn>
-          <div className="text-center mb-10">
-            <h1 className="font-display font-black text-3xl sm:text-4xl lg:text-5xl text-[#0F172A] mb-4 tracking-tight">
-              Selecciona tus <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#171716] to-indigo-600">Cursos</span>
+          <div className="mb-8 max-w-[40rem]">
+            <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
+              Inscripción
             </h1>
-            <p className="text-gray-500 text-lg max-w-[600px] mx-auto">
-              Elige los programas y niveles que deseas cursar. También puedes añadir cupos extra para tu equipo.
+            <p className="mt-4 text-base leading-relaxed text-mute">
+              Elige programas y niveles. Puedes añadir cupos extra para tu equipo.
             </p>
           </div>
         </FadeIn>
 
-        <FadeIn delay={0.1}>
-           <div className="flex justify-center mb-10">
-             <div className="bg-white border border-gray-200 p-1.5 rounded-full inline-flex items-center shadow-sm">
-               <button onClick={() => setMode("individual")}
-                 className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all ${mode === "individual" ? "bg-[#0F172A] text-white shadow-md" : "text-gray-500 hover:text-gray-800"}`}>
-                 <User className="w-4 h-4" /> Compra Individual
-               </button>
-               <button onClick={() => setMode("enterprise")}
-                 className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all ${mode === "enterprise" ? "bg-[#0F172A] text-white shadow-md" : "text-gray-500 hover:text-gray-800"}`}>
-                 <Building2 className="w-4 h-4" /> Cotización Empresa
-               </button>
-             </div>
-           </div>
-        </FadeIn>
+        <div className="mb-8 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setMode("individual")}
+            className={`inline-flex items-center gap-2 ${chipClass(mode === "individual")}`}
+          >
+            <User className="h-4 w-4" /> Individual
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode("enterprise")}
+            className={`inline-flex items-center gap-2 ${chipClass(mode === "enterprise")}`}
+          >
+            <Building2 className="h-4 w-4" /> Empresa
+          </button>
+        </div>
 
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
-          {/* Main Course List */}
-          <div className="lg:col-span-7 space-y-6">
-            {sortedCourses.map((course) => {
+        <div className="grid items-start gap-8 lg:grid-cols-12 lg:gap-10">
+          <div className="space-y-8 lg:col-span-7">
+            <div className="flex flex-wrap gap-2">
+              {CATALOG_FILTERS.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  aria-pressed={catalogFilter === f.id}
+                  onClick={() => setCatalogFilter(f.id)}
+                  className={chipClass(catalogFilter === f.id)}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
+
+            {catalogSections.map((section) => (
+            <div key={section.id} className="space-y-4">
+            {catalogSections.length > 1 ? (
+              <p className="text-sm font-semibold text-mute">{section.label}</p>
+            ) : null}
+            {section.courses.map((course) => {
                const activeLevel = selectedLevels[course.slug];
                const currentLevelData = course.levels?.find(l => l.name === activeLevel);
                
@@ -584,37 +646,56 @@ export default function PagoClient() {
                const entSelected = enterpriseToggles.has(cartKey);
 
                return (
-                 <FadeIn key={course.slug} delay={0.2}>
-                    <div className={`bg-white rounded-3xl border ${itemQty > 0 || entSelected ? 'border-[#171716] ring-1 ring-[#171716]/30' : 'border-gray-200'} p-4 lg:p-6 transition-all hover:shadow-lg flex flex-col sm:flex-row gap-6 items-start sm:items-center`}>
-                       
-                       {/* Left Image */}
-                       <div className="w-full sm:w-56 h-48 sm:h-40 shrink-0 relative rounded-2xl overflow-hidden border border-gray-100 bg-gray-50">
-                          <CourseImage src={course.imageUrl} alt={course.title} fill sizes="(max-width: 640px) 100vw, 224px" className="object-cover" />
+                    <article
+                      key={course.slug}
+                      className={`overflow-hidden rounded-[22px] border bg-paper ${
+                        itemQty > 0 || entSelected
+                          ? "border-[rgb(23_23_22_/_0.28)]"
+                          : "border-line"
+                      }`}
+                    >
+                    <div className="flex flex-col md:flex-row">
+                       <div className="relative aspect-[16/10] w-full shrink-0 bg-wash md:aspect-auto md:min-h-[11.5rem] md:w-[11.5rem] md:self-stretch lg:w-52">
+                          <CourseImage src={course.imageUrl} alt={course.title} fill sizes="(max-width: 640px) 100vw, 208px" className="object-cover" />
                           {isBundle && mode === "individual" && (
-                             <div className="absolute top-2 left-2 bg-[#171716] text-white text-[10px] font-black uppercase px-2 py-1 rounded-md shadow-md">
-                               PROMOCIÓN 3x2
-                             </div>
+                             <span className="absolute left-3 top-3 rounded-md bg-ink px-2 py-1 text-[11px] font-semibold text-paper">
+                               3×2
+                             </span>
                           )}
                        </div>
 
-                       {/* Course Info */}
-                       <div className="flex-1 min-w-0 flex flex-col items-start gap-3 w-full">
+                       <div className="flex min-w-0 flex-1 flex-col gap-3 p-5 sm:p-6">
                           <div>
-                            <h3 className="font-bold text-[#0F172A] text-lg lg:text-xl line-clamp-1">{course.title}</h3>
+                            <div className="flex flex-wrap items-baseline justify-between gap-2">
+                              <h3 className="text-lg font-bold tracking-tight text-ink">{course.title}</h3>
+                              {itemQty > 0 ? (
+                                <span className="text-xs font-semibold text-ink">En el carrito · {itemQty}</span>
+                              ) : entSelected ? (
+                                <span className="text-xs font-semibold text-ink">En la cotización</span>
+                              ) : null}
+                            </div>
+                            <p className="mt-1 text-xs font-semibold text-mute">
+                              {course.durationHours} h · En vivo
+                              {course.techStack.length ? ` · ${course.techStack.join(" · ")}` : ""}
+                            </p>
                             {isBundle && (
-                               <p className="text-[11px] font-bold text-[#171716] mt-0.5">(Incluye Power BI + Python + SQL Server)</p>
+                               <p className="mt-1 text-xs font-semibold text-ink">Incluye Power BI, Python y SQL Server</p>
                              )}
-                            <p className="text-xs text-gray-500 line-clamp-2 mt-1">{getCourseDescription(course)}</p>
+                            <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-mute">{getCourseDescription(course)}</p>
                           </div>
 
-                          {/* Level Selector */}
                           {course.levels && course.levels.length > 0 && (
                             <div className="flex flex-wrap gap-2">
                                {course.levels.map(lvl => (
                                  <button 
                                    key={lvl.name} 
+                                   type="button"
                                    onClick={() => changeLevel(course.slug, lvl.name)}
-                                   className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border outline-none ${activeLevel === lvl.name ? 'border-[#171716]/30 bg-blue-50 text-[#171716]' : 'border-gray-200 bg-gray-50 text-gray-400 hover:text-gray-600 hover:bg-gray-100'}`}
+                                   className={`rounded-md border-2 px-3 py-1.5 text-xs font-semibold transition-colors ${
+                                     activeLevel === lvl.name
+                                       ? "border-[rgb(23_23_22_/_0.28)] bg-canvas text-ink"
+                                       : "border-transparent bg-wash text-mute hover:text-ink"
+                                   }`}
                                  >
                                     {lvl.name}
                                  </button>
@@ -622,13 +703,13 @@ export default function PagoClient() {
                             </div>
                           )}
 
-                          <div className="flex flex-col gap-1.5 text-xs text-gray-500 font-medium mt-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100 w-full max-w-md">
+                          <div className="flex w-full max-w-md flex-col gap-1.5 rounded-md border border-line bg-wash p-2.5 text-xs text-mute">
                                {hasScheduleActive && courseSchedules.length > 0 ? (
                                   <>
                                     {courseSchedules.length > 1 ? (
                                       <div className="relative w-full">
-                                        <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
-                                          Selecciona tu fecha de inicio:
+                                        <label className="mb-1 block text-xs font-semibold text-mute">
+                                          Fecha de inicio
                                         </label>
                                         
                                         {(() => {
@@ -658,17 +739,17 @@ export default function PagoClient() {
                                                 <button
                                                   type="button"
                                                   onClick={() => setOpenDropdownKey(isDropdownOpen ? null : dropdownKey)}
-                                                  className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold text-slate-700 hover:border-gray-300 hover:bg-slate-50 transition-all flex items-center justify-between cursor-pointer shadow-sm select-none outline-none focus:border-[#171716] focus:ring-2 focus:ring-blue-100"
+                                                  className="flex w-full cursor-pointer items-center justify-between rounded-md border border-line bg-paper px-3 py-2.5 text-left text-xs font-semibold text-ink outline-none transition-colors hover:border-[rgb(23_23_22_/_0.28)]"
                                                 >
-                                                  <span className="flex flex-wrap sm:flex-nowrap items-center gap-x-2 gap-y-0.5 text-left min-w-0 flex-1">
-                                                    <span className="flex items-center gap-2 text-slate-800 font-bold shrink-0">
-                                                      <Calendar className="w-3.5 h-3.5 text-[#171716] shrink-0" />
+                                                  <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5 sm:flex-nowrap">
+                                                    <span className="flex shrink-0 items-center gap-2 font-semibold text-ink">
+                                                      <Calendar className="h-3.5 w-3.5 shrink-0 text-ink" />
                                                       <span className="capitalize">{selectedConverted.dateFormatted}</span>
                                                     </span>
-                                                    <span className="hidden sm:inline text-slate-400 font-semibold shrink-0">·</span>
-                                                    <span className="text-blue-600 truncate font-semibold text-[11px]">{selectedConverted.days} {selectedConverted.time}</span>
+                                                    <span className="hidden shrink-0 font-semibold text-faint sm:inline">·</span>
+                                                    <span className="truncate text-[11px] font-semibold text-mute">{selectedConverted.days} {selectedConverted.time}</span>
                                                   </span>
-                                                  <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 shrink-0 ${isDropdownOpen ? "rotate-180 text-[#171716]" : ""}`} />
+                                                  <ChevronDown className={`h-4 w-4 shrink-0 text-faint transition-transform duration-200 ${isDropdownOpen ? "rotate-180 text-ink" : ""}`} />
                                                 </button>
 
                                                 <AnimatePresence>
@@ -678,7 +759,7 @@ export default function PagoClient() {
                                                       animate={{ opacity: 1, y: 0, scale: 1 }}
                                                       exit={{ opacity: 0, y: -6, scale: 0.98 }}
                                                       transition={{ duration: 0.12, ease: "easeOut" }}
-                                                      className="absolute left-0 right-0 mt-1.5 bg-white border border-gray-200 rounded-2xl shadow-xl py-1.5 z-50 overflow-hidden divide-y divide-slate-50 max-h-60 overflow-y-auto"
+                                                      className="absolute left-0 right-0 z-50 mt-1.5 max-h-60 overflow-y-auto rounded-md border border-line bg-paper py-1.5 divide-y divide-line"
                                                     >
                                                       {courseSchedules.map((sch) => {
                                                         const isSelected = sch.start_date === selectedDateVal;
@@ -697,18 +778,18 @@ export default function PagoClient() {
                                                               handleDateChange(course.slug, activeLevel, sch.start_date, courseSchedules);
                                                               setOpenDropdownKey(null);
                                                             }}
-                                                            className={`w-full px-4 py-2.5 text-left transition-colors flex items-center justify-between gap-3 cursor-pointer select-none hover:bg-blue-50/50 ${isSelected ? "bg-blue-50/30 font-bold" : ""}`}
+                                                            className={`flex w-full cursor-pointer items-center justify-between gap-3 px-4 py-2.5 text-left transition-colors hover:bg-wash ${isSelected ? "bg-wash font-semibold" : ""}`}
                                                           >
                                                             <div className="truncate">
-                                                              <span className={`block text-xs font-black capitalize ${isSelected ? "text-[#171716]" : "text-slate-800"}`}>
+                                                              <span className={`block text-xs capitalize ${isSelected ? "font-semibold text-ink" : "font-semibold text-ink"}`}>
                                                                 {converted.dateFormatted}
                                                               </span>
-                                                              <span className="block text-[10.5px] text-slate-500 font-bold mt-0.5 truncate">
-                                                                {converted.days} &middot; {converted.time}
+                                                              <span className="mt-0.5 block truncate text-[11px] font-semibold text-mute">
+                                                                {converted.days} · {converted.time}
                                                               </span>
                                                             </div>
                                                             {isSelected && (
-                                                              <Check className="w-3.5 h-3.5 text-[#171716] shrink-0" />
+                                                              <Check className="h-3.5 w-3.5 shrink-0 text-ink" />
                                                             )}
                                                           </button>
                                                         );
@@ -722,9 +803,9 @@ export default function PagoClient() {
                                         })()}
                                       </div>
                                     ) : (
-                                      <span className="flex flex-wrap sm:flex-nowrap items-center gap-x-1.5 gap-y-0.5 text-emerald-600 font-bold min-w-0 flex-1">
-                                        <span className="flex items-center gap-1.5 shrink-0">
-                                          <Calendar className="w-3.5 h-3.5" />
+                                      <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-1.5 gap-y-0.5 font-semibold text-ink sm:flex-nowrap">
+                                        <span className="flex shrink-0 items-center gap-1.5">
+                                          <Calendar className="h-3.5 w-3.5" />
                                           <span className="capitalize">{(() => {
                                             const converted = convertSchedule(
                                               courseSchedules[0].start_date,
@@ -735,8 +816,8 @@ export default function PagoClient() {
                                             return converted.dateFormatted;
                                           })()}</span>
                                         </span>
-                                        <span className="hidden sm:inline text-slate-500 font-semibold shrink-0">·</span>
-                                        <span className="text-blue-600 truncate font-semibold text-[11px]">{(() => {
+                                        <span className="hidden shrink-0 font-semibold text-faint sm:inline">·</span>
+                                        <span className="truncate text-[11px] font-semibold text-mute">{(() => {
                                           const converted = convertSchedule(
                                             courseSchedules[0].start_date,
                                             courseSchedules[0].schedule_time,
@@ -749,21 +830,20 @@ export default function PagoClient() {
                                     )}
                                   </>
                                ) : (
-                                  <span className="flex items-center gap-1.5 text-amber-500 font-bold">
-                                    <Bell className="w-3.5 h-3.5" /> Próxima fecha por confirmar
+                                  <span className="flex items-center gap-1.5 font-semibold text-ink">
+                                    <Bell className="h-3.5 w-3.5" /> Próxima fecha por confirmar
                                   </span>
                                )}
                                {currentLevelData?.durationHours && (
-                                 <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-slate-500 min-w-0 flex-1">
-                                    <Globe className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                                    <span>{currentLevelData.durationHours}h Online en vivo por Zoom</span>
+                                 <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-1.5 gap-y-0.5 text-mute">
+                                    <Globe className="h-3.5 w-3.5 shrink-0 text-faint" />
+                                    <span>{currentLevelData.durationHours} h en vivo por Zoom</span>
                                  </span>
                                )}
                           </div>
                        </div>
 
-                       {/* Action & Price Col */}
-                       <div className="w-full sm:w-auto flex flex-col items-start sm:items-end gap-3 pt-4 sm:pt-0 border-t sm:border-0 border-gray-100">
+                       <div className="flex w-full shrink-0 flex-col items-start gap-3 border-t border-line p-5 md:w-44 md:items-end md:border-l md:border-t-0 md:p-6">
                            {mode === "individual" && currentLevelData?.price ? (
                               <div className="flex flex-col items-start sm:items-end">
                                  {(() => {
@@ -771,11 +851,11 @@ export default function PagoClient() {
                                     if (isBundle) {
                                       return (
                                         <>
-                                           <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">{convertAndFormat(747000)}</span>
+                                           <span className="text-xs font-semibold text-faint line-through">{convertAndFormat(747000)}</span>
                                            <div className="flex flex-col items-start sm:items-end">
-                                              <span className="text-2xl font-black text-[#0F172A]">{convertAndFormat(pricing.finalPrice)}</span>
+                                              <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice)}</span>
                                               {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                                <span className="text-xs font-semibold text-gray-400">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
+                                                <span className="text-xs font-semibold text-faint">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
                                               )}
                                            </div>
                                         </>
@@ -783,12 +863,12 @@ export default function PagoClient() {
                                     } else if (pricing.hasDiscount) {
                                       return (
                                         <>
-                                           <span className="text-xs text-brand-blue font-bold px-2 py-0.5 rounded-full bg-blue-50 mb-1 tracking-widest uppercase">Promoción</span>
-                                           <span className="text-xs text-gray-400 line-through decoration-red-400/50 decoration-2 font-bold">{convertAndFormat(pricing.originalPrice)}</span>
+                                           <span className="mb-1 text-xs font-semibold text-ink">Promoción</span>
+                                           <span className="text-xs font-semibold text-faint line-through">{convertAndFormat(pricing.originalPrice)}</span>
                                            <div className="flex flex-col items-start sm:items-end">
-                                              <span className="text-2xl font-black text-[#0F172A]">{convertAndFormat(pricing.finalPrice)}</span>
+                                              <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice)}</span>
                                               {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                                <span className="text-xs font-semibold text-gray-400">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
+                                                <span className="text-xs font-semibold text-faint">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
                                               )}
                                            </div>
                                         </>
@@ -796,9 +876,9 @@ export default function PagoClient() {
                                     } else {
                                       return (
                                         <div className="flex flex-col items-start sm:items-end">
-                                           <span className="text-2xl font-black text-[#0F172A]">{convertAndFormat(pricing.finalPrice)}</span>
+                                           <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice)}</span>
                                            {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                             <span className="text-xs font-semibold text-gray-400">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
+                                             <span className="text-xs font-semibold text-faint">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
                                            )}
                                         </div>
                                       );
@@ -807,24 +887,26 @@ export default function PagoClient() {
                               </div>
                            ) : mode === "enterprise" ? null : (
                                <div className="flex flex-col items-start sm:items-end">
-                                   <span className="text-xs text-gray-400 italic">Precio no disponible</span>
+                                   <span className="text-xs text-faint">Precio no disponible</span>
                                </div>
                            )}
 
                            {mode === "individual" ? (
                               canBuy ? (
-                                <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl overflow-hidden h-10 shadow-sm mt-1">
-                                   <button 
+                                <div className="mt-1 flex h-10 items-center overflow-hidden rounded-md border border-line bg-wash">
+                                   <button
+                                     type="button"
                                      onClick={() => updateCartQuantity(course.slug, course.title, activeLevel, getDiscountedPrice(course.slug, currentLevelData!.price, activeLevel).finalPrice, true, -1)}
                                      disabled={itemQty === 0}
-                                     className="w-10 h-full flex items-center justify-center text-gray-500 hover:bg-gray-200 disabled:opacity-30 tooltip"
+                                     className="flex h-full w-10 items-center justify-center text-mute transition-colors hover:bg-paper hover:text-ink disabled:opacity-30"
                                    >
-                                      <Minus className="w-4 h-4" />
+                                      <Minus className="h-4 w-4" />
                                    </button>
-                                   <div className="w-10 h-full flex items-center justify-center text-sm font-black bg-white border-x border-gray-200 text-[#0F172A]">
+                                   <div className="flex h-full w-10 items-center justify-center border-x border-line bg-paper text-sm font-semibold tabular-nums text-ink">
                                       {itemQty}
                                    </div>
-                                   <button 
+                                   <button
+                                      type="button"
                                       onClick={() => {
                                         const chosenDateStr = selectedDates[`${course.slug}-${activeLevel}`] || courseSchedules[0]?.start_date;
                                         const chosenSchedule = courseSchedules.find(s => s.start_date === chosenDateStr) || courseSchedules[0];
@@ -840,68 +922,72 @@ export default function PagoClient() {
                                           chosenSchedule?.schedule_time
                                         );
                                       }}
-                                      className="w-10 h-full flex items-center justify-center text-[#171716] hover:bg-blue-50"
+                                      className="flex h-full w-10 items-center justify-center text-ink transition-colors hover:bg-paper"
                                     >
-                                       <Plus className="w-4 h-4" />
+                                       <Plus className="h-4 w-4" />
                                     </button>
                                 </div>
                               ) : (
                                 <button
+                                  type="button"
                                   onClick={() => handleNotifyMe(course.slug, activeLevel)}
                                   disabled={notifySuccess.has(cartKey) || notifyLoading === cartKey}
-                                  className={`flex items-center justify-center gap-2 px-5 h-10 rounded-xl text-xs font-bold transition-all mt-1 w-full sm:w-auto ${notifySuccess.has(cartKey) ? 'bg-emerald-50 text-emerald-600' : 'bg-amber-50 text-amber-600 hover:bg-amber-100'}`}
+                                  className={`mt-1 flex h-10 w-full items-center justify-center gap-2 rounded-md px-4 text-xs font-semibold transition-colors sm:w-auto ${notifySuccess.has(cartKey) ? "bg-wash text-ink" : "border border-line bg-wash text-ink hover:bg-paper"}`}
                                 >
-                                  {notifyLoading === cartKey ? <Loader2 className="w-4 h-4 animate-spin" /> : notifySuccess.has(cartKey) ? <><CheckCircle2 className="w-4 h-4" /> ¡Registrado!</> : <><Bell className="w-4 h-4" /> Avísame la próxima fecha</>}
+                                  {notifyLoading === cartKey ? <Loader2 className="h-4 w-4 animate-spin" /> : notifySuccess.has(cartKey) ? <><CheckCircle2 className="h-4 w-4" /> Registrado</> : <><Bell className="h-4 w-4" /> Avísame</>}
                                 </button>
                               )
                            ) : (
-                              // Enterprise Mode action
                               <button
+                                type="button"
                                 onClick={() => toggleEnterpriseSelect(course.slug, activeLevel)}
-                                className={`flex items-center justify-center gap-2 px-6 h-10 rounded-xl text-xs font-bold transition-all mt-1 border w-full sm:w-auto ${entSelected ? 'bg-indigo-50 border-indigo-200 text-indigo-600' : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'}`}
+                                className={`mt-1 flex h-10 w-full items-center justify-center gap-2 rounded-md px-4 text-xs font-semibold transition-colors sm:w-auto ${
+                                  entSelected
+                                    ? "border-2 border-[rgb(23_23_22_/_0.28)] bg-canvas text-ink"
+                                    : "border-2 border-transparent bg-wash text-mute hover:text-ink"
+                                }`}
                               >
-                                {entSelected ? <><Check className="w-4 h-4" /> Incluido en formato</> : 'Añadir a cotización'}
+                                {entSelected ? <><Check className="h-4 w-4" /> Incluido</> : "Añadir"}
                               </button>
                            )}
 
                        </div>
                     </div>
-                 </FadeIn>
+                    </article>
                );
             })}
+            </div>
+            ))}
           </div>
 
-          {/* Checkout Widget Column */}
           <div className="lg:col-span-5">
              <div className="sticky top-28 w-full">
                 <AnimatePresence mode="wait">
                   {mode === "individual" ? (
                     <motion.div
                       key="individual"
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="bg-white rounded-3xl border border-zinc-200 overflow-hidden"
-                      style={{ boxShadow: "0 20px 50px -15px rgba(0,0,0,0.06)" }}
+                      exit={{ opacity: 0, y: -8 }}
+                      className="overflow-hidden rounded-[22px] border border-line bg-paper"
                     >
                       <div className="p-6">
+                        <p className="mb-5 text-sm font-semibold text-ink">Tu inscripción</p>
                         {cartItems.length === 0 ? (
-                           <div className="text-center py-6">
-                             <ShoppingCart className="w-10 h-10 text-gray-200 mx-auto mb-3" />
-                             <p className="text-sm text-gray-400">Tu carrito está vacío.</p>
-                             <p className="text-[10px] text-gray-400 mt-1">Abre el selector de un curso para agregarlo.</p>
+                           <div className="py-8">
+                             <ShoppingCart className="mb-3 h-8 w-8 text-faint" />
+                             <p className="text-sm text-mute">Aún no hay cursos.</p>
+                             <p className="mt-1 text-xs text-faint">Suma un programa con +.</p>
                            </div>
                         ) : (
                            <>
 
-                              <div className="space-y-4 mb-6 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                              <div className="custom-scrollbar mb-6 max-h-[300px] space-y-4 overflow-y-auto pr-1">
                                  {cartItems.map(item => (
-                                    <div key={`${item.slug}-${item.levelName}`} className="flex justify-between items-start gap-4">
-                                       <div className="flex-1 min-w-0">
-                                          <div className="flex items-center gap-2">
-                                             <span className="font-semibold text-sm text-zinc-900 leading-tight line-clamp-2">{item.quantity}x {item.title}</span>
-                                          </div>
-                                          <span className="text-[11px] text-zinc-500 mt-0.5 block">{item.levelName}</span>
+                                    <div key={`${item.slug}-${item.levelName}`} className="flex items-start justify-between gap-4">
+                                       <div className="min-w-0 flex-1">
+                                          <span className="line-clamp-2 text-sm font-semibold leading-tight text-ink">{item.quantity}× {item.title}</span>
+                                          <span className="mt-0.5 block text-xs text-mute">{item.levelName}</span>
                                           {item.slug !== "asesoria" && item.selectedStartDate && (() => {
                                             const converted = convertSchedule(
                                               item.selectedStartDate,
@@ -910,58 +996,52 @@ export default function PagoClient() {
                                               scheduleCountry.timeZone
                                             );
                                             return (
-                                              <div className="mt-2.5 rounded-xl border border-zinc-150 bg-zinc-50/50 p-2.5 space-y-2">
+                                              <div className="mt-2.5 space-y-1.5 rounded-md border border-line bg-wash p-2.5">
                                                 <div className="flex items-center gap-2">
-                                                  <Calendar className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
-                                                  <div className="flex flex-wrap items-baseline gap-1">
-                                                    <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Inicio:</span>
-                                                    <span className="text-[11px] font-bold text-zinc-800 capitalize leading-tight">{converted.dateFormatted}</span>
-                                                  </div>
+                                                  <Calendar className="h-3.5 w-3.5 shrink-0 text-mute" />
+                                                  <span className="text-xs font-semibold capitalize leading-tight text-ink">{converted.dateFormatted}</span>
                                                 </div>
                                                 <div className="flex items-start gap-2">
-                                                  <Clock className="w-3.5 h-3.5 text-zinc-500 shrink-0 mt-0.5" />
+                                                  <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-mute" />
                                                   <div className="flex flex-col">
-                                                    <div className="flex flex-wrap items-baseline gap-1">
-                                                      <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider">Horario:</span>
-                                                      <span className="text-[11px] font-bold text-zinc-800 leading-tight">{converted.days}</span>
-                                                    </div>
-                                                    <span className="text-[10px] font-semibold text-zinc-500 mt-0.5">{converted.time}</span>
+                                                    <span className="text-xs font-semibold leading-tight text-ink">{converted.days}</span>
+                                                    <span className="mt-0.5 text-[11px] font-semibold text-mute">{converted.time}</span>
                                                   </div>
                                                 </div>
                                               </div>
                                             );
                                           })()}
                                        </div>
-                                       <div className="flex flex-col items-end shrink-0">
+                                       <div className="flex shrink-0 flex-col items-end">
                                           {item.hasDiscount && item.originalPrice && item.originalPrice > item.price && (
-                                            <div className="flex items-center gap-1.5 mb-1">
-                                              <span className="text-[11px] text-zinc-450 line-through font-semibold">
+                                            <div className="mb-1 flex items-center gap-1.5">
+                                              <span className="text-[11px] font-semibold text-faint line-through">
                                                 {convertAndFormat(item.originalPrice * item.quantity)}
                                               </span>
-                                              <span className="text-[9px] font-extrabold bg-black text-white px-1.5 py-0.5 rounded uppercase tracking-wider">
-                                                -{Math.round((1 - item.price / item.originalPrice) * 100)}%
+                                              <span className="rounded-md bg-ink px-1.5 py-0.5 text-[10px] font-semibold text-paper">
+                                                −{Math.round((1 - item.price / item.originalPrice) * 100)}%
                                               </span>
                                             </div>
                                           )}
-                                          <span className="font-black text-zinc-950 text-sm">{convertAndFormat(item.price * item.quantity)}</span>
+                                          <span className="text-sm font-semibold tabular-nums text-ink">{convertAndFormat(item.price * item.quantity)}</span>
                                           {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                            <span className="text-[10px] font-semibold text-zinc-400 mt-0.5">
+                                            <span className="mt-0.5 text-[10px] font-semibold text-faint">
                                               ≈ ${Math.round((item.price * item.quantity) / 900)} USD
                                             </span>
                                           )}
                                           {item.slug === "asesoria" ? (
-                                            <div className="flex items-center gap-2 mt-2 bg-zinc-50 rounded-lg border border-zinc-205">
-                                              <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -1)} className="p-1 text-zinc-500 hover:text-black transition-colors bg-transparent border-none cursor-pointer">
-                                                <Minus className="w-3 h-3" />
+                                            <div className="mt-2 flex items-center gap-2 rounded-md border border-line bg-wash">
+                                              <button type="button" onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -1)} className="cursor-pointer border-none bg-transparent p-1 text-mute transition-colors hover:text-ink">
+                                                <Minus className="h-3 w-3" />
                                               </button>
-                                              <span className="text-[10px] font-bold min-w-[12px] text-center text-zinc-805">{item.quantity}</span>
-                                              <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, 1)} className="p-1 text-zinc-500 hover:text-black transition-colors bg-transparent border-none cursor-pointer">
-                                                <Plus className="w-3 h-3" />
+                                              <span className="min-w-[12px] text-center text-[10px] font-semibold text-ink">{item.quantity}</span>
+                                              <button type="button" onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, 1)} className="cursor-pointer border-none bg-transparent p-1 text-mute transition-colors hover:text-ink">
+                                                <Plus className="h-3 w-3" />
                                               </button>
                                             </div>
                                           ) : (
-                                            <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} className="text-[10px] text-zinc-400 hover:text-red-500 mt-1.5 uppercase font-bold tracking-widest bg-transparent border-none cursor-pointer transition-colors">
-                                              Eliminar
+                                            <button type="button" onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} className="mt-1.5 cursor-pointer border-none bg-transparent text-xs font-semibold text-faint transition-colors hover:text-ink">
+                                              Quitar
                                             </button>
                                           )}
                                        </div>
@@ -970,26 +1050,25 @@ export default function PagoClient() {
                               </div>
 
                               {hasExtraLicenses && (
-                                 <div className="bg-amber-50 border border-amber-100 rounded-xl p-3 mb-6 flex gap-3">
-                                    <Users className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                                 <div className="mb-6 flex gap-3 rounded-md border border-line bg-wash p-3">
+                                    <Users className="mt-0.5 h-4 w-4 shrink-0 text-ink" />
                                     <div>
-                                      <p className="text-[11px] font-bold text-amber-700">Licencias Adicionales</p>
-                                      <p className="text-[10px] text-amber-600/80 leading-snug mt-1">Has activado asientos para otras personas. Recibirás las instrucciones por correo al completar el pago para asignarlas.</p>
+                                      <p className="text-xs font-semibold text-ink">Cupos extra</p>
+                                      <p className="mt-1 text-[11px] leading-snug text-mute">Recibirás por correo las instrucciones para asignarlos después del pago.</p>
                                     </div>
                                  </div>
                               )}
 
-                              {/* Sección de Cupón de Descuento Colapsable */}
-                              <div className="border-t border-zinc-100 pt-4 mb-4">
+                              <div className="mb-4 border-t border-line pt-4">
                                 <button
                                   type="button"
                                   onClick={() => setShowCouponInput(!showCouponInput)}
-                                  className="flex items-center justify-between w-full py-1 text-xs font-bold text-zinc-500 hover:text-zinc-800 transition-colors bg-transparent border-none cursor-pointer"
+                                  className="flex w-full cursor-pointer items-center justify-between border-none bg-transparent py-1 text-xs font-semibold text-mute transition-colors hover:text-ink"
                                 >
-                                  <span className="flex items-center gap-1.5 uppercase tracking-wider text-[10px]">
-                                    <Tag className="w-3.5 h-3.5" /> ¿Tienes un cupón de descuento?
+                                  <span className="flex items-center gap-1.5">
+                                    <Tag className="h-3.5 w-3.5" /> ¿Tienes un cupón?
                                   </span>
-                                  {showCouponInput ? <ChevronUp className="w-3.5 h-3.5 text-zinc-400" /> : <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />}
+                                  {showCouponInput ? <ChevronUp className="h-3.5 w-3.5 text-faint" /> : <ChevronDown className="h-3.5 w-3.5 text-faint" />}
                                 </button>
                                 
                                 <AnimatePresence initial={false}>
@@ -1001,16 +1080,16 @@ export default function PagoClient() {
                                       className="overflow-hidden"
                                     >
                                       {appliedCoupon ? (
-                                        <div className="flex items-center justify-between bg-emerald-50 border border-emerald-100 px-4 py-3 rounded-xl">
+                                        <div className="flex items-center justify-between rounded-md border border-line bg-wash px-4 py-3">
                                           <div className="flex items-center gap-2">
-                                            <Tag className="w-4 h-4 text-emerald-650 shrink-0" />
+                                            <Tag className="h-4 w-4 shrink-0 text-ink" />
                                             <div>
-                                              <span className="font-mono font-black text-xs text-emerald-800 tracking-wider">{appliedCoupon.code}</span>
-                                              <span className="text-[10px] text-emerald-600 font-bold ml-2">-{appliedCoupon.discount_percentage}% aplicado</span>
+                                              <span className="font-mono text-xs font-semibold tracking-wide text-ink">{appliedCoupon.code}</span>
+                                              <span className="ml-2 text-[11px] font-semibold text-mute">−{appliedCoupon.discount_percentage}%</span>
                                             </div>
                                           </div>
-                                          <button type="button" onClick={handleRemoveCoupon} className="p-1 rounded-full hover:bg-emerald-100 text-emerald-600 hover:text-emerald-800 transition-colors bg-transparent border-none cursor-pointer flex items-center justify-center">
-                                            <X className="w-3.5 h-3.5" />
+                                          <button type="button" onClick={handleRemoveCoupon} className="flex cursor-pointer items-center justify-center rounded-md border-none bg-transparent p-1 text-mute transition-colors hover:text-ink">
+                                            <X className="h-3.5 w-3.5" />
                                           </button>
                                         </div>
                                       ) : (
@@ -1018,27 +1097,27 @@ export default function PagoClient() {
                                           <div className="relative flex-1">
                                             <input
                                               type="text"
-                                              placeholder="Ingresa tu código"
+                                              placeholder="Código"
                                               value={couponCodeInput}
                                               onChange={e => {
                                                 setCouponCodeInput(e.target.value);
                                                 if (couponError) setCouponError(null);
                                               }}
-                                              className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-xs font-semibold focus:bg-white focus:ring-2 focus:ring-zinc-100 focus:border-zinc-950 outline-none transition-all font-mono placeholder:font-sans uppercase tracking-wider"
+                                              className={`${fieldClass} font-mono uppercase tracking-wider placeholder:font-sans placeholder:normal-case placeholder:tracking-normal`}
                                             />
                                           </div>
                                           <button
                                             type="submit"
                                             disabled={validatingCoupon || !couponCodeInput.trim()}
-                                            className="px-4 py-2.5 bg-zinc-950 hover:bg-zinc-900 text-white font-bold text-xs rounded-xl shadow-sm disabled:opacity-50 transition-colors border-none cursor-pointer flex items-center gap-1.5"
+                                            className="flex cursor-pointer items-center gap-1.5 rounded-md border-none bg-ink px-4 py-2.5 text-xs font-semibold text-paper transition-colors hover:opacity-90 disabled:opacity-50"
                                           >
-                                            {validatingCoupon ? <Loader2 className="w-3 h-3 animate-spin" /> : "Aplicar"}
+                                            {validatingCoupon ? <Loader2 className="h-3 w-3 animate-spin" /> : "Aplicar"}
                                           </button>
                                         </form>
                                       )}
                                       
                                       {couponError && (
-                                        <motion.p initial={{ opacity: 0, y: -2 }} animate={{ opacity: 1, y: 0 }} className="text-[10px] text-red-500 font-semibold mt-1.5 px-1">
+                                        <motion.p initial={{ opacity: 0, y: -2 }} animate={{ opacity: 1, y: 0 }} className="mt-1.5 px-1 text-[11px] font-semibold text-danger">
                                           {couponError}
                                         </motion.p>
                                       )}
@@ -1048,49 +1127,48 @@ export default function PagoClient() {
                               </div>
 
                               {appliedCoupon && (
-                                <div className="mb-3 flex justify-between items-center text-xs font-semibold">
-                                  <span className="text-zinc-400">Subtotal</span>
-                                  <span className="text-zinc-700 font-black">{convertAndFormat(totalPrice)}</span>
+                                <div className="mb-3 flex items-center justify-between text-xs font-semibold">
+                                  <span className="text-faint">Subtotal</span>
+                                  <span className="tabular-nums text-ink">{convertAndFormat(totalPrice)}</span>
                                 </div>
                               )}
                               
                               {appliedCoupon && (
-                                <div className="mb-4 flex justify-between items-center text-xs font-semibold text-emerald-600 bg-emerald-50/50 p-2.5 rounded-xl border border-emerald-100/30">
-                                  <span className="flex items-center gap-1"><Tag className="w-3.5 h-3.5"/> Descuento ({appliedCoupon.code})</span>
-                                  <span className="font-black">-{convertAndFormat(couponDiscountAmount)}</span>
+                                <div className="mb-4 flex items-center justify-between rounded-md border border-line bg-wash p-2.5 text-xs font-semibold text-ink">
+                                  <span className="flex items-center gap-1"><Tag className="h-3.5 w-3.5"/> Descuento ({appliedCoupon.code})</span>
+                                  <span className="tabular-nums">−{convertAndFormat(couponDiscountAmount)}</span>
                                 </div>
                               )}
 
-                              <div className="border-t border-zinc-200 border-dashed pt-4 mb-6 flex justify-between items-end">
-                                 <span className="font-bold text-zinc-500">Total a pagar</span>
+                              <div className="mb-6 flex items-end justify-between border-t border-line pt-4">
+                                 <span className="font-semibold text-mute">Total</span>
                                  <div className="text-right">
-                                   <span className="font-black text-2xl text-zinc-950 block">
+                                   <span className="block text-2xl font-bold tabular-nums text-ink">
                                      {convertAndFormat(appliedCoupon ? finalPriceWithCoupon : totalPrice)}
                                    </span>
                                    {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                                     <span className="text-xs font-semibold text-zinc-400">
+                                     <span className="text-xs font-semibold text-faint">
                                        ≈ ${Math.round((appliedCoupon ? finalPriceWithCoupon : totalPrice) / 900)} USD
                                      </span>
                                    )}
                                  </div>
                               </div>
 
-                              {/* Exchange Rate Reference Card */}
                               {country.currency.code !== "CLP" && (
-                                <div className="bg-zinc-50 border border-zinc-150 rounded-2xl p-4 mb-6 text-left">
-                                  <div className="flex gap-2.5 items-start">
-                                    <Info className="w-4 h-4 text-zinc-500 shrink-0 mt-0.5" />
+                                <div className="mb-6 rounded-md border border-line bg-wash p-4 text-left">
+                                  <div className="flex items-start gap-2.5">
+                                    <Info className="mt-0.5 h-4 w-4 shrink-0 text-mute" />
                                     <div>
-                                      <h4 className="text-[11px] font-black text-zinc-800 uppercase tracking-wider mb-1">
-                                        Información de Conversión
-                                      </h4>
-                                      <p className="text-xs text-zinc-600 leading-snug">
-                                        Se realizará un cobro por el equivalente de <span className="font-bold">{convertAndFormat(appliedCoupon ? finalPriceWithCoupon : totalPrice)}</span>.
+                                      <p className="mb-1 text-xs font-semibold text-ink">
+                                        Conversión
                                       </p>
-                                      <div className="mt-2.5 pt-2 border-t border-zinc-200/60 flex flex-wrap gap-x-4 gap-y-1 text-[10px] text-zinc-450 font-bold">
-                                        <span>Tasa USD Ref: $1 USD = $900 CLP</span>
+                                      <p className="text-xs leading-snug text-mute">
+                                        Se cobra el equivalente de <span className="font-semibold text-ink">{convertAndFormat(appliedCoupon ? finalPriceWithCoupon : totalPrice)}</span>.
+                                      </p>
+                                      <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 border-t border-line pt-2 text-[11px] font-semibold text-faint">
+                                        <span>Ref. USD: $1 USD = $900 CLP</span>
                                         {country.currency.code !== "USD" && (
-                                          <span>Tasa de Cambio: $1 USD ≈ {(country.currency.rate * 900).toFixed(2)} {country.currency.code}</span>
+                                          <span>$1 USD ≈ {(country.currency.rate * 900).toFixed(2)} {country.currency.code}</span>
                                         )}
                                       </div>
                                     </div>
@@ -1099,22 +1177,22 @@ export default function PagoClient() {
                               )}
 
                               <motion.button
+                                type="button"
                                 onClick={handleCheckout}
                                 disabled={isCheckingOut}
-                                className="w-full py-4 rounded-xl bg-zinc-950 hover:bg-zinc-900 text-white font-bold text-sm flex justify-center items-center gap-2 transition-all disabled:opacity-60 border-none cursor-pointer shadow-md shadow-zinc-200 hover:shadow-lg hover:shadow-zinc-300"
-                                whileHover={{ y: -2 }}
+                                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-none bg-ink py-3.5 text-sm font-semibold text-paper transition-opacity disabled:opacity-60"
                                 whileTap={{ scale: 0.98 }}
                               >
                                 {isCheckingOut ? (
-                                  <Loader2 className="w-5 h-5 animate-spin" />
+                                  <Loader2 className="h-5 w-5 animate-spin" />
                                 ) : (
-                                  <><ShoppingCart className="w-5 h-5" /> Proceder al Pago</>
+                                  <><ShoppingCart className="h-5 w-5" /> Pagar</>
                                 )}
                               </motion.button>
                               
-                              <div className="flex items-center justify-center gap-2 mt-4 text-[10px] text-zinc-400 font-medium">
-                                <BadgeCheck className="w-3.5 h-3.5 text-emerald-500" />
-                                <span>Pago cifrado y seguro vía Flow</span>
+                              <div className="mt-4 flex items-center justify-center gap-2 text-[11px] font-medium text-faint">
+                                <BadgeCheck className="h-3.5 w-3.5 text-ink" />
+                                <span>Pago cifrado vía Flow</span>
                               </div>
                             </>
                         )}
@@ -1124,114 +1202,111 @@ export default function PagoClient() {
                     // Enterprise Right Widget
                     <motion.div
                       key="enterprise"
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="bg-white rounded-[2rem] border border-gray-200 overflow-hidden"
-                      style={{ boxShadow: "0 20px 50px -15px rgba(0,0,0,0.08)" }}
+                      exit={{ opacity: 0, y: -8 }}
+                      className="overflow-hidden rounded-[22px] border border-line bg-paper"
                     >
-                      <div className="bg-indigo-950 px-6 py-5 text-white">
-                        <h3 className="font-bold text-lg flex items-center gap-2">
-                          <Building2 className="w-5 h-5 text-indigo-400" /> Formulario de Empresa
+                      <div className="border-b border-line px-6 py-5">
+                        <h3 className="flex items-center gap-2 text-lg font-bold text-ink">
+                          <Building2 className="h-5 w-5" /> Cotización empresa
                         </h3>
                       </div>
                       <div className="p-6">
                         {enterpriseSuccess ? (
-                          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="text-center py-8">
-                            <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4 text-emerald-500 text-3xl">✓</div>
-                            <h3 className="text-lg font-black text-gray-900 mb-2">¡Solicitud Enviada!</h3>
-                            <p className="text-sm text-gray-500">Un asesor te contactará en breve.</p>
+                          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-8">
+                            <CheckCircle2 className="mb-4 h-10 w-10 text-ink" />
+                            <h3 className="mb-2 text-lg font-bold text-ink">Solicitud enviada</h3>
+                            <p className="text-sm text-mute">Un asesor te contactará en breve.</p>
                           </motion.div>
                         ) : (
                           <form onSubmit={handleEnterpriseSubmit} className="space-y-4">
                             <div className="space-y-1.5">
-                              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Nombre *</label>
+                              <label className="text-xs font-semibold text-mute">Nombre</label>
                               <input type="text" required value={entName} onChange={e => setEntName(e.target.value)}
-                                className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" />
+                                className={fieldClass} />
                             </div>
                             <div className="space-y-1.5">
-                              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Email *</label>
+                              <label className="text-xs font-semibold text-mute">Email</label>
                               <input type="email" required value={entEmail} onChange={e => setEntEmail(e.target.value)}
-                                className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" />
+                                className={fieldClass} />
                             </div>
                             <div className="space-y-1.5">
-                              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Teléfono / WhatsApp *</label>
-                              <input type="tel" required value={entPhone} onChange={e => setEntPhone(e.target.value)} placeholder="+56 9..."
-                                className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" />
+                              <label className="text-xs font-semibold text-mute">WhatsApp</label>
+                              <input type="tel" required value={entPhone} onChange={e => setEntPhone(e.target.value)} placeholder="+56 9…"
+                                className={fieldClass} />
                             </div>
                             <div className="space-y-1.5">
-                              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Empresa *</label>
+                              <label className="text-xs font-semibold text-mute">Empresa</label>
                               <input type="text" required value={entCompany} onChange={e => setEntCompany(e.target.value)}
-                                className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" />
+                                className={fieldClass} />
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                               <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Cargo</label>
+                                <label className="text-xs font-semibold text-mute">Cargo</label>
                                 <input type="text" value={entPosition} onChange={e => setEntPosition(e.target.value)}
-                                  className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" />
+                                  className={fieldClass} />
                               </div>
                               <div className="space-y-1.5">
-                                <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">N° Personas</label>
+                                <label className="text-xs font-semibold text-mute">Personas</label>
                                 <input type="number" min="1" value={entEmployees} onChange={e => setEntEmployees(e.target.value)}
-                                  className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all" />
+                                  className={fieldClass} />
                               </div>
                             </div>
                             {enterpriseToggles.size > 0 && (
-                              <div className="bg-indigo-50/50 rounded-xl p-3 border border-indigo-100/50">
-                                <p className="text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-2">Cursos sumados a cotización:</p>
+                              <div className="rounded-md border border-line bg-wash p-3">
+                                <p className="mb-2 text-xs font-semibold text-mute">Cursos en la cotización</p>
                                 <div className="flex flex-wrap gap-1.5">
                                   {Array.from(enterpriseToggles).map(toggle => {
                                     const split = toggle.split("-");
                                     const level = split.pop();
                                     const slugPart = split.join("-");
                                     const objName = allCourses.find(c => c.slug === slugPart)?.title;
-                                    return <span key={toggle} className="text-[11px] font-bold bg-white text-indigo-600 border border-indigo-200 px-2 py-1 rounded-lg shadow-sm">{objName} - {level}</span>
+                                    return <span key={toggle} className="rounded-md border border-line bg-paper px-2 py-1 text-[11px] font-semibold text-ink">{objName} · {level}</span>
                                   })}
                                 </div>
                               </div>
                             )}
 
                             <div className="space-y-1.5">
-                              <label className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Mensaje (Opcional)</label>
+                              <label className="text-xs font-semibold text-mute">Mensaje</label>
                               <textarea rows={2} value={entMessage} onChange={e => setEntMessage(e.target.value)}
-                                className="w-full rounded-xl p-3 text-sm bg-[#F8FAFC] border border-[#E2E8F0] focus:bg-white focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 outline-none transition-all resize-none" />
+                                className={`${fieldClass} resize-none`} />
                             </div>
 
-                            <div className="flex items-start gap-3 mt-1">
+                            <div className="mt-1 flex items-start gap-3">
                               <input
                                 type="checkbox"
                                 id="privacy-enterprise"
                                 checked={entAcceptsPrivacy}
                                 onChange={(e) => setEntAcceptsPrivacy(e.target.checked)}
                                 required
-                                className="mt-0.5 w-4 h-4 rounded border-gray-300 accent-indigo-600 cursor-pointer flex-shrink-0"
+                                className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded border-line accent-ink"
                               />
-                              <label htmlFor="privacy-enterprise" className="text-[10px] text-gray-500 cursor-pointer leading-relaxed">
+                              <label htmlFor="privacy-enterprise" className="cursor-pointer text-[11px] leading-relaxed text-mute">
                                 Acepto la{" "}
-                                <Link href="/privacidad" className="text-indigo-500 font-semibold no-underline hover:underline" target="_blank">Política de Privacidad</Link>{" "}
-                                y autorizo el uso de mis datos para recibir la cotización solicitada.
+                                <Link href="/privacidad" className="font-semibold text-ink no-underline hover:underline" target="_blank">Política de Privacidad</Link>{" "}
+                                y el uso de mis datos para esta cotización.
                               </label>
                             </div>
 
                             <motion.button
                               type="submit"
                               disabled={isSubmittingEnterprise || enterpriseToggles.size === 0}
-                              className="w-full py-4 rounded-xl text-white font-bold text-sm flex justify-center items-center gap-2 transition-all disabled:opacity-60 border-none cursor-pointer mt-2"
-                              style={{ background: "linear-gradient(135deg, #6366F1, #4338CA)" }}
-                              whileHover={{ y: -2 }}
+                              className="mt-2 flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-none bg-ink py-3.5 text-sm font-semibold text-paper transition-opacity disabled:opacity-60"
                               whileTap={{ scale: 0.98 }}
                             >
                               {isSubmittingEnterprise ? (
-                                <Loader2 className="w-5 h-5 animate-spin" />
+                                <Loader2 className="h-5 w-5 animate-spin" />
                               ) : (
-                                <><Building2 className="w-4 h-4" /> Enviar Solicitud</>
+                                <><Building2 className="h-4 w-4" /> Enviar solicitud</>
                               )}
                             </motion.button>
                             
-                            <a href="https://wa.me/56935409699" target="_blank" rel="noopener noreferrer" className="w-full block py-3.5 rounded-xl border-2 border-emerald-500 text-emerald-600 font-bold text-sm flex justify-center items-center gap-2 hover:bg-emerald-50 transition-colors no-underline">
-                               Hablar por WhatsApp
+                            <a href="https://wa.me/56935409699" target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center gap-2 rounded-md border-2 border-line py-3 text-sm font-semibold text-ink no-underline transition-colors hover:bg-wash">
+                               WhatsApp
                             </a>
-                            {enterpriseToggles.size === 0 && <p className="text-[10px] text-center text-amber-500 font-bold">Selecciona al menos 1 curso del panel izquierdo</p>}
+                            {enterpriseToggles.size === 0 && <p className="text-center text-[11px] font-semibold text-mute">Elige al menos un curso</p>}
                           </form>
                         )}
                       </div>
@@ -1257,7 +1332,7 @@ export default function PagoClient() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileCartOpen(false)}
-              className="lg:hidden fixed inset-0 bg-[#0F172A]/40 backdrop-blur-[2px]"
+              className="fixed inset-0 bg-ink/40 lg:hidden"
               style={{ zIndex: 9990 }}
             />
           )}
@@ -1267,26 +1342,10 @@ export default function PagoClient() {
             animate={{ y: 0 }}
             exit={{ y: 120 }}
             transition={{ type: "spring", damping: 28, stiffness: 350 }}
-            className="lg:hidden flex flex-col"
-            style={{
-              position: "fixed",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              zIndex: 9999,
-              borderTopLeftRadius: 20,
-              borderTopRightRadius: 20,
-              backgroundColor: "#fff",
-              borderTop: "1px solid #e5e7eb",
-              boxShadow: "0 -8px 30px rgba(0,0,0,0.12)",
-              overflow: "hidden",
-              boxSizing: "border-box" as const,
-              maxWidth: "100vw",
-            }}
+            className="fixed bottom-0 left-0 right-0 z-[9999] flex max-w-[100vw] flex-col overflow-hidden rounded-t-[22px] border-t border-line bg-paper lg:hidden"
           >
-            {/* Drag handle */}
-            <div style={{ display: "flex", justifyContent: "center", paddingTop: 8, paddingBottom: 4 }}>
-              <div style={{ width: 36, height: 4, borderRadius: 2, backgroundColor: "#D1D5DB" }} />
+            <div className="flex justify-center pb-1 pt-2">
+              <div className="h-1 w-9 rounded-full bg-wash" />
             </div>
 
             {/* Expandable Cart Details */}
@@ -1297,43 +1356,43 @@ export default function PagoClient() {
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
                   transition={{ duration: 0.25 }}
-                  style={{ overflow: "hidden", backgroundColor: "#f9fafb" }}
+                  className="overflow-hidden bg-wash"
                 >
-                  <div style={{ padding: 20, maxHeight: "50vh", overflowY: "auto" }}>
-                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-                      <h4 style={{ fontWeight: 700, color: "#0F172A", display: "flex", alignItems: "center", gap: 8, margin: 0, fontSize: 15 }}>
-                        <ShoppingCart style={{ width: 16, height: 16, color: "#000" }} /> Tu Carrito
+                  <div className="max-h-[50vh] overflow-y-auto p-5">
+                    <div className="mb-4 flex items-center justify-between">
+                      <h4 className="m-0 flex items-center gap-2 text-[15px] font-bold text-ink">
+                        <ShoppingCart className="h-4 w-4" /> Tu inscripción
                       </h4>
-                      <button onClick={() => setIsMobileCartOpen(false)} style={{ padding: 6, borderRadius: "50%", background: "#e5e7eb", color: "#6b7280", border: "none", cursor: "pointer", display: "flex", alignItems: "center" }}>
-                        <X style={{ width: 14, height: 14 }} />
+                      <button type="button" onClick={() => setIsMobileCartOpen(false)} className="flex cursor-pointer items-center rounded-md border-none bg-paper p-1.5 text-mute">
+                        <X className="h-3.5 w-3.5" />
                       </button>
                     </div>
                     
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <div className="flex flex-col gap-2.5">
                       {cartItems.map(item => (
-                        <div key={`mob-${item.slug}-${item.levelName}`} style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12, padding: 14, background: "#fff", border: "1px solid #f3f4f6", borderRadius: 14, boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <span style={{ fontWeight: 600, fontSize: 14, color: "#0F172A", lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.quantity}x {item.title}</span>
-                            <span style={{ fontSize: 11, color: "#6b7280", display: "block", marginTop: 4, fontWeight: 500 }}>{item.levelName}</span>
+                        <div key={`mob-${item.slug}-${item.levelName}`} className="flex items-start justify-between gap-3 rounded-md border border-line bg-paper p-3.5">
+                          <div className="min-w-0 flex-1">
+                            <span className="line-clamp-2 text-sm font-semibold leading-snug text-ink">{item.quantity}× {item.title}</span>
+                            <span className="mt-1 block text-[11px] font-medium text-mute">{item.levelName}</span>
                           </div>
-                          <div className="flex flex-col items-end flex-shrink-0">
+                          <div className="flex shrink-0 flex-col items-end">
                             {item.hasDiscount && item.originalPrice && item.originalPrice > item.price && (
-                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
-                                <span style={{ fontSize: 11, textDecoration: "line-through", color: "#9ca3af", fontWeight: 650 }}>
+                              <div className="mb-0.5 flex items-center gap-1.5">
+                                <span className="text-[11px] font-semibold text-faint line-through">
                                   {convertAndFormat(item.originalPrice * item.quantity)}
                                 </span>
-                                <span style={{ fontSize: 9, fontWeight: 900, backgroundColor: "#000", color: "#fff", padding: "1px 4px", borderRadius: 4, textTransform: "uppercase" }}>
-                                  -{Math.round((1 - item.price / item.originalPrice) * 100)}%
+                                <span className="rounded-md bg-ink px-1 py-px text-[10px] font-semibold text-paper">
+                                  −{Math.round((1 - item.price / item.originalPrice) * 100)}%
                                 </span>
                               </div>
                             )}
-                            <span style={{ fontWeight: 900, color: "#0F172A", fontSize: 15 }}>{convertAndFormat(item.price * item.quantity)}</span>
+                            <span className="text-[15px] font-bold tabular-nums text-ink">{convertAndFormat(item.price * item.quantity)}</span>
                             {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
-                              <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 700, marginTop: 2 }}>
+                              <span className="mt-0.5 text-[10px] font-semibold text-faint">
                                 ≈ ${Math.round((item.price * item.quantity) / 900)} USD
                               </span>
                             )}
-                            <button onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} style={{ fontSize: 10, color: "#ef4444", marginTop: 6, textTransform: "uppercase", fontWeight: 700, letterSpacing: 1, background: "#fef2f2", padding: "2px 8px", borderRadius: 4, border: "none", cursor: "pointer" }}>Eliminar</button>
+                            <button type="button" onClick={() => updateCartQuantity(item.slug, item.title, item.levelName, item.price, true, -item.quantity)} className="mt-1.5 cursor-pointer rounded-md border-none bg-wash px-2 py-0.5 text-[11px] font-semibold text-ink">Quitar</button>
                           </div>
                         </div>
                       ))}
@@ -1344,64 +1403,37 @@ export default function PagoClient() {
             </AnimatePresence>
 
             {/* Sticky Bar (Always visible) */}
-            <div 
+            <div
               onClick={() => setIsMobileCartOpen(!isMobileCartOpen)}
-              style={{
-                padding: "14px 20px",
-                paddingBottom: "env(safe-area-inset-bottom, 14px)",
-                background: "#fff",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                borderTop: "1px solid #f3f4f6",
-                cursor: "pointer",
-                gap: 12,
-              }}
+              className="flex cursor-pointer items-center justify-between gap-3 border-t border-line bg-paper px-5 py-3.5"
+              style={{ paddingBottom: "env(safe-area-inset-bottom, 14px)" }}
             >
-              <div style={{ display: "flex", alignItems: "center", gap: 12, userSelect: "none" }}>
-                <div style={{ position: "relative", flexShrink: 0 }}>
-                  <div style={{ width: 44, height: 44, backgroundColor: "#000", color: "#fff", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <ShoppingCart style={{ width: 20, height: 20 }} />
+              <div className="flex select-none items-center gap-3">
+                <div className="relative shrink-0">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-md bg-ink text-paper">
+                    <ShoppingCart className="h-5 w-5" />
                   </div>
-                  <span style={{ position: "absolute", top: -4, right: -4, backgroundColor: "#22C55E", color: "#fff", fontSize: 10, fontWeight: 900, width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: "50%", border: "2px solid #fff", lineHeight: 1 }}>
+                  <span className="absolute -right-1.5 -top-1.5 flex h-5 w-5 items-center justify-center rounded-md border-2 border-paper bg-ink text-[10px] font-bold leading-none text-paper">
                     {cartItemCount}
                   </span>
                 </div>
                 <div>
-                  <span style={{ fontSize: 10, color: "#9ca3af", fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", display: "flex", alignItems: "center", gap: 4 }}>
-                    Ver Detalles {isMobileCartOpen ? <ChevronDown style={{ width: 14, height: 14 }} /> : <ChevronUp style={{ width: 14, height: 14 }} />}
+                  <span className="flex items-center gap-1 text-[11px] font-semibold text-faint">
+                    Ver detalle {isMobileCartOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronUp className="h-3.5 w-3.5" />}
                   </span>
-                  <span style={{ fontSize: 20, fontWeight: 900, color: "#0F172A", lineHeight: 1, display: "block", marginTop: 4 }}>
-                    {convertAndFormat(appliedCoupon ? finalPriceWithCoupon : totalPrice)} {country.currency.code !== "USD" && country.currency.code !== "CLP" && <span style={{ fontSize: 11, color: "#6b7280", fontWeight: 700 }}>≈ ${Math.round((appliedCoupon ? finalPriceWithCoupon : totalPrice) / 900)} USD</span>}
+                  <span className="mt-1 block text-xl font-bold leading-none tabular-nums text-ink">
+                    {convertAndFormat(appliedCoupon ? finalPriceWithCoupon : totalPrice)} {country.currency.code !== "USD" && country.currency.code !== "CLP" && <span className="text-[11px] font-semibold text-mute">≈ ${Math.round((appliedCoupon ? finalPriceWithCoupon : totalPrice) / 900)} USD</span>}
                   </span>
                 </div>
               </div>
               
               <button
+                type="button"
                 onClick={(e) => { e.stopPropagation(); handleCheckout(); }}
                 disabled={isCheckingOut}
-                style={{
-                  padding: "12px 20px",
-                  borderRadius: 12,
-                  color: "#fff",
-                  fontWeight: 700,
-                  fontSize: 13,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 8,
-                  border: "none",
-                  cursor: "pointer",
-                  background: "#000",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                  textTransform: "uppercase",
-                  letterSpacing: 1,
-                  flexShrink: 0,
-                  opacity: isCheckingOut ? 0.6 : 1,
-                  whiteSpace: "nowrap",
-                }}
+                className="flex shrink-0 cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md border-none bg-ink px-5 py-3 text-[13px] font-semibold text-paper disabled:opacity-60"
               >
-                {isCheckingOut ? <Loader2 style={{ width: 16, height: 16 }} className="animate-spin" /> : 'Pagar'}
+                {isCheckingOut ? <Loader2 className="h-4 w-4 animate-spin" /> : "Pagar"}
               </button>
             </div>
           </motion.div>

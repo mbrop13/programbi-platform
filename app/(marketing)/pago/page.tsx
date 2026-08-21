@@ -19,10 +19,10 @@ export default async function PagoPage() {
 
   return (
     <Suspense fallback={
-      <section className="min-h-screen flex items-center justify-center bg-[#F8FAFC]">
+      <section className="flex min-h-[60vh] items-center justify-center bg-canvas">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-3 border-gray-200 border-t-blue-500 rounded-full animate-spin" />
-          <span className="text-sm text-gray-400">Cargando...</span>
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-line border-t-ink" />
+          <span className="text-sm text-mute">Cargando…</span>
         </div>
       </section>
     }>
