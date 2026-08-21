@@ -294,11 +294,24 @@ export default function Navbar() {
                                     <Link
                                       href={`/cursos/${course.slug}`}
                                       onClick={() => setIsMegaOpen(false)}
-                                      className="flex items-baseline justify-between gap-3 rounded-md px-1 py-2 no-underline transition-colors hover:bg-wash"
+                                      className="flex items-center gap-2.5 rounded-md px-1.5 py-2 no-underline transition-colors hover:bg-wash"
                                     >
-                                      <span className="text-sm font-semibold text-ink">{course.title}</span>
-                                      <span className="shrink-0 text-[11px] tabular-nums text-faint">
-                                        {course.durationHours} h
+                                      <span className="relative h-10 w-14 shrink-0 overflow-hidden rounded-md border border-line bg-wash">
+                                        <Image
+                                          src={course.imageUrl}
+                                          alt=""
+                                          fill
+                                          sizes="56px"
+                                          className="object-cover"
+                                        />
+                                      </span>
+                                      <span className="min-w-0 flex-1">
+                                        <span className="block truncate text-sm font-semibold leading-tight text-ink">
+                                          {course.title}
+                                        </span>
+                                        <span className="block text-[11px] tabular-nums text-faint">
+                                          {course.durationHours} h
+                                        </span>
                                       </span>
                                     </Link>
                                   </li>

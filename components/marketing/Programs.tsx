@@ -1,10 +1,20 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { Calendar, ArrowRight } from "lucide-react";
 import CourseImage from "@/components/shared/CourseImage";
 import { COURSE_NAV_GROUPS, courses, type Course } from "@/lib/data/courses";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
+import {
+  type CourseSchedule,
+  staticSchedules,
+  analisisDeDatosSlugs,
+  getNearestSchedule,
+  convertSchedule,
+  SCHEDULE_COUNTRIES,
+} from "@/lib/data/course-schedules";
+import { useCountry } from "@/lib/context/CountryContext";
 
 const ORDER = [
   "analisis-de-datos",
@@ -40,6 +50,22 @@ function isNew(course: Course) {
 export default function Programs() {
   const [filter, setFilter] = useState<FilterId>("todos");
   const [active, setActive] = useState("analisis-de-datos");
+  const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
+  const { country } = useCountry();
+
+  const scheduleCountry = useMemo(
+    () => SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) ?? SCHEDULE_COUNTRIES[0],
+    [country.iso]
+  );
+
+  useEffect(() => {
+    fetch("/api/schedules")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => {
+        if (Array.isArray(data)) setSchedules(data);
+      })
+      .catch(() => {});
+  }, []);
 
   const visible = useMemo(() => {
     if (filter === "todos") return ALL;
@@ -48,6 +74,38 @@ export default function Programs() {
   }, [filter]);
 
   const current = visible.find((c) => c.slug === active) ?? visible[0];
+
+  function getStartMeta(course: Course) {
+    let relevant: CourseSchedule[] = [];
+    if (course.slug === "analisis-de-datos") {
+      relevant = schedules.filter(
+        (s) => analisisDeDatosSlugs.includes(s.course_slug) && s.level_name === "Básico"
+      );
+      if (relevant.length === 0) {
+        relevant = staticSchedules
+          .filter((s) => analisisDeDatosSlugs.includes(s.course_slug))
+          .map((s, i) => ({ ...s, id: `static-${i}` }) as CourseSchedule);
+      }
+    } else {
+      relevant = schedules.filter((s) => s.course_slug === course.slug);
+      if (relevant.length === 0) {
+        relevant = staticSchedules
+          .filter((s) => s.course_slug === course.slug)
+          .map((s, i) => ({ ...s, id: `static-${i}` }) as CourseSchedule);
+      }
+    }
+    const nearest = getNearestSchedule(relevant);
+    if (!nearest) return null;
+    const conv = convertSchedule(
+      nearest.start_date,
+      nearest.schedule_time,
+      nearest.schedule_days,
+      scheduleCountry.timeZone
+    );
+    const capitalized =
+      conv.dateFormatted.charAt(0).toUpperCase() + conv.dateFormatted.slice(1);
+    return { date: capitalized, days: conv.days, time: conv.time };
+  }
 
   if (!current) return null;
 
@@ -81,11 +139,12 @@ export default function Programs() {
           })}
         </div>
 
-        <div className="mt-10 grid items-start gap-6 lg:grid-cols-12 lg:gap-10">
+        {/* ── Desktop: featured + list ─────────────────────────────── */}
+        <div className="mt-10 hidden items-start gap-6 lg:grid lg:grid-cols-12 lg:gap-10">
           <Link
             href={`/cursos/${current.slug}`}
             onClick={() => trackCourseCardClick(current.slug, "home_programs")}
-            className="group order-1 overflow-hidden rounded-[26px] border border-line bg-paper no-underline lg:order-2 lg:col-span-7"
+            className="group order-2 overflow-hidden rounded-[26px] border border-line bg-paper no-underline lg:col-span-7"
           >
             <div className="relative aspect-[16/10] bg-wash">
               <CourseImage
@@ -112,7 +171,7 @@ export default function Programs() {
             </div>
           </Link>
 
-          <ul className="order-2 flex flex-col lg:order-1 lg:col-span-5">
+          <ul className="order-1 flex flex-col lg:col-span-5">
             {visible.map((course, i) => {
               const on = course.slug === current.slug;
               return (
@@ -143,6 +202,89 @@ export default function Programs() {
               );
             })}
           </ul>
+        </div>
+
+        {/* ── Mobile: horizontal snap slider ────────────────────────── */}
+        <div className="mt-8 lg:hidden">
+          <div
+            className="scrollbar-hide -mx-4 flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 pb-4 sm:-mx-6 sm:px-6"
+            style={{ WebkitOverflowScrolling: "touch" as const }}
+            aria-label="Carrusel de cursos"
+          >
+            {visible.map((course) => {
+              const meta = getStartMeta(course);
+              return (
+                <Link
+                  key={course.slug}
+                  href={`/cursos/${course.slug}`}
+                  onClick={() => trackCourseCardClick(course.slug, "home_programs_mobile")}
+                  className="group flex w-[84%] max-w-[340px] shrink-0 snap-start flex-col overflow-hidden rounded-[22px] border border-line bg-paper no-underline shadow-[0_8px_24px_rgba(23,23,22,0.06)] transition-[transform,box-shadow] active:scale-[0.99] sm:w-[360px]"
+                >
+                  <div className="relative aspect-[16/10] overflow-hidden bg-wash">
+                    <CourseImage
+                      src={course.imageUrl}
+                      alt={course.title}
+                      fill
+                      sizes="340px"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    />
+                    <div className="absolute left-3 top-3 flex items-center gap-1.5">
+                      <span className="rounded-full bg-paper/95 px-2.5 py-1 text-xs font-semibold tabular-nums text-ink shadow-sm backdrop-blur">
+                        {course.durationHours} h
+                      </span>
+                      {isNew(course) ? (
+                        <span className="rounded-full bg-ink px-2.5 py-1 text-xs font-semibold text-canvas shadow-sm">
+                          Nuevo
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-1 flex-col px-5 py-5">
+                    <p className="line-clamp-2 text-lg font-bold leading-tight tracking-tight text-ink">
+                      {course.title}
+                    </p>
+                    <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-mute">
+                      {course.shortDescription}
+                    </p>
+                    {course.techStack.length ? (
+                      <p className="mt-3 line-clamp-1 text-xs font-semibold text-mute">
+                        {course.techStack.join(" · ")}
+                      </p>
+                    ) : null}
+
+                    {meta ? (
+                      <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-line bg-wash px-3 py-2.5">
+                        <span className="flex size-8 shrink-0 items-center justify-center rounded-full border border-line bg-paper">
+                          <Calendar size={14} className="text-ink" />
+                        </span>
+                        <div className="min-w-0">
+                          <p className="truncate text-xs font-semibold capitalize leading-none text-ink">
+                            {meta.date}
+                          </p>
+                          <p className="mt-1 truncate text-[11px] font-medium leading-none text-faint">
+                            {meta.days} · {meta.time}
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="mt-4 rounded-xl border border-dashed border-line bg-wash/60 px-3.5 py-2.5">
+                        <p className="text-xs font-semibold text-mute">Fecha por confirmar</p>
+                      </div>
+                    )}
+
+                    <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-ink">
+                      Ver temario <ArrowRight size={14} />
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+          <p className="mt-1 flex items-center gap-1.5 text-xs font-medium text-faint">
+            <span className="inline-block h-1 w-6 rounded-full bg-line-strong" />
+            Desliza para ver todos los cursos
+          </p>
         </div>
       </div>
     </section>
