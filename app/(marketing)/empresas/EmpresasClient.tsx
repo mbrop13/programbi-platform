@@ -16,6 +16,7 @@ import {
   Award,
   Clock,
   GraduationCap,
+  LayoutDashboard,
   Workflow,
   Quote,
   ArrowUpRight,
@@ -37,6 +38,7 @@ import { courses } from "@/lib/data/courses";
 import { casesOfUse } from "@/lib/data/cases";
 import AsesoriasForm from "@/components/marketing/AsesoriasForm";
 import LogoSlider from "@/components/marketing/LogoSlider";
+import SistemasSection from "@/components/marketing/SistemasSection";
 
 /* ═══════════════════════════════════════════════════════════════
    DATA — narrativa B2B clara y escaneable
@@ -129,6 +131,23 @@ const services = [
     cta: "Agendar diagnóstico",
     href: "#contacto",
     accent: "#6366F1",
+  },
+  {
+    id: "sistemas",
+    icon: LayoutDashboard,
+    title: "Sistemas a la medida",
+    subtitle: "Desarrollamos tu software",
+    description:
+      "Paneles de gestión, control de inventario, automatización de reportes y flujos de aprobación: sistemas completos diseñados sobre tus procesos, planillas y bases de datos.",
+    points: [
+      "Gestión comercial, bodega, RRHH y más",
+      "Automatización de reportes y alertas",
+      "Integración con lo que ya usas",
+      "Te acompañamos desde el diseño al rollout",
+    ],
+    cta: "Ver ejemplos",
+    href: "#sistemas",
+    accent: "#0EA5E9",
   },
 ];
 
@@ -496,6 +515,9 @@ export default function EmpresasClient() {
           </div>
         </div>
       </section>
+
+      {/* ─── 3.5 SISTEMAS A MEDIDA ─── */}
+      <SistemasSection />
 
       {/* ─── 4. PROBLEMA → SOLUCIÓN ─── */}
       <section className="py-16 lg:py-24 bg-slate-50 border-y border-slate-100">

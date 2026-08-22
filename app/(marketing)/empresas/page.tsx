@@ -2,16 +2,16 @@ import type { Metadata } from "next";
 import EmpresasClient from "./EmpresasClient";
 
 export const metadata: Metadata = {
-  title: "Soluciones de Datos para Empresas | Capacitación y Consultoría | ProgramBI",
+  title: "Soluciones de Datos para Empresas | Capacitación, Sistemas a Medida y Consultoría",
   description:
-    "Capacitación corporativa y consultoría de Business Intelligence para empresas en Chile y Latinoamérica. Dashboards en Power BI, automatización con Python, SQL Server y Machine Learning. Clientes como CAP y AngloAmerican.",
+    "Capacitación corporativa, consultoría de Business Intelligence y desarrollo de sistemas a la medida: paneles de gestión, automatización de procesos, inventario y flujos internos. Dashboards en Power BI, Python, SQL Server. Clientes como CAP y AngloAmerican.",
   alternates: {
     canonical: "/empresas",
   },
   openGraph: {
-    title: "Soluciones de Datos para Empresas | Capacitación y Consultoría | ProgramBI",
+    title: "Soluciones de Datos para Empresas | ProgramBI",
     description:
-      "Transformamos la operación de tu empresa con dashboards, automatización y ciencia de datos. Capacitamos a tus equipos con más de 9 programas en Power BI, SQL, Python, IA y Machine Learning.",
+      "Transformamos tu operación con dashboards, automatización, sistemas de gestión a la medida y capacitación en datos, IA y Machine Learning.",
     url: "https://programbi.com/empresas",
     type: "website",
   },
