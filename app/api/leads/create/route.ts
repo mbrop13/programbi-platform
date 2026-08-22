@@ -81,6 +81,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: true }); // fake success
     }
 
+    // Timing: el _t llega como timestamp de carga del form (o elapsed en ms).
+    // Un humano tarda >1,5 s en llenar; envíos instantáneos son bots.
+    const t = data._t;
+    if (typeof t === "number" && Number.isFinite(t)) {
+      const elapsed = t > 1e11 ? Date.now() - t : t;
+      if (elapsed >= 0 && elapsed < 1500) {
+        console.log("🤖 Bot blocked (timing):", data.email, `${elapsed}ms`);
+        return NextResponse.json({ success: true });
+      }
+    }
+
     const whatsappClean = data.whatsapp || data.phone;
     const { name, email, message, selectedCourses, sourceCourse, leadType, company, position, employeeCount } = data;
     const whatsapp = whatsappClean;

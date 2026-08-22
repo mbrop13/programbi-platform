@@ -37,7 +37,7 @@ export default function WaitlistForm({ dark = false }: { dark?: boolean }) {
           message: "Pre-inscripción lanzamiento Bolsa de Trabajo",
           leadType: "bolsa_waitlist",
           _website: "",
-          _t: Date.now() - loadedAt.current,
+          _t: loadedAt.current, // timestamp de carga del form (anti-bot de timing)
         }),
       });
       const data = await res.json().catch(() => ({}));
