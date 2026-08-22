@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { ArrowRight, BadgeCheck, FileText, Target, BellOff } from "lucide-react";
 import Reveal from "./Reveal";
 import CineImage from "./CineImage";
+import RegisterCta from "./RegisterCta";
 
 const FEATURES = [
   {
@@ -82,13 +82,10 @@ export default function CandidatesSection() {
           </div>
 
           <Reveal delay={0.2}>
-            <Link
-              href="/?auth=register"
-              className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-canvas px-7 text-base font-semibold text-ink transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-canvas/40"
-            >
+            <RegisterCta className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-canvas px-7 text-base font-semibold text-ink transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-canvas/40">
               Crear mi perfil
               <ArrowRight size={17} strokeWidth={2.4} />
-            </Link>
+            </RegisterCta>
           </Reveal>
         </div>
 

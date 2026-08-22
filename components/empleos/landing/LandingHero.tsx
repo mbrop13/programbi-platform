@@ -12,6 +12,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import RegisterCta from "./RegisterCta";
 
 /**
  * Hero cinematográfico de la Bolsa de Trabajo.
@@ -172,13 +173,10 @@ export default function LandingHero() {
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Link
-                href="/?auth=register"
-                className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-7 text-base font-semibold text-canvas shadow-[0_12px_32px_rgba(23,23,22,0.28)] transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/25"
-              >
+              <RegisterCta className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-7 text-base font-semibold text-canvas shadow-[0_12px_32px_rgba(23,23,22,0.28)] transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/25">
                 Crear mi perfil
                 <ArrowRight size={17} strokeWidth={2.4} />
-              </Link>
+              </RegisterCta>
               <Link
                 href="/empleos/para-empresas"
                 className="inline-flex h-12 items-center gap-2 rounded-full border border-ink/15 bg-canvas/70 px-7 text-base font-semibold text-ink backdrop-blur-sm transition-colors hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/25"

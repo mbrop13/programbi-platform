@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import Reveal from "./Reveal";
 import CineImage from "./CineImage";
 import WaitlistForm from "./WaitlistForm";
+import RegisterCta from "./RegisterCta";
 
 /**
  * Cierre cinematográfico: imagen full-bleed (usa bolsa-cta.jpg si existe;
@@ -43,13 +44,10 @@ export default function FinalCta() {
 
         <Reveal delay={0.12}>
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-            <Link
-              href="/?auth=register"
-              className="inline-flex h-12 items-center gap-2 rounded-full bg-canvas px-7 text-base font-semibold text-ink transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-canvas/40"
-            >
+            <RegisterCta className="inline-flex h-12 items-center gap-2 rounded-full bg-canvas px-7 text-base font-semibold text-ink transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-canvas/40">
               Crear mi perfil
               <ArrowRight size={17} strokeWidth={2.4} />
-            </Link>
+            </RegisterCta>
             <Link
               href="/empleos/para-empresas"
               className="inline-flex h-12 items-center gap-2 rounded-full border border-canvas/25 bg-canvas/[0.06] px-7 text-base font-semibold text-canvas backdrop-blur-sm transition-colors hover:bg-canvas/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-canvas/40"

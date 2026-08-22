@@ -42,7 +42,7 @@ export default function Navbar() {
   const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(true);
   const [isMegaOpen, setIsMegaOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [authModal, setAuthModal] = useState<{ isOpen: boolean; tab: "login" | "register" }>({
+  const [authModal, setAuthModal] = useState<{ isOpen: boolean; tab: "login" | "register"; redirectUrl?: string }>({
     isOpen: false,
     tab: "login",
   });
@@ -148,9 +148,9 @@ export default function Navbar() {
     };
     const handleOpenAuth = (e?: Event) => {
       if (!user) {
-        const customEvent = e as CustomEvent<{ tab?: "login" | "register" }>;
+        const customEvent = e as CustomEvent<{ tab?: "login" | "register"; redirectUrl?: string }>;
         const tab = customEvent?.detail?.tab || "register";
-        setAuthModal({ isOpen: true, tab });
+        setAuthModal({ isOpen: true, tab, redirectUrl: customEvent?.detail?.redirectUrl });
       }
     };
     window.addEventListener("open-nl-subscribe", handleOpen);
@@ -231,6 +231,7 @@ export default function Navbar() {
         isOpen={authModal.isOpen}
         onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
         defaultTab={authModal.tab}
+        redirectUrl={authModal.redirectUrl}
       />
       <ProfileSettingsModal
         isOpen={profileModal.isOpen}

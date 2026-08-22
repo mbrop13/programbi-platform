@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Check, ChevronRight, Loader2 } from "lucide-react";
+import { BadgeCheck, Building2, Check, ChevronRight, Clock, Loader2, XCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { COMPANY_SIZE_LABELS } from "@/lib/jobs/types";
 
@@ -10,6 +10,11 @@ const inputClass =
   "h-12 w-full rounded-xl border border-line-strong bg-paper px-3 text-base text-ink placeholder:text-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/25";
 
 const labelClass = "text-xs font-semibold text-mute";
+
+interface ExistingMembership {
+  company: { name: string; status: string; rejection_reason?: string | null };
+  role: string;
+}
 
 export default function RegisterCompanyForm() {
   const [form, setForm] = useState({
@@ -26,6 +31,21 @@ export default function RegisterCompanyForm() {
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [needsLogin, setNeedsLogin] = useState(false);
+  // Usuario ya registrado con empresa: mostrar su estado en vez del formulario
+  const [membership, setMembership] = useState<ExistingMembership | null>(null);
+  const [checkingMembership, setCheckingMembership] = useState(true);
+
+  useEffect(() => {
+    fetch("/api/employer/verify")
+      .then((r) => r.json())
+      .then((d) => {
+        if (d.membership?.company) {
+          setMembership(d.membership as ExistingMembership);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setCheckingMembership(false));
+  }, []);
 
   const set = (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm((f) => ({ ...f, [key]: e.target.value }));
@@ -38,7 +58,12 @@ export default function RegisterCompanyForm() {
     } = await supabase.auth.getSession();
     if (!session?.user) {
       setNeedsLogin(true);
-      window.dispatchEvent(new Event("open-auth-modal"));
+      // Al registrarte vuelves aquí mismo para completar el paso 2 (datos de empresa)
+      window.dispatchEvent(
+        new CustomEvent("open-auth-modal", {
+          detail: { tab: "register", redirectUrl: "/empleos/para-empresas" },
+        })
+      );
       return;
     }
 
@@ -90,6 +115,75 @@ export default function RegisterCompanyForm() {
         >
           Ir a mi panel
         </Link>
+      </div>
+    );
+  }
+
+  // Usuario ya registrado con empresa: su estado, no el formulario en blanco
+  if (membership) {
+    const status = membership.company.status;
+    return (
+      <div className="rounded-[22px] border border-line bg-paper p-8 text-center shadow-[0_20px_60px_rgba(23,23,22,0.06)]">
+        {status === "approved" ? (
+          <>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[#16a34a]/10 text-[#16a34a]">
+              <BadgeCheck size={22} strokeWidth={2.2} />
+            </div>
+            <h3 className="mt-4 text-xl font-bold tracking-tight text-ink">
+              «{membership.company.name}» ya está aprobada
+            </h3>
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-mute">
+              Puedes publicar vacantes y gestionar postulaciones desde tu panel.
+            </p>
+            <Link
+              href="/comunidad/empleos"
+              onClick={() => sessionStorage.setItem("empleos-section", "empresa")}
+              className="mt-6 inline-flex h-11 items-center rounded-full bg-ink px-7 text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
+            >
+              Ir a mi panel de empresa
+            </Link>
+          </>
+        ) : status === "pending" ? (
+          <>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-wash text-mute">
+              <Clock size={22} strokeWidth={2} />
+            </div>
+            <h3 className="mt-4 text-xl font-bold tracking-tight text-ink">
+              «{membership.company.name}» está en revisión
+            </h3>
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-mute">
+              Estamos verificando tu empresa. Te notificaremos por correo cuando
+              esté aprobada para publicar vacantes (menos de 24 h hábiles).
+            </p>
+          </>
+        ) : (
+          <>
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-wash text-mute">
+              <XCircle size={22} strokeWidth={2} />
+            </div>
+            <h3 className="mt-4 text-xl font-bold tracking-tight text-ink">
+              Registro no aprobado
+            </h3>
+            <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-mute">
+              {membership.company.rejection_reason
+                ? `Motivo: ${membership.company.rejection_reason}. `
+                : ""}
+              Escríbenos a contacto@programbi.cl si crees que es un error.
+            </p>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  if (checkingMembership) {
+    return (
+      <div className="rounded-[22px] border border-line bg-paper p-8 shadow-[0_20px_60px_rgba(23,23,22,0.06)]" aria-hidden="true">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-wash text-mute">
+          <Building2 size={20} strokeWidth={1.8} />
+        </div>
+        <div className="mx-auto mt-4 h-4 w-44 animate-pulse rounded-full bg-wash" />
+        <div className="mx-auto mt-2 h-2.5 w-56 animate-pulse rounded-full bg-wash" />
       </div>
     );
   }
