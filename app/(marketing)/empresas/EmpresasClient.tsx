@@ -447,25 +447,25 @@ export default function EmpresasClient() {
         </div>
       </section>
 
-      {/* ─── 3. QUÉ OFRECEMOS (dos pilares claros) ─── */}
+      {/* ─── 3. QUÉ OFRECEMOS (tres pilares claros) ─── */}
       <section id="oferta" className="py-16 lg:py-24">
         <div className="max-w-6xl mx-auto px-5 lg:px-8">
           <FadeIn className="max-w-2xl mb-12">
             <SectionLabel>Qué hacemos</SectionLabel>
             <SectionTitle>
-              Dos formas de trabajar.{" "}
+              Tres formas de trabajar.{" "}
               <Elegant>Un mismo objetivo:</Elegant> autonomía con datos.
             </SectionTitle>
             <p className="mt-4 text-slate-500 text-base lg:text-lg leading-relaxed">
-              Elige capacitación, implementación, o ambas. Diseñamos el plan según
-              el nivel de madurez de tu organización.
+              Elige capacitación, implementación, sistemas a la medida — o combínalas.
+              Diseñamos el plan según el nivel de madurez de tu organización.
             </p>
           </FadeIn>
 
-          <div className="grid lg:grid-cols-2 gap-5 lg:gap-6">
+          <div className="grid lg:grid-cols-3 gap-5 lg:gap-6">
             {services.map((svc, i) => (
               <FadeIn key={svc.id} delay={i * 0.1}>
-                <div className="h-full rounded-3xl border border-slate-200 bg-white p-7 lg:p-9 flex flex-col shadow-sm hover:shadow-md hover:border-slate-300 transition-all">
+                <div className="h-full rounded-3xl border border-slate-200 bg-white p-7 lg:p-8 flex flex-col shadow-sm hover:shadow-md hover:border-slate-300 transition-all">
                   <div
                     className="w-12 h-12 rounded-2xl flex items-center justify-center mb-5"
                     style={{
