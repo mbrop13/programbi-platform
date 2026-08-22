@@ -1,11 +1,16 @@
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 import { logos } from "@/lib/data/site";
 
-export default function LogoSlider() {
+/** className permite sobreescribir el fondo/bordes por página (p. ej. fondo canvas). */
+export default function LogoSlider({ className }: { className?: string }) {
   const loop = [...logos, ...logos];
 
   return (
-    <section id="empresas-logos" className="border-y border-line bg-wash/40 py-8 lg:py-10">
+    <section
+      id="empresas-logos"
+      className={cn("border-y border-line bg-wash/40 py-8 lg:py-10", className)}
+    >
       <div className="overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)]">
         <div className="logo-track">
           {loop.map((logo, i) => (

@@ -426,9 +426,9 @@ export default function EmpresasClient() {
       </section>
 
       {/* ─── 2. TRUST + STATS ─── */}
-      <LogoSlider />
+      <LogoSlider className="border-0 bg-transparent" />
 
-      <section className="border-y border-slate-100 bg-slate-50/60">
+      <section>
         <div className="max-w-6xl mx-auto px-5 lg:px-8 py-10 lg:py-12">
           <StaggerChildren className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {stats.map((s) => (
@@ -520,7 +520,7 @@ export default function EmpresasClient() {
       <SistemasSection />
 
       {/* ─── 4. PROBLEMA → SOLUCIÓN ─── */}
-      <section className="py-16 lg:py-24 bg-slate-50 border-y border-slate-100">
+      <section className="py-16 lg:py-24">
         <div className="max-w-6xl mx-auto px-5 lg:px-8">
           <FadeIn className="max-w-2xl mb-12 text-center mx-auto">
             <SectionLabel>Por qué importa</SectionLabel>
@@ -637,7 +637,7 @@ export default function EmpresasClient() {
       </section>
 
       {/* ─── 6. CÓMO TRABAJAMOS ─── */}
-      <section className="py-16 lg:py-24 bg-slate-50 border-y border-slate-100">
+      <section className="py-16 lg:py-24">
         <div className="max-w-6xl mx-auto px-5 lg:px-8">
           <FadeIn className="max-w-2xl mb-12 mx-auto text-center">
             <SectionLabel>Método</SectionLabel>
@@ -740,7 +740,7 @@ export default function EmpresasClient() {
       </section>
 
       {/* ─── 8. CASOS + TESTIMONIOS ─── */}
-      <section className="py-16 lg:py-24 bg-slate-50 border-y border-slate-100">
+      <section className="py-16 lg:py-24">
         <div className="max-w-6xl mx-auto px-5 lg:px-8">
           <FadeIn className="max-w-2xl mb-10">
             <SectionLabel>Prueba social</SectionLabel>
@@ -897,7 +897,7 @@ export default function EmpresasClient() {
       </section>
 
       {/* ─── 10. CONTACTO ─── */}
-      <section id="contacto" className="py-16 lg:py-24 bg-slate-50 border-t border-slate-100">
+      <section id="contacto" className="py-16 lg:py-24">
         <div className="max-w-6xl mx-auto px-5 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
             <FadeIn>
