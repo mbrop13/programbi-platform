@@ -19,6 +19,8 @@ export function generateSignature(params: Record<string, string | number>): stri
 /**
  * Creates a payment order in Flow.
  * Returns the token and redirect URL for the user to pay.
+ * urlConfirmation/urlReturn can be overridden for independent payment
+ * loops (e.g. bolsa de trabajo) without touching the default course flow.
  */
 export async function createFlowPayment(data: {
   commerceOrder: string;
@@ -27,6 +29,8 @@ export async function createFlowPayment(data: {
   email: string;
   currency?: string;
   optional?: Record<string, string>;
+  urlConfirmation?: string;
+  urlReturn?: string;
 }): Promise<{ token: string; url: string; flowOrder: number }> {
   if (!FLOW_API_KEY || !FLOW_SECRET_KEY) {
     throw new Error("Flow API credentials not configured. Set FLOW_API_KEY and FLOW_SECRET_KEY in .env.local");
@@ -39,8 +43,8 @@ export async function createFlowPayment(data: {
     currency: data.currency || "CLP",
     amount: data.amount,
     email: data.email,
-    urlConfirmation: `${APP_URL}/api/flow/confirm`,
-    urlReturn: `${APP_URL}/api/flow/return`,
+    urlConfirmation: data.urlConfirmation || `${APP_URL}/api/flow/confirm`,
+    urlReturn: data.urlReturn || `${APP_URL}/api/flow/return`,
   };
 
   // Add optional params (courseId, userId, etc.)

@@ -28,6 +28,7 @@ import { isCurrentUserAdmin } from "@/lib/supabase/comunidad";
 const navLinks = [
   { href: "/cursos", label: "Ver Cursos", hasMega: true },
   { href: "/empresas", label: "Empresas" },
+  { href: "/empleos", label: "Empleos" },
   { href: "/comunidad", label: "Comunidad" },
   { href: "/blog", label: "Blog" },
 ];

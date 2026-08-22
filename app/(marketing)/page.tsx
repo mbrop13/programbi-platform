@@ -3,6 +3,7 @@ import LogoSlider from "@/components/marketing/LogoSlider";
 import Metrics from "@/components/marketing/Metrics";
 import Flagship from "@/components/marketing/Flagship";
 import Programs from "@/components/marketing/Programs";
+import JobsBanner from "@/components/marketing/JobsBanner";
 import Team from "@/components/marketing/Team";
 import Quote from "@/components/marketing/Quote";
 import FaqSection from "@/components/marketing/FaqSection";
@@ -61,6 +62,7 @@ export default function HomePage() {
       <Metrics />
       <Flagship />
       <Programs />
+      <JobsBanner />
       <Team />
       <Quote />
       <FaqSection />

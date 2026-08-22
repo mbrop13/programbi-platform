@@ -641,3 +641,152 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 
+
+-- ============================================
+-- BOLSA DE TRABAJO (ver migración 20260821000000_bolsa_trabajo.sql para RLS completa)
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS public.employer_companies (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  logo_url TEXT,
+  website TEXT,
+  industry TEXT,
+  description TEXT,
+  size TEXT CHECK (size IN ('1-10', '11-50', '51-200', '201-500', '500+')),
+  city TEXT,
+  country TEXT DEFAULT 'Chile',
+  contact_email TEXT NOT NULL,
+  contact_whatsapp TEXT,
+  status TEXT NOT NULL CHECK (status IN ('pending', 'approved', 'rejected')) DEFAULT 'pending',
+  rejection_reason TEXT,
+  owner_user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.employer_members (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES public.employer_companies(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  role TEXT NOT NULL CHECK (role IN ('owner', 'recruiter')) DEFAULT 'recruiter',
+  invited_by UUID REFERENCES public.profiles(id),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (company_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.candidate_profiles (
+  user_id UUID PRIMARY KEY REFERENCES public.profiles(id) ON DELETE CASCADE,
+  headline TEXT,
+  bio TEXT,
+  city TEXT,
+  country TEXT DEFAULT 'Chile',
+  remote_ok BOOLEAN DEFAULT TRUE,
+  years_experience INTEGER CHECK (years_experience >= 0 AND years_experience <= 50),
+  availability TEXT CHECK (availability IN ('full_time', 'part_time', 'freelance')),
+  desired_role TEXT,
+  skills TEXT[] DEFAULT ARRAY[]::TEXT[],
+  linkedin_url TEXT,
+  github_url TEXT,
+  portfolio_url TEXT,
+  cv_url TEXT,
+  cv_filename TEXT,
+  is_searchable BOOLEAN DEFAULT TRUE,
+  expected_salary_clp INTEGER CHECK (expected_salary_clp >= 0),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.jobs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  company_id UUID NOT NULL REFERENCES public.employer_companies(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  slug TEXT NOT NULL UNIQUE,
+  location_city TEXT,
+  location_country TEXT DEFAULT 'Chile',
+  modality TEXT NOT NULL CHECK (modality IN ('remoto', 'presencial', 'hibrido')),
+  employment_type TEXT NOT NULL CHECK (employment_type IN ('full_time', 'part_time', 'contrato', 'freelance', 'practica')),
+  seniority TEXT NOT NULL CHECK (seniority IN ('junior', 'semi', 'senior')) DEFAULT 'semi',
+  description TEXT NOT NULL,
+  responsibilities TEXT[] DEFAULT ARRAY[]::TEXT[],
+  requirements TEXT[] DEFAULT ARRAY[]::TEXT[],
+  benefits TEXT[] DEFAULT ARRAY[]::TEXT[],
+  skills TEXT[] DEFAULT ARRAY[]::TEXT[],
+  salary_min_clp INTEGER CHECK (salary_min_clp >= 0),
+  salary_max_clp INTEGER CHECK (salary_max_clp >= 0),
+  salary_visible BOOLEAN DEFAULT FALSE,
+  apply_via TEXT NOT NULL CHECK (apply_via IN ('plataforma', 'email', 'url')) DEFAULT 'plataforma',
+  apply_url TEXT,
+  status TEXT NOT NULL CHECK (status IN ('draft', 'published', 'paused', 'closed')) DEFAULT 'draft',
+  featured_until TIMESTAMPTZ,
+  published_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ DEFAULT NOW() + INTERVAL '30 days',
+  expiry_notified_at TIMESTAMPTZ,
+  views_count INTEGER DEFAULT 0,
+  applications_count INTEGER DEFAULT 0,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.job_applications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  job_id UUID NOT NULL REFERENCES public.jobs(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  status TEXT NOT NULL CHECK (status IN ('sent', 'viewed', 'shortlisted', 'interview', 'offer', 'hired', 'rejected', 'withdrawn')) DEFAULT 'sent',
+  cover_letter TEXT,
+  candidate_snapshot JSONB NOT NULL DEFAULT '{}'::jsonb,
+  recruiter_notes TEXT,
+  rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE (job_id, user_id)
+);
+
+CREATE TABLE IF NOT EXISTS public.saved_jobs (
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  job_id UUID NOT NULL REFERENCES public.jobs(id) ON DELETE CASCADE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  PRIMARY KEY (user_id, job_id)
+);
+
+-- ============================================
+-- BOLSA DE TRABAJO — FASE 2 (ver migración 20260823000000_bolsa_trabajo_fase2.sql para RLS)
+-- ============================================
+
+ALTER TABLE public.jobs
+  ADD COLUMN IF NOT EXISTS featured BOOLEAN NOT NULL DEFAULT FALSE,
+  ADD COLUMN IF NOT EXISTS featured_until TIMESTAMPTZ;
+
+CREATE TABLE IF NOT EXISTS public.job_feature_orders (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  job_id UUID NOT NULL REFERENCES public.jobs(id) ON DELETE CASCADE,
+  company_id UUID NOT NULL REFERENCES public.employer_companies(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  days INTEGER NOT NULL CHECK (days > 0 AND days <= 90),
+  amount_clp INTEGER NOT NULL CHECK (amount_clp > 0),
+  status TEXT NOT NULL CHECK (status IN ('pending', 'paid', 'rejected', 'cancelled')) DEFAULT 'pending',
+  flow_order TEXT UNIQUE,
+  flow_token TEXT,
+  paid_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.job_alerts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  filters JSONB NOT NULL DEFAULT '{}'::jsonb,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  last_sent_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS public.talent_contact_requests (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  candidate_user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  company_id UUID NOT NULL REFERENCES public.employer_companies(id) ON DELETE CASCADE,
+  requester_user_id UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
+  message TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);

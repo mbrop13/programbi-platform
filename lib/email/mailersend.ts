@@ -1116,3 +1116,299 @@ export async function sendMembershipWelcome(params: {
     text: `¡Bienvenido ${name}! Tu membresía ${planName} está activa. Accede a la comunidad en programbi.com/comunidad`,
   });
 }
+
+// ─── Bolsa de Trabajo ────────────────────────────────────────────────────────
+
+export async function sendCompanyApprovalEmail(params: {
+  to: string;
+  companyName: string;
+  approved: boolean;
+  reason?: string;
+}) {
+  const { to, companyName, approved, reason } = params;
+  const html = wrapHtml(
+    approved ? "Empresa aprobada" : "Registro rechazado",
+    `
+    <p style="margin:0;font-size:16px;color:#0F172A;">Hola,</p>
+    ${
+      approved
+        ? `
+      <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#334155;">
+        <strong>«${companyName}» fue aprobada</strong> para publicar vacantes en la
+        Bolsa de Trabajo de ProgramBI. Ya puedes crear tu primera vacante desde tu panel.
+      </p>
+      <div style="text-align:center;margin-top:28px;">
+        <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background:#1890FF;color:#fff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
+          Publicar mi primera vacante →
+        </a>
+      </div>`
+        : `
+      <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#334155;">
+        Tu solicitud para registrar a <strong>«${companyName}»</strong> en la Bolsa de
+        Trabajo de ProgramBI no fue aprobada${reason ? `: <em>${reason}</em>` : ""}.
+      </p>
+      <p style="margin:12px 0 0;font-size:14px;color:#64748B;">
+        Si crees que fue un error, escríbenos a ${ADMIN_EMAIL}.
+      </p>`
+    }
+  `
+  );
+
+  await sendEmail({
+    to,
+    subject: approved
+      ? `✅ ${companyName} aprobada en la Bolsa de Trabajo ProgramBI`
+      : `Registro de ${companyName} en la Bolsa de Trabajo`,
+    html,
+    text: approved
+      ? `${companyName} fue aprobada para publicar vacantes. Entra a programbi.com/comunidad/empleos`
+      : `Tu solicitud para ${companyName} no fue aprobada${reason ? `: ${reason}` : ""}.`,
+  });
+}
+
+export async function sendNewApplicationEmail(params: {
+  to: string;
+  companyName: string;
+  jobTitle: string;
+  candidateName: string;
+  verifiedSkills: string[];
+  hasCv: boolean;
+}) {
+  const { to, companyName, jobTitle, candidateName, verifiedSkills, hasCv } = params;
+  const html = wrapHtml(
+    "Nueva postulación",
+    `
+    <p style="margin:0;font-size:16px;color:#0F172A;">Hola equipo ${companyName},</p>
+    <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#334155;">
+      <strong>${candidateName}</strong> postuló a tu vacante <strong>«${jobTitle}»</strong>.
+    </p>
+    ${
+      verifiedSkills.length
+        ? `<p style="margin:12px 0 0;font-size:13px;color:#334155;">
+             Certificados ProgramBI verificados del candidato:
+           </p>
+           <div style="margin-top:8px;">
+             ${verifiedSkills
+               .map(
+                 (s) =>
+                   `<span style="display:inline-block;background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700;margin:0 4px 4px 0;">✓ ${s}</span>`
+               )
+               .join("")}
+           </div>`
+        : ""
+    }
+    ${hasCv ? `<p style="margin:12px 0 0;font-size:13px;color:#64748B;">El candidato adjuntó su CV (descargable desde el panel).</p>` : ""}
+    <div style="text-align:center;margin-top:28px;">
+      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background:#1890FF;color:#fff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
+        Revisar postulación →
+      </a>
+    </div>
+  `
+  );
+
+  await sendEmail({
+    to,
+    subject: `📌 Nueva postulación: ${candidateName} → ${jobTitle}`,
+    html,
+    text: `${candidateName} postuló a «${jobTitle}». Revisa la postulación en programbi.com/comunidad/empleos`,
+  });
+}
+
+export async function sendCandidateStatusEmail(params: {
+  to: string;
+  candidateName: string;
+  jobTitle: string;
+  companyName: string;
+  statusLabel: string;
+}) {
+  const { to, candidateName, jobTitle, companyName, statusLabel } = params;
+  const html = wrapHtml(
+    "Actualización de tu postulación",
+    `
+    <p style="margin:0;font-size:16px;color:#0F172A;">Hola ${candidateName},</p>
+    <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#334155;">
+      Tu postulación a <strong>«${jobTitle}»</strong> (${companyName}) avanzó de etapa:
+    </p>
+    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;text-align:center;margin-top:16px;">
+      <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:1.5px;">Nuevo estado</div>
+      <div style="font-size:22px;font-weight:900;color:#0F172A;margin-top:4px;">${statusLabel}</div>
+    </div>
+    <div style="text-align:center;margin-top:24px;">
+      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background:#1890FF;color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:12px;">
+        Ver mis postulaciones →
+      </a>
+    </div>
+  `
+  );
+
+  await sendEmail({
+    to,
+    toName: candidateName,
+    subject: `🔄 Tu postulación a «${jobTitle}»: ${statusLabel}`,
+    html,
+    text: `Tu postulación a «${jobTitle}» (${companyName}) ahora está en estado: ${statusLabel}.`,
+  });
+}
+
+export async function sendJobExpiringEmail(params: {
+  to: string;
+  companyName: string;
+  jobTitle: string;
+  daysLeft: number;
+}) {
+  const { to, companyName, jobTitle, daysLeft } = params;
+  const html = wrapHtml(
+    "Tu vacante está por expirar",
+    `
+    <p style="margin:0;font-size:16px;color:#0F172A;">Hola equipo ${companyName},</p>
+    <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#334155;">
+      Tu vacante <strong>«${jobTitle}»</strong> ${
+        daysLeft <= 0
+          ? "ya expiró y dejó de aparecer en la bolsa de trabajo."
+          : `expira en <strong>${daysLeft} ${daysLeft === 1 ? "día" : "días"}</strong>.`
+      }
+    </p>
+    <p style="margin:12px 0 0;font-size:14px;color:#64748B;">
+      Extiende su vigencia 30 días más con un clic desde tu panel si el cargo sigue abierto.
+    </p>
+    <div style="text-align:center;margin-top:24px;">
+      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background:#1890FF;color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:12px;">
+        Gestionar mis vacantes →
+      </a>
+    </div>
+  `
+  );
+
+  await sendEmail({
+    to,
+    subject: `⏳ «${jobTitle}» ${daysLeft <= 0 ? "expiró" : `expira en ${daysLeft} ${daysLeft === 1 ? "día" : "días"}`}`,
+    html,
+    text: `Tu vacante «${jobTitle}» ${daysLeft <= 0 ? "expiró" : `expira en ${daysLeft} días`}. Extiéndela desde programbi.com/comunidad/empleos`,
+  });
+}
+
+export async function sendFeatureConfirmationEmail(params: {
+  to: string;
+  companyName: string;
+  jobTitle: string;
+  days: number;
+  featuredUntil: string;
+  amountClp: number | null;
+}) {
+  const { to, companyName, jobTitle, days, featuredUntil, amountClp } = params;
+  const until = new Date(featuredUntil).toLocaleDateString("es-CL", { day: "numeric", month: "long" });
+  const html = wrapHtml(
+    "Tu vacante está destacada",
+    `
+    <p style="margin:0;font-size:16px;color:#0F172A;">Hola equipo ${companyName},</p>
+    <div style="background:#ECFDF5;border:1px solid #A7F3D0;border-radius:12px;padding:20px;margin:20px 0;text-align:center;">
+      <div style="font-size:12px;font-weight:700;color:#065F46;text-transform:uppercase;letter-spacing:1.5px;">Vacante destacada activa</div>
+      <div style="font-size:20px;font-weight:900;color:#0F172A;margin-top:4px;">${jobTitle}</div>
+      <div style="font-size:14px;color:#334155;margin-top:6px;">
+        ${days} días · visible arriba del listado hasta el <strong>${until}</strong>
+      </div>
+      ${amountClp ? `<div style="font-size:13px;color:#64748B;margin-top:4px;">Pagado: ${formatCLP(amountClp)}</div>` : ""}
+    </div>
+    <p style="margin:0;font-size:14px;line-height:1.7;color:#334155;">
+      Tu vacante aparecerá en primer lugar en la Bolsa de Trabajo y con la etiqueta
+      «Destacada», recibiendo en promedio mucha más visibilidad que las vacantes orgánicas.
+    </p>
+    <div style="text-align:center;margin-top:24px;">
+      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background:#1890FF;color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:12px;">
+        Ver mis vacantes →
+      </a>
+    </div>
+  `
+  );
+
+  await sendEmail({
+    to,
+    subject: `⭐ «${jobTitle}» ahora está destacada por ${days} días`,
+    html,
+    text: `Tu vacante «${jobTitle}» está destacada hasta el ${until}.`,
+  });
+}
+
+export async function sendJobAlertsDigestEmail(params: {
+  to: string;
+  candidateName: string;
+  alertName: string;
+  jobs: Array<{ title: string; company: string; location: string; url: string; salary?: string | null }>;
+}) {
+  const { to, candidateName, alertName, jobs } = params;
+  const rows = jobs
+    .map(
+      (j) => `
+      <a href="${j.url}" style="display:block;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;margin-bottom:10px;text-decoration:none;">
+        <div style="font-size:15px;font-weight:700;color:#0F172A;">${j.title}</div>
+        <div style="font-size:13px;color:#64748B;margin-top:2px;">${j.company} · ${j.location}${j.salary ? ` · <strong style="color:#334155;">${j.salary}</strong>` : ""}</div>
+      </a>`
+    )
+    .join("");
+
+  const html = wrapHtml(
+    "Nuevas vacantes para ti",
+    `
+    <p style="margin:0;font-size:16px;color:#0F172A;">Hola ${candidateName},</p>
+    <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#334155;">
+      Tu alerta <strong>«${alertName}»</strong> encontró ${jobs.length} ${
+        jobs.length === 1 ? "vacante nueva" : "vacantes nuevas"
+      } en la Bolsa de Trabajo de ProgramBI:
+    </p>
+    <div style="margin-top:20px;">${rows}</div>
+    <div style="text-align:center;margin-top:24px;">
+      <a href="https://programbi.com/empleos" style="display:inline-block;background:#1890FF;color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:12px;">
+        Ver todas las vacantes →
+      </a>
+    </div>
+  `
+  );
+
+  await sendEmail({
+    to,
+    toName: candidateName,
+    subject: `🔔 ${jobs.length} ${jobs.length === 1 ? "vacante nueva" : "vacantes nuevas"} para tu alerta «${alertName}»`,
+    html,
+    text: `Tu alerta «${alertName}» encontró ${jobs.length} vacantes nuevas: ${jobs.map((j) => j.title).join(", ")}.`,
+  });
+}
+
+export async function sendTalentContactEmail(params: {
+  to: string;
+  candidateName: string;
+  companyName: string;
+  jobContext?: string | null;
+  message?: string | null;
+}) {
+  const { to, candidateName, companyName, jobContext, message } = params;
+  const html = wrapHtml(
+    "Una empresa quiere contactarte",
+    `
+    <p style="margin:0;font-size:16px;color:#0F172A;">Hola ${candidateName},</p>
+    <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:20px;margin:20px 0;">
+      <p style="margin:0;font-size:15px;line-height:1.7;color:#334155;">
+        La empresa <strong>${companyName}</strong> vio tu perfil en el directorio de talento
+        de ProgramBI${jobContext ? ` y quiere conversar por <strong>${jobContext}</strong>` : ""}.
+      </p>
+      ${message ? `<p style="margin:12px 0 0;font-size:14px;line-height:1.7;color:#64748B;font-style:italic;">"${message}"</p>` : ""}
+    </div>
+    <p style="margin:0;font-size:14px;color:#334155;">
+      Si te interesa, responde directamente al email de contacto de la empresa que
+      aparece en la notificación dentro de tu portal ProgramBI.
+    </p>
+    <div style="text-align:center;margin-top:24px;">
+      <a href="https://programbi.com/comunidad" style="display:inline-block;background:#1890FF;color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:12px;">
+        Ir a mi portal →
+      </a>
+    </div>
+  `
+  );
+
+  await sendEmail({
+    to,
+    toName: candidateName,
+    subject: `💼 ${companyName} quiere contactarte`,
+    html,
+    text: `La empresa ${companyName} vio tu perfil en el directorio de talento de ProgramBI y quiere contactarte.`,
+  });
+}

@@ -113,6 +113,7 @@ const BusinessPortal = dynamic(() => import("./tabs/BusinessPortal"), { loading:
 const LivePanel = dynamic(() => import("./tabs/LivePanel"), { loading: LivePanelSkeleton });
 const Certificates = dynamic(() => import("./tabs/Certificates"), { loading: InlineLoading });
 const Practicar = dynamic(() => import("./tabs/Practicar"), { loading: InlineLoading });
+const EmpleosTab = dynamic(() => import("./tabs/EmpleosTab"), { loading: InlineLoading });
 const SettingsModal = dynamic(() => import("./SettingsModal"), { ssr: false });
 const SubscriptionModal = dynamic(() => import("./SubscriptionModal"), { ssr: false });
 
@@ -214,7 +215,7 @@ export default function ComunidadPortal() {
     };
   }, [activeTab]);
 
-  const restrictedView = !canAccessFull && hasCourses && activeTab !== "cursos";
+  const restrictedView = !canAccessFull && hasCourses && activeTab !== "cursos" && activeTab !== "empleos";
 
   const handleTabChange = (tabId: string) => {
     if (tabId === "ai") {
@@ -392,6 +393,8 @@ export default function ComunidadPortal() {
                       ))}
 
                     {activeTab === "certificados" && <Certificates />}
+
+                    {activeTab === "empleos" && <EmpleosTab />}
 
                     {activeTab === "practicar" && <Practicar />}
 

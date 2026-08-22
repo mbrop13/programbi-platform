@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Users, Building, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award } from "lucide-react";
+import { Users, Building, CreditCard, Settings, Plus, TrendingUp, Search, MoreHorizontal, ShieldCheck, Loader2, Activity, DollarSign, MessageSquare, ArrowUpRight, ArrowDownRight, Eye, EyeOff, Ban, Mail, UserPlus, BarChart3, Palette, GraduationCap, Upload, Download, ChevronLeft, ChevronRight, Trash2, X, CheckCircle, AlertCircle, Globe, Lock, Play, FileText, Video, Megaphone, Sparkles, Tag, ArrowRight, Bell, Percent, ShoppingCart, Newspaper, Star, ExternalLink, Edit3, Code, Award, Briefcase } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getCommunityMembers, adminUpdateUserSubscription } from "@/lib/supabase/comunidad";
 import { adminGetCourses, adminGetAllUsers, adminDeleteUser, adminBulkDeleteUsers, adminGetUserEnrollments, adminEnrollUser, adminRemoveEnrollment, adminUpdateUserRole, adminBulkImport, adminGetExportData, getAllPublishedCourses, adminGetDashboardStats, adminGetLeads, adminDeleteLead, adminBulkDeleteLeads, adminGetSchedules, adminAddSchedule, adminDeleteSchedule, adminToggleScheduleActive, adminGetPopups, adminCreatePopup, adminUpdatePopup, adminTogglePopup, adminDeletePopup, adminGetPromotions, adminCreatePromotion, adminTogglePromotion, adminDeletePromotion, adminGetPriceOverrides, adminUpsertPriceOverride, adminGetArticles, adminCreateArticle, adminUpdateArticle, adminDeleteArticle, adminToggleArticlePublish, adminToggleArticleFeatured, adminGetNewsletterCategories, adminCreateNewsletterCategory, adminUpdateNewsletterCategory, adminDeleteNewsletterCategory, adminToggleNewsletterCategory, adminGetCoupons, adminCreateCoupon, adminUpdateCoupon, adminToggleCoupon, adminDeleteCoupon, adminGetCertificates, adminAddCertificate, adminImportCertificates, adminDeleteCertificate } from "@/lib/supabase/comunidad-ai";
@@ -12,6 +12,7 @@ import ArticleBlockEditor from "@/components/shared/ArticleBlockEditor";
 import AdminOverview from "./admin/AdminOverview";
 import ClassTrackingTab from "./admin/ClassTrackingTab";
 import AdminCourses from "./admin/AdminCourses";
+import AdminEmpleos from "./admin/AdminEmpleos";
 import {
   formatRegistrationSource,
   matchesRegistrationSourceFilter,
@@ -94,6 +95,7 @@ export default function AdminPanel() {
     { id: "class_tracking", label: "Asistencia y Métricas", icon: Activity },
     { id: "support", label: "Soporte", icon: MessageSquare, badgeCount: unreadSupportCount },
     { id: "companies", label: "Empresas", icon: Building },
+    { id: "empleos_admin", label: "Bolsa de Trabajo", icon: Briefcase },
     { id: "members", label: "Miembros", icon: Users, badgeCount: unreadMembersCount },
     { id: "leads", label: "Contactos", icon: Mail, badgeCount: unreadLeadsCount },
     { id: "chatbot", label: "Chatbot IA", icon: Sparkles },
@@ -173,6 +175,7 @@ export default function AdminPanel() {
               { activeTab === "overview" && <AdminOverview /> }
               { activeTab === "class_tracking" && <ClassTrackingTab /> }
               { activeTab === "companies" && <AdminCompanies /> }
+              { activeTab === "empleos_admin" && <AdminEmpleos /> }
               { activeTab === "members" && <AdminMembers /> }
               { activeTab === "leads" && <AdminLeads /> }
               { activeTab === "cart" && <AdminAbandonedCarts /> }

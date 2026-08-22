@@ -70,7 +70,7 @@ const nextConfig: NextConfig = {
               "default-src 'self';",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com https://s3.tradingview.com https://*.tradingview.com;",
               "style-src 'self' 'unsafe-inline';",
-              "img-src 'self' data: blob: https://images.unsplash.com https://cdn.shopify.com https://img.youtube.com https://mail.programbi.com https://flagcdn.com https://i.pravatar.cc https://www.svgrepo.com https://*.tradingview.com;",
+              "img-src 'self' data: blob: https://images.unsplash.com https://cdn.shopify.com https://img.youtube.com https://mail.programbi.com https://flagcdn.com https://i.pravatar.cc https://www.svgrepo.com https://*.tradingview.com https://*.supabase.co;",
               "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.mercadopago.com https://*.tradingview.com https://huggingface.co https://cdn-lfs.huggingface.co https://cdn-lfs-us-1.huggingface.co;",
               "frame-src 'self' https://*.youtube.com https://*.youtube-nocookie.com https://*.tradingview.com;",
               "media-src 'self' blob: https://mail.programbi.com;",

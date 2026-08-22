@@ -33,6 +33,7 @@ import {
   ArrowRight,
   Loader2,
   Target,
+  Briefcase,
 } from "lucide-react";
 import dynamic from "next/dynamic";
 
@@ -375,6 +376,7 @@ export default function Sidebar({
       { id: "ai", label: t.ai, icon: Sparkles, color: "text-text-secondary", group: t.principal },
       { id: "practicar", label: t.practicar, icon: Target, color: "text-text-secondary", group: t.principal },
     { id: "certificados", label: t.certificados, icon: Award, color: "text-amber-500", group: t.personal },
+    { id: "empleos", label: "Empleos", icon: Briefcase, color: "text-emerald-600", group: t.personal },
     ...(isOrgManager
       ? [{ id: "business", label: t.empresa, icon: Building2, color: "text-slate-500", group: t.gestion }]
       : []),
