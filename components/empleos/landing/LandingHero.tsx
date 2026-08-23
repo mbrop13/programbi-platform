@@ -18,10 +18,10 @@ import RegisterCta from "./RegisterCta";
  * Hero cinematográfico de la Bolsa de Trabajo.
  * Fondo full-bleed con dos imágenes (noche ejecutiva / data-tech):
  * - Desktop: el cursor controla el crossfade entre ambas, un spotlight
- *   las revela al pasar y un parallax sutil da profundidad.
- * - Móvil (sin cursor): crossfade + ken-burns automáticos.
- * El texto vive a la izquierda sobre un degradado del blanco de marca;
- * la derecha queda limpia para la imagen.
+ *   las revela al pasar y un parallax sutil da profundidad. El texto
+ *   vive a la izquierda sobre un degradado del blanco de marca.
+ * - Móvil: sin scrim — los textos van directamente sobre la imagen
+ *   (en claro, con sombra), anclados hacia abajo como un póster.
  */
 export default function LandingHero() {
   const reduce = useReducedMotion();
@@ -89,7 +89,7 @@ export default function LandingHero() {
         ref={containerRef}
         onPointerMove={onPointerMove}
         onPointerLeave={onPointerLeave}
-        className="relative flex min-h-[100svh] items-center overflow-hidden"
+        className="relative flex min-h-[100svh] items-end overflow-hidden sm:items-center"
       >
         {/* Capa 1: noche ejecutiva */}
         <motion.div style={{ x: x1, y: y1 }} className="absolute inset-[-3%]">
@@ -140,21 +140,17 @@ export default function LandingHero() {
           aria-hidden="true"
         />
 
-        {/* Scrim claro: en desktop protege el texto desde la izquierda;
-            en móvil, desde arriba (la imagen respira abajo) */}
-        <div
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,#f3f3f0_0%,rgba(243,243,240,0.94)_34%,rgba(243,243,240,0.55)_58%,rgba(243,243,240,0)_78%)] sm:hidden"
-          aria-hidden="true"
-        />
+        {/* Scrim claro: solo desktop, protege el texto desde la izquierda.
+            En móvil los textos van directo sobre la imagen (sin difuminado). */}
         <div
           className="pointer-events-none absolute inset-0 hidden bg-[linear-gradient(90deg,#f3f3f0_0%,rgba(243,243,240,0.96)_30%,rgba(243,243,240,0.6)_50%,rgba(243,243,240,0)_72%)] sm:block"
           aria-hidden="true"
         />
 
         {/* Contenido: solo columna izquierda, la derecha queda para la imagen */}
-        <div className="relative z-10 mx-auto w-full max-w-[1400px] px-4 py-28 sm:px-6 lg:px-8">
+        <div className="relative z-10 mx-auto w-full max-w-[1400px] px-4 pb-24 pt-28 sm:px-6 sm:py-28 lg:px-8">
           <div className="max-w-xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-line bg-canvas/80 px-3 py-1 text-xs font-semibold text-mute backdrop-blur-sm">
+            <p className="inline-flex items-center gap-2 rounded-full border border-paper/25 bg-[#171716]/45 px-3 py-1 text-xs font-semibold text-paper/90 [backdrop-filter:blur(8px)] sm:border-line sm:bg-canvas/80 sm:text-mute sm:[backdrop-filter:none]">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#16a34a] opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#16a34a]" />
@@ -162,24 +158,24 @@ export default function LandingHero() {
               Pre-inscripción abierta · Lanzamiento pronto
             </p>
 
-            <h1 className="mt-6 max-w-[15ch] text-4xl font-bold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-6xl">
+            <h1 className="mt-6 max-w-[15ch] text-4xl font-bold leading-[1.08] tracking-tight text-paper [text-shadow:0_2px_24px_rgba(23,23,22,0.55)] sm:text-5xl sm:text-ink sm:[text-shadow:none] lg:text-6xl">
               Tu próximo trabajo en datos empieza{" "}
               <em className="italic">certificado</em>
             </h1>
 
-            <p className="mt-5 max-w-[30rem] text-base leading-relaxed text-mute lg:text-lg">
+            <p className="mt-5 max-w-[30rem] text-base leading-relaxed text-paper/85 [text-shadow:0_1px_12px_rgba(23,23,22,0.5)] sm:text-mute sm:[text-shadow:none] lg:text-lg">
               Bolsa de Trabajo de ProgramBI: crea tu perfil en minutos, tus
               certificados se verifican solos y las empresas te descubren.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <RegisterCta className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-7 text-base font-semibold text-canvas shadow-[0_12px_32px_rgba(23,23,22,0.28)] transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/25">
+              <RegisterCta className="inline-flex h-12 items-center gap-2 rounded-full bg-canvas px-7 text-base font-semibold text-ink shadow-[0_12px_32px_rgba(23,23,22,0.45)] transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-canvas/40 sm:bg-ink sm:text-canvas sm:focus-visible:ring-ink/25">
                 Crear mi perfil
                 <ArrowRight size={17} strokeWidth={2.4} />
               </RegisterCta>
               <Link
                 href="/empleos/para-empresas"
-                className="inline-flex h-12 items-center gap-2 rounded-full border border-ink/15 bg-canvas/70 px-7 text-base font-semibold text-ink backdrop-blur-sm transition-colors hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/25"
+                className="inline-flex h-12 items-center gap-2 rounded-full border border-paper/30 bg-[#171716]/40 px-7 text-base font-semibold text-paper [backdrop-filter:blur(8px)] transition-colors hover:bg-[#171716]/60 sm:border-ink/15 sm:bg-canvas/70 sm:text-ink sm:hover:bg-canvas sm:[backdrop-filter:none] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paper/40 sm:focus-visible:ring-ink/25"
               >
                 Registrar mi empresa
               </Link>
