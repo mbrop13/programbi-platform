@@ -21,7 +21,7 @@ import RegisterCta from "./RegisterCta";
  *   las revela al pasar y un parallax sutil da profundidad. El texto
  *   vive a la izquierda sobre un degradado del blanco de marca.
  * - Móvil: sin scrim — los textos van directamente sobre la imagen
- *   (en claro, con sombra), anclados hacia abajo como un póster.
+ *   (en claro, con sombra), centrados con leve sesgo hacia arriba.
  */
 export default function LandingHero() {
   const reduce = useReducedMotion();
@@ -89,7 +89,7 @@ export default function LandingHero() {
         ref={containerRef}
         onPointerMove={onPointerMove}
         onPointerLeave={onPointerLeave}
-        className="relative flex min-h-[100svh] items-end overflow-hidden sm:items-center"
+        className="relative flex min-h-[100svh] items-center overflow-hidden pb-[7vh] sm:pb-0"
       >
         {/* Capa 1: noche ejecutiva */}
         <motion.div style={{ x: x1, y: y1 }} className="absolute inset-[-3%]">
@@ -148,7 +148,7 @@ export default function LandingHero() {
         />
 
         {/* Contenido: solo columna izquierda, la derecha queda para la imagen */}
-        <div className="relative z-10 mx-auto w-full max-w-[1400px] px-4 pb-24 pt-28 sm:px-6 sm:py-28 lg:px-8">
+        <div className="relative z-10 mx-auto w-full max-w-[1400px] px-4 pt-24 pb-28 sm:px-6 sm:py-28 lg:px-8">
           <div className="max-w-xl">
             <p className="inline-flex items-center gap-2 rounded-full border border-paper/25 bg-[#171716]/45 px-3 py-1 text-xs font-semibold text-paper/90 [backdrop-filter:blur(8px)] sm:border-line sm:bg-canvas/80 sm:text-mute sm:[backdrop-filter:none]">
               <span className="relative flex h-2 w-2">
