@@ -20,9 +20,10 @@ import RegisterCta from "./RegisterCta";
  * - Desktop: el cursor controla el crossfade entre ambas, un spotlight
  *   las revela al pasar y un parallax sutil da profundidad. El texto
  *   vive a la izquierda sobre un degradado del blanco de marca.
- * - Móvil: sin scrim — los textos van directamente sobre la imagen
- *   (en claro, con sombra), arrancando arriba como el hero de la home
- *   (pt-8, items-start); la foto llena el resto de la pantalla.
+ * - Móvil: sin scrim — los textos (tinta) van directamente sobre la
+ *   imagen con un halo claro sutil tras las letras para legibilidad,
+ *   arrancando arriba como el hero de la home (pt-8, items-start);
+ *   la foto llena el resto de la pantalla.
  */
 export default function LandingHero() {
   const reduce = useReducedMotion();
@@ -151,7 +152,7 @@ export default function LandingHero() {
         {/* Contenido: solo columna izquierda, la derecha queda para la imagen */}
         <div className="relative z-10 mx-auto w-full max-w-[1400px] px-4 pt-8 pb-20 sm:px-6 sm:py-28 lg:px-8">
           <div className="max-w-xl">
-            <p className="inline-flex items-center gap-2 rounded-full border border-paper/25 bg-[#171716]/45 px-3 py-1 text-xs font-semibold text-paper/90 [backdrop-filter:blur(8px)] sm:border-line sm:bg-canvas/80 sm:text-mute sm:[backdrop-filter:none]">
+            <p className="inline-flex items-center gap-2 rounded-full border border-line bg-canvas/85 px-3 py-1 text-xs font-semibold text-mute backdrop-blur-sm">
               <span className="relative flex h-2 w-2">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#16a34a] opacity-60" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#16a34a]" />
@@ -159,24 +160,24 @@ export default function LandingHero() {
               Pre-inscripción abierta · Lanzamiento pronto
             </p>
 
-            <h1 className="mt-6 max-w-[15ch] text-4xl font-bold leading-[1.08] tracking-tight text-paper [text-shadow:0_2px_24px_rgba(23,23,22,0.55)] sm:text-5xl sm:text-ink sm:[text-shadow:none] lg:text-6xl">
+            <h1 className="mt-6 max-w-[15ch] text-4xl font-bold leading-[1.08] tracking-tight text-ink [text-shadow:0_1px_10px_rgba(243,243,240,0.95),0_0_30px_rgba(243,243,240,0.8)] sm:text-5xl sm:[text-shadow:none] lg:text-6xl">
               Tu próximo trabajo en datos empieza{" "}
               <em className="italic">certificado</em>
             </h1>
 
-            <p className="mt-5 max-w-[30rem] text-base leading-relaxed text-paper/85 [text-shadow:0_1px_12px_rgba(23,23,22,0.5)] sm:text-mute sm:[text-shadow:none] lg:text-lg">
+            <p className="mt-5 max-w-[30rem] text-base leading-relaxed text-mute [text-shadow:0_0_18px_rgba(243,243,240,0.9)] sm:text-lg sm:[text-shadow:none] lg:text-lg">
               Bolsa de Trabajo de ProgramBI: crea tu perfil en minutos, tus
               certificados se verifican solos y las empresas te descubren.
             </p>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <RegisterCta className="inline-flex h-12 items-center gap-2 rounded-full bg-canvas px-7 text-base font-semibold text-ink shadow-[0_12px_32px_rgba(23,23,22,0.45)] transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-canvas/40 sm:bg-ink sm:text-canvas sm:focus-visible:ring-ink/25">
+              <RegisterCta className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-7 text-base font-semibold text-canvas shadow-[0_12px_32px_rgba(23,23,22,0.28)] transition-transform hover:scale-[1.02] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/25">
                 Crear mi perfil
                 <ArrowRight size={17} strokeWidth={2.4} />
               </RegisterCta>
               <Link
                 href="/empleos/para-empresas"
-                className="inline-flex h-12 items-center gap-2 rounded-full border border-paper/30 bg-[#171716]/40 px-7 text-base font-semibold text-paper [backdrop-filter:blur(8px)] transition-colors hover:bg-[#171716]/60 sm:border-ink/15 sm:bg-canvas/70 sm:text-ink sm:hover:bg-canvas sm:[backdrop-filter:none] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-paper/40 sm:focus-visible:ring-ink/25"
+                className="inline-flex h-12 items-center gap-2 rounded-full border border-ink/15 bg-canvas/70 px-7 text-base font-semibold text-ink backdrop-blur-sm transition-colors hover:bg-canvas focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ink/25"
               >
                 Registrar mi empresa
               </Link>
