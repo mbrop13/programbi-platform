@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { courses, getCourseBySlug } from "@/lib/data/courses";
 import { getMarketingDescription } from "@/lib/supabase/comunidad-ai";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
-import { getOptimizedShareImage } from "@/lib/utils";
+import { ogImageUrl } from "@/lib/og/url";
 
 export const revalidate = 3600;
 
@@ -22,7 +22,16 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const dbDescription = await getMarketingDescription(slug);
   const description = dbDescription || course.description;
 
-  const shareImage = getOptimizedShareImage(course.imageUrl);
+  // Tarjeta OG de marca (tipográfica, papel-monócromo) — reemplaza las
+  // portadas remotas de estilo antiguo.
+  const shareImage = ogImageUrl({
+    kicker: "Curso online en vivo",
+    title: course.title,
+    description,
+    tags: course.techStack,
+    accent: course.accentColor,
+    path: `cursos/${slug}`,
+  });
 
   return {
     title,

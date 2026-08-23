@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getArticleBySlug, getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 import { getOptimizedShareImage } from "@/lib/utils";
+import { ogImageUrl } from "@/lib/og/url";
 import ArticleClient from "./ArticleClient";
 
 export const revalidate = 3600; // Cache on CDN for 1 hour
@@ -26,7 +27,12 @@ function getArticlePoster(article: any): string {
     return article.cover_image;
   }
 
-  return "/default-og.png";
+  return ogImageUrl({
+    kicker: "Newsletter",
+    title: article.title,
+    description: article.excerpt || undefined,
+    path: `newsletter/${article.slug}`,
+  });
 }
 
 export async function generateStaticParams() {

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Globe, Award, CheckCircle, ArrowUpRight, BarChart } from "lucide-react";
 import { casesOfUse } from "@/lib/data/cases";
+import { ogImageUrl } from "@/lib/og/url";
 
 interface PageProps {
   params: Promise<{
@@ -31,6 +32,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: currentCase.description,
       url: `https://programbi.com/casos/${slug}`,
       type: "article",
+      images: [
+        {
+          url: ogImageUrl({
+            kicker: "Caso de uso",
+            title: currentCase.fullTitle,
+            description: currentCase.description,
+            path: `casos/${slug}`,
+          }),
+          width: 1200,
+          height: 630,
+          alt: currentCase.fullTitle,
+        },
+      ],
     },
   };
 }

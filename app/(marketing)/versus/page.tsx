@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { comparisons } from "@/lib/data/comparisons";
 import { ChevronRight, ArrowRight, Activity, GitCompare } from "lucide-react";
+import { ogImageUrl } from "@/lib/og/url";
 
 export const metadata: Metadata = {
   title: "Comparativas Técnicas de Datos (Versus) | ProgramBI",
@@ -16,6 +17,21 @@ export const metadata: Metadata = {
       "Análisis profundos, pros y contras de las herramientas líderes en análisis de datos, bases de datos y programación.",
     url: "https://programbi.com/versus",
     type: "website",
+    images: [
+      {
+        url: ogImageUrl({
+          kicker: "Comparativas",
+          title: "¿Qué herramienta de datos aprender?",
+          description:
+            "Análisis profundos con pros y contras de las herramientas líderes de la industria.",
+          tags: ["Power BI", "SQL", "Python", "Excel"],
+          path: "versus",
+        }),
+        width: 1200,
+        height: 630,
+        alt: "Comparativas de herramientas — ProgramBI",
+      },
+    ],
   },
 };
 

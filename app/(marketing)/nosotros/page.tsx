@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Award, BookOpen, Users, Building, ShieldCheck, UserCheck } from "lucide-react";
 import MentorsSection from "@/components/marketing/MentorsSection";
+import { ogImageUrl } from "@/lib/og/url";
 
 export const metadata: Metadata = {
   title: "Sobre Nosotros — Academia de Análisis de Datos | ProgramBI",
@@ -16,6 +17,20 @@ export const metadata: Metadata = {
       "Conoce nuestra misión, metodología de clases en vivo e instructores de la industria. Liderando la capacitación en ciencia de datos y BI en Latinoamérica.",
     url: "https://programbi.com/nosotros",
     type: "website",
+    images: [
+      {
+        url: ogImageUrl({
+          kicker: "Quiénes somos",
+          title: "+5.000 profesionales formados en análisis de datos",
+          description:
+            "Clases en vivo, instructores de la industria y proyectos reales. Desde Chile para Latinoamérica.",
+          path: "nosotros",
+        }),
+        width: 1200,
+        height: 630,
+        alt: "Sobre ProgramBI",
+      },
+    ],
   },
 };
 

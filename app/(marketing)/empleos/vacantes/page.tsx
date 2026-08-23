@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import EmpleosPageClient from "@/components/empleos/EmpleosPageClient";
 import { getPublishedJobs } from "@/lib/jobs/queries";
+import { ogImageUrl } from "@/lib/og/url";
 
 export const metadata: Metadata = {
   title: "Vacantes",
@@ -12,6 +13,22 @@ export const metadata: Metadata = {
     description:
       "Vacantes de datos y programación publicadas por empresas verificadas. Talento con certificados reales.",
     url: "/empleos/vacantes",
+    images: [
+      {
+        url: ogImageUrl({
+          kicker: "Vacantes verificadas",
+          title: "Vacantes de datos y tecnología",
+          description:
+            "Publicadas por empresas verificadas. Postula con certificados que respaldan lo que sabes hacer.",
+          tags: ["Python", "Power BI", "SQL Server"],
+          verified: true,
+          path: "empleos/vacantes",
+        }),
+        width: 1200,
+        height: 630,
+        alt: "Vacantes de la Bolsa de Trabajo ProgramBI",
+      },
+    ],
   },
 };
 

@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import JobCard, { CompanyAvatar } from "@/components/empleos/JobCard";
 import { mapJobRow } from "@/lib/jobs/queries";
 import { COMPANY_SIZE_LABELS } from "@/lib/jobs/types";
+import { ogImageUrl } from "@/lib/og/url";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +38,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${company.name} | Bolsa de Trabajo ProgramBI`,
       description,
       url: `/empleos/empresas/${company.slug}`,
+      images: [
+        {
+          url: ogImageUrl({
+            kicker: "Empresa verificada",
+            title: company.name,
+            description:
+              "Contrata talento certificado en la Bolsa de Trabajo de ProgramBI.",
+            tags: company.industry ? [company.industry] : undefined,
+            verified: true,
+            path: `empleos/empresas/${company.slug}`,
+          }),
+          width: 1200,
+          height: 630,
+          alt: `${company.name} — Bolsa de Trabajo ProgramBI`,
+        },
+      ],
     },
   };
 }

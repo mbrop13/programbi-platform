@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getArticleBySlug, getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 import BlogArticleClient from "./BlogArticleClient";
 import { isVideoUrl, getOptimizedShareImage } from "@/lib/utils";
+import { ogImageUrl } from "@/lib/og/url";
 
 export const revalidate = 3600;
 
@@ -35,8 +36,13 @@ function getArticlePoster(article: any): string {
     return article.cover_image;
   }
 
-  // 3. Fallback
-  return "/default-og.png";
+  // 3. Fallback: tarjeta OG de marca con el título del artículo
+  return ogImageUrl({
+    kicker: "Blog",
+    title: article.title,
+    description: article.excerpt || undefined,
+    path: `blog/${article.slug}`,
+  });
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {

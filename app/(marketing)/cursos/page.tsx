@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { courses } from "@/lib/data/courses";
 import CursosPageClient from "./CursosPageClient";
+import { ogImageUrl } from "@/lib/og/url";
 
 export const metadata: Metadata = {
   title: "Cursos de Análisis de Datos Online — Power BI, SQL, Python | ProgramBI",
@@ -15,6 +16,21 @@ export const metadata: Metadata = {
       "Capacitaciones profesionales en Power BI, Python, SQL y Machine Learning. Cursos online en vivo con expertos de la industria en Chile y Latinoamérica.",
     url: "https://programbi.com/cursos",
     type: "website",
+    images: [
+      {
+        url: ogImageUrl({
+          kicker: "Catálogo de cursos",
+          title: "Aprende análisis de datos con expertos de la industria",
+          description:
+            "Cursos online en vivo: Power BI, SQL Server, Python, Machine Learning y más.",
+          tags: ["Power BI", "SQL", "Python", "IA"],
+          path: "cursos",
+        }),
+        width: 1200,
+        height: 630,
+        alt: "Cursos de análisis de datos de ProgramBI",
+      },
+    ],
   },
 };
 

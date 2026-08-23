@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import EmpresasClient from "./EmpresasClient";
+import { ogImageUrl } from "@/lib/og/url";
 
 export const metadata: Metadata = {
   title: "Soluciones de Datos para Empresas | Capacitación, Sistemas a Medida y Consultoría",
@@ -14,6 +15,21 @@ export const metadata: Metadata = {
       "Transformamos tu operación con dashboards, automatización, sistemas de gestión a la medida y capacitación en datos, IA y Machine Learning.",
     url: "https://programbi.com/empresas",
     type: "website",
+    images: [
+      {
+        url: ogImageUrl({
+          kicker: "Para empresas",
+          title: "Tres formas de trabajar. Un mismo objetivo: autonomía con datos.",
+          description:
+            "Capacitación corporativa, implementación de soluciones y sistemas a la medida.",
+          tags: ["Capacitación", "Dashboards", "Sistemas a medida"],
+          path: "empresas",
+        }),
+        width: 1200,
+        height: 630,
+        alt: "Soluciones de datos para empresas — ProgramBI",
+      },
+    ],
   },
 };
 

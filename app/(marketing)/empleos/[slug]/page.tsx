@@ -28,6 +28,7 @@ import {
   MODALITY_LABELS,
   SENIORITY_LABELS,
 } from "@/lib/jobs/types";
+import { ogImageUrl } from "@/lib/og/url";
 
 export const dynamic = "force-dynamic";
 
@@ -37,14 +38,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const job = await getPublishedJobBySlug(slug);
   if (!job) return { title: "Vacante no encontrada" };
+  const description = job.description.slice(0, 160).replace(/\n/g, " ");
+  const tags = [
+    MODALITY_LABELS[job.modality as keyof typeof MODALITY_LABELS] || job.modality,
+    SENIORITY_LABELS[job.seniority as keyof typeof SENIORITY_LABELS] || job.seniority,
+    ...job.skills.slice(0, 2).map((s) => getSkillLabel(s)),
+  ].filter(Boolean);
   return {
     title: `${job.title} — ${job.company_name}`,
-    description: job.description.slice(0, 160).replace(/\n/g, " "),
+    description,
     alternates: { canonical: `/empleos/${job.slug}` },
     openGraph: {
       title: `${job.title} — ${job.company_name}`,
-      description: job.description.slice(0, 160).replace(/\n/g, " "),
+      description,
       url: `/empleos/${job.slug}`,
+      images: [
+        {
+          url: ogImageUrl({
+            kicker: job.company_name,
+            title: job.title,
+            description,
+            tags,
+            verified: true,
+            path: `empleos/${job.slug}`,
+          }),
+          width: 1200,
+          height: 630,
+          alt: `${job.title} — ${job.company_name}`,
+        },
+      ],
     },
   };
 }

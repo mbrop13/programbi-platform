@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 import BlogClient from "./BlogClient";
+import { ogImageUrl } from "@/lib/og/url";
 
 export const revalidate = 3600;
 
@@ -15,6 +16,21 @@ export const metadata: Metadata = {
       "Artículos, tutoriales y guías prácticas sobre Power BI, SQL, Python y análisis de datos por expertos de ProgramBI.",
     url: "https://programbi.com/blog",
     type: "website",
+    images: [
+      {
+        url: ogImageUrl({
+          kicker: "Blog",
+          title: "Recursos y artículos de análisis de datos",
+          description:
+            "Tutoriales y guías prácticas sobre Power BI, SQL y Python, escritos por expertos de la industria.",
+          tags: ["Power BI", "SQL", "Python"],
+          path: "blog",
+        }),
+        width: 1200,
+        height: 630,
+        alt: "Blog de ProgramBI",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",

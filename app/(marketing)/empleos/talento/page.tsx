@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck } from "lucide-react";
 import TalentosPageClient from "@/components/empleos/TalentosPageClient";
+import { ogImageUrl } from "@/lib/og/url";
 
 export const metadata: Metadata = {
   title: "Talento certificado en datos",
@@ -13,6 +14,23 @@ export const metadata: Metadata = {
     description:
       "Contrata profesionales con certificados verificados en Python, Power BI y SQL Server.",
     url: "/empleos/talento",
+    images: [
+      {
+        url: ogImageUrl({
+          kicker: "Certificados verificados",
+          title: "Talento certificado en datos",
+          description:
+            "Profesionales con habilidades comprobadas en Python, Power BI y SQL Server. Disponibles para tu empresa.",
+          tags: ["Python", "Power BI", "SQL Server"],
+          theme: "ink",
+          verified: true,
+          path: "empleos/talento",
+        }),
+        width: 1200,
+        height: 630,
+        alt: "Talento certificado en datos — ProgramBI",
+      },
+    ],
   },
 };
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import FaqClient from "./FaqClient";
+import { ogImageUrl } from "@/lib/og/url";
 
 export const metadata: Metadata = {
   title: "Preguntas Frecuentes — Soporte y Consultas | ProgramBI",
@@ -15,6 +16,20 @@ export const metadata: Metadata = {
       "Información detallada sobre requisitos de cursos, certificaciones, cuotas de pago y capacitaciones corporativas en Latinoamérica.",
     url: "https://programbi.com/faq",
     type: "website",
+    images: [
+      {
+        url: ogImageUrl({
+          kicker: "Ayuda",
+          title: "Preguntas frecuentes",
+          description:
+            "Cursos en vivo, certificados, cuotas de pago y capacitaciones corporativas — todo lo que necesitas saber.",
+          path: "faq",
+        }),
+        width: 1200,
+        height: 630,
+        alt: "Preguntas frecuentes — ProgramBI",
+      },
+    ],
   },
 };
 

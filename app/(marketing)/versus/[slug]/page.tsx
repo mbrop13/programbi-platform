@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getComparisonBySlug, comparisons } from "@/lib/data/comparisons";
 import { courses } from "@/lib/data/courses";
+import { ogImageUrl } from "@/lib/og/url";
 import { 
   ArrowLeft, 
   ChevronRight, 
@@ -43,6 +44,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: comp.seoDescription,
       url: `https://programbi.com/versus/${slug}`,
       type: "website",
+      images: [
+        {
+          url: ogImageUrl({
+            kicker: "Comparativa",
+            title: `${comp.toolA.name} vs. ${comp.toolB.name}`,
+            description: comp.seoDescription,
+            tags: [comp.toolA.name, comp.toolB.name],
+            path: `versus/${slug}`,
+          }),
+          width: 1200,
+          height: 630,
+          alt: `${comp.toolA.name} vs. ${comp.toolB.name}`,
+        },
+      ],
     },
   };
 }
