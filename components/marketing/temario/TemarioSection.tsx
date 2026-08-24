@@ -400,7 +400,9 @@ export default function TemarioSection({
         <div className="mt-12 max-w-[860px] space-y-10">
             {whatYouLearn && whatYouLearn.length > 0 && (
               <div>
-                <h3 className="text-xl font-bold tracking-tight text-ink">En este nivel</h3>
+                <h3 className="text-xl font-bold tracking-tight text-ink">
+                  {syllabus.levels.length > 1 ? "En este nivel" : "Qué incluye"}
+                </h3>
                 <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {whatYouLearn.map((item) => (
                     <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-ink">

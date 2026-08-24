@@ -4,21 +4,21 @@ export const powerAutomateSyllabus: CourseSyllabusData = {
   slug: "power-automate",
   accent: "#0078D4",
   programYear: "2026",
+  audience:
+    "Este curso es ideal para profesionales sin experiencia previa en programación que quieren eliminar tareas repetitivas de su día a día: aprenderás a crear flujos en la nube desde cero, sin escribir código, integrando correo, Teams, OneDrive y las bibliotecas de documentos de Microsoft.",
+  benefits: [
+    "Automatizar tareas repetitivas sin escribir código.",
+    "Integrar Outlook, Teams, OneDrive y SharePoint.",
+    "Aprobaciones y notificaciones automáticas.",
+    "Ahorro de horas de trabajo manual cada semana.",
+    "Herramientas NoCode de alta demanda laboral.",
+  ],
   levels: [
     {
-      id: "nivel1",
-      label: "Nivel I: Básico",
-      shortLabel: "Fundamentos (16h)",
+      id: "programa",
+      label: "Power Automate & RPA",
+      shortLabel: "16h",
       theme: "#0078D4",
-      audience:
-        "Este curso es ideal para profesionales sin experiencia previa en programación que quieren eliminar tareas repetitivas de su día a día: aprenderás a crear flujos en la nube desde cero, sin escribir código, integrando correo, Teams, OneDrive y las bibliotecas de documentos de Microsoft.",
-      benefits: [
-        "Automatizar tareas repetitivas sin escribir código.",
-        "Integrar Outlook, Teams, OneDrive y SharePoint.",
-        "Aprobaciones y notificaciones automáticas.",
-        "Ahorro de horas de trabajo manual cada semana.",
-        "Herramientas NoCode de alta demanda laboral.",
-      ],
       modules: [
         {
           id: "n1-1",
@@ -125,63 +125,6 @@ export const powerAutomateSyllabus: CourseSyllabusData = {
             "Notificaciones automáticas",
             "Extraer texto de mensajes",
             "Obtener información de destinatarios",
-          ],
-        },
-      ],
-    },
-    {
-      id: "nivel2",
-      label: "Nivel II: Intermedio",
-      shortLabel: "Desktop Flows RPA (16h)",
-      theme: "#7C3AED",
-      audience:
-        "Ideal para alumnos que ya dominan los flujos en la nube y quieren dar el salto a la automatización de escritorio (RPA): grabar procesos, controlar aplicaciones de escritorio, Excel y sitios web sin escribir una sola línea de código.",
-      benefits: [
-        "Automatizar aplicaciones de escritorio y web.",
-        "Grabación de procesos sin programación.",
-        "Manejo de errores y reintentos automáticos.",
-        "Robots que trabajan 24/7 por ti.",
-      ],
-      modules: [
-        {
-          id: "n2-1",
-          title: "Desktop Flows (RPA) (16 horas)",
-          hours: 16,
-          icon: "bolt",
-          topics: [
-            "Grabación de acciones",
-            "Automatización de Excel y web",
-            "Variables y control de flujo",
-            "Manejo de errores",
-          ],
-        },
-      ],
-    },
-    {
-      id: "nivel3",
-      label: "Nivel III: Avanzado",
-      shortLabel: "IA y Copilot (16h)",
-      theme: "#C239B3",
-      audience:
-        "Ideal para alumnos que ya automatizan procesos y quieren incorporar inteligencia artificial: procesamiento de documentos con AI Builder, generación de flujos con Copilot y agentes inteligentes que trabajan de forma autónoma.",
-      benefits: [
-        "Procesar documentos con AI Builder.",
-        "Generar flujos con Copilot.",
-        "Agentes inteligentes autónomos.",
-        "Integración con APIs externas.",
-      ],
-      modules: [
-        {
-          id: "n3-1",
-          title: "IA y Copilot (16 horas)",
-          hours: 16,
-          icon: "star",
-          highlight: true,
-          topics: [
-            "AI Builder",
-            "Copilot para flujos",
-            "Procesamiento de documentos",
-            "Agentes inteligentes",
           ],
         },
       ],

@@ -46,6 +46,11 @@ interface CartItem {
   hasDiscount?: boolean;
 }
 
+function cartShowsLevelName(item: CartItem) {
+  if (item.slug === "asesoria") return true;
+  return (allCourses.find((c) => c.slug === item.slug)?.levels?.length ?? 0) > 1;
+}
+
 export default function PagoClient() {
   const searchParams = useSearchParams();
   const initialSlug = searchParams.get("curso") || "";
@@ -270,7 +275,11 @@ export default function PagoClient() {
              }
           } else {
              courseSchedules = getAllActiveSchedules(
-               schedules.filter(s => s.course_slug === course.slug && s.level_name === lvl.name)
+               schedules.filter((s) => {
+                 if (s.course_slug !== course.slug) return false;
+                 if (!course.levels || course.levels.length <= 1) return true;
+                 return s.level_name === lvl.name;
+               })
              );
           }
 
@@ -633,7 +642,11 @@ export default function PagoClient() {
                   }
                } else if (!alwaysAvailable) {
                   courseSchedules = getAllActiveSchedules(
-                    schedules.filter(s => s.course_slug === course.slug && s.level_name === activeLevel)
+                    schedules.filter((s) => {
+                      if (s.course_slug !== course.slug) return false;
+                      if (!course.levels || course.levels.length <= 1) return true;
+                      return s.level_name === activeLevel;
+                    })
                   );
                }
 
@@ -684,7 +697,7 @@ export default function PagoClient() {
                             <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-mute">{getCourseDescription(course)}</p>
                           </div>
 
-                          {course.levels && course.levels.length > 0 && (
+                          {course.levels && course.levels.length > 1 && (
                             <div className="flex flex-wrap gap-2">
                                {course.levels.map(lvl => (
                                  <button 
@@ -987,7 +1000,9 @@ export default function PagoClient() {
                                     <div key={`${item.slug}-${item.levelName}`} className="flex items-start justify-between gap-4">
                                        <div className="min-w-0 flex-1">
                                           <span className="line-clamp-2 text-sm font-semibold leading-tight text-ink">{item.quantity}× {item.title}</span>
-                                          <span className="mt-0.5 block text-xs text-mute">{item.levelName}</span>
+                                          {cartShowsLevelName(item) ? (
+                                            <span className="mt-0.5 block text-xs text-mute">{item.levelName}</span>
+                                          ) : null}
                                           {item.slug !== "asesoria" && item.selectedStartDate && (() => {
                                             const converted = convertSchedule(
                                               item.selectedStartDate,
@@ -1373,7 +1388,9 @@ export default function PagoClient() {
                         <div key={`mob-${item.slug}-${item.levelName}`} className="flex items-start justify-between gap-3 rounded-md border border-line bg-paper p-3.5">
                           <div className="min-w-0 flex-1">
                             <span className="line-clamp-2 text-sm font-semibold leading-snug text-ink">{item.quantity}× {item.title}</span>
-                            <span className="mt-1 block text-[11px] font-medium text-mute">{item.levelName}</span>
+                            {cartShowsLevelName(item) ? (
+                              <span className="mt-1 block text-[11px] font-medium text-mute">{item.levelName}</span>
+                            ) : null}
                           </div>
                           <div className="flex shrink-0 flex-col items-end">
                             {item.hasDiscount && item.originalPrice && item.originalPrice > item.price && (

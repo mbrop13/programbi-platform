@@ -173,15 +173,21 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       );
       return getAllActiveSchedules(adSchedules);
     }
-    const matched = schedules.filter((s) => s.course_slug === course.slug && s.level_name === activeLevel.name);
+    const matched = schedules.filter((s) => {
+      if (s.course_slug !== course.slug) return false;
+      if (levels.length <= 1) return true;
+      return s.level_name === activeLevel.name;
+    });
     return getAllActiveSchedules(matched);
-  }, [schedules, activeLevel, course.slug]);
+  }, [schedules, activeLevel, course.slug, levels.length]);
 
   const activeSchedulesList = useMemo(() => {
     if (levelSchedules.length > 0) return levelSchedules;
-    const matchedStatic = staticSchedules.filter(
-      (s) => s.course_slug === course.slug && s.level_name === (activeLevel?.name || "Básico")
-    );
+    const matchedStatic = staticSchedules.filter((s) => {
+      if (s.course_slug !== course.slug) return false;
+      if (levels.length <= 1) return true;
+      return s.level_name === (activeLevel?.name || "Básico");
+    });
     const now = new Date();
     const futureStatic = matchedStatic.filter((s) => new Date(s.start_date + "T12:00:00") >= now);
     if (futureStatic.length > 0) {
@@ -399,7 +405,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               <div className="mb-5 border-t border-line pt-5">
                 {activeSchedulesList.length === 0 ? (
                   <p className="text-sm leading-relaxed text-mute">
-                    Aún no hay una fecha abierta para este nivel. Escríbenos y te avisamos del próximo grupo.
+                    {levels.length > 1
+                      ? "Aún no hay una fecha abierta para este nivel. Escríbenos y te avisamos del próximo grupo."
+                      : "Aún no hay una fecha abierta para este curso. Escríbenos y te avisamos del próximo grupo."}
                   </p>
                 ) : checkingAuth ? (
                   <div className="h-10 w-40 rounded-lg bg-wash" />
@@ -412,7 +420,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       </p>
                     )}
                     <p className="text-3xl font-bold tracking-tight text-ink">{convertAndFormat(grandTotal)}</p>
-                    <p className="mt-1 text-xs text-mute">Por nivel</p>
+                    {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
                   </div>
                 ) : (
                   <button
@@ -432,7 +440,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               {activeSchedulesList.length === 0 ? (
                 <a
                   href={`https://wa.me/56935409699?text=${encodeURIComponent(
-                    `Hola! Me gustaría consultar las próximas fechas del curso ${course.title} - ${activeLevel?.name || "Básico"}`
+                    `Hola! Me gustaría consultar las próximas fechas del curso ${course.title}${levels.length > 1 && activeLevel?.name ? ` - ${activeLevel.name}` : ""}`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"

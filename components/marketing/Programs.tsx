@@ -160,7 +160,7 @@ export default function Programs() {
               <div className="flex items-center gap-2 text-xs font-semibold text-mute">
                 <span>
                   {current.durationHours} h · En vivo
-                  {current.levels?.length ? ` · ${current.levels.length} niveles` : ""}
+                  {current.levels && current.levels.length > 1 ? ` · ${current.levels.length} niveles` : ""}
                 </span>
                 {isNew(current) ? <span className="text-ink">Nuevo</span> : null}
               </div>

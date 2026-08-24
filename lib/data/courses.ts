@@ -246,11 +246,11 @@ export const courses: Course[] = [
     isFeatured: false,
     sortOrder: 4,
     whatYouLearn: [
-      "Crear Cloud Flows automatizados",
-      "Desktop Flows y RPA sin código",
-      "Conectores y API integrations",
-      "Copilot IA para generación de flujos",
-      "Automatización de aprobaciones y notificaciones",
+      "Crear flujos de nube automatizados, instantáneos y programados",
+      "Conectores con Outlook, Teams, OneDrive y SharePoint",
+      "Expresiones, variables y funciones lógicas",
+      "Copilot para diseñar flujos con IA",
+      "Automatizar aprobaciones y notificaciones",
     ],
     syllabus: [
       {
@@ -263,31 +263,20 @@ export const courses: Course[] = [
         ],
         hours: 16,
       },
-      {
-        module: "Desktop Flows (RPA)",
-        topics: [
-          "Grabación de acciones",
-          "Automatización de Excel y web",
-          "Variables y control de flujo",
-          "Manejo de errores",
-        ],
-        hours: 16,
-      },
-      {
-        module: "IA y Copilot",
-        topics: [
-          "AI Builder",
-          "Copilot para flujos",
-          "Procesamiento de documentos",
-          "Agentes inteligentes",
-        ],
-        hours: 16,
-      },
     ],
     levels: [
-      { name: "Básico", price: 249000, durationHours: 16, whatYouLearn: ["Crear flujos de nube automatizados, instantáneos y programados", "Conectores con Outlook, Teams, OneDrive y SharePoint", "Expresiones, variables y funciones lógicas", "Automatizar aprobaciones y notificaciones"] },
-      { name: "Intermedio", price: 249000, durationHours: 16, whatYouLearn: ["Desktop Flows y RPA sin código", "Automatización de Excel y web", "Variables y control de flujo avanzado", "Manejo de errores y reintentos"] },
-      { name: "Avanzado", price: 249000, durationHours: 16, whatYouLearn: ["AI Builder y procesamiento de documentos", "Copilot para generación de flujos", "Agentes inteligentes con IA", "Integración con APIs externas"] },
+      {
+        name: "Básico",
+        price: 249000,
+        durationHours: 16,
+        whatYouLearn: [
+          "Crear flujos de nube automatizados, instantáneos y programados",
+          "Conectores con Outlook, Teams, OneDrive y SharePoint",
+          "Expresiones, variables y funciones lógicas",
+          "Copilot para diseñar flujos con IA",
+          "Automatizar aprobaciones y notificaciones",
+        ],
+      },
     ],
   },
   {

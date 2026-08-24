@@ -152,7 +152,7 @@ export async function buildChatbotContext(): Promise<string> {
     const techStr = c.techStack.join(', ')
     let line = `• ${c.title} [/${c.slug}] (${c.durationHours}h) — ${techStr}`
 
-    if (c.levels && c.levels.length > 0) {
+    if (c.levels && c.levels.length > 1) {
       const levelsStr = c.levels.map(l => {
         const price = getPrice(c.slug, l.name, l.price ?? 0)
         let s = `${l.name} ${formatCLP(price)}`
@@ -162,6 +162,14 @@ export async function buildChatbotContext(): Promise<string> {
         return s
       }).join(', ')
       line += `. Niveles: ${levelsStr}`
+    } else if (c.levels && c.levels.length === 1) {
+      const l = c.levels[0]
+      const price = getPrice(c.slug, l.name, l.price ?? 0)
+      let s = formatCLP(price)
+      if (l.originalPrice && l.originalPrice > price) {
+        s += ` (antes ${formatCLP(l.originalPrice)})`
+      }
+      line += `. Precio: ${s}`
     }
 
     // Agregar descripción corta
