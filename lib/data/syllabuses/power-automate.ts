@@ -1,0 +1,190 @@
+import type { CourseSyllabusData } from "./types";
+
+export const powerAutomateSyllabus: CourseSyllabusData = {
+  slug: "power-automate",
+  accent: "#0078D4",
+  programYear: "2026",
+  levels: [
+    {
+      id: "nivel1",
+      label: "Nivel I: Básico",
+      shortLabel: "Fundamentos (16h)",
+      theme: "#0078D4",
+      audience:
+        "Este curso es ideal para profesionales sin experiencia previa en programación que quieren eliminar tareas repetitivas de su día a día: aprenderás a crear flujos en la nube desde cero, sin escribir código, integrando correo, Teams, OneDrive y las bibliotecas de documentos de Microsoft.",
+      benefits: [
+        "Automatizar tareas repetitivas sin escribir código.",
+        "Integrar Outlook, Teams, OneDrive y SharePoint.",
+        "Aprobaciones y notificaciones automáticas.",
+        "Ahorro de horas de trabajo manual cada semana.",
+        "Herramientas NoCode de alta demanda laboral.",
+      ],
+      modules: [
+        {
+          id: "n1-1",
+          title: "Automatización de Procesos y NoCode (1 hora)",
+          hours: 1,
+          topics: [
+            "Tendencias de futuro",
+            "Beneficios de la automatización",
+            "¿Qué es el NoCode?",
+            "Ecosistema NoCode",
+            "Casos de uso de automatización",
+          ],
+        },
+        {
+          id: "n1-2",
+          title: "Primeros Pasos con Power Automate (2 horas)",
+          hours: 2,
+          topics: [
+            "Introducción a la Power Platform",
+            "¿Qué es Power Automate?",
+            "Power Automate Cloud vs Power Automate Desktop",
+            "Automatización Web vs RPA",
+            "Conectores y aplicaciones",
+            "¿Qué es un flujo?",
+            "Tipos de flujo",
+            "Licencia M365 e inicialización de Power Automate",
+            "Plantillas, conexiones y entornos",
+          ],
+        },
+        {
+          id: "n1-3",
+          title: "Crear un Flujo desde Cero (3 horas)",
+          hours: 3,
+          topics: [
+            "Flujo de nube automático",
+            "Flujo de nube instantáneo",
+            "Flujo de nube programado",
+            "Conexiones",
+            "Exportar e importar flujos",
+            "Activar o desactivar un flujo",
+            "Contenido dinámico",
+            "Condiciones y revisión de errores",
+            "Pausa entre bloques y ejecuciones paralelas",
+            "Clonar procesos",
+          ],
+        },
+        {
+          id: "n1-4",
+          title: "Inteligencia Artificial Generativa en Power Automate (1 hora)",
+          hours: 1,
+          icon: "star",
+          highlight: true,
+          topics: [
+            "Crear flujos con IA",
+            "Diseñadores de procesos",
+            "Copilot como asistente diseñador",
+          ],
+        },
+        {
+          id: "n1-5",
+          title: "Expresiones, Variables y Funciones Lógicas (3 horas)",
+          hours: 3,
+          topics: [
+            "Empezando con las variables: establecer variables",
+            "Anexar cadenas de texto y anexar a matriz",
+            "Condiciones y comparaciones en expresiones",
+            "Unir distintos textos",
+            "Expresiones de tiempo",
+            "Palabras clave en cadenas de texto",
+            "Verificar la longitud de una cadena",
+            "Funciones first, last y split",
+            "Substring e indexOf",
+            "Corrección de nomenclatura en acciones",
+            "Join, CSV Table, HTML Table, Parse JSON y Repetir hasta",
+          ],
+        },
+        {
+          id: "n1-6",
+          title: "Automatización de Bibliotecas de Documentos (2 horas)",
+          hours: 2,
+          topics: [
+            "Introducción a las bibliotecas de documentos de Microsoft",
+            "Guardar adjuntos de un correo electrónico en OneDrive",
+            "Notificaciones en bibliotecas de documentos",
+          ],
+        },
+        {
+          id: "n1-7",
+          title: "Solicitud de Aprobaciones (2 horas)",
+          hours: 2,
+          topics: [
+            "Introducción a los procesos de aprobación",
+            "Aprobaciones en bibliotecas de documentos",
+            "Flujos de aprobación",
+          ],
+        },
+        {
+          id: "n1-8",
+          title: "Integraciones con Teams y Correo Electrónico (2 horas)",
+          hours: 2,
+          topics: [
+            "Introducción a Teams",
+            "Procesos automáticos en Teams",
+            "Notificaciones automáticas",
+            "Extraer texto de mensajes",
+            "Obtener información de destinatarios",
+          ],
+        },
+      ],
+    },
+    {
+      id: "nivel2",
+      label: "Nivel II: Intermedio",
+      shortLabel: "Desktop Flows RPA (16h)",
+      theme: "#7C3AED",
+      audience:
+        "Ideal para alumnos que ya dominan los flujos en la nube y quieren dar el salto a la automatización de escritorio (RPA): grabar procesos, controlar aplicaciones de escritorio, Excel y sitios web sin escribir una sola línea de código.",
+      benefits: [
+        "Automatizar aplicaciones de escritorio y web.",
+        "Grabación de procesos sin programación.",
+        "Manejo de errores y reintentos automáticos.",
+        "Robots que trabajan 24/7 por ti.",
+      ],
+      modules: [
+        {
+          id: "n2-1",
+          title: "Desktop Flows (RPA) (16 horas)",
+          hours: 16,
+          icon: "bolt",
+          topics: [
+            "Grabación de acciones",
+            "Automatización de Excel y web",
+            "Variables y control de flujo",
+            "Manejo de errores",
+          ],
+        },
+      ],
+    },
+    {
+      id: "nivel3",
+      label: "Nivel III: Avanzado",
+      shortLabel: "IA y Copilot (16h)",
+      theme: "#C239B3",
+      audience:
+        "Ideal para alumnos que ya automatizan procesos y quieren incorporar inteligencia artificial: procesamiento de documentos con AI Builder, generación de flujos con Copilot y agentes inteligentes que trabajan de forma autónoma.",
+      benefits: [
+        "Procesar documentos con AI Builder.",
+        "Generar flujos con Copilot.",
+        "Agentes inteligentes autónomos.",
+        "Integración con APIs externas.",
+      ],
+      modules: [
+        {
+          id: "n3-1",
+          title: "IA y Copilot (16 horas)",
+          hours: 16,
+          icon: "star",
+          highlight: true,
+          topics: [
+            "AI Builder",
+            "Copilot para flujos",
+            "Procesamiento de documentos",
+            "Agentes inteligentes",
+          ],
+        },
+      ],
+    },
+  ],
+};

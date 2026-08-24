@@ -7,9 +7,11 @@ import { sqlServerSyllabus } from "./sql-server";
 import { analisisDeDatosSyllabus } from "./analisis-de-datos";
 import { analiticaFinancieraSyllabus } from "./analitica-financiera";
 import { analiticaMineriaSyllabus } from "./analitica-mineria";
+import { powerAutomateSyllabus } from "./power-automate";
 
 const dedicatedSyllabuses: Record<string, CourseSyllabusData> = {
   "power-bi": powerBiSyllabus,
+  "power-automate": powerAutomateSyllabus,
   excel: excelSyllabus,
   python: pythonSyllabus,
   "sql-server": sqlServerSyllabus,

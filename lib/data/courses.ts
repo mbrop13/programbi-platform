@@ -256,10 +256,10 @@ export const courses: Course[] = [
       {
         module: "Cloud Flows",
         topics: [
-          "Triggers y acciones",
-          "Conectores estándar y premium",
-          "Expresiones y condiciones",
-          "Flujos de aprobación",
+          "Fundamentos de automatización y NoCode",
+          "Flujos automatizados, instantáneos y programados",
+          "Expresiones, variables y funciones lógicas",
+          "Aprobaciones e integraciones con Teams y correo",
         ],
         hours: 16,
       },
@@ -285,7 +285,7 @@ export const courses: Course[] = [
       },
     ],
     levels: [
-      { name: "Básico", price: 249000, durationHours: 16, whatYouLearn: ["Crear Cloud Flows automatizados", "Triggers, acciones y conectores", "Expresiones y condiciones avanzadas", "Flujos de aprobación empresarial"] },
+      { name: "Básico", price: 249000, durationHours: 16, whatYouLearn: ["Crear flujos de nube automatizados, instantáneos y programados", "Conectores con Outlook, Teams, OneDrive y SharePoint", "Expresiones, variables y funciones lógicas", "Automatizar aprobaciones y notificaciones"] },
       { name: "Intermedio", price: 249000, durationHours: 16, whatYouLearn: ["Desktop Flows y RPA sin código", "Automatización de Excel y web", "Variables y control de flujo avanzado", "Manejo de errores y reintentos"] },
       { name: "Avanzado", price: 249000, durationHours: 16, whatYouLearn: ["AI Builder y procesamiento de documentos", "Copilot para generación de flujos", "Agentes inteligentes con IA", "Integración con APIs externas"] },
     ],
