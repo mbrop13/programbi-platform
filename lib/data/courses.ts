@@ -151,7 +151,7 @@ export const courses: Course[] = [
     modality: "online",
     level: "intermedio a avanzado",
     imageUrl:
-      "https://mail.programbi.com/uploads/Copilot_course_cover_design_2K_202607150337.jpeg",
+      "https://txwkmywhhywxlsxdrvcj.supabase.co/storage/v1/object/public/course-covers/copilot.jpeg",
     icon: "Sparkles",
     accentColor: "#0078D4",
     isFeatured: false,
@@ -240,7 +240,7 @@ export const courses: Course[] = [
     modality: "online",
     level: "intermedio",
     imageUrl:
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?q=80&w=2070&auto=format&fit=crop",
+      "https://txwkmywhhywxlsxdrvcj.supabase.co/storage/v1/object/public/course-covers/power-automate.jpeg",
     icon: "Zap",
     accentColor: "#0078D4",
     isFeatured: false,
@@ -474,7 +474,7 @@ export const courses: Course[] = [
     modality: "online",
     level: "principiante",
     imageUrl:
-      "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/gempages_519842279402243040-95e6ef6f-0d9e-4e69-a5a7-1a3f7a4c0c45_7bda5e0b-a12a-4293-81c0-8c8fb3c345aa.png?v=1736654931",
+      "https://txwkmywhhywxlsxdrvcj.supabase.co/storage/v1/object/public/course-covers/python.jpeg",
     icon: "Code",
     accentColor: "#3776AB",
     isFeatured: true,
@@ -539,7 +539,7 @@ export const courses: Course[] = [
     modality: "online",
     level: "principiante",
     imageUrl:
-      "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/Tamano_personalizado_1.png?v=1720132741",
+      "https://txwkmywhhywxlsxdrvcj.supabase.co/storage/v1/object/public/course-covers/sql-server.jpeg",
     icon: "Database",
     accentColor: "#64748B",
     isFeatured: true,
