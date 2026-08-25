@@ -150,8 +150,7 @@ export const courses: Course[] = [
     durationHours: 16,
     modality: "online",
     level: "intermedio a avanzado",
-    imageUrl:
-      "https://txwkmywhhywxlsxdrvcj.supabase.co/storage/v1/object/public/course-covers/copilot.jpeg",
+    imageUrl: "https://mail.programbi.com/uploads/Copilot.jpeg",
     icon: "Sparkles",
     accentColor: "#0078D4",
     isFeatured: false,
@@ -239,8 +238,7 @@ export const courses: Course[] = [
     durationHours: 16,
     modality: "online",
     level: "intermedio",
-    imageUrl:
-      "https://txwkmywhhywxlsxdrvcj.supabase.co/storage/v1/object/public/course-covers/power-automate.jpeg",
+    imageUrl: "https://mail.programbi.com/uploads/Power-automate.jpeg",
     icon: "Zap",
     accentColor: "#0078D4",
     isFeatured: false,
@@ -473,8 +471,7 @@ export const courses: Course[] = [
     durationHours: 16,
     modality: "online",
     level: "principiante",
-    imageUrl:
-      "https://txwkmywhhywxlsxdrvcj.supabase.co/storage/v1/object/public/course-covers/python.jpeg",
+    imageUrl: "https://mail.programbi.com/uploads/Python.jpeg",
     icon: "Code",
     accentColor: "#3776AB",
     isFeatured: true,
@@ -538,8 +535,7 @@ export const courses: Course[] = [
     durationHours: 16,
     modality: "online",
     level: "principiante",
-    imageUrl:
-      "https://txwkmywhhywxlsxdrvcj.supabase.co/storage/v1/object/public/course-covers/sql-server.jpeg",
+    imageUrl: "https://mail.programbi.com/uploads/sql-server-(2).jpeg",
     icon: "Database",
     accentColor: "#64748B",
     isFeatured: true,
