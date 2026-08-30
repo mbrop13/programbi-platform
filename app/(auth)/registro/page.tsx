@@ -12,6 +12,7 @@ import {
   persistRegistrationSource,
   readRegistrationSource,
 } from "@/lib/registration-source";
+import { readClientPricingVariant } from "@/lib/experiments/cookie";
 
 function getFromQueryParam(): string | null {
   if (typeof window === "undefined") return null;
@@ -129,6 +130,7 @@ export default function RegistroPage() {
       );
 
       const defaultName = formData.email.split("@")[0] || "Usuario";
+      const pricingVariant = readClientPricingVariant();
 
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
@@ -137,6 +139,7 @@ export default function RegistroPage() {
           data: {
             full_name: defaultName,
             registration_source: registrationSource,
+            ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
           },
           emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/comunidad/inicio")}&reg_source=${encodeURIComponent(registrationSource)}`,
         },
@@ -153,6 +156,7 @@ export default function RegistroPage() {
           .from("profiles")
           .update({
             registration_source: registrationSource,
+            ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
           })
           .eq("id", data.user.id);
       }

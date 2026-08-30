@@ -21,6 +21,7 @@ const leadSchema = z.object({
   company: z.string().max(120).optional().nullable(),
   position: z.string().max(120).optional().nullable(),
   employeeCount: z.string().max(50).optional().nullable(),
+  pricingVariant: z.enum(["gate", "direct"]).optional().nullable(),
   _website: z.string().optional().nullable(),
   _company_url: z.string().optional().nullable(),
   _fax: z.string().optional().nullable(),
@@ -112,6 +113,9 @@ export async function POST(req: NextRequest) {
       source_course: sourceCourse || null,
       lead_type: leadType || "contact",
     };
+    if (data.pricingVariant === "gate" || data.pricingVariant === "direct") {
+      insertData.pricing_variant = data.pricingVariant;
+    }
 
     // If enterprise lead, append company info to message
     if (leadType === "enterprise" && (company || position || employeeCount)) {
@@ -123,7 +127,14 @@ export async function POST(req: NextRequest) {
       insertData.message = extraInfo + (message ? ` — ${message}` : "");
     }
 
-    const { error } = await adminDb.from("course_leads").insert(insertData);
+    let { error } = await adminDb.from("course_leads").insert(insertData);
+
+    if (error && insertData.pricing_variant) {
+      console.error("Error inserting lead (retry without variant):", error);
+      delete insertData.pricing_variant;
+      const retry = await adminDb.from("course_leads").insert(insertData);
+      error = retry.error;
+    }
 
     if (error) {
       console.error("Error inserting lead:", error);

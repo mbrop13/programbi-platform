@@ -5,6 +5,12 @@
  *   NEXT_PUBLIC_CLARITY_PROJECT_ID=xxxxxxxxxx
  */
 
+import {
+  PRICING_VISIBILITY_EXPERIMENT_ID,
+  VARIANT_COOKIE,
+  isPricingVisibilityVariant,
+} from "@/lib/experiments/config";
+
 export type AnalyticsParams = Record<string, string | number | boolean | null | undefined>;
 
 const UTM_KEYS = [
@@ -19,6 +25,8 @@ const UTM_KEYS = [
 
 const UTM_STORAGE_KEY = "pb_marketing_utm";
 const PURCHASE_FIRED_KEY = "pb_purchase_tracked";
+const EXP_STORAGE_KEY = "pb_exp_pricing_visibility";
+const EXP_IMPRESSION_KEY = "pb_exp_pricing_impression";
 
 declare global {
   interface Window {
@@ -76,14 +84,88 @@ export function getStoredUtm(): Record<string, string> {
   }
 }
 
+export function persistExperimentVariant(variant: string): void {
+  if (!isBrowser() || !isPricingVisibilityVariant(variant)) return;
+  try {
+    sessionStorage.setItem(
+      EXP_STORAGE_KEY,
+      JSON.stringify({
+        experiment_id: PRICING_VISIBILITY_EXPERIMENT_ID,
+        variant,
+      }),
+    );
+  } catch {
+    // ignore
+  }
+  try {
+    if (typeof window.clarity === "function") {
+      window.clarity("set", "exp_pricing", variant);
+    }
+  } catch {
+    // ignore
+  }
+}
+
+function getStoredExperiment(): { experiment_id?: string; variant?: string } {
+  if (!isBrowser()) return {};
+  try {
+    const raw = sessionStorage.getItem(EXP_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as { experiment_id?: string; variant?: string };
+      if (parsed?.variant) return parsed;
+    }
+  } catch {
+    // fall through to cookie
+  }
+  try {
+    const match = document.cookie.match(new RegExp(`(?:^|; )${VARIANT_COOKIE}=([^;]*)`));
+    if (!match) return {};
+    const value = decodeURIComponent(match[1]);
+    if (!isPricingVisibilityVariant(value)) return {};
+    return { experiment_id: PRICING_VISIBILITY_EXPERIMENT_ID, variant: value };
+  } catch {
+    return {};
+  }
+}
+
 function withUtm(params?: AnalyticsParams): AnalyticsParams {
   const utm = getStoredUtm();
+  const exp = getStoredExperiment();
   return {
     ...utm,
+    experiment_id: exp.experiment_id,
+    variant: exp.variant,
     page_path: isBrowser() ? window.location.pathname : undefined,
     page_location: isBrowser() ? window.location.href : undefined,
     ...params,
   };
+}
+
+/** One impression per tab session, anonymous course visitors only (caller filters). */
+export function trackExperimentImpression(variant: string, courseSlug?: string): void {
+  if (!isBrowser() || !isPricingVisibilityVariant(variant)) return;
+  try {
+    if (sessionStorage.getItem(EXP_IMPRESSION_KEY)) return;
+    sessionStorage.setItem(EXP_IMPRESSION_KEY, variant);
+  } catch {
+    // still fire
+  }
+  persistExperimentVariant(variant);
+  trackEvent("experiment_impression", {
+    experiment_id: PRICING_VISIBILITY_EXPERIMENT_ID,
+    variant,
+    course_slug: courseSlug,
+  });
+  try {
+    fetch("/api/experiments/exposure", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ variant, course_slug: courseSlug }),
+      keepalive: true,
+    }).catch(() => {});
+  } catch {
+    // ignore
+  }
 }
 
 /** Send event to GA4 (gtag) and tag Clarity custom event when available. */
@@ -103,7 +185,7 @@ export function trackEvent(eventName: string, params?: AnalyticsParams): void {
     if (typeof window.clarity === "function") {
       window.clarity("event", eventName);
       // Optional: attach a few string tags for session filtering
-      const tagKeys = ["course_slug", "cta_label", "location", "lead_type"] as const;
+      const tagKeys = ["course_slug", "cta_label", "location", "lead_type", "variant", "experiment_id"] as const;
       for (const key of tagKeys) {
         const val = payload[key];
         if (typeof val === "string" && val) {

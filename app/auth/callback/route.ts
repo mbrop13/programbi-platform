@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { sendNewMemberNotification } from '@/lib/email/mailersend'
+import { VARIANT_COOKIE, isPricingVisibilityVariant } from '@/lib/experiments/config'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -53,6 +55,17 @@ export async function GET(request: Request) {
                 .eq("id", user.id)
                 .is("registration_source", null)
               if (srcErr) console.error("❌ registration_source update:", srcErr.message)
+            }
+
+            const cookieStore = await cookies()
+            const pricingVariant = cookieStore.get(VARIANT_COOKIE)?.value
+            if (isPricingVisibilityVariant(pricingVariant)) {
+              const { error: varErr } = await supabase
+                .from("profiles")
+                .update({ pricing_variant: pricingVariant })
+                .eq("id", user.id)
+                .is("pricing_variant", null)
+              if (varErr) console.error("❌ pricing_variant update:", varErr.message)
             }
 
             const name = googleName || user.email?.split("@")[0] || "Usuario"

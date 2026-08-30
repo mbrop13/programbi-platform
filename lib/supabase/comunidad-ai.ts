@@ -50,6 +50,121 @@ export async function adminBulkDeleteLeads(leadIds: string[]) {
   return { success: true, count: leadIds.length };
 }
 
+export type PricingVariantCounts = { gate: number; direct: number };
+
+export type PricingExperimentStats = {
+  visitors: PricingVariantCounts;
+  leads: PricingVariantCounts;
+  forms: PricingVariantCounts;
+  sales: PricingVariantCounts;
+  revenue: PricingVariantCounts;
+};
+
+function emptyVariantCounts(): PricingVariantCounts {
+  return { gate: 0, direct: 0 };
+}
+
+function countVariants(rows: { pricing_variant?: string | null; variant?: string | null }[], key: "pricing_variant" | "variant" = "pricing_variant"): PricingVariantCounts {
+  const counts = emptyVariantCounts();
+  for (const row of rows) {
+    const value = row[key];
+    if (value === "gate") counts.gate += 1;
+    else if (value === "direct") counts.direct += 1;
+  }
+  return counts;
+}
+
+export async function adminGetPricingExperimentStats(): Promise<PricingExperimentStats> {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const empty: PricingExperimentStats = {
+    visitors: emptyVariantCounts(),
+    leads: emptyVariantCounts(),
+    forms: emptyVariantCounts(),
+    sales: emptyVariantCounts(),
+    revenue: emptyVariantCounts(),
+  };
+
+  try {
+    const [exposuresRes, registersRes, leadsRes, paymentsRes] = await Promise.all([
+      adminDb
+        .from("experiment_exposures")
+        .select("variant")
+        .eq("experiment_id", "pricing_visibility"),
+      adminDb
+        .from("profiles")
+        .select("pricing_variant")
+        .in("pricing_variant", ["gate", "direct"]),
+      adminDb
+        .from("course_leads")
+        .select("pricing_variant, lead_type")
+        .in("pricing_variant", ["gate", "direct"]),
+      adminDb
+        .from("payments")
+        .select("user_id, amount, pricing_variant")
+        .eq("status", "paid")
+        .then((res) => {
+          if (!res.error) return res;
+          return adminDb.from("payments").select("user_id, amount").eq("status", "paid");
+        }),
+    ]);
+
+    const visitors = countVariants(exposuresRes.data || [], "variant");
+    const leads = countVariants(registersRes.data || []);
+    const forms = countVariants(
+      (leadsRes.data || []).filter((row: { lead_type?: string }) => row.lead_type !== "abandoned_cart"),
+    );
+
+    const sales = emptyVariantCounts();
+    const revenue = emptyVariantCounts();
+    const paidRows = (paymentsRes.data || []) as {
+      user_id?: string | null;
+      amount?: number | null;
+      pricing_variant?: string | null;
+    }[];
+
+    const missingUserIds = [
+      ...new Set(
+        paidRows
+          .filter((p) => p.pricing_variant !== "gate" && p.pricing_variant !== "direct" && p.user_id)
+          .map((p) => p.user_id as string),
+      ),
+    ];
+    const profileVariant = new Map<string, string>();
+    if (missingUserIds.length > 0) {
+      const { data: buyerProfiles } = await adminDb
+        .from("profiles")
+        .select("id, pricing_variant")
+        .in("id", missingUserIds);
+      for (const row of buyerProfiles || []) {
+        const typed = row as { id: string; pricing_variant?: string | null };
+        if (typed.pricing_variant === "gate" || typed.pricing_variant === "direct") {
+          profileVariant.set(typed.id, typed.pricing_variant);
+        }
+      }
+    }
+
+    for (const payment of paidRows) {
+      const variant =
+        payment.pricing_variant === "gate" || payment.pricing_variant === "direct"
+          ? payment.pricing_variant
+          : payment.user_id
+            ? profileVariant.get(payment.user_id)
+            : undefined;
+      if (variant !== "gate" && variant !== "direct") continue;
+      sales[variant] += 1;
+      revenue[variant] += Number(payment.amount) || 0;
+    }
+
+    return { visitors, leads, forms, sales, revenue };
+  } catch (err) {
+    console.error("adminGetPricingExperimentStats:", err);
+    return empty;
+  }
+}
+
 // ─── ADMIN: COURSE MANAGEMENT ───
 
 export async function adminGetCourses() {
@@ -418,10 +533,19 @@ export async function adminGetAllUsers() {
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { data: profiles, error } = await adminDb
+  let { data: profiles, error } = await adminDb
     .from("profiles")
-    .select("id, full_name, email, role, avatar_url, created_at, phone, registration_source, subscription_plan, subscription_expires_at")
+    .select("id, full_name, email, role, avatar_url, created_at, phone, registration_source, pricing_variant, subscription_plan, subscription_expires_at")
     .order("created_at", { ascending: false });
+
+  if (error) {
+    const fallback = await adminDb
+      .from("profiles")
+      .select("id, full_name, email, role, avatar_url, created_at, phone, registration_source, subscription_plan, subscription_expires_at")
+      .order("created_at", { ascending: false });
+    profiles = fallback.data;
+    error = fallback.error;
+  }
 
   if (error) { console.error("Error:", error); return []; }
 

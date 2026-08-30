@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/proxy'
+import { applyExperimentCookies } from '@/lib/experiments/edge'
 
 const BAD_BOT_UA_REGEX = /bytespider|petalbot|mj12bot|zgrab|sqlmap|python-requests|go-http-client|scrapy|nikto|curl\/7\.\d+|wget/i;
 
@@ -15,7 +16,7 @@ export async function proxy(request: NextRequest) {
     const cleanPath = rest === '' ? '/' : rest
     const url = request.nextUrl.clone()
     url.pathname = cleanPath
-    return NextResponse.redirect(url)
+    return applyExperimentCookies(request, NextResponse.redirect(url))
   }
 
   // Bloqueo inmediato en Edge de bots agresivos en rutas sensibles (auth/registro/api)
@@ -35,11 +36,11 @@ export async function proxy(request: NextRequest) {
     ((pathname.startsWith('/comunidad') && !isComunidadLanding) ||
       pathname.startsWith('/admin'))
   ) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return applyExperimentCookies(request, NextResponse.redirect(new URL('/login', request.url)))
   }
 
   if (!hasSession) {
-    return NextResponse.next()
+    return applyExperimentCookies(request, NextResponse.next())
   }
 
   // Rutas que requieren refresco y validación activa de sesión de Supabase en el servidor:
@@ -56,10 +57,10 @@ export async function proxy(request: NextRequest) {
     // Para rutas públicas de marketing (home, cursos, blog, empresas, etc.), dejamos pasar
     // la petición de inmediato con TTFB mínimo. El Navbar y componentes de cliente leen
     // la sesión asíncronamente desde el cliente sin bloquear la entrega de la página.
-    return NextResponse.next()
+    return applyExperimentCookies(request, NextResponse.next())
   }
 
-  return await updateSession(request)
+  return applyExperimentCookies(request, await updateSession(request))
 }
 
 export const config = {

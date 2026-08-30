@@ -10,6 +10,7 @@ import { courses as allCourses } from "@/lib/data/courses";
 import { communityPlans } from "@/lib/data/community_plans";
 import ArticleBlockEditor from "@/components/shared/ArticleBlockEditor";
 import AdminOverview from "./admin/AdminOverview";
+import PricingExperimentCard from "./admin/PricingExperimentCard";
 import ClassTrackingTab from "./admin/ClassTrackingTab";
 import AdminCourses from "./admin/AdminCourses";
 import AdminEmpleos from "./admin/AdminEmpleos";
@@ -814,7 +815,7 @@ function AdminLeads() {
 
   const exportToCSV = () => {
     if (leads.length === 0) return alert("No hay contactos para exportar.");
-    const head = ["email", "name", "WhatsApp", "Cursos Interés", "Mensaje", "Origen", "Fecha"];
+    const head = ["email", "name", "WhatsApp", "Cursos Interés", "Mensaje", "Origen", "Variante precio", "Fecha"];
     const rows = leads.map(l => {
       const date = new Date(l.created_at).toLocaleDateString('es-CL');
       const courses = (l.selected_courses || []).join(" | ");
@@ -825,6 +826,7 @@ function AdminLeads() {
         `"${courses}"`,
         `"${(l.message || '').replace(/"/g, '""')}"`,
         l.source_course || '',
+        l.pricing_variant === "direct" ? "Vio precio" : l.pricing_variant === "gate" ? "Candado" : "",
         date
       ].join(',');
     });
@@ -856,7 +858,7 @@ function AdminLeads() {
        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
          <div>
            <h2 className="font-display font-black text-2xl text-gray-900 mb-1">Contactos (Leads)</h2>
-           <p className="text-sm text-gray-400">Solicitudes de información desde los cursos</p>
+           <p className="text-sm text-gray-400">Solicitudes de información desde los cursos. El A/B de precio no oculta contactos: ambos brazos se guardan aquí.</p>
          </div>
          <div className="flex flex-wrap items-center gap-2.5">
            <button 
@@ -875,6 +877,10 @@ function AdminLeads() {
              <Download className="w-4 h-4" /> Exportar Leads CSV
            </button>
          </div>
+       </div>
+
+       <div className="mb-8">
+         <PricingExperimentCard />
        </div>
 
        {leads.length === 0 ? (
@@ -906,6 +912,7 @@ function AdminLeads() {
                  </th>
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Contacto</th>
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Tipo</th>
+                 <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider hidden lg:table-cell">A/B</th>
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Detalles</th>
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider hidden md:table-cell">Mensaje</th>
                  <th className="px-4 py-3 text-xs font-bold text-gray-500 uppercase tracking-wider">Fecha</th>
@@ -953,6 +960,15 @@ function AdminLeads() {
                        }`}>
                          {lead.lead_type === 'enterprise' ? '🏢 Empresa' : lead.lead_type === 'notify' ? '🔔 Notificar' : '📩 Contacto'}
                        </span>
+                     </td>
+                    <td className="px-4 py-4 hidden lg:table-cell">
+                       {lead.pricing_variant === "direct" ? (
+                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 whitespace-nowrap">Vio precio</span>
+                       ) : lead.pricing_variant === "gate" ? (
+                         <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 whitespace-nowrap">Candado</span>
+                       ) : (
+                         <span className="text-[10px] text-gray-300">—</span>
+                       )}
                      </td>
                     <td className="px-4 py-4">
                       <div className="flex flex-wrap gap-1 max-w-[200px]">
@@ -1564,7 +1580,7 @@ function AdminMembers() {
 
   const exportToCSV = () => {
     if (filtered.length === 0) return alert("No hay miembros para exportar.");
-    const head = ["email", "name", "ID", "Teléfono", "Rol", "Origen Registro", "Ruta Origen", "Fecha Registro"];
+    const head = ["email", "name", "ID", "Teléfono", "Rol", "Origen Registro", "Ruta Origen", "Variante precio", "Fecha Registro"];
     const rows = filtered.map(u => [
       u.email || '',
       `"${(u.full_name || '').replace(/"/g, '""')}"`,
@@ -1573,6 +1589,7 @@ function AdminMembers() {
       u.role || 'student',
       `"${formatRegistrationSource(u.registration_source).replace(/"/g, '""')}"`,
       `"${(u.registration_source || '').replace(/"/g, '""')}"`,
+      u.pricing_variant === "direct" ? "Vio precio" : u.pricing_variant === "gate" ? "Candado" : "",
       u.created_at ? new Date(u.created_at).toLocaleDateString("es-CL") : ''
     ].join(','));
 
@@ -1660,6 +1677,15 @@ function AdminMembers() {
                            ({selectedUser.registration_source})
                          </span>
                        )}
+                       {selectedUser.pricing_variant === "direct" || selectedUser.pricing_variant === "gate" ? (
+                         <span className={`inline-flex items-center px-2 py-0.5 rounded-md font-bold text-[11px] border ${
+                           selectedUser.pricing_variant === "direct"
+                             ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+                             : "bg-amber-50 text-amber-700 border-amber-100"
+                         }`}>
+                           {selectedUser.pricing_variant === "direct" ? "Vio precio" : "Candado"}
+                         </span>
+                       ) : null}
                      </p>
                    </div>
                  </div>
@@ -1805,6 +1831,7 @@ function AdminMembers() {
                     <th className="px-5 py-3.5">Contacto</th>
                     <th className="px-5 py-3.5">Rol</th>
                     <th className="px-5 py-3.5 hidden md:table-cell">Origen</th>
+                    <th className="px-5 py-3.5 hidden lg:table-cell">A/B</th>
                     <th className="px-5 py-3.5 hidden sm:table-cell">Registrado</th>
                     <th className="px-5 py-3.5 text-right">Acciones</th>
                  </tr>
@@ -1870,6 +1897,15 @@ function AdminMembers() {
                             <Globe className="w-3 h-3 shrink-0 opacity-70" />
                             <span className="truncate">{formatRegistrationSource(u.registration_source)}</span>
                           </span>
+                       </td>
+                       <td className="px-5 py-4 hidden lg:table-cell">
+                          {u.pricing_variant === "direct" ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 whitespace-nowrap">Vio precio</span>
+                          ) : u.pricing_variant === "gate" ? (
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 whitespace-nowrap">Candado</span>
+                          ) : (
+                            <span className="text-[10px] text-gray-300">—</span>
+                          )}
                        </td>
                        <td className="px-5 py-4 text-gray-400 hidden sm:table-cell">
                           {u.created_at ? new Date(u.created_at).toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" }) : '—'}

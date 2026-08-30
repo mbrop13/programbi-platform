@@ -12,6 +12,7 @@ import { useCountry } from "@/lib/context/CountryContext";
 import { subscribeToNewsletter } from "@/lib/supabase/comunidad-ai";
 import { honeypotStyle } from "@/lib/antibot";
 import { persistRegistrationSource } from "@/lib/registration-source";
+import { readClientPricingVariant } from "@/lib/experiments/cookie";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -177,6 +178,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
 
     try {
       const registrationSource = persistRegistrationSource();
+      const pricingVariant = readClientPricingVariant();
       const defaultName = fullName.trim() || email.split("@")[0] || "Usuario";
 
       const { data, error } = await supabase.auth.signUp({
@@ -187,6 +189,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
             full_name: defaultName,
             whatsapp: whatsapp ? `${phonePrefix}${whatsapp}` : null,
             registration_source: registrationSource,
+            ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
           },
         },
       });
@@ -211,6 +214,9 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           };
           if (whatsapp) {
             profileUpdates.phone = `${phonePrefix}${whatsapp}`;
+          }
+          if (pricingVariant) {
+            profileUpdates.pricing_variant = pricingVariant;
           }
           await supabase.from("profiles").update(profileUpdates).eq("id", data.user.id);
         }

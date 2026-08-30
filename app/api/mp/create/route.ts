@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { randomUUID } from "crypto";
+import { getPricingVariantForUser } from "@/lib/experiments/user-variant";
 
 /**
  * POST /api/mp/create
@@ -218,7 +219,8 @@ export async function POST(req: NextRequest) {
       couponCode: couponCode || null
     });
 
-    await adminDb.from("payments").insert({
+    const pricingVariant = await getPricingVariantForUser(adminDb, user.id);
+    const paymentRow: Record<string, unknown> = {
       user_id: user.id,
       course_id: firstCourseId?.id || null,
       flow_order: commerceOrder, // Reusing column for commerce order ID
@@ -226,8 +228,14 @@ export async function POST(req: NextRequest) {
       amount: grandTotalClp,
       currency: "CLP",
       status: "pending",
-      payment_method: tempMetadata
-    } as any);
+      payment_method: tempMetadata,
+    };
+    if (pricingVariant) paymentRow.pricing_variant = pricingVariant;
+    const paymentInsert = await adminDb.from("payments").insert(paymentRow as any);
+    if (paymentInsert.error && paymentRow.pricing_variant) {
+      delete paymentRow.pricing_variant;
+      await adminDb.from("payments").insert(paymentRow as any);
+    }
 
     // Save scheduling_slots as pending_payment
     const { scheduling_slots = [] } = body;

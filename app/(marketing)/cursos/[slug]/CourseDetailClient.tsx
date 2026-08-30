@@ -32,8 +32,17 @@ import { useCountry } from "@/lib/context/CountryContext";
 import {
   trackCourseView,
   trackCtaClick,
+  trackExperimentImpression,
   trackWhatsAppClick,
 } from "@/lib/analytics/marketing";
+import { usePricingVisibility } from "@/lib/experiments/useExperiment";
+import { readClientPricingVariant } from "@/lib/experiments/cookie";
+
+function courseCheckoutUrl(slug: string, levelName?: string) {
+  const params = new URLSearchParams({ curso: slug });
+  if (levelName) params.set("nivel", levelName);
+  return `/pago?${params.toString()}`;
+}
 
 const PDF_URL =
   "https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link";
@@ -55,6 +64,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const { variant, ready: experimentReady } = usePricingVisibility();
+  const pricingReady = !checkingAuth && experimentReady;
+  const showPrice = isLoggedIn || variant === "direct";
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [isFreeTrial, setIsFreeTrial] = useState(false);
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
@@ -83,7 +95,8 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   };
 
   const handleCheckoutCTA = async () => {
-    trackCtaClick(isLoggedIn ? "Inscribirse" : "Registrarse", "course_detail_sidebar", {
+    const levelName = (course.levels || [])[selectedLevel]?.name;
+    trackCtaClick(showPrice ? "Inscribirse" : "Registrarse", "course_detail_sidebar", {
       course_slug: course.slug,
     });
 
@@ -103,17 +116,23 @@ export default function CourseDetailClient({ course }: { course: Course }) {
           selectedCourses: [course.title],
           sourceCourse: course.slug,
           leadType: "abandoned_cart",
+          pricingVariant: readClientPricingVariant(),
         }),
       });
     } catch {
       /* lead is best-effort */
     }
-    window.location.href = `/pago?curso=${course.slug}`;
+    window.location.href = courseCheckoutUrl(course.slug, levelName);
   };
 
   useEffect(() => {
     trackCourseView(course.slug, course.title);
   }, [course.slug, course.title]);
+
+  useEffect(() => {
+    if (checkingAuth || isLoggedIn || !variant) return;
+    trackExperimentImpression(variant, course.slug);
+  }, [checkingAuth, isLoggedIn, variant, course.slug]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -409,9 +428,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       ? "Aún no hay una fecha abierta para este nivel. Escríbenos y te avisamos del próximo grupo."
                       : "Aún no hay una fecha abierta para este curso. Escríbenos y te avisamos del próximo grupo."}
                   </p>
-                ) : checkingAuth ? (
+                ) : !pricingReady ? (
                   <div className="h-10 w-40 rounded-lg bg-wash" />
-                ) : isLoggedIn ? (
+                ) : showPrice ? (
                   <div>
                     {originalGrandTotal && totalDiscountPercentage > 0 && (
                       <p className="text-sm text-faint">
@@ -456,7 +475,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                   onClick={handleCheckoutCTA}
                   className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
                 >
-                  {isLoggedIn ? "Inscribirse" : "Registrarse"}
+                  {showPrice ? "Inscribirse" : "Registrarse"}
                   <ArrowRight size={16} />
                 </button>
               )}
@@ -528,7 +547,16 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         </section>
       )}
 
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} defaultTab="register" />
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        defaultTab="register"
+        redirectUrl={
+          variant === "direct"
+            ? courseCheckoutUrl(course.slug, activeLevel?.name)
+            : `/cursos/${course.slug}`
+        }
+      />
     </>
   );
 }
@@ -588,6 +616,7 @@ function CourseContactForm({ course }: { course: Course }) {
         message: formData.get("message"),
         sourceCourse: course.title,
         leadType: contactType,
+        pricingVariant: readClientPricingVariant(),
         ...getAntiBotFields(formLoadedAt.current, honeypot),
       };
       if (contactType === "empresa") {

@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { adminGetDetailedDashboardStats } from "@/lib/supabase/comunidad-ai";
+import PricingExperimentCard from "./PricingExperimentCard";
 
 export default function AdminOverview() {
   const [stats, setStats] = useState<any>(null);
@@ -222,6 +223,8 @@ export default function AdminOverview() {
                 );
               })}
             </div>
+
+            <PricingExperimentCard />
 
             {/* Income + Best Course Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
