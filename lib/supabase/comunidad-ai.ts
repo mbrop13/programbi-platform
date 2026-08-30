@@ -543,7 +543,7 @@ export async function adminGetAllUsers() {
       .from("profiles")
       .select("id, full_name, email, role, avatar_url, created_at, phone, registration_source, subscription_plan, subscription_expires_at")
       .order("created_at", { ascending: false });
-    profiles = fallback.data;
+    profiles = fallback.data ? (fallback.data as any[]).map(p => ({ ...p, pricing_variant: null })) : null;
     error = fallback.error;
   }
 

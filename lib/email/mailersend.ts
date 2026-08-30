@@ -68,43 +68,62 @@ async function sendEmail(params: {
   });
 }
 
-// ─── Base HTML template ────────────────────────────────────────────────────────
+// ─── Base HTML template — ProgramBI 2.0 Paper & Ink ───────────────────────────
 function wrapHtml(title: string, content: string) {
   return /* html */ `
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${title}</title>
+  <style type="text/css">
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0; mso-table-rspace: 0; }
+    img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    body { margin: 0; padding: 0; width: 100% !important; background-color: #F3F3F0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    h1, h2, h3, p { margin: 0; padding: 0; }
+    @media screen and (max-width: 620px) {
+      .outer { padding: 12px 8px !important; }
+      .card { border-radius: 16px !important; }
+      .mp { padding-left: 20px !important; padding-right: 20px !important; }
+      .ms { display: block !important; width: 100% !important; text-align: left !important; }
+    }
+  </style>
 </head>
-<body style="margin:0;padding:0;background:#F8FAFC;font-family:'Segoe UI',Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;padding:32px 16px;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);max-width:600px;width:100%;">
+<body style="margin:0;padding:0;background-color:#F3F3F0;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F3F3F0;">
+    <tr><td align="center" style="padding:36px 16px 50px;" class="outer">
+      <table width="600" cellpadding="0" cellspacing="0" border="0" class="card" style="background-color:#FFFFFF;border:1px solid #E5E5E0;border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(23,23,22,0.04);max-width:600px;width:100%;">
 
         <!-- HEADER -->
         <tr>
-          <td style="background:linear-gradient(135deg,#1890FF 0%,#4338ca 100%);padding:32px 40px;text-align:center;">
-            <div style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-0.5px;">ProgramBI</div>
-            <div style="font-size:12px;color:rgba(255,255,255,0.7);margin-top:4px;letter-spacing:2px;text-transform:uppercase;">Formación en Datos</div>
+          <td style="background-color:#FFFFFF;padding:32px 40px 24px;text-align:center;border-bottom:1px solid #EAEAE6;" class="mp">
+            <a href="https://www.programbi.com" target="_blank" style="text-decoration:none;display:inline-block;">
+              <img src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974" width="150" alt="ProgramBI" style="display:inline-block;width:150px;max-width:100%;border:0;"/>
+            </a>
+            <div style="margin-top:10px;">
+              <span style="display:inline-block;background-color:#EBEBE6;color:#5F5E59;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;padding:4px 12px;border-radius:9999px;">
+                Formación en Datos
+              </span>
+            </div>
           </td>
         </tr>
 
         <!-- CONTENT -->
         <tr>
-          <td style="padding:40px 40px 32px;">
+          <td style="padding:36px 40px 32px;" class="mp">
             ${content}
           </td>
         </tr>
 
         <!-- FOOTER -->
         <tr>
-          <td style="padding:24px 40px;border-top:1px solid #F1F5F9;background:#FAFAFA;">
-            <p style="margin:0;font-size:12px;color:#94A3B8;text-align:center;line-height:1.6;">
+          <td style="padding:24px 40px;border-top:1px solid #EAEAE6;background-color:#F7F7F4;" class="mp">
+            <p style="margin:0;font-size:11px;color:#8C8B85;text-align:center;line-height:1.6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
               © ${new Date().getFullYear()} ProgramBI — Todos los derechos reservados<br/>
-              <a href="https://programbi.com" style="color:#1890FF;text-decoration:none;">programbi.com</a> · 
-              <a href="mailto:${ADMIN_EMAIL}" style="color:#1890FF;text-decoration:none;">${ADMIN_EMAIL}</a>
+              <a href="https://programbi.com" style="color:#171716;text-decoration:none;font-weight:700;">programbi.com</a> · 
+              <a href="mailto:${ADMIN_EMAIL}" style="color:#171716;text-decoration:none;font-weight:700;">${ADMIN_EMAIL}</a>
             </p>
           </td>
         </tr>
@@ -528,8 +547,6 @@ export async function sendQuoteConfirmationToLead(params: {
 
 
 // ─── Email 2: Notificación interna — Nueva cotización ─────────────────────────
-// Envía directamente usando transporter.sendMail (mismo método que las cotizaciones
-// que SÍ llegan) para garantizar la entrega a moliva@programbi.cl
 export async function sendNewLeadNotificationToAdmin(params: {
   name: string;
   email: string;
@@ -543,53 +560,57 @@ export async function sendNewLeadNotificationToAdmin(params: {
 }) {
   const { name, email, phone, courses, message, leadType, company, position, employeeCount } = params;
 
-  const isEnterprise = leadType === "enterprise";
-  const courseList = courses.map(c => `<li style="padding:4px 0;font-size:14px;color:#0F172A;">${c}</li>`).join("");
+  const isEnterprise = leadType === "enterprise" || leadType === "empresa";
+  const courseList = courses.map(c => `<li style="padding:4px 0;font-size:13.5px;color:#171716;">${c}</li>`).join("");
   const timestamp = new Date().toLocaleString("es-CL", { timeZone: "America/Santiago" });
 
   const html = wrapHtml("🚨 Nuevo Contacto — ProgramBI", `
-    <div style="display:inline-block;background:${isEnterprise ? "#FEF3C7" : "#DCFCE7"};color:${isEnterprise ? "#92400E" : "#166534"};font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">
-      ${isEnterprise ? "🏢 Empresa" : "👤 Individual"}
+    <div style="display:inline-block;background:${isEnterprise ? "#FEF3C7" : "#EBEBE6"};color:${isEnterprise ? "#92400E" : "#171716"};font-size:10.5px;font-weight:800;padding:4px 12px;border-radius:9999px;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">
+      ${isEnterprise ? "🏢 Lead Empresa" : "👤 Lead Individual"}
     </div>
-    <h1 style="margin:0 0 8px;font-size:22px;font-weight:900;color:#0F172A;">Nuevo contacto: ${name}</h1>
-    <p style="margin:0 0 20px;font-size:12px;color:#94A3B8;">Recibido el ${timestamp}</p>
+    <h1 style="margin:0 0 6px;font-size:22px;font-weight:900;color:#171716;letter-spacing:-0.5px;">Nuevo contacto: ${name}</h1>
+    <p style="margin:0 0 20px;font-size:12px;color:#8C8B85;">Recibido el ${timestamp}</p>
 
-    <table style="width:100%;border-collapse:collapse;">
-      <tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;width:140px;">Nombre</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${name}</td></tr>
-      <tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Email</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;"><a href="mailto:${email}" style="color:#1890FF;">${email}</a></td></tr>
-      ${phone ? `<tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">WhatsApp</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;"><a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" style="color:#25D366;font-weight:700;">${phone}</a></td></tr>` : ""}
-      ${isEnterprise && company ? `<tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Empresa</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${company}</td></tr>` : ""}
-      ${isEnterprise && position ? `<tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Cargo</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${position}</td></tr>` : ""}
-      ${isEnterprise && employeeCount ? `<tr><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Empleados</td><td style="padding:10px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;">${employeeCount}</td></tr>` : ""}
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+      <tr><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;width:130px;">Nombre</td><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:700;color:#171716;">${name}</td></tr>
+      <tr><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;">Email</td><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:600;"><a href="mailto:${email}" style="color:#171716;text-decoration:underline;">${email}</a></td></tr>
+      ${phone ? `<tr><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;">WhatsApp</td><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:700;"><a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" style="color:#166534;text-decoration:none;">${phone}</a></td></tr>` : ""}
+      ${isEnterprise && company ? `<tr><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;">Empresa</td><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:700;color:#171716;">${company}</td></tr>` : ""}
+      ${isEnterprise && position ? `<tr><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;">Cargo</td><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:700;color:#171716;">${position}</td></tr>` : ""}
+      ${isEnterprise && employeeCount ? `<tr><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;">Colaboradores</td><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:700;color:#171716;">${employeeCount}</td></tr>` : ""}
     </table>
 
-    <div style="background:#F8FAFC;border-radius:12px;padding:16px 20px;margin-top:20px;">
-      <div style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Cursos de interés</div>
+    <div style="background-color:#F7F7F4;border:1px solid #E5E5E0;border-radius:12px;padding:16px 20px;margin-bottom:16px;">
+      <div style="font-size:10px;font-weight:800;color:#8C8B85;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px;">Programas de Interés</div>
       <ul style="margin:0;padding-left:18px;">${courseList || "<li>No especificado</li>"}</ul>
     </div>
 
-    ${message ? `<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:16px 20px;margin-top:16px;"><div style="font-size:11px;font-weight:700;color:#92400E;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">Mensaje</div><p style="margin:0;font-size:14px;color:#78350F;">${message}</p></div>` : ""}
+    ${message ? `<div style="background-color:#FFFBEB;border:1px solid #FDE68A;border-radius:12px;padding:16px 20px;margin-bottom:16px;"><div style="font-size:10px;font-weight:800;color:#92400E;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Mensaje del Usuario</div><p style="margin:0;font-size:13.5px;color:#78350F;line-height:1.5;">${message}</p></div>` : ""}
 
-    <div style="margin-top:28px;display:flex;gap:12px;">
-      <a href="mailto:${email}?subject=Cotización ProgramBI — ${encodeURIComponent(name)}" 
-         style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:13px 24px;border-radius:12px;">
-        📧 Responder por Email →
-      </a>
-      ${phone ? `<a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" 
-         style="display:inline-block;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:13px 24px;border-radius:12px;">
-        💬 WhatsApp →
-      </a>` : ""}
+    <div style="margin-top:24px;">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td style="padding-right:10px;">
+            <a href="mailto:${email}?subject=Cotización ProgramBI — ${encodeURIComponent(name)}" 
+               style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:9999px;">
+              📧 Responder Email →
+            </a>
+          </td>
+          ${phone ? `<td>
+            <a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" 
+               style="display:inline-block;background-color:#F7F7F4;border:1px solid #D4D4D0;color:#171716;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:9999px;">
+              💬 WhatsApp →
+            </a>
+          </td>` : ""}
+        </tr>
+      </table>
     </div>
   `);
 
   const subject = `🚨 Nuevo contacto ${isEnterprise ? "empresarial" : ""}: ${name} — ${courses[0] || "General"}`;
   const text = `Nuevo contacto: ${name} | ${email}${phone ? ` | ${phone}` : ""} | Cursos: ${courses.join(", ")}${message ? ` | Msg: ${message}` : ""}`;
 
-  // Enviar directamente usando transporter.sendMail (sin wrapper)
-  // Mismo patrón exacto que los emails de cotización que SÍ llegan
   const transporter = getTransporter();
-
-  // Email a moliva@programbi.cl
   await transporter.sendMail({
     from: fromAddress(),
     to: "moliva@programbi.cl",
@@ -601,7 +622,6 @@ export async function sendNewLeadNotificationToAdmin(params: {
 }
 
 // ─── Email 2b: Notificación — Nuevo miembro registrado ────────────────────────
-// Mismo patrón directo que funciona para los leads
 export async function sendNewMemberNotification(params: {
   name: string;
   email: string;
@@ -611,44 +631,42 @@ export async function sendNewMemberNotification(params: {
   const timestamp = new Date().toLocaleString("es-CL", { timeZone: "America/Santiago" });
 
   const html = wrapHtml("🎉 Nuevo Miembro — ProgramBI", `
-    <div style="text-align:center;padding:16px 0 24px;">
-      <div style="font-size:48px;margin-bottom:12px;">🎉</div>
-      <div style="display:inline-block;background:#DCFCE7;color:#166534;font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">
-        Nuevo Registro
+    <div style="text-align:center;padding:12px 0 20px;">
+      <div style="display:inline-block;background-color:#DCFCE7;color:#166534;font-size:10.5px;font-weight:800;padding:4px 12px;border-radius:9999px;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">
+        Nuevo Registro en Campus
       </div>
-      <h1 style="margin:8px 0 4px;font-size:24px;font-weight:900;color:#0F172A;">¡Se registró ${name}!</h1>
-      <p style="margin:0;font-size:13px;color:#94A3B8;">${timestamp}</p>
+      <h1 style="margin:4px 0;font-size:24px;font-weight:900;color:#171716;letter-spacing:-0.5px;">¡Se registró ${name}!</h1>
+      <p style="margin:0;font-size:12px;color:#8C8B85;">${timestamp}</p>
     </div>
 
-    <table style="width:100%;border-collapse:collapse;margin-top:16px;">
+    <table style="width:100%;border-collapse:collapse;margin:16px 0 24px;">
       <tr>
-        <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;width:120px;">Nombre</td>
-        <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:15px;font-weight:700;color:#0F172A;">${name}</td>
+        <td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;width:120px;">Nombre</td>
+        <td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:700;color:#171716;">${name}</td>
       </tr>
       <tr>
-        <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">Email</td>
-        <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:15px;font-weight:700;">
-          <a href="mailto:${email}" style="color:#1890FF;text-decoration:none;">${email}</a>
+        <td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;">Email</td>
+        <td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:600;">
+          <a href="mailto:${email}" style="color:#171716;text-decoration:underline;">${email}</a>
         </td>
       </tr>
       ${phone ? `<tr>
-        <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:13px;color:#64748B;">WhatsApp</td>
-        <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:15px;font-weight:700;">
-          <a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" style="color:#25D366;text-decoration:none;font-weight:700;">${phone}</a>
+        <td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;">WhatsApp</td>
+        <td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:700;">
+          <a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" style="color:#166534;text-decoration:none;">${phone}</a>
         </td>
       </tr>` : ""}
     </table>
 
-    <div style="margin-top:28px;text-align:center;">
+    <div style="text-align:center;">
       <a href="mailto:${email}?subject=Bienvenido a ProgramBI — ${encodeURIComponent(name)}" 
-         style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:13px 28px;border-radius:12px;">
+         style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
         📧 Enviar bienvenida personalizada →
       </a>
     </div>
   `);
 
   const transporter = getTransporter();
-
   await transporter.sendMail({
     from: fromAddress(),
     to: "moliva@programbi.cl",
@@ -691,25 +709,27 @@ export async function sendNotifyMeConfirmation(params: {
   const { name, email, courseName, levelName } = params;
 
   const html = wrapHtml("Te avisamos cuando haya fecha — ProgramBI", `
-    <div style="text-align:center;padding:20px 0 28px;">
-      <div style="font-size:48px;margin-bottom:12px;">🔔</div>
-      <h1 style="margin:0 0 8px;font-size:24px;font-weight:900;color:#0F172A;">¡Ya estás en lista!</h1>
-      <p style="margin:0;font-size:15px;color:#475569;">Te notificaremos cuando se abra la próxima fecha.</p>
+    <div style="text-align:center;padding:12px 0 20px;">
+      <div style="display:inline-block;background-color:#EBEBE6;color:#171716;font-size:10.5px;font-weight:800;padding:4px 12px;border-radius:9999px;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">
+        🔔 Lista de Espera Confirmada
+      </div>
+      <h1 style="margin:4px 0;font-size:24px;font-weight:900;color:#171716;letter-spacing:-0.5px;">¡Ya estás en lista!</h1>
+      <p style="margin:0;font-size:14px;color:#5F5E59;">Te avisaremos a este correo de inmediato en cuanto abramos cupos.</p>
     </div>
 
-    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:20px 24px;margin-bottom:28px;text-align:center;">
-      <div style="font-size:11px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;">Esperando apertura de</div>
-      <div style="font-size:20px;font-weight:900;color:#0F172A;">${courseName}</div>
-      ${levelName ? `<div style="font-size:13px;color:#64748B;margin-top:4px;">Nivel: ${levelName}</div>` : ""}
+    <div style="background-color:#F7F7F4;border:1px solid #E5E5E0;border-radius:14px;padding:20px 24px;margin:20px 0 24px;text-align:center;">
+      <div style="font-size:10.5px;font-weight:800;color:#8C8B85;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;">Esperando apertura de</div>
+      <div style="font-size:19px;font-weight:900;color:#171716;">${courseName}</div>
+      ${levelName ? `<div style="font-size:12.5px;color:#5F5E59;margin-top:4px;font-weight:600;">Nivel: ${levelName}</div>` : ""}
     </div>
 
-    <p style="font-size:14px;color:#475569;line-height:1.6;text-align:center;">
-      Mientras tanto, puedes explorar los demás cursos disponibles en nuestra plataforma.
+    <p style="font-size:13.5px;color:#5F5E59;line-height:1.6;text-align:center;margin:0 0 24px;">
+      Mientras tanto, puedes explorar todos los programas y cursos con fechas activas en nuestra plataforma.
     </p>
 
-    <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.com/cursos" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
-        Explorar otros cursos →
+    <div style="text-align:center;">
+      <a href="https://programbi.com/cursos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 28px;border-radius:9999px;letter-spacing:0.2px;">
+        Explorar catálogo de cursos →
       </a>
     </div>
   `);
@@ -770,30 +790,30 @@ export async function sendPaymentConfirmation(params: {
     const time = hasSchedule ? sched.schedule_time : "Por confirmar";
 
     return `
-      <div style="background: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02);">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #F1F5F9; padding-bottom: 14px; margin-bottom: 16px;">
-          <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #0F172A; text-align: left;">
-            ${c.title} - <span style="color: #1890FF; font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">${c.levelName}</span>
+      <div style="background-color: #FFFFFF; border: 1px solid #E5E5E0; border-radius: 14px; padding: 20px 22px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(23,23,22,0.03);">
+        <div style="border-bottom: 1px solid #EAEAE6; padding-bottom: 12px; margin-bottom: 14px;">
+          <h3 style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; font-weight: 800; color: #171716;">
+            ${c.title} <span style="display: inline-block; background-color: #EBEBE6; color: #171716; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; padding: 3px 8px; border-radius: 9999px; margin-left: 6px;">${c.levelName}</span>
           </h3>
         </div>
         
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 12px;">
           <tr>
-            <td style="padding: 6px 0; font-size: 14px; color: #64748B; width: 140px; text-align: left;"><strong>📅 Fecha de Inicio:</strong></td>
-            <td style="padding: 6px 0; font-size: 14px; font-weight: 700; color: #0F172A; text-align: left;">${startDateFormatted}</td>
+            <td style="padding: 5px 0; font-size: 13px; color: #5F5E59; width: 130px; text-align: left;"><strong>📅 Fecha de Inicio:</strong></td>
+            <td style="padding: 5px 0; font-size: 13.5px; font-weight: 700; color: #171716; text-align: left;">${startDateFormatted}</td>
           </tr>
           <tr>
-            <td style="padding: 6px 0; font-size: 14px; color: #64748B; text-align: left;"><strong>🗓️ Días de Clases:</strong></td>
-            <td style="padding: 6px 0; font-size: 14px; font-weight: 700; color: #0F172A; text-align: left;">${days}</td>
+            <td style="padding: 5px 0; font-size: 13px; color: #5F5E59; text-align: left;"><strong>🗓️ Días de Clases:</strong></td>
+            <td style="padding: 5px 0; font-size: 13.5px; font-weight: 700; color: #171716; text-align: left;">${days}</td>
           </tr>
           <tr>
-            <td style="padding: 6px 0; font-size: 14px; color: #64748B; text-align: left;"><strong>⏰ Horario:</strong></td>
-            <td style="padding: 6px 0; font-size: 14px; font-weight: 700; color: #0F172A; text-align: left;">${time} (Vía Zoom en Vivo)</td>
+            <td style="padding: 5px 0; font-size: 13px; color: #5F5E59; text-align: left;"><strong>⏰ Horario:</strong></td>
+            <td style="padding: 5px 0; font-size: 13.5px; font-weight: 700; color: #171716; text-align: left;">${time} (Vía Zoom en Vivo)</td>
           </tr>
         </table>
         
-        <div style="background: #F8FAFC; border-left: 4px solid #1890FF; border-radius: 8px; padding: 12px 16px; font-size: 12px; color: #475569; line-height: 1.5; text-align: left;">
-          <strong>💡 Información Importante:</strong> El curso se dicta en vivo vía Zoom. Las clases quedan grabadas y tendrás acceso ilimitado a ellas para repasarlas en cualquier momento. Te enviaremos las instrucciones y enlace de conexión antes del inicio de clases.
+        <div style="background-color: #F7F7F4; border-left: 3px solid #171716; border-radius: 8px; padding: 10px 14px; font-size: 11.5px; color: #5F5E59; line-height: 1.5; text-align: left;">
+          <strong style="color: #171716;">💡 Modalidad:</strong> Clases en vivo vía Zoom con acceso permanente a grabaciones en tu campus virtual. Te enviaremos el enlace y credenciales antes de iniciar.
         </div>
       </div>
     `;
@@ -805,108 +825,123 @@ export async function sendPaymentConfirmation(params: {
   // Detalle financiero / Recibo
   const courseRows = courses.map(c => `
     <tr>
-      <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:14px;color:#0F172A;text-align:left;">${c.title} (${c.levelName})</td>
-      <td style="padding:12px 0;border-bottom:1px solid #F1F5F9;font-size:14px;font-weight:600;color:#0F172A;text-align:right;">${formatCLP(c.price)}</td>
+      <td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13.5px;color:#171716;text-align:left;">${c.title} (${c.levelName})</td>
+      <td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13.5px;font-weight:700;color:#171716;text-align:right;">${formatCLP(c.price)}</td>
     </tr>
   `).join("");
 
   const html = `
-<!DOCTYPE html>
-<html lang="es">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>¡Felicidades por tu inscripción! — ProgramBI</title>
+  <style type="text/css">
+    body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table, td { mso-table-lspace: 0; mso-table-rspace: 0; }
+    img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+    body { margin: 0; padding: 0; width: 100% !important; background-color: #F3F3F0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    h1, h2, h3, p { margin: 0; padding: 0; }
+    @media screen and (max-width: 620px) {
+      .outer { padding: 12px 8px !important; }
+      .card { border-radius: 16px !important; }
+      .mp { padding-left: 20px !important; padding-right: 20px !important; }
+      .ms { display: block !important; width: 100% !important; text-align: left !important; }
+    }
+  </style>
 </head>
-<body style="margin:0;padding:0;background:#F8FAFC;font-family:'Segoe UI',Arial,sans-serif;-webkit-font-smoothing:antialiased;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#F8FAFC;padding:32px 16px;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#FFFFFF;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.04);max-width:600px;width:100%;">
+<body style="margin:0;padding:0;background-color:#F3F3F0;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F3F3F0;">
+    <tr><td align="center" style="padding:36px 16px 50px;" class="outer">
+      <table width="600" cellpadding="0" cellspacing="0" border="0" class="card" style="background-color:#FFFFFF;border:1px solid #E5E5E0;border-radius:20px;overflow:hidden;box-shadow:0 10px 30px rgba(23,23,22,0.04);max-width:600px;width:100%;">
 
-        <!-- HEADER BANNER - CLEAR BACKGROUND WITH LOGO -->
+        <!-- HEADER -->
         <tr>
-          <td style="background:#FFFFFF;padding:40px 40px 20px;text-align:center;border-bottom:1px solid #F1F5F9;">
-            <div style="margin-bottom: 20px;">
-              <img src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974" width="150" alt="ProgramBI" style="display:inline-block;width:150px;max-width:100%"/>
+          <td style="background-color:#FFFFFF;padding:32px 40px 20px;text-align:center;border-bottom:1px solid #EAEAE6;" class="mp">
+            <div style="margin-bottom: 14px;">
+              <a href="https://www.programbi.com" target="_blank" style="text-decoration:none;display:inline-block;">
+                <img src="https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974" width="150" alt="ProgramBI" style="display:inline-block;width:150px;max-width:100%;border:0;"/>
+              </a>
             </div>
-            <div style="background: #E6F4EA; color: #137333; font-size: 11px; font-weight: 800; padding: 6px 14px; border-radius: 99px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">
-              🎉 ¡INSCRIPCIÓN CONFIRMADA!
+            <div style="background-color: #DCFCE7; color: #166534; font-size: 10.5px; font-weight: 800; padding: 5px 14px; border-radius: 9999px; text-transform: uppercase; letter-spacing: 1px; display: inline-block;">
+              🎉 ¡Inscripción Confirmada!
             </div>
           </td>
         </tr>
 
         <!-- MAIN BODY -->
         <tr>
-          <td style="padding:40px 40px 32px;">
-            <h1 style="margin:0 0 16px;font-size:24px;font-weight:900;color:#0F172A;text-align:left;letter-spacing:-0.5px;">¡Felicidades por dar el siguiente paso, ${name.split(" ")[0]}!</h1>
-            <p style="margin:0 0 28px;font-size:15px;color:#475569;line-height:1.6;text-align:left;">
-              Hemos recibido y procesado tu pago de forma exitosa. Oficialmente ya eres parte de ProgramBI y tienes asegurado tu cupo para comenzar tu formación. A continuación encontrarás todos los detalles clave de tus clases e inicio del curso:
+          <td style="padding:36px 40px 28px;" class="mp">
+            <h1 style="margin:0 0 12px;font-size:23px;font-weight:900;color:#171716;letter-spacing:-0.5px;">¡Felicidades por dar el siguiente paso, ${name.split(" ")[0]}!</h1>
+            <p style="margin:0 0 24px;font-size:14px;color:#5F5E59;line-height:1.6;">
+              Hemos recibido y procesado tu pago con éxito. Oficialmente ya eres parte de ProgramBI y tienes asegurado tu cupo para comenzar tu formación. A continuación encontrarás todos los detalles clave de tus clases:
             </p>
 
             <!-- CURSOS DETALLE -->
-            <div style="margin-bottom: 32px;">
-              <h2 style="font-size:14px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:16px;text-align:left;">📅 Horarios e Información de Clases</h2>
+            <div style="margin-bottom: 28px;">
+              <h2 style="font-size:12px;font-weight:800;color:#8C8B85;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;">📅 Horarios e Información de Clases</h2>
               ${courseDetailCards}
             </div>
 
-            <!-- RESUMEN DE PAGO (BOLETA / DETALLE) -->
-            <div style="background:#F8FAFC;border: 1px solid #E2E8F0;border-radius:16px;padding:24px;margin-bottom:32px;">
-              <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E2E8F0;padding-bottom:12px;margin-bottom:14px;">
-                <span style="font-size:12px;font-weight:800;color:#64748B;text-transform:uppercase;letter-spacing:1px;text-align:left;">Comprobante de Pago</span>
-                <span style="font-size:12px;font-weight:800;color:#1890FF;font-family:monospace;">ID Orden: ${orderId}</span>
+            <!-- RESUMEN DE PAGO -->
+            <div style="background-color:#F7F7F4;border: 1px solid #E5E5E0;border-radius:14px;padding:22px 24px;margin-bottom:28px;">
+              <div style="display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #EAEAE6;padding-bottom:10px;margin-bottom:12px;">
+                <span style="font-size:11px;font-weight:800;color:#8C8B85;text-transform:uppercase;letter-spacing:1px;">Comprobante de Pago</span>
+                <span style="font-size:11px;font-weight:800;color:#171716;font-family:monospace;">ID: ${orderId}</span>
               </div>
               
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tbody>${courseRows}</tbody>
                 <tfoot>
                   <tr>
-                    <td style="padding-top:14px;font-size:15px;font-weight:800;color:#0F172A;text-align:left;">Total Pagado</td>
-                    <td style="padding-top:14px;font-size:18px;font-weight:900;color:#10B981;text-align:right;">${formatCLP(totalPaid)}</td>
+                    <td style="padding-top:12px;font-size:14px;font-weight:800;color:#171716;">Total Pagado</td>
+                    <td style="padding-top:12px;font-size:18px;font-weight:900;color:#16A34A;text-align:right;">${formatCLP(totalPaid)}</td>
                   </tr>
                 </tfoot>
               </table>
-              ${cleanPaymentMethod ? `<p style="margin:12px 0 0;font-size:12px;color:#94A3B8;text-align:right;font-style:italic;">Método de Pago: ${cleanPaymentMethod}</p>` : ""}
+              ${cleanPaymentMethod ? `<p style="margin:10px 0 0;font-size:11px;color:#8C8B85;text-align:right;">Método: ${cleanPaymentMethod}</p>` : ""}
             </div>
 
             <!-- ONBOARDING PASOS -->
-            <div style="border-top:1px solid #F1F5F9;padding-top:32px;margin-bottom:36px;">
-              <h2 style="font-size:14px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;text-align:left;">🚀 Siguientes Pasos</h2>
+            <div style="border-top:1px solid #EAEAE6;padding-top:28px;margin-bottom:28px;">
+              <h2 style="font-size:12px;font-weight:800;color:#8C8B85;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:18px;">🚀 Siguientes Pasos</h2>
               
-              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:16px;">
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
                 <tr>
-                  <td valign="top" style="width:32px;padding-right:12px;">
-                    <div style="width:24px;height:24px;background:#EFF6FF;border-radius:50%;color:#1890FF;text-align:center;line-height:24px;font-size:12px;font-weight:800;">1</div>
+                  <td valign="top" style="width:28px;padding-right:12px;">
+                    <div style="width:22px;height:22px;background-color:#EBEBE6;border-radius:50%;color:#171716;text-align:center;line-height:22px;font-size:11px;font-weight:800;">1</div>
                   </td>
-                  <td style="padding-bottom:16px;text-align:left;">
-                    <h4 style="margin:0 0 4px;font-size:14px;font-weight:800;color:#0F172A;">Espera la fecha de inicio del curso</h4>
-                    <p style="margin:0;font-size:13px;color:#64748B;line-height:1.5;">Te enviaremos los detalles finales y las instrucciones de conexión por correo electrónico y WhatsApp antes de comenzar.</p>
+                  <td style="padding-bottom:14px;">
+                    <h4 style="margin:0 0 2px;font-size:13.5px;font-weight:800;color:#171716;">Espera la fecha de inicio</h4>
+                    <p style="margin:0;font-size:12.5px;color:#5F5E59;line-height:1.5;">Te enviaremos los accesos directos de Zoom e instrucciones antes de la primera sesión.</p>
                   </td>
                 </tr>
                 <tr>
-                  <td valign="top" style="width:32px;padding-right:12px;">
-                    <div style="width:24px;height:24px;background:#EFF6FF;border-radius:50%;color:#1890FF;text-align:center;line-height:24px;font-size:12px;font-weight:800;">2</div>
+                  <td valign="top" style="width:28px;padding-right:12px;">
+                    <div style="width:22px;height:22px;background-color:#EBEBE6;border-radius:50%;color:#171716;text-align:center;line-height:22px;font-size:11px;font-weight:800;">2</div>
                   </td>
-                  <td style="padding-bottom:16px;text-align:left;">
-                    <h4 style="margin:0 0 4px;font-size:14px;font-weight:800;color:#0F172A;">Participa en las clases en vivo</h4>
-                    <p style="margin:0;font-size:13px;color:#64748B;line-height:1.5;">Conéctate y participa activamente en las sesiones en vivo vía Zoom. Es la mejor oportunidad para interactuar con el docente y resolver tus dudas en el acto.</p>
+                  <td style="padding-bottom:14px;">
+                    <h4 style="margin:0 0 2px;font-size:13.5px;font-weight:800;color:#171716;">Participa en vivo</h4>
+                    <p style="margin:0;font-size:12.5px;color:#5F5E59;line-height:1.5;">Interactúa en vivo con el docente, resuelve preguntas y trabaja sobre los casos prácticos.</p>
                   </td>
                 </tr>
                 <tr>
-                  <td valign="top" style="width:32px;padding-right:12px;">
-                    <div style="width:24px;height:24px;background:#EFF6FF;border-radius:50%;color:#1890FF;text-align:center;line-height:24px;font-size:12px;font-weight:800;">3</div>
+                  <td valign="top" style="width:28px;padding-right:12px;">
+                    <div style="width:22px;height:22px;background-color:#EBEBE6;border-radius:50%;color:#171716;text-align:center;line-height:22px;font-size:11px;font-weight:800;">3</div>
                   </td>
-                  <td style="padding-bottom:0;text-align:left;">
-                    <h4 style="margin:0 0 4px;font-size:14px;font-weight:800;color:#0F172A;">Acceso ilimitado a grabaciones</h4>
-                    <p style="margin:0;font-size:13px;color:#64748B;line-height:1.5;">Si no puedes asistir en vivo un día, ¡no te preocupes! Todas las sesiones quedan grabadas y tendrás acceso completo para repasarlas cuando quieras.</p>
+                  <td>
+                    <h4 style="margin:0 0 2px;font-size:13.5px;font-weight:800;color:#171716;">Acceso a grabaciones</h4>
+                    <p style="margin:0;font-size:12.5px;color:#5F5E59;line-height:1.5;">Todas las clases quedan grabadas para que las repases a tu propio ritmo en cualquier momento.</p>
                   </td>
                 </tr>
               </table>
             </div>
 
-            <!-- BOTON CTA - WHATSAPP DIRECTO -->
-            <div style="text-align:center;margin-top:36px;margin-bottom:20px;">
-              <a href="https://wa.me/56935409699" 
-                 style="display:inline-block;background:linear-gradient(135deg,#25D366 0%,#128C7E 100%);color:#fff;font-size:15px;font-weight:800;text-decoration:none;padding:16px 36px;border-radius:14px;box-shadow:0 8px 16px rgba(37,211,102,0.25);letter-spacing:0.3px;">
+            <!-- BOTON CTA WHATSAPP DIRECTO -->
+            <div style="text-align:center;margin-top:28px;margin-bottom:12px;">
+              <a href="https://wa.me/56935409699?text=Hola%2C%20tengo%20una%20consulta%20sobre%20mi%20inscripci%C3%B3n%20en%20ProgramBI" 
+                 style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:9999px;letter-spacing:0.2px;">
                 💬 ¿Tienes dudas? Escríbenos por WhatsApp →
               </a>
             </div>
@@ -916,15 +951,14 @@ export async function sendPaymentConfirmation(params: {
 
         <!-- FOOTER -->
         <tr>
-          <td style="padding:32px 40px;border-top:1px solid #F1F5F9;background:#FAFAFA;">
-            <p style="margin:0 0 12px;font-size:13px;color:#64748B;text-align:center;line-height:1.6;">
-              ¿Tienes dudas o necesitas ayuda técnica?<br/>
-              Escríbenos directamente respondiendo a este correo o vía WhatsApp a nuestro soporte.
+          <td style="padding:24px 40px;border-top:1px solid #EAEAE6;background-color:#F7F7F4;" class="mp">
+            <p style="margin:0 0 8px;font-size:11.5px;color:#5F5E59;text-align:center;line-height:1.5;">
+              ¿Necesitas soporte técnico? Escríbenos respondiendo directamente a este correo o vía WhatsApp.
             </p>
-            <p style="margin:0;font-size:12px;color:#94A3B8;text-align:center;line-height:1.6;">
+            <p style="margin:0;font-size:11px;color:#8C8B85;text-align:center;line-height:1.5;">
               © ${new Date().getFullYear()} ProgramBI — Todos los derechos reservados<br/>
-              <a href="https://programbi.com" style="color:#1890FF;text-decoration:none;font-weight:600;">programbi.com</a> · 
-              <a href="mailto:${ADMIN_EMAIL}" style="color:#1890FF;text-decoration:none;font-weight:600;">${ADMIN_EMAIL}</a>
+              <a href="https://programbi.com" style="color:#171716;text-decoration:none;font-weight:700;">programbi.com</a> · 
+              <a href="mailto:${ADMIN_EMAIL}" style="color:#171716;text-decoration:none;font-weight:700;">${ADMIN_EMAIL}</a>
             </p>
           </td>
         </tr>
@@ -1008,44 +1042,52 @@ export async function sendNewPurchaseNotificationToAdmin(params: {
   const timestamp = new Date().toLocaleString("es-CL", { timeZone: "America/Santiago" });
 
   const html = wrapHtml("💰 ¡Nueva venta procesada! — ProgramBI", `
-    <div style="display:inline-block;background:#DCFCE7;color:#166534;font-size:11px;font-weight:700;padding:4px 12px;border-radius:99px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">
-      🛒 Nueva Venta exitosa
+    <div style="display:inline-block;background-color:#DCFCE7;color:#166534;font-size:10.5px;font-weight:800;padding:4px 12px;border-radius:9999px;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">
+      🛒 Nueva Venta Confirmada
     </div>
-    <h1 style="margin:0 0 8px;font-size:22px;font-weight:900;color:#0F172A;">¡Venta procesada de ${name}!</h1>
-    <p style="margin:0 0 20px;font-size:12px;color:#94A3B8;">Confirmada el ${timestamp}</p>
+    <h1 style="margin:0 0 6px;font-size:22px;font-weight:900;color:#171716;letter-spacing:-0.5px;">¡Venta de ${name}!</h1>
+    <p style="margin:0 0 20px;font-size:12px;color:#8C8B85;">Confirmada el ${timestamp}</p>
 
-    <h2 style="font-size:13px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;text-align:left;border-bottom:1px solid #F1F5F9;padding-bottom:6px;">👤 Datos del Alumno</h2>
-    <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
-      <tr><td style="padding:8px 0;font-size:13px;color:#64748B;width:120px;">Nombre</td><td style="padding:8px 0;font-size:14px;font-weight:600;color:#0F172A;">${name}</td></tr>
-      <tr><td style="padding:8px 0;font-size:13px;color:#64748B;">Email</td><td style="padding:8px 0;font-size:14px;font-weight:600;"><a href="mailto:${email}" style="color:#1890FF;text-decoration:none;">${email}</a></td></tr>
-      ${phone ? `<tr><td style="padding:8px 0;font-size:13px;color:#64748B;">WhatsApp</td><td style="padding:8px 0;font-size:14px;font-weight:600;"><a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" style="color:#25D366;text-decoration:none;font-weight:bold;">${phone}</a></td></tr>` : ""}
+    <h2 style="font-size:11px;font-weight:800;color:#8C8B85;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px;text-align:left;border-bottom:1px solid #EAEAE6;padding-bottom:6px;">👤 Datos del Alumno</h2>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
+      <tr><td style="padding:8px 0;font-size:13px;color:#5F5E59;width:120px;">Nombre</td><td style="padding:8px 0;font-size:14px;font-weight:700;color:#171716;">${name}</td></tr>
+      <tr><td style="padding:8px 0;font-size:13px;color:#5F5E59;">Email</td><td style="padding:8px 0;font-size:14px;font-weight:600;"><a href="mailto:${email}" style="color:#171716;text-decoration:underline;">${email}</a></td></tr>
+      ${phone ? `<tr><td style="padding:8px 0;font-size:13px;color:#5F5E59;">WhatsApp</td><td style="padding:8px 0;font-size:14px;font-weight:700;"><a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" style="color:#166534;text-decoration:none;">${phone}</a></td></tr>` : ""}
     </table>
 
-    <h2 style="font-size:13px;font-weight:800;color:#94A3B8;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;text-align:left;border-bottom:1px solid #F1F5F9;padding-bottom:6px;">📚 Detalle de la Compra</h2>
-    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+    <h2 style="font-size:11px;font-weight:800;color:#8C8B85;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px;text-align:left;border-bottom:1px solid #EAEAE6;padding-bottom:6px;">📚 Detalle de la Compra</h2>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:18px;">
       <tbody>${courseRows}</tbody>
       <tfoot>
         <tr>
-          <td style="padding-top:14px;font-size:15px;font-weight:800;color:#0F172A;text-align:left;">Total Recaudado</td>
-          <td style="padding-top:14px;font-size:18px;font-weight:900;color:#10B981;text-align:right;">${formatCLP(totalPaid)}</td>
+          <td style="padding-top:12px;font-size:14px;font-weight:800;color:#171716;text-align:left;">Total Recaudado</td>
+          <td style="padding-top:12px;font-size:18px;font-weight:900;color:#16A34A;text-align:right;">${formatCLP(totalPaid)}</td>
         </tr>
       </tfoot>
     </table>
 
-    <div style="background:#F8FAFC;border: 1px solid #E2E8F0;border-radius:12px;padding:14px;font-size:12px;color:#64748B;margin-top:10px;">
-      <strong>Método de Pago:</strong> ${paymentMethod || "Flow"} <br/>
-      <strong>ID Orden:</strong> <span style="font-family:monospace;">${orderId}</span>
+    <div style="background-color:#F7F7F4;border: 1px solid #E5E5E0;border-radius:12px;padding:14px 16px;font-size:12px;color:#5F5E59;margin-top:10px;">
+      <strong style="color:#171716;">Método de Pago:</strong> ${paymentMethod || "Flow"} <br/>
+      <strong style="color:#171716;">ID Orden:</strong> <span style="font-family:monospace;color:#171716;font-weight:700;">${orderId}</span>
     </div>
 
-    <div style="margin-top:28px;text-align:center;display:flex;gap:12px;justify-content:center;">
-      <a href="mailto:${email}?subject=Bienvenido a ProgramBI — ${encodeURIComponent(name)}" 
-         style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:13px;font-weight:700;text-decoration:none;padding:12px 20px;border-radius:10px;">
-        📧 Escribir Email →
-      </a>
-      ${phone ? `<a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" 
-         style="display:inline-block;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;font-size:13px;font-weight:700;text-decoration:none;padding:12px 20px;border-radius:10px;">
-        💬 Chatear WhatsApp →
-      </a>` : ""}
+    <div style="margin-top:24px;">
+      <table cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td style="padding-right:10px;">
+            <a href="mailto:${email}?subject=Bienvenido a ProgramBI — ${encodeURIComponent(name)}" 
+               style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:9999px;">
+              📧 Escribir Email →
+            </a>
+          </td>
+          ${phone ? `<td>
+            <a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" 
+               style="display:inline-block;background-color:#F7F7F4;border:1px solid #D4D4D0;color:#171716;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:9999px;">
+              💬 Chatear WhatsApp →
+            </a>
+          </td>` : ""}
+        </tr>
+      </table>
     </div>
   `);
 
@@ -1072,38 +1114,43 @@ export async function sendMembershipWelcome(params: {
   const { name, email, planName, price } = params;
 
   const html = wrapHtml("¡Bienvenido a la Comunidad! — ProgramBI", `
-    <div style="text-align:center;padding:20px 0 32px;">
-      <div style="font-size:48px;margin-bottom:16px;">🚀</div>
-      <h1 style="margin:0 0 8px;font-size:26px;font-weight:900;color:#0F172A;">¡Bienvenido, ${name}!</h1>
-      <p style="margin:0;font-size:15px;color:#475569;max-width:380px;margin:8px auto 0;">Ahora eres parte de la comunidad ProgramBI. Tu plan <strong>${planName}</strong> está activo.</p>
+    <div style="text-align:center;padding:14px 0 24px;">
+      <div style="display:inline-block;background-color:#DCFCE7;color:#166534;font-size:10.5px;font-weight:800;padding:4px 12px;border-radius:9999px;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">
+        🚀 Membresía Activa
+      </div>
+      <h1 style="margin:4px 0 6px;font-size:24px;font-weight:900;color:#171716;letter-spacing:-0.5px;">¡Bienvenido, ${name}!</h1>
+      <p style="margin:0;font-size:14px;color:#5F5E59;max-width:380px;margin:6px auto 0;">Ahora eres parte oficial de la comunidad ProgramBI. Tu suscripción a <strong>${planName}</strong> ya está habilitada.</p>
     </div>
 
-    <div style="background:linear-gradient(135deg,#1890FF,#4338ca);border-radius:16px;padding:24px;margin-bottom:28px;text-align:center;color:#fff;">
-      <div style="font-size:12px;font-weight:700;opacity:0.8;text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;">Plan activo</div>
-      <div style="font-size:28px;font-weight:900;">${planName}</div>
-      <div style="font-size:16px;opacity:0.9;margin-top:4px;">${formatCLP(price)} / mes</div>
+    <!-- TARJETA PLAN DARK -->
+    <div style="background-color:#171716;border-radius:16px;padding:24px;margin-bottom:24px;text-align:center;color:#FFFFFF;border:1px solid #2B2A27;">
+      <div style="font-size:10.5px;font-weight:800;color:#8C8B85;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;">Plan Activo</div>
+      <div style="font-size:26px;font-weight:900;color:#FFFFFF;letter-spacing:-0.5px;">${planName}</div>
+      <div style="font-size:15px;color:#EBEBE6;margin-top:4px;font-weight:600;">${formatCLP(price)} / mes</div>
     </div>
 
-    <div style="display:grid;gap:12px;">
+    <div style="margin-bottom:24px;">
       ${[
-      ["💬", "Comunidad privada", "Conecta con cientos de data practitioners en nuestro foro."],
-      ["🤖", "Asistente IA ProgramBI", "Soporte 24/7 con IA especializada en datos."],
-      ["📚", "Biblioteca de recursos", "Acceso a plantillas, datasets y proyectos reales."],
-      ["🎓", "Descuentos en cursos", "Beneficios exclusivos en todos los programas."],
+      ["💬", "Comunidad privada", "Conecta con cientos de profesionales y analistas de datos."],
+      ["🤖", "Asistente IA ProgramBI", "Soporte interactivo y resolución de dudas sobre código."],
+      ["📚", "Biblioteca de recursos", "Plantillas de Power BI, scripts SQL y proyectos reales."],
+      ["🎓", "Descuentos en cursos", "Beneficios y tarifas preferenciales en todos nuestros programas."],
     ].map(([icon, title, desc]) => `
-        <div style="display:flex;gap:16px;align-items:flex-start;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;">
-          <span style="font-size:22px;line-height:1;margin-top:2px;">${icon}</span>
-          <div>
-            <div style="font-size:14px;font-weight:700;color:#0F172A;">${title}</div>
-            <div style="font-size:13px;color:#64748B;margin-top:2px;">${desc}</div>
-          </div>
-        </div>
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F7F7F4;border:1px solid #E5E5E0;border-radius:12px;padding:14px 16px;margin-bottom:10px;">
+          <tr>
+            <td width="36" valign="top" style="font-size:20px;padding-right:10px;">${icon}</td>
+            <td valign="top">
+              <div style="font-size:13.5px;font-weight:800;color:#171716;">${title}</div>
+              <div style="font-size:12px;color:#5F5E59;margin-top:2px;">${desc}</div>
+            </td>
+          </tr>
+        </table>
       `).join("")}
     </div>
 
-    <div style="text-align:center;margin-top:32px;">
-      <a href="https://programbi.com/comunidad" style="display:inline-block;background:linear-gradient(135deg,#1890FF,#4338ca);color:#fff;font-size:15px;font-weight:700;text-decoration:none;padding:16px 32px;border-radius:14px;letter-spacing:0.3px;">
-        Acceder a la Comunidad →
+    <div style="text-align:center;margin-top:24px;">
+      <a href="https://programbi.com/comunidad" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:9999px;letter-spacing:0.2px;">
+        Acceder al Campus de la Comunidad →
       </a>
     </div>
   `);
@@ -1129,25 +1176,25 @@ export async function sendCompanyApprovalEmail(params: {
   const html = wrapHtml(
     approved ? "Empresa aprobada" : "Registro rechazado",
     `
-    <p style="margin:0;font-size:16px;color:#0F172A;">Hola,</p>
+    <p style="margin:0;font-size:15px;color:#171716;font-weight:700;">Hola,</p>
     ${
       approved
         ? `
-      <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#334155;">
-        <strong>«${companyName}» fue aprobada</strong> para publicar vacantes en la
+      <p style="margin:14px 0 0;font-size:14px;line-height:1.65;color:#5F5E59;">
+        <strong style="color:#171716;">«${companyName}» fue aprobada</strong> para publicar vacantes en la
         Bolsa de Trabajo de ProgramBI. Ya puedes crear tu primera vacante desde tu panel.
       </p>
-      <div style="text-align:center;margin-top:28px;">
-        <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background:#1890FF;color:#fff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
+      <div style="text-align:center;margin-top:24px;">
+        <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
           Publicar mi primera vacante →
         </a>
       </div>`
         : `
-      <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#334155;">
-        Tu solicitud para registrar a <strong>«${companyName}»</strong> en la Bolsa de
+      <p style="margin:14px 0 0;font-size:14px;line-height:1.65;color:#5F5E59;">
+        Tu solicitud para registrar a <strong style="color:#171716;">«${companyName}»</strong> en la Bolsa de
         Trabajo de ProgramBI no fue aprobada${reason ? `: <em>${reason}</em>` : ""}.
       </p>
-      <p style="margin:12px 0 0;font-size:14px;color:#64748B;">
+      <p style="margin:12px 0 0;font-size:13px;color:#8C8B85;">
         Si crees que fue un error, escríbenos a ${ADMIN_EMAIL}.
       </p>`
     }
@@ -1178,28 +1225,28 @@ export async function sendNewApplicationEmail(params: {
   const html = wrapHtml(
     "Nueva postulación",
     `
-    <p style="margin:0;font-size:16px;color:#0F172A;">Hola equipo ${companyName},</p>
-    <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#334155;">
-      <strong>${candidateName}</strong> postuló a tu vacante <strong>«${jobTitle}»</strong>.
+    <p style="margin:0;font-size:15px;color:#171716;font-weight:700;">Hola equipo ${companyName},</p>
+    <p style="margin:14px 0 0;font-size:14px;line-height:1.65;color:#5F5E59;">
+      <strong style="color:#171716;">${candidateName}</strong> postuló a tu vacante <strong style="color:#171716;">«${jobTitle}»</strong>.
     </p>
     ${
       verifiedSkills.length
-        ? `<p style="margin:12px 0 0;font-size:13px;color:#334155;">
+        ? `<p style="margin:14px 0 0;font-size:12.5px;color:#5F5E59;font-weight:700;">
              Certificados ProgramBI verificados del candidato:
            </p>
            <div style="margin-top:8px;">
              ${verifiedSkills
                .map(
                  (s) =>
-                   `<span style="display:inline-block;background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:700;margin:0 4px 4px 0;">✓ ${s}</span>`
+                   `<span style="display:inline-block;background-color:#DCFCE7;color:#166534;border:1px solid #BBF7D0;border-radius:9999px;padding:3px 10px;font-size:11.5px;font-weight:700;margin:0 4px 4px 0;">✓ ${s}</span>`
                )
                .join("")}
            </div>`
         : ""
     }
-    ${hasCv ? `<p style="margin:12px 0 0;font-size:13px;color:#64748B;">El candidato adjuntó su CV (descargable desde el panel).</p>` : ""}
-    <div style="text-align:center;margin-top:28px;">
-      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background:#1890FF;color:#fff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 28px;border-radius:12px;">
+    ${hasCv ? `<p style="margin:12px 0 0;font-size:12.5px;color:#8C8B85;">El candidato adjuntó su CV (descargable desde el panel).</p>` : ""}
+    <div style="text-align:center;margin-top:24px;">
+      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
         Revisar postulación →
       </a>
     </div>
@@ -1225,16 +1272,16 @@ export async function sendCandidateStatusEmail(params: {
   const html = wrapHtml(
     "Actualización de tu postulación",
     `
-    <p style="margin:0;font-size:16px;color:#0F172A;">Hola ${candidateName},</p>
-    <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#334155;">
-      Tu postulación a <strong>«${jobTitle}»</strong> (${companyName}) avanzó de etapa:
+    <p style="margin:0;font-size:15px;color:#171716;font-weight:700;">Hola ${candidateName},</p>
+    <p style="margin:14px 0 0;font-size:14px;line-height:1.65;color:#5F5E59;">
+      Tu postulación a <strong style="color:#171716;">«${jobTitle}»</strong> (${companyName}) avanzó de etapa:
     </p>
-    <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;text-align:center;margin-top:16px;">
-      <div style="font-size:12px;font-weight:700;color:#64748B;text-transform:uppercase;letter-spacing:1.5px;">Nuevo estado</div>
-      <div style="font-size:22px;font-weight:900;color:#0F172A;margin-top:4px;">${statusLabel}</div>
+    <div style="background-color:#F7F7F4;border:1px solid #E5E5E0;border-radius:12px;padding:18px;text-align:center;margin-top:16px;">
+      <div style="font-size:10.5px;font-weight:800;color:#8C8B85;text-transform:uppercase;letter-spacing:1.2px;">Nuevo estado</div>
+      <div style="font-size:20px;font-weight:900;color:#171716;margin-top:4px;">${statusLabel}</div>
     </div>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background:#1890FF;color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:12px;">
+      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
         Ver mis postulaciones →
       </a>
     </div>
@@ -1260,19 +1307,19 @@ export async function sendJobExpiringEmail(params: {
   const html = wrapHtml(
     "Tu vacante está por expirar",
     `
-    <p style="margin:0;font-size:16px;color:#0F172A;">Hola equipo ${companyName},</p>
-    <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#334155;">
-      Tu vacante <strong>«${jobTitle}»</strong> ${
+    <p style="margin:0;font-size:15px;color:#171716;font-weight:700;">Hola equipo ${companyName},</p>
+    <p style="margin:14px 0 0;font-size:14px;line-height:1.65;color:#5F5E59;">
+      Tu vacante <strong style="color:#171716;">«${jobTitle}»</strong> ${
         daysLeft <= 0
           ? "ya expiró y dejó de aparecer en la bolsa de trabajo."
-          : `expira en <strong>${daysLeft} ${daysLeft === 1 ? "día" : "días"}</strong>.`
+          : `expira en <strong style="color:#171716;">${daysLeft} ${daysLeft === 1 ? "día" : "días"}</strong>.`
       }
     </p>
-    <p style="margin:12px 0 0;font-size:14px;color:#64748B;">
+    <p style="margin:12px 0 0;font-size:13px;color:#8C8B85;">
       Extiende su vigencia 30 días más con un clic desde tu panel si el cargo sigue abierto.
     </p>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background:#1890FF;color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:12px;">
+      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
         Gestionar mis vacantes →
       </a>
     </div>
@@ -1300,21 +1347,21 @@ export async function sendFeatureConfirmationEmail(params: {
   const html = wrapHtml(
     "Tu vacante está destacada",
     `
-    <p style="margin:0;font-size:16px;color:#0F172A;">Hola equipo ${companyName},</p>
-    <div style="background:#ECFDF5;border:1px solid #A7F3D0;border-radius:12px;padding:20px;margin:20px 0;text-align:center;">
-      <div style="font-size:12px;font-weight:700;color:#065F46;text-transform:uppercase;letter-spacing:1.5px;">Vacante destacada activa</div>
-      <div style="font-size:20px;font-weight:900;color:#0F172A;margin-top:4px;">${jobTitle}</div>
-      <div style="font-size:14px;color:#334155;margin-top:6px;">
+    <p style="margin:0;font-size:15px;color:#171716;font-weight:700;">Hola equipo ${companyName},</p>
+    <div style="background-color:#DCFCE7;border:1px solid #BBF7D0;border-radius:14px;padding:20px;margin:20px 0;text-align:center;">
+      <div style="font-size:10.5px;font-weight:800;color:#166534;text-transform:uppercase;letter-spacing:1.2px;">Vacante Destacada Activa</div>
+      <div style="font-size:20px;font-weight:900;color:#171716;margin-top:4px;">${jobTitle}</div>
+      <div style="font-size:13.5px;color:#166534;margin-top:6px;font-weight:600;">
         ${days} días · visible arriba del listado hasta el <strong>${until}</strong>
       </div>
-      ${amountClp ? `<div style="font-size:13px;color:#64748B;margin-top:4px;">Pagado: ${formatCLP(amountClp)}</div>` : ""}
+      ${amountClp ? `<div style="font-size:12px;color:#5F5E59;margin-top:4px;">Pagado: ${formatCLP(amountClp)}</div>` : ""}
     </div>
-    <p style="margin:0;font-size:14px;line-height:1.7;color:#334155;">
+    <p style="margin:0;font-size:13.5px;line-height:1.65;color:#5F5E59;">
       Tu vacante aparecerá en primer lugar en la Bolsa de Trabajo y con la etiqueta
-      «Destacada», recibiendo en promedio mucha más visibilidad que las vacantes orgánicas.
+      «Destacada», recibiendo en promedio mucha más visibilidad.
     </p>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background:#1890FF;color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:12px;">
+      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
         Ver mis vacantes →
       </a>
     </div>
@@ -1339,9 +1386,9 @@ export async function sendJobAlertsDigestEmail(params: {
   const rows = jobs
     .map(
       (j) => `
-      <a href="${j.url}" style="display:block;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;margin-bottom:10px;text-decoration:none;">
-        <div style="font-size:15px;font-weight:700;color:#0F172A;">${j.title}</div>
-        <div style="font-size:13px;color:#64748B;margin-top:2px;">${j.company} · ${j.location}${j.salary ? ` · <strong style="color:#334155;">${j.salary}</strong>` : ""}</div>
+      <a href="${j.url}" style="display:block;background-color:#F7F7F4;border:1px solid #E5E5E0;border-radius:12px;padding:14px 16px;margin-bottom:10px;text-decoration:none;">
+        <div style="font-size:14.5px;font-weight:700;color:#171716;">${j.title}</div>
+        <div style="font-size:12.5px;color:#5F5E59;margin-top:2px;">${j.company} · ${j.location}${j.salary ? ` · <strong style="color:#171716;">${j.salary}</strong>` : ""}</div>
       </a>`
     )
     .join("");
@@ -1349,15 +1396,15 @@ export async function sendJobAlertsDigestEmail(params: {
   const html = wrapHtml(
     "Nuevas vacantes para ti",
     `
-    <p style="margin:0;font-size:16px;color:#0F172A;">Hola ${candidateName},</p>
-    <p style="margin:16px 0 0;font-size:15px;line-height:1.7;color:#334155;">
-      Tu alerta <strong>«${alertName}»</strong> encontró ${jobs.length} ${
+    <p style="margin:0;font-size:15px;color:#171716;font-weight:700;">Hola ${candidateName},</p>
+    <p style="margin:14px 0 0;font-size:14px;line-height:1.65;color:#5F5E59;">
+      Tu alerta <strong style="color:#171716;">«${alertName}»</strong> encontró ${jobs.length} ${
         jobs.length === 1 ? "vacante nueva" : "vacantes nuevas"
       } en la Bolsa de Trabajo de ProgramBI:
     </p>
-    <div style="margin-top:20px;">${rows}</div>
+    <div style="margin-top:16px;">${rows}</div>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.com/empleos" style="display:inline-block;background:#1890FF;color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:12px;">
+      <a href="https://programbi.com/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
         Ver todas las vacantes →
       </a>
     </div>
@@ -1384,20 +1431,20 @@ export async function sendTalentContactEmail(params: {
   const html = wrapHtml(
     "Una empresa quiere contactarte",
     `
-    <p style="margin:0;font-size:16px;color:#0F172A;">Hola ${candidateName},</p>
-    <div style="background:#EFF6FF;border:1px solid #BFDBFE;border-radius:12px;padding:20px;margin:20px 0;">
-      <p style="margin:0;font-size:15px;line-height:1.7;color:#334155;">
-        La empresa <strong>${companyName}</strong> vio tu perfil en el directorio de talento
-        de ProgramBI${jobContext ? ` y quiere conversar por <strong>${jobContext}</strong>` : ""}.
+    <p style="margin:0;font-size:15px;color:#171716;font-weight:700;">Hola ${candidateName},</p>
+    <div style="background-color:#F7F7F4;border:1px solid #E5E5E0;border-radius:12px;padding:18px;margin:18px 0;">
+      <p style="margin:0;font-size:14px;line-height:1.65;color:#5F5E59;">
+        La empresa <strong style="color:#171716;">${companyName}</strong> vio tu perfil en el directorio de talento
+        de ProgramBI${jobContext ? ` y quiere conversar por <strong style="color:#171716;">${jobContext}</strong>` : ""}.
       </p>
-      ${message ? `<p style="margin:12px 0 0;font-size:14px;line-height:1.7;color:#64748B;font-style:italic;">"${message}"</p>` : ""}
+      ${message ? `<p style="margin:10px 0 0;font-size:13px;line-height:1.6;color:#8C8B85;font-style:italic;">"${message}"</p>` : ""}
     </div>
-    <p style="margin:0;font-size:14px;color:#334155;">
+    <p style="margin:0;font-size:13px;color:#5F5E59;">
       Si te interesa, responde directamente al email de contacto de la empresa que
       aparece en la notificación dentro de tu portal ProgramBI.
     </p>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.com/comunidad" style="display:inline-block;background:#1890FF;color:#fff;font-size:14px;font-weight:700;text-decoration:none;padding:12px 24px;border-radius:12px;">
+      <a href="https://programbi.com/comunidad" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
         Ir a mi portal →
       </a>
     </div>
