@@ -1,5 +1,8 @@
 import { OG_SIZE } from "@/lib/og/assets";
 
+export const OG_WIDTH = OG_SIZE.width;
+export const OG_HEIGHT = OG_SIZE.height;
+
 type OgCardProps = {
   logoSrc: string;
   kicker?: string;
@@ -7,6 +10,9 @@ type OgCardProps = {
   description?: string;
   tags?: string[];
   theme?: "paper" | "ink";
+  accent?: string;
+  path?: string;
+  verified?: boolean;
 };
 
 export function OgCard({
@@ -16,6 +22,9 @@ export function OgCard({
   description,
   tags = [],
   theme = "paper",
+  accent,
+  path,
+  verified,
 }: OgCardProps) {
   const paper = theme !== "ink";
   const bg = paper ? "#F6F4EF" : "#171716";
@@ -65,7 +74,22 @@ export function OgCard({
         ) : null}
       </div>
 
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
+        {verified ? (
+          <div
+            style={{
+              fontFamily: "sans-serif",
+              fontSize: 16,
+              fontWeight: 700,
+              padding: "8px 16px",
+              borderRadius: 999,
+              background: accent || "#0f7a4d",
+              color: "#F6F4EF",
+            }}
+          >
+            Verificado
+          </div>
+        ) : null}
         {tags.map((tag) => (
           <div
             key={tag}
@@ -82,6 +106,18 @@ export function OgCard({
             {tag}
           </div>
         ))}
+        {path ? (
+          <div
+            style={{
+              fontFamily: "sans-serif",
+              fontSize: 16,
+              color: mute,
+              marginLeft: "auto",
+            }}
+          >
+            /{path.replace(/^\//, "")}
+          </div>
+        ) : null}
       </div>
     </div>
   );

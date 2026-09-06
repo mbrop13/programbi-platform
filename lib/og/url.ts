@@ -5,6 +5,8 @@ type OgImageParams = {
   tags?: string[];
   accent?: string;
   path?: string;
+  theme?: "paper" | "ink";
+  verified?: boolean;
 };
 
 /** URL de tarjeta OG dinámica (app/og/route.tsx). */
@@ -16,5 +18,7 @@ export function ogImageUrl(opts: OgImageParams): string {
   if (opts.tags?.length) params.set("tags", opts.tags.slice(0, 4).join("|"));
   if (opts.path) params.set("path", opts.path);
   if (opts.accent) params.set("accent", opts.accent);
+  if (opts.theme) params.set("theme", opts.theme);
+  if (opts.verified) params.set("v", "1");
   return `/og?${params.toString()}`;
 }

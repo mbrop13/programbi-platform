@@ -11,6 +11,10 @@ export async function GET(request: Request) {
     .split("|")
     .map((t) => t.trim())
     .filter(Boolean);
+  const theme = searchParams.get("theme") === "ink" ? ("ink" as const) : ("paper" as const);
+  const path = searchParams.get("path") || undefined;
+  const accent = searchParams.get("accent") || undefined;
+  const verified = searchParams.get("v") === "1";
 
   const logoSrc = await loadLogoDataUrl();
 
@@ -21,7 +25,10 @@ export async function GET(request: Request) {
       title,
       description,
       tags,
-      theme: "paper",
+      theme,
+      path,
+      accent,
+      verified,
     }),
     { ...OG_SIZE }
   );
