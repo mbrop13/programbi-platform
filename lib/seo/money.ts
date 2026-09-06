@@ -6,19 +6,19 @@ export type MoneyFaq = { q: string; a: string };
 
 export const PAGE_SEO = {
   home: {
-    title: "Pack Adopción Power BI y cursos Chile | ProgramBI",
+    title: "Cursos Power BI, SQL y Python en Chile | ProgramBI",
     description:
-      "Power BI para empresas en Chile: Pack Adopción (tablero + equipo). Cursos en vivo de Power BI, SQL y Python para particulares. Diagnóstico 30 min.",
+      "Cursos en vivo de Power BI, SQL y Python en Chile. Capacitación para profesionales y empresas. Clases online con expertos de la industria.",
   },
   empresas: {
-    title: "Pack Adopción Power BI para empresas Chile | ProgramBI",
+    title: "Power BI para empresas Chile | Capacitación y BI",
     description:
-      "Power BI para empresas en Chile: 1–3 dashboards en producción y tu equipo autónomo en 4–6 semanas. Pack Adopción desde $2.9M CLP. Diagnóstico 30 min.",
+      "Capacitación e implementación Power BI para empresas en Chile: dashboards, SQL, Python y automatización. Consultoría de datos in-company.",
   },
   cursos: {
     title: "Cursos Power BI y análisis de datos Chile | ProgramBI",
     description:
-      "Cursos en vivo en Chile: Power BI, análisis de datos (SQL + Power BI + Python) y minería. Formación individual. Empresas: Pack Adopción, no un curso.",
+      "Cursos en vivo en Chile: Power BI, análisis de datos (SQL + Power BI + Python) y minería. Formación profesional con expertos.",
   },
 } as const;
 
@@ -35,10 +35,10 @@ export const COURSE_SEO: Record<
   "power-bi": {
     title: "Curso Power BI Chile en vivo | ProgramBI",
     description:
-      "Curso Power BI en vivo en Chile: Power Query, DAX y dashboards. Para analistas y control de gestión. Cupos abiertos. Si eres empresa, Pack Adopción.",
+      "Curso Power BI en vivo en Chile: Power Query, DAX y dashboards. Para analistas y control de gestión. Cupos abiertos — consulta fecha.",
     h1: "Curso Power BI en vivo Chile",
     audience:
-      "Para analistas, control de gestión y finanzas que quieren armar dashboards propios. No es el Pack para empresas.",
+      "Para analistas, control de gestión y finanzas que quieren armar dashboards propios.",
     faqs: [
       {
         q: "¿El curso Power BI es en vivo en Chile?",
@@ -46,7 +46,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Sirve si mi empresa necesita el tablero en producción?",
-        a: "El curso es formación individual. Si eres Controller o jefe de área y necesitas 1–3 dashboards con tus datos + el equipo autónomo, eso es el Pack Adopción BI, no este curso.",
+        a: "El curso es formación individual. Si tu empresa necesita dashboards con datos propios y capacitación in-company, revisa /empresas.",
       },
       {
         q: "¿Qué veo en el temario?",
@@ -57,10 +57,10 @@ export const COURSE_SEO: Record<
   "analisis-de-datos": {
     title: "Cursos de análisis de datos Chile | ProgramBI",
     description:
-      "Cursos de análisis de datos en Chile: SQL Server + Power BI + Python, 144 horas en vivo. Para profesionales que salen de Excel. Empresas: Pack Adopción.",
+      "Cursos de análisis de datos en Chile: SQL Server + Power BI + Python, 144 horas en vivo. Para profesionales que salen de Excel.",
     h1: "Cursos de análisis de datos: SQL, Power BI y Python",
     audience:
-      "Para profesionales de finanzas, ops y control de gestión que quieren SQL, Power BI y Python de extremo a extremo (144 h). No reemplaza un Pack in-company.",
+      "Para profesionales de finanzas, ops y control de gestión que quieren SQL, Power BI y Python de extremo a extremo (144 h).",
     faqs: [
       {
         q: "¿Qué incluye el programa de análisis de datos?",
@@ -72,17 +72,17 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Y si somos una empresa?",
-        a: "Este programa es cupo individual. Para tablero en producción + adopción del equipo, ve el Pack Adopción BI.",
+        a: "Este programa es cupo individual. Para un proyecto in-company, ve /empresas.",
       },
     ],
   },
   "analitica-mineria": {
     title: "Curso Power BI para minería Chile | ProgramBI",
     description:
-      "Power BI y análisis de datos para minería en Chile: reportes de faena, OEE y SQL. 48 h en vivo. Empresas mineras: Pack Adopción in-company.",
+      "Power BI y análisis de datos para minería en Chile: reportes de faena, OEE y SQL. 48 h en vivo.",
     h1: "Power BI y análisis de datos para minería en Chile",
     audience:
-      "Para analistas de faena, planificación y mantenimiento que reportan en Excel. Empresas mineras que necesitan el tablero en producción: Pack Adopción.",
+      "Para analistas de faena, planificación y mantenimiento que reportan en Excel.",
     faqs: [
       {
         q: "¿El curso es Power BI aplicado a minería?",
@@ -90,7 +90,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Trabajan con datos de mina reales?",
-        a: "En el curso usamos casos de vertical minera (producción, flota, mantenimiento). El Pack Adopción construye el tablero con los datos de tu área.",
+        a: "En el curso usamos casos de vertical minera (producción, flota, mantenimiento). Un proyecto in-company se arma con los datos de tu área — ver /empresas.",
       },
       {
         q: "¿Es capacitación SENCE?",

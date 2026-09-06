@@ -97,7 +97,7 @@ export default function Page() {
         ]}
         faqs={faqs}
         related={[
-          { href: "/empresas", label: "Pack Adopción para empresas" },
+          { href: "/empresas", label: "Soluciones para empresas" },
           { href: "/cursos/power-bi", label: "Curso Power BI en vivo Chile" },
           { href: "/cursos/analisis-de-datos", label: "Cursos de análisis de datos (SQL + Power BI + Python)" },
           { href: "/por-que-fallan-proyectos-power-bi", label: "Por qué fallan los proyectos Power BI" },

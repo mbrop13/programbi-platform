@@ -26,11 +26,12 @@ import { getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
 import { isCurrentUserAdmin } from "@/lib/supabase/comunidad";
 
 const navLinks = [
+  { href: "/cursos", label: "Ver Cursos", hasMega: true },
   { href: "/empresas", label: "Empresas" },
-  { href: "/cursos", label: "Cursos", hasMega: true },
   { href: "/referidos", label: "Referidos" },
   { href: "/empleos", label: "Empleos" },
   { href: "/comunidad", label: "Comunidad" },
+  { href: "/blog", label: "Blog" },
 ];
 
 const courseGroups = getGroupedCourses();
@@ -322,18 +323,11 @@ export default function Navbar() {
                             </div>
                           ))}
                         </div>
-                        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-5 py-3">
-                          <Link
-                            href="/empresas"
-                            onClick={() => setIsMegaOpen(false)}
-                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline"
-                          >
-                            Empresas: Pack Adopción Power BI <ArrowRight size={14} />
-                          </Link>
+                        <div className="border-t border-line px-5 py-3">
                           <Link
                             href="/cursos"
                             onClick={() => setIsMegaOpen(false)}
-                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-mute no-underline hover:text-ink"
+                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline"
                           >
                             Ver todos los cursos <ArrowRight size={14} />
                           </Link>
@@ -452,12 +446,13 @@ export default function Navbar() {
             )}
 
             {!user && !loading ? (
-              <Link
-                href="/empresas#contacto"
-                className="hidden h-10 items-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas no-underline transition-transform active:scale-95 sm:inline-flex"
+              <button
+                type="button"
+                onClick={() => setAuthModal({ isOpen: true, tab: "register" })}
+                className="hidden h-10 items-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas transition-transform active:scale-95 sm:inline-flex"
               >
-                Diagnóstico empresas
-              </Link>
+                Registrarse
+              </button>
             ) : null}
 
             <button
@@ -554,16 +549,9 @@ export default function Navbar() {
                           </div>
                         ))}
                         <Link
-                          href="/empresas"
-                          onClick={() => setIsMobileOpen(false)}
-                          className="mt-2 inline-flex items-center gap-1.5 px-1 py-2 text-sm font-semibold text-ink no-underline"
-                        >
-                          Pack Adopción Power BI (empresas) <ArrowRight size={14} />
-                        </Link>
-                        <Link
                           href="/cursos"
                           onClick={() => setIsMobileOpen(false)}
-                          className="inline-flex items-center gap-1.5 px-1 py-2 text-sm font-semibold text-mute no-underline"
+                          className="mt-2 inline-flex items-center gap-1.5 px-1 py-2 text-sm font-semibold text-ink no-underline"
                         >
                           Ver todos los cursos <ArrowRight size={14} />
                         </Link>
@@ -624,13 +612,16 @@ export default function Navbar() {
                 )}
 
                 {!user ? (
-                  <Link
-                    href="/empresas#contacto"
-                    onClick={() => setIsMobileOpen(false)}
-                    className="mt-2 inline-flex h-12 w-full items-center justify-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas no-underline"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileOpen(false);
+                      setAuthModal({ isOpen: true, tab: "register" });
+                    }}
+                    className="mt-2 inline-flex h-12 w-full items-center justify-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas"
                   >
-                    Diagnóstico empresas
-                  </Link>
+                    Registrarse
+                  </button>
                 ) : null}
               </div>
             </nav>

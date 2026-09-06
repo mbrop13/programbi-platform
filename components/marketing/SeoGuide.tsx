@@ -1,6 +1,5 @@
 import Link from "next/link";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
-import { PACK } from "@/lib/data/pack-adopcion";
 
 export type GuideSection = { h2: string; paragraphs: string[] };
 export type GuideFaq = { q: string; a: string };
@@ -54,11 +53,11 @@ export default function SeoGuide({
             href="/empresas"
             className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
           >
-            Ver Pack Adopción
+            Soluciones para empresas
           </Link>
           <WhatsAppCta
             page={pagePath}
-            intent="pack"
+            intent="general"
             className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-paper px-6 text-sm font-medium text-ink no-underline hover:bg-wash"
           >
             WhatsApp
@@ -77,13 +76,12 @@ export default function SeoGuide({
         ))}
 
         <section className="mt-14 rounded-2xl border border-line bg-paper p-6">
-          <h2 className="text-xl font-bold tracking-tight text-ink">{PACK.headline}</h2>
+          <h2 className="text-xl font-bold tracking-tight text-ink">¿Eres empresa?</h2>
           <p className="mt-3 text-sm leading-relaxed text-mute">
-            {PACK.dashboards} dashboards + adopción {PACK.trainingWeeks} semanas + {PACK.postGoLiveWeeks} semanas post
-            go-live. {PACK.priceLabel} ({PACK.priceFromLabel}). Factura directa.
+            Capacitación in-company, dashboards Power BI e implementación con tus datos. Agenda o escribe por WhatsApp.
           </p>
           <Link href="/empresas" className="mt-4 inline-flex text-sm font-semibold text-ink">
-            Ir a /empresas
+            Ir a empresas
           </Link>
         </section>
 

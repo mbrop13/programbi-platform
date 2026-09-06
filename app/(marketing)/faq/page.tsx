@@ -1,21 +1,20 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import FaqClient from "./FaqClient";
 import { ogImageUrl } from "@/lib/og/url";
-import { SITE_URL, absoluteUrl } from "@/lib/seo";
-import { PACK } from "@/lib/data/pack-adopcion";
 
 export const metadata: Metadata = {
-  title: { absolute: "FAQ Pack Adopción BI y cursos Power BI Chile | ProgramBI" },
+  title: "Preguntas Frecuentes — Soporte y Consultas | ProgramBI",
   description:
-    "¿El Pack es un curso? ¿SENCE? ¿Online o presencial? Cursos en vivo vs tablero en producción. Diagnóstico 30 min. Factura directa.",
+    "Resuelve tus dudas sobre los cursos de análisis de datos en vivo, metodologías, grabaciones de clases, certificados oficiales y asesorías corporativas de ProgramBI.",
   alternates: {
     canonical: "/faq",
   },
   openGraph: {
-    title: "FAQ Pack Adopción BI y cursos | ProgramBI",
+    title: "Preguntas Frecuentes — Soporte y Consultas | ProgramBI",
     description:
-      "Dudas de empresas (Pack Adopción) y de cursos abiertos Power BI, SQL y Python en Chile.",
-    url: absoluteUrl("/faq"),
+      "Información detallada sobre requisitos de cursos, certificaciones, cuotas de pago y capacitaciones corporativas en Latinoamérica.",
+    url: "https://www.programbi.com/faq",
     type: "website",
     images: [
       {
@@ -23,7 +22,7 @@ export const metadata: Metadata = {
           kicker: "Ayuda",
           title: "Preguntas frecuentes",
           description:
-            "Pack Adopción BI vs cursos abiertos. SENCE, diagnóstico 30 min y factura directa.",
+            "Cursos en vivo, certificados, cuotas de pago y capacitaciones corporativas — todo lo que necesitas saber.",
           path: "faq",
         }),
         width: 1200,
@@ -36,55 +35,55 @@ export const metadata: Metadata = {
 
 const FAQ_DATA = [
   {
-    question: "¿El Pack Adopción BI es un curso?",
-    answer: `No. ${PACK.headline} Construimos ${PACK.dashboards} dashboards con los datos de tu área y capacitamos al equipo ${PACK.trainingWeeks} semanas para que los mantenga. El curso abierto de Power BI es formación individual, otra oferta. Detalle: ${SITE_URL}/empresas`,
-    category: "empresa",
+    question: "¿Qué es ProgramBI y a quién va dirigido?",
+    answer: "ProgramBI es la plataforma de capacitación profesional líder en análisis de datos, Power BI, SQL, Python y Machine Learning en Chile y Latinoamérica. Va dirigido a profesionales de administración, finanzas, ingeniería, logística y marketing que quieren automatizar sus tareas, armar dashboards profesionales y tomar decisiones basadas en datos.",
+    category: "general"
   },
   {
-    question: "¿Puedo franquiciarlo con SENCE?",
-    answer: PACK.senceLine,
-    category: "empresa",
+    question: "¿Cuáles son los requisitos previos para hacer los cursos?",
+    answer: "El Curso de Análisis de Datos parte desde cero absoluto, enseñando bases de datos antes de programar o diseñar. Para el curso de Power BI, se recomienda tener nociones básicas de Excel. Para el curso de Machine Learning, es aconsejable conocer sintaxis básica de Python.",
+    category: "cursos"
   },
   {
-    question: "¿Cuánto cuesta el Pack y qué incluye?",
-    answer: `Referencial ${PACK.priceLabel} (${PACK.priceFromLabel}), según fuentes, tableros y tamaño del equipo. Incluye construcción, adopción ${PACK.trainingWeeks} semanas, handoff y ${PACK.postGoLiveWeeks} semanas post go-live. El diagnóstico de ${PACK.diagnosisMinutes} minutos no tiene costo.`,
-    category: "empresa",
+    question: "¿Las clases son grabadas? ¿Tengo acceso permanente?",
+    answer: "Sí. Todas las clases online en vivo se graban y se cargan al portal LMS del alumno al día siguiente. Conservas el acceso de por vida a todas las grabaciones, códigos, sets de datos y diapositivas de tu curso para que repases cuando quieras.",
+    category: "cursos"
   },
   {
-    question: "¿Cómo agendo el diagnóstico?",
-    answer: `Formulario en ${SITE_URL}/empresas (nombre, empresa, cargo, WhatsApp, área) o WhatsApp +56 9 3540 9699. Propuesta en menos de ${PACK.proposalSlaHours} h.`,
-    category: "empresa",
+    question: "¿Entregan un certificado al terminar?",
+    answer: "Sí. Al completar satisfactoriamente los proyectos de cada módulo del curso, recibirás un certificado oficial digital emitido por ProgramBI SPA con firma del CEO Manuel Oliva y un código de verificación único para validación de empleadores y LinkedIn.",
+    category: "general"
   },
   {
-    question: "¿Qué es ProgramBI?",
-    answer: "ProgramBI (Chile) implementa Business Intelligence con adopción para empresas y dicta cursos en vivo de Power BI, SQL y Python para particulares. Mentores con experiencia en banca, retail y minería.",
-    category: "general",
+    question: "¿Tienen capacitaciones SENCE o Franquicia Tributaria en Chile?",
+    answer: "No. En ProgramBI nos enfocamos al 100% en habilidades de aplicación corporativa real e inmediata. Al no operar bajo franquicia burocrática SENCE, podemos actualizar el temario mensualmente con últimas tecnologías (como Inteligencia Artificial aplicada), contratar instructores senior de primer nivel activos en la industria y ofrecer precios significativamente más competitivos.",
+    category: "pagos"
   },
   {
-    question: "¿Los cursos abiertos son lo mismo que el Pack?",
-    answer: "No. Los cursos son clases en vivo por Zoom para particulares o cupos sueltos. El Pack es tablero en producción + autonomía del equipo. Si eres Controller o jefe de área, parte por /empresas.",
-    category: "cursos",
+    question: "¿Cómo funcionan los Capstone Projects o proyectos finales?",
+    answer: "Cada curso finaliza con un proyecto final práctico donde aplicas las tecnologías del módulo a un set de datos corporativo real (por ejemplo, consolidación financiera, reportes de retail o predicción de churn). Estos proyectos te sirven para tu portafolio profesional en GitHub o Power BI Service.",
+    category: "cursos"
   },
   {
-    question: "¿Necesito saber programar para un curso?",
-    answer: "No. Partimos desde cero. Pensado para finanzas, operaciones, minería y administración.",
-    category: "cursos",
+    question: "¿Qué métodos de pago aceptan?",
+    answer: "Aceptamos pagos a través de Webpay (tarjetas de crédito, débito), transferencias bancarias directas nacionales y pagos internacionales mediante plataformas seguras como PayPal y Stripe.",
+    category: "pagos"
   },
   {
-    question: "¿Las clases de los cursos son grabadas?",
-    answer: "Sí. En vivo por Zoom y quedan grabadas de por vida en el campus, con material y datos de práctica.",
-    category: "cursos",
+    question: "¿Tienen opciones de pago en cuotas?",
+    answer: "Sí. Puedes pagar con tus tarjetas de crédito bancarias en las cuotas que estimes conveniente según tu entidad bancaria. También contamos con convenios de cuotas directas por transferencia coordinando con nuestro equipo de admisiones.",
+    category: "pagos"
   },
   {
-    question: "¿Hay certificado en los cursos abiertos?",
-    answer: "Sí, certificado digital al completar. El Pack empresas entrega el tablero, la transferencia y el acompañamiento post go-live, no un diploma de curso.",
-    category: "general",
+    question: "¿Ofrecen capacitaciones cerradas para empresas?",
+    answer: "Sí, diseñamos planes de formación in-company adaptados a las necesidades y datos de tu empresa. Podemos dictar clases privadas y enfocarlas en resolver desafíos específicos de tu negocio. Escríbenos a través de nuestra sección de asesorías.",
+    category: "empresa"
   },
   {
-    question: "¿Qué métodos de pago aceptan en cursos?",
-    answer: "Cursos abiertos: Webpay y transferencia. Pack empresas: factura directa. Los valores vigentes están en cada ficha de curso o en la propuesta del diagnóstico.",
-    category: "pagos",
-  },
+    question: "¿Cómo coordinar una asesoría de datos o consultoría a medida?",
+    answer: "Puedes rellenar el formulario en nuestra sección de /empresas o contactarnos vía WhatsApp. Agendamos una reunión de diagnóstico gratuita de 30 minutos con nuestro CEO Manuel Oliva para evaluar el problema de tu empresa, el estado de tus datos y proponerte una solución.",
+    category: "empresa"
+  }
 ];
 
 export default function FAQPage() {
@@ -105,8 +104,8 @@ export default function FAQPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Preguntas Frecuentes", item: absoluteUrl("/faq") }
+      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://www.programbi.com" },
+      { "@type": "ListItem", position: 2, name: "Preguntas Frecuentes", item: "https://www.programbi.com/faq" }
     ]
   };
 

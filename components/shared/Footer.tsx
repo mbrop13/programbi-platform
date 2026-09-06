@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { getCoursesBySlugs } from "@/lib/data/courses";
-import { HOME_COURSE_SLUGS } from "@/lib/seo";
+import { courses } from "@/lib/data/courses";
 
 const socialLinks = [
   { name: "Instagram", href: "https://www.instagram.com/programbi_capacitaciones/" },
@@ -11,20 +10,18 @@ const socialLinks = [
 ];
 
 const companyLinks = [
-  { label: "Empresas — Pack Adopción Power BI", href: "/empresas" },
-  { label: "Curso Power BI Chile", href: "/cursos/power-bi" },
-  { label: "Cursos de análisis de datos", href: "/cursos/analisis-de-datos" },
-  { label: "Power BI para minería", href: "/cursos/analitica-mineria" },
+  { label: "Ver Cursos", href: "/cursos" },
+  { label: "Empresas", href: "/empresas" },
   { label: "Referidos", href: "/referidos" },
-  { label: "Migrar Excel a Power BI", href: "/migrar-excel-a-power-bi" },
-  { label: "Curso vs Pack Adopción", href: "/curso-power-bi-vs-pack-adopcion" },
-  { label: "Cursos", href: "/cursos" },
+  { label: "Bolsa de Trabajo", href: "/empleos" },
+  { label: "Comunidad", href: "/comunidad" },
   { label: "Blog", href: "/blog" },
   { label: "Preguntas frecuentes", href: "/#faq" },
+  { label: "Registrarse", href: "/?auth=register" },
 ];
 
 export default function Footer({ compact: _compact = false }: { compact?: boolean }) {
-  const topCourses = getCoursesBySlugs(HOME_COURSE_SLUGS);
+  const topCourses = courses.slice(0, 6);
 
   return (
     <footer className="border-t border-line bg-paper px-4 py-12 sm:px-6 lg:px-8" aria-label="Pie de página">
@@ -34,7 +31,7 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
             <Image src="/images/logo.png" alt="ProgramBI" fill sizes="148px" className="object-contain object-left" />
           </Link>
           <p className="mt-4 max-w-[28rem] text-sm leading-relaxed text-mute">
-            Pack Adopción BI para empresas y cursos en vivo de Power BI, SQL y Python. Santiago, Chile.
+            Centro de capacitaciones en análisis de datos. Santiago, Chile.
           </p>
         </div>
 

@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
 import HeroSection from "@/components/marketing/HeroSection";
 import LogoSlider from "@/components/marketing/LogoSlider";
-import HomeProof from "@/components/marketing/HomeProof";
-import PackBand from "@/components/marketing/PackBand";
-import HomeMoneyPaths from "@/components/marketing/HomeMoneyPaths";
-import ProgramsCatalog from "@/components/marketing/ProgramsCatalog";
+import Metrics from "@/components/marketing/Metrics";
+import Flagship from "@/components/marketing/Flagship";
+import Programs from "@/components/marketing/Programs";
 import JobsBanner from "@/components/marketing/JobsBanner";
 import Team from "@/components/marketing/Team";
 import Quote from "@/components/marketing/Quote";
 import FaqSection from "@/components/marketing/FaqSection";
 import LeadForm from "@/components/marketing/LeadForm";
-import { HOME_FAQS, PACK } from "@/lib/data/pack-adopcion";
+import { homeFaqs } from "@/lib/data/site";
 import { SITE_URL, jsonLdString } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 
@@ -31,7 +30,7 @@ export const metadata: Metadata = {
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: HOME_FAQS.map((faq) => ({
+  mainEntity: homeFaqs.map((faq) => ({
     "@type": "Question",
     name: faq.q,
     acceptedAnswer: { "@type": "Answer", text: faq.a },
@@ -44,18 +43,14 @@ export default function HomePage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqJsonLd) }} />
       <HeroSection />
       <LogoSlider />
-      <PackBand />
-      <HomeProof />
-      <HomeMoneyPaths />
-      <ProgramsCatalog />
+      <Metrics />
+      <Flagship />
+      <Programs />
       <JobsBanner />
       <Team />
       <Quote />
       <FaqSection />
       <LeadForm />
-      <p className="sr-only">
-        {PACK.name}. {PACK.headline}. {PACK.tagline}.
-      </p>
     </>
   );
 }

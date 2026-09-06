@@ -96,7 +96,7 @@ export default function Page() {
         ]}
         faqs={faqs}
         related={[
-          { href: "/empresas", label: "Pack Adopción BI para empresas" },
+          { href: "/empresas", label: "Soluciones para empresas" },
           { href: "/curso-power-bi-vs-pack-adopcion", label: "Curso Power BI vs Pack Adopción" },
           { href: "/migrar-excel-a-power-bi", label: "Migrar Excel a Power BI en control de gestión" },
           { href: "/cursos/power-bi", label: "Curso Power BI en vivo (particulares)" },

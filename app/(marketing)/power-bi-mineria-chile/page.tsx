@@ -91,7 +91,7 @@ export default function Page() {
         faqs={faqs}
         related={[
           { href: "/cursos/analitica-mineria", label: "Curso Power BI / análisis de datos para minería" },
-          { href: "/empresas", label: "Pack Adopción para empresas (también minería)" },
+          { href: "/empresas", label: "Soluciones para empresas (minería)" },
           { href: "/cursos/power-bi", label: "Curso Power BI genérico en vivo" },
           { href: "/por-que-fallan-proyectos-power-bi", label: "Por qué fallan los proyectos Power BI" },
         ]}

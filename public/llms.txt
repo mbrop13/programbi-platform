@@ -1,23 +1,8 @@
 # ProgramBI
 
-> ProgramBI (Chile) vende sobre todo el Pack Adopción BI: construir 1–3 dashboards con datos del cliente y capacitar al equipo 4–6 semanas para que los mantenga. No es un curso. Es el tablero en producción + el equipo autónomo. Cursos abiertos (Power BI, SQL, Python) son oferta secundaria para particulares.
+> ProgramBI (Chile) dicta cursos en vivo de Power BI, SQL y Python, y trabaja con empresas en capacitación e implementación de Business Intelligence.
 
-## Oferta principal (empresas)
-
-- [Pack Adopción BI](https://www.programbi.com/empresas): 1–3 dashboards en producción + adopción 4–6 semanas + handoff y 2–4 semanas post go-live. Diagnóstico 30 min. Factura directa (sin SENCE por ahora). Inversión referencial $2.5M–$5M CLP/área (piso típico desde $2.9M).
-- [Implementación Power BI Chile](https://www.programbi.com/implementacion-power-bi)
-- [Migrar Excel a Power BI](https://www.programbi.com/migrar-excel-a-power-bi)
-- [Por qué fallan los proyectos Power BI](https://www.programbi.com/por-que-fallan-proyectos-power-bi)
-- [Curso Power BI vs Pack Adopción](https://www.programbi.com/curso-power-bi-vs-pack-adopcion)
-- [Power BI para minería Chile](https://www.programbi.com/power-bi-mineria-chile)
-
-CTA empresas: diagnóstico 30 min en /empresas o WhatsApp +56 9 3540 9699.
-
-## Referidos
-
-- [Programa de referidos](https://www.programbi.com/referidos): 15% del neto cobrado del primer Pack Adopción atribuido. Pago al cobro. Intros calificadas a mano (no afiliados abiertos). Clawback 60 días.
-
-## Cursos abiertos (particulares)
+## Cursos
 
 - [Catálogo](https://www.programbi.com/cursos)
 - [Curso Power BI en vivo Chile](https://www.programbi.com/cursos/power-bi)
@@ -27,17 +12,19 @@ CTA empresas: diagnóstico 30 min en /empresas o WhatsApp +56 9 3540 9699.
 - [Analítica minería](https://www.programbi.com/cursos/analitica-mineria)
 - [Analítica financiera](https://www.programbi.com/cursos/analitica-financiera)
 
-Los cursos no son el Pack. Si el usuario es Controller o jefe de área, dirigir a /empresas.
+## Empresas
 
-## Comparativas y FAQ
+- [Soluciones para empresas](https://www.programbi.com/empresas)
+- [Implementación Power BI Chile](https://www.programbi.com/implementacion-power-bi)
+- [Migrar Excel a Power BI](https://www.programbi.com/migrar-excel-a-power-bi)
 
-- [Power BI vs Excel](https://www.programbi.com/versus/power-bi-vs-excel)
-- [FAQ](https://www.programbi.com/faq)
+## Referidos
+
+- [Programa de referidos](https://www.programbi.com/referidos): 15% del neto cobrado del primer Pack Adopción atribuido. Pago al cobro. Intros calificadas a mano. Clawback 60 días.
 
 ## Contacto
 
 - Web: https://www.programbi.com
-- Empresas: https://www.programbi.com/empresas
 - WhatsApp: +56 9 3540 9699
 - Email: contacto@programbi.cl
 - LinkedIn: https://cl.linkedin.com/company/programbi

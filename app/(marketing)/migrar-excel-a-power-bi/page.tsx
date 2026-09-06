@@ -1,69 +1,47 @@
 import type { Metadata } from "next";
-import EmpresasClient from "../empresas/EmpresasClient";
-import { ogImageUrl } from "@/lib/og/url";
-import { SITE_URL, ORG_ID, absoluteUrl, jsonLdString } from "@/lib/seo";
-import { PACK, PACK_FAQS, PACK_VARIANT_COPY } from "@/lib/data/pack-adopcion";
+import SeoGuide from "@/components/marketing/SeoGuide";
+import { SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
 
-const copy = PACK_VARIANT_COPY["migrar-excel"];
+const path = "/migrar-excel-a-power-bi";
 
 export const metadata: Metadata = {
-  title: { absolute: copy.title },
-  description: copy.description,
-  alternates: { canonical: "/migrar-excel-a-power-bi" },
+  title: { absolute: "Migrar Excel a Power BI Chile | Control de gestión" },
+  description:
+    "Migrar Excel a Power BI en Chile: tableros para control de gestión y capacitación del equipo. Cotiza in-company o el curso abierto.",
+  alternates: { canonical: path },
   openGraph: {
-    title: copy.title,
-    description: copy.description,
-    url: absoluteUrl("/migrar-excel-a-power-bi"),
-    type: "website",
-    images: [
-      {
-        url: ogImageUrl({
-          kicker: "Excel → Power BI Chile",
-          title: copy.h1,
-          description: PACK.tagline,
-          tags: ["Excel", "Power BI", "Adopción"],
-          path: "migrar-excel-a-power-bi",
-        }),
-        width: 1200,
-        height: 630,
-        alt: "Migrar Excel a Power BI Chile — ProgramBI",
-      },
-    ],
+    title: "Migrar Excel a Power BI Chile | ProgramBI",
+    description: "De planillas eternas a dashboards. Capacitación e implementación en Chile.",
+    url: absoluteUrl(path),
+    type: "article",
   },
 };
 
-export default function MigrarExcelPage() {
+const faqs = [
+  {
+    q: "¿Puedo aprender Power BI en un curso y migrar yo?",
+    a: "Sí: el curso abierto de Power BI es formación individual. Si el área necesita el tablero con datos propios, eso es un proyecto empresas.",
+  },
+];
+
+export default function Page() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Service",
-        name: "Migrar Excel a Power BI — Pack Adopción BI",
-        url: absoluteUrl("/migrar-excel-a-power-bi"),
-        provider: { "@type": "Organization", name: "ProgramBI SPA", url: SITE_URL, "@id": ORG_ID },
-        areaServed: { "@type": "Country", name: "Chile" },
-        description: copy.description,
+        "@type": "Article",
+        headline: "Migrar Excel a Power BI en control de gestión",
+        url: absoluteUrl(path),
+        inLanguage: "es-CL",
+        author: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
       },
       {
         "@type": "FAQPage",
-        mainEntity: PACK_FAQS.map((faq) => ({
+        mainEntity: faqs.map((faq) => ({
           "@type": "Question",
           name: faq.q,
           acceptedAnswer: { "@type": "Answer", text: faq.a },
         })),
-      },
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-          { "@type": "ListItem", position: 2, name: "Empresas", item: absoluteUrl("/empresas") },
-          {
-            "@type": "ListItem",
-            position: 3,
-            name: "Migrar Excel a Power BI",
-            item: absoluteUrl("/migrar-excel-a-power-bi"),
-          },
-        ],
       },
     ],
   };
@@ -71,7 +49,32 @@ export default function MigrarExcelPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
-      <EmpresasClient variant="migrar-excel" />
+      <SeoGuide
+        kicker="Excel → Power BI · Chile"
+        h1="Migrar Excel a Power BI en control de gestión"
+        lead="Pasamos reportes eternos a tableros y formamos al equipo para mantenerlos. Curso abierto o proyecto in-company, según si eres persona o empresa."
+        pagePath={path}
+        crumbs={[
+          { href: "/", label: "Inicio" },
+          { href: "/empresas", label: "Empresas" },
+          { href: path, label: "Migrar Excel a Power BI" },
+        ]}
+        sections={[
+          {
+            h2: "Cuándo un curso alcanza y cuándo no",
+            paragraphs: [
+              "Si tú quieres DAX y Power Query, el curso Power BI en vivo es el camino.",
+              "Si el cierre del área vive en planillas que nadie más entiende, hace falta un tablero con esos datos y práctica del equipo — eso se cotiza en empresas.",
+            ],
+          },
+        ]}
+        faqs={faqs}
+        related={[
+          { href: "/cursos/power-bi", label: "Curso Power BI en vivo Chile" },
+          { href: "/empresas", label: "Soluciones para empresas" },
+          { href: "/implementacion-power-bi", label: "Implementación Power BI" },
+        ]}
+      />
     </>
   );
 }

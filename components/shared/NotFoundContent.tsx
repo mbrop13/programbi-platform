@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { PACK } from "@/lib/data/pack-adopcion";
 
 export default function NotFoundContent() {
   return (
@@ -9,30 +8,22 @@ export default function NotFoundContent() {
         Esta página no está.
       </h1>
       <p className="mt-4 max-w-md text-base leading-relaxed text-mute">
-        Si buscabas implementación Power BI o migrar Excel, el Pack Adopción está en empresas. Los cursos abiertos
-        siguen en el catálogo.
+        Revisa el catálogo de cursos o las soluciones para empresas.
       </p>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <Link
-          href="/empresas"
+          href="/cursos"
           className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
         >
-          Pack Adopción BI
+          Ver cursos
         </Link>
         <Link
-          href="/cursos/power-bi"
+          href="/empresas"
           className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-paper px-6 text-sm font-medium text-ink no-underline"
         >
-          Curso Power BI
-        </Link>
-        <Link
-          href="/migrar-excel-a-power-bi"
-          className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-paper px-6 text-sm font-medium text-ink no-underline"
-        >
-          Migrar Excel → Power BI
+          Empresas
         </Link>
       </div>
-      <p className="mt-8 text-sm text-mute">{PACK.tagline}</p>
     </main>
   );
 }

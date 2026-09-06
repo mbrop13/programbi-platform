@@ -37,16 +37,14 @@ export const metadata: Metadata = {
   },
   description: PAGE_SEO.home.description,
   keywords: [
-    "implementación Power BI Chile",
-    "migrar Excel a Power BI",
-    "Power BI control de gestión",
-    "Pack Adopción BI",
+    "curso Power BI Chile",
+    "cursos de power bi chile",
+    "cursos analisis de datos",
+    "Power BI empresas Chile",
     "capacitación Power BI Chile",
-    "curso Power BI en vivo Chile",
-    "Business Intelligence Chile",
-    "dashboards Power BI empresas",
     "SQL Server",
     "Python datos",
+    "Business Intelligence Chile",
     "ProgramBI",
   ],
   authors: [{ name: "ProgramBI", url: SITE_URL }],
@@ -107,8 +105,8 @@ const jsonLd = {
         height: 160,
       },
       description:
-        "ProgramBI (Chile) implementa Business Intelligence con adopción: tableros en producción y equipos autónomos. También dicta cursos en vivo de Power BI, SQL y Python.",
-      slogan: "De reportes eternos a decisiones en minutos.",
+        "ProgramBI (Chile) dicta cursos en vivo de Power BI, SQL y Python, y trabaja con empresas en capacitación e implementación de Business Intelligence.",
+      slogan: "Aprende análisis de datos con expertos.",
       foundingDate: "2021",
       areaServed: [
         { "@type": "Country", name: "Chile" },
@@ -119,7 +117,7 @@ const jsonLd = {
       ],
       knowsAbout: [
         "Power BI", "DAX", "SQL Server", "Python", "Pandas",
-        "Business Intelligence", "Control de gestión", "Adopción BI",
+        "Business Intelligence", "Control de gestión",
         "Excel a Power BI", "Minería", "Retail", "Finanzas",
       ],
       founder: {

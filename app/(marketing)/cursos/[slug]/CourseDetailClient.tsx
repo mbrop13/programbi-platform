@@ -15,9 +15,7 @@ import {
   Lock,
   MessageCircle,
 } from "lucide-react";
-import { type Course, courses, getCourseBySlug } from "@/lib/data/courses";
-import { COURSE_SEO } from "@/lib/seo/money";
-import { MONEY_COURSE_SLUGS } from "@/lib/seo";
+import { type Course, courses } from "@/lib/data/courses";
 import { founderImage } from "@/lib/data/images";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/shared/AuthModal";
@@ -34,8 +32,17 @@ import { useCountry } from "@/lib/context/CountryContext";
 import {
   trackCourseView,
   trackCtaClick,
+  trackExperimentImpression,
   trackWhatsAppClick,
 } from "@/lib/analytics/marketing";
+import { usePricingVisibility } from "@/lib/experiments/useExperiment";
+import { readClientPricingVariant } from "@/lib/experiments/cookie";
+
+function courseCheckoutUrl(slug: string, levelName?: string) {
+  const params = new URLSearchParams({ curso: slug });
+  if (levelName) params.set("nivel", levelName);
+  return `/pago?${params.toString()}`;
+}
 
 const PDF_URL =
   "https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link";
@@ -57,6 +64,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const { variant, ready: experimentReady } = usePricingVisibility();
+  const pricingReady = !checkingAuth && experimentReady;
+  const showPrice = isLoggedIn || variant === "direct";
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [isFreeTrial, setIsFreeTrial] = useState(false);
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
@@ -64,14 +74,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const [selectedScheduleIndex, setSelectedScheduleIndex] = useState(0);
   const [isScheduleDropdownOpen, setIsScheduleDropdownOpen] = useState(false);
   const { country } = useCountry();
-  const moneySet = new Set<string>(MONEY_COURSE_SLUGS);
-  const relatedCourses = [
-    ...MONEY_COURSE_SLUGS.filter((s) => s !== course.slug)
-      .map((s) => getCourseBySlug(s))
-      .filter((c): c is Course => Boolean(c)),
-    ...courses.filter((c) => c.slug !== course.slug && !moneySet.has(c.slug)),
-  ].slice(0, 3);
-  const courseSeo = COURSE_SEO[course.slug];
+  const relatedCourses = courses.filter((c) => c.slug !== course.slug).slice(0, 3);
   const scheduleCountry = SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0];
 
   const convertAndFormat = (priceCLP: number | null | undefined) => {
@@ -92,7 +95,8 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   };
 
   const handleCheckoutCTA = async () => {
-    trackCtaClick(isLoggedIn ? "Inscribirse" : "Registrarse", "course_detail_sidebar", {
+    const levelName = (course.levels || [])[selectedLevel]?.name;
+    trackCtaClick(showPrice ? "Inscribirse" : "Registrarse", "course_detail_sidebar", {
       course_slug: course.slug,
     });
 
@@ -112,17 +116,23 @@ export default function CourseDetailClient({ course }: { course: Course }) {
           selectedCourses: [course.title],
           sourceCourse: course.slug,
           leadType: "abandoned_cart",
+          pricingVariant: readClientPricingVariant(),
         }),
       });
     } catch {
       /* lead is best-effort */
     }
-    window.location.href = `/pago?curso=${course.slug}`;
+    window.location.href = courseCheckoutUrl(course.slug, levelName);
   };
 
   useEffect(() => {
     trackCourseView(course.slug, course.title);
   }, [course.slug, course.title]);
+
+  useEffect(() => {
+    if (checkingAuth || isLoggedIn || !variant) return;
+    trackExperimentImpression(variant, course.slug);
+  }, [checkingAuth, isLoggedIn, variant, course.slug]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -281,27 +291,17 @@ export default function CourseDetailClient({ course }: { course: Course }) {
             </nav>
 
             <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl lg:leading-[1.12]">
-              {courseSeo?.h1 || course.title}
+              {course.title}
             </h1>
             <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute sm:text-lg">
               {course.shortDescription}
-            </p>
-            {courseSeo ? (
-              <p className="mt-3 max-w-[40rem] text-sm leading-relaxed text-mute">{courseSeo.audience}</p>
-            ) : null}
-            <p className="mt-3 max-w-[40rem] text-sm leading-relaxed text-mute">
-              Curso abierto, en vivo. Si tu empresa necesita el tablero en producción + el equipo autónomo, eso es el{" "}
-              <Link href="/empresas" className="font-semibold text-ink">
-                Pack Adopción BI
-              </Link>
-              .
             </p>
 
             <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-mute">
               <li className="inline-flex items-center gap-1.5">
                 <Clock size={15} /> {hours} h
               </li>
-              <li>En vivo por Zoom · Chile</li>
+              <li>En vivo por Zoom</li>
               <li>Certificado</li>
               {levels.length > 1 ? <li>{levels.length} niveles</li> : null}
             </ul>
@@ -428,9 +428,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       ? "Aún no hay una fecha abierta para este nivel. Escríbenos y te avisamos del próximo grupo."
                       : "Aún no hay una fecha abierta para este curso. Escríbenos y te avisamos del próximo grupo."}
                   </p>
-                ) : checkingAuth ? (
+                ) : !pricingReady ? (
                   <div className="h-10 w-40 rounded-lg bg-wash" />
-                ) : isLoggedIn ? (
+                ) : showPrice ? (
                   <div>
                     {originalGrandTotal && totalDiscountPercentage > 0 && (
                       <p className="text-sm text-faint">
@@ -459,7 +459,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               {activeSchedulesList.length === 0 ? (
                 <a
                   href={`https://wa.me/56935409699?text=${encodeURIComponent(
-                    `Hola, vengo de /cursos/${course.slug} y quiero consultar fechas del curso ${course.title}${levels.length > 1 && activeLevel?.name ? ` - ${activeLevel.name}` : ""}.`
+                    `Hola! Me gustaría consultar las próximas fechas del curso ${course.title}${levels.length > 1 && activeLevel?.name ? ` - ${activeLevel.name}` : ""}`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -475,7 +475,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                   onClick={handleCheckoutCTA}
                   className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
                 >
-                  {isLoggedIn ? "Inscribirse" : "Registrarse"}
+                  {showPrice ? "Inscribirse" : "Registrarse"}
                   <ArrowRight size={16} />
                 </button>
               )}
@@ -504,33 +504,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
       <TemarioSection course={course} selectedLevel={selectedLevel} isFreeTrial={isFreeTrial} />
 
-      {courseSeo ? (
-        <section className="border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-[1400px]">
-            <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Preguntas frecuentes</h2>
-            <div className="mt-8 grid gap-4 lg:grid-cols-3">
-              {courseSeo.faqs.map((faq) => (
-                <div key={faq.q} className="rounded-2xl border border-line bg-paper p-5">
-                  <h3 className="text-base font-semibold text-ink">{faq.q}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-mute">{faq.a}</p>
-                </div>
-              ))}
-            </div>
-            <p className="mt-6 text-sm text-mute">
-              Empresa (tablero en producción):{" "}
-              <Link href="/empresas" className="font-semibold text-ink">
-                Pack Adopción
-              </Link>
-              . Comparativa:{" "}
-              <Link href="/curso-power-bi-vs-pack-adopcion" className="font-semibold text-ink">
-                curso vs Pack
-              </Link>
-              .
-            </p>
-          </div>
-        </section>
-      ) : null}
-
       <section className="border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="relative aspect-[4/5] overflow-hidden rounded-[26px] border border-line bg-wash lg:col-span-4">
@@ -541,7 +514,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
             <p className="mt-2 text-lg font-semibold text-ink">Manuel Oliva</p>
             <p className="mt-4 max-w-[54ch] text-base leading-relaxed text-mute">
               Magíster en Data Science (UAI). Ha liderado proyectos de datos en AngloAmerican, CAP, Deloitte y SQM, y
-              forma profesionales en SQL, Power BI, Python e IA.
+              formado a más de 5.000 profesionales en SQL, Power BI, Python e IA.
             </p>
           </div>
         </div>
@@ -574,7 +547,16 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         </section>
       )}
 
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} defaultTab="register" />
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        defaultTab="register"
+        redirectUrl={
+          variant === "direct"
+            ? courseCheckoutUrl(course.slug, activeLevel?.name)
+            : `/cursos/${course.slug}`
+        }
+      />
     </>
   );
 }
@@ -634,6 +616,7 @@ function CourseContactForm({ course }: { course: Course }) {
         message: formData.get("message"),
         sourceCourse: course.title,
         leadType: contactType,
+        pricingVariant: readClientPricingVariant(),
         ...getAntiBotFields(formLoadedAt.current, honeypot),
       };
       if (contactType === "empresa") {
