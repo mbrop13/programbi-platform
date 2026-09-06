@@ -3,7 +3,7 @@ import { captureAndReadAttribution } from "@/lib/utm";
 
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const;
 
-export type WhatsAppIntent = "pack" | "curso" | "fechas" | "general";
+export type WhatsAppIntent = "pack" | "curso" | "fechas" | "general" | "empresas";
 
 export function whatsappHref(opts: {
   page: string;
@@ -15,6 +15,8 @@ export function whatsappHref(opts: {
   let text: string;
   if (opts.intent === "pack") {
     text = `Hola, vengo de ${page} y quiero Pack Adopción BI / diagnóstico.`;
+  } else if (opts.intent === "empresas") {
+    text = `Hola, vengo de ${page} y quiero cotizar una capacitación para mi equipo.`;
   } else if (opts.intent === "curso") {
     text = `Hola, vengo de ${page} y quiero cotizar el curso ${opts.course || ""}.`.trim();
   } else if (opts.intent === "fechas") {

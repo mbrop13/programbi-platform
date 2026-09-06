@@ -1,6 +1,6 @@
 # ProgramBI
 
-> ProgramBI (Chile) dicta cursos en vivo de Power BI, SQL y Python, y trabaja con empresas en capacitación e implementación de Business Intelligence.
+> ProgramBI (Chile) dicta cursos en vivo de Power BI, SQL y Python, y forma equipos de empresas con capacitación in-company.
 
 ## Cursos
 
@@ -14,13 +14,13 @@
 
 ## Empresas
 
-- [Soluciones para empresas](https://www.programbi.com/empresas)
+- [Capacitación para empresas](https://www.programbi.com/empresas)
 - [Implementación Power BI Chile](https://www.programbi.com/implementacion-power-bi)
 - [Migrar Excel a Power BI](https://www.programbi.com/migrar-excel-a-power-bi)
 
 ## Referidos
 
-- [Programa de referidos](https://www.programbi.com/referidos): 15% del neto cobrado del primer Pack Adopción atribuido. Pago al cobro. Intros calificadas a mano. Clawback 60 días.
+- [Programa de referidos](https://www.programbi.com/referidos): 15% del neto cobrado de un curso o una capacitación a empresas. Pago al cobro. Intros calificadas a mano. Clawback 60 días.
 
 ## Contacto
 

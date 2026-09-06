@@ -23,13 +23,21 @@ export default function WhatsAppButton() {
   useEffect(() => {
     const path = pathname || "/";
     const courseMatch = path.match(/^\/cursos\/([^/?#]+)/);
+    const isEmpresas = path.startsWith("/empresas");
     const isPack =
-      path.startsWith("/empresas") ||
       path.startsWith("/implementacion-power-bi") ||
       path.startsWith("/migrar-excel-a-power-bi");
     const base = whatsappHref({
       page: path,
-      intent: isPack ? "pack" : courseMatch ? "curso" : path === "/" ? "pack" : "general",
+      intent: isEmpresas
+        ? "empresas"
+        : isPack
+          ? "pack"
+          : courseMatch
+            ? "curso"
+            : path === "/"
+              ? "pack"
+              : "general",
       course: courseMatch?.[1],
     });
     setHref(withPageUtms(base));

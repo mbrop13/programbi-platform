@@ -13,7 +13,7 @@ export const PAGE_SEO = {
   empresas: {
     title: "Power BI para empresas Chile | Capacitación y BI",
     description:
-      "Capacitación e implementación Power BI para empresas en Chile: dashboards, SQL, Python y automatización. Consultoría de datos in-company.",
+      "Capacitación corporativa de Power BI, SQL y Python para empresas en Chile. Programas in-company, en vivo, con factura. Pide una propuesta.",
   },
   cursos: {
     title: "Cursos Power BI y análisis de datos Chile | ProgramBI",

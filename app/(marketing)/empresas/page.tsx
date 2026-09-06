@@ -19,15 +19,15 @@ export const metadata: Metadata = {
       {
         url: ogImageUrl({
           kicker: "Para empresas",
-          title: "Tres formas de trabajar. Un mismo objetivo: autonomía con datos.",
+          title: "Formamos a tu equipo en datos.",
           description:
-            "Capacitación corporativa, implementación de soluciones y sistemas a la medida.",
-          tags: ["Capacitación", "Dashboards", "Sistemas a medida"],
+            "Capacitación in-company de Power BI, SQL, Python y automatización. En vivo, con factura.",
+          tags: ["Capacitación", "Power BI", "In-company"],
           path: "empresas",
         }),
         width: 1200,
         height: 630,
-        alt: "Soluciones de datos para empresas — ProgramBI",
+        alt: "Capacitación de datos para empresas — ProgramBI",
       },
     ],
   },
@@ -37,14 +37,14 @@ export default function EmpresasPage() {
   const serviceJsonLd = {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: "Consultoría de Business Intelligence, Automatización y Capacitación Corporativa",
+    name: "Capacitación corporativa de datos",
     provider: {
       "@type": "Organization",
       name: "ProgramBI SPA",
       url: SITE_URL,
       "@id": `${SITE_URL}/#organization`,
     },
-    serviceType: "Data Analytics, Business Intelligence, Automation & Corporate Training",
+    serviceType: "Corporate training in Power BI, SQL, Python and automation",
     areaServed: [
       { "@type": "Country", name: "Chile" },
       { "@type": "Country", name: "Colombia" },
@@ -52,7 +52,7 @@ export default function EmpresasPage() {
       { "@type": "Country", name: "Perú" },
     ],
     description:
-      "Desarrollo de dashboards en Power BI, integración de bases de datos en SQL Server, automatización de procesos con Python y Power Automate, modelos predictivos de Machine Learning y capacitación corporativa para equipos.",
+      "Capacitación in-company para equipos en Chile: Power BI, SQL Server, Python, Excel, Power Automate e IA. Programas en vivo, con los datos de la empresa y factura corporativa.",
   };
 
   return (
