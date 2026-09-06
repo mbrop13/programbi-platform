@@ -26,18 +26,12 @@ export function KpiGrid({ stats, loading }: { stats: ReferrerStats | null; loadi
   return (
     <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
       {items.map((it) => (
-        <div key={it.label} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
-          <p className="text-xs text-muted-foreground">{it.label}</p>
+        <div key={it.label} className="rounded-2xl border border-line bg-paper p-4">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-faint">{it.label}</p>
           {loading ? (
             <Skeleton className="mt-3 h-8 w-24" />
           ) : (
-            <p
-              className={
-                it.money
-                  ? "mt-2 text-2xl font-semibold tracking-tight text-emerald-800 dark:text-emerald-300"
-                  : "mt-2 text-2xl font-semibold tracking-tight"
-              }
-            >
+            <p className="mt-2 text-2xl font-semibold tracking-tight text-ink">
               {it.money ? (
                 <NumberTicker value={it.value} format={(n) => formatClp(n)} />
               ) : it.pct ? (

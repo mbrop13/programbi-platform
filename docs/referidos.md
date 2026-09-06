@@ -4,6 +4,36 @@ Plataforma v1 integrada en www.programbi.com. Comisión: **15% del neto cobrado*
 
 No toca capacitaciones.programbi.cl.
 
+## Para que el panel funcione en producción
+
+Hay que hacer **dos cosas** en Supabase / Vercel. El código ya está en `main`.
+
+### 1. SQL (obligatorio)
+
+En [Supabase](https://supabase.com/dashboard) → proyecto de ProgramBI → **SQL Editor** → New query.
+
+Pega y ejecuta todo el archivo:
+
+`supabase/migrations/20260906000000_referrals.sql`
+
+Eso crea `referrers`, `referrals`, `referral_commissions`, `referral_audit_log`, `referral_lead_hints` y las políticas RLS.
+
+El seed `supabase/seeds/referrals_seed.sql` es **opcional** (solo usuarios de prueba). No lo corras en producción.
+
+### 2. Variable de entorno (recomendado)
+
+En Vercel → Project → Settings → Environment Variables:
+
+```
+REFERRAL_BANK_KEY=<secreto de 32+ caracteres>
+```
+
+Sirve para cifrar datos bancarios del referidor. Si no está, el panel igual arranca (cae al service role / plaintext wrap).
+
+Confirma que ya existen `SUPABASE_SECRET_KEY` o `SUPABASE_SERVICE_ROLE_KEY`.
+
+Después: hard-refresh de `/referidos/app` con una cuenta normal de ProgramBI. El perfil de referidor se crea solo.
+
 ## Cómo correr
 
 1. Variables de entorno (además de las de Supabase / SES ya usadas):
@@ -44,11 +74,11 @@ Una venta atribuida = una comisión. Cookie `?ref=CODIGO` en `/cursos` o `/empre
 
 | Ruta | Quién |
 | --- | --- |
-| `/referidos` | Landing (navbar/footer del sitio; no está en el menú público) |
+| `/referidos` | Landing pública (navbar/footer del sitio; no está en el menú público) |
 | `/referidos/terminos` | Público |
 | `/login?next=/referidos/app` `/registro?from=/referidos` | Misma cuenta de la plataforma |
-| `/referidos/app/*` | Referidor (sesión ProgramBI; se crea el perfil al entrar) |
-| `/referidos/admin/*` | Admin ProgramBI |
+| `/referidos/app/*` | App exclusiva del referidor (sesión ProgramBI; sin navbar del sitio) |
+| `/referidos/admin/*` | App exclusiva de admin (sin navbar del sitio) |
 
 `/referidos/login` y `/referidos/registro` redirigen al login/registro normal.
 

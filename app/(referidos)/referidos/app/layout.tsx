@@ -24,6 +24,7 @@ export default async function ReferrerAppLayout({
     .maybeSingle();
 
   let referrer = null;
+  let setupPending = false;
   try {
     referrer = await ensureReferrer({
       userId: user.id,
@@ -32,11 +33,18 @@ export default async function ReferrerAppLayout({
       phone: profile?.phone,
     });
   } catch (err) {
+    const msg = err instanceof Error ? err.message : "";
+    setupPending =
+      msg.includes("migración") || msg.includes("does not exist") || msg.includes("schema cache");
     console.error("ensureReferrer:", err);
   }
 
   return (
-    <ReferrerShell referrer={referrer} email={user.email || referrer?.email || ""}>
+    <ReferrerShell
+      referrer={referrer}
+      email={user.email || referrer?.email || ""}
+      setupPending={setupPending}
+    >
       {children}
     </ReferrerShell>
   );

@@ -14,7 +14,7 @@ export function useReferralData() {
     setError(null);
     const res = await fetch("/api/referrals/me");
     if (!res.ok) {
-      setError("No se pudo cargar el panel.");
+      setError("No se pudo cargar el panel. Si es la primera vez, ProgramBI aún debe activar la base de referidos.");
       setLoading(false);
       return;
     }

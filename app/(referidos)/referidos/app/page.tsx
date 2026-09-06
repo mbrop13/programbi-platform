@@ -7,8 +7,6 @@ import { KpiGrid } from "@/components/referrals/app/kpi-grid";
 import { ReferralTable } from "@/components/referrals/app/referral-table";
 import { EmptyState } from "@/components/referrals/empty-state";
 import { SITE_URL } from "@/lib/seo";
-import { buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 
 export default function ReferrerDashboardPage() {
   const { loading, error, referrer, stats, referrals } = useReferralData();
@@ -23,21 +21,24 @@ export default function ReferrerDashboardPage() {
         <h1 className="text-2xl font-semibold tracking-tight">
           {referrer ? `Hola, ${referrer.name.split(" ")[0]}` : "Panel"}
         </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-sm text-mute">
           Intros, pipeline y el 15% cuando se cobra el curso o la capacitación.
         </p>
       </div>
-      {error ? <p className="text-sm text-destructive">{error}</p> : null}
+      {error ? (
+        <p className="rounded-xl border border-line bg-paper px-4 py-3 text-sm text-ink">{error}</p>
+      ) : null}
       <KpiGrid stats={stats} loading={loading} />
 
       {referrer ? (
-        <div className="rounded-2xl border border-border bg-card p-4 text-sm">
-          <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
-            Link opcional (cookie 90 días)
+        <div className="rounded-2xl border border-line bg-paper p-5 text-sm">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint">
+            Tu link
           </p>
-          <p className="mt-2 break-all font-mono text-xs">{track}</p>
-          <p className="mt-2 text-xs text-muted-foreground">
-            También sirve en /empresas. Sugiere atribución; un admin confirma. No spamear.
+          <p className="mt-2 break-all font-mono text-xs text-ink">{track}</p>
+          <p className="mt-2 text-xs text-mute">
+            Sirve en /cursos y /empresas. Deja una cookie 90 días. Un admin confirma la venta. No
+            spamear.
           </p>
         </div>
       ) : null}
@@ -45,7 +46,7 @@ export default function ReferrerDashboardPage() {
       <div>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-base font-semibold">Últimas intros</h2>
-          <Link href="/referidos/app/referidos" className="text-sm text-muted-foreground hover:underline">
+          <Link href="/referidos/app/referidos" className="text-sm text-mute no-underline hover:text-ink hover:underline">
             Ver todas
           </Link>
         </div>
@@ -64,12 +65,6 @@ export default function ReferrerDashboardPage() {
         )}
       </div>
 
-      <Link
-        href="/referidos/app/nueva"
-        className={cn(buttonVariants(), "h-10 px-4 no-underline md:hidden")}
-      >
-        Nueva intro
-      </Link>
     </div>
   );
 }
