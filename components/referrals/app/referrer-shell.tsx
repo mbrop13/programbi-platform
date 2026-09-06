@@ -31,7 +31,7 @@ export function ReferrerShell({
   email,
   children,
 }: {
-  referrer: Referrer;
+  referrer: Referrer | null;
   email: string;
   children: React.ReactNode;
 }) {
@@ -103,7 +103,7 @@ export function ReferrerShell({
               <span className="text-sm font-semibold">Referidos</span>
             </div>
             <div className="ml-auto flex items-center gap-3">
-              {referrer.status !== "active" ? (
+              {referrer && referrer.status !== "active" ? (
                 <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800 ring-1 ring-amber-200">
                   {REFERRER_STATUS_LABELS[referrer.status]}
                 </span>

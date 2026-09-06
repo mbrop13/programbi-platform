@@ -23,15 +23,20 @@ export default async function ReferrerAppLayout({
     .eq("id", user.id)
     .maybeSingle();
 
-  const referrer = await ensureReferrer({
-    userId: user.id,
-    email: user.email || profile?.email,
-    name: profile?.full_name || user.email?.split("@")[0],
-    phone: profile?.phone,
-  });
+  let referrer = null;
+  try {
+    referrer = await ensureReferrer({
+      userId: user.id,
+      email: user.email || profile?.email,
+      name: profile?.full_name || user.email?.split("@")[0],
+      phone: profile?.phone,
+    });
+  } catch (err) {
+    console.error("ensureReferrer:", err);
+  }
 
   return (
-    <ReferrerShell referrer={referrer} email={user.email || referrer.email}>
+    <ReferrerShell referrer={referrer} email={user.email || referrer?.email || ""}>
       {children}
     </ReferrerShell>
   );

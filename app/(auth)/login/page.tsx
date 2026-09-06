@@ -28,7 +28,14 @@ export default function LoginPage() {
     if (params.get("registered") === "true") {
       setSuccess("¡Registro exitoso! Ya puedes iniciar sesión.");
     }
-  }, []);
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data }) => {
+      if (data.session) {
+        router.replace(getNextPath());
+        router.refresh();
+      }
+    });
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

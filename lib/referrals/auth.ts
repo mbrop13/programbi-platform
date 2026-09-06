@@ -93,6 +93,9 @@ function autoActiveForEmail(email: string | undefined): boolean {
   return Boolean(domain && allow.includes(domain));
 }
 
+const REFERRER_COLS =
+  "id, user_id, name, email, phone, type, status, referral_code, bank_payload, created_at, updated_at";
+
 export async function ensureReferrer(params: {
   userId: string;
   email?: string;
@@ -100,17 +103,28 @@ export async function ensureReferrer(params: {
   phone?: string | null;
   type?: Referrer["type"];
 }): Promise<Referrer> {
-  const admin = createAdminClient();
-  const { data: existing, error } = await admin
+  const supabase = await createClient();
+  const { data: own, error: ownError } = await supabase
     .from("referrers")
-    .select(
-      "id, user_id, name, email, phone, type, status, referral_code, bank_payload, created_at, updated_at"
-    )
+    .select(REFERRER_COLS)
     .eq("user_id", params.userId)
     .maybeSingle();
 
-  if (error) throw error;
+  if (!ownError && own) return toPublicReferrer(own);
+
+  const admin = createAdminClient();
+  const { data: existing, error } = own
+    ? { data: own, error: null }
+    : await admin.from("referrers").select(REFERRER_COLS).eq("user_id", params.userId).maybeSingle();
+
   if (existing) return toPublicReferrer(existing);
+  if (isMissingRelation(error) || isMissingRelation(ownError)) {
+    throw new Error("Falta aplicar la migración de referidos en Supabase.");
+  }
+  if (error && !isMissingRelation(error)) {
+    if (ownError && !isMissingRelation(ownError)) throw ownError;
+    throw error;
+  }
 
   const email = params.email || "";
   const name = params.name?.trim() || email.split("@")[0] || "Referidor";
@@ -127,28 +141,36 @@ export async function ensureReferrer(params: {
     referral_code: code,
   };
 
+  const { data: createdOwn, error: insertOwn } = await supabase
+    .from("referrers")
+    .insert(insert)
+    .select(REFERRER_COLS)
+    .maybeSingle();
+  if (createdOwn) return toPublicReferrer(createdOwn);
+
   const { data: created, error: insertError } = await admin
     .from("referrers")
     .insert(insert)
-    .select(
-      "id, user_id, name, email, phone, type, status, referral_code, bank_payload, created_at, updated_at"
-    )
+    .select(REFERRER_COLS)
     .single();
 
-  if (insertError) {
-    // Unique race: another request created it.
-    const { data: raced } = await admin
+  if (insertError || !created) {
+    const { data: raced } = await supabase
       .from("referrers")
-      .select(
-        "id, user_id, name, email, phone, type, status, referral_code, bank_payload, created_at, updated_at"
-      )
+      .select(REFERRER_COLS)
       .eq("user_id", params.userId)
       .maybeSingle();
     if (raced) return toPublicReferrer(raced);
-    throw insertError;
+    throw insertOwn || insertError || new Error("No se pudo crear el perfil de referidor.");
   }
 
   return toPublicReferrer(created);
+}
+
+function isMissingRelation(error: { message?: string; code?: string } | null): boolean {
+  if (!error) return false;
+  const msg = (error.message || "").toLowerCase();
+  return error.code === "42P01" || msg.includes("does not exist") || msg.includes("schema cache");
 }
 
 type ReferrerRow = {

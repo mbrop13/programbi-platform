@@ -59,7 +59,7 @@ function PlatformAuthCtas({
 
   return (
     <>
-      <Link href="/referidos/app" className={primary}>
+      <Link href={loggedIn ? "/referidos/app" : "/login?next=/referidos/app"} className={primary}>
         {loggedIn ? "Entrar al panel" : "Entrar con mi cuenta"}
         <ArrowRight size={16} strokeWidth={2.4} />
       </Link>

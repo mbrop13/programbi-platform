@@ -13,15 +13,23 @@ export async function GET() {
     .eq("id", auth.data.user.id)
     .maybeSingle();
 
-  const referrer = await ensureReferrer({
-    userId: auth.data.user.id,
-    email: auth.data.user.email || profile?.email,
-    name: profile?.full_name || auth.data.user.email?.split("@")[0],
-    phone: profile?.phone,
-  });
+  try {
+    const referrer = await ensureReferrer({
+      userId: auth.data.user.id,
+      email: auth.data.user.email || profile?.email,
+      name: profile?.full_name || auth.data.user.email?.split("@")[0],
+      phone: profile?.phone,
+    });
 
-  const referrals = await listReferralsForReferrer(referrer.id);
-  const stats = computeStats(referrals);
+    const referrals = await listReferralsForReferrer(referrer.id);
+    const stats = computeStats(referrals);
 
-  return NextResponse.json({ referrer, stats, referrals });
+    return NextResponse.json({ referrer, stats, referrals });
+  } catch (err) {
+    console.error("GET /api/referrals/me:", err);
+    return NextResponse.json(
+      { error: "No se pudo cargar el panel de referidos." },
+      { status: 503 }
+    );
+  }
 }
