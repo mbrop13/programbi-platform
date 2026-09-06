@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { sendNewMemberNotification } from '@/lib/email/mailersend'
 import { VARIANT_COOKIE, isPricingVisibilityVariant } from '@/lib/experiments/config'
 import { safeNextPath } from '@/lib/auth/safe-next'
+import { claimReferralForUser } from '@/lib/referrals/claim'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -44,6 +45,17 @@ export async function GET(request: Request) {
           const createdAt = new Date(user.created_at).getTime()
           const now = Date.now()
           const isNewUser = (now - createdAt) < 60_000 // within 60 seconds
+
+          await claimReferralForUser({
+            userId: user.id,
+            email: user.email,
+            name: googleName || user.email?.split("@")[0],
+            createdAt: user.created_at,
+            metadataCode:
+              typeof user.user_metadata?.referral_code === "string"
+                ? user.user_metadata.referral_code
+                : null,
+          })
 
           if (isNewUser) {
             // Guardar origen de registro solo en usuarios nuevos (OAuth o confirmación de email)

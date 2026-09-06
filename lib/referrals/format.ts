@@ -1,3 +1,9 @@
+import { SITE_URL } from "@/lib/seo";
+
+export function referralSignupUrl(code: string): string {
+  return `${SITE_URL}/registro?ref=${encodeURIComponent(code)}`;
+}
+
 export function formatClp(amount: number): string {
   return new Intl.NumberFormat("es-CL", {
     style: "currency",

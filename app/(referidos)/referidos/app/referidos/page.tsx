@@ -15,19 +15,17 @@ export default function ReferidosListPage() {
     <div className="mx-auto max-w-5xl space-y-6">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Tus referidos</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Estados en español. Calificada = el equipo validó el fit.
+        <p className="mt-1 text-sm text-mute">
+          Personas que se registraron con tu link. La comisión aparece cuando se cobra.
         </p>
       </div>
       {loading ? (
-        <div className="h-48 animate-pulse rounded-2xl bg-muted" />
+        <div className="h-48 animate-pulse rounded-2xl bg-wash" />
       ) : referrals.length === 0 ? (
         <EmptyState
           icon={Inbox}
-          title="Aún no tienes intros — manda la primera"
-          description="Cuando envíes una intro, aparece acá y en la cola interna de ProgramBI."
-          actionHref="/referidos/app/nueva"
-          actionLabel="Nueva intro"
+          title="Todavía no hay referidos"
+          description="Comparte tu link. Cuando alguien cree una cuenta ProgramBI, aparece acá."
         />
       ) : (
         <ReferralTable data={referrals} />

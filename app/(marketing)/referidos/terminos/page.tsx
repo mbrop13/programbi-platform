@@ -5,7 +5,7 @@ import { REFERRAL_CLAWBACK_DAYS, REFERRAL_COMMISSION_PERCENT } from "@/lib/refer
 export const metadata: Metadata = {
   title: "Términos del programa de referidos",
   description:
-    "Reglas del 15% en cursos y capacitaciones a empresas: pago al cobro, clawback 60 días, intros calificadas a mano.",
+    "Reglas del 15% en cursos y capacitaciones a empresas: link de referido, pago al cobro, clawback 60 días.",
   alternates: { canonical: "/referidos/terminos" },
 };
 
@@ -18,7 +18,7 @@ export default function TerminosReferidosPage() {
         </p>
         <h1 className="mt-2 text-3xl font-semibold tracking-tight">Términos v1</h1>
         <p className="mt-3 text-muted-foreground">
-          Español Chile. Vigentes para intros de cursos abiertos y de capacitaciones a empresas en
+          Español Chile. Vigentes para referidos de cursos abiertos y de capacitaciones a empresas en
           www.programbi.com. No aplican a capacitaciones.programbi.cl.
         </p>
 
@@ -47,24 +47,25 @@ export default function TerminosReferidosPage() {
             posteriores no generan comisión extra en v1, salvo acuerdo escrito distinto.
           </p>
         </Section>
-        <Section title="5. Calificación de intros">
+        <Section title="5. Cómo se atribuye">
           <p>
-            El registro no implica que cada intro cuente. ProgramBI califica a mano. Sirve un amigo
-            para un curso o un área / empresa para capacitación, en Chile. Spam, links masivos o
-            contactos sin fit se rechazan.
+            El referidor comparte un link con <code>?ref=CODIGO</code>. Si esa persona crea una
+            cuenta ProgramBI (cookie 90 días), queda atribuida. La comisión se paga solo cuando se
+            cobra un curso o una capacitación de esa persona o de su empresa. ProgramBI puede
+            rechazar spam, auto-referidos o abuso.
           </p>
         </Section>
-        <Section title="6. Tracking opcional">
+        <Section title="6. Tracking">
           <p>
-            El parámetro <code>?ref=CODIGO</code> en /cursos o /empresas guarda una cookie 90 días y
-            puede sugerir atribución. Un admin confirma. La cookie sola no basta.
+            El parámetro <code>?ref=CODIGO</code> en /registro, /cursos o /empresas guarda una cookie
+            90 días. El registro con esa cookie atribuye al referidor. El cobro de la comisión lo
+            confirma el equipo al liquidar la venta.
           </p>
         </Section>
         <Section title="7. Cuenta">
           <p>
             Se usa la misma cuenta de ProgramBI (login / registro del sitio). Al entrar al panel se
-            activa el perfil de referidor. ProgramBI puede suspender abuso, intros falsas o conflicto
-            de interés.
+            activa el perfil de referidor. ProgramBI puede suspender abuso o conflicto de interés.
           </p>
         </Section>
         <Section title="8. Independencia">

@@ -7,7 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function KpiGrid({ stats, loading }: { stats: ReferrerStats | null; loading: boolean }) {
   const items = [
-    { label: "Intros enviadas", value: stats?.introsSent ?? 0, money: false },
+    { label: "Referidos", value: stats?.introsSent ?? 0, money: false },
     { label: "En pipeline", value: stats?.inPipeline ?? 0, money: false },
     { label: "Ganadas", value: stats?.won ?? 0, money: false },
     {

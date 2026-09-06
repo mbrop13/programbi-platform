@@ -230,6 +230,7 @@ function mapReferral(row: Record<string, unknown>): Referral {
     status: row.status as Referral["status"],
     lost_reason: (row.lost_reason as string) ?? null,
     suggested_from_cookie: Boolean(row.suggested_from_cookie),
+    prospect_user_id: (row.prospect_user_id as string) ?? null,
     created_at: String(row.created_at),
     updated_at: String(row.updated_at),
   };

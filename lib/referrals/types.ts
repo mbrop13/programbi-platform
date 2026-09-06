@@ -48,6 +48,7 @@ export type Referral = {
   status: ReferralStatus;
   lost_reason: string | null;
   suggested_from_cookie: boolean;
+  prospect_user_id: string | null;
   created_at: string;
   updated_at: string;
 };

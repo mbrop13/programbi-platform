@@ -5,6 +5,8 @@ import "./globals.css";
 import Providers from "./providers";
 import { Analytics } from "@vercel/analytics/react";
 import MarketingAnalytics from "@/components/shared/MarketingAnalytics";
+import AttributionCapture from "@/components/shared/AttributionCapture";
+import ReferralClaim from "@/components/shared/ReferralClaim";
 import { SITE_URL, ORG_ID, WEBSITE_ID, jsonLdString } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 
@@ -180,6 +182,8 @@ export default function RootLayout({
       </head>
       <body className="min-h-dvh bg-canvas text-ink font-sans antialiased">
         <Providers>
+          <AttributionCapture />
+          <ReferralClaim />
           {children}
         </Providers>
         <Suspense fallback={null}>

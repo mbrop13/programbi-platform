@@ -54,8 +54,6 @@ export default function ComisionesPage() {
           icon={Wallet}
           title="Todavía no hay comisiones"
           description="Aparecen cuando un curso o una capacitación atribuida se cierra y se cobra."
-          actionHref="/referidos/app/nueva"
-          actionLabel="Enviar intro"
         />
       ) : (
         <>

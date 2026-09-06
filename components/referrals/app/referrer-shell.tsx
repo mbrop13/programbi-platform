@@ -5,7 +5,6 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
-  Plus,
   Users,
   Wallet,
   UserRound,
@@ -24,7 +23,6 @@ import { CopyLinkButton } from "./copy-link-button";
 
 const NAV = [
   { href: "/referidos/app", label: "Inicio", icon: LayoutDashboard },
-  { href: "/referidos/app/nueva", label: "Nueva intro", icon: Plus },
   { href: "/referidos/app/referidos", label: "Referidos", icon: Users },
   { href: "/referidos/app/comisiones", label: "Comisiones", icon: Wallet },
   { href: "/referidos/app/recursos", label: "Recursos", icon: BookOpen },
@@ -139,13 +137,6 @@ export function ReferrerShell({
             </span>
           ) : null}
           {referrer ? <CopyLinkButton code={referrer.referral_code} /> : null}
-          <Link
-            href="/referidos/app/nueva"
-            className="inline-flex h-9 items-center gap-1.5 rounded-full bg-ink px-3.5 text-[13px] font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
-          >
-            <Plus className="size-3.5" strokeWidth={2.4} />
-            Nueva intro
-          </Link>
         </header>
 
         {open ? (

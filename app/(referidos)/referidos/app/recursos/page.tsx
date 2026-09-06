@@ -9,9 +9,8 @@ export default function RecursosPage() {
     <div className="mx-auto max-w-2xl space-y-10">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Recursos</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Mensajes modelo para invitar a un curso o a una capacitación de empresa. No prometas
-          precios a nombre de ProgramBI.
+        <p className="mt-1 text-sm text-mute">
+          Mensajes modelo. Pega tu link del panel. No prometas precios a nombre de ProgramBI.
         </p>
       </div>
 

@@ -1,6 +1,6 @@
 # Programa de referidos — ProgramBI
 
-Plataforma v1 integrada en www.programbi.com. Comisión: **15% del neto cobrado** de un **curso abierto** o de una **capacitación a empresas** atribuida. Pago al cobro. Clawback 60 días. Intros calificadas a mano.
+Plataforma v1 integrada en www.programbi.com. Comisión: **15% del neto cobrado** de un **curso abierto** o de una **capacitación a empresas** atribuida. El referidor comparte un **link**. Si la persona se registra, aparece en el panel. Pago al cobro. Clawback 60 días.
 
 No toca capacitaciones.programbi.cl.
 
@@ -12,11 +12,12 @@ Hay que hacer **dos cosas** en Supabase / Vercel. El código ya está en `main`.
 
 En [Supabase](https://supabase.com/dashboard) → proyecto de ProgramBI → **SQL Editor** → New query.
 
-Pega y ejecuta todo el archivo:
+Pega y ejecuta, en este orden:
 
-`supabase/migrations/20260906000000_referrals.sql`
+1. `supabase/migrations/20260906000000_referrals.sql`
+2. `supabase/migrations/20260907000000_referrals_signup.sql`
 
-Eso crea `referrers`, `referrals`, `referral_commissions`, `referral_audit_log`, `referral_lead_hints` y las políticas RLS.
+El primero crea las tablas. El segundo liga el registro (`prospect_user_id`) al referidor.
 
 El seed `supabase/seeds/referrals_seed.sql` es **opcional** (solo usuarios de prueba). No lo corras en producción.
 
@@ -60,15 +61,15 @@ El seed espera usuarios auth:
 
 3. `npm run dev` → [http://localhost:3000/referidos](http://localhost:3000/referidos)
 
-## Flujo de pago
+## Flujo
 
-1. Referidor envía intro (`/referidos/app/nueva`). Estado: **Enviada**.
-2. Admin califica → agenda → propuesta (`/referidos/admin`).
-3. Admin marca **won** con el **monto neto cobrado** (CLP). Comisión = `floor(monto * 15 / 100)`, estado **por pagar**.
-4. Admin marca **pagada** con referencia de transferencia. El referidor la ve en `/referidos/app/comisiones`.
+1. El referidor copia su link (`/registro?ref=CODIGO`) desde `/referidos/app`.
+2. La persona entra, se registra (cookie `pb_ref` 90 días). Queda en el panel como **Registrado**.
+3. Si compra un curso o se cobra una capacitación, el admin marca **won** con el monto neto. Comisión = `floor(monto * 15 / 100)`.
+4. Admin marca **pagada**. El referidor la ve en `/referidos/app/comisiones`.
 5. Si hay NC/devolución ≤ 60 días: **clawback**.
 
-Una venta atribuida = una comisión. Cookie `?ref=CODIGO` en `/cursos` o `/empresas` dura 90 días y **sugiere** atribución; un admin confirma.
+Una venta atribuida = una comisión. El link también funciona en `/cursos` y `/empresas`.
 
 ## Rutas
 
@@ -87,7 +88,7 @@ Una venta atribuida = una comisión. Cookie `?ref=CODIGO` en `/cursos` o `/empre
 ### Desktop
 - [ ] `/referidos` hero de puntos, cursos + empresas, calculadora 15%, FAQ
 - [ ] Login/registro de la plataforma → panel (sin cuenta aparte)
-- [ ] Nueva intro aparece en lista referidor y cola admin
+- [ ] Registro con `?ref=CODIGO` aparece en la lista del referidor
 - [ ] Admin won + monto → comisión 15%
 - [ ] Admin pagada → referidor ve “Pagada”
 - [ ] Export CSV
@@ -96,7 +97,7 @@ Una venta atribuida = una comisión. Cookie `?ref=CODIGO` en `/cursos` o `/empre
 ### Mobile
 - [ ] Landing apilada, CTAs táctiles
 - [ ] Calculadora usable
-- [ ] Panel: menú hamburguesa + “Nueva intro” visible
+- [ ] Panel: menú hamburguesa + copiar link visible
 - [ ] Admin: tabla scrollea / kanban horizontal
 
 ### Seguridad

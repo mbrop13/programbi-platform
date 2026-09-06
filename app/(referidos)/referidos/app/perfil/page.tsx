@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CHILE_ACCOUNT_TYPES, CHILE_BANKS, REFERRER_TYPES } from "@/lib/referrals/constants";
 import { REFERRER_TYPE_LABELS } from "@/lib/referrals/status";
-import { SITE_URL } from "@/lib/seo";
+import { referralSignupUrl } from "@/lib/referrals/format";
+import { CopyLinkButton } from "@/components/referrals/app/copy-link-button";
 
 type BankPublic = {
   bank: string;
@@ -183,12 +184,15 @@ export default function PerfilPage() {
             </Field>
           </div>
         </div>
-        <div className="rounded-xl bg-muted/50 p-3 font-mono text-xs">
-          Código: {code}
-          <div className="mt-1 break-all text-muted-foreground">
-            {SITE_URL}/empresas?ref={code}
+        {code ? (
+          <div className="rounded-xl border border-line bg-paper p-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint">Tu link</p>
+            <p className="mt-2 break-all font-mono text-xs text-ink">{referralSignupUrl(code)}</p>
+            <div className="mt-3">
+              <CopyLinkButton code={code} always />
+            </div>
           </div>
-        </div>
+        ) : null}
         <Button type="submit" disabled={saving} className="h-10 px-5">
           {saving ? <Loader2 className="size-4 animate-spin" /> : "Guardar"}
         </Button>

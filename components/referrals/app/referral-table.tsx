@@ -29,15 +29,16 @@ const helper = createColumnHelper<typeof features, ReferralWithCommission>();
 
 const columns = helper.columns([
   helper.accessor("prospect_name", {
-    header: "Contacto",
+    header: "Persona",
     cell: (c) => (
       <div>
         <div className="font-medium">{c.getValue()}</div>
-        <div className="text-xs text-muted-foreground">{c.row.original.prospect_role}</div>
+        <div className="text-xs text-mute">
+          {c.row.original.prospect_email || c.row.original.prospect_role}
+        </div>
       </div>
     ),
   }),
-  helper.accessor("prospect_company", { header: "Empresa" }),
   helper.accessor("status", {
     header: "Estado",
     cell: (c) => <StatusBadge status={c.getValue()} />,
@@ -47,7 +48,7 @@ const columns = helper.columns([
     cell: (c) => SOURCE_LABELS[c.getValue() as keyof typeof SOURCE_LABELS] || c.getValue(),
   }),
   helper.accessor("created_at", {
-    header: "Enviada",
+    header: "Desde",
     cell: (c) => formatDateCl(c.getValue()),
   }),
   helper.display({
@@ -84,7 +85,7 @@ export function ReferralTable({
   const bodyRows = table.getRowModel().rows;
 
   return (
-    <div className="rounded-2xl border border-border bg-card">
+    <div className="rounded-2xl border border-line bg-paper">
       <Table>
         <TableHeader>
           {headerGroups.map((hg) => (

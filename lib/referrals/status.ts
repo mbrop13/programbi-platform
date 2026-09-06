@@ -1,7 +1,7 @@
 import type { ReferralStatus } from "./types";
 
 export const STATUS_LABELS: Record<ReferralStatus, string> = {
-  submitted: "Enviada",
+  submitted: "Registrado",
   in_review: "En revisión",
   qualified: "Calificada",
   diagnosis_scheduled: "Diagnóstico agendado",
@@ -13,13 +13,13 @@ export const STATUS_LABELS: Record<ReferralStatus, string> = {
 };
 
 export const STATUS_HELP: Record<ReferralStatus, string> = {
-  submitted: "Recibimos tu intro. El equipo la revisa antes de calificarla.",
-  in_review: "ProgramBI está validando que el contacto encaje con un curso o una capacitación.",
-  qualified: "Intro calificada: el prospecto entra al proceso comercial.",
-  diagnosis_scheduled: "Agendamos la conversación con el contacto.",
+  submitted: "Se creó una cuenta con tu link. La comisión se genera cuando se cobra un curso o una capacitación.",
+  in_review: "ProgramBI está revisando el caso.",
+  qualified: "El referido entra al proceso comercial.",
+  diagnosis_scheduled: "Agendamos la conversación.",
   proposal_sent: "Enviamos propuesta de curso o de capacitación a empresas.",
   won: "Venta cerrada y cobrada. Tu comisión 15% quedó generada.",
-  lost: "No avanzó. Puedes enviar otra intro cuando tengas un mejor fit.",
+  lost: "No avanzó.",
   paid: "Transferimos tu comisión.",
   clawback: "Nota de crédito / devolución dentro de 60 días.",
 };
@@ -64,12 +64,13 @@ export const SOURCE_LABELS = {
   linkedin: "LinkedIn",
   email: "Email",
   in_person: "Presencial",
+  signup: "Link",
   other: "Otro",
 } as const;
 
 /** Transiciones que el admin puede disparar desde la UI. */
 export const ADMIN_TRANSITIONS: Record<ReferralStatus, ReferralStatus[]> = {
-  submitted: ["in_review", "qualified", "lost"],
+  submitted: ["in_review", "qualified", "won", "lost"],
   in_review: ["qualified", "lost", "submitted"],
   qualified: ["diagnosis_scheduled", "lost"],
   diagnosis_scheduled: ["proposal_sent", "lost"],
@@ -86,7 +87,7 @@ export function canTransition(from: ReferralStatus, to: ReferralStatus): boolean
 }
 
 export const KANBAN_COLUMNS: { id: ReferralStatus; label: string }[] = [
-  { id: "submitted", label: "Enviadas" },
+  { id: "submitted", label: "Registrados" },
   { id: "in_review", label: "En revisión" },
   { id: "qualified", label: "Calificadas" },
   { id: "diagnosis_scheduled", label: "Diagnóstico" },

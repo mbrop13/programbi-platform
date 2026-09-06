@@ -1,7 +1,11 @@
 export const REFERRAL_FAQS = [
   {
-    q: "¿Cuánto gano por una intro?",
-    a: "15% del valor neto cobrado de un curso abierto o de una capacitación a empresas, cuando esa venta se atribuye a tu intro. Pagamos sobre lo facturado y cobrado, no sobre una cotización.",
+    q: "¿Cuánto gano?",
+    a: "15% del valor neto cobrado de un curso abierto o de una capacitación a empresas, cuando esa venta se atribuye a tu link. Pagamos sobre lo facturado y cobrado, no sobre una cotización.",
+  },
+  {
+    q: "¿Cómo invito?",
+    a: "Copias tu link del panel y se lo mandas a la persona. Si entra y crea una cuenta ProgramBI, aparece en tus referidos.",
   },
   {
     q: "¿Cuándo me pagan?",
@@ -12,12 +16,8 @@ export const REFERRAL_FAQS = [
     a: "Si hay nota de crédito o devolución dentro de 60 días desde el pago de tu comisión, revertimos el 15%. Después de esa ventana, no hay clawback.",
   },
   {
-    q: "¿Cualquier intro cuenta?",
-    a: "No. El equipo califica cada intro a mano. Buscamos alguien que quiera un curso (Power BI, SQL, Python, Excel, etc.) o un área / empresa que necesite capacitación. Un link para spamear no califica.",
-  },
-  {
-    q: "¿Puedo usar un link de tracking?",
-    a: "Opcional. ?ref=TUCODIGO en /cursos o /empresas deja una cookie 90 días. Si esa persona se registra o pide capacitación, sugerimos atribución y un admin la confirma. La cookie sola no basta.",
+    q: "¿El registro basta para cobrar?",
+    a: "El registro te atribuye a esa persona. La comisión se genera cuando se cobra un curso o una capacitación de esa persona o de su empresa.",
   },
   {
     q: "¿Quién puede unirse?",
@@ -25,7 +25,7 @@ export const REFERRAL_FAQS = [
   },
   {
     q: "¿Tengo que vender yo?",
-    a: "No. Presentas el contacto. Nosotros conversamos, cerramos el curso o la capacitación y entregamos. Tú cobras cuando se liquida.",
+    a: "No. Compartes el link. Nosotros conversamos, cerramos el curso o la capacitación y entregamos. Tú cobras cuando se liquida.",
   },
   {
     q: "¿Sirve para un amigo y para una empresa?",
@@ -33,12 +33,14 @@ export const REFERRAL_FAQS = [
   },
 ] as const;
 
-export const WHATSAPP_TEMPLATE = `Hola [Nombre], te escribo porque se me ocurrió que te puede servir ProgramBI.
+export const WHATSAPP_TEMPLATE = `Hola [Nombre], te paso el link de ProgramBI.
 
-Dan cursos en vivo de Power BI, SQL, Python y Excel, y también capacitan equipos en empresas. Si te interesa para ti o para tu área, te hago la intro.
+Dan cursos en vivo de Power BI, SQL, Python y Excel, y también capacitan equipos. Si te sirve para ti o para tu área, regístrate acá:
 
-¿Te parece?`;
+[PEGA TU LINK]
 
-export const LINKEDIN_TEMPLATE = `Hola [Nombre] — si tú o tu equipo quieren subir el nivel en datos, te presento ProgramBI.
+Cualquier cosa me dices.`;
 
-Cursos en vivo (Power BI, SQL, Python, Excel) y capacitaciones para empresas en Chile. Si te sirve, armo la intro.`;
+export const LINKEDIN_TEMPLATE = `Hola [Nombre] — si tú o tu equipo quieren subir el nivel en datos, te dejo ProgramBI.
+
+Cursos en vivo (Power BI, SQL, Python, Excel) y capacitaciones para empresas en Chile. Registro acá: [PEGA TU LINK]`;

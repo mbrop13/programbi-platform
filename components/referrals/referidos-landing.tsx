@@ -86,7 +86,7 @@ function Hero() {
             Invita a amigos o empresas.
           </h1>
           <p className="mt-5 max-w-md text-base leading-relaxed text-mute sm:text-lg">
-            Recomienda un curso o una capacitación para un equipo. Si se cierra y se cobra, ganas
+            Comparte tu link. Si se registran y después se cobra un curso o una capacitación, ganas
             el 15%.
           </p>
 
@@ -111,30 +111,30 @@ function How() {
   const steps = [
     {
       n: "01",
-      title: "Invitas",
-      text: "Un amigo para un curso, o un área / empresa para una capacitación. Una intro, no un blast.",
+      title: "Copias tu link",
+      text: "Entras al panel con tu cuenta ProgramBI y copias el link único.",
     },
     {
       n: "02",
-      title: "Calificamos",
-      text: "El equipo valida el contacto a mano. Sin calificación no hay comisión.",
+      title: "Lo compartes",
+      text: "Se lo mandas a un amigo o a alguien de una empresa. WhatsApp, mail, lo que uses.",
     },
     {
       n: "03",
-      title: "Cerramos y formamos",
-      text: "Nosotros conversamos, cobramos y entregamos el curso o la capacitación in-company.",
+      title: "Se registran",
+      text: "Crean una cuenta en ProgramBI. Aparecen en tu panel como referidos.",
     },
     {
       n: "04",
       title: "Cobras el 15%",
-      text: "Cuando se liquida la factura. Transferencia a tu cuenta. Clawback 60 días.",
+      text: "Cuando se cobra un curso o una capacitación atribuida. Transferencia a tu cuenta.",
     },
   ];
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-20 sm:px-6 lg:px-8">
       <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">Cómo funciona</p>
       <h2 className="mt-3 max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-        Tú presentas. Nosotros cerramos.
+        Un link. Ellos se registran. Tú ganas el 15%.
       </h2>
       <div className="mt-12 grid gap-px overflow-hidden rounded-2xl border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
         {steps.map((s) => (
@@ -241,7 +241,7 @@ function Who() {
     { title: "Alumni", text: "Cursaste con nosotros y conoces a alguien que también debería." },
     { title: "Alumnos", text: "Un compañero de trabajo o un amigo que quiere el mismo curso." },
     { title: "Empresas", text: "Tu área u otra empresa que necesita formar al equipo en datos." },
-    { title: "Otros", text: "Si tienes el contacto correcto, únete. Calificamos intros, no volumen." },
+    { title: "Otros", text: "Si tienes a quién invitar, basta. El link atribuye el registro, no el spam." },
   ];
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-20 sm:px-6 lg:px-8">
@@ -265,7 +265,7 @@ function Rules() {
   const rules = [
     "Pago solo al cobro (transferencia / OC liquidada).",
     "Clawback 60 días si hay nota de crédito o devolución.",
-    "Intro calificada por el equipo. El link ?ref= sugiere, no cierra.",
+    "El link atribuye el registro. La comisión se paga cuando se cobra la venta.",
     "Una venta atribuida = una comisión. Curso o capacitación a empresas.",
   ];
   return (
@@ -328,7 +328,7 @@ function FinalCta() {
           Si conoces a alguien que debería aprender datos, invítalo.
         </h2>
         <p className="relative mt-4 max-w-lg text-sm leading-relaxed text-canvas/65 sm:text-base">
-          Un amigo para un curso, o un equipo para una capacitación. Usa tu cuenta de ProgramBI.
+          Comparte tu link. Si se registran y se cobra, ganas el 15%. Usa tu cuenta de ProgramBI.
         </p>
         <div className="relative mt-8 flex flex-wrap gap-3">
           <PlatformAuthCtas variant="final" />

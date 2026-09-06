@@ -14,6 +14,11 @@ import {
 } from "@/lib/registration-source";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import { safeNextPath } from "@/lib/auth/safe-next";
+import {
+  normalizeReferralCode,
+  readBrowserReferralCode,
+  writeBrowserReferralCode,
+} from "@/lib/referrals/cookie";
 
 function getFromQueryParam(): string | null {
   if (typeof window === "undefined") return null;
@@ -51,10 +56,20 @@ export default function RegistroPage() {
   });
   const router = useRouter();
 
+  const captureReferralFromUrl = () => {
+    const fromUrl = normalizeReferralCode(
+      new URLSearchParams(window.location.search).get("ref")
+    );
+    const code = fromUrl || readBrowserReferralCode();
+    if (code) writeBrowserReferralCode(code);
+    return code;
+  };
+
   const handleGoogleLogin = async () => {
     setError(null);
     setLoading(true);
     try {
+      captureReferralFromUrl();
       const supabase = createClient();
       const fromParam = getFromQueryParam();
       const registrationSource = persistRegistrationSource(
@@ -137,6 +152,7 @@ export default function RegistroPage() {
 
       const defaultName = formData.email.split("@")[0] || "Usuario";
       const pricingVariant = readClientPricingVariant();
+      const referralCode = captureReferralFromUrl();
 
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
@@ -145,6 +161,7 @@ export default function RegistroPage() {
           data: {
             full_name: defaultName,
             registration_source: registrationSource,
+            ...(referralCode ? { referral_code: referralCode } : {}),
             ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
           },
           emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(getNextPath())}&reg_source=${encodeURIComponent(registrationSource)}`,
