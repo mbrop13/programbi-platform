@@ -15,7 +15,9 @@ import {
   Lock,
   MessageCircle,
 } from "lucide-react";
-import { type Course, courses } from "@/lib/data/courses";
+import { type Course, courses, getCourseBySlug } from "@/lib/data/courses";
+import { COURSE_SEO } from "@/lib/seo/money";
+import { MONEY_COURSE_SLUGS } from "@/lib/seo";
 import { founderImage } from "@/lib/data/images";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/shared/AuthModal";
@@ -62,7 +64,14 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const [selectedScheduleIndex, setSelectedScheduleIndex] = useState(0);
   const [isScheduleDropdownOpen, setIsScheduleDropdownOpen] = useState(false);
   const { country } = useCountry();
-  const relatedCourses = courses.filter((c) => c.slug !== course.slug).slice(0, 3);
+  const moneySet = new Set<string>(MONEY_COURSE_SLUGS);
+  const relatedCourses = [
+    ...MONEY_COURSE_SLUGS.filter((s) => s !== course.slug)
+      .map((s) => getCourseBySlug(s))
+      .filter((c): c is Course => Boolean(c)),
+    ...courses.filter((c) => c.slug !== course.slug && !moneySet.has(c.slug)),
+  ].slice(0, 3);
+  const courseSeo = COURSE_SEO[course.slug];
   const scheduleCountry = SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0];
 
   const convertAndFormat = (priceCLP: number | null | undefined) => {
@@ -272,26 +281,27 @@ export default function CourseDetailClient({ course }: { course: Course }) {
             </nav>
 
             <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl lg:leading-[1.12]">
-              {course.slug === "power-bi" ? "Curso Power BI en vivo Chile" : course.title}
+              {courseSeo?.h1 || course.title}
             </h1>
             <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute sm:text-lg">
               {course.shortDescription}
             </p>
-            {course.slug === "power-bi" ? (
-              <p className="mt-3 max-w-[40rem] text-sm leading-relaxed text-mute">
-                Esto es un curso abierto. Si necesitas el tablero en producción + tu equipo autónomo, eso es el{" "}
-                <Link href="/empresas" className="font-semibold text-ink">
-                  Pack Adopción BI
-                </Link>
-                .
-              </p>
+            {courseSeo ? (
+              <p className="mt-3 max-w-[40rem] text-sm leading-relaxed text-mute">{courseSeo.audience}</p>
             ) : null}
+            <p className="mt-3 max-w-[40rem] text-sm leading-relaxed text-mute">
+              Curso abierto, en vivo. Si tu empresa necesita el tablero en producción + el equipo autónomo, eso es el{" "}
+              <Link href="/empresas" className="font-semibold text-ink">
+                Pack Adopción BI
+              </Link>
+              .
+            </p>
 
             <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-mute">
               <li className="inline-flex items-center gap-1.5">
                 <Clock size={15} /> {hours} h
               </li>
-              <li>En vivo por Zoom</li>
+              <li>En vivo por Zoom · Chile</li>
               <li>Certificado</li>
               {levels.length > 1 ? <li>{levels.length} niveles</li> : null}
             </ul>
@@ -494,6 +504,33 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
       <TemarioSection course={course} selectedLevel={selectedLevel} isFreeTrial={isFreeTrial} />
 
+      {courseSeo ? (
+        <section className="border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-[1400px]">
+            <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Preguntas frecuentes</h2>
+            <div className="mt-8 grid gap-4 lg:grid-cols-3">
+              {courseSeo.faqs.map((faq) => (
+                <div key={faq.q} className="rounded-2xl border border-line bg-paper p-5">
+                  <h3 className="text-base font-semibold text-ink">{faq.q}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-mute">{faq.a}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mt-6 text-sm text-mute">
+              Empresa (tablero en producción):{" "}
+              <Link href="/empresas" className="font-semibold text-ink">
+                Pack Adopción
+              </Link>
+              . Comparativa:{" "}
+              <Link href="/curso-power-bi-vs-pack-adopcion" className="font-semibold text-ink">
+                curso vs Pack
+              </Link>
+              .
+            </p>
+          </div>
+        </section>
+      ) : null}
+
       <section className="border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="relative aspect-[4/5] overflow-hidden rounded-[26px] border border-line bg-wash lg:col-span-4">
@@ -504,7 +541,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
             <p className="mt-2 text-lg font-semibold text-ink">Manuel Oliva</p>
             <p className="mt-4 max-w-[54ch] text-base leading-relaxed text-mute">
               Magíster en Data Science (UAI). Ha liderado proyectos de datos en AngloAmerican, CAP, Deloitte y SQM, y
-              formado a más de 5.000 profesionales en SQL, Power BI, Python e IA.
+              forma profesionales en SQL, Power BI, Python e IA.
             </p>
           </div>
         </div>

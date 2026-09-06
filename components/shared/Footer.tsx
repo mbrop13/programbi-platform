@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
-import { courses } from "@/lib/data/courses";
+import { getCoursesBySlugs } from "@/lib/data/courses";
+import { HOME_COURSE_SLUGS } from "@/lib/seo";
 
 const socialLinks = [
   { name: "Instagram", href: "https://www.instagram.com/programbi_capacitaciones/" },
@@ -10,18 +11,20 @@ const socialLinks = [
 ];
 
 const companyLinks = [
-  { label: "Pack Adopción BI", href: "/empresas" },
-  { label: "Implementación Power BI", href: "/implementacion-power-bi" },
+  { label: "Empresas — Pack Adopción Power BI", href: "/empresas" },
+  { label: "Curso Power BI Chile", href: "/cursos/power-bi" },
+  { label: "Cursos de análisis de datos", href: "/cursos/analisis-de-datos" },
+  { label: "Power BI para minería", href: "/cursos/analitica-mineria" },
+  { label: "Referidos", href: "/referidos" },
   { label: "Migrar Excel a Power BI", href: "/migrar-excel-a-power-bi" },
+  { label: "Curso vs Pack Adopción", href: "/curso-power-bi-vs-pack-adopcion" },
   { label: "Cursos", href: "/cursos" },
-  { label: "Bolsa de Trabajo", href: "/empleos" },
-  { label: "Comunidad", href: "/comunidad" },
   { label: "Blog", href: "/blog" },
   { label: "Preguntas frecuentes", href: "/#faq" },
 ];
 
 export default function Footer({ compact: _compact = false }: { compact?: boolean }) {
-  const topCourses = courses.slice(0, 6);
+  const topCourses = getCoursesBySlugs(HOME_COURSE_SLUGS);
 
   return (
     <footer className="border-t border-line bg-paper px-4 py-12 sm:px-6 lg:px-8" aria-label="Pie de página">

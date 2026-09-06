@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import EmpresasClient from "../empresas/EmpresasClient";
 import { ogImageUrl } from "@/lib/og/url";
-import { SITE_URL, ORG_ID, absoluteUrl } from "@/lib/seo";
+import { SITE_URL, ORG_ID, absoluteUrl, jsonLdString } from "@/lib/seo";
 import { PACK, PACK_FAQS, PACK_VARIANT_COPY } from "@/lib/data/pack-adopcion";
 
 const copy = PACK_VARIANT_COPY["migrar-excel"];
@@ -70,7 +70,7 @@ export default function MigrarExcelPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <EmpresasClient variant="migrar-excel" />
     </>
   );

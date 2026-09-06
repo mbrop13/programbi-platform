@@ -29,6 +29,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/por-que-fallan-proyectos-power-bi`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/curso-power-bi-vs-pack-adopcion`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/power-bi-mineria-chile`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${baseUrl}/cursos`,
       lastModified: now,
       changeFrequency: "weekly",
@@ -39,6 +57,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/referidos`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.7,
+    },
+    {
+      url: `${baseUrl}/referidos/terminos`,
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.2,
     },
     {
       url: `${baseUrl}/faq`,
@@ -56,7 +86,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/blog`,
       lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.4,
+      priority: 0.25,
     },
     {
       url: `${baseUrl}/empleos`,
@@ -98,7 +128,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${baseUrl}/gran-partido`,
       lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.2,
+      priority: 0.1,
     },
     {
       url: `${baseUrl}/privacidad`,
@@ -115,7 +145,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   const coursePriority = (slug: string) =>
-    slug === "power-bi" || slug === "analisis-de-datos" ? 0.85 : 0.7;
+    slug === "power-bi" || slug === "analisis-de-datos" || slug === "analitica-mineria"
+      ? 0.85
+      : 0.55;
 
   const coursePages: MetadataRoute.Sitemap = courses.map((course) => ({
     url: `${baseUrl}/cursos/${course.slug}`,

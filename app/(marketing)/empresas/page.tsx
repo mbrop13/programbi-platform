@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import EmpresasClient from "./EmpresasClient";
 import { ogImageUrl } from "@/lib/og/url";
-import { SITE_URL, ORG_ID, absoluteUrl } from "@/lib/seo";
+import { SITE_URL, ORG_ID, absoluteUrl, jsonLdString } from "@/lib/seo";
 import { PACK, PACK_FAQS, PACK_VARIANT_COPY } from "@/lib/data/pack-adopcion";
 
 const copy = PACK_VARIANT_COPY.empresas;
@@ -38,7 +38,7 @@ export default function EmpresasPage() {
     "@graph": [
       {
         "@type": "Service",
-        name: PACK.name,
+        name: "Pack Adopción Power BI para empresas Chile",
         url: absoluteUrl("/empresas"),
         provider: { "@type": "Organization", name: "ProgramBI SPA", url: SITE_URL, "@id": ORG_ID },
         serviceType: "Business Intelligence implementation and team adoption",
@@ -71,7 +71,7 @@ export default function EmpresasPage() {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <EmpresasClient variant="empresas" />
     </>
   );

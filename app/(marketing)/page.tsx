@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import HeroSection from "@/components/marketing/HeroSection";
 import LogoSlider from "@/components/marketing/LogoSlider";
-import Metrics from "@/components/marketing/Metrics";
+import HomeProof from "@/components/marketing/HomeProof";
 import PackBand from "@/components/marketing/PackBand";
-import Flagship from "@/components/marketing/Flagship";
+import HomeMoneyPaths from "@/components/marketing/HomeMoneyPaths";
 import ProgramsCatalog from "@/components/marketing/ProgramsCatalog";
 import JobsBanner from "@/components/marketing/JobsBanner";
 import Team from "@/components/marketing/Team";
@@ -11,19 +11,18 @@ import Quote from "@/components/marketing/Quote";
 import FaqSection from "@/components/marketing/FaqSection";
 import LeadForm from "@/components/marketing/LeadForm";
 import { HOME_FAQS, PACK } from "@/lib/data/pack-adopcion";
-import { SITE_URL } from "@/lib/seo";
+import { SITE_URL, jsonLdString } from "@/lib/seo";
+import { PAGE_SEO } from "@/lib/seo/money";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: { absolute: "Pack Adopción BI y cursos Power BI Chile | ProgramBI" },
-  description:
-    "Pack Adopción BI: tablero en producción + equipo autónomo. Cursos Power BI, SQL y Python en vivo en Chile. Diagnóstico 30 min. Factura directa.",
+  title: { absolute: PAGE_SEO.home.title },
+  description: PAGE_SEO.home.description,
   alternates: { canonical: "/" },
   openGraph: {
-    title: "Pack Adopción BI y cursos Power BI Chile | ProgramBI",
-    description:
-      "Empresas: Pack Adopción BI. Particulares: cursos en vivo. De reportes eternos a decisiones en minutos.",
+    title: PAGE_SEO.home.title,
+    description: PAGE_SEO.home.description,
     url: SITE_URL,
     type: "website",
   },
@@ -42,13 +41,13 @@ const faqJsonLd = {
 export default function HomePage() {
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqJsonLd) }} />
       <HeroSection />
       <LogoSlider />
       <PackBand />
-      <Metrics />
+      <HomeProof />
+      <HomeMoneyPaths />
       <ProgramsCatalog />
-      <Flagship />
       <JobsBanner />
       <Team />
       <Quote />

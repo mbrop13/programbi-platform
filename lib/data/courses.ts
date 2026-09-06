@@ -37,9 +37,9 @@ export const courses: Course[] = [
     slug: "analisis-de-datos",
     title: "Análisis de Datos",
     shortDescription:
-      "Programa integral de 48 horas por nivel donde dominarás SQL Server, Power BI y Python.",
+      "Cursos de análisis de datos en Chile: SQL Server, Power BI y Python. 144 horas en vivo.",
     description:
-      "Programa integral de 48 horas por nivel (3 niveles) diseñado para dominar SQL Server, Power BI y Python de extremo a extremo. Aprende a extraer, transformar y visualizar datos para tomar decisiones estratégicas.",
+      "Cursos de análisis de datos en Chile (144 h en vivo): SQL Server, Power BI y Python. Extrae, modela y visualiza para salir de Excel. Formación individual; empresas ven el Pack Adopción.",
     category: "programacion",
     categoryLabel: "MÁS POPULAR",
     badgeLabel: "MÁS POPULAR",
@@ -281,9 +281,9 @@ export const courses: Course[] = [
     slug: "analitica-mineria",
     title: "Análisis de Datos para la Minería",
     shortDescription:
-      "Optimización de Procesos y Toma de Decisiones en Entornos Mineros. Un trayecto integral de 48 horas para optimizar procesos y predecir fallas.",
+      "Power BI y análisis de datos para minería en Chile. 48 horas en vivo: faena, OEE y SQL.",
     description:
-      "Especialización técnica de 48h para profesionales mineros e industriales. Domina el ciclo completo del dato, desde la automatización de flotas hasta el mantenimiento predictivo, respaldado por nuestra experiencia en CAP y AngloAmerican.",
+      "Curso Power BI para minería en Chile (48 h): reportes de turno, OEE, SQL a bases de faena y Python para logs. Cupo individual. Empresas mineras: Pack Adopción in-company.",
     category: "especializacion",
     categoryLabel: "ESPECIALIZACIÓN",
     badgeLabel: "ESPECIALIZACIÓN",
@@ -396,9 +396,9 @@ export const courses: Course[] = [
     slug: "power-bi",
     title: "Power BI",
     shortDescription:
-      "Dashboards interactivos para decisiones estratégicas. Domina DAX y Modelado.",
+      "Curso Power BI en vivo en Chile: Power Query, DAX y dashboards. Formación individual.",
     description:
-      "Curso completo de Power BI desde conexión de datos hasta DAX avanzado. Crea dashboards profesionales que automatizan la toma de decisiones en tu empresa.",
+      "Curso Power BI en vivo en Chile. Power Query, modelo estrella, DAX y publicación. Para analistas y control de gestión. Si tu empresa necesita el tablero en producción, eso es el Pack Adopción.",
     category: "visualizacion",
     categoryLabel: "Visualización",
     techStack: ["Power Query", "DAX", "Dashboards"],

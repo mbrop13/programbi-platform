@@ -1,7 +1,22 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { updateSession } from '@/lib/supabase/proxy'
+import { normalizeReferralCode, referralCookieOptions } from '@/lib/referrals/cookie'
 
 const BAD_BOT_UA_REGEX = /bytespider|petalbot|mj12bot|zgrab|sqlmap|python-requests|go-http-client|scrapy|nikto|curl\/7\.\d+|wget/i;
+
+function attachReferralCookie(request: NextRequest, response: NextResponse) {
+  const code = normalizeReferralCode(request.nextUrl.searchParams.get('ref'))
+  if (!code) return response
+  const opts = referralCookieOptions()
+  response.cookies.set(opts.name, code, {
+    maxAge: opts.maxAge,
+    path: opts.path,
+    sameSite: opts.sameSite,
+    secure: opts.secure,
+    httpOnly: false,
+  })
+  return response
+}
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -13,7 +28,7 @@ export async function proxy(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.protocol = 'https'
     url.host = 'www.programbi.com'
-    return NextResponse.redirect(url, 308)
+    return attachReferralCookie(request, NextResponse.redirect(url, 308))
   }
 
   // Legacy locale prefixes (/es, /en) from the old Maverlang merge — strip and redirect.
@@ -39,36 +54,45 @@ export async function proxy(request: NextRequest) {
   // Landing pública de comunidad; el resto del portal y admin requieren sesión
   const isComunidadLanding =
     pathname === '/comunidad' || pathname === '/comunidad/'
+  const isReferidosApp =
+    pathname.startsWith('/referidos/app') || pathname.startsWith('/referidos/admin')
   if (
     !hasSession &&
     ((pathname.startsWith('/comunidad') && !isComunidadLanding) ||
       pathname.startsWith('/admin'))
   ) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return attachReferralCookie(request, NextResponse.redirect(new URL('/login', request.url)))
+  }
+  if (!hasSession && isReferidosApp) {
+    const login = new URL('/referidos/login', request.url)
+    login.searchParams.set('next', pathname)
+    return attachReferralCookie(request, NextResponse.redirect(login))
   }
 
   if (!hasSession) {
-    return NextResponse.next()
+    return attachReferralCookie(request, NextResponse.next())
   }
 
   // Rutas que requieren refresco y validación activa de sesión de Supabase en el servidor:
-  // /comunidad/*, /admin/*, /login, /registro, /pago, /auth/*
+  // /comunidad/*, /admin/*, /login, /registro, /pago, /auth/*, /referidos/app|admin
   const requiresSessionUpdate =
     (pathname.startsWith('/comunidad') && !isComunidadLanding) ||
     pathname.startsWith('/admin') ||
     pathname.startsWith('/login') ||
     pathname.startsWith('/registro') ||
     pathname.startsWith('/pago') ||
-    pathname.startsWith('/auth');
+    pathname.startsWith('/auth') ||
+    isReferidosApp;
 
   if (!requiresSessionUpdate) {
     // Para rutas públicas de marketing (home, cursos, blog, empresas, etc.), dejamos pasar
     // la petición de inmediato con TTFB mínimo. El Navbar y componentes de cliente leen
     // la sesión asíncronamente desde el cliente sin bloquear la entrega de la página.
-    return NextResponse.next()
+    return attachReferralCookie(request, NextResponse.next())
   }
 
-  return await updateSession(request)
+  const sessionRes = await updateSession(request)
+  return attachReferralCookie(request, sessionRes)
 }
 
 export const config = {

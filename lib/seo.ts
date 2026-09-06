@@ -9,3 +9,23 @@ export function absoluteUrl(path = "/"): string {
 
 export const ORG_ID = `${SITE_URL}/#organization`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
+
+/** Safe JSON-LD payload (escapes `<` to avoid XSS in script tags). */
+export function jsonLdString(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
+export const MONEY_COURSE_SLUGS = [
+  "power-bi",
+  "analisis-de-datos",
+  "analitica-mineria",
+] as const;
+
+export const HOME_COURSE_SLUGS = [
+  "power-bi",
+  "analisis-de-datos",
+  "analitica-mineria",
+  "sql-server",
+  "python",
+  "analitica-financiera",
+] as const;

@@ -31,12 +31,12 @@ export const PACK_VARIANT_COPY: Record<
   { kicker: string; h1: string; sub: string; title: string; description: string }
 > = {
   empresas: {
-    kicker: "Pack Adopción BI · Empresas Chile",
+    kicker: "Pack Adopción BI · Power BI para empresas Chile",
     h1: "No es un curso. Es el tablero en producción + tu equipo autónomo.",
-    sub: "Construimos 1–3 dashboards con los datos de tu área y capacitamos al equipo 4–6 semanas para que los mantenga. Mentores de banca, retail y minería. Factura directa.",
-    title: "Pack Adopción BI Chile | Tablero + equipo autónomo",
+    sub: "Implementación y adopción Power BI en Chile: construimos 1–3 dashboards con los datos de tu área y capacitamos al equipo 4–6 semanas. Mentores de banca, retail y minería. Factura directa.",
+    title: "Pack Adopción Power BI para empresas Chile | ProgramBI",
     description:
-      "Implementación Power BI en Chile: 1–3 dashboards en producción y tu equipo autónomo en 4–6 semanas. Desde $2.9M CLP/área. Diagnóstico 30 min.",
+      "Power BI para empresas en Chile: 1–3 dashboards en producción y tu equipo autónomo en 4–6 semanas. Pack Adopción desde $2.9M CLP. Diagnóstico 30 min.",
   },
   implementacion: {
     kicker: "Implementación Power BI · Chile",
@@ -48,11 +48,11 @@ export const PACK_VARIANT_COPY: Record<
   },
   "migrar-excel": {
     kicker: "Excel → Power BI · Chile",
-    h1: "Migrar Excel a Power BI, sin dejar al analista héroe solo.",
-    sub: "Pasamos reportes eternos a tableros en producción y formamos a tu equipo para mantenerlos. Pack Adopción BI: construcción + 4–6 semanas de adopción + handoff post go-live.",
-    title: "Migrar Excel a Power BI Chile | Pack Adopción BI",
+    h1: "Migrar Excel a Power BI en control de gestión, sin dejar al analista héroe solo.",
+    sub: "Pasamos el cierre y los reportes eternos de control de gestión a tableros en producción, y formamos al equipo para mantenerlos. Pack Adopción BI: construcción + 4–6 semanas de adopción + handoff post go-live.",
+    title: "Migrar Excel a Power BI Chile | Control de gestión",
     description:
-      "Migra Excel a Power BI en Chile con adopción: 1–3 dashboards en producción y equipo autónomo en 4–6 semanas. Diagnóstico 30 min. Factura directa.",
+      "Migrar Excel a Power BI en control de gestión (Chile): tableros en producción y equipo autónomo en 4–6 semanas. Pack Adopción. Diagnóstico 30 min.",
   },
 };
 

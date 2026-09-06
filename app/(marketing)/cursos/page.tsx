@@ -2,19 +2,19 @@ import type { Metadata } from "next";
 import { courses } from "@/lib/data/courses";
 import CursosPageClient from "./CursosPageClient";
 import { ogImageUrl } from "@/lib/og/url";
+import { PAGE_SEO } from "@/lib/seo/money";
+import { absoluteUrl, jsonLdString } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: { absolute: "Cursos Power BI, SQL y Python en vivo Chile | ProgramBI" },
-  description:
-    "Cursos abiertos en vivo: Power BI, SQL y Python. Formación individual, distinta al Pack Adopción para empresas. Cupos abiertos — consulta fecha.",
+  title: { absolute: PAGE_SEO.cursos.title },
+  description: PAGE_SEO.cursos.description,
   alternates: {
     canonical: "/cursos",
   },
   openGraph: {
-    title: "Cursos Power BI, SQL y Python en vivo Chile | ProgramBI",
-    description:
-      "Cursos abiertos en vivo de Power BI, SQL y Python en Chile. Si eres empresa, el Pack Adopción es otra oferta.",
-    url: "https://www.programbi.com/cursos",
+    title: PAGE_SEO.cursos.title,
+    description: PAGE_SEO.cursos.description,
+    url: absoluteUrl("/cursos"),
     type: "website",
     images: [
       {
@@ -42,7 +42,7 @@ export default function CursosPage() {
     itemListElement: courses.map((course, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      url: `https://www.programbi.com/cursos/${course.slug}`,
+      url: absoluteUrl(`/cursos/${course.slug}`),
       name: course.title,
     })),
   };
@@ -51,7 +51,7 @@ export default function CursosPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(itemListJsonLd) }}
       />
       <CursosPageClient />
     </>

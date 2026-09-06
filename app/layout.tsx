@@ -5,7 +5,8 @@ import "./globals.css";
 import Providers from "./providers";
 import { Analytics } from "@vercel/analytics/react";
 import MarketingAnalytics from "@/components/shared/MarketingAnalytics";
-import { SITE_URL, ORG_ID, WEBSITE_ID } from "@/lib/seo";
+import { SITE_URL, ORG_ID, WEBSITE_ID, jsonLdString } from "@/lib/seo";
+import { PAGE_SEO } from "@/lib/seo/money";
 
 const geist = Geist({
   variable: "--font-sans",
@@ -31,11 +32,10 @@ const dancing = Dancing_Script({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Pack Adopción BI y cursos Power BI Chile | ProgramBI",
+    default: PAGE_SEO.home.title,
     template: "%s | ProgramBI",
   },
-  description:
-    "Pack Adopción BI: tablero en producción + tu equipo autónomo. Cursos Power BI, SQL y Python en vivo en Chile. Diagnóstico 30 min. Factura directa.",
+  description: PAGE_SEO.home.description,
   keywords: [
     "implementación Power BI Chile",
     "migrar Excel a Power BI",
@@ -65,15 +65,13 @@ export const metadata: Metadata = {
     locale: "es_CL",
     url: SITE_URL,
     siteName: "ProgramBI",
-    title: "Pack Adopción BI y cursos Power BI Chile | ProgramBI",
-    description:
-      "Tablero en producción + equipo autónomo para empresas. Cursos Power BI, SQL y Python en vivo. Diagnóstico 30 min.",
+    title: PAGE_SEO.home.title,
+    description: PAGE_SEO.home.description,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Pack Adopción BI y cursos Power BI Chile | ProgramBI",
-    description:
-      "Tablero en producción + equipo autónomo. Cursos Power BI, SQL y Python en vivo en Chile.",
+    title: PAGE_SEO.home.title,
+    description: PAGE_SEO.home.description,
   },
   robots: {
     index: true,
@@ -175,11 +173,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${geist.variable} ${jetbrainsMono.variable} ${dancing.variable}`}>
+    <html lang="es" suppressHydrationWarning className={`${geist.variable} ${jetbrainsMono.variable} ${dancing.variable}`}>
       <head>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
         />
       </head>
       <body className="min-h-dvh bg-canvas text-ink font-sans antialiased">

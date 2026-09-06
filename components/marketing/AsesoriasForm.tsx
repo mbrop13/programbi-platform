@@ -7,6 +7,7 @@ import Link from "next/link";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { PACK } from "@/lib/data/pack-adopcion";
 import { captureAndReadAttribution } from "@/lib/utm";
+import { readBrowserReferralCode } from "@/lib/referrals/cookie";
 
 interface AsesoriasFormProps {
   type: "empresas" | "particulares";
@@ -51,6 +52,7 @@ export default function AsesoriasForm({ type }: AsesoriasFormProps) {
         utm_campaign: attr.utm_campaign,
         utm_content: attr.utm_content,
         utm_term: attr.utm_term,
+        referral_code: readBrowserReferralCode(),
         ...getAntiBotFields(formLoadedAt.current, honeypot),
       };
 

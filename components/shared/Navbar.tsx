@@ -28,9 +28,9 @@ import { isCurrentUserAdmin } from "@/lib/supabase/comunidad";
 const navLinks = [
   { href: "/empresas", label: "Empresas" },
   { href: "/cursos", label: "Cursos", hasMega: true },
+  { href: "/referidos", label: "Referidos" },
   { href: "/empleos", label: "Empleos" },
   { href: "/comunidad", label: "Comunidad" },
-  { href: "/blog", label: "Blog" },
 ];
 
 const courseGroups = getGroupedCourses();
@@ -322,11 +322,18 @@ export default function Navbar() {
                             </div>
                           ))}
                         </div>
-                        <div className="border-t border-line px-5 py-3">
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-5 py-3">
+                          <Link
+                            href="/empresas"
+                            onClick={() => setIsMegaOpen(false)}
+                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline"
+                          >
+                            Empresas: Pack Adopción Power BI <ArrowRight size={14} />
+                          </Link>
                           <Link
                             href="/cursos"
                             onClick={() => setIsMegaOpen(false)}
-                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline"
+                            className="inline-flex items-center gap-1.5 text-sm font-semibold text-mute no-underline hover:text-ink"
                           >
                             Ver todos los cursos <ArrowRight size={14} />
                           </Link>
@@ -547,9 +554,16 @@ export default function Navbar() {
                           </div>
                         ))}
                         <Link
-                          href="/cursos"
+                          href="/empresas"
                           onClick={() => setIsMobileOpen(false)}
                           className="mt-2 inline-flex items-center gap-1.5 px-1 py-2 text-sm font-semibold text-ink no-underline"
+                        >
+                          Pack Adopción Power BI (empresas) <ArrowRight size={14} />
+                        </Link>
+                        <Link
+                          href="/cursos"
+                          onClick={() => setIsMobileOpen(false)}
+                          className="inline-flex items-center gap-1.5 px-1 py-2 text-sm font-semibold text-mute no-underline"
                         >
                           Ver todos los cursos <ArrowRight size={14} />
                         </Link>

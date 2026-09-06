@@ -6,6 +6,8 @@ import CourseImage from "@/components/shared/CourseImage";
 import { Clock, Search } from "lucide-react";
 import { courses } from "@/lib/data/courses";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
+import { COURSE_SEO } from "@/lib/seo/money";
+import { MONEY_COURSE_SLUGS } from "@/lib/seo";
 
 export default function CursosPageClient() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,14 +23,18 @@ export default function CursosPageClient() {
   });
 
   const featured = filteredCourses.find((c) => c.slug === "analisis-de-datos");
-  const rest = filteredCourses.filter((c) => c.slug !== "analisis-de-datos");
+  const moneySet = new Set<string>(MONEY_COURSE_SLUGS);
+  const rest = [
+    ...filteredCourses.filter((c) => c.slug !== "analisis-de-datos" && moneySet.has(c.slug)),
+    ...filteredCourses.filter((c) => c.slug !== "analisis-de-datos" && !moneySet.has(c.slug)),
+  ];
 
   return (
     <>
       <section className="px-4 pt-16 pb-8 sm:px-6 lg:px-8 lg:pt-20">
         <div className="mx-auto max-w-[1400px]">
           <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
-            Cursos Power BI, SQL y Python en vivo — Chile
+            Cursos Power BI y análisis de datos en vivo — Chile
           </h1>
           <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">
             Formación individual en vivo por Zoom. Si tu empresa necesita el tablero en producción y un equipo
@@ -38,6 +44,22 @@ export default function CursosPageClient() {
             </Link>
             , no un curso.
           </p>
+          <div className="mt-6 flex flex-wrap gap-2">
+            {[
+              { href: "/cursos/power-bi", label: "Curso Power BI" },
+              { href: "/cursos/analisis-de-datos", label: "Análisis de datos" },
+              { href: "/cursos/analitica-mineria", label: "Minería" },
+              { href: "/empresas", label: "Pack empresas" },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-full border border-line bg-paper px-3 py-1.5 text-xs font-semibold text-ink no-underline hover:bg-wash"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
           <div className="relative mt-8 max-w-xl">
             <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-faint" />
             <label htmlFor="course-search" className="sr-only">
@@ -76,7 +98,9 @@ export default function CursosPageClient() {
               </div>
               <div className="flex flex-col justify-end px-6 py-6 lg:col-span-5 lg:px-8 lg:py-8">
                 <p className="text-xs font-semibold text-mute">Programa de 144 horas</p>
-                <h2 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">{featured.title}</h2>
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+                  Cursos de análisis de datos: SQL, Power BI y Python
+                </h2>
                 <p className="mt-3 text-sm leading-relaxed text-mute">{featured.shortDescription}</p>
                 <p className="mt-4 text-sm font-semibold text-ink">SQL · Power BI · Python</p>
                 <span className="mt-6 inline-flex text-sm font-semibold text-ink">Ver temario</span>
@@ -102,7 +126,9 @@ export default function CursosPageClient() {
                   />
                 </div>
                 <div className="px-6 py-5">
-                  <h2 className="text-xl font-bold tracking-tight text-ink">{course.title}</h2>
+                  <h2 className="text-xl font-bold tracking-tight text-ink">
+                    {COURSE_SEO[course.slug]?.h1 || course.title}
+                  </h2>
                   <p className="mt-1 text-sm text-mute">{course.shortDescription}</p>
                   <p className="mt-3 inline-flex items-center gap-1 text-xs text-faint">
                     <Clock size={12} /> {course.durationHours} h · En vivo

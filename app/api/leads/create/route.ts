@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { z } from "zod";
 import { isRateLimited } from "@/lib/security/rate-limiter";
+import { normalizeReferralCode } from "@/lib/referrals/cookie";
+import { REFERRAL_COOKIE_NAME } from "@/lib/referrals/constants";
 import {
   sendQuoteConfirmationToLead,
   sendEnterpriseQuoteToLead,
@@ -28,6 +30,7 @@ const leadSchema = z.object({
   utm_campaign: z.string().max(120).optional().nullable(),
   utm_content: z.string().max(120).optional().nullable(),
   utm_term: z.string().max(120).optional().nullable(),
+  referral_code: z.string().max(16).optional().nullable(),
   _website: z.string().optional().nullable(),
   _company_url: z.string().optional().nullable(),
   _fax: z.string().optional().nullable(),
@@ -103,6 +106,7 @@ export async function POST(req: NextRequest) {
     const {
       name, email, message, selectedCourses, sourceCourse, leadType, company, position,
       employeeCount, area, landing_path, utm_source, utm_medium, utm_campaign, utm_content, utm_term,
+      referral_code,
     } = data;
     const whatsapp = whatsappClean;
 
@@ -125,6 +129,12 @@ export async function POST(req: NextRequest) {
 
     const isEnterprise =
       leadType === "enterprise" || leadType === "empresa" || leadType === "asesoria_b2b";
+    const cookieHeader = req.headers.get("cookie") || "";
+    const cookieMatch = cookieHeader.match(new RegExp(`(?:^|; )${REFERRAL_COOKIE_NAME}=([^;]*)`));
+    const suggestedCode = normalizeReferralCode(
+      referral_code || (cookieMatch ? decodeURIComponent(cookieMatch[1]) : null)
+    );
+
     const extraInfo = [
       isEnterprise && company ? `Empresa: ${company}` : null,
       isEnterprise && position ? `Cargo: ${position}` : null,
@@ -136,6 +146,7 @@ export async function POST(req: NextRequest) {
       utm_campaign ? `utm_campaign=${utm_campaign}` : null,
       utm_content ? `utm_content=${utm_content}` : null,
       utm_term ? `utm_term=${utm_term}` : null,
+      suggestedCode ? `ref=${suggestedCode} (sugerido, confirmar)` : null,
     ].filter(Boolean).join(" | ");
     if (extraInfo) {
       insertData.message = extraInfo + (message ? ` — ${message}` : "");
@@ -146,6 +157,21 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error("Error inserting lead:", error);
       return NextResponse.json({ error: "Error al guardar el contacto" }, { status: 500 });
+    }
+
+    if (suggestedCode) {
+      const { error: hintErr } = await adminDb.from("referral_lead_hints").insert({
+        referral_code: suggestedCode,
+        lead_name: name,
+        lead_email: email,
+        lead_company: company || null,
+        lead_phone: whatsapp || null,
+        landing_path: landing_path || null,
+        status: "suggested",
+      });
+      if (hintErr) {
+        console.warn("[referrals] lead hint skip:", hintErr.message);
+      }
     }
 
     // ─── Disparar emails ───

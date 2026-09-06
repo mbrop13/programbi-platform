@@ -4,8 +4,9 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Clock } from "lucide-react";
 import CourseImage from "@/components/shared/CourseImage";
-import { courses, COURSE_NAV_GROUPS } from "@/lib/data/courses";
+import { courses, COURSE_NAV_GROUPS, getCoursesBySlugs } from "@/lib/data/courses";
 import { getCourseDateLabel } from "@/lib/data/course-schedules";
+import { HOME_COURSE_SLUGS } from "@/lib/seo";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
 
 const FILTERS = [
@@ -17,10 +18,10 @@ export default function ProgramsCatalog() {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("todos");
 
   const visible = useMemo(() => {
-    if (filter === "todos") return courses;
+    if (filter === "todos") return getCoursesBySlugs(HOME_COURSE_SLUGS);
     const group = COURSE_NAV_GROUPS.find((g) => g.id === filter);
     if (!group) return courses;
-    const set = new Set(group.slugs);
+    const set = new Set<string>(group.slugs);
     return courses.filter((c) => set.has(c.slug));
   }, [filter]);
 

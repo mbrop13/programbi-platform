@@ -4,6 +4,8 @@ import { courses, getCourseBySlug } from "@/lib/data/courses";
 import { getMarketingDescription } from "@/lib/supabase/comunidad-ai";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
 import { ogImageUrl } from "@/lib/og/url";
+import { SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
+import { COURSE_SEO } from "@/lib/seo/money";
 
 export const revalidate = 3600;
 
@@ -18,14 +20,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const course = getCourseBySlug(slug);
   if (!course) return { title: "Curso no encontrado" };
 
-  const title =
-    slug === "power-bi" ? "Curso Power BI en vivo Chile" : `${course.title} — Curso en vivo Chile`;
+  const seo = COURSE_SEO[slug];
+  const title = seo?.title || `${course.title} — Curso en vivo Chile`;
   const dbDescription = await getMarketingDescription(slug);
-  const description =
-    dbDescription ||
-    (slug === "power-bi"
-      ? "Curso Power BI en vivo en Chile: DAX, modelo y dashboards. Formación individual, distinta al Pack Adopción para empresas. Cupos abiertos — consulta fecha."
-      : course.description);
+  const description = seo?.description || dbDescription || course.description;
 
   // Tarjeta OG de marca (tipográfica, papel-monócromo) — reemplaza las
   // portadas remotas de estilo antiguo.
@@ -39,15 +37,15 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   });
 
   return {
-    title,
+    title: seo ? { absolute: title } : title,
     description,
     alternates: {
       canonical: `/cursos/${slug}`,
     },
     openGraph: {
-      title: `${title} | ProgramBI`,
+      title: seo ? title : `${title} | ProgramBI`,
       description,
-      url: `https://www.programbi.com/cursos/${slug}`,
+      url: absoluteUrl(`/cursos/${slug}`),
       type: "website",
       images: [
         {
@@ -60,7 +58,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     },
     twitter: {
       card: "summary_large_image",
-      title: `${title} | ProgramBI`,
+      title: seo ? title : `${title} | ProgramBI`,
       description,
       images: [shareImage],
     },
@@ -97,16 +95,15 @@ function getCourseJsonLd(course: ReturnType<typeof getCourseBySlug>) {
   const prereq = prerequisites[course.slug] || "No se requieren conocimientos previos de programación.";
 
   return {
-    "@context": "https://schema.org",
     "@type": "Course",
     name: course.title,
     description: course.description,
-    url: `https://www.programbi.com/cursos/${course.slug}`,
+    url: absoluteUrl(`/cursos/${course.slug}`),
     provider: {
       "@type": "Organization",
       name: "ProgramBI",
-      url: "https://www.programbi.com",
-      "@id": "https://www.programbi.com/#organization",
+      url: SITE_URL,
+      "@id": `${SITE_URL}/#organization`,
       sameAs: [
         "https://www.instagram.com/programbi_capacitaciones/",
         "https://www.tiktok.com/@programbi",
@@ -124,14 +121,6 @@ function getCourseJsonLd(course: ReturnType<typeof getCourseBySlug>) {
     coursePrerequisites: prereq,
     educationalCredentialAwarded: "Certificado de Aprobación Oficial ProgramBI SPA",
     occupationalCategory: jobRole,
-    financialAidEligible: "Becas de financiamiento parcial disponibles directamente con ProgramBI",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.9",
-      reviewCount: course.isFeatured ? "142" : "56",
-      bestRating: "5",
-      worstRating: "1",
-    },
     hasCourseInstance: {
       "@type": "CourseInstance",
       courseMode: "Online",
@@ -148,7 +137,7 @@ function getCourseJsonLd(course: ReturnType<typeof getCourseBySlug>) {
         price: lowestPrice,
         priceCurrency: "CLP",
         availability: "https://schema.org/InStock",
-        url: `https://www.programbi.com/cursos/${course.slug}`,
+        url: absoluteUrl(`/cursos/${course.slug}`),
         validFrom: new Date().toISOString(),
       },
     }),
@@ -165,30 +154,55 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
   const course = getCourseBySlug(slug);
   if (!course) notFound();
 
+  const seo = COURSE_SEO[slug];
   const dbDescription = await getMarketingDescription(slug);
-  if (dbDescription) {
+  if (dbDescription && !seo) {
     course.description = dbDescription;
+  } else if (seo) {
+    course.description = seo.description;
   }
 
-  const jsonLd = getCourseJsonLd(course);
+  const courseJsonLd = getCourseJsonLd(course);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      courseJsonLd,
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Cursos", item: absoluteUrl("/cursos") },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: seo?.h1 || course.title,
+            item: absoluteUrl(`/cursos/${slug}`),
+          },
+        ],
+      },
+      seo
+        ? {
+            "@type": "FAQPage",
+            mainEntity: seo.faqs.map((faq) => ({
+              "@type": "Question",
+              name: faq.q,
+              acceptedAnswer: { "@type": "Answer", text: faq.a },
+            })),
+          }
+        : null,
+    ].filter(Boolean),
+  };
 
   return (
     <>
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
-      
-      {/* TL;DR Summary Block for GEO/SEO Optimization (Visually hidden for users, accessible for LLMs/Crawlers) */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
+      />
       <section className="sr-only">
-        <h2>Resumen Rápido (TL;DR) - {course.title}</h2>
-        <p>
-          El {course.title} es un programa de capacitación online en vivo de {course.durationHours} horas dictado en español. Está diseñado para formar profesionales con proyectos reales, grabaciones permanentes y certificado oficial de ProgramBI SPA.
-        </p>
+        <h2>{seo?.h1 || course.title}</h2>
+        <p>{seo?.description || course.description}</p>
       </section>
-
       <CourseDetailClient course={course} />
     </>
   );

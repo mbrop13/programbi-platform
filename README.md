@@ -1,5 +1,15 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## SEO (www.programbi.com)
+
+Canonical siempre `https://www.programbi.com`. Titles y money pages: **[docs/seo-gsc.md](docs/seo-gsc.md)**.
+
+Noindex selectivo de posts vanity (tokenizadas, GLM, SpaceX, etc.): **no aplicar noindex masivo** sin confirmación humana. El slider de `/blog` ya los deprioriza.
+
+## Referidos (Pack Adopción BI)
+
+Programa interno de intros: 15% al cobro del primer Pack atribuido. Ver **[docs/referidos.md](docs/referidos.md)** (env, migración, flujo de pago, QA).
+
 ## Getting Started
 
 First, run the development server:

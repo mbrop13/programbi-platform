@@ -7,8 +7,15 @@
 - [Pack Adopción BI](https://www.programbi.com/empresas): 1–3 dashboards en producción + adopción 4–6 semanas + handoff y 2–4 semanas post go-live. Diagnóstico 30 min. Factura directa (sin SENCE por ahora). Inversión referencial $2.5M–$5M CLP/área (piso típico desde $2.9M).
 - [Implementación Power BI Chile](https://www.programbi.com/implementacion-power-bi)
 - [Migrar Excel a Power BI](https://www.programbi.com/migrar-excel-a-power-bi)
+- [Por qué fallan los proyectos Power BI](https://www.programbi.com/por-que-fallan-proyectos-power-bi)
+- [Curso Power BI vs Pack Adopción](https://www.programbi.com/curso-power-bi-vs-pack-adopcion)
+- [Power BI para minería Chile](https://www.programbi.com/power-bi-mineria-chile)
 
 CTA empresas: diagnóstico 30 min en /empresas o WhatsApp +56 9 3540 9699.
+
+## Referidos
+
+- [Programa de referidos](https://www.programbi.com/referidos): 15% del neto cobrado del primer Pack Adopción atribuido. Pago al cobro. Intros calificadas a mano (no afiliados abiertos). Clawback 60 días.
 
 ## Cursos abiertos (particulares)
 

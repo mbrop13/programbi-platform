@@ -9,6 +9,7 @@ import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/Bl
 import { createClient } from "@/lib/supabase/client";
 import { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 import { isVideoUrl } from "@/lib/utils";
+import { isVanityBlogPost } from "@/lib/seo/money";
 
 function getPosterFromContent(content?: string): string | undefined {
   if (!content) return undefined;
@@ -349,7 +350,14 @@ export default function BlogClient({ articles }: { articles: any[] }) {
     return temp;
   }, [articles, activeCategory, searchQuery]);
 
-  const sliderArticles = filtered.slice(0, Math.min(5, filtered.length));
+  const sliderArticles = useMemo(() => {
+    const nonVanity = filtered.filter(
+      (a) => !isVanityBlogPost(a.title, a.excerpt, a.slug)
+    );
+    const source =
+      activeCategory === "all" && nonVanity.length > 0 ? nonVanity : filtered;
+    return source.slice(0, Math.min(5, source.length));
+  }, [filtered, activeCategory]);
   const gridArticles = filtered;
 
   return (
