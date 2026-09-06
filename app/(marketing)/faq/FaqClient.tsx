@@ -37,7 +37,8 @@ export default function FaqClient({ faqItems }: { faqItems: FaqItem[] }) {
       <div className="mx-auto max-w-[860px]">
         <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Preguntas frecuentes</h1>
         <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">
-          Dudas sobre clases, certificados, pagos y capacitaciones para empresas.
+          Empresas: Pack Adopción (tablero + equipo autónomo). Particulares: cursos en vivo. SENCE, fechas y
+          diagnóstico de 30 minutos.
         </p>
 
         <div className="relative mt-8">
@@ -84,10 +85,15 @@ export default function FaqClient({ faqItems }: { faqItems: FaqItem[] }) {
         )}
 
         <p className="mt-12 text-sm text-mute">
-          ¿No está tu duda?{" "}
-          <Link href="/?auth=register" className="font-semibold text-ink underline underline-offset-2">
-            Registrarse
+          ¿Eres empresa?{" "}
+          <Link href="/empresas#contacto" className="font-semibold text-ink underline underline-offset-2">
+            Agenda el diagnóstico Pack
           </Link>
+          . ¿Curso abierto?{" "}
+          <Link href="/cursos" className="font-semibold text-ink underline underline-offset-2">
+            Ver catálogo
+          </Link>
+          .
         </p>
       </div>
     </main>

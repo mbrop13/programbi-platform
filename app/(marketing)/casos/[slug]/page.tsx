@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: `${currentCase.fullTitle} | ProgramBI`,
       description: currentCase.description,
-      url: `https://programbi.com/casos/${slug}`,
+      url: `https://www.programbi.com/casos/${slug}`,
       type: "article",
       images: [
         {
@@ -62,9 +62,9 @@ export default async function CaseStudyPage({ params }: PageProps) {
     "@type": "Article",
     headline: currentCase.fullTitle,
     description: currentCase.description,
-    author: { "@type": "Organization", name: "ProgramBI", url: "https://programbi.com" },
-    publisher: { "@id": "https://programbi.com/#organization" },
-    mainEntityOfPage: `https://programbi.com/casos/${slug}`,
+    author: { "@type": "Organization", name: "ProgramBI", url: "https://www.programbi.com" },
+    publisher: { "@id": "https://www.programbi.com/#organization" },
+    mainEntityOfPage: `https://www.programbi.com/casos/${slug}`,
     about: currentCase.productsUsed.map((p: string) => ({ "@type": "Thing", name: p })),
   };
 

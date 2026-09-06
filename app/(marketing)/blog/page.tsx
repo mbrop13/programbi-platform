@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     title: "Blog — Recursos de Análisis de Datos | ProgramBI",
     description:
       "Artículos, tutoriales y guías prácticas sobre Power BI, SQL, Python y análisis de datos por expertos de ProgramBI.",
-    url: "https://programbi.com/blog",
+    url: "https://www.programbi.com/blog",
     type: "website",
     images: [
       {
@@ -49,19 +49,19 @@ export default async function BlogPage() {
     name: "Blog ProgramBI",
     description:
       "Artículos y tutoriales de análisis de datos, Power BI, SQL y Python",
-    url: "https://programbi.com/blog",
+    url: "https://www.programbi.com/blog",
     inLanguage: "es",
     publisher: {
       "@type": "Organization",
       name: "ProgramBI",
-      url: "https://programbi.com",
-      "@id": "https://programbi.com/#organization",
+      url: "https://www.programbi.com",
+      "@id": "https://www.programbi.com/#organization",
     },
     blogPost: articles.map((a: any) => ({
       "@type": "BlogPosting",
       headline: a.title,
       description: a.excerpt,
-      url: `https://programbi.com/blog/${a.slug}`,
+      url: `https://www.programbi.com/blog/${a.slug}`,
       datePublished: a.published_at,
       image: a.cover_image || undefined,
       author: {
@@ -79,13 +79,13 @@ export default async function BlogPage() {
         "@type": "ListItem",
         position: 1,
         name: "Inicio",
-        item: "https://programbi.com",
+        item: "https://www.programbi.com",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Blog",
-        item: "https://programbi.com/blog",
+        item: "https://www.programbi.com/blog",
       },
     ],
   };

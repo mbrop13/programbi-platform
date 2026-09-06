@@ -3,7 +3,7 @@ import { loadLogoDataUrl, OG_SIZE } from "@/lib/og/assets";
 import { OgCard } from "@/lib/og/card";
 
 export const alt =
-  "ProgramBI — Cursos de Análisis de Datos, Power BI, SQL y Python";
+  "Pack Adopción BI y cursos Power BI Chile | ProgramBI";
 export const size = OG_SIZE;
 export const contentType = "image/png";
 
@@ -13,11 +13,11 @@ export default async function Image() {
   return new ImageResponse(
     OgCard({
       logoSrc,
-      kicker: "+5.000 estudiantes formados",
-      title: "Cursos de análisis de datos con expertos de la industria",
+      kicker: "Chile · Pack Adopción BI",
+      title: "De reportes eternos a decisiones en minutos",
       description:
-        "Formación práctica, online en vivo, con proyectos reales. Desde Chile para Latinoamérica.",
-      tags: ["Power BI", "SQL Server", "Python", "Excel"],
+        "Tablero en producción + equipo autónomo. Cursos Power BI, SQL y Python en vivo.",
+      tags: ["Pack Adopción", "Power BI", "Chile"],
       theme: "paper",
     }),
     { ...size }

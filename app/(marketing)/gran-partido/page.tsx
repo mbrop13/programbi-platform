@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     description:
       "Predice quién se lleva la final entre España y Argentina. Si aciertas, entras al sorteo de un curso a tu elección.",
     type: "website",
-    url: "https://programbi.com/gran-partido",
+    url: "https://www.programbi.com/gran-partido",
     siteName: "ProgramBI",
     locale: "es_CL",
   },

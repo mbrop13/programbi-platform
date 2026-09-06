@@ -179,13 +179,23 @@ export function CountUp({
 }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-60px" });
-  const motionValue = useMotionValue(0);
+  const motionValue = useMotionValue(target);
   const springValue = useSpring(motionValue, {
     damping: 60,
     stiffness: 100,
     duration: duration * 1000,
   });
-  const [display, setDisplay] = useState("0");
+  const formatValue = (latest: number) => {
+    if (decimals > 0) {
+      return Intl.NumberFormat("es-CL", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      }).format(latest);
+    }
+    return Intl.NumberFormat("es-CL").format(Math.floor(latest));
+  };
+
+  const [display, setDisplay] = useState(() => formatValue(target));
 
   useEffect(() => {
     if (isInView) {
@@ -195,18 +205,10 @@ export function CountUp({
 
   useEffect(() => {
     const unsubscribe = springValue.on("change", (latest) => {
-      if (decimals > 0) {
-        setDisplay(
-          Intl.NumberFormat("es-CL", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(latest)
-        );
-      } else {
-        setDisplay(
-          Intl.NumberFormat("es-CL").format(Math.floor(latest))
-        );
-      }
+      setDisplay(formatValue(latest));
     });
     return unsubscribe;
-  }, [springValue, decimals]);
+  }, [springValue, decimals, target]);
 
   return (
     <span ref={ref} className={className}>

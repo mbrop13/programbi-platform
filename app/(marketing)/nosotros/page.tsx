@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     title: "Sobre Nosotros — Academia de Análisis de Datos | ProgramBI",
     description:
       "Conoce nuestra misión, metodología de clases en vivo e instructores de la industria. Liderando la capacitación en ciencia de datos y BI en Latinoamérica.",
-    url: "https://programbi.com/nosotros",
+    url: "https://www.programbi.com/nosotros",
     type: "website",
     images: [
       {
@@ -47,18 +47,18 @@ export default function NosotrosPage() {
     "@graph": [
       {
         "@type": "AboutPage",
-        "@id": "https://programbi.com/nosotros/#webpage",
-        url: "https://programbi.com/nosotros",
+        "@id": "https://www.programbi.com/nosotros/#webpage",
+        url: "https://www.programbi.com/nosotros",
         name: "Sobre Nosotros — Academia de Análisis de Datos | ProgramBI",
         description: "Información institucional sobre la academia ProgramBI, fundadores, equipo docente y misión.",
-        isPartOf: { "@id": "https://programbi.com/#website" },
-        mainEntity: { "@id": "https://programbi.com/#organization" },
+        isPartOf: { "@id": "https://www.programbi.com/#website" },
+        mainEntity: { "@id": "https://www.programbi.com/#organization" },
       },
       {
         "@type": "EducationalOrganization",
-        "@id": "https://programbi.com/#organization",
+        "@id": "https://www.programbi.com/#organization",
         name: "ProgramBI SPA",
-        url: "https://programbi.com",
+        url: "https://www.programbi.com",
         logo: {
           "@type": "ImageObject",
           url: "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"

@@ -2,144 +2,140 @@ import type { MetadataRoute } from "next";
 import { courses } from "@/lib/data/courses";
 import { casesOfUse } from "@/lib/data/cases";
 import { comparisons } from "@/lib/data/comparisons";
+import { SITE_URL } from "@/lib/seo";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://programbi.com";
+  const baseUrl = SITE_URL;
+  const now = new Date();
 
-  // Static pages
   const staticPages: MetadataRoute.Sitemap = [
+    { url: baseUrl, lastModified: now, changeFrequency: "weekly", priority: 1 },
     {
-      url: baseUrl,
-      lastModified: new Date(),
+      url: `${baseUrl}/empresas`,
+      lastModified: now,
       changeFrequency: "weekly",
-      priority: 1,
+      priority: 0.95,
+    },
+    {
+      url: `${baseUrl}/implementacion-power-bi`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${baseUrl}/migrar-excel-a-power-bi`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.9,
     },
     {
       url: `${baseUrl}/cursos`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/consultorias`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/newsletter`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/registro`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/empresas`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/empleos`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/empleos/vacantes`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/empleos/para-empresas`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/empleos/talento`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.8,
+      priority: 0.85,
     },
     {
       url: `${baseUrl}/nosotros`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/blog`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.9,
+      priority: 0.5,
     },
     {
       url: `${baseUrl}/faq`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.85,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
     },
     {
       url: `${baseUrl}/glosario`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.85,
+      priority: 0.45,
+    },
+    {
+      url: `${baseUrl}/blog`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.4,
+    },
+    {
+      url: `${baseUrl}/empleos`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.5,
+    },
+    {
+      url: `${baseUrl}/empleos/vacantes`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.45,
+    },
+    {
+      url: `${baseUrl}/empleos/para-empresas`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.4,
+    },
+    {
+      url: `${baseUrl}/empleos/talento`,
+      lastModified: now,
+      changeFrequency: "daily",
+      priority: 0.4,
     },
     {
       url: `${baseUrl}/versus`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${baseUrl}/gran-partido`,
-      lastModified: new Date(),
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/login`,
-      lastModified: new Date(),
+      lastModified: now,
       changeFrequency: "monthly",
+      priority: 0.4,
+    },
+    {
+      url: `${baseUrl}/newsletter`,
+      lastModified: now,
+      changeFrequency: "weekly",
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/privacidad`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
+      url: `${baseUrl}/gran-partido`,
+      lastModified: now,
+      changeFrequency: "weekly",
       priority: 0.2,
+    },
+    {
+      url: `${baseUrl}/privacidad`,
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.1,
+    },
+    {
+      url: `${baseUrl}/terminos`,
+      lastModified: now,
+      changeFrequency: "yearly",
+      priority: 0.1,
     },
   ];
 
-  // Dynamic course pages
+  const coursePriority = (slug: string) =>
+    slug === "power-bi" || slug === "analisis-de-datos" ? 0.85 : 0.7;
+
   const coursePages: MetadataRoute.Sitemap = courses.map((course) => ({
     url: `${baseUrl}/cursos/${course.slug}`,
-    lastModified: new Date(),
+    lastModified: now,
     changeFrequency: "weekly" as const,
-    priority: 0.85,
+    priority: coursePriority(course.slug),
   }));
 
-  // Dynamic case study pages
   const casePages: MetadataRoute.Sitemap = casesOfUse.map((c) => ({
     url: `${baseUrl}/casos/${c.slug}`,
-    lastModified: new Date(),
+    lastModified: now,
     changeFrequency: "monthly" as const,
-    priority: 0.7,
+    priority: 0.45,
   }));
 
-  // Dynamic tool comparison pages
   const versusPages: MetadataRoute.Sitemap = comparisons.map((comp) => ({
     url: `${baseUrl}/versus/${comp.slug}`,
-    lastModified: new Date(),
+    lastModified: now,
     changeFrequency: "monthly" as const,
-    priority: 0.75,
+    priority: 0.4,
   }));
 
   return [...staticPages, ...coursePages, ...casePages, ...versusPages];

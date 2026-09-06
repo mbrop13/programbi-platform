@@ -6,7 +6,7 @@ const openrouter = createOpenAI({
   baseURL: 'https://openrouter.ai/api/v1',
   apiKey: process.env.OPENROUTER_API_KEY || '',
   headers: {
-    'HTTP-Referer': 'https://programbi.com',
+    'HTTP-Referer': 'https://www.programbi.com',
     'X-Title': 'ProgramBI Classroom AI Tutor',
   },
 });

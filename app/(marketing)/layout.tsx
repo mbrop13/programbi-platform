@@ -3,6 +3,7 @@ import Footer from "@/components/shared/Footer";
 import PromoPopup from "@/components/shared/PromoPopup";
 import WhatsAppButton from "@/components/shared/WhatsAppButton";
 import BlogSubscribeWidget from "@/components/shared/BlogSubscribeWidget";
+import AttributionCapture from "@/components/shared/AttributionCapture";
 
 export default function MarketingLayout({
   children,
@@ -11,6 +12,7 @@ export default function MarketingLayout({
 }) {
   return (
     <>
+      <AttributionCapture />
       <Navbar />
       <main className="flex-1 bg-canvas">{children}</main>
       <Footer />

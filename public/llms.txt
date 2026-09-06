@@ -1,50 +1,40 @@
 # ProgramBI
 
-> ProgramBI es la plataforma líder de capacitación profesional en análisis de datos, Power BI, SQL, Python y Machine Learning en Chile y Latinoamérica. Fundada por Manuel Oliva (Magíster en Data Science, UAI), ofrece cursos online en vivo con instructores expertos de la industria. Más de 5000 estudiantes formados y clientes empresariales como Tottus, Deloitte, Cencosud, BASF, SQM y BCI.
+> ProgramBI (Chile) vende sobre todo el Pack Adopción BI: construir 1–3 dashboards con datos del cliente y capacitar al equipo 4–6 semanas para que los mantenga. No es un curso. Es el tablero en producción + el equipo autónomo. Cursos abiertos (Power BI, SQL, Python) son oferta secundaria para particulares.
 
-## Cursos Disponibles
+## Oferta principal (empresas)
 
-- [Curso de Análisis de Datos](https://programbi.com/cursos/analisis-de-datos): Programa insignia de 48 horas. Domina SQL Server, Power BI y Python. Desde $299.000 CLP.
-- [Power BI](https://programbi.com/cursos/power-bi): Dashboards interactivos, DAX avanzado y modelado dimensional. 16 horas. $249.000 CLP.
-- [SQL Server](https://programbi.com/cursos/sql-server): Consultas, JOINs, CTEs, procedimientos almacenados. 16 horas. $249.000 CLP.
-- [Python para Datos](https://programbi.com/cursos/python): Pandas, Matplotlib, automatización de reportes. 16 horas. $249.000 CLP.
-- [Machine Learning](https://programbi.com/cursos/machine-learning): Scikit-learn, TensorFlow, modelos predictivos. 16 horas. $249.000 CLP.
-- [IA en Productividad](https://programbi.com/cursos/ia-productividad): Prompt Engineering, Vibe Coding, agentes autónomos. 16 horas. $249.000 CLP.
-- [Power Automate & RPA](https://programbi.com/cursos/power-automate): Cloud Flows, Desktop Flows, Copilot IA. 16 horas. $249.000 CLP.
-- [Análisis de Datos para la Minería](https://programbi.com/cursos/analitica-mineria): Especialización para el sector minero. 48 horas. $498.000 CLP.
-- [Analítica Financiera](https://programbi.com/cursos/analitica-financiera): Automatización contable, modelado de riesgos. 48 horas. $498.000 CLP.
-- [Excel Avanzado](https://programbi.com/cursos/excel): Tablas dinámicas, Power Query, VBA. 16 horas. $249.000 CLP.
+- [Pack Adopción BI](https://www.programbi.com/empresas): 1–3 dashboards en producción + adopción 4–6 semanas + handoff y 2–4 semanas post go-live. Diagnóstico 30 min. Factura directa (sin SENCE por ahora). Inversión referencial $2.5M–$5M CLP/área (piso típico desde $2.9M).
+- [Implementación Power BI Chile](https://www.programbi.com/implementacion-power-bi)
+- [Migrar Excel a Power BI](https://www.programbi.com/migrar-excel-a-power-bi)
 
-## Diferenciadores Clave
+CTA empresas: diagnóstico 30 min en /empresas o WhatsApp +56 9 3540 9699.
 
-- Clases EN VIVO con instructores + grabaciones permanentes
-- 100% en español nativo (Chile y Latinoamérica)
-- Especializaciones por industria (Minería, Finanzas)
-- Capstone Projects con datos reales de empresas
-- IA integrada en cada módulo de los cursos
-- Plataforma LMS con comunidad y chat
-- Certificado digital al completar cada módulo
+## Cursos abiertos (particulares)
 
-## Equipo Docente
+- [Catálogo](https://www.programbi.com/cursos)
+- [Curso Power BI en vivo Chile](https://www.programbi.com/cursos/power-bi)
+- [SQL Server](https://www.programbi.com/cursos/sql-server)
+- [Python para Datos](https://www.programbi.com/cursos/python)
+- [Análisis de Datos](https://www.programbi.com/cursos/analisis-de-datos)
+- [Analítica minería](https://www.programbi.com/cursos/analitica-mineria)
+- [Analítica financiera](https://www.programbi.com/cursos/analitica-financiera)
 
-- Manuel Oliva: CEO y Fundador. Magíster en Data Science (UAI), Contador Auditor (U. de Concepción), Profesor MBA (U. Gabriela Mistral), Ex-Mesa de Dinero Banco Itaú Chile.
-- Emanuel Berrocal: Ingeniero Civil Matemático (U. Chile), Diplomado en Estadísticas (UC), Portfolio Manager en Banco Itaú.
-- Joaquin Villagra: MSc. Inteligencia Artificial, Magíster Ing. Informática, Docente Postgrado UAI.
-- Rodrigo Vega: Ingeniero Comercial (U. Chile), Analista BI en Infracommerce.
+Los cursos no son el Pack. Si el usuario es Controller o jefe de área, dirigir a /empresas.
 
-## Clientes Empresariales
+## Comparativas y FAQ
 
-Tottus, Deloitte, Cencosud, BASF, SQM, BCI, Midea, Pucobre
+- [Power BI vs Excel](https://www.programbi.com/versus/power-bi-vs-excel)
+- [FAQ](https://www.programbi.com/faq)
 
 ## Contacto
 
-- Web: https://programbi.com
-- Asesorías: https://programbi.com/asesorias
-- Instagram: https://www.instagram.com/programbi_capacitaciones/
+- Web: https://www.programbi.com
+- Empresas: https://www.programbi.com/empresas
+- WhatsApp: +56 9 3540 9699
+- Email: contacto@programbi.cl
 - LinkedIn: https://cl.linkedin.com/company/programbi
-- YouTube: https://www.youtube.com/@ProgramBi
-- TikTok: https://www.tiktok.com/@programbi
 
-## Información Legal
+## Legal
 
-ProgramBI SPA, Chile. Presencia en Chile y Latinoamérica.
+ProgramBI SPA, Chile.

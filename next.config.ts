@@ -57,6 +57,21 @@ const nextConfig: NextConfig = {
         destination: "/cursos/copilot",
         permanent: true,
       },
+      {
+        source: "/consultorias",
+        destination: "/empresas",
+        permanent: true,
+      },
+      {
+        source: "/consultoria",
+        destination: "/empresas",
+        permanent: true,
+      },
+      {
+        source: "/asesorias",
+        destination: "/empresas",
+        permanent: true,
+      },
     ];
   },
   async headers() {

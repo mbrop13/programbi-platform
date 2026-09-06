@@ -1,55 +1,48 @@
 import type { Metadata } from "next";
-import EmpresasClient from "./EmpresasClient";
+import EmpresasClient from "../empresas/EmpresasClient";
 import { ogImageUrl } from "@/lib/og/url";
 import { SITE_URL, ORG_ID, absoluteUrl } from "@/lib/seo";
 import { PACK, PACK_FAQS, PACK_VARIANT_COPY } from "@/lib/data/pack-adopcion";
 
-const copy = PACK_VARIANT_COPY.empresas;
+const copy = PACK_VARIANT_COPY["migrar-excel"];
 
 export const metadata: Metadata = {
   title: { absolute: copy.title },
   description: copy.description,
-  alternates: { canonical: "/empresas" },
+  alternates: { canonical: "/migrar-excel-a-power-bi" },
   openGraph: {
     title: copy.title,
     description: copy.description,
-    url: absoluteUrl("/empresas"),
+    url: absoluteUrl("/migrar-excel-a-power-bi"),
     type: "website",
     images: [
       {
         url: ogImageUrl({
-          kicker: "Pack Adopción BI",
-          title: PACK.headline,
+          kicker: "Excel → Power BI Chile",
+          title: copy.h1,
           description: PACK.tagline,
-          tags: ["Power BI", "Adopción", "Chile"],
-          path: "empresas",
+          tags: ["Excel", "Power BI", "Adopción"],
+          path: "migrar-excel-a-power-bi",
         }),
         width: 1200,
         height: 630,
-        alt: "Pack Adopción BI — ProgramBI",
+        alt: "Migrar Excel a Power BI Chile — ProgramBI",
       },
     ],
   },
 };
 
-export default function EmpresasPage() {
+export default function MigrarExcelPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Service",
-        name: PACK.name,
-        url: absoluteUrl("/empresas"),
+        name: "Migrar Excel a Power BI — Pack Adopción BI",
+        url: absoluteUrl("/migrar-excel-a-power-bi"),
         provider: { "@type": "Organization", name: "ProgramBI SPA", url: SITE_URL, "@id": ORG_ID },
-        serviceType: "Business Intelligence implementation and team adoption",
         areaServed: { "@type": "Country", name: "Chile" },
         description: copy.description,
-        offers: {
-          "@type": "Offer",
-          priceCurrency: "CLP",
-          price: String(PACK.priceFromClp),
-          description: `${PACK.priceLabel} (${PACK.priceFromLabel})`,
-        },
       },
       {
         "@type": "FAQPage",
@@ -64,6 +57,12 @@ export default function EmpresasPage() {
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
           { "@type": "ListItem", position: 2, name: "Empresas", item: absoluteUrl("/empresas") },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: "Migrar Excel a Power BI",
+            item: absoluteUrl("/migrar-excel-a-power-bi"),
+          },
         ],
       },
     ],
@@ -72,7 +71,7 @@ export default function EmpresasPage() {
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <EmpresasClient variant="empresas" />
+      <EmpresasClient variant="migrar-excel" />
     </>
   );
 }

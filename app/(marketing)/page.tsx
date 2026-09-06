@@ -1,72 +1,62 @@
+import type { Metadata } from "next";
 import HeroSection from "@/components/marketing/HeroSection";
 import LogoSlider from "@/components/marketing/LogoSlider";
 import Metrics from "@/components/marketing/Metrics";
+import PackBand from "@/components/marketing/PackBand";
 import Flagship from "@/components/marketing/Flagship";
-import Programs from "@/components/marketing/Programs";
+import ProgramsCatalog from "@/components/marketing/ProgramsCatalog";
 import JobsBanner from "@/components/marketing/JobsBanner";
 import Team from "@/components/marketing/Team";
 import Quote from "@/components/marketing/Quote";
 import FaqSection from "@/components/marketing/FaqSection";
 import LeadForm from "@/components/marketing/LeadForm";
+import { HOME_FAQS, PACK } from "@/lib/data/pack-adopcion";
+import { SITE_URL } from "@/lib/seo";
 
 export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  title: { absolute: "Pack Adopción BI y cursos Power BI Chile | ProgramBI" },
+  description:
+    "Pack Adopción BI: tablero en producción + equipo autónomo. Cursos Power BI, SQL y Python en vivo en Chile. Diagnóstico 30 min. Factura directa.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Pack Adopción BI y cursos Power BI Chile | ProgramBI",
+    description:
+      "Empresas: Pack Adopción BI. Particulares: cursos en vivo. De reportes eternos a decisiones en minutos.",
+    url: SITE_URL,
+    type: "website",
+  },
+};
 
 const faqJsonLd = {
   "@context": "https://schema.org",
   "@type": "FAQPage",
-  mainEntity: [
-    {
-      "@type": "Question",
-      name: "¿Necesito saber programar?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "No. Partimos desde cero. La metodología está pensada para profesionales de finanzas, operaciones, minería y administración que quieren trabajar con datos sin depender de TI.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Cómo son las clases?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "En vivo por Zoom, dos horas por sesión, en horario vespertino Chile. Todas las clases quedan grabadas de por vida.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Qué pasa si falto a una clase?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Ves la grabación cuando quieras. El material y las clases quedan en el campus sin límite de tiempo.",
-      },
-    },
-    {
-      "@type": "Question",
-      name: "¿Hay certificado?",
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: "Sí. Al finalizar el curso recibes un certificado digital.",
-      },
-    },
-  ],
+  mainEntity: HOME_FAQS.map((faq) => ({
+    "@type": "Question",
+    name: faq.q,
+    acceptedAnswer: { "@type": "Answer", text: faq.a },
+  })),
 };
 
 export default function HomePage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
       <HeroSection />
       <LogoSlider />
+      <PackBand />
       <Metrics />
+      <ProgramsCatalog />
       <Flagship />
-      <Programs />
       <JobsBanner />
       <Team />
       <Quote />
       <FaqSection />
       <LeadForm />
+      <p className="sr-only">
+        {PACK.name}. {PACK.headline}. {PACK.tagline}.
+      </p>
     </>
   );
 }

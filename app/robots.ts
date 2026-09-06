@@ -1,14 +1,13 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      // Disallow known aggressive web scrapers
       {
         userAgent: ["Bytespider", "PetalBot", "MJ12bot", "SemrushBot", "AhrefsBot", "DataForSEOBot"],
         disallow: "/",
       },
-      // AI Search & Retrieval Bots — WELCOME
       { userAgent: "GPTBot", allow: "/" },
       { userAgent: "ChatGPT-User", allow: "/" },
       { userAgent: "OAI-SearchBot", allow: "/" },
@@ -17,13 +16,13 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "Anthropic-ai", allow: "/" },
       { userAgent: "ClaudeBot", allow: "/" },
       { userAgent: "CCBot", allow: "/" },
-      // General crawlers
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/auth/", "/comunidad/", "/_next/"],
+        disallow: ["/api/", "/auth/", "/comunidad/", "/_next/", "/admin/", "/login", "/pago"],
       },
     ],
-    sitemap: "https://programbi.com/sitemap.xml",
+    sitemap: `${SITE_URL}/sitemap.xml`,
+    host: "www.programbi.com",
   };
 }

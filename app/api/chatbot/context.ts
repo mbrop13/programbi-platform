@@ -226,7 +226,15 @@ export async function buildChatbotContext(): Promise<string> {
   // ═══════════════════════════════════════════
   // ENSAMBLAR CONTEXTO FINAL
   // ═══════════════════════════════════════════
-  return `=== CATÁLOGO DE CURSOS ===
+  return `=== PACK ADOPCIÓN BI (OFERTA PRINCIPAL EMPRESAS) ===
+No es un curso. 1–3 dashboards en producción + capacitación 4–6 semanas + handoff 2–4 semanas post go-live.
+Diagnóstico 30 min. Factura directa. Referencial $2.5M–$5M CLP/área (desde $2.9M).
+URL: https://www.programbi.com/empresas
+Migrar Excel: https://www.programbi.com/migrar-excel-a-power-bi
+Implementación Power BI: https://www.programbi.com/implementacion-power-bi
+WhatsApp: +56 9 3540 9699
+
+=== CURSOS ABIERTOS (PARTICULARES) ===
 ${coursesSection}
 
 === HORARIOS PRÓXIMOS ===

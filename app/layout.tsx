@@ -5,6 +5,7 @@ import "./globals.css";
 import Providers from "./providers";
 import { Analytics } from "@vercel/analytics/react";
 import MarketingAnalytics from "@/components/shared/MarketingAnalytics";
+import { SITE_URL, ORG_ID, WEBSITE_ID } from "@/lib/seo";
 
 const geist = Geist({
   variable: "--font-sans",
@@ -28,36 +29,27 @@ const dancing = Dancing_Script({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://programbi.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "ProgramBI — Cursos de Análisis de Datos, Power BI, SQL y Python",
+    default: "Pack Adopción BI y cursos Power BI Chile | ProgramBI",
     template: "%s | ProgramBI",
   },
   description:
-    "Capacitaciones profesionales en Power BI, Python, SQL, Excel y Big Data. Cursos online y presencial con expertos de la industria en Chile y Latinoamérica. +5000 estudiantes.",
+    "Pack Adopción BI: tablero en producción + tu equipo autónomo. Cursos Power BI, SQL y Python en vivo en Chile. Diagnóstico 30 min. Factura directa.",
   keywords: [
-    "Power BI",
-    "cursos Power BI",
-    "Python",
-    "curso Python datos",
-    "SQL Server",
-    "curso SQL",
-    "análisis de datos",
-    "data analytics",
-    "cursos online Chile",
-    "capacitación empresarial",
-    "ProgramBI",
-    "Excel avanzado",
-    "Big Data",
-    "machine learning",
-    "dashboards",
-    "automatización de datos",
-    "Power Automate",
-    "inteligencia artificial",
-    "cursos presenciales Santiago",
+    "implementación Power BI Chile",
+    "migrar Excel a Power BI",
+    "Power BI control de gestión",
+    "Pack Adopción BI",
     "capacitación Power BI Chile",
+    "curso Power BI en vivo Chile",
+    "Business Intelligence Chile",
+    "dashboards Power BI empresas",
+    "SQL Server",
+    "Python datos",
+    "ProgramBI",
   ],
-  authors: [{ name: "ProgramBI", url: "https://programbi.com" }],
+  authors: [{ name: "ProgramBI", url: SITE_URL }],
   creator: "ProgramBI",
   publisher: "ProgramBI",
   formatDetection: {
@@ -71,19 +63,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_CL",
-    url: "https://programbi.com",
+    url: SITE_URL,
     siteName: "ProgramBI",
-    title: "ProgramBI — Cursos de Análisis de Datos, Power BI, SQL y Python",
+    title: "Pack Adopción BI y cursos Power BI Chile | ProgramBI",
     description:
-      "Capacitaciones profesionales en Power BI, Python, SQL, Excel y Big Data. +5000 estudiantes formados. Cursos online y presencial.",
-    // Imagen generada por app/opengraph-image.tsx (usa el logo principal)
+      "Tablero en producción + equipo autónomo para empresas. Cursos Power BI, SQL y Python en vivo. Diagnóstico 30 min.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ProgramBI — Cursos de Análisis de Datos con Expertos",
+    title: "Pack Adopción BI y cursos Power BI Chile | ProgramBI",
     description:
-      "Capacitaciones profesionales en Power BI, Python, SQL, Excel y Big Data. +5000 estudiantes.",
-    // Imagen generada por app/twitter-image.tsx (usa el logo principal)
+      "Tablero en producción + equipo autónomo. Cursos Power BI, SQL y Python en vivo en Chile.",
   },
   robots: {
     index: true,
@@ -108,19 +98,19 @@ const jsonLd = {
   "@graph": [
     {
       "@type": ["Organization", "EducationalOrganization"],
-      "@id": "https://programbi.com/#organization",
+      "@id": ORG_ID,
       name: "ProgramBI",
       legalName: "ProgramBI SPA",
-      url: "https://programbi.com",
+      url: SITE_URL,
       logo: {
         "@type": "ImageObject",
-        url: "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974",
+        url: `${SITE_URL}/images/logo.png`,
         width: 600,
         height: 160,
       },
       description:
-        "ProgramBI es la plataforma líder de capacitación profesional en análisis de datos, Power BI, SQL, Python y Machine Learning en Chile y Latinoamérica. Más de 5000 estudiantes formados con clases en vivo e instructores expertos de la industria.",
-      slogan: "Capacitaciones profesionales en análisis de datos con expertos",
+        "ProgramBI (Chile) implementa Business Intelligence con adopción: tableros en producción y equipos autónomos. También dicta cursos en vivo de Power BI, SQL y Python.",
+      slogan: "De reportes eternos a decisiones en minutos.",
       foundingDate: "2021",
       areaServed: [
         { "@type": "Country", name: "Chile" },
@@ -131,11 +121,8 @@ const jsonLd = {
       ],
       knowsAbout: [
         "Power BI", "DAX", "SQL Server", "Python", "Pandas",
-        "Machine Learning", "Análisis de Datos", "Data Analytics",
-        "Business Intelligence", "Data Science", "Excel Avanzado",
-        "Power Query", "ETL", "Visualización de Datos", "Dashboards",
-        "Automatización de Reportes", "RPA", "Power Automate",
-        "Inteligencia Artificial", "Prompt Engineering",
+        "Business Intelligence", "Control de gestión", "Adopción BI",
+        "Excel a Power BI", "Minería", "Retail", "Finanzas",
       ],
       founder: {
         "@type": "Person",
@@ -147,37 +134,34 @@ const jsonLd = {
         ],
         knowsAbout: ["Data Science", "Riesgo Financiero", "Econometría", "Power BI", "Python"],
       },
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "4.9",
-        reviewCount: "327",
-        bestRating: "5",
-        worstRating: "1",
-      },
       sameAs: [
         "https://www.instagram.com/programbi_capacitaciones/",
         "https://www.tiktok.com/@programbi",
         "https://cl.linkedin.com/company/programbi",
         "https://www.youtube.com/@ProgramBi",
       ],
-      contactPoint: {
-        "@type": "ContactPoint",
-        contactType: "customer service",
-        availableLanguage: ["Spanish"],
-      },
+      contactPoint: [
+        {
+          "@type": "ContactPoint",
+          contactType: "sales",
+          telephone: "+56-9-3540-9699",
+          availableLanguage: ["Spanish"],
+          areaServed: "CL",
+        },
+      ],
     },
     {
       "@type": "WebSite",
-      "@id": "https://programbi.com/#website",
-      url: "https://programbi.com",
+      "@id": WEBSITE_ID,
+      url: SITE_URL,
       name: "ProgramBI",
-      publisher: { "@id": "https://programbi.com/#organization" },
-      inLanguage: "es",
+      publisher: { "@id": ORG_ID },
+      inLanguage: "es-CL",
       potentialAction: {
         "@type": "SearchAction",
         target: {
           "@type": "EntryPoint",
-          urlTemplate: "https://programbi.com/cursos?q={search_term_string}",
+          urlTemplate: `${SITE_URL}/cursos?q={search_term_string}`,
         },
         "query-input": "required name=search_term_string",
       },

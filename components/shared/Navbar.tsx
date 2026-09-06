@@ -26,8 +26,8 @@ import { getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
 import { isCurrentUserAdmin } from "@/lib/supabase/comunidad";
 
 const navLinks = [
-  { href: "/cursos", label: "Ver Cursos", hasMega: true },
   { href: "/empresas", label: "Empresas" },
+  { href: "/cursos", label: "Cursos", hasMega: true },
   { href: "/empleos", label: "Empleos" },
   { href: "/comunidad", label: "Comunidad" },
   { href: "/blog", label: "Blog" },
@@ -445,13 +445,12 @@ export default function Navbar() {
             )}
 
             {!user && !loading ? (
-              <button
-                type="button"
-                onClick={() => setAuthModal({ isOpen: true, tab: "register" })}
-                className="hidden h-10 items-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas transition-transform active:scale-95 sm:inline-flex"
+              <Link
+                href="/empresas#contacto"
+                className="hidden h-10 items-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas no-underline transition-transform active:scale-95 sm:inline-flex"
               >
-                Registrarse
-              </button>
+                Diagnóstico empresas
+              </Link>
             ) : null}
 
             <button
@@ -611,16 +610,13 @@ export default function Navbar() {
                 )}
 
                 {!user ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsMobileOpen(false);
-                      setAuthModal({ isOpen: true, tab: "register" });
-                    }}
-                    className="mt-2 inline-flex h-12 w-full items-center justify-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas"
+                  <Link
+                    href="/empresas#contacto"
+                    onClick={() => setIsMobileOpen(false)}
+                    className="mt-2 inline-flex h-12 w-full items-center justify-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas no-underline"
                   >
-                    Registrarse
-                  </button>
+                    Diagnóstico empresas
+                  </Link>
                 ) : null}
               </div>
             </nav>

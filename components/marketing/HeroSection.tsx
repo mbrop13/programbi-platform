@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import RegisterCta from "@/components/marketing/RegisterCta";
 import HeroPreview from "@/components/marketing/HeroPreview";
+import { PACK } from "@/lib/data/pack-adopcion";
 
 export default function HeroSection() {
   return (
@@ -13,30 +13,45 @@ export default function HeroSection() {
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-70" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
             </span>
-            Clases en vivo online y presencial
+            Chile · Power BI · datos en producción
           </div>
 
-          <h1 className="text-4xl font-bold leading-[1.12] tracking-tight text-ink sm:text-5xl lg:text-[3.5rem] lg:leading-[1.12]">
-            Aprende Análisis de
-            <br />
-            Datos con <em className="italic font-semibold">Expertos</em>
+          <h1 className="text-4xl font-bold leading-[1.12] tracking-tight text-ink sm:text-5xl lg:text-[3.25rem] lg:leading-[1.12]">
+            De reportes eternos a{" "}
+            <em className="italic font-semibold">decisiones en minutos</em>
           </h1>
 
           <p className="mt-6 max-w-xl text-base leading-relaxed text-mute sm:text-lg">
-            Capacitaciones diseñadas para profesionales que buscan potenciar su carrera con Power
-            BI, Python, SQL, Excel y Big Data.
+            Empresas: tablero en producción + equipo autónomo (Pack Adopción BI). Particulares: cursos en vivo de
+            Power BI, SQL y Python.
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <RegisterCta className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-7 text-base font-semibold text-canvas shadow-md shadow-ink/10 transition-transform active:scale-[0.98]">
-              Registrarse
-              <ArrowRight size={17} strokeWidth={2.4} />
-            </RegisterCta>
+          <div className="mt-8 grid gap-3 sm:grid-cols-2">
             <Link
-              href="#programas"
-              className="inline-flex h-12 items-center rounded-full border border-line bg-paper px-7 text-base font-medium text-ink no-underline transition-colors hover:bg-wash active:scale-[0.98]"
+              href="/empresas"
+              className="group flex flex-col rounded-2xl border border-ink bg-ink px-5 py-4 text-canvas no-underline transition-transform active:scale-[0.99]"
             >
-              Ver Cursos
+              <span className="text-[11px] font-bold uppercase tracking-widest text-canvas/70">Empresas</span>
+              <span className="mt-1 inline-flex items-center gap-2 text-base font-semibold">
+                Pack Adopción BI
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
+              </span>
+              <span className="mt-1 text-xs leading-snug text-canvas/70">
+                {PACK.dashboards} dashboards + {PACK.trainingWeeks} semanas · diagnóstico {PACK.diagnosisMinutes} min
+              </span>
+            </Link>
+            <Link
+              href="/cursos"
+              className="group flex flex-col rounded-2xl border border-line bg-paper px-5 py-4 text-ink no-underline transition-colors hover:bg-wash active:scale-[0.99]"
+            >
+              <span className="text-[11px] font-bold uppercase tracking-widest text-mute">Particulares</span>
+              <span className="mt-1 inline-flex items-center gap-2 text-base font-semibold">
+                Ver cursos
+                <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
+              </span>
+              <span className="mt-1 text-xs leading-snug text-mute">
+                Power BI, SQL, Python y más · en vivo por Zoom
+              </span>
             </Link>
           </div>
         </div>

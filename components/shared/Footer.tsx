@@ -10,13 +10,14 @@ const socialLinks = [
 ];
 
 const companyLinks = [
-  { label: "Ver Cursos", href: "/cursos" },
-  { label: "Empresas", href: "/empresas" },
+  { label: "Pack Adopción BI", href: "/empresas" },
+  { label: "Implementación Power BI", href: "/implementacion-power-bi" },
+  { label: "Migrar Excel a Power BI", href: "/migrar-excel-a-power-bi" },
+  { label: "Cursos", href: "/cursos" },
   { label: "Bolsa de Trabajo", href: "/empleos" },
   { label: "Comunidad", href: "/comunidad" },
   { label: "Blog", href: "/blog" },
   { label: "Preguntas frecuentes", href: "/#faq" },
-  { label: "Registrarse", href: "/?auth=register" },
 ];
 
 export default function Footer({ compact: _compact = false }: { compact?: boolean }) {
@@ -30,7 +31,7 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
             <Image src="/images/logo.png" alt="ProgramBI" fill sizes="148px" className="object-contain object-left" />
           </Link>
           <p className="mt-4 max-w-[28rem] text-sm leading-relaxed text-mute">
-            Centro de capacitaciones en análisis de datos. Santiago, Chile.
+            Pack Adopción BI para empresas y cursos en vivo de Power BI, SQL y Python. Santiago, Chile.
           </p>
         </div>
 

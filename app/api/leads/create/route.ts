@@ -21,7 +21,13 @@ const leadSchema = z.object({
   company: z.string().max(120).optional().nullable(),
   position: z.string().max(120).optional().nullable(),
   employeeCount: z.string().max(50).optional().nullable(),
-  pricingVariant: z.enum(["gate", "direct"]).optional().nullable(),
+  area: z.string().max(120).optional().nullable(),
+  landing_path: z.string().max(256).optional().nullable(),
+  utm_source: z.string().max(120).optional().nullable(),
+  utm_medium: z.string().max(120).optional().nullable(),
+  utm_campaign: z.string().max(120).optional().nullable(),
+  utm_content: z.string().max(120).optional().nullable(),
+  utm_term: z.string().max(120).optional().nullable(),
   _website: z.string().optional().nullable(),
   _company_url: z.string().optional().nullable(),
   _fax: z.string().optional().nullable(),
@@ -94,7 +100,10 @@ export async function POST(req: NextRequest) {
     }
 
     const whatsappClean = data.whatsapp || data.phone;
-    const { name, email, message, selectedCourses, sourceCourse, leadType, company, position, employeeCount } = data;
+    const {
+      name, email, message, selectedCourses, sourceCourse, leadType, company, position,
+      employeeCount, area, landing_path, utm_source, utm_medium, utm_campaign, utm_content, utm_term,
+    } = data;
     const whatsapp = whatsappClean;
 
     if (looksLikeSpam(name, email, message || undefined)) {
@@ -113,28 +122,26 @@ export async function POST(req: NextRequest) {
       source_course: sourceCourse || null,
       lead_type: leadType || "contact",
     };
-    if (data.pricingVariant === "gate" || data.pricingVariant === "direct") {
-      insertData.pricing_variant = data.pricingVariant;
-    }
 
-    // If enterprise lead, append company info to message
-    if (leadType === "enterprise" && (company || position || employeeCount)) {
-      const extraInfo = [
-        company ? `Empresa: ${company}` : null,
-        position ? `Cargo: ${position}` : null,
-        employeeCount ? `Empleados a capacitar: ${employeeCount}` : null,
-      ].filter(Boolean).join(" | ");
+    const isEnterprise =
+      leadType === "enterprise" || leadType === "empresa" || leadType === "asesoria_b2b";
+    const extraInfo = [
+      isEnterprise && company ? `Empresa: ${company}` : null,
+      isEnterprise && position ? `Cargo: ${position}` : null,
+      isEnterprise && area ? `Área: ${area}` : null,
+      isEnterprise && employeeCount ? `Empleados a capacitar: ${employeeCount}` : null,
+      landing_path ? `page=${landing_path}` : null,
+      utm_source ? `utm_source=${utm_source}` : null,
+      utm_medium ? `utm_medium=${utm_medium}` : null,
+      utm_campaign ? `utm_campaign=${utm_campaign}` : null,
+      utm_content ? `utm_content=${utm_content}` : null,
+      utm_term ? `utm_term=${utm_term}` : null,
+    ].filter(Boolean).join(" | ");
+    if (extraInfo) {
       insertData.message = extraInfo + (message ? ` — ${message}` : "");
     }
 
-    let { error } = await adminDb.from("course_leads").insert(insertData);
-
-    if (error && insertData.pricing_variant) {
-      console.error("Error inserting lead (retry without variant):", error);
-      delete insertData.pricing_variant;
-      const retry = await adminDb.from("course_leads").insert(insertData);
-      error = retry.error;
-    }
+    const { error } = await adminDb.from("course_leads").insert(insertData);
 
     if (error) {
       console.error("Error inserting lead:", error);
@@ -147,7 +154,7 @@ export async function POST(req: NextRequest) {
     // 1. Notificación interna al equipo de ventas
     try {
       await sendNewLeadNotificationToAdmin({
-        name, email, phone: whatsapp ?? undefined, courses, message: message ?? undefined,
+        name, email, phone: whatsapp ?? undefined, courses, message: insertData.message ?? message ?? undefined,
         leadType: leadType ?? undefined, company: company ?? undefined, position: position ?? undefined, employeeCount: employeeCount ?? undefined,
       });
       console.log("✅ Admin notification sent");
@@ -158,7 +165,7 @@ export async function POST(req: NextRequest) {
     // 2. Confirmación al lead (diferente para empresa vs. individual, se omite para webinar)
     if (leadType !== "webinar") {
       try {
-        if ((leadType === "empresa" || leadType === "enterprise") && company) {
+        if (isEnterprise && company) {
           await sendEnterpriseQuoteToLead({ name, email, company, courses, employeeCount: employeeCount ?? undefined });
         } else {
           await sendQuoteConfirmationToLead({ name, email, courses, message: message ?? undefined });

@@ -27,9 +27,16 @@ export default function CursosPageClient() {
     <>
       <section className="px-4 pt-16 pb-8 sm:px-6 lg:px-8 lg:pt-20">
         <div className="mx-auto max-w-[1400px]">
-          <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">Cursos</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
+            Cursos Power BI, SQL y Python en vivo — Chile
+          </h1>
           <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">
-            Programas en vivo por Zoom. Elige una herramienta o el programa completo de 144 horas.
+            Formación individual en vivo por Zoom. Si tu empresa necesita el tablero en producción y un equipo
+            autónomo, eso es el{" "}
+            <Link href="/empresas" className="font-semibold text-ink">
+              Pack Adopción
+            </Link>
+            , no un curso.
           </p>
           <div className="relative mt-8 max-w-xl">
             <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-faint" />

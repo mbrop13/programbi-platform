@@ -4,17 +4,17 @@ import CursosPageClient from "./CursosPageClient";
 import { ogImageUrl } from "@/lib/og/url";
 
 export const metadata: Metadata = {
-  title: "Cursos de Análisis de Datos Online — Power BI, SQL, Python | ProgramBI",
+  title: { absolute: "Cursos Power BI, SQL y Python en vivo Chile | ProgramBI" },
   description:
-    "Capacitaciones profesionales en Power BI, Python, SQL y Machine Learning. Cursos online en vivo con expertos de la industria. Formación para profesionales y empresas en Chile y Latinoamérica.",
+    "Cursos abiertos en vivo: Power BI, SQL y Python. Formación individual, distinta al Pack Adopción para empresas. Cupos abiertos — consulta fecha.",
   alternates: {
     canonical: "/cursos",
   },
   openGraph: {
-    title: "Cursos de Análisis de Datos Online — Power BI, SQL, Python | ProgramBI",
+    title: "Cursos Power BI, SQL y Python en vivo Chile | ProgramBI",
     description:
-      "Capacitaciones profesionales en Power BI, Python, SQL y Machine Learning. Cursos online en vivo con expertos de la industria en Chile y Latinoamérica.",
-    url: "https://programbi.com/cursos",
+      "Cursos abiertos en vivo de Power BI, SQL y Python en Chile. Si eres empresa, el Pack Adopción es otra oferta.",
+    url: "https://www.programbi.com/cursos",
     type: "website",
     images: [
       {
@@ -42,7 +42,7 @@ export default function CursosPage() {
     itemListElement: courses.map((course, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      url: `https://programbi.com/cursos/${course.slug}`,
+      url: `https://www.programbi.com/cursos/${course.slug}`,
       name: course.title,
     })),
   };

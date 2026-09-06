@@ -18,14 +18,19 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const course = getCourseBySlug(slug);
   if (!course) return { title: "Curso no encontrado" };
 
-  const title = `${course.title} — Curso Online`;
+  const title =
+    slug === "power-bi" ? "Curso Power BI en vivo Chile" : `${course.title} — Curso en vivo Chile`;
   const dbDescription = await getMarketingDescription(slug);
-  const description = dbDescription || course.description;
+  const description =
+    dbDescription ||
+    (slug === "power-bi"
+      ? "Curso Power BI en vivo en Chile: DAX, modelo y dashboards. Formación individual, distinta al Pack Adopción para empresas. Cupos abiertos — consulta fecha."
+      : course.description);
 
   // Tarjeta OG de marca (tipográfica, papel-monócromo) — reemplaza las
   // portadas remotas de estilo antiguo.
   const shareImage = ogImageUrl({
-    kicker: "Curso online en vivo",
+    kicker: "Curso en vivo Chile",
     title: course.title,
     description,
     tags: course.techStack,
@@ -42,7 +47,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     openGraph: {
       title: `${title} | ProgramBI`,
       description,
-      url: `https://programbi.com/cursos/${slug}`,
+      url: `https://www.programbi.com/cursos/${slug}`,
       type: "website",
       images: [
         {
@@ -96,12 +101,12 @@ function getCourseJsonLd(course: ReturnType<typeof getCourseBySlug>) {
     "@type": "Course",
     name: course.title,
     description: course.description,
-    url: `https://programbi.com/cursos/${course.slug}`,
+    url: `https://www.programbi.com/cursos/${course.slug}`,
     provider: {
       "@type": "Organization",
       name: "ProgramBI",
-      url: "https://programbi.com",
-      "@id": "https://programbi.com/#organization",
+      url: "https://www.programbi.com",
+      "@id": "https://www.programbi.com/#organization",
       sameAs: [
         "https://www.instagram.com/programbi_capacitaciones/",
         "https://www.tiktok.com/@programbi",
@@ -143,7 +148,7 @@ function getCourseJsonLd(course: ReturnType<typeof getCourseBySlug>) {
         price: lowestPrice,
         priceCurrency: "CLP",
         availability: "https://schema.org/InStock",
-        url: `https://programbi.com/cursos/${course.slug}`,
+        url: `https://www.programbi.com/cursos/${course.slug}`,
         validFrom: new Date().toISOString(),
       },
     }),

@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: `${article.title} | ProgramBI`,
       description: article.excerpt || article.title,
-      url: `https://programbi.com/newsletter/${slug}`,
+      url: `https://www.programbi.com/newsletter/${slug}`,
       type: "article",
       publishedTime: article.published_at,
       authors: [article.author_name || "ProgramBI"],

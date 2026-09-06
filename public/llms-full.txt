@@ -1,6 +1,21 @@
-# ProgramBI - Documentación Completa de Capacitaciones y Casos de Éxito
+# ProgramBI — Pack Adopción BI y cursos
 
-> ProgramBI es la institución de capacitación profesional líder en análisis de datos, Power BI, SQL, Python y Machine Learning en Chile y Latinoamérica. Fundada por Manuel Oliva (Magíster en Data Science, UAI), se enfoca en entregar habilidades prácticas e inmediatamente aplicables en el ámbito corporativo y profesional.
+> Oferta principal: Pack Adopción BI para empresas (tablero en producción + equipo autónomo). Cursos abiertos de Power BI, SQL y Python son secundarios. Sitio canónico: https://www.programbi.com
+
+## Pack Adopción BI (empresas)
+
+No es un curso. Construimos 1–3 dashboards con los datos del área y capacitamos al equipo 4–6 semanas. Handoff + 2–4 semanas post go-live. Diagnóstico 30 min. Factura directa; si después hay franquicia SENCE, orientamos. Referencial $2.5M–$5M CLP/área (desde $2.9M).
+
+- https://www.programbi.com/empresas
+- https://www.programbi.com/implementacion-power-bi
+- https://www.programbi.com/migrar-excel-a-power-bi
+- WhatsApp +56 9 3540 9699
+
+---
+
+# Cursos abiertos (particulares)
+
+> Formación en vivo. No reemplaza el Pack empresas.
 
 ---
 

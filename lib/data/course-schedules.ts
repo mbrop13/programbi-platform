@@ -64,6 +64,40 @@ export function formatShortDate(dateStr: string): string {
   });
 }
 
+/** Copy honesto cuando no hay cohorte futura en DB ni en estáticos. */
+export const OPEN_COHORT_LABEL = "Cupos abiertos — consulta fecha";
+
+export function formatCohortShort(dateStr: string): string {
+  const date = new Date(dateStr + "T12:00:00");
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  return `${dd}/${mm}`;
+}
+
+/** Etiqueta visible en catálogo: fecha real o copy honesto. Nunca "Fecha por confirmar". */
+export function getCourseDateLabel(
+  courseSlug: string,
+  schedules: Array<Pick<CourseSchedule, "course_slug" | "start_date" | "is_active">> = staticSchedules
+): string {
+  const slugs =
+    courseSlug === "analisis-de-datos" ? analisisDeDatosSlugs : [courseSlug];
+  const now = new Date();
+  const future = schedules
+    .filter(
+      (s) =>
+        slugs.includes(s.course_slug) &&
+        s.is_active !== false &&
+        new Date(s.start_date + "T12:00:00") >= now
+    )
+    .sort(
+      (a, b) =>
+        new Date(a.start_date).getTime() - new Date(b.start_date).getTime()
+    );
+  const nearest = future[0];
+  if (!nearest) return OPEN_COHORT_LABEL;
+  return `Próxima cohorte: ${formatCohortShort(nearest.start_date)}`;
+}
+
 // Get the nearest start date from a list of schedules
 export function getNearestSchedule(schedules: CourseSchedule[]): CourseSchedule | null {
   const now = new Date();

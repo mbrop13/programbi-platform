@@ -60,7 +60,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: `${article.title} | ProgramBI`,
       description: article.excerpt || article.title,
-      url: `https://programbi.com/blog/${slug}`,
+      url: `https://www.programbi.com/blog/${slug}`,
       type: "article",
       publishedTime: article.published_at,
       authors: [article.author_name || "ProgramBI"],
@@ -93,16 +93,16 @@ export default async function BlogArticlePage({ params }: PageProps) {
     "@type": "BlogPosting",
     headline: article.title,
     description: article.excerpt,
-    url: `https://programbi.com/blog/${slug}`,
+    url: `https://www.programbi.com/blog/${slug}`,
     datePublished: article.published_at,
     dateModified: article.updated_at || article.published_at,
     author: {
       "@type": "Person",
       name: article.author_name || "Manuel Oliva",
-      url: "https://programbi.com",
+      url: "https://www.programbi.com",
     },
-    publisher: { "@id": "https://programbi.com/#organization" },
-    mainEntityOfPage: `https://programbi.com/blog/${slug}`,
+    publisher: { "@id": "https://www.programbi.com/#organization" },
+    mainEntityOfPage: `https://www.programbi.com/blog/${slug}`,
     image: shareImage,
     inLanguage: "es",
     keywords: article.tags?.join(", "),
@@ -113,9 +113,9 @@ export default async function BlogArticlePage({ params }: PageProps) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://programbi.com" },
-      { "@type": "ListItem", position: 2, name: "Blog", item: "https://programbi.com/blog" },
-      { "@type": "ListItem", position: 3, name: article.title, item: `https://programbi.com/blog/${slug}` },
+      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://www.programbi.com" },
+      { "@type": "ListItem", position: 2, name: "Blog", item: "https://www.programbi.com/blog" },
+      { "@type": "ListItem", position: 3, name: article.title, item: `https://www.programbi.com/blog/${slug}` },
     ],
   };
 

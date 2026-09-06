@@ -133,15 +133,15 @@ export default function GlosarioPage() {
   const glossaryJsonLd = {
     "@context": "https://schema.org",
     "@type": "DefinedTermSet",
-    "@id": "https://programbi.com/glosario/#termset",
+    "@id": "https://www.programbi.com/glosario/#termset",
     name: "Glosario de Términos de Datos y Business Intelligence | ProgramBI",
     description: "Diccionario de términos técnicos explicados de forma concisa sobre bases de datos SQL, Power BI, fórmulas DAX, programación en Python y Machine Learning.",
-    url: "https://programbi.com/glosario",
+    url: "https://www.programbi.com/glosario",
     hasDefinedTerm: GLOSSARY_TERMS.map((t) => ({
       "@type": "DefinedTerm",
       name: t.term,
       description: t.definition,
-      inDefinedTermSet: "https://programbi.com/glosario/#termset"
+      inDefinedTermSet: "https://www.programbi.com/glosario/#termset"
     }))
   };
 
@@ -149,8 +149,8 @@ export default function GlosarioPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://programbi.com" },
-      { "@type": "ListItem", position: 2, name: "Glosario", item: "https://programbi.com/glosario" }
+      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://www.programbi.com" },
+      { "@type": "ListItem", position: 2, name: "Glosario", item: "https://www.programbi.com/glosario" }
     ]
   };
 

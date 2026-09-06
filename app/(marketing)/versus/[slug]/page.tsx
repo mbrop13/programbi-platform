@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     openGraph: {
       title: `${comp.seoTitle} | ProgramBI`,
       description: comp.seoDescription,
-      url: `https://programbi.com/versus/${slug}`,
+      url: `https://www.programbi.com/versus/${slug}`,
       type: "website",
       images: [
         {
@@ -78,12 +78,12 @@ export default async function VersusDetailPage({ params }: PageProps) {
     author: {
       "@type": "Organization",
       name: "ProgramBI",
-      url: "https://programbi.com",
+      url: "https://www.programbi.com",
     },
     publisher: {
-      "@id": "https://programbi.com/#organization",
+      "@id": "https://www.programbi.com/#organization",
     },
-    mainEntityOfPage: `https://programbi.com/versus/${slug}`,
+    mainEntityOfPage: `https://www.programbi.com/versus/${slug}`,
     about: [
       { "@type": "Thing", name: comp.toolA.name },
       { "@type": "Thing", name: comp.toolB.name }
@@ -94,9 +94,9 @@ export default async function VersusDetailPage({ params }: PageProps) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://programbi.com" },
-      { "@type": "ListItem", position: 2, name: "Comparativas", item: "https://programbi.com/versus" },
-      { "@type": "ListItem", position: 3, name: comp.toolA.name + " vs " + comp.toolB.name, item: `https://programbi.com/versus/${slug}` },
+      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://www.programbi.com" },
+      { "@type": "ListItem", position: 2, name: "Comparativas", item: "https://www.programbi.com/versus" },
+      { "@type": "ListItem", position: 3, name: comp.toolA.name + " vs " + comp.toolB.name, item: `https://www.programbi.com/versus/${slug}` },
     ],
   };
 
@@ -279,6 +279,34 @@ export default async function VersusDetailPage({ params }: PageProps) {
             </p>
           </section>
 
+          {slug === "power-bi-vs-excel" && (
+            <section className="mb-10 rounded-3xl border border-slate-200 bg-white p-8 shadow-sm sm:p-10">
+              <p className="text-[10px] font-black uppercase tracking-widest text-[#1890FF]">Para empresas</p>
+              <h3 className="font-display mt-2 mb-3 text-2xl font-black tracking-tight text-slate-900">
+                Migrar Excel a Power BI no es un curso. Es el tablero en producción + tu equipo autónomo.
+              </h3>
+              <p className="mb-6 text-sm leading-relaxed text-slate-500 sm:text-base">
+                El Pack Adopción BI construye 1–3 dashboards con los datos del área, capacita 4–6 semanas y se queda
+                2–4 semanas post go-live. Diagnóstico 30 min. Factura directa.
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Link
+                  href="/migrar-excel-a-power-bi"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-ink px-6 py-3.5 text-sm font-bold text-canvas no-underline"
+                >
+                  Migrar Excel → Power BI
+                  <ArrowUpRight className="h-4 w-4" />
+                </Link>
+                <Link
+                  href="/empresas#contacto"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-paper px-6 py-3.5 text-sm font-bold text-slate-900 no-underline"
+                >
+                  Diagnóstico Pack Adopción
+                </Link>
+              </div>
+            </section>
+          )}
+
           {/* CTA Related Course Card */}
           {relatedCourse && (
             <section className="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-3xl p-8 sm:p-12 relative overflow-hidden shadow-xl">
@@ -287,13 +315,17 @@ export default async function VersusDetailPage({ params }: PageProps) {
               <div className="relative z-10 grid md:grid-cols-12 gap-8 items-center">
                 <div className="md:col-span-8 space-y-4">
                   <span className="text-[10px] font-black uppercase tracking-widest text-[#1890FF] bg-[#1890FF]/10 px-3 py-1 rounded-full inline-block">
-                    Curso en Vivo Relacionado
+                    {slug === "power-bi-vs-excel" ? "Curso abierto (particulares)" : "Curso en vivo relacionado"}
                   </span>
-                  <h4 className="font-display font-black text-2xl text-white leading-tight my-0">
-                    Aprende a dominar {comp.ctaCourseSlug === "python" ? "Python" : comp.ctaCourseSlug === "sql-server" ? "SQL Server" : "Power BI"} de forma práctica
+                  <h4 className="font-display my-0 text-2xl font-black leading-tight text-white">
+                    {slug === "power-bi-vs-excel"
+                      ? "¿Eres particular? Curso Power BI en vivo Chile"
+                      : `Aprende a dominar ${comp.ctaCourseSlug === "python" ? "Python" : comp.ctaCourseSlug === "sql-server" ? "SQL Server" : "Power BI"} de forma práctica`}
                   </h4>
-                  <p className="text-slate-300 text-sm sm:text-base leading-relaxed my-0">
-                    {relatedCourse.shortDescription} Programa en vivo con soporte de instructores y proyectos finales para tu portafolio corporativo.
+                  <p className="my-0 text-sm leading-relaxed text-slate-300 sm:text-base">
+                    {slug === "power-bi-vs-excel"
+                      ? "Formación individual, distinta al Pack empresas. Cupos abiertos — consulta fecha."
+                      : `${relatedCourse.shortDescription} Programa en vivo con soporte de instructores.`}
                   </p>
                 </div>
 
