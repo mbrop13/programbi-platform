@@ -40,7 +40,7 @@ export function CommissionPaidEmail({
             {amountLabel}
           </Text>
           <Text style={p}>
-            Transferimos tu 15% por el Pack de {prospectCompany}. Referencia: {paymentRef}.
+            Transferimos tu 15% por la venta de {prospectCompany}. Referencia: {paymentRef}.
             Clawback 60 días si hay nota de crédito.
           </Text>
           <Section style={{ marginTop: 24 }}>

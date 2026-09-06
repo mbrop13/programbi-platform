@@ -84,7 +84,7 @@ export async function notifyStatusChange(params: {
   });
   const subject =
     params.status === "won"
-      ? `Pack cerrado: ${params.prospectCompany} — comisión 15% generada`
+      ? `Venta cerrada: ${params.prospectCompany} — comisión 15% generada`
       : `Intro calificada: ${params.prospectName} · ${params.prospectCompany}`;
   await sendHtml({
     to: params.referrerEmail,
@@ -108,7 +108,7 @@ export async function notifyCommissionPaid(params: {
     toName: params.referrerName,
     subject: `Comisión pagada: ${formatClp(params.amountClp)}`,
     html,
-    text: `Hola ${params.referrerName}, transferimos ${formatClp(params.amountClp)} por el Pack de ${params.prospectCompany}. Ref: ${params.paymentRef}.`,
+    text: `Hola ${params.referrerName}, transferimos ${formatClp(params.amountClp)} por la venta de ${params.prospectCompany}. Ref: ${params.paymentRef}.`,
   });
 }
 

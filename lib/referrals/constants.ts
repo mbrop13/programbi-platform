@@ -1,5 +1,3 @@
-import { PACK } from "@/lib/data/pack-adopcion";
-
 export const REFERRAL_COMMISSION_PERCENT = 15;
 export const REFERRAL_CLAWBACK_DAYS = 60;
 export const REFERRAL_INTRO_DAILY_LIMIT = 5;
@@ -7,9 +5,10 @@ export const REFERRAL_COOKIE_NAME = "pb_ref";
 export const REFERRAL_COOKIE_MAX_AGE_SECONDS = 90 * 24 * 60 * 60;
 export const REFERRAL_CODE_PREFIX = "PB";
 
-export const REFERRAL_TICKET_MIN_CLP = PACK.priceMinClp;
-export const REFERRAL_TICKET_MAX_CLP = PACK.priceMaxClp;
-export const REFERRAL_TICKET_DEFAULT_CLP = PACK.priceFromClp;
+/** Slider de ejemplo: rango de cursos abiertos publicados. */
+export const REFERRAL_TICKET_MIN_CLP = 199_000;
+export const REFERRAL_TICKET_MAX_CLP = 498_000;
+export const REFERRAL_TICKET_DEFAULT_CLP = 249_000;
 
 export const REFERRER_TYPES = ["alumni", "client", "partner", "other"] as const;
 export const REFERRER_STATUSES = ["pending", "active", "suspended"] as const;

@@ -22,7 +22,7 @@ function wrap(title: string, body: string): string {
         <tr><td style="padding:28px 36px 32px;font-size:15px;line-height:1.65;color:#5f5e59;">${body}</td></tr>
         <tr>
           <td style="padding:18px 36px;background:#f7f7f4;font-size:12px;color:#8c8b85;text-align:center;">
-            Comisión 15% del Pack Adopción, pagada al cobro. Clawback 60 días.<br/>
+            Comisión 15% de cursos y capacitaciones a empresas, pagada al cobro. Clawback 60 días.<br/>
             <a href="${SITE_URL}/referidos/app" style="color:#0f7a4d;text-decoration:none;">Abrir panel</a>
             · <a href="${SITE_URL}/referidos/terminos" style="color:#0f7a4d;text-decoration:none;">Reglas</a>
           </td>
@@ -120,7 +120,7 @@ export async function renderCommissionPaidEmail(params: {
     return wrap(
       "Comisión pagada",
       `<p>Hola ${escapeHtml(params.referrerName)},</p>
-       <p>Transferimos <strong style="color:#0f7a4d;font-size:20px;">${formatClp(params.amountClp)}</strong> por el Pack de ${escapeHtml(params.prospectCompany)}.</p>
+       <p>Transferimos <strong style="color:#0f7a4d;font-size:20px;">${formatClp(params.amountClp)}</strong> por la venta de ${escapeHtml(params.prospectCompany)}.</p>
        <p>Referencia: ${escapeHtml(params.paymentRef)}. Clawback 60 días si hay nota de crédito.</p>
        ${cta(`${SITE_URL}/referidos/app/comisiones`, "Ver comisiones")}`
     );
@@ -139,14 +139,14 @@ export async function renderWelcomeReferrerEmail(params: {
         name: params.name,
         code: params.code,
         panelUrl: `${SITE_URL}/referidos/app`,
-        trackUrl: `${SITE_URL}/empresas?ref=${encodeURIComponent(params.code)}`,
+        trackUrl: `${SITE_URL}/cursos?ref=${encodeURIComponent(params.code)}`,
       })
     );
   } catch {
     return wrap(
       "Tu cuenta de referidor está lista",
       `<p>Hola ${escapeHtml(params.name)},</p>
-       <p>Ya puedes enviar intros de Controllers / Control de Gestión con dolor Excel. Nosotros vendemos y entregamos el Pack; tú cobras 15% al cierre.</p>
+       <p>Ya puedes invitar a un amigo a un curso o a una empresa a una capacitación. Nosotros cerramos; tú cobras 15% al cobro.</p>
        <p>Tu código (opcional, 90 días en cookie): <strong>${escapeHtml(params.code)}</strong></p>
        ${cta(`${SITE_URL}/referidos/app/nueva`, "Enviar primera intro")}`
     );

@@ -20,17 +20,18 @@ export function CommissionCalculator() {
 
   return (
     <div className="rounded-2xl border border-line bg-paper p-6 sm:p-8">
-      <p className="font-mono text-[11px] tracking-[0.18em] text-faint uppercase">calculadora</p>
+      <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">Calculadora</p>
       <h3 className="mt-2 text-xl font-semibold tracking-tight sm:text-2xl">
-        Ticket del Pack → tu 15%
+        Ejemplo con un curso → tu 15%
       </h3>
       <p className="mt-2 max-w-md text-sm text-mute">
-        Rango referencial {formatClp(REFERRAL_TICKET_MIN_CLP)}–{formatClp(REFERRAL_TICKET_MAX_CLP)}{" "}
-        / área. Comisión = entero inferior del 15% del neto cobrado.
+        Rango de cursos abiertos {formatClp(REFERRAL_TICKET_MIN_CLP)}–{formatClp(REFERRAL_TICKET_MAX_CLP)}.
+        Comisión = entero inferior del 15% del neto cobrado. En empresas, la misma fórmula sobre la
+        factura de la capacitación.
       </p>
 
       <label className="mt-8 block text-sm font-medium" htmlFor="ticket-slider">
-        Valor neto cobrado del Pack
+        Valor neto cobrado
       </label>
       <input
         id="ticket-slider"
@@ -52,12 +53,12 @@ export function CommissionCalculator() {
       </div>
 
       <div className="mt-8 rounded-xl border border-line bg-canvas px-5 py-5">
-        <p className="font-mono text-[11px] tracking-wide text-faint">floor(neto × 0.15)</p>
+        <p className="text-[11px] tracking-wide text-faint">Tu 15%</p>
         <p className="mt-1 text-4xl font-bold tracking-tight text-ink sm:text-5xl">
           <NumberTicker value={commission} format={(n) => formatClp(n)} />
         </p>
         <p className="mt-2 text-xs text-mute">
-          Transferencia cuando ProgramBI cobra la factura / OC. Un Pack = una comisión.
+          Transferencia cuando ProgramBI cobra la factura. Una venta atribuida = una comisión.
         </p>
       </div>
     </div>

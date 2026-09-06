@@ -28,11 +28,11 @@ export function WelcomeReferrerEmail({ name, code, panelUrl, trackUrl }: Props) 
           <Heading style={h1}>Tu cuenta está lista</Heading>
           <Text style={p}>Hola {name},</Text>
           <Text style={p}>
-            Presentas un Controller / área con dolor Excel. Nosotros vendemos y entregamos el Pack
-            Adopción. Tú cobras 15% al cobro del primer Pack atribuido.
+            Invita a un amigo a un curso o a una empresa a una capacitación. Nosotros cerramos. Tú
+            cobras 15% al cobro de esa venta atribuida.
           </Text>
           <Text style={p}>
-            Código opcional (cookie 90 días en /empresas): <strong>{code}</strong>
+            Código opcional (cookie 90 días en /cursos o /empresas): <strong>{code}</strong>
           </Text>
           <Text style={{ ...p, fontSize: 13 }}>
             El código sugiere atribución. Una intro calificada la confirma el equipo.

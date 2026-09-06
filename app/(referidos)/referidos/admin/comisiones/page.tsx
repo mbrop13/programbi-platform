@@ -82,7 +82,7 @@ export default function AdminComisionesPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Referidor</TableHead>
-                <TableHead>Pack</TableHead>
+                <TableHead>Venta</TableHead>
                 <TableHead>Deal</TableHead>
                 <TableHead>15%</TableHead>
                 <TableHead>Estado</TableHead>

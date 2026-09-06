@@ -14,11 +14,11 @@ export const STATUS_LABELS: Record<ReferralStatus, string> = {
 
 export const STATUS_HELP: Record<ReferralStatus, string> = {
   submitted: "Recibimos tu intro. El equipo la revisa antes de calificarla.",
-  in_review: "ProgramBI está validando que el contacto encaje con el Pack.",
+  in_review: "ProgramBI está validando que el contacto encaje con un curso o una capacitación.",
   qualified: "Intro calificada: el prospecto entra al proceso comercial.",
-  diagnosis_scheduled: "Agendamos el diagnóstico de 30 min.",
-  proposal_sent: "Enviamos propuesta del Pack Adopción.",
-  won: "Pack cerrado y cobrado. Tu comisión 15% quedó generada.",
+  diagnosis_scheduled: "Agendamos la conversación con el contacto.",
+  proposal_sent: "Enviamos propuesta de curso o de capacitación a empresas.",
+  won: "Venta cerrada y cobrada. Tu comisión 15% quedó generada.",
   lost: "No avanzó. Puedes enviar otra intro cuando tengas un mejor fit.",
   paid: "Transferimos tu comisión.",
   clawback: "Nota de crédito / devolución dentro de 60 días.",

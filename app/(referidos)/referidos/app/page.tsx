@@ -14,7 +14,7 @@ export default function ReferrerDashboardPage() {
   const { loading, error, referrer, stats, referrals } = useReferralData();
   const recent = referrals.slice(0, 6);
   const track = referrer
-    ? `${SITE_URL}/empresas?ref=${encodeURIComponent(referrer.referral_code)}`
+    ? `${SITE_URL}/cursos?ref=${encodeURIComponent(referrer.referral_code)}`
     : "";
 
   return (
@@ -24,7 +24,7 @@ export default function ReferrerDashboardPage() {
           {referrer ? `Hola, ${referrer.name.split(" ")[0]}` : "Panel"}
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Intros, pipeline y el 15% cuando el Pack se cobra.
+          Intros, pipeline y el 15% cuando se cobra el curso o la capacitación.
         </p>
       </div>
       {error ? <p className="text-sm text-destructive">{error}</p> : null}
@@ -37,7 +37,7 @@ export default function ReferrerDashboardPage() {
           </p>
           <p className="mt-2 break-all font-mono text-xs">{track}</p>
           <p className="mt-2 text-xs text-muted-foreground">
-            Sugiere atribución si llenan el diagnóstico. Un admin confirma. No spamear.
+            También sirve en /empresas. Sugiere atribución; un admin confirma. No spamear.
           </p>
         </div>
       ) : null}
@@ -53,7 +53,7 @@ export default function ReferrerDashboardPage() {
           <EmptyState
             icon={Inbox}
             title="Aún no tienes intros — manda la primera"
-            description="Un Controller con dolor Excel es suficiente. Nosotros vendemos y entregamos el Pack."
+            description="Un amigo para un curso, o un equipo para una capacitación. Nosotros cerramos."
             actionHref="/referidos/app/nueva"
             actionLabel="Nueva intro"
           />

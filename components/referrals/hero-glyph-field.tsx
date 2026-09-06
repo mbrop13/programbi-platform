@@ -115,9 +115,6 @@ export function HeroGlyphField({ text = "15%", className }: Props) {
 
   return (
     <div className={cn("relative", className)} aria-hidden>
-      <span className="pointer-events-none absolute inset-0 flex items-center justify-center font-mono text-[clamp(4.5rem,18vw,9rem)] font-semibold leading-none text-ink/[0.04] select-none">
-        {text}
-      </span>
       <canvas ref={canvasRef} className="absolute inset-0 size-full" />
     </div>
   );

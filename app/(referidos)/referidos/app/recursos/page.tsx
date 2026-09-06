@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { PACK } from "@/lib/data/pack-adopcion";
 import { LINKEDIN_TEMPLATE, REFERRAL_FAQS, WHATSAPP_TEMPLATE } from "@/lib/referrals/copy";
 import { CopyBlock } from "@/components/referrals/app/copy-block";
 
@@ -11,22 +10,26 @@ export default function RecursosPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Recursos</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          One-pager del Pack y mensajes modelo. No prometas precios a nombre de ProgramBI.
+          Mensajes modelo para invitar a un curso o a una capacitación de empresa. No prometas
+          precios a nombre de ProgramBI.
         </p>
       </div>
 
       <section className="rounded-2xl border border-border bg-card p-5">
-        <h2 className="font-semibold">Pack Adopción BI</h2>
-        <p className="mt-2 text-sm text-muted-foreground">{PACK.headline}</p>
+        <h2 className="font-semibold">Qué puedes recomendar</h2>
         <ul className="mt-4 list-disc space-y-1 pl-5 text-sm">
-          <li>1–3 dashboards con datos del área + capacitación {PACK.trainingWeeks} semanas</li>
-          <li>{PACK.priceLabel} ({PACK.priceFromLabel})</li>
-          <li>Factura directa · diagnóstico {PACK.diagnosisMinutes} min</li>
-          <li>ICP: Controller / Control de Gestión / gerencia con dolor Excel</li>
+          <li>Cursos abiertos: Power BI, SQL, Python, Excel y más</li>
+          <li>Capacitación corporativa para un equipo o empresa</li>
+          <li>15% sobre el neto cobrado de esa venta atribuida</li>
         </ul>
-        <Link href="/empresas" className="mt-4 inline-block text-sm underline-offset-4 hover:underline">
-          Ver landing del Pack
-        </Link>
+        <div className="mt-4 flex gap-4 text-sm">
+          <Link href="/cursos" className="underline-offset-4 hover:underline">
+            Ver cursos
+          </Link>
+          <Link href="/empresas" className="underline-offset-4 hover:underline">
+            Ver empresas
+          </Link>
+        </div>
       </section>
 
       <CopyBlock title="WhatsApp" text={WHATSAPP_TEMPLATE} />

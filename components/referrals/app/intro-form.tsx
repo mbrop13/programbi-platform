@@ -74,7 +74,7 @@ export function IntroForm() {
         <Input
           id="prospectRole"
           required
-          placeholder="Controller, Control de Gestión…"
+          placeholder="Analista, jefe de área, amigo…"
           className="h-10"
           value={form.prospectRole}
           onChange={(e) => setForm({ ...form, prospectRole: e.target.value })}

@@ -6,9 +6,9 @@ Canonical siempre `https://www.programbi.com`. Titles y money pages: **[docs/seo
 
 Noindex selectivo de posts vanity (tokenizadas, GLM, SpaceX, etc.): **no aplicar noindex masivo** sin confirmación humana. El slider de `/blog` ya los deprioriza.
 
-## Referidos (Pack Adopción BI)
+## Referidos
 
-Programa interno de intros: 15% al cobro del primer Pack atribuido. Ver **[docs/referidos.md](docs/referidos.md)** (env, migración, flujo de pago, QA).
+Programa interno de intros: 15% al cobro de un curso o una capacitación a empresas. Ver **[docs/referidos.md](docs/referidos.md)**.
 
 ## Getting Started
 

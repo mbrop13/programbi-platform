@@ -53,7 +53,7 @@ export default function ComisionesPage() {
         <EmptyState
           icon={Wallet}
           title="Todavía no hay comisiones"
-          description="Aparecen cuando un Pack atribuido se cierra y se cobra."
+          description="Aparecen cuando un curso o una capacitación atribuida se cierra y se cobra."
           actionHref="/referidos/app/nueva"
           actionLabel="Enviar intro"
         />

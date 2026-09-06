@@ -1,6 +1,6 @@
 # Programa de referidos — ProgramBI
 
-Plataforma v1 integrada en www.programbi.com. Comisión: **15% del neto cobrado del primer Pack Adopción atribuido**. Pago al cobro. Clawback 60 días. Intros calificadas a mano (no afiliados abiertos).
+Plataforma v1 integrada en www.programbi.com. Comisión: **15% del neto cobrado** de un **curso abierto** o de una **capacitación a empresas** atribuida. Pago al cobro. Clawback 60 días. Intros calificadas a mano.
 
 No toca capacitaciones.programbi.cl.
 
@@ -38,7 +38,7 @@ El seed espera usuarios auth:
 4. Admin marca **pagada** con referencia de transferencia. El referidor la ve en `/referidos/app/comisiones`.
 5. Si hay NC/devolución ≤ 60 días: **clawback**.
 
-Un Pack = una comisión. Cookie `?ref=CODIGO` en `/empresas` dura 90 días y **sugiere** atribución; un admin confirma.
+Una venta atribuida = una comisión. Cookie `?ref=CODIGO` en `/cursos` o `/empresas` dura 90 días y **sugiere** atribución; un admin confirma.
 
 ## Rutas
 
@@ -55,7 +55,7 @@ Un Pack = una comisión. Cookie `?ref=CODIGO` en `/empresas` dura 90 días y **s
 ## QA checklist
 
 ### Desktop
-- [ ] `/referidos` hero, calculadora 15%, FAQ, navbar del sitio (sin toggle de tema)
+- [ ] `/referidos` hero de puntos, cursos + empresas, calculadora 15%, FAQ
 - [ ] Login/registro de la plataforma → panel (sin cuenta aparte)
 - [ ] Nueva intro aparece en lista referidor y cola admin
 - [ ] Admin won + monto → comisión 15%
