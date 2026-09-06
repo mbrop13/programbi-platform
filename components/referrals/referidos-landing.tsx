@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -18,10 +18,10 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PACK } from "@/lib/data/pack-adopcion";
 import { REFERRAL_FAQS } from "@/lib/referrals/copy";
+import { createClient } from "@/lib/supabase/client";
 import { CommissionCalculator } from "./commission-calculator";
 import { BorderBeam } from "./magic/border-beam";
 import { Particles } from "./magic/particles";
-import { ReferidosNav } from "./referidos-nav";
 
 const fade = {
   hidden: { opacity: 0, y: 16 },
@@ -30,8 +30,7 @@ const fade = {
 
 export function ReferidosLanding() {
   return (
-    <div className="min-h-dvh bg-background text-foreground">
-      <ReferidosNav />
+    <div className="bg-canvas text-ink">
       <Hero />
       <How />
       <PackBlock />
@@ -40,13 +39,54 @@ export function ReferidosLanding() {
       <Rules />
       <Faq />
       <FinalCta />
-      <footer className="border-t border-border px-4 py-8 text-center text-xs text-muted-foreground">
-        ProgramBI SPA · Chile · Factura directa ·{" "}
-        <Link href="/referidos/terminos" className="underline-offset-2 hover:underline">
-          Términos del programa
-        </Link>
-      </footer>
     </div>
+  );
+}
+
+function PlatformAuthCtas({
+  variant = "hero",
+}: {
+  variant?: "hero" | "final";
+}) {
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data }) => {
+      setLoggedIn(Boolean(data.session));
+    });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setLoggedIn(Boolean(session));
+    });
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const primary =
+    variant === "final"
+      ? cn(
+          buttonVariants({ size: "lg" }),
+          "h-11 bg-background px-5 text-foreground no-underline hover:bg-background/90"
+        )
+      : cn(buttonVariants({ size: "lg" }), "h-11 px-5 no-underline");
+  const secondary =
+    variant === "final"
+      ? "inline-flex h-11 items-center justify-center px-5 text-sm text-background/80 no-underline hover:text-background"
+      : cn(buttonVariants({ variant: "outline", size: "lg" }), "h-11 px-5 no-underline");
+
+  return (
+    <>
+      <Link href="/referidos/app" className={primary}>
+        {loggedIn ? "Entrar al panel" : "Entrar con mi cuenta"}
+        <ArrowRight className="size-4" />
+      </Link>
+      {loggedIn ? null : (
+        <Link href="/registro?from=/referidos&next=/referidos/app" className={secondary}>
+          Crear cuenta ProgramBI
+        </Link>
+      )}
+    </>
   );
 }
 
@@ -70,23 +110,8 @@ function Hero() {
           <p className="mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             Presentas un Controller / área con dolor Excel. Nosotros vendemos y entregamos. Tú cobras al cierre.
           </p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/referidos/registro"
-              className={cn(buttonVariants({ size: "lg" }), "h-11 px-5 no-underline")}
-            >
-              Crear cuenta
-              <ArrowRight className="size-4" />
-            </Link>
-            <Link
-              href="/referidos/login"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "lg" }),
-                "h-11 px-5 no-underline"
-              )}
-            >
-              Iniciar sesión
-            </Link>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <PlatformAuthCtas />
           </div>
           <ul className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground">
             <li className="flex items-center gap-1.5">
@@ -382,24 +407,10 @@ function FinalCta() {
           Si conoces un área ahogada en Excel, esa intro vale 15%.
         </h2>
         <p className="mt-3 max-w-xl text-sm text-background/70">
-          Crea tu cuenta. Manda la primera intro. El resto lo hacemos nosotros.
+          Usa tu cuenta de ProgramBI. Manda la primera intro. El resto lo hacemos nosotros.
         </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Link
-            href="/referidos/registro"
-            className={cn(
-              buttonVariants({ size: "lg" }),
-              "h-11 bg-background px-5 text-foreground no-underline hover:bg-background/90"
-            )}
-          >
-            Crear cuenta
-          </Link>
-          <Link
-            href="/referidos/login"
-            className="inline-flex h-11 items-center justify-center px-5 text-sm text-background/80 no-underline hover:text-background"
-          >
-            Ya tengo cuenta →
-          </Link>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <PlatformAuthCtas variant="final" />
         </div>
       </div>
     </section>

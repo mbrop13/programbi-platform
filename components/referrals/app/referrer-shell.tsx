@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Plus,
@@ -9,11 +9,9 @@ import {
   Wallet,
   UserRound,
   BookOpen,
-  LogOut,
   Menu,
 } from "lucide-react";
 import { useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import type { Referrer } from "@/lib/referrals/types";
@@ -38,14 +36,7 @@ export function ReferrerShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
   const [open, setOpen] = useState(false);
-
-  const signOut = async () => {
-    await createClient().auth.signOut();
-    router.push("/referidos");
-    router.refresh();
-  };
 
   const nav = (
     <nav className="flex flex-1 flex-col gap-1 p-3">
@@ -72,20 +63,19 @@ export function ReferrerShell({
         );
       })}
       <div className="mt-auto pt-6">
-        <button
-          type="button"
-          onClick={signOut}
-          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-muted hover:text-foreground"
+        <Link
+          href="/comunidad/inicio"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground no-underline hover:bg-muted hover:text-foreground"
         >
-          <LogOut className="size-4" />
-          Salir
-        </button>
+          <LayoutDashboard className="size-4" />
+          Campus
+        </Link>
       </div>
     </nav>
   );
 
   return (
-    <div className="min-h-dvh bg-background">
+    <div className="min-h-[calc(100dvh-72px)] bg-canvas">
       <div className="flex min-h-dvh">
         <aside className="hidden w-60 shrink-0 border-r border-border md:flex md:flex-col">
           <div className="flex h-14 items-center gap-2 border-b border-border px-4">

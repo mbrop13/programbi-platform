@@ -16,6 +16,7 @@ import {
   Settings,
   LifeBuoy,
   ShieldAlert,
+  Handshake,
 } from "lucide-react";
 import { getGroupedCourses } from "@/lib/data/courses";
 import { createClient } from "@/lib/supabase/client";
@@ -28,7 +29,6 @@ import { isCurrentUserAdmin } from "@/lib/supabase/comunidad";
 const navLinks = [
   { href: "/cursos", label: "Ver Cursos", hasMega: true },
   { href: "/empresas", label: "Empresas" },
-  { href: "/referidos", label: "Referidos" },
   { href: "/empleos", label: "Empleos" },
   { href: "/comunidad", label: "Comunidad" },
   { href: "/blog", label: "Blog" },
@@ -380,6 +380,13 @@ export default function Navbar() {
                           <LayoutDashboard className="h-4 w-4 text-mute" />
                           Comunidad
                         </Link>
+                        <Link
+                          href="/referidos/app"
+                          className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-ink no-underline hover:bg-surface"
+                        >
+                          <Handshake className="h-4 w-4 text-mute" />
+                          Referidos
+                        </Link>
                         <button
                           type="button"
                           onClick={() => {
@@ -579,6 +586,13 @@ export default function Navbar() {
                       className="py-3 text-lg font-medium text-ink no-underline"
                     >
                       Campus
+                    </Link>
+                    <Link
+                      href="/referidos/app"
+                      onClick={() => setIsMobileOpen(false)}
+                      className="py-3 text-lg font-medium text-ink no-underline"
+                    >
+                      Referidos
                     </Link>
                     <button
                       type="button"

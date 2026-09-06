@@ -15,7 +15,7 @@ export default async function ReferrerAppLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/referidos/login?next=/referidos/app");
+  if (!user) redirect("/login?next=/referidos/app");
 
   const { data: profile } = await supabase
     .from("profiles")

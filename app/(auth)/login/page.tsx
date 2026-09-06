@@ -7,6 +7,12 @@ import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, LogIn, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { persistRegistrationSource } from "@/lib/registration-source";
+import { safeNextPath } from "@/lib/auth/safe-next";
+
+function getNextPath(): string {
+  if (typeof window === "undefined") return "/comunidad/inicio";
+  return safeNextPath(new URLSearchParams(window.location.search).get("next"));
+}
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -42,8 +48,9 @@ export default function LoginPage() {
         return;
       }
 
+      const next = getNextPath();
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      if (user && !next.startsWith("/referidos")) {
         const { data: managerRecord } = await supabase
           .from("organization_managers")
           .select("organization_id")
@@ -57,7 +64,7 @@ export default function LoginPage() {
         }
       }
 
-      router.push("/comunidad/inicio");
+      router.push(next);
       router.refresh();
     } catch (err) {
       setError("Ocurrió un error inesperado al iniciar sesión.");
@@ -73,7 +80,7 @@ export default function LoginPage() {
       const supabase = createClient();
       const registrationSource = persistRegistrationSource();
       const callbackParams = new URLSearchParams({
-        next: "/comunidad/inicio",
+        next: getNextPath(),
         reg_source: registrationSource,
       });
 

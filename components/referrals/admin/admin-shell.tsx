@@ -13,7 +13,7 @@ const NAV = [
 export function AdminShell({ email, children }: { email: string; children: React.ReactNode }) {
   const pathname = usePathname();
   return (
-    <div className="min-h-dvh bg-background">
+    <div className="min-h-[calc(100dvh-72px)] bg-canvas">
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-3 px-4 py-3 sm:px-6">
           <Link href="/referidos/admin" className="text-sm font-semibold no-underline">

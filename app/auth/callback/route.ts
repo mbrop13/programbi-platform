@@ -3,12 +3,13 @@ import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { sendNewMemberNotification } from '@/lib/email/mailersend'
 import { VARIANT_COOKIE, isPricingVisibilityVariant } from '@/lib/experiments/config'
+import { safeNextPath } from '@/lib/auth/safe-next'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   const nextParam = searchParams.get('next')
-  const next = (nextParam && nextParam !== '/') ? nextParam : '/comunidad/inicio'
+  const next = safeNextPath(nextParam)
   const regSource = searchParams.get('reg_source')
 
   if (code) {

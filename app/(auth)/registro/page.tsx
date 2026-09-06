@@ -13,10 +13,16 @@ import {
   readRegistrationSource,
 } from "@/lib/registration-source";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
+import { safeNextPath } from "@/lib/auth/safe-next";
 
 function getFromQueryParam(): string | null {
   if (typeof window === "undefined") return null;
   return new URLSearchParams(window.location.search).get("from");
+}
+
+function getNextPath(): string {
+  if (typeof window === "undefined") return "/comunidad/inicio";
+  return safeNextPath(new URLSearchParams(window.location.search).get("next"));
 }
 
 export default function RegistroPage() {
@@ -57,7 +63,7 @@ export default function RegistroPage() {
           : readRegistrationSource() || "/registro"
       );
       const callbackParams = new URLSearchParams({
-        next: "/comunidad/inicio",
+        next: getNextPath(),
         reg_source: registrationSource,
       });
 
@@ -141,7 +147,7 @@ export default function RegistroPage() {
             registration_source: registrationSource,
             ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent("/comunidad/inicio")}&reg_source=${encodeURIComponent(registrationSource)}`,
+          emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(getNextPath())}&reg_source=${encodeURIComponent(registrationSource)}`,
         },
       });
 
@@ -161,7 +167,12 @@ export default function RegistroPage() {
           .eq("id", data.user.id);
       }
 
-      router.push("/login?registered=true");
+      const next = getNextPath();
+      const loginUrl =
+        next === "/comunidad/inicio"
+          ? "/login?registered=true"
+          : `/login?registered=true&next=${encodeURIComponent(next)}`;
+      router.push(loginUrl);
     } catch (err) {
       setError("Ocurrió un error inesperado al registrar su cuenta.");
     } finally {

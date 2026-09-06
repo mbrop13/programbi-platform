@@ -64,7 +64,7 @@ export async function proxy(request: NextRequest) {
     return attachReferralCookie(request, NextResponse.redirect(new URL('/login', request.url)))
   }
   if (!hasSession && isReferidosApp) {
-    const login = new URL('/referidos/login', request.url)
+    const login = new URL('/login', request.url)
     login.searchParams.set('next', pathname)
     return attachReferralCookie(request, NextResponse.redirect(login))
   }

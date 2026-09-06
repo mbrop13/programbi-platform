@@ -1,16 +1,14 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
-import { ReferidosLogin } from "@/components/referrals/auth-card";
+import { redirect } from "next/navigation";
+import { safeNextPath } from "@/lib/auth/safe-next";
 
-export const metadata: Metadata = {
-  title: "Iniciar sesión · Referidos",
-  robots: { index: false, follow: false },
-};
+export const metadata = { robots: { index: false, follow: false } };
 
-export default function Page() {
-  return (
-    <Suspense>
-      <ReferidosLogin />
-    </Suspense>
-  );
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
+  const dest = safeNextPath(next, "/referidos/app");
+  redirect(`/login?next=${encodeURIComponent(dest)}`);
 }

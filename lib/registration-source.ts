@@ -135,6 +135,7 @@ export function formatRegistrationSource(source: string | null | undefined): str
   if (path.startsWith("/gran-partido")) return "Gran Partido";
   if (path.startsWith("/webinar")) return "Webinar";
   if (path.startsWith("/pago")) return "Pago";
+  if (path.startsWith("/referidos")) return "Referidos";
   if (path.startsWith("/versus")) return "Versus";
   if (path.startsWith("/casos")) return "Casos";
   if (path.startsWith("/faq")) return "FAQ";

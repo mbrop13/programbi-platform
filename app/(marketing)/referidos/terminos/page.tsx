@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ReferidosNav } from "@/components/referrals/referidos-nav";
 import { PACK } from "@/lib/data/pack-adopcion";
 import { REFERRAL_CLAWBACK_DAYS, REFERRAL_COMMISSION_PERCENT } from "@/lib/referrals/constants";
 
@@ -13,8 +12,7 @@ export const metadata: Metadata = {
 
 export default function TerminosReferidosPage() {
   return (
-    <div className="min-h-dvh bg-background">
-      <ReferidosNav />
+    <div className="bg-canvas">
       <article className="mx-auto max-w-2xl px-4 py-16 sm:px-6">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           Programa de referidos
@@ -65,8 +63,8 @@ export default function TerminosReferidosPage() {
         </Section>
         <Section title="7. Cuenta">
           <p>
-            Por defecto la cuenta queda activa. ProgramBI puede suspender abuso, intros falsas o conflicto
-            de interés. Email verificado requerido.
+            Se usa la misma cuenta de ProgramBI (login / registro del sitio). Al entrar al panel se activa
+            el perfil de referidor. ProgramBI puede suspender abuso, intros falsas o conflicto de interés.
           </p>
         </Section>
         <Section title="8. Independencia">
@@ -83,8 +81,11 @@ export default function TerminosReferidosPage() {
         </Section>
 
         <div className="mt-12 flex gap-3 text-sm">
-          <Link href="/referidos/registro" className="underline-offset-4 hover:underline">
-            Crear cuenta
+          <Link
+            href="/login?next=/referidos/app"
+            className="underline-offset-4 hover:underline"
+          >
+            Entrar con mi cuenta
           </Link>
           <Link href="/referidos" className="text-muted-foreground underline-offset-4 hover:underline">
             Volver

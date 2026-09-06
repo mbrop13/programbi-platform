@@ -44,16 +44,19 @@ Un Pack = una comisión. Cookie `?ref=CODIGO` en `/empresas` dura 90 días y **s
 
 | Ruta | Quién |
 | --- | --- |
-| `/referidos` | Landing |
-| `/referidos/registro` `/login` `/terminos` | Público |
-| `/referidos/app/*` | Referidor (auth) |
+| `/referidos` | Landing (navbar/footer del sitio; no está en el menú público) |
+| `/referidos/terminos` | Público |
+| `/login?next=/referidos/app` `/registro?from=/referidos` | Misma cuenta de la plataforma |
+| `/referidos/app/*` | Referidor (sesión ProgramBI; se crea el perfil al entrar) |
 | `/referidos/admin/*` | Admin ProgramBI |
+
+`/referidos/login` y `/referidos/registro` redirigen al login/registro normal.
 
 ## QA checklist
 
 ### Desktop
-- [ ] `/referidos` hero, calculadora 15%, FAQ, light/dark
-- [ ] Registro + verificación / login → panel
+- [ ] `/referidos` hero, calculadora 15%, FAQ, navbar del sitio (sin toggle de tema)
+- [ ] Login/registro de la plataforma → panel (sin cuenta aparte)
 - [ ] Nueva intro aparece en lista referidor y cola admin
 - [ ] Admin won + monto → comisión 15%
 - [ ] Admin pagada → referidor ve “Pagada”
@@ -67,7 +70,7 @@ Un Pack = una comisión. Cookie `?ref=CODIGO` en `/empresas` dura 90 días y **s
 - [ ] Admin: tabla scrollea / kanban horizontal
 
 ### Seguridad
-- [ ] Sin sesión, `/referidos/app` redirige a login
+- [ ] Sin sesión, `/referidos/app` redirige a `/login?next=/referidos/app`
 - [ ] No-admin no entra a `/referidos/admin`
 - [ ] Datos bancarios no salen en logs
 - [ ] Rate limit 5 intros/día

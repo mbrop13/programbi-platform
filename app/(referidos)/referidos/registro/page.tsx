@@ -1,11 +1,14 @@
-import type { Metadata } from "next";
-import { ReferidosRegistro } from "@/components/referrals/auth-card";
+import { redirect } from "next/navigation";
+import { safeNextPath } from "@/lib/auth/safe-next";
 
-export const metadata: Metadata = {
-  title: "Crear cuenta · Referidos",
-  description: "Únete al programa de referidos del Pack Adopción BI. 15% al cobro.",
-};
+export const metadata = { robots: { index: false, follow: false } };
 
-export default function Page() {
-  return <ReferidosRegistro />;
+export default async function Page({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
+  const { next } = await searchParams;
+  const dest = safeNextPath(next, "/referidos/app");
+  redirect(`/registro?from=/referidos&next=${encodeURIComponent(dest)}`);
 }

@@ -15,7 +15,7 @@ export default async function ReferralAdminLayout({
   const {
     data: { user },
   } = await supabase.auth.getUser();
-  if (!user) redirect("/referidos/login?next=/referidos/admin");
+  if (!user) redirect("/login?next=/referidos/admin");
   const admin = await isReferralAdmin(user.id);
   if (!admin) redirect("/referidos/app");
 
