@@ -44,7 +44,7 @@ export function HeroGlyphField({ text = "15%", className }: Props) {
       canvas.height = Math.floor(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      const cell = width < 480 ? 11 : width < 800 ? 10 : 9;
+      const cell = width < 480 ? 10 : width < 800 ? 9 : 8;
       const cols = Math.max(8, Math.floor(width / cell));
       const rows = Math.max(6, Math.floor(height / cell));
       const sample = sampleGlyph(text, cols, rows);
@@ -53,17 +53,15 @@ export function HeroGlyphField({ text = "15%", className }: Props) {
       for (let y = 0; y < rows; y++) {
         for (let x = 0; x < cols; x++) {
           const t = sample[y * cols + x] ?? 0;
-          const keepField = ((x * 13 + y * 7) % 5) !== 0;
-          if (t < 0.18 && !keepField) continue;
-          const glyph = t;
+          if (t < 0.22) continue;
           next.push({
             x: x * cell + cell / 2,
             y: y * cell + cell / 2,
-            r: glyph > 0.55 ? 2.6 : glyph > 0.22 ? 1.9 : 1.15,
+            r: t > 0.55 ? 2.8 : 2.1,
             phase: (x * 0.37 + y * 0.51) % (Math.PI * 2),
-            amp: glyph > 0.22 ? 3.2 : 5.5,
-            speed: 0.7 + ((x + y) % 5) * 0.12,
-            glyph,
+            amp: 1.6,
+            speed: 0.28 + ((x + y) % 5) * 0.04,
+            glyph: t,
           });
         }
       }
@@ -73,7 +71,7 @@ export function HeroGlyphField({ text = "15%", className }: Props) {
     const draw = (now: number) => {
       if (!started) started = now;
       const t = (now - started) / 1000;
-      const boot = reduce ? 1 : Math.min(1, t / 0.9);
+      const boot = reduce ? 1 : Math.min(1, t / 1.4);
 
       ctx.clearRect(0, 0, width, height);
       ctx.fillStyle = "#000000";
@@ -84,24 +82,24 @@ export function HeroGlyphField({ text = "15%", className }: Props) {
         let r = d.r * boot;
 
         if (!reduce) {
-          const wave = Math.sin(t * 1.15 + d.x * 0.018 + d.y * 0.014);
+          const wave = Math.sin(t * 0.45 + d.x * 0.012 + d.y * 0.01);
           const orbit = t * d.speed + d.phase;
-          px += Math.cos(orbit) * d.amp * (0.45 + d.glyph * 0.2);
-          py += Math.sin(orbit * 0.85) * d.amp * 0.7 + wave * 3.4;
-          r *= 0.82 + (0.28 + d.glyph * 0.12) * (0.5 + 0.5 * Math.sin(t * 2.1 + d.phase));
+          px += Math.cos(orbit) * d.amp * 0.55;
+          py += Math.sin(orbit * 0.9) * d.amp * 0.45 + wave * 1.1;
+          r *= 0.94 + 0.08 * Math.sin(t * 0.7 + d.phase);
 
           if (mouse.on) {
             const dx = px - mouse.x;
             const dy = py - mouse.y;
             const dist = Math.hypot(dx, dy) || 1;
-            const push = Math.max(0, 1 - dist / 140) ** 2 * 28;
+            const push = Math.max(0, 1 - dist / 160) ** 2 * 10;
             px += (dx / dist) * push;
             py += (dy / dist) * push;
           }
         }
 
         ctx.beginPath();
-        ctx.arc(px, py, Math.max(0.7, r), 0, Math.PI * 2);
+        ctx.arc(px, py, Math.max(1.1, r), 0, Math.PI * 2);
         ctx.fill();
       }
 
