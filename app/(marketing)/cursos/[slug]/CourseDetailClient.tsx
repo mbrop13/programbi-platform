@@ -32,10 +32,8 @@ import { useCountry } from "@/lib/context/CountryContext";
 import {
   trackCourseView,
   trackCtaClick,
-  trackExperimentImpression,
   trackWhatsAppClick,
 } from "@/lib/analytics/marketing";
-import { usePricingVisibility } from "@/lib/experiments/useExperiment";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 
 function courseCheckoutUrl(slug: string, levelName?: string) {
@@ -64,9 +62,8 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const { variant, ready: experimentReady } = usePricingVisibility();
-  const pricingReady = !checkingAuth && experimentReady;
-  const showPrice = isLoggedIn || variant === "direct";
+  const pricingReady = !checkingAuth;
+  const showPrice = isLoggedIn;
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [isFreeTrial, setIsFreeTrial] = useState(false);
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
@@ -128,11 +125,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   useEffect(() => {
     trackCourseView(course.slug, course.title);
   }, [course.slug, course.title]);
-
-  useEffect(() => {
-    if (checkingAuth || isLoggedIn || !variant) return;
-    trackExperimentImpression(variant, course.slug);
-  }, [checkingAuth, isLoggedIn, variant, course.slug]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -551,11 +543,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         defaultTab="register"
-        redirectUrl={
-          variant === "direct"
-            ? courseCheckoutUrl(course.slug, activeLevel?.name)
-            : `/cursos/${course.slug}`
-        }
+        redirectUrl={`/cursos/${course.slug}`}
       />
     </>
   );

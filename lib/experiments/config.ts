@@ -4,8 +4,8 @@
  * Kill switch / rollout via Vercel env:
  *   NEXT_PUBLIC_EXP_PRICING_VISIBILITY=off|gate|direct|split
  *
- * Default is split 50/50. off|gate = everyone sees the lock (rollback).
- * direct = everyone sees the price (winner).
+ * Default is gate — precio oculto hasta registrarse. El split 50/50 quedó cerrado.
+ * off|gate = everyone sees the lock. direct = everyone sees the price.
  */
 
 export const PRICING_VISIBILITY_EXPERIMENT_ID = "pricing_visibility";
@@ -33,9 +33,9 @@ export function isPricingVisibilityVariant(value: string | null | undefined): va
 }
 
 export function getPricingVisibilityMode(): PricingVisibilityMode {
-  const raw = (process.env.NEXT_PUBLIC_EXP_PRICING_VISIBILITY || "split").trim().toLowerCase();
+  const raw = (process.env.NEXT_PUBLIC_EXP_PRICING_VISIBILITY || "gate").trim().toLowerCase();
   if (raw === "split" || raw === "gate" || raw === "direct" || raw === "off") return raw;
-  return "split";
+  return "gate";
 }
 
 export function formatPricingVariant(variant: string | null | undefined): string {

@@ -96,11 +96,10 @@ export default function PricingExperimentCard() {
   return (
     <section className="rounded-3xl border border-neutral-100 bg-neutral-50 p-5 sm:p-6">
       <div className="mb-4">
-        <h3 className="text-base font-black text-neutral-900">Experimento de precio: 50% / 50%</h3>
+        <h3 className="text-base font-black text-neutral-900">Experimento de precio (cerrado)</h3>
         <p className="mt-1 text-xs font-semibold leading-relaxed text-neutral-500">
-          No son las primeras 50 personas. Cada visita nueva tiene 50% de probabilidad de ver el candado o el
-          precio. Si la misma persona vuelve, ve lo mismo. En los dos casos el registro y el pago se guardan, y
-          aquí se comparan leads y ventas de cada opción.
+          El split 50/50 ya no está activo: todos los visitantes ven el candado hasta registrarse. Abajo quedan
+          los datos históricos de cada brazo.
         </p>
       </div>
 
@@ -116,14 +115,14 @@ export default function PricingExperimentCard() {
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Arm
-            title="Candado (50%)"
-            hint="Tienen que registrarse para ver el precio"
+            title="Candado"
+            hint="Se registraban para ver el precio"
             icon={Lock}
             counts={pick(stats, "gate")}
           />
           <Arm
-            title="Precio visible (50%)"
-            hint="Ven el valor y después se registran para pagar"
+            title="Precio visible"
+            hint="Veían el valor y se registraban para pagar"
             icon={Eye}
             counts={pick(stats, "direct")}
           />
