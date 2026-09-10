@@ -103,13 +103,15 @@ export async function getPosts(communityId: string = "default", limit: number = 
   }
 
   let likedPostIds: string[] = [];
-  if (user) {
+  const pageIds = (posts || []).map((p: { id: string }) => p.id);
+  if (user && pageIds.length > 0) {
     const { data: likes } = await supabase
       .from("post_likes")
       .select("post_id")
-      .eq("user_id", user.id);
+      .eq("user_id", user.id)
+      .in("post_id", pageIds);
     if (likes) {
-      likedPostIds = likes.map((l: any) => l.post_id);
+      likedPostIds = likes.map((l: { post_id: string }) => l.post_id);
     }
   }
 
@@ -152,7 +154,7 @@ export async function createPost(content: string, isQuestion: boolean = false, c
     throw new Error(error.message);
   }
 
-  revalidatePath("/(comunidad)", "layout");
+  revalidatePath("/comunidad/inicio");
 }
 
 export async function toggleLike(postId: string) {
@@ -187,7 +189,7 @@ export async function toggleLike(postId: string) {
     if (error) throw new Error(error.message);
   }
   
-  revalidatePath("/(comunidad)", "layout");
+  revalidatePath("/comunidad/inicio");
 }
 
 export async function addComment(postId: string, content: string) {
@@ -202,7 +204,7 @@ export async function addComment(postId: string, content: string) {
   });
 
   if (error) throw new Error(error.message);
-  revalidatePath("/(comunidad)", "layout");
+  revalidatePath("/comunidad/inicio");
 }
 
 // ------------------------------------------
@@ -812,7 +814,7 @@ export async function voteInPoll(postId: string, optionId: string) {
 
   if (updateError) throw new Error("Error al registrar voto: " + updateError.message);
 
-  revalidatePath("/(comunidad)", "layout");
+  revalidatePath("/comunidad/inicio");
 }
 
 /**
@@ -967,7 +969,7 @@ export async function deletePost(postId: string) {
     throw new Error(error.message);
   }
 
-  revalidatePath("/(comunidad)", "layout");
+  revalidatePath("/comunidad/inicio");
 }
 
 export async function updatePost(postId: string, newContent: string) {
@@ -1011,7 +1013,7 @@ export async function updatePost(postId: string, newContent: string) {
     throw new Error(error.message);
   }
 
-  revalidatePath("/(comunidad)", "layout");
+  revalidatePath("/comunidad/inicio");
 }
 
 export async function getCommunityPortalData() {

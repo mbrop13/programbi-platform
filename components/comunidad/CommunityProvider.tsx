@@ -46,9 +46,10 @@ export function useCommunity() {
 interface ServerData {
   isAdmin: boolean;
   userProfile: any;
-  enrollmentData: any;
-  orgData: any;
-  allCourses: any[];
+  enrollmentData?: any;
+  orgData?: any;
+  allCourses?: any[];
+  hasCourses?: boolean;
 }
 
 export function CommunityProvider({
@@ -76,6 +77,7 @@ export function CommunityProvider({
   const [enrollmentData, setEnrollmentData] = useState<any>(serverData?.enrollmentData || null);
   const [hasCourses, setHasCourses] = useState<boolean | null>(() => {
     if (!serverData) return null;
+    if (typeof serverData.hasCourses === "boolean") return serverData.hasCourses;
     const enrolls = Array.isArray(serverData.enrollmentData)
       ? serverData.enrollmentData
       : serverData.enrollmentData?.enrollments ?? [];
@@ -121,14 +123,9 @@ export function CommunityProvider({
     return "es";
   });
 
-  // Theme persistence
+  // v1 campus is light-only; do not toggle `html.dark` (it fights /ai theme).
   useEffect(() => {
     localStorage.setItem("comunidad-theme", theme);
-    if (theme === "oscuro") {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
   }, [theme]);
 
   useEffect(() => {
@@ -136,9 +133,7 @@ export function CommunityProvider({
   }, [language]);
 
   useEffect(() => {
-    return () => {
-      document.documentElement.classList.remove("dark");
-    };
+    document.documentElement.classList.remove("dark");
   }, []);
 
   // If no serverData was provided, do a client-side fallback load

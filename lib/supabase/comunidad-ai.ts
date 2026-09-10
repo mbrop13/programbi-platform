@@ -1191,7 +1191,7 @@ export async function getMyEnrollments() {
 
   const adminDb = createAdminClient();
 
-  const [enrollmentsRes, profileRes, isAdmin, publishedCoursesRes, allLessonsRes] = await Promise.all([
+  const [enrollmentsRes, profileRes, isAdmin, publishedCoursesRes] = await Promise.all([
     supabase
       .from("enrollments")
       .select("course_slug, status, access_type, enrolled_at")
@@ -1208,9 +1208,6 @@ export async function getMyEnrollments() {
       .select("id, slug")
       .eq("is_published", true)
       .eq("is_hidden", false),
-    adminDb
-      .from("lessons")
-      .select("course_id")
   ]);
 
   const dbEnrollments = enrollmentsRes.data || [];
@@ -1222,10 +1219,15 @@ export async function getMyEnrollments() {
 
   let data = [...dbEnrollments];
 
-  // Obtener únicamente los slugs de cursos verdaderamente publicados y que tienen al menos 1 lección creada
-  const validCourseIds = new Set((allLessonsRes.data || []).map((l: any) => l.course_id));
-  const validPublishedCourses = (publishedCoursesRes.data || []).filter((c: any) => validCourseIds.has(c.id));
-  const communitySlugs = validPublishedCourses.map((c: any) => c.slug);
+  // Count lessons only for published catalog courses — never scan the whole lessons table.
+  const publishedCourses = publishedCoursesRes.data || [];
+  const publishedIds = publishedCourses.map((c: { id: string }) => c.id);
+  const { data: publishedLessons } = publishedIds.length
+    ? await adminDb.from("lessons").select("course_id").in("course_id", publishedIds)
+    : { data: [] as { course_id: string }[] };
+  const validCourseIds = new Set((publishedLessons || []).map((l: { course_id: string }) => l.course_id));
+  const validPublishedCourses = publishedCourses.filter((c: { id: string }) => validCourseIds.has(c.id));
+  const communitySlugs = validPublishedCourses.map((c: { slug: string }) => c.slug);
 
   if (hasActiveSubscription || isOnTrial) {
     const requiredAccess = hasActiveSubscription ? "full" : "trial";

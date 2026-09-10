@@ -13,7 +13,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PRACTICE_UNITS } from "@/lib/practice/levels";
+import { PRACTICE_UNIT_META } from "@/lib/practice/catalog";
 import Confetti from "./Confetti";
 import ChromaVideo from "./ChromaVideo";
 
@@ -82,7 +82,7 @@ export default function OnboardingModal({
 
   if (!isOpen) return null;
 
-  const activeUnit = PRACTICE_UNITS.find((u) => u.id === selectedUnitId) || PRACTICE_UNITS[0];
+  const activeUnit = PRACTICE_UNIT_META.find((u) => u.id === selectedUnitId) || PRACTICE_UNIT_META[0];
   const activeGoal = DAILY_GOALS.find((g) => g.id === selectedGoalId) || DAILY_GOALS[1];
 
   const handleNext = () => {
@@ -94,7 +94,7 @@ export default function OnboardingModal({
       setShowConfetti(true);
       setStep(4);
     } else if (step === 4) {
-      onComplete(selectedUnitId || PRACTICE_UNITS[0].id, selectedGoalId || 20);
+      onComplete(selectedUnitId || PRACTICE_UNIT_META[0].id, selectedGoalId || 20);
     }
   };
 
@@ -175,7 +175,7 @@ export default function OnboardingModal({
                 exit={{ opacity: 0, y: -12 }}
                 className="space-y-3"
               >
-                {PRACTICE_UNITS.map((unit) => {
+                {PRACTICE_UNIT_META.map((unit) => {
                   const Icon = ICON_MAP[unit.icon] ?? Database;
                   const isSelected = unit.id === selectedUnitId;
                   return (
@@ -202,7 +202,7 @@ export default function OnboardingModal({
                             <span>{unit.title}</span>
                           </div>
                           <div className="text-xs text-text-muted mt-0.5">
-                            {unit.levels.length} lecciones interactivas
+                            {unit.levelCount} lecciones interactivas
                           </div>
                         </div>
                       </div>

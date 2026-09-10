@@ -150,7 +150,7 @@ export default function BusinessPortal() {
 
   // Remove Employee / Disassociate
   const handleRemoveMember = async (userId: string) => {
-    if (!confirm("¿Estás seguro de que deseas revocar el acceso a este colaborador de la suscripción corporativa? Sus progresos se mantendrán pero no se cobrará como cupo activo.")) {
+    if (!window.confirm("¿Revocar el acceso de este colaborador? Su progreso se mantiene.")) {
       return;
     }
     setRemovingMemberId(userId);
@@ -163,7 +163,7 @@ export default function BusinessPortal() {
         // Refresh stats
         loadDashboardData();
       } else {
-        alert("Error al remover colaborador");
+        window.alert("Error al remover colaborador");
       }
     } catch (e) {
       console.error(e);
@@ -174,7 +174,7 @@ export default function BusinessPortal() {
 
   // Cancel Pending Invitation
   const handleCancelInvitation = async (inviteId: string) => {
-    if (!confirm("¿Deseas cancelar esta invitación pendiente?")) {
+    if (!window.confirm("¿Cancelar esta invitación pendiente?")) {
       return;
     }
     setRemovingInviteId(inviteId);
@@ -185,7 +185,7 @@ export default function BusinessPortal() {
       if (res.ok) {
         setInvitations(invitations.filter(i => i.id !== inviteId));
       } else {
-        alert("Error al cancelar invitación");
+        window.alert("Error al cancelar invitación");
       }
     } catch (e) {
       console.error(e);
@@ -237,11 +237,11 @@ export default function BusinessPortal() {
 
   if (error) {
     return (
-      <div className="bg-red-50 text-red-700 p-8 rounded-3xl border border-red-100 max-w-2xl mx-auto text-center mt-12">
+      <div className="bg-red-50 text-red-700 p-8 rounded-xl border border-red-100 max-w-2xl mx-auto text-center mt-12">
         <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
         <h2 className="text-xl font-bold mb-2">Acceso No Autorizado</h2>
         <p className="text-sm mb-6">{error}</p>
-        <a href="/comunidad/inicio" className="bg-brand-blue text-white font-bold px-6 py-2.5 rounded-xl hover:bg-blue-600 transition-colors shadow-md">Volver al Inicio</a>
+        <a href="/comunidad/inicio" className="bg-foreground text-white font-bold px-6 py-2.5 rounded-xl hover:bg-blue-600 transition-colors shadow-md">Volver al Inicio</a>
       </div>
     );
   }
@@ -252,7 +252,7 @@ export default function BusinessPortal() {
     <div className="flex flex-col gap-8 w-full max-w-[1400px] mx-auto pb-12">
       
       {/* ─── BANNER DE BIENVENIDA EMPRESA ─── */}
-      <div className="relative bg-gradient-to-r from-slate-900 to-indigo-950 rounded-3xl p-6 sm:p-8 overflow-hidden shadow-md border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-6">
+      <div className="relative bg-surface rounded-xl p-6 sm:p-8 border border-border flex flex-col sm:flex-row items-center justify-between gap-6">
         <div className="relative z-10 flex items-center gap-4 text-center sm:text-left">
           <div className="w-16 h-16 rounded-2xl bg-white border border-slate-700 flex items-center justify-center p-2.5 shadow-sm shrink-0 mx-auto">
             {stats?.logoUrl ? (
@@ -262,10 +262,10 @@ export default function BusinessPortal() {
             )}
           </div>
           <div>
-            <h1 className="font-display font-black text-2xl sm:text-3xl text-white tracking-tight leading-none mb-1.5">
+            <h1 className="font-display font-semibold text-2xl sm:text-3xl text-foreground tracking-tight leading-none mb-1.5">
               Portal Corporativo — {stats?.orgName}
             </h1>
-            <p className="text-[13px] text-slate-400 font-medium">
+            <p className="text-[13px] text-muted-foreground font-medium">
               Gestiona el plan de capacitación, supervisa progresos y descarga reportes de tu equipo.
             </p>
           </div>
@@ -274,13 +274,13 @@ export default function BusinessPortal() {
         <div className="flex flex-wrap gap-3 shrink-0">
           <button 
             onClick={handleExportCSV}
-            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-semibold text-xs border border-white/10 hover:border-white/20 shadow-sm transition-all"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-bg hover:bg-muted text-foreground font-medium text-xs border border-border"
           >
             <FileSpreadsheet className="w-4 h-4 text-emerald-400" /> Exportar CSV
           </button>
           <button 
             onClick={() => setShowInviteModal(true)}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-blue hover:bg-blue-600 text-white font-black text-xs shadow-md shadow-brand-blue/20 transition-all"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-foreground text-background font-medium text-xs"
           >
             <Plus className="w-4 h-4" /> Agregar Colaborador
           </button>
@@ -296,7 +296,7 @@ export default function BusinessPortal() {
             <Users className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">
+            <div className="text-2xl font-semibold text-gray-900 tracking-tight leading-none mb-1">
               {stats?.metrics.totalMembers}
             </div>
             <div className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
@@ -311,7 +311,7 @@ export default function BusinessPortal() {
             <BookOpen className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">
+            <div className="text-2xl font-semibold text-gray-900 tracking-tight leading-none mb-1">
               {stats?.metrics.activeLearners}
             </div>
             <div className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
@@ -326,7 +326,7 @@ export default function BusinessPortal() {
             <Award className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">
+            <div className="text-2xl font-semibold text-gray-900 tracking-tight leading-none mb-1">
               {stats?.metrics.totalCertificates}
             </div>
             <div className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
@@ -341,7 +341,7 @@ export default function BusinessPortal() {
             <TrendingUp className="w-6 h-6" />
           </div>
           <div>
-            <div className="text-2xl font-black text-gray-900 tracking-tight leading-none mb-1">
+            <div className="text-2xl font-semibold text-gray-900 tracking-tight leading-none mb-1">
               {stats?.metrics.averageProgress}%
             </div>
             <div className="text-[11px] text-gray-400 font-bold uppercase tracking-wider">
@@ -356,7 +356,7 @@ export default function BusinessPortal() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* CHART: ACTIVIDAD DE ESTUDIO SEMANAL */}
-        <div className="lg:col-span-2 bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col gap-4">
+        <div className="lg:col-span-2 bg-white rounded-xl p-6 border border-gray-100 shadow-sm flex flex-col gap-4">
           <div>
             <h3 className="font-bold text-gray-900 text-sm">Horas de Estudio Semanales</h3>
             <p className="text-[11px] text-gray-400">Total de horas invertidas por el equipo de lunes a domingo.</p>
@@ -369,7 +369,7 @@ export default function BusinessPortal() {
               return (
                 <div key={dayData.day} className="flex flex-col items-center gap-2.5 w-10 group cursor-pointer">
                   {/* Tooltip on hover */}
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[10px] font-black px-2 py-1 rounded shadow absolute -translate-y-8 pointer-events-none">
+                  <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-slate-900 text-white text-[10px] font-semibold px-2 py-1 rounded shadow absolute -translate-y-8 pointer-events-none">
                     {dayData.hours} hrs
                   </div>
                   
@@ -392,7 +392,7 @@ export default function BusinessPortal() {
         </div>
 
         {/* DEPARTAMENTOS / AREAS DE LA EMPRESA */}
-        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm flex flex-col gap-4">
+        <div className="bg-white rounded-xl p-6 border border-gray-100 shadow-sm flex flex-col gap-4">
           <div>
             <h3 className="font-bold text-gray-900 text-sm">Avance por Área</h3>
             <p className="text-[11px] text-gray-400">Progreso promedio por departamento corporativo.</p>
@@ -410,7 +410,7 @@ export default function BusinessPortal() {
                   </div>
                   <div className="w-full h-2 bg-gray-50 rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-brand-blue rounded-full" 
+                      className="h-full bg-foreground rounded-full" 
                       style={{ width: `${dept.progress}%` }} 
                     />
                   </div>
@@ -424,7 +424,7 @@ export default function BusinessPortal() {
       </div>
 
       {/* ─── DIRECTORIO DE COLABORADORES ─── */}
-      <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
         
         {/* Filtros de Tabla */}
         <div className="p-5 border-b border-gray-50 flex flex-col sm:flex-row gap-4 items-center justify-between">
@@ -489,7 +489,7 @@ export default function BusinessPortal() {
                     <td className="py-4 px-6">
                       <div className="flex items-center gap-2.5 w-40">
                         <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-brand-blue rounded-full" style={{ width: `${m.avgProgress}%` }} />
+                          <div className="h-full bg-foreground rounded-full" style={{ width: `${m.avgProgress}%` }} />
                         </div>
                         <span className="font-bold text-gray-700 min-w-[28px] text-[11px]">{m.avgProgress}%</span>
                       </div>
@@ -517,7 +517,7 @@ export default function BusinessPortal() {
 
       {/* ─── SECCIÓN DE INVITACIONES PENDIENTES ─── */}
       {invitations.length > 0 && (
-        <div className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
           <div className="p-5 border-b border-gray-50">
             <h3 className="font-bold text-gray-900 text-sm">Invitaciones Pendientes</h3>
             <p className="text-[11px] text-gray-400">Usuarios que aún no registran su cuenta pero ya tienen su cupo corporativo asignado.</p>
@@ -580,10 +580,10 @@ export default function BusinessPortal() {
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden z-10"
+              className="relative w-full max-w-md bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-10"
             >
               <div className="p-6 border-b border-gray-50 flex justify-between items-center">
-                <h3 className="font-display font-black text-lg text-gray-900">Agregar Colaborador</h3>
+                <h3 className="font-display font-semibold text-lg text-gray-900">Agregar Colaborador</h3>
                 <button 
                   onClick={() => setShowInviteModal(false)}
                   className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-xl transition-all"
@@ -653,7 +653,7 @@ export default function BusinessPortal() {
                 <button 
                   type="submit"
                   disabled={submittingInvite}
-                  className="w-full bg-brand-blue hover:bg-blue-600 text-white font-black py-3 rounded-xl shadow-md transition-all mt-2 text-xs flex items-center justify-center gap-2"
+                  className="w-full bg-foreground hover:bg-blue-600 text-white font-semibold py-3 rounded-xl shadow-md transition-all mt-2 text-xs flex items-center justify-center gap-2"
                 >
                   {submittingInvite ? (
                     <Loader2 className="w-4 h-4 animate-spin" />

@@ -72,6 +72,21 @@ const nextConfig: NextConfig = {
         destination: "/empresas",
         permanent: true,
       },
+      {
+        source: "/comunidad/configuracion",
+        destination: "/comunidad/ajustes",
+        permanent: true,
+      },
+      {
+        source: "/comunidad/ai",
+        destination: "/ai",
+        permanent: true,
+      },
+      {
+        source: "/comunidad/ai/:path*",
+        destination: "/ai/:path*",
+        permanent: true,
+      },
     ];
   },
   async headers() {

@@ -42,7 +42,6 @@ import {
   addComment,
   isCurrentUserAdmin,
   getCurrentUserProfile,
-  getDashboardStats,
   voteInPoll,
   getCoursesAndLessons,
   deletePost,
@@ -91,22 +90,22 @@ const PRESET_IMAGES = [
 const GUIDE_STEPS = [
   {
     title: "¿Dónde están mis clases?",
-    description: "Tus especializaciones activas y tu progreso de aprendizaje se encuentran en la pestaña 'Mis Cursos' en el menú lateral.",
-    videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-    poster: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop"
+    description: "Tus cursos y tu progreso están en Cursos.",
+    href: "/comunidad/cursos",
+    cta: "Ir a Cursos",
   },
   {
-    title: "Clases en Vivo",
-    description: "Conéctate a las masterclasses semanales en vivo para resolver dudas complejas interactuando en directo con el profesor en la pestaña 'Clases en Vivo'.",
-    videoUrl: "https://www.w3schools.com/html/movie.mp4",
-    poster: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop"
+    title: "Clases en vivo",
+    description: "Conéctate a las masterclasses semanales en En Vivo.",
+    href: "/comunidad/live",
+    cta: "Ir a En Vivo",
   },
   {
     title: "Estudia con el Mentor IA",
-    description: "Encuentra respuestas rápidas de SQL, Python y visualización de datos chateando 24/7 con el Mentor de IA.",
-    videoUrl: "https://www.w3schools.com/html/mov_bbb.mp4",
-    poster: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=600&auto=format&fit=crop"
-  }
+    description: "Pregunta SQL, Python y visualización 24/7.",
+    href: "/ai",
+    cta: "Abrir Mentor IA",
+  },
 ];
 
 interface MuroFeedProps {
@@ -179,7 +178,9 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
   const [newPostContent, setNewPostContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isQuestionPost, setIsQuestionPost] = useState(false);
-  const [visibleCount, setVisibleCount] = useState(5);
+  const [visibleCount, setVisibleCount] = useState(10);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMorePosts, setHasMorePosts] = useState(true);
 
   // Rich Media States
   const [selectedMediaType, setSelectedMediaType] = useState<"text" | "image" | "video" | "poll">("text");
@@ -218,12 +219,8 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
   useEffect(() => {
     async function init() {
       try {
-        const [data, stats] = await Promise.all([
-          getPosts(),
-          getDashboardStats(),
-        ]);
+        const data = await getPosts("default", 10, 0);
         setPosts(data);
-        setDashStats(stats);
       } catch (err) {
         console.error("Failed fetching dashboard", err);
       } finally {
@@ -387,7 +384,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
         {/* Columna Principal (Feed) */}
         <div className="lg:col-span-8 space-y-6">
           {/* Compositor de Post (Esqueleto) */}
-          <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-5 space-y-4 shadow-sm">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl p-5 space-y-4 shadow-sm">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-zinc-800 shrink-0" />
               <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded-md w-1/3" />
@@ -405,7 +402,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
           {/* Listado de Posts (Esqueleto) */}
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-6 space-y-4 shadow-sm">
+              <div key={i} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl p-6 space-y-4 shadow-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gray-200 dark:bg-zinc-800 shrink-0" />
@@ -433,11 +430,11 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
 
         {/* Columna Derecha (Sidebar) */}
         <div className="hidden lg:block lg:col-span-4 space-y-6">
-          <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-6 space-y-4 shadow-sm">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl p-6 space-y-4 shadow-sm">
             <div className="h-4 bg-gray-300 dark:bg-zinc-700 rounded-md w-1/2" />
             <div className="h-48 bg-gray-100 dark:bg-zinc-850 rounded-2xl w-full" />
           </div>
-          <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-3xl p-6 space-y-4 shadow-sm">
+          <div className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-zinc-800 rounded-xl p-6 space-y-4 shadow-sm">
             <div className="h-4 bg-gray-300 dark:bg-zinc-700 rounded-md w-1/2" />
             <div className="space-y-3">
               {[1, 2, 3].map((x) => (
@@ -454,37 +451,19 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
   }
 
   const greeting = getGreeting();
-  const hasSubscription = !!userProfile?.subscription_plan;
-  const hasCourses = !!(dashStats?.courseProgress && dashStats.courseProgress.length > 0);
-  const isGuest = !isAdmin && !hasSubscription && !hasCourses;
+  const isGuest = false;
 
   return (
     <div className="space-y-6 w-full max-w-[1400px] mx-auto">
       {/* ─── GREETING BANNER ─── */}
-      {dashStats && (
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative rounded-2xl p-6 sm:p-8 overflow-hidden shadow-lg border-0"
-          style={{
-            background:
-              "linear-gradient(135deg, #38bdf8 0%, #1890FF 45%, #0050b3 100%)",
-            backgroundSize: "200% 200%",
-          }}
-        >
-          <div className="absolute top-0 right-0 w-56 h-56 bg-white/15 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-40 h-40 bg-white/10 rounded-full blur-3xl -ml-10 -mb-10 pointer-events-none" />
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.18),transparent_50%)] pointer-events-none" />
-          <div className="relative z-10">
-            <h2 className="font-display font-black text-2xl sm:text-3xl tracking-tight leading-tight mb-2 text-white">
-              {greeting}, {dashStats.userName?.split(" ")[0]}!
-            </h2>
-            <p className="text-[14px] text-white/85 font-medium max-w-lg leading-relaxed">
-              Nos alegra tenerte de vuelta en ProgramBI. Explora el contenido, interactúa en el foro y continúa tu especialización.
-            </p>
-          </div>
-        </motion.div>
-      )}
+      <div className="rounded-xl border border-border bg-surface px-5 py-5">
+        <h2 className="text-xl font-semibold tracking-tight">
+          {greeting}, {userProfile?.full_name?.split(" ")[0] || "bienvenido"}
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Explora el muro, sigue un curso o entra a una clase en vivo.
+        </p>
+      </div>
 
       {/* ─── COURSE PROGRESS ─── */}
       {dashStats?.courseProgress?.length > 0 && (
@@ -529,7 +508,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                     className={`h-full rounded-full ${
                       cp.progress === 100
                         ? "bg-emerald-500"
-                        : "bg-brand-blue"
+                        : "bg-foreground"
                     }`}
                   />
                 </div>
@@ -546,11 +525,11 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
           {/* Post Composer */}
           {/* Post Composer (Admins Only) */}
           {isAdmin && (
-            <div className="bg-white rounded-3xl p-6 shadow-md border border-gray-150/70 transition-all hover:shadow-lg space-y-6">
+            <div className="bg-white rounded-xl p-6 shadow-md border border-gray-150/70 transition-all hover:shadow-lg space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-gray-100 gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-display font-black text-sm shadow-md shrink-0">
-                    {dashStats?.userName?.charAt(0)?.toUpperCase() || "A"}
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-blue to-indigo-600 text-white flex items-center justify-center font-display font-semibold text-sm shadow-md shrink-0">
+                    {userProfile?.full_name?.charAt(0)?.toUpperCase() || "A"}
                   </div>
                   <div>
                     <h4 className="font-bold text-gray-900 text-sm">Nuevo Anuncio Oficial</h4>
@@ -623,15 +602,15 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                       <div className="flex gap-2">
                         <button
                           onClick={() => setShowImagePresets(true)}
-                          className={`px-2.5 py-1 rounded-md text-[10px] font-black tracking-wide uppercase border-none cursor-pointer
-                            ${showImagePresets ? "bg-brand-blue text-white" : "bg-gray-200 text-gray-500 hover:bg-gray-300"}`}
+                          className={`px-2.5 py-1 rounded-md text-[10px] font-semibold tracking-wide uppercase border-none cursor-pointer
+                            ${showImagePresets ? "bg-foreground text-white" : "bg-gray-200 text-gray-500 hover:bg-gray-300"}`}
                         >
                           Presets
                         </button>
                         <button
                           onClick={() => setShowImagePresets(false)}
-                          className={`px-2.5 py-1 rounded-md text-[10px] font-black tracking-wide uppercase border-none cursor-pointer
-                            ${!showImagePresets ? "bg-brand-blue text-white" : "bg-gray-200 text-gray-500 hover:bg-gray-300"}`}
+                          className={`px-2.5 py-1 rounded-md text-[10px] font-semibold tracking-wide uppercase border-none cursor-pointer
+                            ${!showImagePresets ? "bg-foreground text-white" : "bg-gray-200 text-gray-500 hover:bg-gray-300"}`}
                         >
                           URL Personalizada
                         </button>
@@ -655,7 +634,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img src={img.url} alt="" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform" />
                               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                              <span className="relative z-10 text-[9px] font-black text-white uppercase tracking-wider line-clamp-1">{img.name}</span>
+                              <span className="relative z-10 text-[9px] font-semibold text-white uppercase tracking-wider line-clamp-1">{img.name}</span>
                             </button>
                           ))}
                         </div>
@@ -788,7 +767,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                         {pollOptions.length < 5 && (
                           <button
                             onClick={() => setPollOptions([...pollOptions, ""])}
-                            className="bg-brand-blue/10 hover:bg-brand-blue/20 text-brand-blue text-[10px] font-black px-2.5 py-1.5 rounded-lg border-none cursor-pointer flex items-center gap-1 transition-all"
+                            className="bg-foreground/10 hover:bg-foreground/20 text-brand-blue text-[10px] font-semibold px-2.5 py-1.5 rounded-lg border-none cursor-pointer flex items-center gap-1 transition-all"
                           >
                             <Plus className="w-3 h-3" /> Agregar opción
                           </button>
@@ -835,7 +814,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                   <button
                     onClick={handlePostSubmit}
                     disabled={isSubmitting || (selectedMediaType === "text" && !newPostContent.trim())}
-                    className="px-6 py-2.5 bg-brand-blue hover:bg-blue-600 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl transition-all font-bold text-sm flex items-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98] border-none cursor-pointer"
+                    className="px-6 py-2.5 bg-foreground hover:bg-blue-600 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl transition-all font-bold text-sm flex items-center gap-2 shadow-sm hover:shadow-md active:scale-[0.98] border-none cursor-pointer"
                   >
                     {isSubmitting ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -864,7 +843,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
             </div>
           ) : (
             <div className="space-y-4">
-              {posts.slice(0, visibleCount).map((post, index) => (
+              {posts.map((post, index) => (
                 <motion.div
                   key={post.id}
                   initial={{ opacity: 0, y: 16 }}
@@ -890,12 +869,22 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                   />
                 </motion.div>
               ))}
-              {posts.length > visibleCount && (
+              {hasMorePosts && (
                 <button
-                  onClick={() => setVisibleCount(posts.length)}
-                  className="w-full py-3 text-center text-sm font-semibold text-brand-blue hover:text-blue-650 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all border-none cursor-pointer"
+                  disabled={loadingMore}
+                  onClick={async () => {
+                    setLoadingMore(true);
+                    try {
+                      const next = await getPosts("default", 10, posts.length);
+                      setPosts((prev) => [...prev, ...next]);
+                      setHasMorePosts(next.length === 10);
+                    } finally {
+                      setLoadingMore(false);
+                    }
+                  }}
+                  className="w-full py-3 text-center text-sm font-medium rounded-xl border border-border bg-surface hover:bg-muted cursor-pointer"
                 >
-                  Ver todas las publicaciones ({posts.length})
+                  {loadingMore ? "Cargando…" : "Cargar más"}
                 </button>
               )}
             </div>
@@ -910,13 +899,13 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
             return (
               <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm relative overflow-hidden">
                 <div className="relative z-10">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full border border-gray-200">
+                  <span className="text-[9px] font-semibold uppercase tracking-widest text-gray-600 bg-gray-100 px-2.5 py-0.5 rounded-full border border-gray-200">
                     Tu aprendizaje
                   </span>
                   
                   {activeCourse ? (
                     <>
-                      <h4 className="text-sm font-black mt-3 leading-snug truncate text-gray-900">
+                      <h4 className="text-sm font-semibold mt-3 leading-snug truncate text-gray-900">
                         {activeCourse.title}
                       </h4>
                       <div className="mt-4 flex items-center justify-between text-[10px] text-gray-500 font-extrabold uppercase tracking-wider">
@@ -924,12 +913,12 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                         <span className="text-gray-800">{activeCourse.progress}%</span>
                       </div>
                       <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden mt-1.5">
-                        <div className="h-full bg-brand-blue rounded-full" style={{ width: `${activeCourse.progress}%` }} />
+                        <div className="h-full bg-foreground rounded-full" style={{ width: `${activeCourse.progress}%` }} />
                       </div>
                       
                       <button
                         onClick={() => router.push(`/comunidad/cursos/${activeCourse.courseSlug}`)}
-                        className="w-full mt-4 py-2.5 bg-[#1890FF] hover:bg-[#0d7de0] text-white text-xs font-black rounded-xl shadow-sm border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+                        className="w-full mt-4 py-2.5 bg-[#171716] hover:bg-[#0d7de0] text-white text-xs font-semibold rounded-xl shadow-sm border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
                       >
                         Continuar Clase
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -937,7 +926,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                     </>
                   ) : (
                     <>
-                      <h4 className="text-sm font-black mt-3 leading-snug text-gray-900 dark:text-white">
+                      <h4 className="text-sm font-semibold mt-3 leading-snug text-gray-900 dark:text-white">
                         Comienza tu especialización
                       </h4>
                       <p className="text-[12px] text-gray-600 dark:text-zinc-400 mt-2 leading-relaxed">
@@ -946,7 +935,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                       
                       <button
                         onClick={() => router.push('/comunidad/cursos')}
-                        className="w-full mt-4 py-2.5 bg-[#1890FF] hover:bg-[#0d7de0] text-white text-xs font-black rounded-xl shadow-sm border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
+                        className="w-full mt-4 py-2.5 bg-[#171716] hover:bg-[#0d7de0] text-white text-xs font-semibold rounded-xl shadow-sm border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]"
                       >
                         Explorar Cursos
                         <ArrowRight className="w-3.5 h-3.5" />
@@ -1000,7 +989,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                 </div>
                 <button
                   onClick={handleSkipGuide}
-                  className="text-[10px] font-black uppercase tracking-wide text-gray-500 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 px-2.5 py-1 rounded-lg transition-all border-none cursor-pointer"
+                  className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 hover:text-gray-700 bg-gray-50 hover:bg-gray-100 px-2.5 py-1 rounded-lg transition-all border-none cursor-pointer"
                 >
                   Saltar
                 </button>
@@ -1041,7 +1030,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                               x="12" 
                               y="15.5" 
                               textAnchor="middle" 
-                              className="text-[9px] font-black fill-gray-400 font-sans"
+                              className="text-[9px] font-semibold fill-gray-400 font-sans"
                             >
                               {idx + 1}
                             </text>
@@ -1065,7 +1054,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
               <span className="text-[10px] text-gray-500 font-medium">¿Te saltaste la guía de inicio?</span>
               <button
                 onClick={handleResetGuide}
-                className="text-[10px] font-black text-brand-blue hover:underline block mx-auto mt-1 bg-transparent border-none cursor-pointer"
+                className="text-[10px] font-semibold text-brand-blue hover:underline block mx-auto mt-1 bg-transparent border-none cursor-pointer"
               >
                 Reiniciar Guía de Inicio
               </button>
@@ -1088,7 +1077,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
               initial={{ scale: 0.95, y: 15 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
-              className="bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative flex flex-col"
+              className="bg-white dark:bg-neutral-950 border border-neutral-100 dark:border-neutral-800 rounded-xl max-w-lg w-full overflow-hidden shadow-2xl relative flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
@@ -1099,30 +1088,23 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Video Player at the Top of the Pop-up */}
-              <div className="relative aspect-video w-full bg-black border-b border-gray-100 dark:border-neutral-900 overflow-hidden shadow-inner shrink-0">
-                <video
-                  key={GUIDE_STEPS[activeModalStep].videoUrl}
-                  src={GUIDE_STEPS[activeModalStep].videoUrl}
-                  poster={GUIDE_STEPS[activeGuideStep === activeModalStep ? activeGuideStep : activeModalStep].poster}
-                  controls
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              {/* Content area */}
               <div className="p-6 space-y-4">
                 <div>
-                  <span className="text-[10px] font-black uppercase tracking-wider text-brand-blue bg-brand-blue/10 dark:bg-brand-blue/20 px-3 py-1 rounded-full border border-brand-blue/20">
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
                     Paso {activeModalStep + 1} de {GUIDE_STEPS.length}
                   </span>
-                  <h3 className="text-xl font-display font-black text-neutral-900 dark:text-white leading-snug mt-3">
+                  <h3 className="text-xl font-semibold tracking-tight text-foreground leading-snug mt-3">
                     {GUIDE_STEPS[activeModalStep].title}
                   </h3>
-                  <p className="text-xs text-neutral-550 dark:text-neutral-450 mt-2 leading-relaxed">
+                  <p className="text-sm text-muted-foreground mt-2 leading-relaxed">
                     {GUIDE_STEPS[activeModalStep].description}
                   </p>
+                  <a
+                    href={GUIDE_STEPS[activeModalStep].href}
+                    className="mt-4 inline-flex text-sm font-medium underline underline-offset-4"
+                  >
+                    {GUIDE_STEPS[activeModalStep].cta}
+                  </a>
                 </div>
 
                 {/* Footer Buttons */}
@@ -1133,7 +1115,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                         handleToggleStepCompleted(activeModalStep, e);
                         setActiveModalStep(null);
                       }}
-                      className="flex-1 py-3 bg-brand-blue hover:bg-blue-600 text-white text-xs font-black rounded-xl border-none cursor-pointer transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 shadow-sm"
+                      className="flex-1 py-3 bg-foreground hover:bg-blue-600 text-white text-xs font-semibold rounded-xl border-none cursor-pointer transition-all active:scale-[0.98] flex items-center justify-center gap-1.5 shadow-sm"
                     >
                       <Check className="w-4 h-4 stroke-[3]" />
                       <span>Marcar como Completado</span>
@@ -1143,7 +1125,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                       onClick={(e) => {
                         handleToggleStepCompleted(activeModalStep, e);
                       }}
-                      className="flex-1 py-3 bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-850 text-neutral-700 dark:text-neutral-300 text-xs font-black rounded-xl border-none cursor-pointer transition-all active:scale-[0.98] flex items-center justify-center gap-1.5"
+                      className="flex-1 py-3 bg-neutral-100 dark:bg-neutral-900 hover:bg-neutral-200 dark:hover:bg-neutral-850 text-neutral-700 dark:text-neutral-300 text-xs font-semibold rounded-xl border-none cursor-pointer transition-all active:scale-[0.98] flex items-center justify-center gap-1.5"
                     >
                       <span>Desmarcar Paso</span>
                     </button>
@@ -1175,7 +1157,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
               initial={{ scale: 0.95, y: 15 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 15 }}
-              className="bg-white border border-gray-150/70 rounded-3xl max-w-lg w-full overflow-hidden shadow-2xl relative"
+              className="bg-white border border-gray-150/70 rounded-xl max-w-lg w-full overflow-hidden shadow-2xl relative"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Close Button */}
@@ -1191,7 +1173,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                   <div className="w-12 h-12 rounded-2xl bg-blue-50 text-brand-blue flex items-center justify-center mb-4">
                     <BookOpen className="w-6 h-6" />
                   </div>
-                  <h3 className="text-lg font-black text-gray-950 leading-tight">Guía de Primeros Pasos</h3>
+                  <h3 className="text-lg font-semibold text-gray-950 leading-tight">Guía de Primeros Pasos</h3>
                   <p className="text-xs text-gray-500 mt-2 leading-relaxed">
                     ¡Bienvenido a la comunidad de ProgramBI! Sigue estas breves instrucciones para sacar el máximo provecho a tu espacio de estudio:
                   </p>
@@ -1220,7 +1202,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                   </div>
                   <button
                     onClick={() => setActiveGuide(null)}
-                    className="w-full mt-6 py-2.5 bg-brand-blue hover:bg-blue-600 text-white text-xs font-black rounded-xl border-0 cursor-pointer transition-colors"
+                    className="w-full mt-6 py-2.5 bg-foreground hover:bg-blue-600 text-white text-xs font-semibold rounded-xl border-0 cursor-pointer transition-colors"
                   >
                     ¡Entendido, empecemos!
                   </button>
@@ -1232,7 +1214,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                   <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mb-4">
                     <Clock className="w-6 h-6" />
                   </div>
-                  <h3 className="text-lg font-black text-gray-950 leading-tight">Roadmap de Aprendizaje</h3>
+                  <h3 className="text-lg font-semibold text-gray-950 leading-tight">Roadmap de Aprendizaje</h3>
                   <p className="text-xs text-gray-500 mt-2 leading-relaxed">
                     Te recomendamos seguir este flujo estructurado para optimizar tu aprendizaje en análisis de datos y business intelligence:
                   </p>
@@ -1261,7 +1243,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                   </div>
                   <button
                     onClick={() => setActiveGuide(null)}
-                    className="w-full mt-6 py-2.5 bg-brand-blue hover:bg-blue-600 text-white text-xs font-black rounded-xl border-0 cursor-pointer transition-colors"
+                    className="w-full mt-6 py-2.5 bg-foreground hover:bg-blue-600 text-white text-xs font-semibold rounded-xl border-0 cursor-pointer transition-colors"
                   >
                     Seguir mi Ruta
                   </button>
@@ -1273,7 +1255,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                   <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-650 flex items-center justify-center mb-4">
                     <Sparkles className="w-6 h-6 animate-none" />
                   </div>
-                  <h3 className="text-lg font-black text-gray-950 leading-tight">Código de Convivencia</h3>
+                  <h3 className="text-lg font-semibold text-gray-950 leading-tight">Código de Convivencia</h3>
                   <p className="text-xs text-gray-500 mt-2 leading-relaxed">
                     Mantenemos un espacio seguro y profesional para el crecimiento mutuo. Estas son nuestras pautas de convivencia:
                   </p>
@@ -1302,7 +1284,7 @@ export default function MuroFeed({ isRestricted }: MuroFeedProps = {}) {
                   </div>
                   <button
                     onClick={() => setActiveGuide(null)}
-                    className="w-full mt-6 py-2.5 bg-brand-blue hover:bg-blue-600 text-white text-xs font-black rounded-xl border-0 cursor-pointer transition-colors"
+                    className="w-full mt-6 py-2.5 bg-foreground hover:bg-blue-600 text-white text-xs font-semibold rounded-xl border-0 cursor-pointer transition-colors"
                   >
                     Acepto las Pautas
                   </button>
@@ -1336,7 +1318,7 @@ function VideoAttachmentCard({ videoRef }: any) {
   return (
     <div className="bg-neutral-50/60 dark:bg-neutral-900/30 border border-neutral-200/70 dark:border-neutral-800/80 rounded-2xl p-4 overflow-hidden relative group mt-3 transition-colors duration-200">
       {/* Decorative Blur Glow */}
-      <div className="absolute top-0 right-0 w-24 h-24 bg-brand-blue/5 dark:bg-brand-blue/10 rounded-full filter blur-xl pointer-events-none transition-opacity duration-300 group-hover:opacity-40" />
+      <div className="absolute top-0 right-0 w-24 h-24 bg-foreground/5 dark:bg-foreground/10 rounded-full filter blur-xl pointer-events-none transition-opacity duration-300 group-hover:opacity-40" />
       
       <div className="flex flex-col sm:flex-row gap-4 items-center relative z-10">
         {/* Play Video Thumbnail simulation */}
@@ -1346,13 +1328,13 @@ function VideoAttachmentCard({ videoRef }: any) {
         >
           {/* Decorative design */}
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-50/40 via-neutral-100/50 to-neutral-250/40 dark:from-indigo-950/40 dark:via-neutral-900/60 dark:to-neutral-950/60 opacity-80" />
-          <div className="w-10 h-10 rounded-full bg-brand-blue/10 dark:bg-brand-blue/20 flex items-center justify-center border border-brand-blue/30 text-brand-blue group-hover/thumb:scale-110 group-hover/thumb:bg-brand-blue group-hover/thumb:text-white transition-all shadow-md relative z-10 duration-300">
+          <div className="w-10 h-10 rounded-full bg-foreground/10 dark:bg-foreground/20 flex items-center justify-center border border-brand-blue/30 text-brand-blue group-hover/thumb:scale-110 group-hover/thumb:bg-foreground group-hover/thumb:text-white transition-all shadow-md relative z-10 duration-300">
             <Play className="w-4 h-4 fill-current ml-0.5" />
           </div>
         </div>
 
         <div className="flex-1 min-w-0 text-center sm:text-left">
-          <span className="text-[9px] font-black uppercase tracking-widest text-brand-blue bg-blue-50/60 dark:bg-brand-blue/10 px-2 py-0.5 rounded-md border border-brand-blue/20">
+          <span className="text-[9px] font-semibold uppercase tracking-widest text-brand-blue bg-blue-50/60 dark:bg-foreground/10 px-2 py-0.5 rounded-md border border-brand-blue/20">
             Clase Recomendada
           </span>
           <h4 className="text-xs font-bold text-neutral-800 dark:text-neutral-100 mt-1.5 leading-snug line-clamp-1">
@@ -1372,7 +1354,7 @@ function VideoAttachmentCard({ videoRef }: any) {
 
         <button
           onClick={handleRedirect}
-          className="w-full sm:w-auto px-4 py-2 bg-brand-blue hover:bg-blue-600 text-white text-[11px] font-bold rounded-xl shadow-sm hover:shadow-md border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all shrink-0 active:scale-[0.98]"
+          className="w-full sm:w-auto px-4 py-2 bg-foreground hover:bg-blue-600 text-white text-[11px] font-bold rounded-xl shadow-sm hover:shadow-md border-0 cursor-pointer flex items-center justify-center gap-1.5 transition-all shrink-0 active:scale-[0.98]"
         >
           <span>Ver Clase</span>
           <ArrowRight className="w-3.5 h-3.5" />
@@ -1476,12 +1458,12 @@ function PollAttachmentCard({ poll, postId, userId, onRefresh }: any) {
                     animate={{ width: `${percentage}%` }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
                     className={`absolute left-0 top-0 bottom-0 pointer-events-none opacity-10 
-                      ${hasVotedThis ? "bg-brand-blue" : "bg-gray-450 dark:bg-gray-650"}`}
+                      ${hasVotedThis ? "bg-foreground" : "bg-gray-450 dark:bg-gray-650"}`}
                   />
                   
                   <div className="flex items-center gap-2 relative z-10">
                     {hasVotedThis && (
-                      <span className="text-[9px] bg-brand-blue text-white w-4.5 h-4.5 rounded-full flex items-center justify-center font-black">
+                      <span className="text-[9px] bg-foreground text-white w-4.5 h-4.5 rounded-full flex items-center justify-center font-semibold">
                         ✓
                       </span>
                     )}
@@ -1600,7 +1582,7 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
                 {post.author?.role === "admin" ? `Profesor ${authorName}` : authorName}
               </h4>
               {post.author?.role === "admin" && (
-                <span className="bg-brand-blue/10 text-brand-blue text-[10px] font-black px-1.5 py-0.5 rounded-md tracking-wide">
+                <span className="bg-foreground/10 text-brand-blue text-[10px] font-semibold px-1.5 py-0.5 rounded-md tracking-wide">
                   Profesor
                 </span>
               )}
@@ -1663,40 +1645,19 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
       {/* Tags */}
       <div className="flex items-center gap-2 mb-3">
         {isQuestion && (
-          <span className="inline-flex items-center px-2.5 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-black tracking-wide">
+          <span className="inline-flex items-center px-2.5 py-1 bg-indigo-50 text-indigo-600 rounded-lg text-[10px] font-semibold tracking-wide">
             ❓ PREGUNTA
           </span>
         )}
         {post.is_pinned && (
-          <span className="inline-flex items-center px-2.5 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-black tracking-wide">
+          <span className="inline-flex items-center px-2.5 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-semibold tracking-wide">
             📌 FIJADO
           </span>
         )}
       </div>
 
       {/* Content */}
-      {isGuest && post.author?.role === "admin" && !/gratis|gratuita/i.test(postText || "") ? (
-        <div className="relative mb-5">
-          <p className="text-gray-400 text-[15px] leading-relaxed whitespace-pre-wrap select-none filter blur-[5px] pointer-events-none">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ut lorem quis diam elementum elementum. Nullam luctus finibus elit eget elementum. Duis id arcu id urna finibus porta.
-          </p>
-          <div className="absolute inset-0 bg-white/40 flex flex-col items-center justify-center p-4 text-center z-10">
-            <Crown className="w-7 h-7 text-amber-500 mb-1 animate-bounce" />
-            <h5 className="text-xs font-black text-gray-900 uppercase tracking-wide">
-              Publicación Premium Exclusiva
-            </h5>
-            <p className="text-[10px] text-gray-550 font-medium mt-1 mb-2.5 max-w-[260px]">
-              Esta publicación del administrador es exclusiva para alumnos premium activos.
-            </p>
-            <button
-              onClick={onUpgradeClick}
-              className="bg-brand-blue hover:bg-blue-600 text-white text-[10px] font-black px-3.5 py-1.5 rounded-lg shadow-sm border-0 cursor-pointer transition-all active:scale-95"
-            >
-              Ver Planes Premium
-            </button>
-          </div>
-        </div>
-      ) : (
+      {true && (
         <>
           {isEditing ? (
             <div className="space-y-3 mb-5">
@@ -1720,7 +1681,7 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
                   <button
                     onClick={handleSave}
                     disabled={isSaving || !editedText.trim()}
-                    className="px-4 py-2 bg-brand-blue hover:bg-blue-650 text-white rounded-xl transition-all font-bold text-xs flex items-center gap-1.5 cursor-pointer border-none shadow-sm hover:shadow"
+                    className="px-4 py-2 bg-foreground hover:bg-blue-650 text-white rounded-xl transition-all font-bold text-xs flex items-center gap-1.5 cursor-pointer border-none shadow-sm hover:shadow"
                   >
                     {isSaving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                     Guardar cambios
@@ -1765,8 +1726,7 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
       )}
 
       {/* Actions */}
-      {!(isGuest && post.author?.role === "admin" && !/gratis|gratuita/i.test(postText || "")) && (
-        <div className="flex items-center gap-1 pt-3 border-t border-gray-100">
+      <div className="flex items-center gap-1 pt-3 border-t border-gray-100">
           <button
             onClick={() => {
               setIsLiked(!isLiked);
@@ -1784,7 +1744,6 @@ function PostCard({ post, isGuest, userId, onLike, onSubmitComment, onUpgradeCli
             <Share2 className="w-[18px] h-[18px]" />
           </button>
         </div>
-      )}
     </div>
   );
 }

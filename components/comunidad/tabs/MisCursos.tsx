@@ -44,6 +44,7 @@ interface EnrollmentItem {
     category?: string;
     lesson_count?: number;
     latest_lesson_at?: string | null;
+    has_free_preview?: boolean;
   };
 }
 
@@ -65,6 +66,7 @@ interface PublicCourse {
   sort_order: number;
   price_clp: number;
   has_free_preview?: boolean;
+  lesson_count?: number;
 }
 
 interface TranslationDict {
@@ -164,8 +166,9 @@ function processMergedCourses(allCourses: any[], enrollmentData: any): CourseWit
     return {
       ...course,
       access_type: enrollment?.access_type || null,
-      lesson_count: enrollment?.course?.lesson_count || 0,
+      lesson_count: enrollment?.course?.lesson_count || course.lesson_count || 0,
       latest_lesson_at: enrollment?.course?.latest_lesson_at || null,
+      has_free_preview: enrollment?.course?.has_free_preview || course.has_free_preview || false,
     };
   });
 
@@ -198,45 +201,63 @@ function processMergedCourses(allCourses: any[], enrollmentData: any): CourseWit
   return merged;
 }
 
-export default function MisCursos({ onSelectCourse, language }: { onSelectCourse: (id: string) => void; language?: 'es' | 'en' }) {
+export default function MisCursos({
+  onSelectCourse,
+  language,
+  initialCourses,
+  initialEnrollments,
+  initialFilter,
+  onFilterChange,
+}: {
+  onSelectCourse: (slug: string) => void;
+  language?: "es" | "en";
+  initialCourses?: PublicCourse[];
+  initialEnrollments?: any;
+  initialFilter?: "all" | "active";
+  onFilterChange?: (filter: "all" | "active") => void;
+}) {
   const activeLanguage = language || "es";
   const t = tc[activeLanguage];
   const { allCourses: ctxCourses, enrollmentData: ctxEnrollments } = useCommunity();
 
-  const initialMerged = (ctxCourses?.length > 0 && ctxEnrollments)
-    ? processMergedCourses(ctxCourses, ctxEnrollments)
-    : [];
+  const seedCourses = initialCourses?.length ? initialCourses : ctxCourses;
+  const seedEnrollments = initialEnrollments ?? ctxEnrollments;
+  const initialMerged =
+    seedCourses?.length > 0 && seedEnrollments ? processMergedCourses(seedCourses, seedEnrollments) : [];
 
   const [standaloneCourses, setStandaloneCourses] = useState<CourseWithAccess[]>(initialMerged);
   const [programs, setPrograms] = useState<ProgramGroup[]>([]);
   const [allCoursesFlat, setAllCoursesFlat] = useState<CourseWithAccess[]>(initialMerged);
   const [loading, setLoading] = useState(initialMerged.length === 0);
-  const [filter, setFilter] = useState<'all' | 'active'>('active');
+  const [filter, setFilter] = useState<"all" | "active">(initialFilter || "active");
   const [buyingCourseId, setBuyingCourseId] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
   const paymentStatus = searchParams.get('payment');
 
   useEffect(() => {
-     // If already initialized with server-preloaded data, do not show blocking loader
-     async function loadData() {
-         try {
-             const [allCourses, enrollmentData] = await Promise.all([
-               getAllPublishedCourses(),
-               getMyEnrollments(),
-             ]);
-
-             const merged = processMergedCourses(allCourses, enrollmentData);
-             setPrograms([]);
-             setStandaloneCourses(merged);
-             setAllCoursesFlat(merged);
-         } catch (e) {
-             console.error("Error loading courses", e);
-         } finally {
-             setLoading(false);
-         }
-     }
-     loadData();
+    if (initialMerged.length > 0) {
+      setLoading(false);
+      return;
+    }
+    async function loadData() {
+      try {
+        const [allCourses, enrollmentData] = await Promise.all([
+          getAllPublishedCourses(),
+          getMyEnrollments(),
+        ]);
+        const merged = processMergedCourses(allCourses, enrollmentData);
+        setPrograms([]);
+        setStandaloneCourses(merged);
+        setAllCoursesFlat(merged);
+      } catch (e) {
+        console.error("Error loading courses", e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const activeCoursesList = allCoursesFlat.filter(c => c.access_type !== null);
@@ -285,12 +306,15 @@ export default function MisCursos({ onSelectCourse, language }: { onSelectCourse
            return (
              <button 
                key={tab.id} 
-               onClick={() => setFilter(tab.id)}
+               onClick={() => {
+                 setFilter(tab.id);
+                 onFilterChange?.(tab.id);
+               }}
                className={cn(
-                 "relative px-4 py-2.5 rounded-xl text-xs font-bold transition-all border-0 cursor-pointer flex items-center gap-2",
+                 "relative px-4 py-2.5 rounded-xl text-xs font-medium transition-all border-0 cursor-pointer flex items-center gap-2",
                  isActive
-                   ? "bg-[#1890ff] text-white shadow-sm"
-                   : "bg-neutral-100 hover:bg-neutral-200 text-neutral-500 hover:text-neutral-800 dark:bg-neutral-900/60 dark:hover:bg-neutral-900"
+                   ? "bg-foreground text-background"
+                   : "bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground"
                )}
              >
                <span>{tab.label}</span>
@@ -309,7 +333,7 @@ export default function MisCursos({ onSelectCourse, language }: { onSelectCourse
        {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/60 dark:border-neutral-800/80 overflow-hidden animate-pulse shadow-sm">
+              <div key={i} className="bg-white dark:bg-neutral-950 rounded-xl border border-neutral-200/60 dark:border-neutral-800/80 overflow-hidden animate-pulse shadow-sm">
                 <div className="aspect-[16/10] bg-neutral-200 dark:bg-neutral-900" />
                 <div className="p-6 space-y-4">
                   <div className="h-4 bg-neutral-200 dark:bg-neutral-900 rounded-lg w-3/4" />
@@ -320,7 +344,7 @@ export default function MisCursos({ onSelectCourse, language }: { onSelectCourse
             ))}
           </div>
        ) : (filteredPrograms.length === 0 && filteredStandalone.length === 0) ? (
-          <div className="bg-white dark:bg-neutral-950 rounded-3xl p-16 text-center border border-neutral-200/80 dark:border-neutral-800/80 shadow-sm max-w-lg mx-auto select-none mt-12">
+          <div className="bg-white dark:bg-neutral-950 rounded-xl p-16 text-center border border-neutral-200/80 dark:border-neutral-800/80 shadow-sm max-w-lg mx-auto select-none mt-12">
              <div className="relative w-20 h-20 mx-auto mb-6">
                <div className="w-full h-full rounded-2xl bg-neutral-100 dark:bg-neutral-900 flex items-center justify-center">
                  <GraduationCap className="w-9 h-9 text-neutral-500" />
@@ -398,7 +422,7 @@ function ProgramCard({ program, onSelectCourse, translations }: {
     : 0;
 
   return (
-    <div className="rounded-3xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden bg-white dark:bg-neutral-950 shadow-[0_8px_30px_rgb(0,0,0,0.015)] transition-all">
+    <div className="rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 overflow-hidden bg-white dark:bg-neutral-950 shadow-[0_8px_30px_rgb(0,0,0,0.015)] transition-all">
       {/* Program Header */}
       <div className="relative px-6 sm:px-8 py-7 overflow-hidden border-b border-neutral-100 dark:border-neutral-900 bg-neutral-50/50 dark:bg-neutral-900/10">
         <div className="flex items-center justify-between relative z-10 select-none">
@@ -450,7 +474,7 @@ function ProgramCard({ program, onSelectCourse, translations }: {
           return (
             <div
               key={curso.id}
-              onClick={() => isActive && hasLessons && onSelectCourse(curso.id)}
+              onClick={() => isActive && hasLessons && onSelectCourse(curso.slug)}
               className={cn(
                 "relative rounded-2xl border p-5 transition-all duration-200 flex flex-col justify-between",
                 isActive && hasLessons
@@ -559,9 +583,9 @@ function StandaloneCourseCard({ curso, onSelectCourse, onBuyCourse, buyingCourse
 
   return (
     <div 
-      onClick={() => !isLocked && onSelectCourse(curso.id)}
+      onClick={() => !isLocked && onSelectCourse(curso.slug)}
       className={cn(
-        "group bg-white dark:bg-neutral-950 rounded-3xl overflow-hidden border transition-all duration-300 flex flex-col h-full relative",
+        "group bg-white dark:bg-neutral-950 rounded-xl overflow-hidden border transition-all duration-300 flex flex-col h-full relative",
         isLocked 
           ? 'border-neutral-200/80 dark:border-neutral-800/80 opacity-75 hover:opacity-90' 
           : isTrial
@@ -614,7 +638,7 @@ function StandaloneCourseCard({ curso, onSelectCourse, onBuyCourse, buyingCourse
             )}
             {curso.badge_label && !isTrial && !isFree && (
               <span className="text-[9px] font-bold px-2.5 py-0.5 rounded-full shadow-md text-white"
-                style={{ backgroundColor: curso.badge_color || '#1890FF' }}>
+                style={{ backgroundColor: curso.badge_color || '#171716' }}>
                 {curso.badge_label}
               </span>
             )}

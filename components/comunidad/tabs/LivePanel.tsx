@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCommunity } from "@/components/comunidad/CommunityProvider";
+import { AdminLiveControls } from "@/components/comunidad/live/AdminLiveControls";
 
 interface LiveClass {
   id: string;
@@ -39,7 +40,7 @@ const UNLOCK_WINDOW_MS = 10 * 60 * 1000; // join button unlocks 10 min before st
 function CountdownUnit({ value, label }: { value: number; label: string }) {
   return (
     <div className="flex flex-col items-center flex-1 min-w-0 px-2 sm:px-4 py-2.5">
-      <span className="font-display text-2xl sm:text-3xl md:text-4xl font-black tabular-nums text-neutral-900 dark:text-white leading-none tracking-tight">
+      <span className="font-display text-2xl sm:text-3xl md:text-4xl font-semibold tabular-nums text-foreground leading-none tracking-tight">
         {String(value).padStart(2, "0")}
       </span>
       <span className="text-[9px] sm:text-[10px] uppercase tracking-[0.16em] text-neutral-400 dark:text-neutral-500 font-bold mt-1.5 sm:mt-2">
@@ -53,7 +54,7 @@ function CountdownUnit({ value, label }: { value: number; label: string }) {
 function MetaPill({ icon: Icon, children }: { icon: typeof Calendar; children: React.ReactNode }) {
   return (
     <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-600 dark:text-neutral-300 bg-neutral-50 dark:bg-neutral-900/80 border border-neutral-200/70 dark:border-neutral-800 px-3 py-1.5 rounded-full select-none">
-      <Icon className="w-3.5 h-3.5 text-brand-blue shrink-0" />
+      <Icon className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
       {children}
     </span>
   );
@@ -84,7 +85,7 @@ function PrimaryCta({
     <button
       type="button"
       onClick={onClick}
-      className="px-6 py-3 bg-brand-blue hover:bg-brand-blue-dark hover:scale-[1.03] active:scale-[0.98] text-white font-bold text-xs rounded-xl transition-all duration-200 shadow-glow-brand hover:shadow-lg flex items-center justify-center gap-2 border-none cursor-pointer"
+      className="px-6 py-3 bg-foreground text-background font-medium text-xs rounded-xl transition-colors flex items-center justify-center gap-2 border-none cursor-pointer hover:opacity-90"
     >
       {children}
     </button>
@@ -249,8 +250,12 @@ export default function LivePanel() {
   useEffect(() => {
     if (isWatchingLive) return; // Don't poll while watching stream
 
+    if (activeClass?.status !== "scheduled" && activeClass?.status !== "active") return;
+
     const interval =
-      activeClass?.status === "scheduled" ? POLL_INTERVAL_ACTIVE : POLL_INTERVAL_IDLE;
+      activeClass?.status === "scheduled" || activeClass?.status === "active"
+        ? POLL_INTERVAL_ACTIVE
+        : POLL_INTERVAL_IDLE;
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible" && !isWatchingLive) {
@@ -324,11 +329,7 @@ export default function LivePanel() {
   };
 
   const handleCompleteClass = async () => {
-    if (
-      !activeClass ||
-      !confirm("¿Estás seguro de finalizar la clase? Esto la moverá al historial de clases grabadas.")
-    )
-      return;
+    if (!activeClass) return;
     setLoading(true);
     setError(null);
     try {
@@ -355,7 +356,7 @@ export default function LivePanel() {
   if (loading && !adminChecked) {
     return (
       <div className="max-w-5xl mx-auto pt-2 space-y-8 animate-pulse">
-        <div className="bg-white dark:bg-neutral-950 border border-neutral-200/80 dark:border-neutral-800/80 rounded-3xl p-5 md:p-6 flex flex-col md:flex-row gap-6">
+        <div className="bg-white dark:bg-neutral-950 border border-neutral-200/80 dark:border-neutral-800/80 rounded-xl p-5 md:p-6 flex flex-col md:flex-row gap-6">
           <div className="md:w-[42%] aspect-video rounded-2xl bg-neutral-200 dark:bg-neutral-900" />
           <div className="flex-1 space-y-4 py-1">
             <div className="h-7 w-2/3 bg-neutral-200 dark:bg-neutral-800 rounded-lg" />
@@ -371,7 +372,7 @@ export default function LivePanel() {
           </div>
         </div>
         <div className="flex flex-col items-center justify-center gap-2 py-4">
-          <Loader2 className="w-5 h-5 text-brand-blue animate-spin" />
+          <Loader2 className="w-5 h-5 text-foreground animate-spin" />
           <span className="text-xs text-neutral-400 font-medium">Cargando transmisión…</span>
         </div>
       </div>
@@ -390,7 +391,7 @@ export default function LivePanel() {
           {/* Header bar */}
           <div className="flex items-center justify-between border-b border-neutral-800/90 px-4 sm:px-6 py-3.5 bg-neutral-950/95">
             <div className="flex items-center gap-3 min-w-0">
-              <span className="bg-red-500 text-white text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1.5 shrink-0 shadow-sm shadow-red-500/30">
+              <span className="bg-red-500 text-white text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full flex items-center gap-1.5 shrink-0 shadow-sm shadow-red-500/30">
                 <span className="relative flex h-1.5 w-1.5">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
                   <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-white" />
@@ -402,15 +403,9 @@ export default function LivePanel() {
               </h2>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              {isAdmin && (
-                <button
-                  type="button"
-                  onClick={handleCompleteClass}
-                  className="px-3.5 py-2 bg-red-600/90 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-all active:scale-[0.98] cursor-pointer border border-red-500/40"
-                >
-                  Finalizar
-                </button>
-              )}
+              {isAdmin ? (
+                <AdminLiveControls canStart={false} canComplete onStart={handleStartClass} onComplete={handleCompleteClass} />
+              ) : null}
               <button
                 type="button"
                 onClick={() => setIsWatchingLive(false)}
@@ -468,7 +463,7 @@ export default function LivePanel() {
             </button>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="bg-brand-blue/10 text-brand-blue text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider border border-brand-blue/10">
+                <span className="bg-foreground/10 text-foreground text-[9px] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider border border-brand-blue/10">
                   Clase Grabada
                 </span>
                 <span className="text-[11px] text-neutral-400 dark:text-neutral-500 font-medium">
@@ -480,7 +475,7 @@ export default function LivePanel() {
                   })}
                 </span>
               </div>
-              <h2 className="font-display font-black text-lg sm:text-xl text-neutral-900 dark:text-white leading-tight mt-1 truncate">
+              <h2 className="font-display font-semibold text-lg sm:text-xl text-neutral-900 dark:text-white leading-tight mt-1 truncate">
                 {playbackClass.title}
               </h2>
             </div>
@@ -519,13 +514,13 @@ export default function LivePanel() {
                   onClick={() => setActiveTab("about")}
                   className={`relative text-xs font-bold px-3.5 py-2.5 transition-colors cursor-pointer border-none bg-transparent ${
                     activeTab === "about"
-                      ? "text-brand-blue"
+                      ? "text-foreground"
                       : "text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300"
                   }`}
                 >
                   Descripción general
                   {activeTab === "about" && (
-                    <span className="absolute left-3 right-3 bottom-0 h-0.5 bg-brand-blue rounded-full" />
+                    <span className="absolute left-3 right-3 bottom-0 h-0.5 bg-foreground rounded-full" />
                   )}
                 </button>
                 <button
@@ -533,13 +528,13 @@ export default function LivePanel() {
                   onClick={() => setActiveTab("notes")}
                   className={`relative text-xs font-bold px-3.5 py-2.5 transition-colors cursor-pointer border-none bg-transparent ${
                     activeTab === "notes"
-                      ? "text-brand-blue"
+                      ? "text-foreground"
                       : "text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300"
                   }`}
                 >
                   Mis apuntes
                   {activeTab === "notes" && (
-                    <span className="absolute left-3 right-3 bottom-0 h-0.5 bg-brand-blue rounded-full" />
+                    <span className="absolute left-3 right-3 bottom-0 h-0.5 bg-foreground rounded-full" />
                   )}
                 </button>
               </div>
@@ -577,7 +572,7 @@ export default function LivePanel() {
           {/* Right Column: Sidebar Playlist of Recordings */}
           <div className="lg:col-span-4 space-y-3 select-none">
             <div className="px-1">
-              <h4 className="font-display font-black text-xs text-neutral-900 dark:text-white uppercase tracking-wider mb-1">
+              <h4 className="font-display font-semibold text-xs text-neutral-900 dark:text-white uppercase tracking-wider mb-1">
                 Índice de Grabaciones
               </h4>
               <p className="text-[11px] text-neutral-400 dark:text-neutral-500">
@@ -598,7 +593,7 @@ export default function LivePanel() {
                     transition={{ type: "spring", stiffness: 450, damping: 30 }}
                     className={`group/item w-full flex gap-3 p-2.5 rounded-xl cursor-pointer border text-left origin-left ${
                       isActive
-                        ? "bg-brand-blue/[0.08] border-brand-blue/50 shadow-sm"
+                        ? "bg-foreground/[0.08] border-brand-blue/50 shadow-sm"
                         : "bg-white dark:bg-neutral-950 hover:bg-neutral-50 dark:hover:bg-neutral-900 border-neutral-200/80 dark:border-neutral-800/80 hover:border-brand-blue/25 hover:shadow-md"
                     }`}
                   >
@@ -616,7 +611,7 @@ export default function LivePanel() {
                         </div>
                       )}
                       {isActive && (
-                        <div className="absolute inset-0 bg-brand-blue/20 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-foreground/20 flex items-center justify-center">
                           <Play className="w-4 h-4 text-white fill-white drop-shadow" />
                         </div>
                       )}
@@ -625,8 +620,8 @@ export default function LivePanel() {
                       <h5
                         className={`font-bold text-[11px] leading-snug line-clamp-2 transition-colors ${
                           isActive
-                            ? "text-brand-blue"
-                            : "text-neutral-800 dark:text-neutral-200 group-hover/item:text-brand-blue"
+                            ? "text-foreground"
+                            : "text-neutral-800 dark:text-neutral-200 group-hover/item:text-foreground"
                         }`}
                       >
                         {item.title}
@@ -683,14 +678,14 @@ export default function LivePanel() {
             animate={{ opacity: 1, y: 0 }}
             whileHover={{ y: -4, scale: 1.01 }}
             transition={{ type: "spring", stiffness: 380, damping: 28 }}
-            className="group bg-white dark:bg-neutral-950 border border-red-200/50 dark:border-red-900/30 rounded-3xl overflow-hidden shadow-float hover:shadow-lift flex flex-col md:flex-row ring-1 ring-red-500/5 will-change-transform"
+            className="group bg-white dark:bg-neutral-950 border border-red-200/50 dark:border-red-900/30 rounded-xl overflow-hidden shadow-float hover:shadow-lift flex flex-col md:flex-row ring-1 ring-red-500/5 will-change-transform"
           >
             {/* Thumbnail + LIVE badge */}
             <div className="relative md:w-[42%] shrink-0 aspect-video md:aspect-auto md:min-h-[240px] cursor-pointer overflow-hidden bg-neutral-900">
               <HeroThumbnail youtubeId={activeClass.youtube_video_id} placeholderIcon={Film} />
               <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent transition-opacity duration-500 group-hover:from-black/40" />
               <div className="absolute top-4 left-4 z-10">
-                <span className="bg-red-500 text-white text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg shadow-red-500/25">
+                <span className="bg-red-500 text-white text-[10px] font-semibold uppercase tracking-wider px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-lg shadow-red-500/25">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
@@ -715,7 +710,7 @@ export default function LivePanel() {
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-red-500 mb-1.5">
                 Transmisión en curso
               </p>
-              <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight tracking-tight group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-300">
+              <h2 className="font-display font-semibold text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight tracking-tight group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-300">
                 {activeClass.title}
               </h2>
               {activeClass.description && (
@@ -728,15 +723,14 @@ export default function LivePanel() {
                   <Tv className="w-4 h-4" />
                   Unirse a la Clase
                 </PrimaryCta>
-                {isAdmin && (
-                  <button
-                    type="button"
-                    onClick={handleStartClass}
-                    className="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs rounded-xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 border-none cursor-pointer"
-                  >
-                    <Play className="w-3.5 h-3.5" /> Iniciar Clase
-                  </button>
-                )}
+                {isAdmin ? (
+                  <AdminLiveControls
+                    canStart={activeClass.status !== "active"}
+                    canComplete={activeClass.status === "active"}
+                    onStart={handleStartClass}
+                    onComplete={handleCompleteClass}
+                  />
+                ) : null}
               </div>
             </div>
           </motion.article>
@@ -761,7 +755,7 @@ export default function LivePanel() {
           <section className="space-y-4">
             {isScheduled && (
               <div className="px-1">
-                <h3 className="font-display font-black text-lg text-neutral-900 dark:text-white uppercase tracking-wider">
+                <h3 className="font-display font-semibold text-lg text-neutral-900 dark:text-white uppercase tracking-wider">
                   Próxima Clase
                 </h3>
               </div>
@@ -772,7 +766,7 @@ export default function LivePanel() {
               animate={{ opacity: 1, y: 0 }}
               whileHover={{ y: -5, scale: 1.01 }}
               transition={{ type: "spring", stiffness: 380, damping: 28 }}
-              className="group/hero bg-white dark:bg-neutral-950 border border-neutral-200/80 dark:border-neutral-800/80 rounded-3xl p-5 md:p-6 shadow-float hover:shadow-lift hover:border-brand-blue/25 dark:hover:border-brand-blue/30 flex flex-col md:flex-row gap-6 will-change-transform"
+              className="group/hero bg-white dark:bg-neutral-950 border border-neutral-200/80 dark:border-neutral-800/80 rounded-xl p-5 md:p-6 shadow-float hover:shadow-lift hover:border-brand-blue/25 dark:hover:border-brand-blue/30 flex flex-col md:flex-row gap-6 will-change-transform"
             >
               {/* Left Column: Video Preview Thumbnail */}
               <div
@@ -807,7 +801,7 @@ export default function LivePanel() {
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-neutral-400">
-                    <div className="w-12 h-12 rounded-xl bg-brand-blue/15 flex items-center justify-center text-brand-blue mb-2.5 group-hover/hero:scale-110 transition-transform duration-300">
+                    <div className="w-12 h-12 rounded-xl bg-foreground/15 flex items-center justify-center text-foreground mb-2.5 group-hover/hero:scale-110 transition-transform duration-300">
                       <RadioTower className="w-6 h-6" />
                     </div>
                     <span className="text-xs font-medium">Video no programado</span>
@@ -831,7 +825,7 @@ export default function LivePanel() {
               {/* Right Column: Details & Countdown Info */}
               <div className="flex-1 flex flex-col justify-between py-0.5 min-w-0">
                 <div>
-                  <h2 className="font-display font-black text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight tracking-tight group-hover/hero:text-brand-blue transition-colors duration-300">
+                  <h2 className="font-display font-semibold text-xl sm:text-2xl text-neutral-900 dark:text-white leading-tight tracking-tight group-hover/hero:text-foreground transition-colors duration-300">
                     {featuredClass.title}
                   </h2>
 
@@ -865,7 +859,7 @@ export default function LivePanel() {
                       </span>
                     ) : (
                       <span className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-800 px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-brand-blue shrink-0" />
+                        <Clock className="w-3.5 h-3.5 text-foreground shrink-0" />
                         {(() => {
                           const diffMs = nowMs - new Date(featuredClass.scheduled_at).getTime();
                           const diffDays = Math.floor(diffMs / (24 * 60 * 60 * 1000));
@@ -922,15 +916,14 @@ export default function LivePanel() {
                         );
                       })()}
 
-                      {isAdmin && (
-                        <button
-                          type="button"
-                          onClick={handleStartClass}
-                          className="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white font-bold text-xs rounded-xl transition-all shadow-sm hover:shadow-md flex items-center justify-center gap-2 border-none cursor-pointer"
-                        >
-                          <Play className="w-3.5 h-3.5" /> Iniciar Clase
-                        </button>
-                      )}
+                      {isAdmin ? (
+                        <AdminLiveControls
+                          canStart={featuredClass.status === "scheduled"}
+                          canComplete={featuredClass.status === "active"}
+                          onStart={handleStartClass}
+                          onComplete={handleCompleteClass}
+                        />
+                      ) : null}
                     </>
                   ) : (
                     featuredClass.youtube_video_id && (
@@ -949,11 +942,11 @@ export default function LivePanel() {
 
       {/* Empty state when nothing at all */}
       {!activeClass && completedClasses.length === 0 && !loading && (
-        <div className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/80 dark:border-neutral-800/80 p-12 text-center shadow-sm">
-          <div className="bg-brand-blue/10 rounded-2xl flex items-center justify-center mx-auto mb-5 w-16 h-16">
-            <RadioTower className="w-8 h-8 text-brand-blue" />
+        <div className="bg-white dark:bg-neutral-950 rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-12 text-center shadow-sm">
+          <div className="bg-foreground/10 rounded-2xl flex items-center justify-center mx-auto mb-5 w-16 h-16">
+            <RadioTower className="w-8 h-8 text-foreground" />
           </div>
-          <h4 className="font-display font-black text-lg text-neutral-900 dark:text-white mb-1.5">
+          <h4 className="font-display font-semibold text-lg text-neutral-900 dark:text-white mb-1.5">
             Sin clases por ahora
           </h4>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-xs mx-auto leading-relaxed">
@@ -966,7 +959,7 @@ export default function LivePanel() {
       <section className="space-y-5">
         <div className="px-1 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-1">
           <div>
-            <h3 className="font-display font-black text-xl text-neutral-900 dark:text-white mb-1">
+            <h3 className="font-display font-semibold text-xl text-neutral-900 dark:text-white mb-1">
               Clases Grabadas
             </h3>
             <p className="text-sm text-neutral-500 dark:text-neutral-400">
@@ -994,11 +987,11 @@ export default function LivePanel() {
             ))}
           </div>
         ) : activeClass ? (
-          <div className="bg-white dark:bg-neutral-950 rounded-3xl border border-neutral-200/80 dark:border-neutral-800/80 p-12 text-center shadow-sm">
+          <div className="bg-white dark:bg-neutral-950 rounded-xl border border-neutral-200/80 dark:border-neutral-800/80 p-12 text-center shadow-sm">
             <div className="bg-neutral-100 dark:bg-neutral-900 rounded-2xl flex items-center justify-center mx-auto mb-5 w-16 h-16">
               <Film className="w-8 h-8 text-neutral-400 dark:text-neutral-600" />
             </div>
-            <h4 className="font-display font-black text-lg text-neutral-900 dark:text-white mb-1.5">
+            <h4 className="font-display font-semibold text-lg text-neutral-900 dark:text-white mb-1.5">
               Sin grabaciones aún
             </h4>
             <p className="text-sm text-neutral-500 dark:text-neutral-400 max-w-xs mx-auto leading-relaxed">
@@ -1093,7 +1086,7 @@ function RecordingCard({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-transparent opacity-90 group-hover:opacity-70 transition-opacity duration-500" />
             {/* Velo azul sutil en hover */}
-            <div className="absolute inset-0 bg-brand-blue/0 group-hover:bg-brand-blue/10 transition-colors duration-500" />
+            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/10 transition-colors duration-500" />
           </>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-neutral-200 to-neutral-100 dark:from-neutral-900 dark:to-neutral-800 flex items-center justify-center">
@@ -1120,7 +1113,7 @@ function RecordingCard({
 
       {/* Info */}
       <div className="relative p-4 sm:p-5 flex flex-col flex-1 bg-white dark:bg-neutral-950">
-        <h4 className="font-bold text-sm text-neutral-900 dark:text-white leading-snug line-clamp-2 transition-colors duration-300 group-hover:text-brand-blue">
+        <h4 className="font-bold text-sm text-neutral-900 dark:text-white leading-snug line-clamp-2 transition-colors duration-300 group-hover:text-foreground">
           {recording.title}
         </h4>
 
@@ -1143,7 +1136,7 @@ function RecordingCard({
           </div>
 
           {hasVideo ? (
-            <span className="text-[11px] font-bold text-brand-blue flex items-center gap-0.5 group-hover:gap-2 transition-all duration-300 shrink-0">
+            <span className="text-[11px] font-bold text-foreground flex items-center gap-0.5 group-hover:gap-2 transition-all duration-300 shrink-0">
               Ver grabación{" "}
               <ChevronRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5" />
             </span>

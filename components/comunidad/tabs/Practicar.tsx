@@ -38,7 +38,7 @@ import {
   Clock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PRACTICE_UNITS } from "@/lib/practice/levels";
+import { loadPracticeUnit, PRACTICE_UNIT_META } from "@/lib/practice/catalog";
 import type { Level, LevelKind, Unit } from "@/lib/practice/types";
 import { usePracticeProgress } from "@/lib/practice/progress";
 import LessonPlayer from "../practice/LessonPlayer";
@@ -82,10 +82,21 @@ export default function Practicar() {
   const [openLevel, setOpenLevel] = useState<{ unit: Unit; level: Level } | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [trackDropdownOpen, setTrackDropdownOpen] = useState(false);
+  const [activeUnit, setActiveUnitData] = useState<Unit | null>(null);
 
-  // Sync active unit with saved state or default to first
-  const activeUnitId = progress.activeUnitId || PRACTICE_UNITS[0].id;
-  const activeUnit = PRACTICE_UNITS.find((u) => u.id === activeUnitId) || PRACTICE_UNITS[0];
+  const activeUnitId = progress.activeUnitId || PRACTICE_UNIT_META[0].id;
+  const activeMeta = PRACTICE_UNIT_META.find((u) => u.id === activeUnitId) || PRACTICE_UNIT_META[0];
+
+  useEffect(() => {
+    let cancelled = false;
+    setActiveUnitData(null);
+    loadPracticeUnit(activeUnitId).then((unit) => {
+      if (!cancelled) setActiveUnitData(unit);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [activeUnitId]);
 
   // Auto-trigger onboarding modal for first-time users
   useEffect(() => {
@@ -94,15 +105,15 @@ export default function Practicar() {
     }
   }, [progress.hasCompletedOnboarding]);
 
-  const completedCount = activeUnit.levels.filter((l) =>
-    isLevelCompleted(activeUnit.id, l.id)
-  ).length;
-  const nextIdx = Math.min(completedCount, activeUnit.levels.length - 1);
+  const completedCount = activeUnit
+    ? activeUnit.levels.filter((l) => isLevelCompleted(activeUnit.id, l.id)).length
+    : 0;
+  const nextIdx = activeUnit ? Math.min(completedCount, activeUnit.levels.length - 1) : 0;
 
   const isLocked = (idx: number) => idx > nextIdx;
-  const isDone = (id: string) => isLevelCompleted(activeUnit.id, id);
+  const isDone = (id: string) => (activeUnit ? isLevelCompleted(activeUnit.id, id) : false);
 
-  const activeLevel = activeUnit.levels[nextIdx];
+  const activeLevel = activeUnit?.levels[nextIdx];
 
   const handleOnboardingComplete = (unitId: string, dailyGoalXP: number) => {
     completeOnboarding(unitId, dailyGoalXP);
@@ -126,8 +137,8 @@ export default function Practicar() {
             onClick={() => setTrackDropdownOpen(!trackDropdownOpen)}
             className="flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-surface/80 hover:bg-surface border border-border/80 text-xs font-bold text-text transition-all shadow-sm backdrop-blur-md"
           >
-            <span className="text-sm">{activeUnit.emoji}</span>
-            <span className="truncate max-w-[110px] sm:max-w-[160px]">{activeUnit.title}</span>
+            <span className="text-sm">{activeMeta.emoji}</span>
+            <span className="truncate max-w-[110px] sm:max-w-[160px]">{activeMeta.title}</span>
             <ChevronDown className="w-3.5 h-3.5 text-text-muted shrink-0" />
           </button>
 
@@ -142,13 +153,13 @@ export default function Practicar() {
                 <div className="px-2 py-1 text-[10px] font-bold text-text-muted uppercase">
                   Cambiar Tecnología
                 </div>
-                {PRACTICE_UNITS.map((u) => (
+                {PRACTICE_UNIT_META.map((u) => (
                   <button
                     key={u.id}
                     onClick={() => handleSelectTrack(u.id)}
                     className={cn(
                       "w-full flex items-center justify-between p-2.5 rounded-xl text-left text-xs font-semibold transition-colors",
-                      u.id === activeUnit.id ? "bg-accent/10 text-accent font-bold" : "hover:bg-surface-hover text-text"
+                      u.id === activeMeta.id ? "bg-accent/10 text-accent font-bold" : "hover:bg-surface-hover text-text"
                     )}
                   >
                     <div className="flex items-center gap-2 truncate">
@@ -191,11 +202,11 @@ export default function Practicar() {
           
           {/* Banner de Sección Superior (Verde/Acento) */}
           <motion.div
-            key={activeUnit.id}
+            key={activeMeta.id}
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="w-full max-w-[620px] rounded-2xl p-4 sm:p-5 text-white shadow-lg flex items-center justify-between gap-3 mb-6 relative overflow-hidden"
-            style={{ background: activeUnit.accentColor }}
+            style={{ background: activeMeta.accentColor }}
           >
             <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
               <button
@@ -208,16 +219,16 @@ export default function Practicar() {
 
               <div className="min-w-0">
                 <div className="text-[10px] font-black uppercase tracking-wider opacity-85">
-                  ETAPA 1, SECCIÓN {PRACTICE_UNITS.findIndex((u) => u.id === activeUnit.id) + 1}
+                  ETAPA 1, SECCIÓN {PRACTICE_UNIT_META.findIndex((u) => u.id === activeMeta.id) + 1}
                 </div>
                 <h2 className="font-display font-black text-base sm:text-xl truncate leading-tight">
-                  {activeUnit.emoji} {activeUnit.title}
+                  {activeMeta.emoji} {activeMeta.title}
                 </h2>
               </div>
             </div>
 
             <button
-              onClick={() => activeLevel && setOpenLevel({ unit: activeUnit, level: activeLevel })}
+              onClick={() => activeUnit && activeLevel && setOpenLevel({ unit: activeUnit, level: activeLevel })}
               className="px-3.5 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs flex items-center gap-1.5 backdrop-blur-sm shrink-0 transition-all border border-white/20"
             >
               <BookOpen className="w-4 h-4" />
@@ -226,14 +237,18 @@ export default function Practicar() {
           </motion.div>
 
           {/* Tablero Serpenteante 3D (Sin línea conectora) */}
-          <div className="w-full relative">
-            <PathBoard
-              unit={activeUnit}
-              isDone={isDone}
-              isLocked={isLocked}
-              onOpen={(lvl) => setOpenLevel({ unit: activeUnit, level: lvl })}
-              nextIdx={nextIdx}
-            />
+          <div className="w-full relative min-h-[320px]">
+            {activeUnit ? (
+              <PathBoard
+                unit={activeUnit}
+                isDone={isDone}
+                isLocked={isLocked}
+                onOpen={(lvl) => setOpenLevel({ unit: activeUnit, level: lvl })}
+                nextIdx={nextIdx}
+              />
+            ) : (
+              <div className="h-80 rounded-xl border border-border bg-surface animate-pulse" />
+            )}
           </div>
         </div>
 
@@ -272,18 +287,18 @@ export default function Practicar() {
             <div className="flex items-center justify-between">
               <h3 className="font-display font-bold text-sm text-text flex items-center gap-2">
                 <Crown className="w-4 h-4 text-amber-500" />
-                Avance en {activeUnit.title}
+                Avance en {activeMeta.title}
               </h3>
               <span className="text-xs font-bold text-text-muted">
-                {completedCount}/{activeUnit.levels.length}
+                {completedCount}/{activeUnit?.levels.length ?? activeMeta.levelCount}
               </span>
             </div>
 
             <p className="text-xs text-text-secondary leading-relaxed">
-              Completa {activeUnit.levels.length - completedCount} lecciones más para desbloquear el trofeo final de esta unidad.
+              Completa {(activeUnit?.levels.length ?? activeMeta.levelCount) - completedCount} lecciones más para desbloquear el trofeo final de esta unidad.
             </p>
 
-            {activeLevel && (
+            {activeUnit && activeLevel && (
               <button
                 onClick={() => setOpenLevel({ unit: activeUnit, level: activeLevel })}
                 className="w-full py-2.5 rounded-xl bg-accent text-white font-bold text-xs shadow-md hover:bg-accent/90 transition-all flex items-center justify-center gap-2"

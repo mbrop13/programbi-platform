@@ -13,7 +13,7 @@ import {
   Info,
   HelpCircle
 } from "lucide-react";
-import { getCurrentUserProfile, getDashboardStats, getUserCertificates } from "@/lib/supabase/comunidad";
+import { getCurrentUserProfile, getUserCertificates } from "@/lib/supabase/comunidad";
 
 interface Certificate {
   id: string;
@@ -36,8 +36,7 @@ export default function Certificates() {
   useEffect(() => {
     async function load() {
       try {
-        const [stats, userProf, dbCerts] = await Promise.all([
-          getDashboardStats(),
+        const [userProf, dbCerts] = await Promise.all([
           getCurrentUserProfile(),
           getUserCertificates(),
         ]);
@@ -57,10 +56,7 @@ export default function Certificates() {
         }));
         setManualCertificates(manualCerts);
 
-        // 2. LMS course progress to show evaluation states
-        if (stats?.courseProgress) {
-          setCourseProgressList(stats.courseProgress);
-        }
+        setCourseProgressList([]);
       } catch (err) {
         console.error("Error loading certificates", err);
       } finally {
@@ -275,23 +271,23 @@ export default function Certificates() {
   return (
     <div className="max-w-[1200px] mx-auto space-y-8 p-1 sm:p-0">
       {/* ─── BANNER SUPERIOR ACADÉMICO ─── */}
-      <div className="relative overflow-hidden rounded-3xl bg-neutral-900 dark:bg-neutral-950 p-6 sm:p-8 text-white border border-neutral-800 shadow-lg">
+      <div className="relative overflow-hidden rounded-xl bg-surface p-6 sm:p-8 text-foreground border border-border">
         <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-br from-amber-500/10 to-transparent rounded-full blur-3xl" />
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <span className="text-[10px] font-black text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-md uppercase tracking-wider">
+            <span className="text-[10px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-md uppercase tracking-wider">
               Acreditación Profesional
             </span>
-            <h1 className="font-display font-black text-2xl sm:text-3xl tracking-tight mt-2 flex items-center gap-2">
+            <h1 className="font-display font-semibold text-2xl sm:text-3xl tracking-tight mt-2 flex items-center gap-2">
               <Award className="w-8 h-8 text-amber-500 shrink-0" /> Logros y Certificados
             </h1>
             <p className="text-sm text-neutral-400 max-w-xl leading-relaxed">
               Tus certificados oficiales firmados por ProgramBI. Aquí se listarán de inmediato una vez que los profesores evalúen tu progreso y habiliten la descarga.
             </p>
           </div>
-          <div className="bg-neutral-850 border border-neutral-700/40 rounded-2xl p-4 shrink-0 text-center md:text-left min-w-[200px]">
-            <div className="text-2xl font-black text-white">{manualCertificates.length}</div>
-            <div className="text-xs text-neutral-400 font-bold uppercase tracking-wider mt-0.5">Certificados Obtenidos</div>
+          <div className="bg-bg border border-border rounded-xl p-4 shrink-0 text-center md:text-left min-w-[200px]">
+            <div className="text-2xl font-semibold text-foreground">{manualCertificates.length}</div>
+            <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider mt-0.5">Certificados obtenidos</div>
           </div>
         </div>
       </div>
@@ -320,7 +316,7 @@ export default function Certificates() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.08 }}
-                className="bg-white dark:bg-neutral-900 rounded-3xl shadow-sm border border-neutral-200/60 dark:border-neutral-800/80 overflow-hidden hover:shadow-md transition-all duration-200"
+                className="bg-white dark:bg-neutral-900 rounded-xl shadow-sm border border-neutral-200/60 dark:border-neutral-800/80 overflow-hidden hover:shadow-md transition-all duration-200"
               >
                 {/* Visual Preview */}
                 <div className="relative h-40 bg-gradient-to-br from-neutral-900 to-neutral-950 p-5 flex flex-col justify-between border-b border-neutral-200/50 dark:border-neutral-800/50">
@@ -328,7 +324,7 @@ export default function Certificates() {
                   <div>
                     <div className="flex items-center justify-between">
                       <Award className="w-7 h-7 text-amber-500" />
-                      <span className="text-[9px] font-black text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded uppercase tracking-wider">
+                      <span className="text-[9px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded uppercase tracking-wider">
                         OFICIAL
                       </span>
                     </div>
@@ -351,7 +347,7 @@ export default function Certificates() {
                   <button
                     onClick={() => handleDownload(cert)}
                     disabled={downloading === cert.id}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-brand-blue hover:bg-blue-600 text-white rounded-2xl text-xs font-black shadow-sm hover:shadow-md transition-all active:scale-[0.98] disabled:opacity-50 cursor-pointer border-none"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 bg-foreground text-background rounded-xl text-xs font-medium disabled:opacity-50 cursor-pointer border-none"
                   >
                     {downloading === cert.id ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -390,7 +386,7 @@ export default function Certificates() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.08 }}
-                  className={`bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-200/60 dark:border-neutral-800/80 p-5 space-y-4 shadow-sm relative overflow-hidden
+                  className={`bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200/60 dark:border-neutral-800/80 p-5 space-y-4 shadow-sm relative overflow-hidden
                     ${!hasAccessToCert ? "opacity-60 bg-neutral-50/50 dark:bg-neutral-950/20" : ""}`}
                 >
                   <div className="flex items-start justify-between gap-4">
@@ -402,15 +398,15 @@ export default function Certificates() {
                     </div>
                     {/* Status Badge */}
                     {!hasAccessToCert ? (
-                      <span className="text-[9px] font-black text-neutral-500 bg-neutral-200/50 dark:bg-neutral-850 dark:text-neutral-400 px-2 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 shrink-0">
+                      <span className="text-[9px] font-semibold text-neutral-500 bg-neutral-200/50 dark:bg-neutral-850 dark:text-neutral-400 px-2 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 shrink-0">
                         <Lock className="w-2.5 h-2.5" /> Requerido Ultra
                       </span>
                     ) : isFinished ? (
-                      <span className="text-[9px] font-black text-amber-600 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 shrink-0 animate-pulse">
+                      <span className="text-[9px] font-semibold text-amber-600 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-md uppercase tracking-wider flex items-center gap-1 shrink-0 animate-pulse">
                         <Clock className="w-2.5 h-2.5" /> En Evaluación
                       </span>
                     ) : (
-                      <span className="text-[9px] font-black text-blue-600 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-md uppercase tracking-wider shrink-0">
+                      <span className="text-[9px] font-semibold text-blue-600 bg-blue-500/10 border border-blue-500/20 px-2 py-0.5 rounded-md uppercase tracking-wider shrink-0">
                         En Curso
                       </span>
                     )}
@@ -451,7 +447,7 @@ export default function Certificates() {
 
       {/* ─── ESTADO VACÍO (Si no hay cursos ni certificados) ─── */}
       {manualCertificates.length === 0 && courseProgressList.length === 0 && (
-        <div className="bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-200/60 dark:border-neutral-800/80 shadow-sm p-12 text-center max-w-lg mx-auto">
+        <div className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200/60 dark:border-neutral-800/80 shadow-sm p-12 text-center max-w-lg mx-auto">
           <div className="w-16 h-16 bg-neutral-100 dark:bg-neutral-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
             <FileText className="w-8 h-8 text-neutral-400" />
           </div>

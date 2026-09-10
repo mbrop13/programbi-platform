@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Bookmark, Bell, Briefcase, Building2, Search, UserRound, CheckCircle2, Clock, XCircle, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import JobSearchPanel from "./empleos/JobSearchPanel";
@@ -12,17 +13,39 @@ import EmployerDashboard from "./empleos/EmployerDashboard";
 
 type Section = "buscar" | "postulaciones" | "guardados" | "alertas" | "perfil" | "empresa";
 
+const SECTIONS: Section[] = ["buscar", "postulaciones", "guardados", "alertas", "perfil", "empresa"];
+
 export default function EmpleosTab() {
-  const [section, setSection] = useState<Section>("buscar");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const seccionParam = searchParams.get("seccion");
+  const [section, setSection] = useState<Section>(
+    seccionParam && SECTIONS.includes(seccionParam as Section) ? (seccionParam as Section) : "buscar"
+  );
   const [isEmployer, setIsEmployer] = useState(false);
   const [featureResult, setFeatureResult] = useState<"ok" | "pending" | "error" | null>(null);
+
+  useEffect(() => {
+    if (seccionParam && SECTIONS.includes(seccionParam as Section)) {
+      setSection(seccionParam as Section);
+    }
+  }, [seccionParam]);
+
+  const selectSection = (next: Section) => {
+    setSection(next);
+    const params = new URLSearchParams(searchParams.toString());
+    if (next === "buscar") params.delete("seccion");
+    else params.set("seccion", next);
+    const qs = params.toString();
+    router.replace(qs ? `/comunidad/empleos?${qs}` : "/comunidad/empleos", { scroll: false });
+  };
 
   useEffect(() => {
     // Navegación directa desde la página pública (ej. "completar perfil para postular")
     const target = sessionStorage.getItem("empleos-section");
     if (target) {
       sessionStorage.removeItem("empleos-section");
-      setSection(target as Section);
+      selectSection(target as Section);
     }
     // ¿Pertenece a una empresa? (incluso pendiente: mostramos su estado)
     fetch("/api/employer/verify")
@@ -109,7 +132,7 @@ export default function EmpleosTab() {
             key={s.id}
             role="tab"
             aria-selected={section === s.id}
-            onClick={() => setSection(s.id)}
+            onClick={() => selectSection(s.id)}
             className={cn(
               "inline-flex shrink-0 items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
               section === s.id
