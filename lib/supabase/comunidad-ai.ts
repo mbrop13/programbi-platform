@@ -3,6 +3,167 @@
 import { createClient, createAdminClient } from "./server";
 import { revalidatePath } from "next/cache";
 import { isCurrentUserAdmin } from "./comunidad";
+import type { RegistrationSourceCategory } from "@/lib/registration-source";
+
+function sanitizeSearch(q: string) {
+  return q.replace(/[%_,.()]/g, " ").replace(/\s+/g, " ").trim().slice(0, 80);
+}
+
+function applyRegistrationSourceFilter(query: any, source: RegistrationSourceCategory) {
+  switch (source) {
+    case "all":
+      return query;
+    case "desconocido":
+      return query.or("registration_source.is.null,registration_source.eq.");
+    case "inicio":
+      return query.or("registration_source.eq./,registration_source.like./?%");
+    case "registro":
+      return query.or("registration_source.ilike.%/registro%,registration_source.ilike.%/login%");
+    case "comunidad":
+      return query.ilike("registration_source", "%/comunidad%");
+    case "cursos":
+      return query.ilike("registration_source", "%/cursos%");
+    case "blog":
+      return query.or("registration_source.ilike.%/blog%,registration_source.ilike.%/newsletter%");
+    case "empresas":
+      return query.ilike("registration_source", "%/empresas%");
+    case "asesorias":
+      return query.ilike("registration_source", "%/asesorias%");
+    case "gran-partido":
+      return query.ilike("registration_source", "%/gran-partido%");
+    case "webinar":
+      return query.ilike("registration_source", "%/webinar%");
+    case "pago":
+      return query.ilike("registration_source", "%/pago%");
+    case "otros":
+      return query
+        .not("registration_source", "is", null)
+        .neq("registration_source", "")
+        .not("registration_source", "eq", "/")
+        .not("registration_source", "ilike", "%/comunidad%")
+        .not("registration_source", "ilike", "%/cursos%")
+        .not("registration_source", "ilike", "%/registro%")
+        .not("registration_source", "ilike", "%/login%")
+        .not("registration_source", "ilike", "%/blog%")
+        .not("registration_source", "ilike", "%/newsletter%")
+        .not("registration_source", "ilike", "%/empresas%")
+        .not("registration_source", "ilike", "%/asesorias%")
+        .not("registration_source", "ilike", "%/gran-partido%")
+        .not("registration_source", "ilike", "%/webinar%")
+        .not("registration_source", "ilike", "%/pago%");
+    default:
+      return query;
+  }
+}
+
+const USER_LIST_COLUMNS =
+  "id, full_name, email, role, avatar_url, created_at, phone, registration_source, pricing_variant, subscription_plan, subscription_expires_at";
+
+export type AdminUsersPage = {
+  users: any[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
+export async function adminGetUsersPage(opts: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  source?: RegistrationSourceCategory;
+} = {}): Promise<AdminUsersPage> {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const page = Math.max(1, opts.page || 1);
+  const pageSize = Math.min(100, Math.max(10, opts.pageSize || 50));
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  let query = adminDb
+    .from("profiles")
+    .select(USER_LIST_COLUMNS, { count: "exact" })
+    .order("created_at", { ascending: false });
+
+  const search = opts.search ? sanitizeSearch(opts.search) : "";
+  if (search) {
+    query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);
+  }
+  if (opts.source && opts.source !== "all") {
+    query = applyRegistrationSourceFilter(query, opts.source);
+  }
+
+  const { data, error, count } = await query.range(from, to);
+  if (error) {
+    console.error("Error fetching users page:", error);
+    return { users: [], total: 0, page, pageSize };
+  }
+  return { users: data || [], total: count || 0, page, pageSize };
+}
+
+export type AdminLeadsPage = {
+  leads: any[];
+  total: number;
+  page: number;
+  pageSize: number;
+};
+
+export async function adminGetLeadsPage(opts: {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  leadType?: string;
+} = {}): Promise<AdminLeadsPage> {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const page = Math.max(1, opts.page || 1);
+  const pageSize = Math.min(100, Math.max(10, opts.pageSize || 50));
+  const from = (page - 1) * pageSize;
+  const to = from + pageSize - 1;
+
+  let query = adminDb
+    .from("course_leads")
+    .select("*", { count: "exact" })
+    .neq("lead_type", "abandoned_cart")
+    .order("created_at", { ascending: false });
+
+  const search = opts.search ? sanitizeSearch(opts.search) : "";
+  if (search) {
+    query = query.or(
+      `name.ilike.%${search}%,email.ilike.%${search}%,whatsapp.ilike.%${search}%,message.ilike.%${search}%,source_course.ilike.%${search}%`
+    );
+  }
+  if (opts.leadType && opts.leadType !== "all") {
+    query = query.eq("lead_type", opts.leadType);
+  }
+
+  const { data, error, count } = await query.range(from, to);
+  if (error) {
+    console.error("Error fetching leads page:", error);
+    return { leads: [], total: 0, page, pageSize };
+  }
+  return { leads: data || [], total: count || 0, page, pageSize };
+}
+
+export async function adminGetCourseOptions() {
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const adminDb = createAdminClient();
+  const { data, error } = await adminDb
+    .from("courses")
+    .select("id, slug, title, is_hidden")
+    .order("title");
+
+  if (error) {
+    console.error("Error fetching course options:", error);
+    return [];
+  }
+  return data || [];
+}
 
 // ─── ADMIN: LEADS / CONTACTS ───
 
@@ -548,40 +709,6 @@ export async function adminGetAllUsers() {
   }
 
   if (error) { console.error("Error:", error); return []; }
-
-  // Auto-backfill missing emails or phones from auth.users
-  const profilesMissingData = (profiles || []).filter(p => !p.email || !p.phone);
-  if (profilesMissingData.length > 0) {
-    try {
-      const { data: authData } = await adminDb.auth.admin.listUsers({ perPage: 1000 });
-      if (authData && authData.users) {
-        const authMap = Object.fromEntries(authData.users.map(u => [u.id, u]));
-        for (const p of (profiles || [])) {
-          const authUser = authMap[p.id];
-          if (authUser) {
-            let updated = false;
-            let updates: any = {};
-            if (!p.email && authUser.email) {
-               p.email = authUser.email;
-               updates.email = authUser.email;
-               updated = true;
-            }
-            const phone = authUser.phone || authUser.user_metadata?.whatsapp || authUser.user_metadata?.phone;
-            if (!p.phone && phone) {
-               p.phone = phone;
-               updates.phone = phone;
-               updated = true;
-            }
-            if (updated) {
-               adminDb.from("profiles").update(updates).eq("id", p.id).then();
-            }
-          }
-        }
-      }
-    } catch (err) {
-      console.error("Failed to backfill missing data:", err);
-    }
-  }
 
   return profiles || [];
 }
@@ -2760,59 +2887,82 @@ export async function adminGetDetailedDashboardStats() {
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  // 1. Obtener estadísticas básicas (ingresos, transacciones recientes, etc.)
-  const basicStats = await adminGetDashboardStats();
-
-  // 2. Obtener usuarios con suscripciones activas
-  const { data: subscribers } = await adminDb
-    .from("profiles")
-    .select("id, full_name, email, subscription_plan, subscription_expires_at, created_at")
-    .not("subscription_plan", "is", null)
-    .neq("subscription_plan", "none");
-
-  const activeSubscribers = (subscribers || []).filter(p => {
-    if (!p.subscription_expires_at) return true; // permanente
-    return new Date(p.subscription_expires_at) >= new Date();
-  });
-
-  // 3. Progreso de los usuarios y estadísticas de actividad
-  const { data: progressList } = await adminDb
-    .from("user_progress")
-    .select("user_id, lesson_id, course_id, completed, progress_percent, updated_at");
-
-  const totalProgressRecords = progressList?.length || 0;
-  const avgProgressPercent = totalProgressRecords > 0
-    ? Math.round(progressList!.reduce((sum, p) => sum + (p.progress_percent || 0), 0) / totalProgressRecords)
-    : 0;
-
-  const completedClassesCount = progressList?.filter(p => p.completed).length || 0;
-
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  const watchedLastMonthCount = progressList?.filter(p => p.updated_at && new Date(p.updated_at) >= thirtyDaysAgo).length || 0;
 
-  // 4. Ranking de estudiantes (Progreso acumulado por curso)
-  const { data: courses } = await adminDb
-    .from("courses")
-    .select("id, title");
+  const [
+    basicStats,
+    { data: subscribers },
+    { count: totalProgressRecords },
+    { count: completedClassesCount },
+    { count: watchedLastMonthCount },
+  ] = await Promise.all([
+    adminGetDashboardStats(),
+    adminDb
+      .from("profiles")
+      .select("id, full_name, email, subscription_plan, subscription_expires_at, created_at")
+      .not("subscription_plan", "is", null)
+      .neq("subscription_plan", "none"),
+    adminDb.from("user_progress").select("id", { count: "exact", head: true }),
+    adminDb.from("user_progress").select("id", { count: "exact", head: true }).eq("completed", true),
+    adminDb
+      .from("user_progress")
+      .select("id", { count: "exact", head: true })
+      .gte("updated_at", thirtyDaysAgo.toISOString()),
+  ]);
 
-  const { data: lessons } = await adminDb
-    .from("lessons")
-    .select("id, course_id");
+  const now = new Date();
+  const activeSubscribers = (subscribers || []).filter(p => {
+    if (!p.subscription_expires_at) return true;
+    return new Date(p.subscription_expires_at) >= now;
+  });
+
+  const total = totalProgressRecords || 0;
+  const completed = completedClassesCount || 0;
+
+  return {
+    ...basicStats,
+    subscribers: activeSubscribers,
+    activity: {
+      avgProgressPercent: total > 0 ? Math.round((completed / total) * 100) : 0,
+      completedClassesCount: completed,
+      watchedLastMonthCount: watchedLastMonthCount || 0,
+    },
+    leaderboard: [] as any[],
+  };
+}
+
+export async function adminGetProgressLeaderboard() {
+  const adminDb = createAdminClient();
+  const admin = await isCurrentUserAdmin();
+  if (!admin) throw new Error("Solo administradores");
+
+  const { data: progressList } = await adminDb
+    .from("user_progress")
+    .select("user_id, course_id, completed, progress_percent, updated_at");
+
+  const userIds = Array.from(new Set((progressList || []).map(p => p.user_id).filter(Boolean)));
+  const courseIds = Array.from(new Set((progressList || []).map(p => p.course_id).filter(Boolean)));
+
+  const [{ data: courses }, { data: lessons }, { data: profiles }] = await Promise.all([
+    courseIds.length
+      ? adminDb.from("courses").select("id, title").in("id", courseIds)
+      : Promise.resolve({ data: [] as { id: string; title: string }[] }),
+    courseIds.length
+      ? adminDb.from("lessons").select("id, course_id").in("course_id", courseIds)
+      : Promise.resolve({ data: [] as { id: string; course_id: string }[] }),
+    userIds.length
+      ? adminDb.from("profiles").select("id, full_name, email").in("id", userIds)
+      : Promise.resolve({ data: [] as { id: string; full_name: string | null; email: string | null }[] }),
+  ]);
 
   const courseLessonsCount: Record<string, number> = {};
   (lessons || []).forEach(l => {
-    if (l.course_id) {
-      courseLessonsCount[l.course_id] = (courseLessonsCount[l.course_id] || 0) + 1;
-    }
+    if (l.course_id) courseLessonsCount[l.course_id] = (courseLessonsCount[l.course_id] || 0) + 1;
   });
 
-  const { data: allProfiles } = await adminDb
-    .from("profiles")
-    .select("id, full_name, email");
-
   const profileMap = new Map<string, { name: string; email: string }>();
-  (allProfiles || []).forEach(p => {
+  (profiles || []).forEach(p => {
     profileMap.set(p.id, { name: p.full_name || "Estudiante", email: p.email || "" });
   });
 
@@ -2821,53 +2971,34 @@ export async function adminGetDetailedDashboardStats() {
     courseMap.set(c.id, c.title);
   });
 
-  const studentCourseProgress: Record<string, { completedCount: number; totalCount: number; maxPercent: number; lastUpdated: string }> = {};
+  const studentCourseProgress: Record<string, { completedCount: number; totalCount: number; lastUpdated: string }> = {};
 
   (progressList || []).forEach(p => {
     const key = `${p.user_id}_${p.course_id}`;
     if (!studentCourseProgress[key]) {
-      studentCourseProgress[key] = { completedCount: 0, totalCount: 0, maxPercent: 0, lastUpdated: p.updated_at };
+      studentCourseProgress[key] = { completedCount: 0, totalCount: 0, lastUpdated: p.updated_at };
     }
-    if (p.completed) {
-      studentCourseProgress[key].completedCount += 1;
-    }
+    if (p.completed) studentCourseProgress[key].completedCount += 1;
     studentCourseProgress[key].totalCount += 1;
-    if (p.progress_percent > studentCourseProgress[key].maxPercent) {
-      studentCourseProgress[key].maxPercent = p.progress_percent;
-    }
     if (p.updated_at && (!studentCourseProgress[key].lastUpdated || new Date(p.updated_at) > new Date(studentCourseProgress[key].lastUpdated))) {
       studentCourseProgress[key].lastUpdated = p.updated_at;
     }
   });
 
-  const leaderboard = Object.entries(studentCourseProgress).map(([key, val]) => {
+  return Object.entries(studentCourseProgress).map(([key, val]) => {
     const [userId, courseId] = key.split("_");
     const prof = profileMap.get(userId);
-    const courseTitle = courseMap.get(courseId) || "Curso Desconocido";
     const totalLessons = courseLessonsCount[courseId] || val.totalCount || 1;
-    const completionPercent = Math.min(100, Math.round((val.completedCount / totalLessons) * 100));
-
     return {
       userId,
       courseId,
       studentName: prof?.name || "Estudiante",
       studentEmail: prof?.email || "",
-      courseTitle,
+      courseTitle: courseMap.get(courseId) || "Curso Desconocido",
       completedLessons: val.completedCount,
       totalLessons,
-      completionPercent,
+      completionPercent: Math.min(100, Math.round((val.completedCount / totalLessons) * 100)),
       lastUpdated: val.lastUpdated,
     };
   }).sort((a, b) => b.completionPercent - a.completionPercent);
-
-  return {
-    ...basicStats,
-    subscribers: activeSubscribers,
-    activity: {
-      avgProgressPercent,
-      completedClassesCount,
-      watchedLastMonthCount,
-    },
-    leaderboard,
-  };
 }

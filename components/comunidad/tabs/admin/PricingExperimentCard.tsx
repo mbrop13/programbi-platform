@@ -47,21 +47,21 @@ function Arm({
   ];
 
   return (
-    <div className="rounded-2xl border border-neutral-100 bg-white p-5">
-      <div className="mb-4 flex items-center gap-2.5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-neutral-100 text-neutral-700">
-          <Icon className="h-4 w-4" />
+    <div className="rounded-xl border border-border bg-surface p-4">
+      <div className="mb-3 flex items-center gap-2.5">
+        <div className="flex size-8 items-center justify-center rounded-md bg-muted text-foreground">
+          <Icon className="size-3.5" />
         </div>
         <div>
-          <p className="text-sm font-black text-neutral-900">{title}</p>
-          <p className="text-[11px] font-semibold text-neutral-400">{hint}</p>
+          <p className="text-sm font-medium">{title}</p>
+          <p className="text-[11px] text-muted-foreground">{hint}</p>
         </div>
       </div>
-      <dl className="space-y-2.5">
+      <dl className="space-y-2">
         {rows.map((row) => (
           <div key={row.label} className="flex items-baseline justify-between gap-3">
-            <dt className="text-xs font-semibold text-neutral-500">{row.label}</dt>
-            <dd className="text-sm font-black tabular-nums text-neutral-900">{row.value}</dd>
+            <dt className="text-xs text-muted-foreground">{row.label}</dt>
+            <dd className="text-sm tabular-nums">{row.value}</dd>
           </div>
         ))}
       </dl>
@@ -94,10 +94,10 @@ export default function PricingExperimentCard() {
   }, []);
 
   return (
-    <section className="rounded-3xl border border-neutral-100 bg-neutral-50 p-5 sm:p-6">
+    <section className="rounded-xl border border-border bg-surface p-4 sm:p-5">
       <div className="mb-4">
-        <h3 className="text-base font-black text-neutral-900">Experimento de precio (cerrado)</h3>
-        <p className="mt-1 text-xs font-semibold leading-relaxed text-neutral-500">
+        <h3 className="text-sm font-medium">Experimento de precio (cerrado)</h3>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
           El split 50/50 ya no está activo: todos los visitantes ven el candado hasta registrarse. Abajo quedan
           los datos históricos de cada brazo.
         </p>

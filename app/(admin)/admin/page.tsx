@@ -1,9 +1,16 @@
-import AdminPanel from "@/components/comunidad/tabs/AdminPanel";
+import { redirect } from "next/navigation";
+import AdminOverview from "@/components/comunidad/tabs/admin/AdminOverview";
+import { ADMIN_TAB_REDIRECTS } from "@/components/admin/nav";
 
-export default function AdminPage() {
-  return (
-    <div className="min-h-screen bg-[#f8f9fb] p-4 sm:p-6 lg:p-8">
-      <AdminPanel />
-    </div>
-  );
+export default async function AdminPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ tab?: string }>;
+}) {
+  const { tab } = await searchParams;
+  if (tab && ADMIN_TAB_REDIRECTS[tab] && ADMIN_TAB_REDIRECTS[tab] !== "/admin") {
+    redirect(ADMIN_TAB_REDIRECTS[tab]);
+  }
+
+  return <AdminOverview />;
 }

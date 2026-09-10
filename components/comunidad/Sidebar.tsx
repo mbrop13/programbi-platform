@@ -705,7 +705,7 @@ export default function Sidebar({
                 {isAdmin && (
                   <>
                     <Link
-                      href="/comunidad/admin"
+                      href="/admin"
                       onMouseEnter={() => setActiveSubmenu(null)}
                       className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-amber-600 hover:bg-amber-50 transition-colors font-medium no-underline"
                     >

@@ -446,6 +446,21 @@ body {
   transform: translateY(-1px);
 }
 
+/* Admin shell — same paper tokens as the rest of ProgramBI */
+.admin-app {
+  color: var(--text);
+  background: var(--bg);
+}
+.admin-app aside::-webkit-scrollbar,
+.admin-app main::-webkit-scrollbar {
+  width: 8px;
+}
+.admin-app aside::-webkit-scrollbar-thumb,
+.admin-app main::-webkit-scrollbar-thumb {
+  background: rgb(23 23 22 / 16%);
+  border-radius: 999px;
+}
+
 /* Section padding utility */
 .section-padding {
   @apply py-16 lg:py-24 px-4 sm:px-6 lg:px-8;
