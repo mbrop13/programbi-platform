@@ -702,21 +702,6 @@ export default function Sidebar({
 
                 <div className="my-1 h-px bg-border" />
 
-                {isAdmin && (
-                  <>
-                    <Link
-                      href="/admin"
-                      onMouseEnter={() => setActiveSubmenu(null)}
-                      className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-amber-600 hover:bg-amber-50 transition-colors font-medium no-underline"
-                    >
-                      <ShieldAlert className="w-4 h-4 shrink-0" />
-                      <span>{t.adminPanel}</span>
-                      <ExternalLink className="w-3 h-3 ml-auto opacity-50 shrink-0" />
-                    </Link>
-                    <div className="my-1 h-px bg-border" />
-                  </>
-                )}
-
                 <Link
                   href="/"
                   onMouseEnter={() => setActiveSubmenu(null)}

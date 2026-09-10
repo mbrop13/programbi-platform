@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Bell, LogOut, Menu, Search, Shield, X } from "lucide-react";
+import { Bell, LogOut, Menu, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
@@ -40,7 +40,7 @@ export function useCampusUi() {
 export function CampusShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() || "/comunidad/inicio";
   const hideChrome = isLessonPlayerPath(pathname);
-  const { isAdmin, isOrgManager, userProfile } = useCommunity();
+  const { isOrgManager, userProfile } = useCommunity();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [upgradeOpen, setUpgradeOpen] = useState(false);
@@ -134,7 +134,6 @@ export function CampusShell({ children }: { children: React.ReactNode }) {
           <UserChip
             name={userProfile?.full_name || userProfile?.email || ""}
             plan={userProfile?.subscription_plan}
-            isAdmin={isAdmin}
             onUpgrade={() => setUpgradeOpen(true)}
           />
         </aside>
@@ -168,7 +167,6 @@ export function CampusShell({ children }: { children: React.ReactNode }) {
               <UserChip
                 name={userProfile?.full_name || userProfile?.email || ""}
                 plan={userProfile?.subscription_plan}
-                isAdmin={isAdmin}
                 onUpgrade={() => setUpgradeOpen(true)}
               />
             </aside>
@@ -292,12 +290,10 @@ function CampusNavList({
 function UserChip({
   name,
   plan,
-  isAdmin,
   onUpgrade,
 }: {
   name: string;
   plan?: string | null;
-  isAdmin: boolean;
   onUpgrade: () => void;
 }) {
   const initials = name
@@ -329,23 +325,13 @@ function UserChip({
           <span className="block text-[11px] text-muted-foreground truncate">{plan || "Sin plan"}</span>
         </span>
       </Link>
-      {isAdmin ? (
-        <Link
-          href="/admin"
-          className="flex items-center gap-2 rounded-md px-2 h-8 text-[13px] text-muted-foreground hover:bg-muted hover:text-foreground"
-        >
-          <Shield className="size-3.5" />
-          Admin
-        </Link>
-      ) : (
-        <button
-          type="button"
-          onClick={onUpgrade}
-          className="w-full flex items-center gap-2 rounded-md px-2 h-8 text-[13px] text-muted-foreground hover:bg-muted hover:text-foreground bg-transparent border-0 cursor-pointer"
-        >
-          Actualizar plan
-        </button>
-      )}
+      <button
+        type="button"
+        onClick={onUpgrade}
+        className="w-full flex items-center gap-2 rounded-md px-2 h-8 text-[13px] text-muted-foreground hover:bg-muted hover:text-foreground bg-transparent border-0 cursor-pointer"
+      >
+        Actualizar plan
+      </button>
       <button
         type="button"
         onClick={() => {
