@@ -21,6 +21,7 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   display: "swap",
   weight: ["400", "600"],
+  preload: false,
 });
 
 const dancing = Dancing_Script({
@@ -157,14 +158,6 @@ const jsonLd = {
       name: "ProgramBI",
       publisher: { "@id": ORG_ID },
       inLanguage: "es-CL",
-      potentialAction: {
-        "@type": "SearchAction",
-        target: {
-          "@type": "EntryPoint",
-          urlTemplate: `${SITE_URL}/cursos?q={search_term_string}`,
-        },
-        "query-input": "required name=search_term_string",
-      },
     },
   ],
 };

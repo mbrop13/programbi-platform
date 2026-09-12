@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
 import SeoGuide from "@/components/marketing/SeoGuide";
-import { SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
+import { SITE_URL, absoluteUrl, jsonLdString, pageOg } from "@/lib/seo";
 import { GUIDE_SEO } from "@/lib/seo/money";
 
 const copy = GUIDE_SEO["power-bi-mineria-chile"];
+
+const share = pageOg({
+  title: copy.title,
+  description: copy.description,
+  path: copy.path,
+  kicker: "Power BI · Minería Chile",
+  tags: ["Power BI", "Minería", "Chile"],
+});
 
 export const metadata: Metadata = {
   title: { absolute: copy.title },
@@ -14,7 +22,9 @@ export const metadata: Metadata = {
     description: copy.description,
     url: absoluteUrl(copy.path),
     type: "article",
+    images: share.images,
   },
+  twitter: share.twitter,
 };
 
 const faqs = [

@@ -1,3 +1,5 @@
+import { ogImageUrl } from "@/lib/og/url";
+
 /** Canonical host for ProgramBI marketing. Always www. */
 export const SITE_URL = "https://www.programbi.com";
 
@@ -47,6 +49,35 @@ export function twitterShare(
     title,
     description,
     images: [imageUrl],
+  };
+}
+
+/** OG + Twitter pair using the existing /og pipeline (no new card design). */
+export function pageOg(opts: {
+  title: string;
+  description: string;
+  path: string;
+  kicker: string;
+  tags?: string[];
+  alt?: string;
+}) {
+  const url = ogImageUrl({
+    kicker: opts.kicker,
+    title: opts.title,
+    description: opts.description,
+    tags: opts.tags,
+    path: opts.path.replace(/^\//, ""),
+  });
+  return {
+    images: [
+      {
+        url,
+        width: 1200,
+        height: 630,
+        alt: opts.alt || opts.title,
+      },
+    ],
+    twitter: twitterShare(opts.title, opts.description, url),
   };
 }
 

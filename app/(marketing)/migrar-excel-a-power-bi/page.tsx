@@ -1,20 +1,31 @@
 import type { Metadata } from "next";
 import SeoGuide from "@/components/marketing/SeoGuide";
-import { SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
+import { SITE_URL, absoluteUrl, breadcrumbJsonLd, jsonLdString, pageOg } from "@/lib/seo";
 
 const path = "/migrar-excel-a-power-bi";
+const title = "Migrar Excel a Power BI Chile | Control de gestión";
+const description =
+  "Migrar Excel a Power BI en Chile: tableros para control de gestión y capacitación del equipo. Cotiza in-company o el curso abierto.";
+const share = pageOg({
+  title,
+  description,
+  path,
+  kicker: "Excel → Power BI · Chile",
+  tags: ["Excel", "Power BI", "Chile"],
+});
 
 export const metadata: Metadata = {
-  title: { absolute: "Migrar Excel a Power BI Chile | Control de gestión" },
-  description:
-    "Migrar Excel a Power BI en Chile: tableros para control de gestión y capacitación del equipo. Cotiza in-company o el curso abierto.",
+  title: { absolute: title },
+  description,
   alternates: { canonical: path },
   openGraph: {
     title: "Migrar Excel a Power BI Chile | ProgramBI",
     description: "De planillas eternas a dashboards. Capacitación e implementación en Chile.",
     url: absoluteUrl(path),
     type: "article",
+    images: share.images,
   },
+  twitter: share.twitter,
 };
 
 const faqs = [
@@ -43,6 +54,11 @@ export default function Page() {
           acceptedAnswer: { "@type": "Answer", text: faq.a },
         })),
       },
+      breadcrumbJsonLd([
+        { name: "Inicio", path: "/" },
+        { name: "Empresas", path: "/empresas" },
+        { name: "Migrar Excel a Power BI", path: path },
+      ]),
     ],
   };
 

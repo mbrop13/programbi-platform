@@ -1,10 +1,18 @@
 import type { Metadata } from "next";
 import SeoGuide from "@/components/marketing/SeoGuide";
-import { SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
+import { SITE_URL, absoluteUrl, jsonLdString, pageOg } from "@/lib/seo";
 import { GUIDE_SEO } from "@/lib/seo/money";
 import { PACK } from "@/lib/data/pack-adopcion";
 
 const copy = GUIDE_SEO["curso-power-bi-vs-pack-adopcion"];
+
+const share = pageOg({
+  title: copy.title,
+  description: copy.description,
+  path: copy.path,
+  kicker: "Curso vs Pack · Chile",
+  tags: ["Power BI", "Pack Adopción", "Chile"],
+});
 
 export const metadata: Metadata = {
   title: { absolute: copy.title },
@@ -15,7 +23,9 @@ export const metadata: Metadata = {
     description: copy.description,
     url: absoluteUrl(copy.path),
     type: "article",
+    images: share.images,
   },
+  twitter: share.twitter,
 };
 
 const faqs = [

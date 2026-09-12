@@ -1,21 +1,32 @@
 import type { Metadata } from "next";
 import SeoGuide from "@/components/marketing/SeoGuide";
-import { SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
+import { SITE_URL, absoluteUrl, breadcrumbJsonLd, jsonLdString, pageOg } from "@/lib/seo";
 
 const path = "/implementacion-power-bi";
+const title = "Implementación Power BI Chile | ProgramBI";
+const description =
+  "Implementación Power BI en Chile para control de gestión: dashboards, capacitación in-company y acompañamiento. Diagnóstico por WhatsApp.";
+const share = pageOg({
+  title,
+  description,
+  path,
+  kicker: "Implementación Power BI · Chile",
+  tags: ["Power BI", "Empresas", "Chile"],
+});
 
 export const metadata: Metadata = {
-  title: { absolute: "Implementación Power BI Chile | ProgramBI" },
-  description:
-    "Implementación Power BI en Chile para control de gestión: dashboards, capacitación in-company y acompañamiento. Diagnóstico por WhatsApp.",
+  title: { absolute: title },
+  description,
   alternates: { canonical: path },
   openGraph: {
-    title: "Implementación Power BI Chile | ProgramBI",
+    title,
     description:
       "Dashboards Power BI con los datos de tu área y capacitación del equipo. Chile.",
     url: absoluteUrl(path),
     type: "article",
+    images: share.images,
   },
+  twitter: share.twitter,
 };
 
 const faqs = [
@@ -48,6 +59,11 @@ export default function Page() {
           acceptedAnswer: { "@type": "Answer", text: faq.a },
         })),
       },
+      breadcrumbJsonLd([
+        { name: "Inicio", path: "/" },
+        { name: "Empresas", path: "/empresas" },
+        { name: "Implementación Power BI", path: path },
+      ]),
     ],
   };
 

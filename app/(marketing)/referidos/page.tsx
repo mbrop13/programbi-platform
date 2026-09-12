@@ -1,19 +1,31 @@
 import type { Metadata } from "next";
 import { ReferidosLanding } from "@/components/referrals/referidos-landing";
-import { absoluteUrl, SITE_URL } from "@/lib/seo";
+import { absoluteUrl, breadcrumbJsonLd, jsonLdString, pageOg, SITE_URL } from "@/lib/seo";
+
+const title = "Invita a amigos o empresas | Referidos ProgramBI";
+const description =
+  "Recomienda un curso o una capacitación para un equipo. Si se cierra y se cobra, ganas el 15%. Misma cuenta ProgramBI. Chile.";
+const share = pageOg({
+  title,
+  description,
+  path: "/referidos",
+  kicker: "Programa de referidos",
+  tags: ["Referidos", "Cursos", "Empresas"],
+});
 
 export const metadata: Metadata = {
-  title: { absolute: "Invita a amigos o empresas | Referidos ProgramBI" },
-  description:
-    "Recomienda un curso o una capacitación para un equipo. Si se cierra y se cobra, ganas el 15%. Misma cuenta ProgramBI. Chile.",
+  title: { absolute: title },
+  description,
   alternates: { canonical: "/referidos" },
   openGraph: {
-    title: "Invita a amigos o empresas | Referidos ProgramBI",
+    title,
     description:
       "15% de cursos y capacitaciones a empresas, pagado al cobro. Intros calificadas a mano.",
     url: absoluteUrl("/referidos"),
     type: "website",
+    images: share.images,
   },
+  twitter: share.twitter,
 };
 
 export default function ReferidosPage() {
@@ -39,7 +51,18 @@ export default function ReferidosPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLdString(
+            breadcrumbJsonLd([
+              { name: "Inicio", path: "/" },
+              { name: "Referidos", path: "/referidos" },
+            ])
+          ),
+        }}
       />
       <ReferidosLanding />
     </>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import CourseImage from "@/components/shared/CourseImage";
 import { Clock, Search } from "lucide-react";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
+import { WA_URL } from "@/lib/data/site";
 
 export type CourseCatalogItem = {
   slug: string;
@@ -116,7 +117,30 @@ export default function CursosPageClient({ catalog }: { catalog: CourseCatalogIt
           </div>
 
           {filteredCourses.length === 0 && (
-            <p className="py-16 text-center text-mute">No se encontraron cursos con esa búsqueda.</p>
+            <div className="py-16 text-center">
+              <p className="text-mute">No se encontraron cursos con esa búsqueda.</p>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="inline-flex h-11 items-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas"
+                >
+                  Ver todos los cursos
+                </button>
+                <Link
+                  href="/empresas"
+                  className="inline-flex h-11 items-center rounded-full border border-line bg-paper px-6 text-sm font-semibold text-ink no-underline"
+                >
+                  Capacitación para empresas
+                </Link>
+                <a
+                  href={WA_URL}
+                  className="inline-flex h-11 items-center rounded-full border border-line bg-paper px-6 text-sm font-semibold text-ink no-underline"
+                >
+                  Contactar
+                </a>
+              </div>
+            </div>
           )}
         </div>
       </section>

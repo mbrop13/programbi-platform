@@ -361,11 +361,18 @@ export default function BlogClient({ articles }: { articles: any[] }) {
   }, [articles, activeCategory, searchQuery]);
 
   const sliderArticles = useMemo(() => {
+    const icp = filtered.filter(
+      (a) => blogIcpScore(a.title, a.excerpt, a.slug, a.category) > 0
+    );
     const nonVanity = filtered.filter(
       (a) => !isVanityBlogPost(a.title, a.excerpt, a.slug)
     );
     const source =
-      activeCategory === "all" && nonVanity.length > 0 ? nonVanity : filtered;
+      activeCategory === "all" && icp.length > 0
+        ? icp
+        : activeCategory === "all" && nonVanity.length > 0
+          ? nonVanity
+          : filtered;
     return source.slice(0, Math.min(5, source.length));
   }, [filtered, activeCategory]);
   const gridArticles = filtered;
@@ -481,8 +488,27 @@ export default function BlogClient({ articles }: { articles: any[] }) {
               No se encontraron artículos
             </h2>
             <p className="text-slate-500 text-sm max-w-md mx-auto leading-relaxed font-light">
-              Pronto publicaremos contenido increíble. ¡Vuelve pronto o intenta otra búsqueda!
+              Prueba otra búsqueda o revisa los cursos de Power BI, SQL y Python.
             </p>
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setActiveCategory("all");
+                  setIsSearchActive(false);
+                }}
+                className="inline-flex h-11 items-center rounded-full bg-slate-950 px-6 text-sm font-semibold text-white"
+              >
+                Ver todos los artículos
+              </button>
+              <Link
+                href="/cursos"
+                className="inline-flex h-11 items-center rounded-full border border-slate-200 bg-white px-6 text-sm font-semibold text-slate-950 no-underline"
+              >
+                Ver cursos
+              </Link>
+            </div>
           </div>
         ) : (
           <>

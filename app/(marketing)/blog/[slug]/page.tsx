@@ -20,6 +20,14 @@ export async function generateStaticParams() {
   }));
 }
 
+function articleDescription(article: { title?: string; excerpt?: string | null }): string {
+  const excerpt = (article.excerpt || "").trim();
+  if (excerpt.length >= 70) return excerpt.slice(0, 155);
+  const base = excerpt || article.title || "Artículo de ProgramBI";
+  const suffix = " Análisis de datos, Power BI, SQL y Python en Chile — ProgramBI.";
+  return `${base.replace(/\.$/, "")}.${suffix}`.slice(0, 155);
+}
+
 function getArticlePoster(article: any): string {
   if (!article) return "/default-og.png";
   
@@ -52,14 +60,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const rawShareImage = getArticlePoster(article);
   const shareImage = getOptimizedShareImage(rawShareImage);
+  const description = articleDescription(article);
 
   return {
     title: article.title,
-    description: article.excerpt || article.title,
+    description,
     alternates: { canonical: `/blog/${slug}` },
     openGraph: {
       title: `${article.title} | ProgramBI`,
-      description: article.excerpt || article.title,
+      description,
       url: `https://www.programbi.com/blog/${slug}`,
       type: "article",
       publishedTime: article.published_at,
@@ -69,7 +78,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     twitter: {
       card: "summary_large_image",
       title: article.title,
-      description: article.excerpt || article.title,
+      description,
       images: [shareImage],
     },
   };

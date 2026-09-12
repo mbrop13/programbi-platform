@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 import BlogClient from "./BlogClient";
 import { ogImageUrl } from "@/lib/og/url";
+import { blogIcpScore } from "@/lib/seo/money";
 
 export const revalidate = 3600;
 
@@ -51,7 +52,13 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  const articles = await getPublishedArticles();
+  const articles = (await getPublishedArticles()).slice().sort((a: any, b: any) => {
+    const byIcp =
+      blogIcpScore(b.title, b.excerpt, b.slug, b.category) -
+      blogIcpScore(a.title, a.excerpt, a.slug, a.category);
+    if (byIcp !== 0) return byIcp;
+    return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
+  });
 
   const blogJsonLd = {
     "@context": "https://schema.org",
