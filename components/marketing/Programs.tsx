@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Calendar, ArrowRight } from "lucide-react";
 import CourseImage from "@/components/shared/CourseImage";
-import { COURSE_NAV_GROUPS, courses, type Course } from "@/lib/data/courses";
+import { COURSE_FILTER_GROUPS } from "@/lib/data/course-nav";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
 import {
   type CourseSchedule,
@@ -30,28 +30,39 @@ const ORDER = [
   "machine-learning",
 ] as const;
 
-const FILTERS = [{ id: "todos" as const, label: "Todos" }, ...COURSE_NAV_GROUPS];
+const FILTERS = [{ id: "todos" as const, label: "Todos" }, ...COURSE_FILTER_GROUPS];
 
 type FilterId = (typeof FILTERS)[number]["id"];
 
-function catalog(): Course[] {
-  const bySlug = new Map(courses.map((c) => [c.slug, c]));
-  const listed = ORDER.map((slug) => bySlug.get(slug)).filter((c): c is Course => Boolean(c));
-  const rest = courses.filter((c) => !ORDER.includes(c.slug as (typeof ORDER)[number]));
+export type ProgramCard = {
+  slug: string;
+  title: string;
+  shortDescription: string;
+  imageUrl: string;
+  durationHours: number;
+  techStack: string[];
+  badgeLabel?: string;
+  levelsCount: number;
+};
+
+function orderCatalog(list: ProgramCard[]): ProgramCard[] {
+  const bySlug = new Map(list.map((c) => [c.slug, c]));
+  const listed = ORDER.map((slug) => bySlug.get(slug)).filter((c): c is ProgramCard => Boolean(c));
+  const rest = list.filter((c) => !ORDER.includes(c.slug as (typeof ORDER)[number]));
   return [...listed, ...rest];
 }
 
-const ALL = catalog();
-
-function isNew(course: Course) {
+function isNew(course: ProgramCard) {
   return course.badgeLabel?.toLowerCase().includes("nuevo") ?? false;
 }
 
-export default function Programs() {
+export default function Programs({ catalog }: { catalog: ProgramCard[] }) {
   const [filter, setFilter] = useState<FilterId>("todos");
   const [active, setActive] = useState("analisis-de-datos");
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
   const { country } = useCountry();
+
+  const ALL = useMemo(() => orderCatalog(catalog), [catalog]);
 
   const scheduleCountry = useMemo(
     () => SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) ?? SCHEDULE_COUNTRIES[0],
@@ -69,13 +80,13 @@ export default function Programs() {
 
   const visible = useMemo(() => {
     if (filter === "todos") return ALL;
-    const group = COURSE_NAV_GROUPS.find((f) => f.id === filter);
+    const group = COURSE_FILTER_GROUPS.find((f) => f.id === filter);
     return group ? ALL.filter((c) => (group.slugs as readonly string[]).includes(c.slug)) : ALL;
-  }, [filter]);
+  }, [filter, ALL]);
 
   const current = visible.find((c) => c.slug === active) ?? visible[0];
 
-  function getStartMeta(course: Course) {
+  function getStartMeta(course: ProgramCard) {
     let relevant: CourseSchedule[] = [];
     if (course.slug === "analisis-de-datos") {
       relevant = schedules.filter(
@@ -160,7 +171,7 @@ export default function Programs() {
               <div className="flex items-center gap-2 text-xs font-semibold text-mute">
                 <span>
                   {current.durationHours} h · En vivo
-                  {current.levels && current.levels.length > 1 ? ` · ${current.levels.length} niveles` : ""}
+                  {current.levelsCount > 1 ? ` · ${current.levelsCount} niveles` : ""}
                 </span>
                 {isNew(current) ? <span className="text-ink">Nuevo</span> : null}
               </div>

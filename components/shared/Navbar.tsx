@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Menu,
@@ -20,11 +21,10 @@ import {
 } from "lucide-react";
 import { NAV_COURSE_GROUPS } from "@/lib/data/course-nav";
 import { createClient } from "@/lib/supabase/client";
-import AuthModal from "./AuthModal";
-import SupportModal from "./SupportModal";
-import ProfileSettingsModal from "./ProfileSettingsModal";
-import { getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
-import { isCurrentUserAdmin } from "@/lib/supabase/comunidad";
+
+const AuthModal = dynamic(() => import("./AuthModal"), { ssr: false });
+const SupportModal = dynamic(() => import("./SupportModal"), { ssr: false });
+const ProfileSettingsModal = dynamic(() => import("./ProfileSettingsModal"), { ssr: false });
 
 const navLinks = [
   { href: "/cursos", label: "Ver Cursos", hasMega: true },
@@ -109,7 +109,8 @@ export default function Navbar() {
       } = await supabase.auth.getSession();
       setUser(session?.user ?? null);
       if (session?.user) {
-        isCurrentUserAdmin()
+        import("@/lib/supabase/comunidad")
+          .then((m) => m.isCurrentUserAdmin())
           .then((admin) => setIsAdmin(admin))
           .catch(() => {});
       } else {
@@ -125,7 +126,8 @@ export default function Navbar() {
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) {
-        isCurrentUserAdmin()
+        import("@/lib/supabase/comunidad")
+          .then((m) => m.isCurrentUserAdmin())
           .then((admin) => setIsAdmin(admin))
           .catch(() => {});
       } else {
@@ -138,7 +140,8 @@ export default function Navbar() {
 
   useEffect(() => {
     if (!isNewsletter) return;
-    getNewsletterCategories()
+    import("@/lib/supabase/comunidad-ai")
+      .then((m) => m.getNewsletterCategories())
       .then((cats) => setNlCategories(cats))
       .catch(() => {});
   }, [isNewsletter]);
@@ -228,18 +231,24 @@ export default function Navbar() {
 
   return (
     <>
-      <AuthModal
-        isOpen={authModal.isOpen}
-        onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
-        defaultTab={authModal.tab}
-        redirectUrl={authModal.redirectUrl}
-      />
-      <ProfileSettingsModal
-        isOpen={profileModal.isOpen}
-        onClose={() => setProfileModal((prev) => ({ ...prev, isOpen: false }))}
-        defaultTab={profileModal.tab}
-      />
-      <SupportModal isOpen={isSupportModalOpen} onClose={() => setIsSupportModalOpen(false)} userEmail={user?.email || ""} />
+      {authModal.isOpen ? (
+        <AuthModal
+          isOpen={authModal.isOpen}
+          onClose={() => setAuthModal((prev) => ({ ...prev, isOpen: false }))}
+          defaultTab={authModal.tab}
+          redirectUrl={authModal.redirectUrl}
+        />
+      ) : null}
+      {profileModal.isOpen ? (
+        <ProfileSettingsModal
+          isOpen={profileModal.isOpen}
+          onClose={() => setProfileModal((prev) => ({ ...prev, isOpen: false }))}
+          defaultTab={profileModal.tab}
+        />
+      ) : null}
+      {isSupportModalOpen ? (
+        <SupportModal isOpen={isSupportModalOpen} onClose={() => setIsSupportModalOpen(false)} userEmail={user?.email || ""} />
+      ) : null}
 
       <header
         className={`fixed inset-x-0 top-0 z-50 h-[72px] transition-[transform,background-color,border-color,box-shadow] duration-300 ease-out motion-reduce:transition-none ${
@@ -253,11 +262,11 @@ export default function Navbar() {
         <div className="relative mx-auto flex h-full max-w-[1400px] items-center px-4 sm:px-6 lg:px-8">
           <Link href="/" className="relative z-10 h-8 w-[150px] shrink-0" aria-label="ProgramBI">
             <Image
-              src="/images/logo.png"
+              src="/images/logo-nav.webp"
               alt="ProgramBI"
-              fill
-              sizes="150px"
-              className="object-contain object-left"
+              width={150}
+              height={32}
+              className="h-8 w-[150px] object-contain object-left"
               fetchPriority="low"
             />
           </Link>

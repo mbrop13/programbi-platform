@@ -1,8 +1,6 @@
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
-import PromoPopup from "@/components/shared/PromoPopup";
-import WhatsAppButton from "@/components/shared/WhatsAppButton";
-import BlogSubscribeWidget from "@/components/shared/BlogSubscribeWidget";
+import MarketingChrome from "@/components/shared/MarketingChrome";
 import AttributionCapture from "@/components/shared/AttributionCapture";
 
 export default function MarketingLayout({
@@ -24,9 +22,7 @@ export default function MarketingLayout({
         {children}
       </main>
       <Footer />
-      <PromoPopup />
-      <WhatsAppButton />
-      <BlogSubscribeWidget />
+      <MarketingChrome />
     </>
   );
 }

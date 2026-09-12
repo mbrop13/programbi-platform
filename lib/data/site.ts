@@ -4,17 +4,17 @@ export const WA_URL =
 export const WA_NUMBER = "56935409699";
 
 export const logos = [
-  { name: "Tottus", src: "/images/logos/tottus.png" },
-  { name: "Deloitte", src: "/images/logos/deloitte.png" },
-  { name: "Cencosud", src: "/images/logos/cencosud.png" },
-  { name: "BASF", src: "/images/logos/basf.png" },
-  { name: "SQM", src: "/images/logos/sqm.png" },
-  { name: "BCI", src: "/images/logos/bci.png" },
-  { name: "Midea", src: "/images/logos/midea.png" },
-  { name: "Pucobre", src: "/images/logos/pucobre.png" },
-  { name: "Fonasa", src: "/images/logos/fonasa.png" },
-  { name: "CGE", src: "/images/logos/cge.png" },
-  { name: "Chilevisión", src: "/images/logos/chilevision.png" },
+  { name: "Tottus", src: "/images/logos/tottus.webp" },
+  { name: "Deloitte", src: "/images/logos/deloitte.webp" },
+  { name: "Cencosud", src: "/images/logos/cencosud.webp" },
+  { name: "BASF", src: "/images/logos/basf.webp" },
+  { name: "SQM", src: "/images/logos/sqm.webp" },
+  { name: "BCI", src: "/images/logos/bci.webp" },
+  { name: "Midea", src: "/images/logos/midea.webp" },
+  { name: "Pucobre", src: "/images/logos/pucobre.webp" },
+  { name: "Fonasa", src: "/images/logos/fonasa.webp" },
+  { name: "CGE", src: "/images/logos/cge.webp" },
+  { name: "Chilevisión", src: "/images/logos/chilevision.webp" },
 ] as const;
 
 export const programs = [
@@ -23,7 +23,7 @@ export const programs = [
     name: "Análisis de Datos",
     hours: "144 h",
     line: "Programa integral de SQL Server, Power BI y Python.",
-    image: "/images/courses/analisis-de-datos.webp",
+    image: "/images/courses/analisis-de-datos-card.webp",
     href: "/cursos/analisis-de-datos",
   },
   {
@@ -31,7 +31,7 @@ export const programs = [
     name: "Power BI",
     hours: "16 h por nivel",
     line: "Dashboards, DAX y modelado para decisiones.",
-    image: "/images/courses/power-bi.webp",
+    image: "/images/courses/power-bi-card.webp",
     href: "/cursos/power-bi",
   },
   {
@@ -39,7 +39,7 @@ export const programs = [
     name: "SQL Server",
     hours: "16 h por nivel",
     line: "Consultas, procedimientos y arquitectura de datos.",
-    image: "/images/courses/sql-server.webp",
+    image: "/images/courses/sql-server-card.webp",
     href: "/cursos/sql-server",
   },
   {
@@ -47,7 +47,7 @@ export const programs = [
     name: "Python para Datos",
     hours: "16 h por nivel",
     line: "Pandas y análisis aplicado a negocios reales.",
-    image: "/images/courses/python.webp",
+    image: "/images/courses/python-card.webp",
     href: "/cursos/python",
   },
 ] as const;

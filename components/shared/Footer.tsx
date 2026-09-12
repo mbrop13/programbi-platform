@@ -28,7 +28,13 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
       <div className="mx-auto flex max-w-[1400px] flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <Link href="/" className="relative block h-8 w-[148px]" aria-label="ProgramBI">
-            <Image src="/images/logo.png" alt="ProgramBI" fill sizes="148px" className="object-contain object-left" />
+            <Image
+              src="/images/logo-nav.webp"
+              alt="ProgramBI"
+              width={148}
+              height={32}
+              className="h-8 w-[148px] object-contain object-left"
+            />
           </Link>
           <p className="mt-4 max-w-[28rem] text-sm leading-relaxed text-mute">
             Centro de capacitaciones en análisis de datos. Santiago, Chile.

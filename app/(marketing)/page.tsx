@@ -10,6 +10,7 @@ import Quote from "@/components/marketing/Quote";
 import FaqSection from "@/components/marketing/FaqSection";
 import LeadForm from "@/components/marketing/LeadForm";
 import { homeFaqs } from "@/lib/data/site";
+import { courses } from "@/lib/data/courses";
 import { SITE_URL, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 
@@ -52,7 +53,18 @@ export default function HomePage() {
       <LogoSlider />
       <Metrics />
       <Flagship />
-      <Programs />
+      <Programs
+        catalog={courses.map((c) => ({
+          slug: c.slug,
+          title: c.title,
+          shortDescription: c.shortDescription,
+          imageUrl: c.imageUrl,
+          durationHours: c.durationHours,
+          techStack: c.techStack,
+          badgeLabel: c.badgeLabel,
+          levelsCount: c.levels?.length ?? 1,
+        }))}
+      />
       <JobsBanner />
       <Team />
       <Quote />

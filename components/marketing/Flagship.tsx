@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import RegisterCta from "@/components/marketing/RegisterCta";
 import CourseImage from "@/components/shared/CourseImage";
-import { courses } from "@/lib/data/courses";
+import { programs } from "@/lib/data/site";
 import { useAuthStore } from "@/lib/stores/auth-store";
 
-const analisis = courses.find((c) => c.slug === "analisis-de-datos");
+const flagshipImage =
+  programs.find((p) => p.slug === "analisis-de-datos")?.image ??
+  "/images/courses/analisis-de-datos-card.webp";
 
 export default function Flagship() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
@@ -42,10 +44,11 @@ export default function Flagship() {
 
         <div className="relative min-h-[42vh] overflow-hidden rounded-[26px] border border-line bg-wash lg:min-h-[520px]">
           <CourseImage
-            src={analisis?.imageUrl ?? ""}
+            src={flagshipImage}
             alt="Análisis de Datos — programa de 144 horas"
             fill
             sizes="(max-width: 1024px) 100vw, 50vw"
+            fetchPriority="low"
             className="object-cover"
           />
         </div>
