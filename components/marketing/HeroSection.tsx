@@ -17,7 +17,7 @@ export default function HeroSection() {
           </div>
 
           <h1 className="text-4xl font-bold leading-[1.12] tracking-tight text-ink sm:text-5xl lg:text-[3.5rem] lg:leading-[1.12]">
-            Aprende Análisis de
+            Aprende Análisis de{" "}
             <br />
             Datos con <em className="italic font-semibold">Expertos</em>
           </h1>

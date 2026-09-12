@@ -4,7 +4,7 @@ import FaqClient from "./FaqClient";
 import { ogImageUrl } from "@/lib/og/url";
 
 export const metadata: Metadata = {
-  title: "Preguntas Frecuentes — Soporte y Consultas | ProgramBI",
+  title: "Preguntas frecuentes — Soporte y consultas",
   description:
     "Resuelve tus dudas sobre los cursos de análisis de datos en vivo, metodologías, grabaciones de clases, certificados oficiales y asesorías corporativas de ProgramBI.",
   alternates: {

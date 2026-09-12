@@ -5,7 +5,7 @@ import { ChevronRight, ArrowRight, Activity, GitCompare } from "lucide-react";
 import { ogImageUrl } from "@/lib/og/url";
 
 export const metadata: Metadata = {
-  title: "Comparativas Técnicas de Datos (Versus) | ProgramBI",
+  title: "Comparativas técnicas de datos (Versus)",
   description:
     "Comparamos las herramientas de datos más demandadas de la industria: Power BI vs Excel, SQL Server vs PostgreSQL y Python vs R. Toma decisiones informadas sobre qué aprender.",
   alternates: {

@@ -5,7 +5,7 @@ import MentorsSection from "@/components/marketing/MentorsSection";
 import { ogImageUrl } from "@/lib/og/url";
 
 export const metadata: Metadata = {
-  title: "Sobre Nosotros — Academia de Análisis de Datos | ProgramBI",
+  title: "Sobre nosotros — Academia de análisis de datos",
   description:
     "Conoce ProgramBI: la institución de capacitación profesional líder en Power BI, SQL, Python y Machine Learning en Chile y Latinoamérica. Fundada por Manuel Oliva.",
   alternates: {

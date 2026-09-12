@@ -134,13 +134,13 @@ function ActivityBar({
     { id: "ext", Icon: Puzzle },
   ] as const;
   return (
-    <div className="flex w-10 shrink-0 flex-col items-center gap-1 border-r border-line bg-wash py-2 text-mute">
+    <div className="flex w-11 shrink-0 flex-col items-center gap-1 border-r border-line bg-wash py-2 text-mute">
       {items.map(({ id, Icon }) => (
         <button
           key={id}
           type="button"
           onClick={() => onChange(id)}
-          className={`flex size-9 items-center justify-center ${
+          className={`flex size-11 items-center justify-center ${
             current === id ? "border-l-2 border-ink text-ink" : "border-l-2 border-transparent hover:text-ink"
           }`}
           aria-label={id}
@@ -197,7 +197,7 @@ function Sidebar({
               key={name}
               type="button"
               onClick={() => onFile(name)}
-              className={`w-full truncate px-1.5 py-0.5 text-left font-mono text-[11px] ${
+              className={`min-h-11 w-full truncate px-1.5 py-2 text-left font-mono text-[11px] ${
                 name === activeFile ? "bg-wash text-ink" : "text-mute hover:text-ink"
               }`}
             >
@@ -228,7 +228,7 @@ function PythonEditor({ onOpenSql }: { onOpenSql: () => void }) {
         }}
       />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-paper">
-        <div className="flex h-8 shrink-0 items-center justify-between border-b border-line bg-canvas px-2">
+        <div className="flex min-h-11 shrink-0 items-center justify-between border-b border-line bg-canvas px-2">
           <div className="flex items-center">
             {(["ventas.py", file === "data/ventas.csv" ? "ventas.csv" : null] as const)
               .filter(Boolean)
@@ -251,7 +251,7 @@ function PythonEditor({ onOpenSql }: { onOpenSql: () => void }) {
           <button
             type="button"
             onClick={() => setRan(true)}
-            className="mr-1 inline-flex items-center gap-1 px-2 py-0.5 font-mono text-[11px] font-semibold text-ink hover:bg-wash"
+            className="mr-1 inline-flex min-h-11 items-center gap-1 px-3 py-0.5 font-mono text-[11px] font-semibold text-ink hover:bg-wash"
           >
             <Play size={12} fill="currentColor" />
             Ejecutar
@@ -378,7 +378,7 @@ function SqlEditor() {
       <ActivityBar current={panel} onChange={setPanel} />
       <Sidebar panel={panel} activeFile="consulta.sql" onFile={() => undefined} />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-paper">
-        <div className="flex h-8 shrink-0 items-center justify-between border-b border-line bg-canvas px-2">
+        <div className="flex min-h-11 shrink-0 items-center justify-between border-b border-line bg-canvas px-2">
           <span className="border-b-2 border-ink px-2 py-1 font-mono text-[11px] text-ink">consulta.sql</span>
           <button
             type="button"
