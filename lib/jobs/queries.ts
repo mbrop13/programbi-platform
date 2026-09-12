@@ -65,9 +65,15 @@ export interface JobFilters {
 
 /** Lista de vacantes publicadas con filtros (cliente con RLS, lectura pública). */
 export async function getPublishedJobs(filters: JobFilters = {}) {
-  const supabase = await createClient();
   const page = Math.max(1, filters.page ?? 1);
   const perPage = Math.min(50, filters.perPage ?? 12);
+  let supabase;
+  try {
+    supabase = await createClient();
+  } catch (err) {
+    console.error("getPublishedJobs client:", err);
+    return { jobs: [], total: 0, page, perPage };
+  }
 
   let query = supabase
     .from("jobs")
@@ -97,7 +103,10 @@ export async function getPublishedJobs(filters: JobFilters = {}) {
   }
 
   const { data, error, count } = await query.range((page - 1) * perPage, page * perPage - 1);
-  if (error) throw new Error(error.message);
+  if (error) {
+    console.error("getPublishedJobs:", error.message);
+    return { jobs: [], total: 0, page, perPage };
+  }
 
   return {
     jobs: (data ?? []).map(mapJobRow),
@@ -234,7 +243,7 @@ export async function getCompanyMemberIds(companyId: string): Promise<string[]> 
 }
 
 /** Rutas estáticas de /empleos que no pueden usarse como slug de vacante. */
-const RESERVED_JOB_SLUGS = new Set(["para-empresas", "empresas", "talento"]);
+const RESERVED_JOB_SLUGS = new Set(["para-empresas", "empresas", "talento", "vacantes"]);
 
 /** Genera un slug único para una vacante o empresa. */
 export async function generateUniqueSlug(

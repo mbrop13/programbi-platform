@@ -303,7 +303,8 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 src={course.imageUrl}
                 alt={course.title}
                 fill
-                priority
+                preload
+                fetchPriority="high"
                 sizes="(max-width: 1024px) 100vw, 58vw"
                 className="object-cover"
               />

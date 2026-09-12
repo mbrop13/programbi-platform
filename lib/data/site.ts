@@ -23,8 +23,7 @@ export const programs = [
     name: "Análisis de Datos",
     hours: "144 h",
     line: "Programa integral de SQL Server, Power BI y Python.",
-    image:
-      "https://mail.programbi.com/uploads/diseña_una_imagen_similar_a_202605311714.jpeg",
+    image: "/images/courses/analisis-de-datos.jpg",
     href: "/cursos/analisis-de-datos",
   },
   {
@@ -32,8 +31,7 @@ export const programs = [
     name: "Power BI",
     hours: "16 h por nivel",
     line: "Dashboards, DAX y modelado para decisiones.",
-    image:
-      "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/Tamano_personalizado_1_9d2f2efd-3f0e-40d7-a62b-fb7a0ba08d83.png?v=1720500191",
+    image: "/images/courses/power-bi.jpg",
     href: "/cursos/power-bi",
   },
   {
@@ -41,7 +39,7 @@ export const programs = [
     name: "SQL Server",
     hours: "16 h por nivel",
     line: "Consultas, procedimientos y arquitectura de datos.",
-    image: "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/Tamano_personalizado_1.png?v=1720132741",
+    image: "/images/courses/sql-server.jpg",
     href: "/cursos/sql-server",
   },
   {
@@ -49,8 +47,7 @@ export const programs = [
     name: "Python para Datos",
     hours: "16 h por nivel",
     line: "Pandas y análisis aplicado a negocios reales.",
-    image:
-      "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/gempages_519842279402243040-95e6ef6f-0d9e-4e69-a5a7-1a3f7a4c0c45_7bda5e0b-a12a-4293-81c0-8c8fb3c345aa.png?v=1736654931",
+    image: "/images/courses/python.jpg",
     href: "/cursos/python",
   },
 ] as const;

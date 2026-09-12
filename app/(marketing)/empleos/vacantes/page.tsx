@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
-import EmpleosPageClient from "@/components/empleos/EmpleosPageClient";
+import { Suspense } from "react";
+import EmpleosPageClient, { EmpleosPageSkeleton } from "@/components/empleos/EmpleosPageClient";
 import { getPublishedJobs } from "@/lib/jobs/queries";
 import { ogImageUrl } from "@/lib/og/url";
+import { absoluteUrl, jsonLdString } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Vacantes",
@@ -55,7 +57,7 @@ export default async function VacantesPage() {
     itemListElement: initialJobs.slice(0, 10).map((job, i) => ({
       "@type": "ListItem",
       position: i + 1,
-      url: `https://programbi.com/empleos/${job.slug}`,
+      url: absoluteUrl(`/empleos/${job.slug}`),
       name: `${job.title} — ${job.company_name}`,
     })),
   };
@@ -64,9 +66,11 @@ export default async function VacantesPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
-      <EmpleosPageClient initialJobs={initialJobs} initialTotal={initialTotal} />
+      <Suspense fallback={<EmpleosPageSkeleton />}>
+        <EmpleosPageClient initialJobs={initialJobs} initialTotal={initialTotal} />
+      </Suspense>
     </>
   );
 }

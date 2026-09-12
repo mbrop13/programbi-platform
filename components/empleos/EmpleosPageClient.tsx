@@ -48,6 +48,27 @@ interface EmpleosPageClientProps {
   initialTotal: number;
 }
 
+/** Static fallback for the Suspense boundary around useSearchParams (Next 16). */
+export function EmpleosPageSkeleton() {
+  return (
+    <section className="px-4 pt-16 pb-8 sm:px-6 lg:px-8 lg:pt-20">
+      <div className="mx-auto max-w-[1400px]">
+        <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
+          Bolsa de Trabajo
+        </h1>
+        <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">
+          Vacantes de datos y programación publicadas por empresas verificadas.
+        </p>
+        <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <JobCardSkeleton key={i} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function EmpleosPageClient({ initialJobs, initialTotal }: EmpleosPageClientProps) {
   const router = useRouter();
   const pathname = usePathname();

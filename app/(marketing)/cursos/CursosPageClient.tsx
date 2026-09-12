@@ -62,7 +62,8 @@ export default function CursosPageClient() {
                   src={featured.imageUrl}
                   alt={featured.title}
                   fill
-                  priority
+                  preload
+                  fetchPriority="high"
                   sizes="(max-width: 1024px) 100vw, 58vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                 />
