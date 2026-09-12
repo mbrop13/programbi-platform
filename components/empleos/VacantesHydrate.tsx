@@ -1,35 +1,40 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
-import dynamic from "next/dynamic";
-import type { VacantesFilters } from "@/components/empleos/EmpleosPageClient";
+import { useEffect, useState, type ComponentType, type ReactNode } from "react";
 import type { JobPublic } from "@/lib/jobs/types";
+import type { VacantesFilters } from "@/components/empleos/vacantes-types";
 
-const EmpleosPageClient = dynamic(
-  () => import("@/components/empleos/EmpleosPageClient"),
-  { ssr: false }
-);
+type ClientProps = {
+  initialJobs: JobPublic[];
+  initialTotal: number;
+  initialFilters: VacantesFilters;
+};
 
 /**
- * SSR paints `children` (server board). After mount, swap to the interactive
- * client so useRouter/usePathname never run during Vercel SSR.
+ * SSR only renders `children` (server board). The interactive client is
+ * imported in useEffect so Next never SSRs useRouter/usePathname on Vercel.
  */
 export default function VacantesHydrate({
   children,
   initialJobs,
   initialTotal,
   initialFilters,
-}: {
-  children: ReactNode;
-  initialJobs: JobPublic[];
-  initialTotal: number;
-  initialFilters: VacantesFilters;
-}) {
-  const [live, setLive] = useState(false);
-  useEffect(() => setLive(true), []);
-  if (!live) return children;
+}: ClientProps & { children: ReactNode }) {
+  const [Client, setClient] = useState<ComponentType<ClientProps> | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void import("@/components/empleos/EmpleosPageClient").then((mod) => {
+      if (!cancelled) setClient(() => mod.default);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (!Client) return children;
   return (
-    <EmpleosPageClient
+    <Client
       initialJobs={initialJobs}
       initialTotal={initialTotal}
       initialFilters={initialFilters}

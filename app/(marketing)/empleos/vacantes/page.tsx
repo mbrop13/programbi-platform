@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { unstable_rethrow } from "next/navigation";
 import VacantesBoard from "@/components/empleos/VacantesBoard";
-import VacantesHydrate from "@/components/empleos/VacantesHydrate";
 import { getPublishedJobs } from "@/lib/jobs/queries";
 import { ogImageUrl } from "@/lib/og/url";
 import { absoluteUrl, breadcrumbJsonLd, jsonLdString, twitterShare } from "@/lib/seo";
@@ -130,13 +129,7 @@ export default async function VacantesPage({ searchParams }: { searchParams: Sea
           ),
         }}
       />
-      <VacantesHydrate
-        initialJobs={initialJobs}
-        initialTotal={initialTotal}
-        initialFilters={initialFilters}
-      >
-        <VacantesBoard jobs={initialJobs} total={initialTotal} />
-      </VacantesHydrate>
+      <VacantesBoard jobs={initialJobs} total={initialTotal} />
     </>
   );
 }

@@ -16,6 +16,9 @@ import JobCard, { JobCardSkeleton } from "@/components/empleos/JobCard";
 import { createClient } from "@/lib/supabase/client";
 import { getSkillLabel, skillsFromCourseTitles } from "@/lib/data/job-skills";
 import { matchScore, type JobPublic } from "@/lib/jobs/types";
+import type { VacantesFilters } from "@/components/empleos/vacantes-types";
+
+export type { VacantesFilters };
 
 const MODALITY_OPTIONS = [
   { id: "remoto", label: "Remoto" },
@@ -42,15 +45,6 @@ const SORT_OPTIONS = [
   { id: "recent", label: "Recientes" },
   { id: "salary", label: "Mayor salario" },
 ] as const;
-
-export type VacantesFilters = {
-  q: string;
-  modality: string[];
-  seniority: string[];
-  employmentType: string[];
-  skills: string[];
-  sort: "recent" | "salary";
-};
 
 interface EmpleosPageClientProps {
   initialJobs: JobPublic[];
