@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import EmpresasClient from "./EmpresasClient";
 import { ogImageUrl } from "@/lib/og/url";
-import { SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
+import { SITE_URL, absoluteUrl, jsonLdString, twitterShare } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 
 export const metadata: Metadata = {
@@ -31,6 +31,18 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: twitterShare(
+    PAGE_SEO.empresas.title,
+    PAGE_SEO.empresas.description,
+    ogImageUrl({
+      kicker: "Para empresas",
+      title: "Formamos a tu equipo en datos.",
+      description:
+        "Capacitación in-company de Power BI, SQL, Python y automatización. En vivo, con factura.",
+      tags: ["Capacitación", "Power BI", "In-company"],
+      path: "empresas",
+    })
+  ),
 };
 
 export default function EmpresasPage() {

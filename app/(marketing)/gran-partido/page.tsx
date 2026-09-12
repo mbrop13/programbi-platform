@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import GranPartidoClient from "./GranPartidoClient";
+import { DEFAULT_OG_IMAGE, twitterShare } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "¿Quién ganará la final? — Predice y gana un curso",
@@ -14,13 +15,12 @@ export const metadata: Metadata = {
     url: "https://www.programbi.com/gran-partido",
     siteName: "ProgramBI",
     locale: "es_CL",
+    images: [DEFAULT_OG_IMAGE],
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "¿Quién ganará la final? — Predice y gana un curso | ProgramBI",
-    description:
-      "Predice el resultado entre España y Argentina y participa por un curso de ProgramBI.",
-  },
+  twitter: twitterShare(
+    "¿Quién ganará la final? — Predice y gana un curso",
+    "Predice el resultado entre España y Argentina y participa por un curso de ProgramBI."
+  ),
 };
 
 export default function GranPartidoPage() {

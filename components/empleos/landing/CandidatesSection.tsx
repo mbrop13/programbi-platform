@@ -33,7 +33,7 @@ export default function CandidatesSection() {
       <CineImage
         src="/images/bolsa-perfil.jpg"
         fallbackSrc="/images/bolsa-hero-2.jpg"
-        alt=""
+        alt="Candidatos de datos con certificados verificados de ProgramBI"
         dimClass="opacity-45"
       />
       <div

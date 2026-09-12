@@ -103,7 +103,7 @@ export default function HeroPreview() {
                 setActive(tab.id);
                 pause();
               }}
-              className={`flex flex-1 items-center justify-center gap-2 border-2 py-2.5 text-sm font-semibold transition-colors ${round} ${
+              className={`flex min-h-12 flex-1 items-center justify-center gap-2 border-2 py-2.5 text-sm font-semibold transition-colors ${round} ${
                 isActive
                   ? "border-[rgb(23_23_22_/_0.28)] bg-paper text-ink"
                   : "border-transparent text-mute hover:text-ink"
@@ -134,13 +134,13 @@ function ActivityBar({
     { id: "ext", Icon: Puzzle },
   ] as const;
   return (
-    <div className="flex w-11 shrink-0 flex-col items-center gap-1 border-r border-line bg-wash py-2 text-mute">
+    <div className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-line bg-wash py-2 text-mute">
       {items.map(({ id, Icon }) => (
         <button
           key={id}
           type="button"
           onClick={() => onChange(id)}
-          className={`flex size-11 items-center justify-center ${
+          className={`flex size-12 items-center justify-center ${
             current === id ? "border-l-2 border-ink text-ink" : "border-l-2 border-transparent hover:text-ink"
           }`}
           aria-label={id}
@@ -197,7 +197,7 @@ function Sidebar({
               key={name}
               type="button"
               onClick={() => onFile(name)}
-              className={`min-h-11 w-full truncate px-1.5 py-2 text-left font-mono text-[11px] ${
+              className={`min-h-12 w-full truncate px-1.5 py-2 text-left font-mono text-[11px] ${
                 name === activeFile ? "bg-wash text-ink" : "text-mute hover:text-ink"
               }`}
             >
@@ -214,7 +214,7 @@ function PythonEditor({ onOpenSql }: { onOpenSql: () => void }) {
   const [panel, setPanel] = useState("files");
   const [file, setFile] = useState("ventas.py");
   const [ran, setRan] = useState(false);
-  const [line, setLine] = useState(10);
+  const line = 10;
 
   return (
     <div className="flex h-full">
@@ -228,7 +228,7 @@ function PythonEditor({ onOpenSql }: { onOpenSql: () => void }) {
         }}
       />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-paper">
-        <div className="flex min-h-11 shrink-0 items-center justify-between border-b border-line bg-canvas px-2">
+        <div className="flex min-h-12 shrink-0 items-center justify-between border-b border-line bg-canvas px-2">
           <div className="flex items-center">
             {(["ventas.py", file === "data/ventas.csv" ? "ventas.csv" : null] as const)
               .filter(Boolean)
@@ -237,7 +237,7 @@ function PythonEditor({ onOpenSql }: { onOpenSql: () => void }) {
                   key={tab}
                   type="button"
                   onClick={() => setFile(tab === "ventas.csv" ? "data/ventas.csv" : "ventas.py")}
-                  className={`px-2 py-1 font-mono text-[11px] ${
+                  className={`min-h-12 min-w-12 px-2 py-1 font-mono text-[11px] ${
                     (file === "ventas.py" && tab === "ventas.py") ||
                     (file === "data/ventas.csv" && tab === "ventas.csv")
                       ? "border-b-2 border-ink text-ink"
@@ -251,7 +251,7 @@ function PythonEditor({ onOpenSql }: { onOpenSql: () => void }) {
           <button
             type="button"
             onClick={() => setRan(true)}
-            className="mr-1 inline-flex min-h-11 items-center gap-1 px-3 py-0.5 font-mono text-[11px] font-semibold text-ink hover:bg-wash"
+            className="mr-1 inline-flex min-h-12 items-center gap-1 px-3 py-0.5 font-mono text-[11px] font-semibold text-ink hover:bg-wash"
           >
             <Play size={12} fill="currentColor" />
             Ejecutar
@@ -287,33 +287,33 @@ function PythonEditor({ onOpenSql }: { onOpenSql: () => void }) {
             </table>
           ) : (
             <pre className="h-full overflow-hidden px-3 py-2.5 font-mono text-[11px] leading-[1.7] sm:text-[12px]">
-              <CodeLine n={1} active={line === 1} onClick={() => setLine(1)}>
+              <CodeLine n={1}>
                 <Kw>import</Kw> pandas <Kw>as</Kw> pd
               </CodeLine>
-              <CodeLine n={2} active={line === 2} onClick={() => setLine(2)}>
+              <CodeLine n={2}>
                 <Kw>import</Kw> plotly.express <Kw>as</Kw> px
               </CodeLine>
-              <CodeLine n={3} active={line === 3} onClick={() => setLine(3)} />
-              <CodeLine n={4} active={line === 4} onClick={() => setLine(4)}>
+              <CodeLine n={3} />
+              <CodeLine n={4}>
                 ventas = pd.<Fn>read_csv</Fn>(<Str>&quot;ventas.csv&quot;</Str>)
               </CodeLine>
-              <CodeLine n={5} active={line === 5} onClick={() => setLine(5)}>
+              <CodeLine n={5}>
                 mensual = (
               </CodeLine>
-              <CodeLine n={6} active={line === 6} onClick={() => setLine(6)}>
+              <CodeLine n={6}>
                 {"    "}ventas.<Fn>groupby</Fn>(<Str>&quot;mes&quot;</Str>, as_index=<Kw>False</Kw>)
               </CodeLine>
-              <CodeLine n={7} active={line === 7} onClick={() => setLine(7)}>
+              <CodeLine n={7}>
                 {"    "}.<Fn>agg</Fn>(total=(<Str>&quot;monto&quot;</Str>, <Str>&quot;sum&quot;</Str>))
               </CodeLine>
-              <CodeLine n={8} active={line === 8} onClick={() => setLine(8)}>
+              <CodeLine n={8}>
                 )
               </CodeLine>
-              <CodeLine n={9} active={line === 9} onClick={() => setLine(9)} />
-              <CodeLine n={10} active={line === 10} onClick={() => setLine(10)}>
+              <CodeLine n={9} />
+              <CodeLine n={10} active>
                 fig = px.<Fn>bar</Fn>(mensual, x=<Str>&quot;mes&quot;</Str>, y=<Str>&quot;total&quot;</Str>)
               </CodeLine>
-              <CodeLine n={11} active={line === 11} onClick={() => setLine(11)}>
+              <CodeLine n={11}>
                 fig.<Fn>show</Fn>()
               </CodeLine>
             </pre>
@@ -378,12 +378,12 @@ function SqlEditor() {
       <ActivityBar current={panel} onChange={setPanel} />
       <Sidebar panel={panel} activeFile="consulta.sql" onFile={() => undefined} />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden bg-paper">
-        <div className="flex min-h-11 shrink-0 items-center justify-between border-b border-line bg-canvas px-2">
+        <div className="flex min-h-12 shrink-0 items-center justify-between border-b border-line bg-canvas px-2">
           <span className="border-b-2 border-ink px-2 py-1 font-mono text-[11px] text-ink">consulta.sql</span>
           <button
             type="button"
             onClick={run}
-            className="mr-1 inline-flex items-center gap-1 px-2 py-0.5 font-mono text-[11px] font-semibold text-ink hover:bg-wash"
+            className="mr-1 inline-flex min-h-12 items-center gap-1 px-3 py-0.5 font-mono text-[11px] font-semibold text-ink hover:bg-wash"
           >
             <Play size={12} fill="currentColor" />
             {running ? "Ejecutando…" : "Ejecutar"}
@@ -497,7 +497,7 @@ function PowerBiCanvas() {
                 key={r}
                 type="button"
                 onClick={() => setRegion(r)}
-                className={`border px-2 py-0.5 text-[10px] font-medium ${
+                className={`min-h-12 border px-3 text-[10px] font-medium ${
                   region === r ? "border-ink bg-paper text-ink" : "border-line bg-paper/70 text-mute hover:text-ink"
                 }`}
               >
@@ -510,7 +510,7 @@ function PowerBiCanvas() {
                 key={y}
                 type="button"
                 onClick={() => setYear(y)}
-                className={`border px-2 py-0.5 text-[10px] font-medium ${
+                className={`min-h-12 border px-3 text-[10px] font-medium ${
                   year === y ? "border-ink bg-paper text-ink" : "border-line bg-paper/70 text-mute hover:text-ink"
                 }`}
               >
@@ -533,9 +533,10 @@ function PowerBiCanvas() {
                     <button
                       key={MONTHS[i]}
                       type="button"
+                      aria-label={`Ventas ${MONTHS[i]}`}
                       onMouseEnter={() => setHoverBar(i)}
                       onMouseLeave={() => setHoverBar(null)}
-                      className="flex h-full flex-1 flex-col items-center justify-end"
+                      className="flex h-full min-h-12 flex-1 flex-col items-center justify-end"
                     >
                       <div
                         className="w-full transition-opacity"
@@ -575,8 +576,9 @@ function PowerBiCanvas() {
                       <li key={c.name}>
                         <button
                           type="button"
+                          aria-label={`Canal ${c.name}`}
                           onClick={() => setChannel(channel === c.name ? null : c.name)}
-                          className={`flex w-full items-center gap-1.5 text-[10px] ${
+                          className={`flex min-h-12 w-full items-center gap-1.5 text-[10px] ${
                             channel === c.name ? "font-semibold text-ink" : "text-mute hover:text-ink"
                           }`}
                         >
@@ -602,8 +604,9 @@ function PowerBiCanvas() {
                   <button
                     key={r.name}
                     type="button"
+                    aria-label={`Región ${r.name}`}
                     onClick={() => setRegion(r.name as Region)}
-                    className="mb-1 flex items-center gap-2 text-[10px]"
+                    className="mb-1 flex min-h-12 items-center gap-2 text-[10px]"
                   >
                     <span className="w-16 truncate text-left text-mute">{r.name}</span>
                     <span className="h-1.5 flex-1 bg-wash">
@@ -675,7 +678,7 @@ function PowerBiCanvas() {
         <button
           type="button"
           onClick={() => setPage("informe")}
-          className={`px-2 py-0.5 text-[10px] font-medium ${
+          className={`min-h-12 px-3 text-[10px] font-medium ${
             page === "informe" ? "border-b-2 border-ink text-ink" : "text-mute"
           }`}
         >
@@ -684,7 +687,7 @@ function PowerBiCanvas() {
         <button
           type="button"
           onClick={() => setPage("detalle")}
-          className={`px-2 py-0.5 text-[10px] font-medium ${
+          className={`min-h-12 px-3 text-[10px] font-medium ${
             page === "detalle" ? "border-b-2 border-ink text-ink" : "text-mute"
           }`}
         >

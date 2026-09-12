@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import FaqClient from "./FaqClient";
 import { ogImageUrl } from "@/lib/og/url";
+import { jsonLdString, twitterShare } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Preguntas frecuentes — Soporte y consultas",
@@ -31,6 +32,17 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: twitterShare(
+    "Preguntas Frecuentes — Soporte y Consultas | ProgramBI",
+    "Información detallada sobre requisitos de cursos, certificaciones, cuotas de pago y capacitaciones corporativas en Latinoamérica.",
+    ogImageUrl({
+      kicker: "Ayuda",
+      title: "Preguntas frecuentes",
+      description:
+        "Cursos en vivo, certificados, cuotas de pago y capacitaciones corporativas — todo lo que necesitas saber.",
+      path: "faq",
+    })
+  ),
 };
 
 const FAQ_DATA = [
@@ -113,11 +125,11 @@ export default function FAQPage() {
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(faqJsonLd) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbJsonLd) }}
       />
 
       <FaqClient faqItems={FAQ_DATA} />

@@ -152,6 +152,24 @@ export const COURSE_SEO: Record<
       },
     ],
   },
+  "analitica-financiera": {
+    title: "Curso analítica financiera Chile | ProgramBI",
+    description:
+      "Curso de analítica financiera en Chile, en vivo: Excel, SQL, Power BI y Python para reportes contables, riesgo y dashboards de inversión.",
+    h1: "Analítica Financiera",
+    audience:
+      "Para analistas financieros y control de gestión que automatizan reportes y quieren tableros de inversión.",
+    faqs: [
+      {
+        q: "¿Qué cubre el curso de analítica financiera?",
+        a: "Automatización de reportes contables con SQL, dashboards de ROI y flujos en Power BI, y modelado de riesgo con Python. 48 horas en vivo.",
+      },
+      {
+        q: "¿Necesito ser contador para tomarlo?",
+        a: "Sirve tener nociones de contabilidad y finanzas corporativas. El curso enseña las herramientas (Excel, SQL, Power BI y Python) sobre esos casos.",
+      },
+    ],
+  },
   "machine-learning": {
     title: "Curso Machine Learning Chile | ProgramBI",
     description:

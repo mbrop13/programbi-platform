@@ -97,7 +97,7 @@ export default function LandingHero() {
         <motion.div style={{ x: x1, y: y1 }} className="absolute inset-[-3%]">
           <Image
             src="/images/bolsa-hero-1.jpg"
-            alt=""
+            alt="Profesionales de datos en un entorno de trabajo ejecutivo"
             fill
             priority
             sizes="100vw"
@@ -110,7 +110,7 @@ export default function LandingHero() {
         <motion.div style={{ x: x2, y: y2, opacity: img2Base }} className="absolute inset-[-3%]">
           <Image
             src="/images/bolsa-hero-2.jpg"
-            alt=""
+            alt="Visualización de datos y tecnología aplicada a negocios"
             fill
             priority
             sizes="100vw"

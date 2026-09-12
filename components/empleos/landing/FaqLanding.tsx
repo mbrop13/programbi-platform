@@ -1,4 +1,4 @@
-const FAQS = [
+export const FAQS = [
   {
     q: "¿Cuánto cuesta?",
     a: "Para candidatos es gratis, siempre. Las empresas publican sin costo durante el lanzamiento; destacar una vacante es opcional y se paga solo si lo necesitas.",

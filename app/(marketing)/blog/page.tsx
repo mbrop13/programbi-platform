@@ -37,6 +37,16 @@ export const metadata: Metadata = {
     title: "Blog — Recursos de análisis de datos",
     description:
       "Artículos, tutoriales y guías prácticas sobre Power BI, SQL, Python y análisis de datos.",
+    images: [
+      ogImageUrl({
+        kicker: "Blog",
+        title: "Recursos y artículos de análisis de datos",
+        description:
+          "Tutoriales y guías prácticas sobre Power BI, SQL y Python, escritos por expertos de la industria.",
+        tags: ["Power BI", "SQL", "Python"],
+        path: "blog",
+      }),
+    ],
   },
 };
 

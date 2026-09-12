@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DEFAULT_OG_IMAGE, twitterShare } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Términos y Condiciones de Uso",
@@ -11,7 +12,12 @@ export const metadata: Metadata = {
       "Conoce los términos y condiciones de uso de la plataforma de educación y comunidad de ProgramBI.",
     url: "https://www.programbi.com/terminos",
     type: "website",
+    images: [DEFAULT_OG_IMAGE],
   },
+  twitter: twitterShare(
+    "Términos y Condiciones de Uso",
+    "Conoce los términos y condiciones de uso de la plataforma de educación y comunidad de ProgramBI."
+  ),
 };
 
 export default function TerminosPage() {

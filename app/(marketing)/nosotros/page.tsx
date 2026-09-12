@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Award, BookOpen, Users, Building, ShieldCheck, UserCheck } from "lucide-react";
 import MentorsSection from "@/components/marketing/MentorsSection";
 import { ogImageUrl } from "@/lib/og/url";
+import { twitterShare } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Sobre nosotros — Academia de análisis de datos",
@@ -32,6 +33,17 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: twitterShare(
+    "Sobre Nosotros — Academia de Análisis de Datos | ProgramBI",
+    "Conoce nuestra misión, metodología de clases en vivo e instructores de la industria. Liderando la capacitación en ciencia de datos y BI en Latinoamérica.",
+    ogImageUrl({
+      kicker: "Quiénes somos",
+      title: "+5.000 profesionales formados en análisis de datos",
+      description:
+        "Clases en vivo, instructores de la industria y proyectos reales. Desde Chile para Latinoamérica.",
+      path: "nosotros",
+    })
+  ),
 };
 
 const STATS = [

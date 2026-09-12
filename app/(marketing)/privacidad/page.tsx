@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DEFAULT_OG_IMAGE, twitterShare } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Política de Privacidad",
@@ -11,7 +12,12 @@ export const metadata: Metadata = {
       "Conoce cómo ProgramBI recopila, usa y protege tu información personal conforme a la Ley N° 19.628 de Chile.",
     url: "https://www.programbi.com/privacidad",
     type: "website",
+    images: [DEFAULT_OG_IMAGE],
   },
+  twitter: twitterShare(
+    "Política de Privacidad",
+    "Conoce cómo ProgramBI recopila, usa y protege tu información personal conforme a la Ley N° 19.628 de Chile."
+  ),
 };
 
 export default function PrivacidadPage() {
