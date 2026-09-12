@@ -6,7 +6,6 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, ChevronRight, Search, X, Sparkles, DollarSign, Cpu, Sliders, ChevronLeft, Trophy } from "lucide-react";
 import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
-import { createClient } from "@/lib/supabase/client";
 import { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 import { isVideoUrl } from "@/lib/utils";
 import { isVanityBlogPost, blogIcpScore } from "@/lib/seo/money";
@@ -27,6 +26,7 @@ function getVideoFromContent(content?: string): string | undefined {
 
 const CATEGORIES = [
   { value: "all", label: "Todo" },
+  { value: "datos", label: "Datos" },
   { value: "ia", label: "AI" },
   { value: "economia", label: "Economía" },
   { value: "tecnologia", label: "Tecnología" },
@@ -35,9 +35,9 @@ const CATEGORIES = [
 ] as const;
 
 const categoryLabels: Record<string, string> = {
-  "power-bi": "Tecnología",
-  sql: "Tecnología",
-  python: "Tecnología",
+  "power-bi": "Datos",
+  sql: "Datos",
+  python: "Datos",
   tecnologia: "Tecnología",
   ia: "AI",
   industria: "Economía",
@@ -57,6 +57,41 @@ function formatDate(d: string) {
     month: "long",
     year: "numeric",
   });
+}
+
+const DATOS_DESTACADOS = [
+  { href: "/cursos/power-bi", title: "Curso Power BI en vivo", kicker: "Curso" },
+  { href: "/cursos/sql-server", title: "Curso SQL Server", kicker: "Curso" },
+  { href: "/cursos/python", title: "Python para datos", kicker: "Curso" },
+  { href: "/migrar-excel-a-power-bi", title: "Migrar de Excel a Power BI", kicker: "Guía" },
+  { href: "/power-bi-mineria-chile", title: "Power BI para minería en Chile", kicker: "Guía" },
+] as const;
+
+function DatosDestacados() {
+  return (
+    <div className="mb-16">
+      <p className="text-[10px] font-bold tracking-widest uppercase text-slate-500 mb-4">
+        Destacados de datos y BI
+      </p>
+      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {DATOS_DESTACADOS.map((item) => (
+          <li key={item.href}>
+            <Link
+              href={item.href}
+              className="block rounded-xl border border-slate-100 bg-slate-50 px-5 py-4 no-underline hover:border-slate-300"
+            >
+              <span className="text-[9px] font-bold tracking-widest uppercase text-slate-500">
+                {item.kicker}
+              </span>
+              <span className="mt-1 block font-serif font-bold text-lg text-slate-950 leading-snug">
+                {item.title}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
 /* ── Featured News Slider (Editorial Carrusel) ─── */
@@ -291,14 +326,20 @@ export default function BlogClient({ articles }: { articles: any[] }) {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    const supabase = createClient();
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
+    let unsub = () => {};
+    import("@/lib/supabase/client").then(({ createClient }) => {
+      const supabase = createClient();
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setUser(session?.user ?? null);
+      });
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null);
+      });
+      unsub = () => subscription.unsubscribe();
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-    });
-    return () => subscription.unsubscribe();
+    return () => unsub();
   }, []);
 
   // Load preferences from localStorage on mount
@@ -325,7 +366,13 @@ export default function BlogClient({ articles }: { articles: any[] }) {
     let temp = articles;
 
     // Filter by category
-    if (activeCategory === "ia") {
+    if (activeCategory === "datos") {
+      temp = temp.filter(
+        (a) =>
+          ["power-bi", "sql", "python"].includes(a.category) ||
+          blogIcpScore(a.title, a.excerpt, a.slug, a.category) > 0
+      );
+    } else if (activeCategory === "ia") {
       temp = temp.filter((a) => a.category === "ia");
     } else if (activeCategory === "economia") {
       temp = temp.filter((a) => ["industria", "economia"].includes(a.category));
@@ -364,16 +411,12 @@ export default function BlogClient({ articles }: { articles: any[] }) {
     const icp = filtered.filter(
       (a) => blogIcpScore(a.title, a.excerpt, a.slug, a.category) > 0
     );
-    const nonVanity = filtered.filter(
-      (a) => !isVanityBlogPost(a.title, a.excerpt, a.slug)
-    );
-    const source =
-      activeCategory === "all" && icp.length > 0
-        ? icp
-        : activeCategory === "all" && nonVanity.length > 0
-          ? nonVanity
-          : filtered;
-    return source.slice(0, Math.min(5, source.length));
+    if (activeCategory === "all" || activeCategory === "datos") {
+      return icp.slice(0, Math.min(5, icp.length));
+    }
+    return filtered
+      .filter((a) => !isVanityBlogPost(a.title, a.excerpt, a.slug))
+      .slice(0, Math.min(5, filtered.length));
   }, [filtered, activeCategory]);
   const gridArticles = filtered;
 
@@ -512,13 +555,19 @@ export default function BlogClient({ articles }: { articles: any[] }) {
           </div>
         ) : (
           <>
-            {/* News Slider (Latest 5 articles) */}
-            {sliderArticles.length > 0 && <BlogSlider articles={sliderArticles} />}
+            {/* News Slider: ICP first. If the CMS has no BI posts, show existing guides. */}
+            {sliderArticles.length > 0 ? (
+              <BlogSlider articles={sliderArticles} />
+            ) : activeCategory === "all" || activeCategory === "datos" ? (
+              <DatosDestacados />
+            ) : null}
 
             {/* Title for Recent list */}
             {gridArticles.length > 0 && (
               <h3 className="font-serif font-bold text-2xl text-slate-950 mb-8 border-b border-slate-100 pb-3 tracking-tight">
-                Últimas Entradas
+                {activeCategory === "all" || activeCategory === "datos"
+                  ? "Power BI, SQL y Python"
+                  : "Últimas Entradas"}
               </h3>
             )}
 

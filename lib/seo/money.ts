@@ -215,7 +215,9 @@ export const GUIDE_SEO = {
 } as const;
 
 const VANITY_RE =
-  /tokenizad|neuralink|spacex|glm\b|mundial\s*20|criptomoned|bitcoin|openai\b|chatgpt\s+agente|ia\s+global/i;
+  /tokenizad|neuralink|spacex|glm\b|mundial|criptomoned|bitcoin|openai\b|chatgpt|ia\s+global|gran[\s-]*partido|bolsa de trabajo|neuralink/i;
+
+const SPORTS_RE = /\b(deporte|futbol|fútbol|running|mundial|partido|u de chile|colo[\s-]?colo)\b/i;
 
 export function isVanityBlogPost(
   title?: string | null,
@@ -223,7 +225,7 @@ export function isVanityBlogPost(
   slug?: string | null
 ): boolean {
   const hay = `${title || ""} ${excerpt || ""} ${slug || ""}`;
-  return VANITY_RE.test(hay);
+  return VANITY_RE.test(hay) || SPORTS_RE.test(hay);
 }
 
 /** Higher score → list first on /blog (Power BI, SQL, Python, datos en Chile). */
@@ -234,12 +236,15 @@ export function blogIcpScore(
   category?: string | null
 ): number {
   if (isVanityBlogPost(title, excerpt, slug)) return -100;
+  const cat = (category || "").toLowerCase();
+  if (["deporte", "futbol", "running", "deportes"].includes(cat)) return -50;
   const hay = `${title || ""} ${excerpt || ""} ${slug || ""} ${category || ""}`;
   let score = 0;
-  if (/power\s*bi|dax|power query/i.test(hay)) score += 5;
-  if (/\bsql\b|sql server/i.test(hay)) score += 4;
-  if (/python|pandas/i.test(hay)) score += 4;
-  if (/an[áa]lisis de datos|business intelligence|\bbi\b/i.test(hay)) score += 3;
-  if (/chile/i.test(hay)) score += 2;
+  if (/power\s*bi|dax|power query|powerquery/i.test(hay)) score += 5;
+  if (/\bsql\b|sql server|t-sql/i.test(hay)) score += 4;
+  if (/python|pandas|numpy/i.test(hay)) score += 4;
+  if (/an[áa]lisis de datos|business intelligence|dashboard|tablero/i.test(hay)) score += 3;
+  if (["power-bi", "sql", "python", "tecnologia"].includes(cat)) score += 2;
+  if (score > 0 && /chile/i.test(hay)) score += 2;
   return score;
 }
