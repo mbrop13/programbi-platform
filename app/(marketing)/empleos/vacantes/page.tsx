@@ -5,6 +5,7 @@ import { getPublishedJobs } from "@/lib/jobs/queries";
 import { ogImageUrl } from "@/lib/og/url";
 import { absoluteUrl, breadcrumbJsonLd, jsonLdString, twitterShare } from "@/lib/seo";
 
+
 const TITLE = "Vacantes";
 const DESCRIPTION =
   "Encuentra vacantes de datos y programación (Python, Power BI, SQL Server) publicadas por empresas verificadas. Los egresados ProgramBI postulan con certificados verificados.";
@@ -44,52 +45,14 @@ export const metadata: Metadata = {
   ),
 };
 
-export const dynamic = "force-dynamic";
-
-type Search = Promise<{
-  q?: string | string[];
-  modality?: string | string[];
-  seniority?: string | string[];
-  employment_type?: string | string[];
-  skills?: string | string[];
-  sort?: string | string[];
-}>;
-
-function one(v?: string | string[]) {
-  return Array.isArray(v) ? v[0] ?? "" : v ?? "";
-}
-
-function csv(v?: string | string[]) {
-  return one(v)
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
+export const revalidate = 60;
 
 /** Listado público de vacantes (board). Durante el pre-lanzamiento vive en /empleos/vacantes. */
-export default async function VacantesPage({ searchParams }: { searchParams: Search }) {
-  const sp = await searchParams;
-  const initialFilters = {
-    q: one(sp.q),
-    modality: csv(sp.modality),
-    seniority: csv(sp.seniority),
-    employmentType: csv(sp.employment_type),
-    skills: csv(sp.skills),
-    sort: (one(sp.sort) === "salary" ? "salary" : "recent") as "recent" | "salary",
-  };
-
+export default async function VacantesPage() {
   let initialJobs: Awaited<ReturnType<typeof getPublishedJobs>>["jobs"] = [];
   let initialTotal = 0;
   try {
-    const result = await getPublishedJobs({
-      q: initialFilters.q || undefined,
-      modality: initialFilters.modality,
-      seniority: initialFilters.seniority,
-      employment_type: initialFilters.employmentType,
-      skills: initialFilters.skills,
-      sort: initialFilters.sort,
-      perPage: 12,
-    });
+    const result = await getPublishedJobs({ perPage: 12 });
     initialJobs = result.jobs;
     initialTotal = result.total;
   } catch (err) {
