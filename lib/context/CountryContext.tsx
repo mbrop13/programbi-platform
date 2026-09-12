@@ -132,37 +132,12 @@ function getCountry(iso: string): CountryData {
 /* ═══════════════════════════════════════════════════════════════ */
 export function CountryProvider({ children }: { children: React.ReactNode }) {
   const [iso, setIso] = useState<string>(DEFAULT_ISO);
-  const [isDetecting, setIsDetecting] = useState(true);
+  const [isDetecting] = useState(false);
 
-  // On mount: check localStorage first, then IP detection
+  // localStorage only — ipapi.co is blocked by CSP and raced the LCP path.
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved && COUNTRIES.some((c) => c.iso === saved)) {
-      setIso(saved);
-      setIsDetecting(false);
-      return;
-    }
-
-    // Auto-detect by IP
-    const detect = async () => {
-      try {
-        const res = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(4000) });
-        if (res.ok) {
-          const data = await res.json();
-          const code = (data.country_code || "").toLowerCase();
-          if (COUNTRIES.some((c) => c.iso === code)) {
-            setIso(code);
-            localStorage.setItem(STORAGE_KEY, code);
-          }
-        }
-      } catch {
-        // Silently fail, keep default (Chile)
-      } finally {
-        setIsDetecting(false);
-      }
-    };
-
-    detect();
+    if (saved && COUNTRIES.some((c) => c.iso === saved)) setIso(saved);
   }, []);
 
   const setCountryByIso = useCallback((newIso: string) => {

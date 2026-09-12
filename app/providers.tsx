@@ -1,8 +1,10 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { CountryProvider } from "@/lib/context/CountryContext";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "sonner";
+
+const Toaster = dynamic(() => import("sonner").then((m) => m.Toaster), { ssr: false });
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (

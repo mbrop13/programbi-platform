@@ -73,8 +73,9 @@ export default function CursosPageClient({ catalog }: { catalog: CourseCatalogIt
                   fill
                   preload
                   fetchPriority="high"
+                  decoding="sync"
                   quality={70}
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 58vw"
+                  sizes="(max-width: 640px) 412px, (max-width: 1024px) 100vw, 58vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                 />
               </div>
@@ -101,6 +102,7 @@ export default function CursosPageClient({ catalog }: { catalog: CourseCatalogIt
                     src={course.imageUrl}
                     alt={course.title}
                     fill
+                    loading="lazy"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                   />

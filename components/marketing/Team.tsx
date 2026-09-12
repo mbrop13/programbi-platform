@@ -5,7 +5,7 @@ import { mentors } from "@/lib/data/mentors";
 
 export default function Team() {
   return (
-    <section className="border-t border-line py-20 lg:py-28">
+    <section className="cv-auto border-t border-line py-20 lg:py-28">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
           Conoce a nuestro equipo

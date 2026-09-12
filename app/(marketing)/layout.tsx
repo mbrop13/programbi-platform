@@ -1,7 +1,6 @@
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import MarketingChrome from "@/components/shared/MarketingChrome";
-import AttributionCapture from "@/components/shared/AttributionCapture";
 
 export default function MarketingLayout({
   children,
@@ -16,7 +15,6 @@ export default function MarketingLayout({
       >
         Saltar al contenido
       </a>
-      <AttributionCapture />
       <Navbar />
       <main id="contenido" className="flex-1 bg-canvas">
         {children}

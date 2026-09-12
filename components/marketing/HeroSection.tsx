@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import RegisterCta from "@/components/marketing/RegisterCta";
-import HeroPreview from "@/components/marketing/HeroPreview";
+import HeroPreviewLazy from "@/components/marketing/HeroPreviewLazy";
 
 export default function HeroSection() {
   return (
@@ -41,7 +41,7 @@ export default function HeroSection() {
           </div>
         </div>
 
-        <HeroPreview />
+        <HeroPreviewLazy />
       </div>
     </section>
   );

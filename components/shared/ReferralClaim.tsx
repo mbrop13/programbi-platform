@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import { createClient } from "@/lib/supabase/client";
 
 const KEY = "pb_ref_claimed";
 
@@ -11,14 +10,16 @@ export default function ReferralClaim() {
     if (typeof window === "undefined") return;
     if (sessionStorage.getItem(KEY)) return;
 
-    const supabase = createClient();
-    void supabase.auth.getSession().then(({ data }) => {
-      if (!data.session) return;
-      void fetch("/api/referrals/claim", { method: "POST" })
-        .then(() => {
-          sessionStorage.setItem(KEY, "1");
-        })
-        .catch(() => {});
+    import("@/lib/supabase/client").then(({ createClient }) => {
+      const supabase = createClient();
+      void supabase.auth.getSession().then(({ data }) => {
+        if (!data.session) return;
+        void fetch("/api/referrals/claim", { method: "POST" })
+          .then(() => {
+            sessionStorage.setItem(KEY, "1");
+          })
+          .catch(() => {});
+      });
     });
   }, []);
 

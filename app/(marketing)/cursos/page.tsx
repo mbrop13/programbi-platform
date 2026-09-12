@@ -5,6 +5,8 @@ import { ogImageUrl } from "@/lib/og/url";
 import { PAGE_SEO } from "@/lib/seo/money";
 import { absoluteUrl, breadcrumbJsonLd, jsonLdString, twitterShare } from "@/lib/seo";
 
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: { absolute: PAGE_SEO.cursos.title },
   description: PAGE_SEO.cursos.description,
@@ -47,6 +49,10 @@ export const metadata: Metadata = {
 };
 
 export default function CursosPage() {
+  const featuredImage =
+    courses.find((c) => c.slug === "analisis-de-datos")?.imageUrl ??
+    "/images/courses/analisis-de-datos-card.webp";
+
   const itemListJsonLd = {
     "@context": "https://schema.org",
     "@type": "ItemList",
@@ -61,6 +67,7 @@ export default function CursosPage() {
 
   return (
     <>
+      <link rel="preload" as="image" href={featuredImage} fetchPriority="high" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(itemListJsonLd) }}

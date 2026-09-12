@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import { Geist, JetBrains_Mono, Dancing_Script } from "next/font/google";
+import { Geist, Dancing_Script } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import { Analytics } from "@vercel/analytics/react";
@@ -14,14 +14,6 @@ const geist = Geist({
   variable: "--font-sans",
   subsets: ["latin"],
   display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["400", "600"],
-  preload: false,
 });
 
 const dancing = Dancing_Script({
@@ -168,7 +160,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" suppressHydrationWarning className={`${geist.variable} ${jetbrainsMono.variable} ${dancing.variable}`}>
+    <html lang="es" suppressHydrationWarning className={`${geist.variable} ${dancing.variable}`}>
       <head>
         <script
           type="application/ld+json"

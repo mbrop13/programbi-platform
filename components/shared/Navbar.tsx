@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { AnimatePresence, motion } from "framer-motion";
 import {
   Menu,
   X,
@@ -20,7 +19,6 @@ import {
   Handshake,
 } from "lucide-react";
 import { NAV_COURSE_GROUPS } from "@/lib/data/course-nav";
-import { createClient } from "@/lib/supabase/client";
 
 const AuthModal = dynamic(() => import("./AuthModal"), { ssr: false });
 const SupportModal = dynamic(() => import("./SupportModal"), { ssr: false });
@@ -59,7 +57,6 @@ export default function Navbar() {
 
   const megaTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const userMenuTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const supabase = createClient();
   const pathname = usePathname();
   const isNewsletter = pathname?.startsWith("/newsletter");
 
@@ -103,40 +100,38 @@ export default function Navbar() {
   }, [isHidden]);
 
   useEffect(() => {
-    const checkUser = async () => {
+    let unsub = () => {};
+    import("@/lib/supabase/client").then(({ createClient }) => {
+      const supabase = createClient();
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          import("@/lib/supabase/comunidad")
+            .then((m) => m.isCurrentUserAdmin())
+            .then((admin) => setIsAdmin(admin))
+            .catch(() => {});
+        } else {
+          setIsAdmin(false);
+        }
+        setLoading(false);
+      });
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        import("@/lib/supabase/comunidad")
-          .then((m) => m.isCurrentUserAdmin())
-          .then((admin) => setIsAdmin(admin))
-          .catch(() => {});
-      } else {
-        setIsAdmin(false);
-      }
-      setLoading(false);
-    };
-
-    checkUser();
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      if (session?.user) {
-        import("@/lib/supabase/comunidad")
-          .then((m) => m.isCurrentUserAdmin())
-          .then((admin) => setIsAdmin(admin))
-          .catch(() => {});
-      } else {
-        setIsAdmin(false);
-      }
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        setUser(session?.user ?? null);
+        if (session?.user) {
+          import("@/lib/supabase/comunidad")
+            .then((m) => m.isCurrentUserAdmin())
+            .then((admin) => setIsAdmin(admin))
+            .catch(() => {});
+        } else {
+          setIsAdmin(false);
+        }
+      });
+      unsub = () => subscription.unsubscribe();
     });
-
-    return () => subscription.unsubscribe();
-  }, [supabase.auth]);
+    return () => unsub();
+  }, []);
 
   useEffect(() => {
     if (!isNewsletter) return;
@@ -215,7 +210,8 @@ export default function Navbar() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut({ scope: "global" });
+    const { createClient } = await import("@/lib/supabase/client");
+    await createClient().auth.signOut({ scope: "global" });
     window.location.replace("/");
   };
 
@@ -268,6 +264,7 @@ export default function Navbar() {
               height={32}
               className="h-8 w-[150px] object-contain object-left"
               fetchPriority="low"
+              unoptimized
             />
           </Link>
 
@@ -285,13 +282,8 @@ export default function Navbar() {
                     <ChevronDown size={14} className={isMegaOpen ? "rotate-180" : ""} />
                   </Link>
 
-                  <AnimatePresence>
-                    {isMegaOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 8 }}
-                        transition={{ duration: 0.18 }}
+                  {isMegaOpen ? (
+                      <div
                         className="absolute top-[calc(100%+14px)] left-1/2 w-[680px] -translate-x-1/2 overflow-hidden rounded-[22px] border border-line bg-paper shadow-[0_25px_80px_rgba(23,23,22,0.10)]"
                         onMouseEnter={handleMegaEnter}
                         onMouseLeave={handleMegaLeave}
@@ -314,6 +306,7 @@ export default function Navbar() {
                                           alt={course.title}
                                           fill
                                           sizes="56px"
+                                          unoptimized
                                           className="object-cover"
                                         />
                                       </span>
@@ -341,9 +334,8 @@ export default function Navbar() {
                             Ver todos los cursos <ArrowRight size={14} />
                           </Link>
                         </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                      </div>
+                  ) : null}
                 </div>
               ) : (
                 <Link key={link.href} href={link.href} className="transition-colors hover:text-ink no-underline">
@@ -370,14 +362,8 @@ export default function Navbar() {
                   </span>
                 </button>
 
-                <AnimatePresence>
-                  {isUserMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 8 }}
-                      className="absolute right-0 top-[calc(100%+8px)] w-[240px] overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_16px_40px_rgba(23,23,22,0.08)]"
-                    >
+                {isUserMenuOpen ? (
+                    <div className="absolute right-0 top-[calc(100%+8px)] w-[240px] overflow-hidden rounded-2xl border border-line bg-paper shadow-[0_16px_40px_rgba(23,23,22,0.08)]">
                       <div className="border-b border-line px-4 py-3">
                         <p className="truncate text-xs text-mute">{user.email}</p>
                       </div>
@@ -447,9 +433,8 @@ export default function Navbar() {
                           Cerrar sesión
                         </button>
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+                    </div>
+                ) : null}
               </div>
             ) : (
               <button

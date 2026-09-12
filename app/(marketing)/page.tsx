@@ -8,7 +8,7 @@ import JobsBanner from "@/components/marketing/JobsBanner";
 import Team from "@/components/marketing/Team";
 import Quote from "@/components/marketing/Quote";
 import FaqSection from "@/components/marketing/FaqSection";
-import LeadForm from "@/components/marketing/LeadForm";
+import HomeDeferred from "@/components/marketing/HomeDeferred";
 import { homeFaqs } from "@/lib/data/site";
 import { courses } from "@/lib/data/courses";
 import { SITE_URL, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
@@ -69,7 +69,7 @@ export default function HomePage() {
       <Team />
       <Quote />
       <FaqSection />
-      <LeadForm />
+      <HomeDeferred />
     </>
   );
 }

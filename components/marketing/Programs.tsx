@@ -1,11 +1,7 @@
-"use client";
-
-import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Calendar, ArrowRight } from "lucide-react";
 import CourseImage from "@/components/shared/CourseImage";
 import { COURSE_FILTER_GROUPS } from "@/lib/data/course-nav";
-import { trackCourseCardClick } from "@/lib/analytics/marketing";
 import {
   type CourseSchedule,
   staticSchedules,
@@ -14,7 +10,6 @@ import {
   convertSchedule,
   SCHEDULE_COUNTRIES,
 } from "@/lib/data/course-schedules";
-import { useCountry } from "@/lib/context/CountryContext";
 
 const ORDER = [
   "analisis-de-datos",
@@ -31,8 +26,6 @@ const ORDER = [
 ] as const;
 
 const FILTERS = [{ id: "todos" as const, label: "Todos" }, ...COURSE_FILTER_GROUPS];
-
-type FilterId = (typeof FILTERS)[number]["id"];
 
 export type ProgramCard = {
   slug: string;
@@ -56,72 +49,37 @@ function isNew(course: ProgramCard) {
   return course.badgeLabel?.toLowerCase().includes("nuevo") ?? false;
 }
 
-export default function Programs({ catalog }: { catalog: ProgramCard[] }) {
-  const [filter, setFilter] = useState<FilterId>("todos");
-  const [active, setActive] = useState("analisis-de-datos");
-  const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
-  const { country } = useCountry();
-
-  const ALL = useMemo(() => orderCatalog(catalog), [catalog]);
-
-  const scheduleCountry = useMemo(
-    () => SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) ?? SCHEDULE_COUNTRIES[0],
-    [country.iso]
-  );
-
-  useEffect(() => {
-    fetch("/api/schedules")
-      .then((r) => (r.ok ? r.json() : []))
-      .then((data) => {
-        if (Array.isArray(data)) setSchedules(data);
-      })
-      .catch(() => {});
-  }, []);
-
-  const visible = useMemo(() => {
-    if (filter === "todos") return ALL;
-    const group = COURSE_FILTER_GROUPS.find((f) => f.id === filter);
-    return group ? ALL.filter((c) => (group.slugs as readonly string[]).includes(c.slug)) : ALL;
-  }, [filter, ALL]);
-
-  const current = visible.find((c) => c.slug === active) ?? visible[0];
-
-  function getStartMeta(course: ProgramCard) {
-    let relevant: CourseSchedule[] = [];
-    if (course.slug === "analisis-de-datos") {
-      relevant = schedules.filter(
-        (s) => analisisDeDatosSlugs.includes(s.course_slug) && s.level_name === "Básico"
-      );
-      if (relevant.length === 0) {
-        relevant = staticSchedules
-          .filter((s) => analisisDeDatosSlugs.includes(s.course_slug))
-          .map((s, i) => ({ ...s, id: `static-${i}` }) as CourseSchedule);
-      }
-    } else {
-      relevant = schedules.filter((s) => s.course_slug === course.slug);
-      if (relevant.length === 0) {
-        relevant = staticSchedules
-          .filter((s) => s.course_slug === course.slug)
-          .map((s, i) => ({ ...s, id: `static-${i}` }) as CourseSchedule);
-      }
-    }
-    const nearest = getNearestSchedule(relevant);
-    if (!nearest) return null;
-    const conv = convertSchedule(
-      nearest.start_date,
-      nearest.schedule_time,
-      nearest.schedule_days,
-      scheduleCountry.timeZone
-    );
-    const capitalized =
-      conv.dateFormatted.charAt(0).toUpperCase() + conv.dateFormatted.slice(1);
-    return { date: capitalized, days: conv.days, time: conv.time };
+function getStartMeta(course: ProgramCard) {
+  const chile = SCHEDULE_COUNTRIES[0];
+  let relevant: CourseSchedule[];
+  if (course.slug === "analisis-de-datos") {
+    relevant = staticSchedules
+      .filter((s) => analisisDeDatosSlugs.includes(s.course_slug))
+      .map((s, i) => ({ ...s, id: `static-${i}` }) as CourseSchedule);
+  } else {
+    relevant = staticSchedules
+      .filter((s) => s.course_slug === course.slug)
+      .map((s, i) => ({ ...s, id: `static-${i}` }) as CourseSchedule);
   }
+  const nearest = getNearestSchedule(relevant);
+  if (!nearest) return null;
+  const conv = convertSchedule(
+    nearest.start_date,
+    nearest.schedule_time,
+    nearest.schedule_days,
+    chile.timeZone
+  );
+  const capitalized = conv.dateFormatted.charAt(0).toUpperCase() + conv.dateFormatted.slice(1);
+  return { date: capitalized, days: conv.days, time: conv.time };
+}
 
+export default function Programs({ catalog }: { catalog: ProgramCard[] }) {
+  const ALL = orderCatalog(catalog);
+  const current = ALL.find((c) => c.slug === "analisis-de-datos") ?? ALL[0];
   if (!current) return null;
 
   return (
-    <section id="programas" className="border-t border-line py-20 lg:py-28">
+    <section id="programas" className="cv-auto border-t border-line py-20 lg:py-28">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">Cursos</h2>
         <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">
@@ -131,35 +89,30 @@ export default function Programs({ catalog }: { catalog: ProgramCard[] }) {
 
         <div className="mt-8 flex flex-wrap gap-2">
           {FILTERS.map((f) => {
-            const on = f.id === filter;
+            const on = f.id === "todos";
             return (
-              <button
+              <Link
                 key={f.id}
-                type="button"
-                aria-pressed={on}
-                onClick={() => setFilter(f.id)}
-                className={`rounded-md border-2 px-3.5 py-2 text-sm font-semibold transition-colors ${
+                href="/cursos"
+                className={`rounded-md border-2 px-3.5 py-2 text-sm font-semibold no-underline transition-colors ${
                   on
                     ? "border-[rgb(23_23_22_/_0.28)] bg-paper text-ink"
                     : "border-transparent bg-wash text-mute hover:text-ink"
                 }`}
               >
                 {f.label}
-              </button>
+              </Link>
             );
           })}
         </div>
 
-        {/* ── Desktop: featured + list ─────────────────────────────── */}
         <div className="mt-10 hidden items-start gap-6 lg:grid lg:grid-cols-12 lg:gap-10">
           <Link
             href={`/cursos/${current.slug}`}
-            onClick={() => trackCourseCardClick(current.slug, "home_programs")}
             className="group order-2 overflow-hidden rounded-[26px] border border-line bg-paper no-underline lg:col-span-7"
           >
             <div className="relative aspect-[16/10] bg-wash">
               <CourseImage
-                key={current.slug}
                 src={current.imageUrl}
                 alt={current.title}
                 fill
@@ -183,15 +136,12 @@ export default function Programs({ catalog }: { catalog: ProgramCard[] }) {
           </Link>
 
           <ul className="order-1 flex flex-col lg:col-span-5">
-            {visible.map((course, i) => {
+            {ALL.map((course, i) => {
               const on = course.slug === current.slug;
               return (
                 <li key={course.slug}>
                   <Link
                     href={`/cursos/${course.slug}`}
-                    onMouseEnter={() => setActive(course.slug)}
-                    onFocus={() => setActive(course.slug)}
-                    onClick={() => trackCourseCardClick(course.slug, "home_programs_list")}
                     className={`flex items-baseline justify-between gap-4 rounded-md px-3 py-3 no-underline transition-colors ${
                       on ? "bg-paper text-ink" : "text-mute hover:text-ink"
                     }`}
@@ -215,20 +165,18 @@ export default function Programs({ catalog }: { catalog: ProgramCard[] }) {
           </ul>
         </div>
 
-        {/* ── Mobile: horizontal snap slider ────────────────────────── */}
         <div className="mt-8 lg:hidden">
           <div
             className="scrollbar-hide -mx-4 flex gap-4 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 pb-4 sm:-mx-6 sm:px-6"
-            style={{ WebkitOverflowScrolling: "touch" as const }}
+            style={{ WebkitOverflowScrolling: "touch" }}
             aria-label="Carrusel de cursos"
           >
-            {visible.map((course) => {
+            {ALL.map((course) => {
               const meta = getStartMeta(course);
               return (
                 <Link
                   key={course.slug}
                   href={`/cursos/${course.slug}`}
-                  onClick={() => trackCourseCardClick(course.slug, "home_programs_mobile")}
                   className="group flex w-[84%] max-w-[340px] shrink-0 snap-start flex-col overflow-hidden rounded-[22px] border border-line bg-paper no-underline shadow-[0_8px_24px_rgba(23,23,22,0.06)] transition-[transform,box-shadow] active:scale-[0.99] sm:w-[360px]"
                 >
                   <div className="relative aspect-[16/10] overflow-hidden bg-wash">

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { courses } from "@/lib/data/courses";
+import { NAV_COURSE_GROUPS } from "@/lib/data/course-nav";
 
 const socialLinks = [
   { name: "Instagram", href: "https://www.instagram.com/programbi_capacitaciones/" },
@@ -21,7 +21,7 @@ const companyLinks = [
 ];
 
 export default function Footer({ compact: _compact = false }: { compact?: boolean }) {
-  const topCourses = courses.slice(0, 6);
+  const topCourses = NAV_COURSE_GROUPS.flatMap((g) => g.items).slice(0, 6);
 
   return (
     <footer className="border-t border-line bg-paper px-4 py-12 sm:px-6 lg:px-8" aria-label="Pie de página">
@@ -33,6 +33,7 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
               alt="ProgramBI"
               width={148}
               height={32}
+              unoptimized
               className="h-8 w-[148px] object-contain object-left"
             />
           </Link>
