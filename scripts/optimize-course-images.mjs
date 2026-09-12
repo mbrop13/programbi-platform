@@ -57,13 +57,19 @@ for (const [slug, url] of IMAGES) {
   }
   const buf = Buffer.from(await res.arrayBuffer());
   const dest = path.join(outDir, `${slug}.jpg`);
-  await sharp(buf)
+  const destWebp = path.join(outDir, `${slug}.webp`);
+  const pipeline = sharp(buf)
     .rotate()
-    .resize({ width: 1600, height: 1000, fit: "cover", withoutEnlargement: true })
-    .jpeg({ quality: 78, mozjpeg: true, chromaSubsampling: "4:2:0" })
-    .toFile(dest);
+    .resize({ width: 1600, height: 1000, fit: "cover", withoutEnlargement: true });
+  await pipeline.clone().jpeg({ quality: 78, mozjpeg: true, chromaSubsampling: "4:2:0" }).toFile(dest);
+  await pipeline
+    .clone()
+    .resize({ width: 1200, height: 750, fit: "cover", withoutEnlargement: true })
+    .webp({ quality: 72 })
+    .toFile(destWebp);
   const out = await sharp(dest).metadata();
+  const webp = await sharp(destWebp).metadata();
   console.log(
-    `${slug}: ${(buf.length / 1024 / 1024).toFixed(2)} MB → ${((out.size ?? 0) / 1024).toFixed(0)} KB ${out.width}x${out.height}`
+    `${slug}: ${(buf.length / 1024 / 1024).toFixed(2)} MB → ${((out.size ?? 0) / 1024).toFixed(0)} KB jpg / ${((webp.size ?? 0) / 1024).toFixed(0)} KB webp`
   );
 }

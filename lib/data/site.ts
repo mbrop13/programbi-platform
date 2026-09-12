@@ -23,7 +23,7 @@ export const programs = [
     name: "Análisis de Datos",
     hours: "144 h",
     line: "Programa integral de SQL Server, Power BI y Python.",
-    image: "/images/courses/analisis-de-datos.jpg",
+    image: "/images/courses/analisis-de-datos.webp",
     href: "/cursos/analisis-de-datos",
   },
   {
@@ -31,7 +31,7 @@ export const programs = [
     name: "Power BI",
     hours: "16 h por nivel",
     line: "Dashboards, DAX y modelado para decisiones.",
-    image: "/images/courses/power-bi.jpg",
+    image: "/images/courses/power-bi.webp",
     href: "/cursos/power-bi",
   },
   {
@@ -39,7 +39,7 @@ export const programs = [
     name: "SQL Server",
     hours: "16 h por nivel",
     line: "Consultas, procedimientos y arquitectura de datos.",
-    image: "/images/courses/sql-server.jpg",
+    image: "/images/courses/sql-server.webp",
     href: "/cursos/sql-server",
   },
   {
@@ -47,7 +47,7 @@ export const programs = [
     name: "Python para Datos",
     hours: "16 h por nivel",
     line: "Pandas y análisis aplicado a negocios reales.",
-    image: "/images/courses/python.jpg",
+    image: "/images/courses/python.webp",
     href: "/cursos/python",
   },
 ] as const;

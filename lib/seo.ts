@@ -23,6 +23,33 @@ export function jsonLdString(data: unknown): string {
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
+export function breadcrumbJsonLd(items: { name: string; path: string }[]) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      name: item.name,
+      item: item.path.startsWith("http") ? item.path : absoluteUrl(item.path),
+    })),
+  };
+}
+
+/** Twitter card matching an OG image so root layout twitter:image does not leak. */
+export function twitterShare(
+  title: string,
+  description: string,
+  imageUrl: string = DEFAULT_OG_IMAGE.url
+) {
+  return {
+    card: "summary_large_image" as const,
+    title,
+    description,
+    images: [imageUrl],
+  };
+}
+
 export const MONEY_COURSE_SLUGS = [
   "power-bi",
   "analisis-de-datos",

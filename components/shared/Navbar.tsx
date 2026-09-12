@@ -18,7 +18,7 @@ import {
   ShieldAlert,
   Handshake,
 } from "lucide-react";
-import { getGroupedCourses } from "@/lib/data/courses";
+import { NAV_COURSE_GROUPS } from "@/lib/data/course-nav";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "./AuthModal";
 import SupportModal from "./SupportModal";
@@ -34,7 +34,7 @@ const navLinks = [
   { href: "/blog", label: "Blog" },
 ];
 
-const courseGroups = getGroupedCourses();
+const courseGroups = NAV_COURSE_GROUPS;
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -258,7 +258,7 @@ export default function Navbar() {
               fill
               sizes="150px"
               className="object-contain object-left"
-              priority
+              fetchPriority="low"
             />
           </Link>
 
@@ -302,7 +302,7 @@ export default function Navbar() {
                                       <span className="relative h-10 w-14 shrink-0 overflow-hidden rounded-md border border-line bg-wash">
                                         <Image
                                           src={course.imageUrl}
-                                          alt=""
+                                          alt={course.title}
                                           fill
                                           sizes="56px"
                                           className="object-cover"

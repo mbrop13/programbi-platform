@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Search,
   Briefcase,
@@ -43,9 +43,19 @@ const SORT_OPTIONS = [
   { id: "salary", label: "Mayor salario" },
 ] as const;
 
+export type VacantesFilters = {
+  q: string;
+  modality: string[];
+  seniority: string[];
+  employmentType: string[];
+  skills: string[];
+  sort: "recent" | "salary";
+};
+
 interface EmpleosPageClientProps {
   initialJobs: JobPublic[];
   initialTotal: number;
+  initialFilters: VacantesFilters;
 }
 
 /** Static fallback for the Suspense boundary around useSearchParams (Next 16). */
@@ -69,23 +79,21 @@ export function EmpleosPageSkeleton() {
   );
 }
 
-export default function EmpleosPageClient({ initialJobs, initialTotal }: EmpleosPageClientProps) {
+export default function EmpleosPageClient({
+  initialJobs,
+  initialTotal,
+  initialFilters,
+}: EmpleosPageClientProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
-  const listParam = (key: string) =>
-    (searchParams.get(key) ?? "").split(",").map((v) => v.trim()).filter(Boolean);
-
-  const [query, setQuery] = useState(searchParams.get("q") ?? "");
-  const [debouncedQuery, setDebouncedQuery] = useState(searchParams.get("q") ?? "");
-  const [modality, setModality] = useState<string[]>(listParam("modality"));
-  const [seniority, setSeniority] = useState<string[]>(listParam("seniority"));
-  const [employmentType, setEmploymentType] = useState<string[]>(listParam("employment_type"));
-  const [skills, setSkills] = useState<string[]>(listParam("skills"));
-  const [sort, setSort] = useState<"recent" | "salary">(
-    searchParams.get("sort") === "salary" ? "salary" : "recent"
-  );
+  const [query, setQuery] = useState(initialFilters.q);
+  const [debouncedQuery, setDebouncedQuery] = useState(initialFilters.q);
+  const [modality, setModality] = useState<string[]>(initialFilters.modality);
+  const [seniority, setSeniority] = useState<string[]>(initialFilters.seniority);
+  const [employmentType, setEmploymentType] = useState<string[]>(initialFilters.employmentType);
+  const [skills, setSkills] = useState<string[]>(initialFilters.skills);
+  const [sort, setSort] = useState<"recent" | "salary">(initialFilters.sort);
 
   const [jobs, setJobs] = useState<JobPublic[]>(initialJobs);
   const [total, setTotal] = useState(initialTotal);
@@ -426,12 +434,16 @@ export default function EmpleosPageClient({ initialJobs, initialTotal }: Empleos
                   <Briefcase size={24} strokeWidth={1.8} />
                 </div>
                 <h2 className="mt-5 text-xl font-bold tracking-tight text-ink">
-                  No hay vacantes con esos criterios
+                  {hasActiveState
+                    ? "No hay vacantes con esos criterios"
+                    : "Aún no hay vacantes publicadas"}
                 </h2>
                 <p className="mt-2 max-w-md text-sm text-mute">
-                  Prueba quitando filtros o vuelve pronto: publicamos nuevas vacantes cada semana.
+                  {hasActiveState
+                    ? "Prueba quitando filtros o vuelve pronto: publicamos nuevas vacantes cada semana."
+                    : "Mientras tanto, crea tu perfil, revisa los cursos o escríbenos. Publicamos vacantes de datos cada semana."}
                 </p>
-                {hasActiveState && (
+                {hasActiveState ? (
                   <button
                     onClick={clearFilters}
                     className="mt-6 inline-flex h-11 items-center gap-2 rounded-full border border-line bg-paper px-6 text-sm font-semibold text-ink transition-colors hover:bg-wash"
@@ -439,6 +451,27 @@ export default function EmpleosPageClient({ initialJobs, initialTotal }: Empleos
                     <RotateCcw size={15} strokeWidth={2} />
                     Limpiar filtros
                   </button>
+                ) : (
+                  <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                    <Link
+                      href="/?auth=register"
+                      className="inline-flex h-11 items-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
+                    >
+                      Crear perfil
+                    </Link>
+                    <Link
+                      href="/cursos"
+                      className="inline-flex h-11 items-center rounded-full border border-line bg-paper px-6 text-sm font-semibold text-ink no-underline transition-colors hover:bg-wash"
+                    >
+                      Ver cursos
+                    </Link>
+                    <a
+                      href="https://wa.me/56935409699"
+                      className="inline-flex h-11 items-center rounded-full border border-line bg-paper px-6 text-sm font-semibold text-ink no-underline transition-colors hover:bg-wash"
+                    >
+                      Contactar
+                    </a>
+                  </div>
                 )}
               </div>
             ) : (

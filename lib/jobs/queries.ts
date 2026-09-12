@@ -1,4 +1,4 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient, createPublicAnonClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase";
 import { skillsFromCourseTitles } from "@/lib/data/job-skills";
 import type { CandidateSnapshot, JobPublic } from "@/lib/jobs/types";
@@ -63,17 +63,11 @@ export interface JobFilters {
   perPage?: number;
 }
 
-/** Lista de vacantes publicadas con filtros (cliente con RLS, lectura pública). */
+/** Lista de vacantes publicadas con filtros (lectura pública, sin cookies()). */
 export async function getPublishedJobs(filters: JobFilters = {}) {
   const page = Math.max(1, filters.page ?? 1);
   const perPage = Math.min(50, filters.perPage ?? 12);
-  let supabase;
-  try {
-    supabase = await createClient();
-  } catch (err) {
-    console.error("getPublishedJobs client:", err);
-    return { jobs: [], total: 0, page, perPage };
-  }
+  const supabase = createPublicAnonClient();
 
   let query = supabase
     .from("jobs")

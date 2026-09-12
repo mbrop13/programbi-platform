@@ -4,13 +4,21 @@ import { useState } from "react";
 import Link from "next/link";
 import CourseImage from "@/components/shared/CourseImage";
 import { Clock, Search } from "lucide-react";
-import { courses } from "@/lib/data/courses";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
 
-export default function CursosPageClient() {
+export type CourseCatalogItem = {
+  slug: string;
+  title: string;
+  shortDescription: string;
+  imageUrl: string;
+  durationHours: number;
+  techStack: string[];
+};
+
+export default function CursosPageClient({ catalog }: { catalog: CourseCatalogItem[] }) {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredCourses = courses.filter((course) => {
+  const filteredCourses = catalog.filter((course) => {
     const q = searchQuery.toLowerCase();
     return (
       !q ||
@@ -64,7 +72,8 @@ export default function CursosPageClient() {
                   fill
                   preload
                   fetchPriority="high"
-                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  quality={70}
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 58vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                 />
               </div>

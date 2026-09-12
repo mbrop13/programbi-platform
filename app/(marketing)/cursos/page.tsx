@@ -3,7 +3,7 @@ import { courses } from "@/lib/data/courses";
 import CursosPageClient from "./CursosPageClient";
 import { ogImageUrl } from "@/lib/og/url";
 import { PAGE_SEO } from "@/lib/seo/money";
-import { absoluteUrl, jsonLdString } from "@/lib/seo";
+import { absoluteUrl, breadcrumbJsonLd, jsonLdString, twitterShare } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: { absolute: PAGE_SEO.cursos.title },
@@ -32,6 +32,18 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: twitterShare(
+    PAGE_SEO.cursos.title,
+    PAGE_SEO.cursos.description,
+    ogImageUrl({
+      kicker: "Catálogo de cursos",
+      title: "Aprende análisis de datos con expertos de la industria",
+      description:
+        "Cursos online en vivo: Power BI, SQL Server, Python, Machine Learning y más.",
+      tags: ["Power BI", "SQL", "Python", "IA"],
+      path: "cursos",
+    })
+  ),
 };
 
 export default function CursosPage() {
@@ -53,7 +65,27 @@ export default function CursosPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(itemListJsonLd) }}
       />
-      <CursosPageClient />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: jsonLdString(
+            breadcrumbJsonLd([
+              { name: "Inicio", path: "/" },
+              { name: "Cursos", path: "/cursos" },
+            ])
+          ),
+        }}
+      />
+      <CursosPageClient
+        catalog={courses.map((c) => ({
+          slug: c.slug,
+          title: c.title,
+          shortDescription: c.shortDescription,
+          imageUrl: c.imageUrl,
+          durationHours: c.durationHours,
+          techStack: c.techStack,
+        }))}
+      />
     </>
   );
 }

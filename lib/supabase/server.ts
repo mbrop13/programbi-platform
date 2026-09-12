@@ -29,6 +29,18 @@ export async function createClient() {
 }
 
 /**
+ * Anon client without cookies(). Public reads in Server Components must not
+ * call cookies(): catching that bailout turns the route into HTTP 500.
+ */
+export function createPublicAnonClient() {
+  return createSupabaseClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+    { auth: { persistSession: false } }
+  )
+}
+
+/**
  * Admin client that bypasses RLS using the service role key.
  * Use ONLY in server-side code (API routes, webhooks).
  * NEVER expose to the client.
