@@ -9,7 +9,7 @@ import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/Bl
 import { createClient } from "@/lib/supabase/client";
 import { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 import { isVideoUrl } from "@/lib/utils";
-import { isVanityBlogPost } from "@/lib/seo/money";
+import { isVanityBlogPost, blogIcpScore } from "@/lib/seo/money";
 
 function getPosterFromContent(content?: string): string | undefined {
   if (!content) return undefined;
@@ -347,6 +347,16 @@ export default function BlogClient({ articles }: { articles: any[] }) {
       );
     }
 
+    if (activeCategory === "all" && searchQuery.trim() === "") {
+      temp = [...temp].sort((a, b) => {
+        const byIcp =
+          blogIcpScore(b.title, b.excerpt, b.slug, b.category) -
+          blogIcpScore(a.title, a.excerpt, a.slug, a.category);
+        if (byIcp !== 0) return byIcp;
+        return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
+      });
+    }
+
     return temp;
   }, [articles, activeCategory, searchQuery]);
 
@@ -372,8 +382,11 @@ export default function BlogClient({ articles }: { articles: any[] }) {
 
         {/* Central Logo */}
         <h1 className="font-serif text-5xl md:text-7xl font-bold tracking-tight text-slate-950 text-center pt-0 pb-4 select-none">
-          Programbi
+          Blog
         </h1>
+        <p className="text-center text-[10px] font-bold tracking-widest text-slate-500 uppercase pb-2">
+          Recursos de datos y BI · Power BI · SQL · Python
+        </p>
 
         {/* Division border */}
         <div className="border-t border-slate-950 mt-4 mb-2" />

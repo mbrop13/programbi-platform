@@ -7,7 +7,7 @@ import { Analytics } from "@vercel/analytics/react";
 import MarketingAnalytics from "@/components/shared/MarketingAnalytics";
 import AttributionCapture from "@/components/shared/AttributionCapture";
 import ReferralClaim from "@/components/shared/ReferralClaim";
-import { SITE_URL, ORG_ID, WEBSITE_ID, jsonLdString } from "@/lib/seo";
+import { SITE_URL, ORG_ID, WEBSITE_ID, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 
 const geist = Geist({
@@ -67,11 +67,13 @@ export const metadata: Metadata = {
     siteName: "ProgramBI",
     title: PAGE_SEO.home.title,
     description: PAGE_SEO.home.description,
+    images: [DEFAULT_OG_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
     title: PAGE_SEO.home.title,
     description: PAGE_SEO.home.description,
+    images: [DEFAULT_OG_IMAGE.url],
   },
   robots: {
     index: true,

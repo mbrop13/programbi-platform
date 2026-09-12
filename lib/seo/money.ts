@@ -98,6 +98,78 @@ export const COURSE_SEO: Record<
       },
     ],
   },
+  excel: {
+    title: "Curso Excel Chile en vivo | ProgramBI",
+    description:
+      "Curso de Excel en vivo en Chile: tablas dinámicas, fórmulas avanzadas, Power Query y dashboards para reportes de gestión. Consulta la próxima cohorte.",
+    h1: "Excel",
+    audience:
+      "Para analistas y control de gestión que arman reportes en Excel y quieren ir más allá de las tablas dinámicas.",
+    faqs: [
+      {
+        q: "¿El curso Excel es en vivo?",
+        a: "Sí. Clases en vivo por Zoom, con grabaciones en el campus. Cupos abiertos: consulta la próxima cohorte.",
+      },
+      {
+        q: "¿Qué veo en el temario de Excel?",
+        a: "Fórmulas avanzadas, tablas dinámicas, Power Query para ETL y dashboards. También macros VBA a nivel práctico.",
+      },
+    ],
+  },
+  python: {
+    title: "Curso Python para datos Chile | ProgramBI",
+    description:
+      "Curso de Python para datos en Chile, en vivo: Pandas, visualización y automatización, desde fundamentos hasta análisis aplicado a negocios.",
+    h1: "Python para Datos",
+    audience:
+      "Para profesionales que quieren analizar datos con Python y Pandas, sin un programa de ciencia de datos de meses.",
+    faqs: [
+      {
+        q: "¿El curso Python es para análisis de datos?",
+        a: "Sí. Está enfocado en Pandas, limpieza, visualización y automatización de reportes, no en desarrollo de software genérico.",
+      },
+      {
+        q: "¿Necesito saber programar antes?",
+        a: "No. El nivel básico parte desde fundamentos de Python y sube hasta análisis con Pandas.",
+      },
+    ],
+  },
+  "sql-server": {
+    title: "Curso SQL Server Chile en vivo | ProgramBI",
+    description:
+      "Curso SQL Server en vivo en Chile: consultas, JOINs, procedimientos almacenados y diseño de esquemas. Para analistas que trabajan con datos.",
+    h1: "SQL Server",
+    audience:
+      "Para analistas que salen de Excel y necesitan extraer datos de bases SQL Server con consultas propias.",
+    faqs: [
+      {
+        q: "¿El curso SQL Server es en vivo en Chile?",
+        a: "Sí. Clases en vivo por Zoom, horario Chile, con grabaciones en el campus. Consulta la próxima cohorte.",
+      },
+      {
+        q: "¿Qué cubre el temario?",
+        a: "SELECT, JOINs, CTEs, procedimientos almacenados y diseño de esquemas. Tres niveles de 16 horas.",
+      },
+    ],
+  },
+  "machine-learning": {
+    title: "Curso Machine Learning Chile | ProgramBI",
+    description:
+      "Curso de Machine Learning en vivo en Chile: modelos predictivos con Python, Scikit-learn y redes neuronales aplicados a negocios.",
+    h1: "Machine Learning",
+    audience:
+      "Para quienes ya manejan Python y quieren armar modelos predictivos aplicados a negocios.",
+    faqs: [
+      {
+        q: "¿Qué conocimientos previos pide Machine Learning?",
+        a: "Python intermedio (Pandas/NumPy) ayuda. El curso cubre regresión, clasificación, clustering y redes neuronales.",
+      },
+      {
+        q: "¿Es un curso teórico?",
+        a: "No. Se trabaja con modelos aplicados a negocios: predicción, clasificación y deploy básico.",
+      },
+    ],
+  },
 };
 
 export const GUIDE_SEO = {
@@ -134,4 +206,22 @@ export function isVanityBlogPost(
 ): boolean {
   const hay = `${title || ""} ${excerpt || ""} ${slug || ""}`;
   return VANITY_RE.test(hay);
+}
+
+/** Higher score → list first on /blog (Power BI, SQL, Python, datos en Chile). */
+export function blogIcpScore(
+  title?: string | null,
+  excerpt?: string | null,
+  slug?: string | null,
+  category?: string | null
+): number {
+  if (isVanityBlogPost(title, excerpt, slug)) return -100;
+  const hay = `${title || ""} ${excerpt || ""} ${slug || ""} ${category || ""}`;
+  let score = 0;
+  if (/power\s*bi|dax|power query/i.test(hay)) score += 5;
+  if (/\bsql\b|sql server/i.test(hay)) score += 4;
+  if (/python|pandas/i.test(hay)) score += 4;
+  if (/an[áa]lisis de datos|business intelligence|\bbi\b/i.test(hay)) score += 3;
+  if (/chile/i.test(hay)) score += 2;
+  return score;
 }

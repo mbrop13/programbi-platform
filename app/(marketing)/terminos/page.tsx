@@ -1,8 +1,17 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Términos y Condiciones de Uso | ProgramBI",
-  description: "Conoce los términos y condiciones de uso de la plataforma de educación y comunidad de ProgramBI.",
+  title: "Términos y Condiciones de Uso",
+  description:
+    "Conoce los términos y condiciones de uso de la plataforma de educación y comunidad de ProgramBI.",
+  alternates: { canonical: "/terminos" },
+  openGraph: {
+    title: "Términos y Condiciones de Uso",
+    description:
+      "Conoce los términos y condiciones de uso de la plataforma de educación y comunidad de ProgramBI.",
+    url: "https://www.programbi.com/terminos",
+    type: "website",
+  },
 };
 
 export default function TerminosPage() {
@@ -15,7 +24,7 @@ export default function TerminosPage() {
         <div className="mb-16 text-center">
           <span className="text-[#171716] font-bold tracking-widest uppercase text-xs block mb-4">Legal</span>
           <h1 className="font-display text-4xl md:text-5xl font-black text-[#0F172A] mb-4">Términos y Condiciones de Uso</h1>
-          <p className="text-gray-400 text-sm">Última actualización: {lastUpdated}</p>
+          <p className="text-gray-600 text-sm">Última actualización: {lastUpdated}</p>
         </div>
 
         {/* Content */}

@@ -5,8 +5,9 @@ export const metadata: Metadata = {
   title: "¿Quién ganará la final? — Predice y gana un curso",
   description:
     "¿Quién ganará la final? España o Argentina. Predice el resultado como miembro de ProgramBI y participa por un curso a tu elección.",
+  alternates: { canonical: "/gran-partido" },
   openGraph: {
-    title: "¿Quién ganará la final? — Predice y gana un curso | ProgramBI",
+    title: "¿Quién ganará la final? — Predice y gana un curso",
     description:
       "Predice quién se lleva la final entre España y Argentina. Si aciertas, entras al sorteo de un curso a tu elección.",
     type: "website",

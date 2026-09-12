@@ -3,8 +3,31 @@ import { courses } from "@/lib/data/courses";
 import { casesOfUse } from "@/lib/data/cases";
 import { comparisons } from "@/lib/data/comparisons";
 import { SITE_URL } from "@/lib/seo";
+import { createAdminClient } from "@/lib/supabase/server";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+async function publishedBlogUrls(now: Date): Promise<MetadataRoute.Sitemap> {
+  try {
+    const db = createAdminClient();
+    const { data, error } = await db
+      .from("newsletter_articles")
+      .select("slug, published_at")
+      .eq("status", "published");
+    if (error || !data) return [];
+    return data
+      .filter((row): row is { slug: string; published_at: string | null } => !!row.slug)
+      .map((row) => ({
+        url: `${SITE_URL}/blog/${row.slug}`,
+        lastModified: row.published_at ? new Date(row.published_at) : now,
+        changeFrequency: "weekly" as const,
+        priority: 0.4,
+      }));
+  } catch (err) {
+    console.error("sitemap blog posts:", err);
+    return [];
+  }
+}
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = SITE_URL;
   const now = new Date();
 
@@ -170,5 +193,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.4,
   }));
 
-  return [...staticPages, ...coursePages, ...casePages, ...versusPages];
+  const blogPages = await publishedBlogUrls(now);
+
+  return [...staticPages, ...coursePages, ...casePages, ...versusPages, ...blogPages];
 }

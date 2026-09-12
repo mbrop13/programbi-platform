@@ -1,8 +1,17 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Política de Privacidad | ProgramBI",
-  description: "Conoce cómo ProgramBI recopila, usa y protege tu información personal conforme a la Ley N° 19.628 de Chile.",
+  title: "Política de Privacidad",
+  description:
+    "Conoce cómo ProgramBI recopila, usa y protege tu información personal conforme a la Ley N° 19.628 de Chile.",
+  alternates: { canonical: "/privacidad" },
+  openGraph: {
+    title: "Política de Privacidad",
+    description:
+      "Conoce cómo ProgramBI recopila, usa y protege tu información personal conforme a la Ley N° 19.628 de Chile.",
+    url: "https://www.programbi.com/privacidad",
+    type: "website",
+  },
 };
 
 export default function PrivacidadPage() {
@@ -15,7 +24,7 @@ export default function PrivacidadPage() {
         <div className="mb-16 text-center">
           <span className="text-[#171716] font-bold tracking-widest uppercase text-xs block mb-4">Legal</span>
           <h1 className="font-display text-4xl md:text-5xl font-black text-[#0F172A] mb-4">Política de Privacidad</h1>
-          <p className="text-gray-400 text-sm">Última actualización: {lastUpdated}</p>
+          <p className="text-gray-600 text-sm">Última actualización: {lastUpdated}</p>
         </div>
 
         {/* Content */}

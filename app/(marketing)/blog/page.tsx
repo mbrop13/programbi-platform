@@ -6,12 +6,12 @@ import { ogImageUrl } from "@/lib/og/url";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Blog — Recursos y Artículos de Análisis de Datos | ProgramBI",
+  title: "Blog — Recursos y artículos de análisis de datos",
   description:
     "Artículos, tutoriales y guías prácticas sobre Power BI, SQL, Python, Machine Learning y análisis de datos. Contenido técnico y actualizado por expertos de ProgramBI.",
   alternates: { canonical: "/blog" },
   openGraph: {
-    title: "Blog — Recursos de Análisis de Datos | ProgramBI",
+    title: "Blog — Recursos de análisis de datos",
     description:
       "Artículos, tutoriales y guías prácticas sobre Power BI, SQL, Python y análisis de datos por expertos de ProgramBI.",
     url: "https://www.programbi.com/blog",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Blog — Recursos de Análisis de Datos | ProgramBI",
+    title: "Blog — Recursos de análisis de datos",
     description:
       "Artículos, tutoriales y guías prácticas sobre Power BI, SQL, Python y análisis de datos.",
   },

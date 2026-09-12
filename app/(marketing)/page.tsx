@@ -10,7 +10,7 @@ import Quote from "@/components/marketing/Quote";
 import FaqSection from "@/components/marketing/FaqSection";
 import LeadForm from "@/components/marketing/LeadForm";
 import { homeFaqs } from "@/lib/data/site";
-import { SITE_URL, jsonLdString } from "@/lib/seo";
+import { SITE_URL, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 
 export const revalidate = 3600;
@@ -24,6 +24,13 @@ export const metadata: Metadata = {
     description: PAGE_SEO.home.description,
     url: SITE_URL,
     type: "website",
+    images: [DEFAULT_OG_IMAGE],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: PAGE_SEO.home.title,
+    description: PAGE_SEO.home.description,
+    images: [DEFAULT_OG_IMAGE.url],
   },
 };
 

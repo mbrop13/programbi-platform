@@ -113,7 +113,7 @@
   --color-wash: #ebebe6;
   --color-ink: #171716;
   --color-mute: #5f5e59;
-  --color-faint: #8c8b85;
+  --color-faint: #6a6964;
   --color-line: rgb(23 23 22 / 9%);
   --color-line-strong: rgb(23 23 22 / 16%);
 
@@ -149,7 +149,7 @@
   /* Texto */
   --text: #171716;
   --text-secondary: #5f5e59;
-  --text-muted: #8c8b85;
+  --text-muted: #6a6964;
 
   /* Acentos — ink */
   --accent: var(--accent-token);
@@ -168,7 +168,7 @@
   --secondary: #ebebe6;
   --secondary-foreground: #171716;
   --muted: #ebebe6;
-  --muted-foreground: #8c8b85;
+  --muted-foreground: #6a6964;
   --destructive: #dc2626;
   --input: rgb(23 23 22 / 16%);
   --ring: #171716;
@@ -194,7 +194,7 @@
 
   --text: #f4f4f5;
   --text-secondary: #a1a1aa;
-  --text-muted: #71717a;
+  --text-muted: #a1a1aa;
 
   --accent: var(--accent-token);
   --accent-foreground: var(--accent-foreground-token);
@@ -210,7 +210,7 @@
   --secondary: #121214;
   --secondary-foreground: #f4f4f5;
   --muted: #121214;
-  --muted-foreground: #71717a;
+  --muted-foreground: #a1a1aa;
   --destructive: #f87171;
   --input: #1f1f22;
   --ring: #ffffff;
