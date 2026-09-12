@@ -58,28 +58,94 @@ interface EmpleosPageClientProps {
   initialFilters: VacantesFilters;
 }
 
-/** Static fallback for the Suspense boundary around useSearchParams (Next 16). */
-export function EmpleosPageSkeleton() {
+/** Static markup for SSR (no useRouter/usePathname — those 500 on Vercel). */
+export function EmpleosPageSkeleton({
+  total = 0,
+}: {
+  total?: number;
+}) {
   return (
-    <section className="px-4 pt-16 pb-8 sm:px-6 lg:px-8 lg:pt-20">
-      <div className="mx-auto max-w-[1400px]">
-        <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
-          Bolsa de Trabajo
-        </h1>
-        <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">
-          Vacantes de datos y programación publicadas por empresas verificadas.
-        </p>
-        <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <JobCardSkeleton key={i} />
-          ))}
+    <>
+      <section className="px-4 pt-16 pb-8 sm:px-6 lg:px-8 lg:pt-20">
+        <div className="mx-auto max-w-[1400px]">
+          <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
+            Bolsa de Trabajo
+          </h1>
+          <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">
+            Vacantes de datos y programación publicadas por empresas verificadas.
+            Los egresados de ProgramBI postulan con sus certificados a la vista.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            <Link
+              href="/empleos/talento"
+              className="inline-flex h-11 items-center gap-2 rounded-full border border-line bg-paper px-6 text-sm font-semibold text-ink no-underline"
+            >
+              Talento certificado
+            </Link>
+            <Link
+              href="/empleos/para-empresas"
+              className="inline-flex h-11 items-center gap-2 rounded-full border border-line bg-paper px-6 text-sm font-semibold text-ink no-underline"
+            >
+              Soy empresa
+            </Link>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+      <section className="border-t border-line px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+        <div className="mx-auto max-w-[1400px]">
+          <p className="text-sm text-mute">
+            {total} {total === 1 ? "vacante disponible" : "vacantes disponibles"}
+          </p>
+          {total === 0 ? (
+            <div className="flex flex-col items-center py-20 text-center">
+              <h2 className="text-xl font-bold tracking-tight text-ink">
+                Aún no hay vacantes publicadas
+              </h2>
+              <p className="mt-2 max-w-md text-sm text-mute">
+                Mientras tanto, crea tu perfil, revisa los cursos o escríbenos. Publicamos vacantes de datos cada semana.
+              </p>
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+                <Link
+                  href="/?auth=register"
+                  className="inline-flex h-11 items-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
+                >
+                  Crear perfil
+                </Link>
+                <Link
+                  href="/cursos"
+                  className="inline-flex h-11 items-center rounded-full border border-line bg-paper px-6 text-sm font-semibold text-ink no-underline"
+                >
+                  Ver cursos
+                </Link>
+                <a
+                  href="https://wa.me/56935409699"
+                  className="inline-flex h-11 items-center rounded-full border border-line bg-paper px-6 text-sm font-semibold text-ink no-underline"
+                >
+                  Contactar
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3" aria-hidden="true">
+              {Array.from({ length: Math.min(6, total) }).map((_, i) => (
+                <JobCardSkeleton key={i} />
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+    </>
   );
 }
 
-export default function EmpleosPageClient({
+export default function EmpleosPageClient(props: EmpleosPageClientProps) {
+  const [live, setLive] = useState(false);
+  useEffect(() => setLive(true), []);
+  if (!live) return <EmpleosPageSkeleton total={props.initialTotal} />;
+  return <EmpleosPageLive {...props} />;
+}
+
+function EmpleosPageLive({
   initialJobs,
   initialTotal,
   initialFilters,

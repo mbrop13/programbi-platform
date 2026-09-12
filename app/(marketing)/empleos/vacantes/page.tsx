@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { unstable_rethrow } from "next/navigation";
-import EmpleosPageClient from "@/components/empleos/EmpleosPageClient";
+import VacantesBoard from "@/components/empleos/VacantesBoard";
+import VacantesHydrate from "@/components/empleos/VacantesHydrate";
 import { getPublishedJobs } from "@/lib/jobs/queries";
 import { ogImageUrl } from "@/lib/og/url";
 import { absoluteUrl, breadcrumbJsonLd, jsonLdString, twitterShare } from "@/lib/seo";
@@ -129,11 +130,13 @@ export default async function VacantesPage({ searchParams }: { searchParams: Sea
           ),
         }}
       />
-      <EmpleosPageClient
+      <VacantesHydrate
         initialJobs={initialJobs}
         initialTotal={initialTotal}
         initialFilters={initialFilters}
-      />
+      >
+        <VacantesBoard jobs={initialJobs} total={initialTotal} />
+      </VacantesHydrate>
     </>
   );
 }
