@@ -418,7 +418,18 @@ export default function BlogClient({ articles }: { articles: any[] }) {
       .filter((a) => !isVanityBlogPost(a.title, a.excerpt, a.slug))
       .slice(0, Math.min(5, filtered.length));
   }, [filtered, activeCategory]);
-  const gridArticles = filtered;
+  const icpGrid = useMemo(
+    () =>
+      filtered.filter((a) => blogIcpScore(a.title, a.excerpt, a.slug, a.category) > 0),
+    [filtered]
+  );
+  const restGrid = useMemo(
+    () =>
+      filtered.filter((a) => blogIcpScore(a.title, a.excerpt, a.slug, a.category) <= 0),
+    [filtered]
+  );
+  const gridArticles =
+    activeCategory === "all" || activeCategory === "datos" ? [...icpGrid, ...restGrid] : filtered;
 
   return (
     <div className="min-h-screen bg-white pb-28">
@@ -562,21 +573,47 @@ export default function BlogClient({ articles }: { articles: any[] }) {
               <DatosDestacados />
             ) : null}
 
-            {/* Title for Recent list */}
-            {gridArticles.length > 0 && (
-              <h3 className="font-serif font-bold text-2xl text-slate-950 mb-8 border-b border-slate-100 pb-3 tracking-tight">
-                {activeCategory === "all" || activeCategory === "datos"
-                  ? "Power BI, SQL y Python"
-                  : "Últimas Entradas"}
-              </h3>
+            {activeCategory === "all" || activeCategory === "datos" ? (
+              <>
+                {icpGrid.length > 0 && (
+                  <>
+                    <h3 className="font-serif font-bold text-2xl text-slate-950 mb-8 border-b border-slate-100 pb-3 tracking-tight">
+                      Power BI, SQL y Python
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 mb-16">
+                      {icpGrid.map((article, i) => (
+                        <ArticleCard key={article.id} article={article} index={i} />
+                      ))}
+                    </div>
+                  </>
+                )}
+                {restGrid.length > 0 && (
+                  <>
+                    <h3 className="font-serif font-bold text-2xl text-slate-950 mb-8 border-b border-slate-100 pb-3 tracking-tight">
+                      Más artículos
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+                      {restGrid.map((article, i) => (
+                        <ArticleCard key={article.id} article={article} index={i} />
+                      ))}
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <>
+                {gridArticles.length > 0 && (
+                  <h3 className="font-serif font-bold text-2xl text-slate-950 mb-8 border-b border-slate-100 pb-3 tracking-tight">
+                    Últimas Entradas
+                  </h3>
+                )}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+                  {gridArticles.map((article, i) => (
+                    <ArticleCard key={article.id} article={article} index={i} />
+                  ))}
+                </div>
+              </>
             )}
-
-            {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-              {gridArticles.map((article, i) => (
-                <ArticleCard key={article.id} article={article} index={i} />
-              ))}
-            </div>
           </>
         )}
       </main>
@@ -584,11 +621,11 @@ export default function BlogClient({ articles }: { articles: any[] }) {
       {/* Mobile Bottom Navigation Menu (Floating Circular Liquid Glass) */}
       <div className="md:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-40 w-[90%] max-w-[360px] bg-slate-950/70 backdrop-blur-xl border border-white/10 rounded-full px-2 py-1.5 flex items-center justify-between shadow-[0_16px_40px_rgba(0,0,0,0.5),inset_0_1px_1px_rgba(255,255,255,0.15)] select-none">
         {[
+          { value: "datos", label: "Datos", icon: Sliders },
           { value: "ia", label: "AI", icon: Sparkles },
           { value: "economia", label: "Economía", icon: DollarSign },
           { value: "tecnologia", label: "Tecno", icon: Cpu },
           { value: "deporte", label: "Deporte", icon: Trophy },
-          { value: "cultura", label: "Cultura", icon: BookOpen },
         ].map((tab) => {
           const isActive = activeCategory === tab.value;
           const Icon = tab.icon;
