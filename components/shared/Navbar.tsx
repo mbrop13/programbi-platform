@@ -19,6 +19,7 @@ import {
   Handshake,
 } from "lucide-react";
 import { NAV_COURSE_GROUPS } from "@/lib/data/course-nav";
+import { trackNavRegistro } from "@/lib/analytics/marketing";
 
 const AuthModal = dynamic(() => import("./AuthModal"), { ssr: false });
 const SupportModal = dynamic(() => import("./SupportModal"), { ssr: false });
@@ -449,7 +450,11 @@ export default function Navbar() {
             {!user && !loading ? (
               <button
                 type="button"
-                onClick={() => setAuthModal({ isOpen: true, tab: "register" })}
+                data-cta-id={pathname === "/" ? "home_nav_registrarse" : undefined}
+                onClick={() => {
+                  trackNavRegistro(pathname);
+                  setAuthModal({ isOpen: true, tab: "register" });
+                }}
                 className="hidden h-10 items-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas transition-transform active:scale-95 sm:inline-flex"
               >
                 Registrarse
@@ -622,7 +627,9 @@ export default function Navbar() {
                 {!user ? (
                   <button
                     type="button"
+                    data-cta-id={pathname === "/" ? "home_nav_registrarse" : undefined}
                     onClick={() => {
+                      trackNavRegistro(pathname);
                       setIsMobileOpen(false);
                       setAuthModal({ isOpen: true, tab: "register" });
                     }}

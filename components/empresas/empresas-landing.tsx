@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { HeroGlyphField } from "@/components/referrals/hero-glyph-field";
 import LogoSlider from "@/components/marketing/LogoSlider";
+import AnalyticsPageEvent from "@/components/shared/AnalyticsPageEvent";
 import { whatsappHref } from "@/lib/whatsapp";
 import { EmpresasContactForm } from "./empresas-contact-form";
 import { EmpresasFaq } from "./empresas-faq";
@@ -60,6 +61,7 @@ const TOPICS = [
 export function EmpresasLanding() {
   return (
     <div className="bg-canvas text-ink">
+      <AnalyticsPageEvent event="view_empresas" />
       <Hero />
       <LogoSlider className="border-0 bg-transparent" />
       <Includes />
@@ -92,6 +94,7 @@ function Hero() {
           <div className="mt-8 flex flex-wrap gap-3">
             <a
               href="#contacto"
+              data-analytics-event="click_cotizar_empresas"
               className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-7 text-[14.5px] font-semibold text-canvas no-underline shadow-md shadow-ink/10 transition-transform active:scale-[0.98]"
             >
               Pedir una propuesta

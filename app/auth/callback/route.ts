@@ -17,6 +17,7 @@ export async function GET(request: Request) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      let isNewUser = false
       // Check if this is a NEW user (created within the last 60 seconds)
       try {
         const { data: { user } } = await supabase.auth.getUser()
@@ -44,7 +45,7 @@ export async function GET(request: Request) {
 
           const createdAt = new Date(user.created_at).getTime()
           const now = Date.now()
-          const isNewUser = (now - createdAt) < 60_000 // within 60 seconds
+          isNewUser = (now - createdAt) < 60_000 // within 60 seconds
 
           await claimReferralForUser({
             userId: user.id,
@@ -95,7 +96,9 @@ export async function GET(request: Request) {
         console.error("❌ OAuth member check error:", err)
       }
 
-      return NextResponse.redirect(`${origin}${next}`)
+      const dest = new URL(next, origin)
+      if (isNewUser) dest.searchParams.set("reg_ok", "1")
+      return NextResponse.redirect(dest)
     }
   }
 

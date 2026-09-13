@@ -307,6 +307,7 @@ export function EmpresasContactForm() {
       <button
         type="submit"
         disabled={sending}
+        data-analytics-event="click_cotizar_empresas"
         className="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full bg-ink px-8 text-base font-semibold text-canvas transition-transform active:scale-[0.98] disabled:opacity-60 sm:w-auto"
       >
         {sending ? "Enviando…" : "Pedir una propuesta"}

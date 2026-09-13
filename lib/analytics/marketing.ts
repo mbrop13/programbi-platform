@@ -1,8 +1,9 @@
 /**
- * Marketing analytics helpers (GA4 + optional custom params for Clarity/session).
- * Env:
+ * Marketing analytics helpers (GA4 gtag — not GTM).
+ * Env (public measurement ID only, never a secret):
  *   NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXX
  *   NEXT_PUBLIC_CLARITY_PROJECT_ID=xxxxxxxxxx
+ * See ANALYTICS.md
  */
 
 import {
@@ -168,13 +169,50 @@ export function trackExperimentImpression(variant: string, courseSlug?: string):
   }
 }
 
+/** Lead events — exact names for GA4 DebugView / explorations. */
+export const GA_LEAD_EVENTS = {
+  VIEW_CURSO: "view_curso",
+  VIEW_EMPRESAS: "view_empresas",
+  CLICK_CTA_PRIMARY: "click_cta_primary",
+  CLICK_REGISTRO: "click_registro",
+  SUBMIT_REGISTRO: "submit_registro",
+  CLICK_WHATSAPP: "click_whatsapp",
+  CLICK_COTIZAR_EMPRESAS: "click_cotizar_empresas",
+} as const;
+
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
+
+/**
+ * Official gtag stub: events pushed here before gtag.js loads are replayed
+ * in order (js → config → events). Safe to call on every client mount.
+ */
+export function initGa4(): void {
+  if (!isBrowser() || !GA_MEASUREMENT_ID) return;
+  window.dataLayer = window.dataLayer || [];
+  if (typeof window.gtag !== "function") {
+    window.gtag = function gtag() {
+      // Official snippet uses Arguments, not a rest-array.
+      // eslint-disable-next-line prefer-rest-params
+      window.dataLayer!.push(arguments);
+    };
+  }
+  const flagged = window as Window & { __pbGa4Init?: boolean };
+  if (flagged.__pbGa4Init) return;
+  flagged.__pbGa4Init = true;
+  window.gtag("js", new Date());
+  window.gtag("config", GA_MEASUREMENT_ID, {
+    send_page_view: false,
+    ...(process.env.NODE_ENV === "development" ? { debug_mode: true } : {}),
+  });
+}
+
 /** Send event to GA4 (gtag) and tag Clarity custom event when available. */
 export function trackEvent(eventName: string, params?: AnalyticsParams): void {
   if (!isBrowser()) return;
   const payload = withUtm(params);
 
   try {
-    if (typeof window.gtag === "function") {
+    if (GA_MEASUREMENT_ID && typeof window.gtag === "function") {
       window.gtag("event", eventName, payload);
     }
   } catch {
@@ -184,8 +222,17 @@ export function trackEvent(eventName: string, params?: AnalyticsParams): void {
   try {
     if (typeof window.clarity === "function") {
       window.clarity("event", eventName);
-      // Optional: attach a few string tags for session filtering
-      const tagKeys = ["course_slug", "cta_label", "location", "lead_type", "variant", "experiment_id"] as const;
+      const tagKeys = [
+        "course_slug",
+        "curso_slug",
+        "cta_id",
+        "cta_label",
+        "location",
+        "lead_type",
+        "variant",
+        "experiment_id",
+        "page_path",
+      ] as const;
       for (const key of tagKeys) {
         const val = payload[key];
         if (typeof val === "string" && val) {
@@ -207,21 +254,25 @@ export function trackEvent(eventName: string, params?: AnalyticsParams): void {
 export function trackPageView(path?: string): void {
   if (!isBrowser()) return;
   const page_path = path || window.location.pathname + window.location.search;
-  const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
   try {
-    if (typeof window.gtag === "function" && measurementId) {
-      window.gtag("config", measurementId, {
+    if (typeof window.gtag === "function" && GA_MEASUREMENT_ID) {
+      window.gtag("config", GA_MEASUREMENT_ID, {
         page_path,
         page_location: window.location.href,
         page_title: document.title,
+        send_page_view: true,
+        ...(process.env.NODE_ENV === "development" ? { debug_mode: true } : {}),
       });
     }
   } catch {
     // no-op
   }
 
-  trackEvent("page_view", { page_path });
+  if (process.env.NODE_ENV === "development") {
+    // eslint-disable-next-line no-console
+    console.debug("[analytics]", "page_view", { page_path });
+  }
 }
 
 export function trackCtaClick(ctaLabel: string, location: string, extra?: AnalyticsParams): void {
@@ -246,19 +297,20 @@ export function trackCourseCardClick(courseSlug: string, location: string): void
   });
 }
 
+const firedOnce = new Set<string>();
+
+export function trackEventOnce(key: string, eventName: string, params?: AnalyticsParams): void {
+  if (firedOnce.has(key)) return;
+  firedOnce.add(key);
+  trackEvent(eventName, params);
+}
+
 export function trackCourseView(courseSlug: string, courseTitle?: string, value?: number): void {
-  trackEvent("course_view", {
-    course_slug: courseSlug,
+  trackEventOnce(`view_curso:${courseSlug}`, GA_LEAD_EVENTS.VIEW_CURSO, {
+    curso_slug: courseSlug,
     course_title: courseTitle,
     value: value ?? undefined,
     currency: value != null ? "CLP" : undefined,
-  });
-  trackEvent("view_item", {
-    currency: "CLP",
-    value: value ?? 0,
-    item_id: courseSlug,
-    item_name: courseTitle,
-    course_slug: courseSlug,
   });
 }
 
@@ -305,11 +357,50 @@ export function trackPurchase(opts?: {
   });
 }
 
-export function trackWhatsAppClick(location: string, courseSlug?: string): void {
-  trackEvent("whatsapp_click", {
-    location,
-    course_slug: courseSlug,
+export function trackWhatsAppClick(location?: string, courseSlug?: string): void {
+  trackEvent(GA_LEAD_EVENTS.CLICK_WHATSAPP, {
+    page_path: isBrowser()
+      ? window.location.pathname + window.location.search
+      : location,
+    curso_slug: courseSlug,
   });
+}
+
+export function trackViewEmpresas(): void {
+  trackEvent(GA_LEAD_EVENTS.VIEW_EMPRESAS);
+}
+
+export function trackClickCtaPrimary(ctaId: string): void {
+  trackEvent(GA_LEAD_EVENTS.CLICK_CTA_PRIMARY, { cta_id: ctaId });
+}
+
+export function trackClickRegistro(): void {
+  trackEvent(GA_LEAD_EVENTS.CLICK_REGISTRO);
+}
+
+let lastSubmitRegistroAt = 0;
+export function trackSubmitRegistro(): void {
+  const now = Date.now();
+  if (now - lastSubmitRegistroAt < 2000) return;
+  lastSubmitRegistroAt = now;
+  trackEvent(GA_LEAD_EVENTS.SUBMIT_REGISTRO);
+}
+
+export function trackClickCotizarEmpresas(): void {
+  trackEvent(GA_LEAD_EVENTS.CLICK_COTIZAR_EMPRESAS);
+}
+
+/** Home primary CTA that also starts registration. */
+export function trackHomePrimaryRegistro(ctaId: string): void {
+  trackClickCtaPrimary(ctaId);
+  trackClickRegistro();
+}
+
+export function trackNavRegistro(pathname?: string): void {
+  trackClickRegistro();
+  if (pathname === "/") {
+    trackClickCtaPrimary("home_nav_registrarse");
+  }
 }
 
 export function trackLeadSubmit(leadType: string, source?: string, courseSlug?: string): void {

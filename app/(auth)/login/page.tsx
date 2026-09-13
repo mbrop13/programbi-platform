@@ -234,7 +234,11 @@ export default function LoginPage() {
 
         <p className="text-center text-text-muted text-sm mt-6">
           ¿No tienes cuenta?{" "}
-          <Link href="/registro" className="text-brand-blue font-bold no-underline hover:underline">
+          <Link
+            href="/registro"
+            data-analytics-event="click_registro"
+            className="text-brand-blue font-bold no-underline hover:underline"
+          >
             Regístrate gratis
           </Link>
         </p>

@@ -28,7 +28,10 @@ export default function HeroSection() {
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <RegisterCta className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-7 text-base font-semibold text-canvas shadow-md shadow-ink/10 transition-transform active:scale-[0.98]">
+            <RegisterCta
+              ctaId="home_hero_registrarse"
+              className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-7 text-base font-semibold text-canvas shadow-md shadow-ink/10 transition-transform active:scale-[0.98]"
+            >
               Registrarse
               <ArrowRight size={17} strokeWidth={2.4} />
             </RegisterCta>

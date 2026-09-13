@@ -5,40 +5,49 @@ import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
 import {
   captureUtmFromUrl,
+  initGa4,
+  trackEvent,
   trackPageView,
   trackPurchase,
+  trackSubmitRegistro,
+  trackWhatsAppClick,
 } from "@/lib/analytics/marketing";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || "";
+const WA_HREF_RE = /(?:wa\.me|whatsapp\.com|api\.whatsapp\.com)/i;
 
 /**
  * Loads GA4 + Microsoft Clarity and tracks SPA page views + purchase success.
  * Safe when env IDs are missing (no scripts loaded).
+ * gtag.js stays lazyOnload (after hydrate / idle); the stub + config run on mount
+ * so lead events queued in dataLayer are not lost.
  */
 export default function MarketingAnalytics() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const lastPathRef = useRef<string>("");
 
-  // Capture UTM on first load and when query changes
+  useEffect(() => {
+    initGa4();
+  }, []);
+
   useEffect(() => {
     captureUtmFromUrl();
   }, [pathname, searchParams]);
 
-  // SPA page views
   useEffect(() => {
     if (!pathname) return;
-    const qs = searchParams?.toString();
+    const params = new URLSearchParams(searchParams?.toString() || "");
+    params.delete("reg_ok");
+    const qs = params.toString();
     const full = qs ? `${pathname}?${qs}` : pathname;
     if (lastPathRef.current === full) return;
     lastPathRef.current = full;
-    // Small delay so document.title is updated by Next
     const t = setTimeout(() => trackPageView(full), 50);
     return () => clearTimeout(t);
   }, [pathname, searchParams]);
 
-  // Purchase conversion after MP/Flow redirect
   useEffect(() => {
     const payment = searchParams?.get("payment");
     if (payment === "success") {
@@ -48,24 +57,51 @@ export default function MarketingAnalytics() {
     }
   }, [searchParams]);
 
+  useEffect(() => {
+    if (searchParams?.get("reg_ok") !== "1") return;
+    trackSubmitRegistro();
+    const url = new URL(window.location.href);
+    url.searchParams.delete("reg_ok");
+    const next = url.pathname + url.search + url.hash;
+    window.history.replaceState({}, "", next);
+  }, [searchParams]);
+
+  useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const anchor = target.closest("a[href]");
+      if (anchor instanceof HTMLAnchorElement && WA_HREF_RE.test(anchor.href)) {
+        trackWhatsAppClick();
+      }
+
+      const tracked = target.closest("[data-analytics-event]");
+      if (!(tracked instanceof HTMLElement)) return;
+      const names = (tracked.dataset.analyticsEvent || "")
+        .split(",")
+        .map((name) => name.trim())
+        .filter(Boolean);
+      if (!names.length) return;
+      const params: Record<string, string> = {};
+      if (tracked.dataset.ctaId) params.cta_id = tracked.dataset.ctaId;
+      if (tracked.dataset.cursoSlug) params.curso_slug = tracked.dataset.cursoSlug;
+      for (const name of names) {
+        trackEvent(name, params);
+      }
+    };
+
+    document.addEventListener("click", onClick);
+    return () => document.removeEventListener("click", onClick);
+  }, []);
+
   return (
     <>
       {GA_ID ? (
-        <>
-          <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-            strategy="lazyOnload"
-          />
-          <Script id="ga4-init" strategy="lazyOnload">
-            {`
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              window.gtag = gtag;
-              gtag('js', new Date());
-              gtag('config', '${GA_ID}', { send_page_view: false });
-            `}
-          </Script>
-        </>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+          strategy="lazyOnload"
+        />
       ) : null}
 
       {CLARITY_ID ? (

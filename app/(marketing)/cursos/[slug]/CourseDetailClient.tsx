@@ -30,9 +30,9 @@ import {
 } from "@/lib/data/course-schedules";
 import { useCountry } from "@/lib/context/CountryContext";
 import {
+  trackClickRegistro,
   trackCourseView,
   trackCtaClick,
-  trackWhatsAppClick,
 } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 
@@ -98,6 +98,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
     });
 
     if (!isLoggedIn) {
+      trackClickRegistro();
       setShowAuthModal(true);
       return;
     }
@@ -437,7 +438,10 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => setShowAuthModal(true)}
+                    onClick={() => {
+                      trackClickRegistro();
+                      setShowAuthModal(true);
+                    }}
                     className="flex w-full items-start gap-3 rounded-xl border border-line bg-canvas px-3 py-3 text-left"
                   >
                     <Lock size={16} className="mt-0.5 shrink-0" />
@@ -456,7 +460,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  onClick={() => trackWhatsAppClick("course_detail_no_schedule", course.slug)}
                   className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
                 >
                   <MessageCircle size={16} />

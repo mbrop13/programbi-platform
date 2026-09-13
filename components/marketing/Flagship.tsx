@@ -21,7 +21,10 @@ export default function Flagship() {
           </p>
           <FlagshipPrice />
           <div className="mt-8 flex flex-wrap gap-3">
-            <RegisterCta className="inline-flex h-12 items-center rounded-full bg-ink px-7 text-base font-semibold text-canvas transition-transform active:scale-[0.98]">
+            <RegisterCta
+              ctaId="home_flagship_registrarse"
+              className="inline-flex h-12 items-center rounded-full bg-ink px-7 text-base font-semibold text-canvas transition-transform active:scale-[0.98]"
+            >
               Registrarse
             </RegisterCta>
             <Link

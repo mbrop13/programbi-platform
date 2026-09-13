@@ -19,6 +19,7 @@ import {
   readBrowserReferralCode,
   writeBrowserReferralCode,
 } from "@/lib/referrals/cookie";
+import { trackSubmitRegistro } from "@/lib/analytics/marketing";
 
 function getFromQueryParam(): string | null {
   if (typeof window === "undefined") return null;
@@ -172,6 +173,8 @@ export default function RegistroPage() {
         setError(signUpError.message);
         return;
       }
+
+      trackSubmitRegistro();
 
       // Backup: escribir origen en el perfil si el usuario ya quedó creado
       if (data?.user?.id) {

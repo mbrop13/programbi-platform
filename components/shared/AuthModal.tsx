@@ -13,6 +13,7 @@ import { subscribeToNewsletter } from "@/lib/supabase/comunidad-ai";
 import { honeypotStyle } from "@/lib/antibot";
 import { persistRegistrationSource } from "@/lib/registration-source";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
+import { trackClickRegistro, trackSubmitRegistro } from "@/lib/analytics/marketing";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -201,6 +202,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           setError(error.message);
         }
       } else {
+        trackSubmitRegistro();
         // Auto-login after successful registration
         const { error: loginError } = await supabase.auth.signInWithPassword({
           email,
@@ -366,7 +368,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                       Iniciar Sesión
                     </button>
                     <button
-                      onClick={() => setTab("register")}
+                      onClick={() => {
+                        if (tab !== "register") trackClickRegistro();
+                        setTab("register");
+                      }}
                       className={`pb-2 text-lg font-bold transition-colors bg-transparent border-none cursor-pointer ${tab === "register" ? "text-slate-900" : "text-slate-400 hover:text-slate-600"}`}
                       style={tab === "register" ? { borderBottom: "2px solid #171716" } : {}}
                     >
