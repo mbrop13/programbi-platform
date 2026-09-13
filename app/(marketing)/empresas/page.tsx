@@ -19,15 +19,15 @@ export const metadata: Metadata = {
       {
         url: ogImageUrl({
           kicker: "Para empresas",
-          title: "Formamos a tu equipo en datos.",
+          title: "De Excel a Power BI en tu empresa.",
           description:
-            "Capacitación in-company de Power BI, SQL, Python y automatización. En vivo, con factura.",
+            "Adopción de BI in-company: Power BI, SQL y Python con los datos de la empresa. En vivo, con factura.",
           tags: ["Capacitación", "Power BI", "In-company"],
           path: "empresas",
         }),
         width: 1200,
         height: 630,
-        alt: "Capacitación de datos para empresas — ProgramBI",
+        alt: "De Excel a Power BI para empresas en Chile — ProgramBI",
       },
     ],
   },
@@ -36,9 +36,9 @@ export const metadata: Metadata = {
     PAGE_SEO.empresas.description,
     ogImageUrl({
       kicker: "Para empresas",
-      title: "Formamos a tu equipo en datos.",
+      title: "De Excel a Power BI en tu empresa.",
       description:
-        "Capacitación in-company de Power BI, SQL, Python y automatización. En vivo, con factura.",
+        "Adopción de BI in-company: Power BI, SQL y Python con los datos de la empresa. En vivo, con factura.",
       tags: ["Capacitación", "Power BI", "In-company"],
       path: "empresas",
     })
@@ -49,7 +49,7 @@ export default function EmpresasPage() {
   const serviceJsonLd = {
     "@context": "https://schema.org",
     "@type": "Service",
-    name: "Capacitación corporativa de datos",
+    name: "Adopción de Power BI y capacitación in-company",
     provider: {
       "@type": "Organization",
       name: "ProgramBI SPA",
@@ -64,7 +64,7 @@ export default function EmpresasPage() {
       { "@type": "Country", name: "Perú" },
     ],
     description:
-      "Capacitación in-company para equipos en Chile: Power BI, SQL Server, Python, Excel, Power Automate e IA. Programas en vivo, con los datos de la empresa y factura corporativa.",
+      "Adopción de Power BI en empresas de Chile: de Excel a tableros, con SQL, Python y automatización. Programas in-company en vivo, con los datos de la empresa y factura corporativa.",
   };
 
   return (

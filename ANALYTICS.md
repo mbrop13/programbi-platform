@@ -54,7 +54,9 @@ Nombres **exactos**. Parámetros custom en snake_case.
 - `home_flagship_registrarse`
 - `home_nav_registrarse`
 
-Home “Registrarse” dispara **los dos**: `click_cta_primary` + `click_registro`.
+Home “Registrarme” dispara **los dos**: `click_cta_primary` + `click_registro`.
+
+CTA primario home: **Registrarme** (camino más corto al lead). “Ver cursos” es outline y no dispara `click_cta_primary`.
 
 Google OAuth de usuario nuevo redirige con `?reg_ok=1` (se limpia del URL al instante). Eso dispara `submit_registro`.
 
@@ -71,7 +73,7 @@ Google OAuth de usuario nuevo redirige con `?reg_ok=1` (se limpia del URL al ins
    | Paso | Qué debes ver en DebugView |
    | --- | --- |
    | Abrir `/` | `page_view` (`page_path` `/`) |
-   | Click **Registrarse** (hero) | `click_cta_primary` (`cta_id=home_hero_registrarse`) y `click_registro` |
+   | Click **Registrarme** (hero) | `click_cta_primary` (`cta_id=home_hero_registrarse`) y `click_registro` |
    | Ir a un curso `/cursos/power-bi` (slug real) | `page_view` + `view_curso` (`curso_slug`) |
    | Click **Registrarse** / **Ver precio** en el curso | `click_registro` |
    | Completar registro (éxito) | `submit_registro` |

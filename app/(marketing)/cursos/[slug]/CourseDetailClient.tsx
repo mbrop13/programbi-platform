@@ -35,6 +35,14 @@ import {
   trackCtaClick,
 } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
+import { whatsappHref } from "@/lib/whatsapp";
+import {
+  CourseAudienceAndResults,
+  CourseFaq,
+  CourseLeadCtas,
+  CourseSyllabusAndFormat,
+  isCourseCroSlug,
+} from "@/components/marketing/CourseLeadSections";
 
 function courseCheckoutUrl(slug: string, levelName?: string) {
   const params = new URLSearchParams({ curso: slug });
@@ -261,6 +269,12 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const hours = activeLevel?.durationHours || course.durationHours;
   const outcomes = activeLevel?.whatYouLearn?.length ? activeLevel.whatYouLearn : course.whatYouLearn;
   const nextStart = levelSchedule ? formatSchedule(levelSchedule, scheduleCountry.timeZone) : null;
+  const isCroTemplate = isCourseCroSlug(course.slug);
+  const courseWa = whatsappHref({
+    page: `/cursos/${course.slug}`,
+    intent: "curso",
+    course: course.title,
+  });
 
   const includes = [
     "Clases en vivo por Zoom",
@@ -311,18 +325,22 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               />
             </div>
 
-            {outcomes.length > 0 && (
-              <div className="mt-12">
-                <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Qué vas a aprender</h2>
-                <ul className="mt-6 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
-                  {outcomes.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-ink">
-                      <Check size={16} className="mt-0.5 shrink-0" strokeWidth={2.2} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+            {isCroTemplate ? (
+              <CourseAudienceAndResults course={course} results={outcomes} />
+            ) : (
+              outcomes.length > 0 && (
+                <div className="mt-12">
+                  <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Qué vas a aprender</h2>
+                  <ul className="mt-6 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
+                    {outcomes.map((item) => (
+                      <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-ink">
+                        <Check size={16} className="mt-0.5 shrink-0" strokeWidth={2.2} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )
             )}
           </div>
 
@@ -455,9 +473,11 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
               {activeSchedulesList.length === 0 ? (
                 <a
-                  href={`https://wa.me/56935409699?text=${encodeURIComponent(
-                    `Hola! Me gustaría consultar las próximas fechas del curso ${course.title}${levels.length > 1 && activeLevel?.name ? ` - ${activeLevel.name}` : ""}`
-                  )}`}
+                  href={whatsappHref({
+                    page: `/cursos/${course.slug}`,
+                    intent: "fechas",
+                    course: `${course.title}${levels.length > 1 && activeLevel?.name ? ` - ${activeLevel.name}` : ""}`,
+                  })}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
@@ -466,14 +486,25 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                   Consultar fechas
                 </a>
               ) : (
-                <button
-                  type="button"
-                  onClick={handleCheckoutCTA}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
-                >
-                  {showPrice ? "Inscribirse" : "Registrarse"}
-                  <ArrowRight size={16} />
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={handleCheckoutCTA}
+                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
+                  >
+                    {showPrice ? "Inscribirse" : "Registrarme"}
+                    <ArrowRight size={16} />
+                  </button>
+                  <a
+                    href={courseWa}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-medium text-ink no-underline hover:bg-wash"
+                  >
+                    <MessageCircle size={16} />
+                    WhatsApp
+                  </a>
+                </>
               )}
 
               <ul className="mt-5 space-y-2 border-t border-line pt-5">
@@ -498,6 +529,16 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         </div>
       </section>
 
+      {isCroTemplate ? <CourseSyllabusAndFormat course={course} hours={hours} /> : null}
+
+      {isCroTemplate ? (
+        <CourseLeadCtas
+          course={course}
+          onRegister={() => void handleCheckoutCTA()}
+          primaryLabel={showPrice ? "Inscribirse" : "Registrarme"}
+        />
+      ) : null}
+
       <TemarioSection course={course} selectedLevel={selectedLevel} isFreeTrial={isFreeTrial} />
 
       <section className="border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
@@ -515,6 +556,8 @@ export default function CourseDetailClient({ course }: { course: Course }) {
           </div>
         </div>
       </section>
+
+      {isCroTemplate ? <CourseFaq slug={course.slug} /> : null}
 
       <CourseContactForm course={course} />
 
@@ -607,6 +650,7 @@ function CourseContactForm({ course }: { course: Course }) {
         whatsapp: `${phonePrefix}${formData.get("whatsapp")}`,
         message: formData.get("message"),
         sourceCourse: course.title,
+        selectedCourses: contactType === "personal" ? [course.title] : selectedServices,
         leadType: contactType,
         pricingVariant: readClientPricingVariant(),
         ...getAntiBotFields(formLoadedAt.current, honeypot),
@@ -615,7 +659,6 @@ function CourseContactForm({ course }: { course: Course }) {
         payload.company = formData.get("company");
         payload.position = formData.get("position");
         payload.employeeCount = formData.get("employeeCount");
-        payload.selectedCourses = selectedServices;
       }
       const res = await fetch("/api/leads/create", {
         method: "POST",
@@ -624,11 +667,6 @@ function CourseContactForm({ course }: { course: Course }) {
       });
       if (!res.ok) throw new Error("Error submitting form");
       setIsSuccess(true);
-      if (contactType === "personal") {
-        setTimeout(() => {
-          window.location.href = `/pago?curso=${course.slug}`;
-        }, 2500);
-      }
     } catch {
       alert("Hubo un problema al enviar tu solicitud. Inténtalo de nuevo.");
     } finally {
@@ -654,11 +692,26 @@ function CourseContactForm({ course }: { course: Course }) {
 
         <div className="border-t border-line px-4 py-16 sm:px-6 lg:border-t-0 lg:border-l lg:px-16 lg:py-24">
           {isSuccess ? (
-            <p className="rounded-2xl border border-line bg-paper px-5 py-6 text-base text-ink">
-              {isPersonal
-                ? "Recibimos tu cotización. En un momento te llevamos al pago."
-                : "Recibimos tu solicitud. Te escribimos con una propuesta."}
-            </p>
+            <div className="rounded-2xl border border-line bg-paper px-5 py-6">
+              <p className="text-base font-semibold text-ink">Recibimos tu solicitud.</p>
+              <p className="mt-2 text-sm leading-relaxed text-mute">
+                {isPersonal
+                  ? "Te escribimos por email o WhatsApp con fechas y el siguiente paso."
+                  : "Te escribimos con una propuesta para el equipo."}
+              </p>
+              <a
+                href={whatsappHref({
+                  page: `/cursos/${course.slug}`,
+                  intent: isPersonal ? "curso" : "empresas",
+                  course: course.title,
+                })}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex h-11 items-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
+              >
+                Escribir por WhatsApp
+              </a>
+            </div>
           ) : (
             <form onSubmit={handleSubmit} className="max-w-[36rem] space-y-5" noValidate>
               <div className="flex gap-1 rounded-full border border-line bg-wash p-1">
@@ -789,17 +842,19 @@ function CourseContactForm({ course }: { course: Course }) {
                 </>
               )}
 
-              <div className="flex flex-col gap-2">
-                <label htmlFor="course-message" className="text-sm font-medium text-ink">
-                  Mensaje <span className="font-normal text-mute">(opcional)</span>
-                </label>
-                <textarea
-                  id="course-message"
-                  name="message"
-                  rows={4}
-                  className="rounded-xl border border-line-strong bg-paper px-3 py-3 text-base text-ink"
-                />
-              </div>
+              {!isPersonal ? (
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="course-message" className="text-sm font-medium text-ink">
+                    Mensaje <span className="font-normal text-mute">(opcional)</span>
+                  </label>
+                  <textarea
+                    id="course-message"
+                    name="message"
+                    rows={4}
+                    className="rounded-xl border border-line-strong bg-paper px-3 py-3 text-base text-ink"
+                  />
+                </div>
+              ) : null}
 
               <div style={honeypotStyle} aria-hidden>
                 <input

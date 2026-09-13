@@ -30,7 +30,6 @@ export function EmpresasContactForm() {
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [company, setCompany] = useState("");
-  const [position, setPosition] = useState("");
   const [employeeCount, setEmployeeCount] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [message, setMessage] = useState("");
@@ -88,7 +87,6 @@ export function EmpresasContactForm() {
           email: email.trim(),
           whatsapp: whatsapp.trim(),
           company: company.trim(),
-          position: position.trim() || null,
           employeeCount: employeeCount || null,
           message: message.trim() || null,
           selectedCourses: selected,
@@ -200,17 +198,6 @@ export function EmpresasContactForm() {
           error={errors.whatsapp}
           autoComplete="tel"
           helper="Incluye código de país. Chile: +56 9..."
-        />
-      </div>
-
-      <div className="mt-4">
-        <Field
-          id="emp-position"
-          label="Cargo"
-          value={position}
-          onChange={setPosition}
-          autoComplete="organization-title"
-          optional
         />
       </div>
 

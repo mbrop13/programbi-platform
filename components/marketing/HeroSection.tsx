@@ -32,16 +32,25 @@ export default function HeroSection() {
               ctaId="home_hero_registrarse"
               className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-7 text-base font-semibold text-canvas shadow-md shadow-ink/10 transition-transform active:scale-[0.98]"
             >
-              Registrarse
+              Registrarme
               <ArrowRight size={17} strokeWidth={2.4} />
             </RegisterCta>
             <Link
-              href="#programas"
+              href="/cursos"
               className="inline-flex h-12 items-center rounded-full border border-line bg-paper px-7 text-base font-medium text-ink no-underline transition-colors hover:bg-wash active:scale-[0.98]"
             >
-              Ver Cursos
+              Ver cursos
             </Link>
           </div>
+
+          <p className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-mute">
+            <Link href="/cursos" className="font-semibold text-ink no-underline hover:text-mute">
+              Personas → Cursos
+            </Link>
+            <Link href="/empresas" className="font-semibold text-ink no-underline hover:text-mute">
+              Empresas → Capacitación
+            </Link>
+          </p>
         </div>
 
         <HeroPreviewLazy />

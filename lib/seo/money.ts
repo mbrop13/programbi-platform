@@ -11,9 +11,9 @@ export const PAGE_SEO = {
       "Cursos en vivo de Power BI, SQL y Python en Chile. Capacitación para profesionales y empresas. Clases online con expertos de la industria.",
   },
   empresas: {
-    title: "Power BI para empresas Chile | Capacitación y BI",
+    title: "De Excel a Power BI para empresas Chile | ProgramBI",
     description:
-      "Capacitación corporativa de Power BI, SQL y Python para empresas en Chile. Programas in-company, en vivo, con factura. Pide una propuesta.",
+      "Adopción de Power BI en empresas de Chile: capacitación in-company, de Excel a tableros, en vivo y con factura. Pide una propuesta.",
   },
   cursos: {
     title: "Cursos Power BI y análisis de datos Chile | ProgramBI",
@@ -132,6 +132,10 @@ export const COURSE_SEO: Record<
         q: "¿Necesito saber programar antes?",
         a: "No. El nivel básico parte desde fundamentos de Python y sube hasta análisis con Pandas.",
       },
+      {
+        q: "¿Y si somos una empresa?",
+        a: "Este programa es cupo individual. Para un proyecto in-company, ve /empresas.",
+      },
     ],
   },
   "sql-server": {
@@ -149,6 +153,10 @@ export const COURSE_SEO: Record<
       {
         q: "¿Qué cubre el temario?",
         a: "SELECT, JOINs, CTEs, procedimientos almacenados y diseño de esquemas. Tres niveles de 16 horas.",
+      },
+      {
+        q: "¿Y si somos una empresa?",
+        a: "Este programa es cupo individual. Para un proyecto in-company, ve /empresas.",
       },
     ],
   },

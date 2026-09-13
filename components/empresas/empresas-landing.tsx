@@ -81,14 +81,14 @@ function Hero() {
       <div className="relative mx-auto grid h-full min-h-0 max-w-[1400px] lg:min-h-[calc(100dvh-72px)] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-stretch">
         <div className="flex flex-col justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20 xl:px-10">
           <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-            Capacitación corporativa · Chile
+            Adopción BI · Empresas Chile
           </p>
-          <h1 className="mt-5 max-w-[14ch] text-4xl font-bold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.35rem] lg:leading-[1.08]">
-            Formamos a tu equipo en datos.
+          <h1 className="mt-5 max-w-[16ch] text-4xl font-bold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.35rem] lg:leading-[1.08]">
+            De Excel a Power BI en tu empresa.
           </h1>
           <p className="mt-5 max-w-md text-base leading-relaxed text-mute sm:text-lg">
-            Power BI, SQL, Python y automatización. En vivo, con los casos de la
-            empresa. Factura a nombre de la empresa.
+            Capacitación in-company para adoptar Power BI con las planillas y
+            sistemas que ya usan. En vivo, con factura a la empresa.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
@@ -112,6 +112,20 @@ function Hero() {
 
           <p className="mt-8 text-[13px] text-faint">
             No es el curso abierto. Es un programa para el equipo.
+          </p>
+          <p className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-mute">
+            <Link
+              href="/casos/dashboards-ventas-bi"
+              className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
+            >
+              Caso Power BI
+            </Link>
+            <Link
+              href="/casos/automatizacion-conciliaciones"
+              className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
+            >
+              Caso Excel → automatización
+            </Link>
           </p>
         </div>
 

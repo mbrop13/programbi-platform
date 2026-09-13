@@ -14,6 +14,7 @@ import { honeypotStyle } from "@/lib/antibot";
 import { persistRegistrationSource } from "@/lib/registration-source";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import { trackClickRegistro, trackSubmitRegistro } from "@/lib/analytics/marketing";
+import { LEAD_INTERESTS, interestFromCoursePath } from "@/lib/data/lead-interests";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -62,6 +63,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [interest, setInterest] = useState("");
   
   // UI states
   const [showPassword, setShowPassword] = useState(false);
@@ -85,13 +87,14 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     setPassword("");
     setFullName("");
     setWhatsapp("");
+    setInterest(interestFromCoursePath(redirectUrl) || "");
     setHoneypot("");
     formLoadedAt.current = Date.now();
     setShowPassword(false);
     setShowPrefixDropdown(false);
     setAcceptsPrivacy(false);
     setSubscribeToBlog(true);
-  }, [isOpen, tab]);
+  }, [isOpen, tab, redirectUrl]);
 
   // Update tab when defaultTab changes
   useEffect(() => {
@@ -162,6 +165,23 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     // A-01 / V2.5.1 (OWASP ASVS L3): apply the same centralized policy used by
     // the dedicated registro page. The previous check (< 6 chars) was far too
     // weak and diverged from the rest of the app.
+    if (!fullName.trim() || fullName.trim().length < 2) {
+      setError("Escribe tu nombre.");
+      return;
+    }
+    if (!whatsapp.trim() || whatsapp.replace(/\D/g, "").length < 8) {
+      setError("Escribe un WhatsApp válido.");
+      return;
+    }
+    if (!interest) {
+      setError("Elige en qué estás interesado.");
+      return;
+    }
+    if (!acceptsPrivacy) {
+      setError("Debes aceptar la política de privacidad.");
+      return;
+    }
+
     const pwCheck = validatePassword(password);
     if (!pwCheck.ok) {
       setError(pwCheck.error!);
@@ -189,6 +209,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           data: {
             full_name: defaultName,
             whatsapp: whatsapp ? `${phonePrefix}${whatsapp}` : null,
+            interest: interest || null,
             registration_source: registrationSource,
             ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
           },
@@ -224,9 +245,9 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
         }
 
         if (loginError) {
-          setSuccess("¡Cuenta creada exitosamente! Revisa tu correo para verificar tu cuenta.");
+          setSuccess("Cuenta creada. Revisa tu correo para confirmar e inicia sesión.");
         } else {
-          setSuccess("¡Bienvenido a ProgramBI! 🎉");
+          setSuccess("Cuenta creada. Ya puedes ver fechas y continuar.");
 
           if (subscribeToBlog) {
             subscribeToNewsletter({
@@ -397,15 +418,17 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -10 }}
-                        className="flex items-center gap-2 p-3 mb-4 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 text-sm font-medium"
+                        className="flex flex-col gap-2 p-4 mb-4 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-800 text-sm font-medium"
                       >
-                        <CheckCircle size={16} className="flex-shrink-0" />
-                        {success}
+                        <span className="flex items-center gap-2">
+                          <CheckCircle size={16} className="flex-shrink-0" />
+                          {success}
+                        </span>
                       </motion.div>
                     )}
                   </AnimatePresence>
 
-                  {tab === "login" ? (
+                  {success && tab === "register" ? null : tab === "login" ? (
                     <motion.form initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-4" onSubmit={handleLogin}>
                       <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Correo Electrónico</label>
@@ -572,15 +595,35 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                          </div>
                       </div>
                       <div>
+                        <label htmlFor="auth-interest" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                          Interés *
+                        </label>
+                        <select
+                          id="auth-interest"
+                          required
+                          disabled={loading}
+                          value={interest}
+                          onChange={(e) => setInterest(e.target.value)}
+                          className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
+                        >
+                          <option value="">Elige un programa</option>
+                          {LEAD_INTERESTS.map((item) => (
+                            <option key={item} value={item}>
+                              {item}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Contraseña</label>
                         <div className="relative">
                           <input
                             type={showPassword ? "text" : "password"}
-                            placeholder="Mínimo 6 caracteres"
+                            placeholder="Mínimo 12 caracteres"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            minLength={6}
+                            minLength={12}
                             disabled={loading}
                             autoComplete="new-password"
                             name="new-password"
@@ -613,19 +656,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                         </label>
                       </div>
 
-                      {/* Blog subscription checkbox */}
-                      <div className="flex items-start gap-2.5 mt-2">
-                        <input
-                          type="checkbox"
-                          id="subscribe-blog"
-                          checked={subscribeToBlog}
-                          onChange={(e) => setSubscribeToBlog(e.target.checked)}
-                          className="mt-0.5 w-3.5 h-3.5 rounded border-gray-300 accent-[#171716] cursor-pointer flex-shrink-0"
-                        />
-                        <label htmlFor="subscribe-blog" className="text-[10px] text-slate-400 cursor-pointer leading-relaxed">
-                          Suscribirse al blog para recibir la mejor información gratis (marcado por defecto)
-                        </label>
-                      </div>
                       <button
                         type="submit"
                         disabled={loading}
@@ -642,6 +672,8 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                     </motion.form>
                   )}
 
+                  {success && tab === "register" ? null : (
+                    <>
                   <div className="mt-8 relative flex items-center justify-center">
                      <div className="absolute inset-0 flex items-center">
                         <div className="w-full border-t border-slate-100"></div>
@@ -658,6 +690,8 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                         <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-4 h-4 mr-2" alt="" /> Google
                      </button>
                   </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

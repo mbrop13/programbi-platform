@@ -26,7 +26,7 @@ export default function LoginPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get("registered") === "true") {
-      setSuccess("¡Registro exitoso! Ya puedes iniciar sesión.");
+      setSuccess("Cuenta creada. Revisa tu correo si pide confirmación e inicia sesión.");
     }
     const supabase = createClient();
     supabase.auth.getSession().then(({ data }) => {

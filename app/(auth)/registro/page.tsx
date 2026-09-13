@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, Lock, User, Phone, Building, Eye, EyeOff, UserPlus, Loader2 } from "lucide-react";
+import { Mail, Lock, User, Phone, Eye, EyeOff, UserPlus, Loader2, CheckCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { validatePassword, isBreachedPassword } from "@/lib/security/password";
 import { honeypotStyle } from "@/lib/antibot";
@@ -20,6 +20,7 @@ import {
   writeBrowserReferralCode,
 } from "@/lib/referrals/cookie";
 import { trackSubmitRegistro } from "@/lib/analytics/marketing";
+import { LEAD_INTERESTS, interestFromCoursePath } from "@/lib/data/lead-interests";
 
 function getFromQueryParam(): string | null {
   if (typeof window === "undefined") return null;
@@ -35,6 +36,7 @@ export default function RegistroPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [acceptsPrivacy, setAcceptsPrivacy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [honeypot, setHoneypot] = useState("");
   const formLoadedAt = useRef<number>(Date.now());
@@ -51,11 +53,21 @@ export default function RegistroPage() {
   }, []);
 
   const [formData, setFormData] = useState({
+    fullName: "",
     email: "",
+    phone: "",
+    interest: "",
     password: "",
-    confirmPassword: "",
   });
   const router = useRouter();
+
+  useEffect(() => {
+    const from = getFromQueryParam();
+    const guessed = interestFromCoursePath(from);
+    if (guessed) {
+      setFormData((prev) => (prev.interest ? prev : { ...prev, interest: guessed }));
+    }
+  }, []);
 
   const captureReferralFromUrl = () => {
     const fromUrl = normalizeReferralCode(
@@ -115,8 +127,16 @@ export default function RegistroPage() {
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      setError("Las contraseñas no coinciden.");
+    if (!formData.fullName.trim() || formData.fullName.trim().length < 2) {
+      setError("Escribe tu nombre.");
+      return;
+    }
+    if (!formData.phone.trim() || formData.phone.replace(/\D/g, "").length < 8) {
+      setError("Escribe un teléfono o WhatsApp válido.");
+      return;
+    }
+    if (!formData.interest) {
+      setError("Elige en qué estás interesado.");
       return;
     }
 
@@ -151,9 +171,10 @@ export default function RegistroPage() {
           : readRegistrationSource() || "/registro"
       );
 
-      const defaultName = formData.email.split("@")[0] || "Usuario";
+      const defaultName = formData.fullName.trim() || formData.email.split("@")[0] || "Usuario";
       const pricingVariant = readClientPricingVariant();
       const referralCode = captureReferralFromUrl();
+      const phone = formData.phone.trim();
 
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
@@ -161,6 +182,8 @@ export default function RegistroPage() {
         options: {
           data: {
             full_name: defaultName,
+            whatsapp: phone,
+            interest: formData.interest,
             registration_source: registrationSource,
             ...(referralCode ? { referral_code: referralCode } : {}),
             ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
@@ -182,17 +205,23 @@ export default function RegistroPage() {
           .from("profiles")
           .update({
             registration_source: registrationSource,
+            phone,
             ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
           })
           .eq("id", data.user.id);
       }
 
-      const next = getNextPath();
-      const loginUrl =
-        next === "/comunidad/inicio"
-          ? "/login?registered=true"
-          : `/login?registered=true&next=${encodeURIComponent(next)}`;
-      router.push(loginUrl);
+      fetch("/api/auth/new-member", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: defaultName,
+          email: formData.email,
+          phone,
+        }),
+      }).catch(() => {});
+
+      setSuccess(true);
     } catch (err) {
       setError("Ocurrió un error inesperado al registrar su cuenta.");
     } finally {
@@ -219,9 +248,29 @@ export default function RegistroPage() {
             Crea tu cuenta
           </h1>
           <p className="text-text-muted text-center mb-8">
-            Accede a todos nuestros recursos y comunidad
+            Nombre, email, teléfono e interés. Después ves fechas y valor.
           </p>
 
+          {success ? (
+            <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-5 py-6 text-center">
+              <CheckCircle className="mx-auto mb-3 h-8 w-8 text-emerald-600" />
+              <p className="text-base font-semibold text-brand-dark">Cuenta creada</p>
+              <p className="mt-2 text-sm leading-relaxed text-text-muted">
+                Revisa tu correo para confirmar la cuenta. Después puedes iniciar sesión.
+              </p>
+              <Link
+                href={
+                  getNextPath() === "/comunidad/inicio"
+                    ? "/login?registered=true"
+                    : `/login?registered=true&next=${encodeURIComponent(getNextPath())}`
+                }
+                className="mt-5 inline-flex h-11 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
+              >
+                Ir a iniciar sesión
+              </Link>
+            </div>
+          ) : (
+            <>
           {error && (
             <div className="bg-red-50 text-red-600 border border-red-100 rounded-xl p-3 text-sm font-semibold mb-5 text-center">
               {error}
@@ -242,6 +291,23 @@ export default function RegistroPage() {
             </div>
 
             <div>
+              <label className="block text-sm font-bold text-brand-dark mb-1.5">Nombre *</label>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
+                <input
+                  type="text"
+                  required
+                  disabled={loading}
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  placeholder="Tu nombre"
+                  autoComplete="name"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
+                />
+              </div>
+            </div>
+
+            <div>
               <label className="block text-sm font-bold text-brand-dark mb-1.5">Email *</label>
               <div className="relative">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
@@ -252,9 +318,48 @@ export default function RegistroPage() {
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="tu@empresa.cl"
+                  autoComplete="email"
                   className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
                 />
               </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-bold text-brand-dark mb-1.5">Teléfono / WhatsApp *</label>
+              <div className="relative">
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
+                <input
+                  type="tel"
+                  required
+                  disabled={loading}
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="+56 9 1234 5678"
+                  autoComplete="tel"
+                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="registro-interest" className="block text-sm font-bold text-brand-dark mb-1.5">
+                Interés *
+              </label>
+              <select
+                id="registro-interest"
+                required
+                disabled={loading}
+                value={formData.interest}
+                onChange={(e) => setFormData({ ...formData, interest: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50 bg-white"
+              >
+                <option value="">Elige un programa</option>
+                {LEAD_INTERESTS.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
@@ -267,7 +372,8 @@ export default function RegistroPage() {
                   disabled={loading}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="Mínimo 10 caracteres (mayúsculas y números)"
+                  placeholder="Mínimo 12 caracteres"
+                  autoComplete="new-password"
                   className="w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
                 />
                 <button
@@ -277,22 +383,6 @@ export default function RegistroPage() {
                 >
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-bold text-brand-dark mb-1.5">Confirmar Contraseña *</label>
-              <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  required
-                  disabled={loading}
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-                  placeholder="Repite tu contraseña"
-                  className="w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
-                />
               </div>
             </div>
 
@@ -358,6 +448,8 @@ export default function RegistroPage() {
             </svg>
             Google
           </button>
+            </>
+          )}
         </div>
 
         <p className="text-center text-text-muted text-sm mt-6">
