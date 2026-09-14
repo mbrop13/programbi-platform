@@ -348,10 +348,12 @@ export default function TemarioSection({
   course,
   selectedLevel,
   isFreeTrial,
+  embedded,
 }: {
   course: Course;
   selectedLevel: number;
   isFreeTrial?: boolean;
+  embedded?: boolean;
 }) {
   const syllabus = useMemo(() => getCourseSyllabus(course), [course]);
   const level = useMemo(
@@ -391,13 +393,13 @@ export default function TemarioSection({
 
   return (
     <section id="temario" className="border-t border-line bg-canvas py-16 lg:py-24">
-      <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+      <div className={embedded ? undefined : "mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8"}>
         <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Temario</h2>
         <p className="mt-3 max-w-[40rem] text-base leading-relaxed text-mute">
           {hours} horas · {modules.length} módulos · certificado al completar.
         </p>
 
-        <div className="mt-12 max-w-[860px] space-y-10">
+        <div className={embedded ? "mt-12 space-y-10" : "mt-12 max-w-[860px] space-y-10"}>
             {whatYouLearn && whatYouLearn.length > 0 && (
               <div>
                 <h3 className="text-xl font-bold tracking-tight text-ink">

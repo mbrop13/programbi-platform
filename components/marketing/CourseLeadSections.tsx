@@ -87,16 +87,30 @@ export function CourseAudienceAndResults({
 export function CourseSyllabusAndFormat({
   course,
   hours,
+  embedded = false,
 }: {
   course: Course;
   hours: number;
+  embedded?: boolean;
 }) {
   const bullets = syllabusBullets(course);
   const format = formatItems(course, hours);
 
   return (
-    <section className="border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-20">
-      <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
+    <section
+      className={
+        embedded
+          ? "border-t border-line py-12 lg:py-16"
+          : "border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-20"
+      }
+    >
+      <div
+        className={
+          embedded
+            ? "grid grid-cols-1 gap-10"
+            : "mx-auto grid max-w-[1400px] grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16"
+        }
+      >
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Temario</h2>
           <ul className="mt-6 space-y-3">

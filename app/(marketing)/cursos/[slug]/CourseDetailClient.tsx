@@ -286,9 +286,9 @@ export default function CourseDetailClient({ course }: { course: Course }) {
 
   return (
     <>
-      <section className="bg-canvas px-4 pt-10 pb-16 sm:px-6 lg:px-8 lg:pt-14 lg:pb-20">
-        <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-start gap-10 lg:grid-cols-12 lg:gap-14">
-          <div className="lg:col-span-7">
+      <section className="bg-canvas px-4 pt-10 sm:px-6 lg:px-8 lg:pt-14">
+        <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
+          <div className="min-w-0 lg:col-span-7">
             <nav className="mb-6 text-sm text-mute" aria-label="Migas">
               <Link href="/cursos" className="no-underline hover:text-ink">
                 Cursos
@@ -344,7 +344,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
             )}
           </div>
 
-          <aside className="lg:col-span-5">
+          <aside className="lg:col-span-5 lg:row-span-2">
             <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-24">
               {levels.length > 1 && (
                 <div className="mb-5">
@@ -526,10 +526,20 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               </div>
             </div>
           </aside>
+
+          <div className="min-w-0 lg:col-span-7">
+            {isCroTemplate ? (
+              <CourseSyllabusAndFormat course={course} hours={hours} embedded />
+            ) : null}
+            <TemarioSection
+              course={course}
+              selectedLevel={selectedLevel}
+              isFreeTrial={isFreeTrial}
+              embedded
+            />
+          </div>
         </div>
       </section>
-
-      {isCroTemplate ? <CourseSyllabusAndFormat course={course} hours={hours} /> : null}
 
       {isCroTemplate ? (
         <CourseLeadCtas
@@ -538,8 +548,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
           primaryLabel={showPrice ? "Inscribirse" : "Registrarme"}
         />
       ) : null}
-
-      <TemarioSection course={course} selectedLevel={selectedLevel} isFreeTrial={isFreeTrial} />
 
       <section className="border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-16">
