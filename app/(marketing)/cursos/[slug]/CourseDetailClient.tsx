@@ -289,14 +289,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
       <section className="bg-canvas px-4 pt-10 sm:px-6 lg:px-8 lg:pt-14">
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="min-w-0 lg:col-span-7">
-            <nav className="mb-6 text-sm text-mute" aria-label="Migas">
-              <Link href="/cursos" className="no-underline hover:text-ink">
-                Cursos
-              </Link>
-              <span className="mx-2 text-faint">/</span>
-              <span className="text-ink">{course.title}</span>
-            </nav>
-
             <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl lg:leading-[1.12]">
               {course.title}
             </h1>
