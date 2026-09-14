@@ -58,18 +58,17 @@ for (const [slug, url] of IMAGES) {
   const buf = Buffer.from(await res.arrayBuffer());
   const dest = path.join(outDir, `${slug}.jpg`);
   const destWebp = path.join(outDir, `${slug}.webp`);
+  const destCard = path.join(outDir, `${slug}-card.webp`);
   const pipeline = sharp(buf)
     .rotate()
     .resize({ width: 1600, height: 1000, fit: "cover", withoutEnlargement: true });
-  await pipeline.clone().jpeg({ quality: 78, mozjpeg: true, chromaSubsampling: "4:2:0" }).toFile(dest);
-  await pipeline
-    .clone()
-    .resize({ width: 1200, height: 750, fit: "cover", withoutEnlargement: true })
-    .webp({ quality: 72 })
-    .toFile(destWebp);
+  await pipeline.clone().jpeg({ quality: 82, mozjpeg: true, chromaSubsampling: "4:2:0" }).toFile(dest);
+  await pipeline.clone().webp({ quality: 80 }).toFile(destWebp);
+  await pipeline.clone().webp({ quality: 80 }).toFile(destCard);
   const out = await sharp(dest).metadata();
   const webp = await sharp(destWebp).metadata();
+  const card = await sharp(destCard).metadata();
   console.log(
-    `${slug}: ${(buf.length / 1024 / 1024).toFixed(2)} MB → ${((out.size ?? 0) / 1024).toFixed(0)} KB jpg / ${((webp.size ?? 0) / 1024).toFixed(0)} KB webp`
+    `${slug}: ${(buf.length / 1024 / 1024).toFixed(2)} MB → ${((out.size ?? 0) / 1024).toFixed(0)} KB jpg / ${((webp.size ?? 0) / 1024).toFixed(0)} KB webp / ${((card.size ?? 0) / 1024).toFixed(0)} KB card`
   );
 }

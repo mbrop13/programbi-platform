@@ -1,5 +1,6 @@
 /**
- * Compress critical-path images: app icon, nav logo, course covers, company logos.
+ * Compress critical-path images: app icon, nav logo, company logos.
+ * Course covers live in scripts/optimize-course-images.mjs (1600px / webp q80).
  * Does not change composition — only dimensions/quality.
  */
 import { readdir } from "node:fs/promises";
@@ -57,19 +58,8 @@ await rewrite(
   })
 );
 
-const courseDir = path.join(root, "public", "images", "courses");
-for (const name of await readdir(courseDir)) {
-  if (!name.endsWith(".webp")) continue;
-  const file = path.join(courseDir, name);
-  const buf = await sharp(file).toBuffer();
-  await rewrite(
-    `courses/${name}`,
-    file,
-    sharp(buf)
-      .resize({ width: 960, height: 600, fit: "cover", withoutEnlargement: true })
-      .webp({ quality: 62 })
-  );
-}
+// Course covers are produced by scripts/optimize-course-images.mjs
+// (1600px webp q80). Do not crush them here — 960px / q62 looked too soft.
 
 const logosDir = path.join(root, "public", "images", "logos");
 for (const name of await readdir(logosDir)) {

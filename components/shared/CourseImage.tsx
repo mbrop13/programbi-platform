@@ -2,7 +2,7 @@ import Image, { type ImageProps } from "next/image";
 
 /**
  * Course/marketing covers.
- * Local files in /public/images/courses are already resized (~1600px, ~80–170 KB).
+ * Local files in /public/images/courses are already resized (~1600px, webp q80).
  * Serving them as static assets avoids the raw 2 MB mail.programbi.com JPEGs and
  * does not depend on the image optimizer at request time.
  * Remaining remote URLs go through the Next optimizer (GET works; HEAD is 405).

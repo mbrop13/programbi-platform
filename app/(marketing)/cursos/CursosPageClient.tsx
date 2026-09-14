@@ -74,7 +74,7 @@ export default function CursosPageClient({ catalog }: { catalog: CourseCatalogIt
                   preload
                   fetchPriority="high"
                   decoding="sync"
-                  quality={70}
+                  quality={80}
                   sizes="(max-width: 640px) 412px, (max-width: 1024px) 100vw, 58vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                 />
