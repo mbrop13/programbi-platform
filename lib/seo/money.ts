@@ -6,9 +6,9 @@ export type MoneyFaq = { q: string; a: string };
 
 export const PAGE_SEO = {
   home: {
-    title: "Cursos Power BI, SQL y Python en Chile | ProgramBI",
+    title: "Cursos de análisis de datos en vivo Chile | ProgramBI",
     description:
-      "Cursos en vivo de Power BI, SQL y Python en Chile. Capacitación para profesionales y empresas. Clases online con expertos de la industria.",
+      "Academia de datos en Chile: cursos en vivo de análisis de datos, Power BI y Power Automate. Clases por Zoom para profesionales. Inscríbete en ProgramBI.",
   },
   empresas: {
     title: "De Excel a Power BI para empresas Chile | ProgramBI",
@@ -29,50 +29,71 @@ export const COURSE_SEO: Record<
     description: string;
     h1: string;
     audience: string;
+    intro?: string;
     faqs: MoneyFaq[];
   }
 > = {
   "power-bi": {
-    title: "Curso Power BI Chile en vivo | ProgramBI",
+    title: "Curso Power BI Chile en vivo: DAX y Query | ProgramBI",
     description:
-      "Curso Power BI en vivo en Chile: Power Query, DAX y dashboards. Para analistas y control de gestión. Cupos abiertos — consulta fecha.",
-    h1: "Curso Power BI en vivo Chile",
+      "Curso Power BI en Chile, en vivo: Power Query, DAX y dashboards. Para analistas y control de gestión. 16 h por nivel. Cupos abiertos — inscríbete.",
+    h1: "Curso Power BI en vivo en Chile",
     audience:
-      "Para analistas, control de gestión y finanzas que quieren armar dashboards propios.",
+      "Para analistas, control de gestión y finanzas que hoy reportan en Excel y quieren armar dashboards propios en Power BI.",
+    intro:
+      "Este es un curso Power BI en Chile, en vivo por Zoom, para analistas, control de gestión y finanzas que hoy consolidan cifras en Excel y necesitan un dashboard que ellos mismos puedan mantener.\n\nEn tres niveles de 16 horas —horario vespertino Chile, con grabaciones en el campus— trabajas Power Query (ETL), el modelo estrella, DAX (CALCULATE, FILTER, time intelligence) y la publicación en Power BI Service, incluida la seguridad a nivel de fila. El objetivo es un tablero usable en el trabajo, no una captura de pantalla.\n\nSi buscas cursos de Power BI en Chile para formarte como persona, este es el camino. Si tu empresa necesita el tablero en producción con datos propios y capacitación in-company, eso vive en /empresas. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.",
     faqs: [
       {
-        q: "¿El curso Power BI es en vivo en Chile?",
-        a: "Sí. Clases en vivo por Zoom, horario vespertino Chile, con grabaciones en el campus. Cupos abiertos: consulta la próxima cohorte.",
+        q: "¿Hay un curso Power BI en Chile, en vivo?",
+        a: "Sí. ProgramBI dicta el curso Power BI en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. Tres niveles de 16 horas: Query, modelo y DAX, y publicación.",
       },
       {
-        q: "¿Sirve si mi empresa necesita el tablero en producción?",
-        a: "El curso es formación individual. Si tu empresa necesita dashboards con datos propios y capacitación in-company, revisa /empresas.",
+        q: "¿Qué cubren los cursos de Power BI?",
+        a: "Power Query para transformar datos, modelo estrella, DAX y dashboards en Power BI Service, con seguridad a nivel de fila. Cada nivel son 16 horas en vivo.",
       },
       {
-        q: "¿Qué veo en el temario?",
-        a: "Power Query (ETL), modelo estrella, DAX y publicación en Power BI Service, incluyendo seguridad a nivel de fila. Tres niveles de 16 horas.",
+        q: "¿El curso Power BI es para empresas o para personas?",
+        a: "Esta landing es formación individual. Power BI para empresas en Chile (tablero en producción + equipo) está en /empresas. El catálogo de cursos abiertos está en /cursos.",
+      },
+      {
+        q: "¿Necesito saber DAX antes de inscribirme?",
+        a: "No. El nivel básico parte en Power Query. DAX y time intelligence entran en el nivel intermedio; publicación y RLS en el avanzado.",
+      },
+      {
+        q: "¿Cómo me inscribo al curso Power BI Chile?",
+        a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor de la próxima cohorte.",
       },
     ],
   },
   "analisis-de-datos": {
-    title: "Cursos de análisis de datos Chile | ProgramBI",
+    title: "Curso de análisis de datos en vivo Chile | ProgramBI",
     description:
-      "Cursos de análisis de datos en Chile: SQL Server + Power BI + Python, 144 horas en vivo. Para profesionales que salen de Excel.",
-    h1: "Cursos de análisis de datos: SQL, Power BI y Python",
+      "Curso de análisis de datos en Chile, en vivo: SQL, Power BI y Python. 144 h para profesionales que salen de Excel y quieren ser analistas de datos. Inscríbete.",
+    h1: "Curso de análisis de datos en vivo en Chile",
     audience:
-      "Para profesionales de finanzas, ops y control de gestión que quieren SQL, Power BI y Python de extremo a extremo (144 h).",
+      "Para profesionales de finanzas, control de gestión y operaciones que hoy reportan en Excel y quieren el oficio de analista de datos: SQL, Power BI y Python.",
+    intro:
+      "Este es un curso de análisis de datos en Chile, en vivo por Zoom, para profesionales de finanzas, control de gestión y operaciones que hoy arman reportes en Excel y necesitan un oficio completo de analista de datos.\n\nEn 144 horas —tres bloques de 48 horas, horario vespertino Chile, con grabaciones en el campus— aprendes a extraer datos con SQL Server, a modelar y publicar tableros en Power BI (Power Query y DAX) y a limpiar y automatizar con Python y Pandas. El cierre es un proyecto integrador, no un módulo teórico suelto.\n\nSi buscas cursos de análisis de datos para dar el salto de Excel a SQL, Power BI y Python, este es el programa largo de ProgramBI. Sales sabiendo consultar una base, armar un modelo de negocio y entregar un dashboard usable. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.",
     faqs: [
       {
-        q: "¿Qué incluye el programa de análisis de datos?",
-        a: "Tres bloques de 48 horas: SQL Server, Power BI (modelo y DAX) y Python con Pandas. En total 144 horas en vivo, con proyecto integrador.",
+        q: "¿Hay un curso de análisis de datos en Chile, en vivo?",
+        a: "Sí. ProgramBI dicta el curso de análisis de datos en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. Son 144 horas: SQL Server, Power BI y Python.",
+      },
+      {
+        q: "¿Qué se aprende en los cursos de análisis de datos?",
+        a: "Extraer datos con SQL Server, armar tableros con Power Query y DAX en Power BI, y limpiar o automatizar con Python y Pandas. Tres bloques de 48 horas y un proyecto integrador.",
+      },
+      {
+        q: "¿Sirve como curso para analista de datos?",
+        a: "Está pensado para profesionales que quieren el oficio de analista de datos: consultas propias, modelo de negocio y un dashboard publicable. No es un curso Power BI de 16 horas ni un bootcamp genérico.",
       },
       {
         q: "¿Es lo mismo que un curso Power BI suelto?",
-        a: "No. El curso Power BI es 16 h por nivel, solo visualización. Análisis de datos cubre extracción (SQL), tableros (Power BI) y Python.",
+        a: "El curso Power BI cubre visualización (16 h por nivel). Este programa cubre extracción (SQL), tableros (Power BI) y Python. El catálogo de cursos sueltos está en /cursos.",
       },
       {
-        q: "¿Y si somos una empresa?",
-        a: "Este programa es cupo individual. Para un proyecto in-company, ve /empresas.",
+        q: "¿Cómo me inscribo al curso de análisis de datos?",
+        a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor. Si eres empresa y necesitas un proyecto in-company, ve /empresas.",
       },
     ],
   },
@@ -175,6 +196,38 @@ export const COURSE_SEO: Record<
       {
         q: "¿Necesito ser contador para tomarlo?",
         a: "Sirve tener nociones de contabilidad y finanzas corporativas. El curso enseña las herramientas (Excel, SQL, Power BI y Python) sobre esos casos.",
+      },
+    ],
+  },
+  "power-automate": {
+    title: "Curso Power Automate Chile: flujos y RPA | ProgramBI",
+    description:
+      "Curso Power Automate en Chile, en vivo: flujos en la nube, RPA de escritorio y aprobaciones. Para analistas que automatizan sin código. Inscríbete.",
+    h1: "Curso Power Automate y RPA en vivo en Chile",
+    audience:
+      "Para analistas y operaciones que pierden horas en correos, aprobaciones y copiar datos entre Excel, Outlook y Teams.",
+    intro:
+      "Este es un curso Power Automate en Chile, en vivo por Zoom, para analistas y operaciones que pierden horas en correos, aprobaciones y copiar datos entre Excel, Outlook y Teams.\n\nEn 16 horas —horario vespertino Chile, con grabaciones en el campus— armas flujos en la nube (automatizados, instantáneos y programados), conectores de Microsoft 365, expresiones y aprobaciones. También ves RPA de escritorio y Copilot para diseñar flujos sin código. Sales con automatizaciones que puedes publicar, no con una demo suelta.\n\nSi buscas un curso Power Automate o cursos Power Automate para el día a día en Chile, este es el programa. No hace falta programar: es no-code, con conectores de Microsoft 365. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor. El catálogo completo está en /cursos.",
+    faqs: [
+      {
+        q: "¿Hay un curso Power Automate en Chile, en vivo?",
+        a: "Sí. ProgramBI dicta el curso Power Automate en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. Son 16 horas, enfocadas en flujos reales.",
+      },
+      {
+        q: "¿Qué se aprende en un curso Power Automate?",
+        a: "Flujos de nube (automatizados, instantáneos y programados), conectores de Outlook, Teams, OneDrive y SharePoint, expresiones, aprobaciones, RPA de escritorio y Copilot para diseñar flujos.",
+      },
+      {
+        q: "¿Power Automate es lo mismo que RPA?",
+        a: "Power Automate cubre flujos en la nube y RPA de escritorio. En este curso ves ambos: automatizar Microsoft 365 y procesos que hoy viven en el PC.",
+      },
+      {
+        q: "¿Necesito saber programar?",
+        a: "No. Es un curso no-code: conectores, condiciones y Copilot. Sirve si ya usas Excel, Outlook o Teams y quieres dejar de copiar datos a mano.",
+      },
+      {
+        q: "¿Cómo me inscribo al curso Power Automate?",
+        a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor. El resto de cursos está en /cursos.",
       },
     ],
   },

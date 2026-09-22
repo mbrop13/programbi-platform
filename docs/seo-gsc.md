@@ -6,11 +6,12 @@ Canonical host: `https://www.programbi.com`. No se tocó capacitaciones.programb
 
 | Ruta | Title final | Query objetivo |
 |---|---|---|
-| `/` | Pack Adopción Power BI y cursos Chile \| ProgramBI | marca + dual path empresas/cursos |
+| `/` | Cursos de análisis de datos en vivo Chile \| ProgramBI | academia de datos Chile, cursos en vivo, Power BI, análisis de datos |
 | `/empresas` | Pack Adopción Power BI para empresas Chile \| ProgramBI | power bi empresas chile, implementación/adopción Power BI empresas |
 | `/cursos` | Cursos Power BI y análisis de datos Chile \| ProgramBI | cursos power bi chile, cursos analisis de datos |
-| `/cursos/power-bi` | Curso Power BI Chile en vivo \| ProgramBI | curso power bi chile, cursos de power bi chile, curso power bi |
-| `/cursos/analisis-de-datos` | Cursos de análisis de datos Chile \| ProgramBI | cursos analisis de datos, cursos de analisis de datos |
+| `/cursos/power-bi` | Curso Power BI Chile en vivo: DAX y Query \| ProgramBI | curso power bi, cursos power bi chile, curso power bi chile, power bi empresas chile |
+| `/cursos/power-automate` | Curso Power Automate Chile: flujos y RPA \| ProgramBI | curso power automate, power automate curso, cursos power automate |
+| `/cursos/analisis-de-datos` | Curso de análisis de datos en vivo Chile \| ProgramBI | cursos analisis de datos, cursos de analisis de datos, curso analisis de datos, curso analista de datos |
 | `/cursos/analitica-mineria` | Curso Power BI para minería Chile \| ProgramBI | (potenciar lo que ya rankea) Power BI + minería Chile |
 | `/implementacion-power-bi` | Implementación Power BI Chile \| Pack Adopción BI | implementación Power BI Chile |
 | `/migrar-excel-a-power-bi` | Migrar Excel a Power BI Chile \| Control de gestión | migrar Excel a Power BI, control de gestión |
@@ -21,7 +22,7 @@ Canonical host: `https://www.programbi.com`. No se tocó capacitaciones.programb
 ## Técnico (código)
 
 - Canonical y `metadataBase` en www.
-- Apex `programbi.com` → www en `proxy.ts` (308).
+- Apex `programbi.com` → www en `proxy.ts`, `next.config.ts` y `vercel.json` (301).
 - Sitemap: money pages 0.85–0.95; minería al mismo nivel que Power BI / análisis; blog 0.25; vanity (`/gran-partido`) 0.1. Posts CMS de blog no van al sitemap.
 - robots.txt: sitemap www; disallow app/admin/referidos privados.
 - JSON-LD: Organization + WebSite (layout); FAQPage + Service en `/empresas`; Course (sin AggregateRating inventado) + FAQ en fichas money; Article en guías.

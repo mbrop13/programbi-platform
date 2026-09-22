@@ -40,9 +40,11 @@ import {
   CourseAudienceAndResults,
   CourseFaq,
   CourseLeadCtas,
+  CourseSeoInternalLinks,
   CourseSyllabusAndFormat,
   isCourseCroSlug,
 } from "@/components/marketing/CourseLeadSections";
+import { COURSE_SEO } from "@/lib/seo/money";
 
 function courseCheckoutUrl(slug: string, levelName?: string) {
   const params = new URLSearchParams({ curso: slug });
@@ -270,6 +272,8 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const outcomes = activeLevel?.whatYouLearn?.length ? activeLevel.whatYouLearn : course.whatYouLearn;
   const nextStart = levelSchedule ? formatSchedule(levelSchedule, scheduleCountry.timeZone) : null;
   const isCroTemplate = isCourseCroSlug(course.slug);
+  const seo = COURSE_SEO[course.slug];
+  const introParagraphs = seo?.intro?.split("\n\n").filter(Boolean) ?? [];
   const courseWa = whatsappHref({
     page: `/cursos/${course.slug}`,
     intent: "curso",
@@ -290,11 +294,40 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="min-w-0 lg:col-span-7">
             <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl lg:leading-[1.12]">
-              {course.title}
+              {seo?.intro && seo.h1 ? seo.h1 : course.title}
             </h1>
-            <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute sm:text-lg">
-              {course.shortDescription}
-            </p>
+            {introParagraphs.length > 0 ? (
+              <div className="mt-4 max-w-[40rem] space-y-4 text-base leading-relaxed text-mute sm:text-lg">
+                {introParagraphs.map((p) => (
+                  <p key={p.slice(0, 48)}>{p}</p>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute sm:text-lg">
+                {course.shortDescription}
+              </p>
+            )}
+            {introParagraphs.length > 0 ? (
+              <div className="mt-6 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() => void handleCheckoutCTA()}
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-7 text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
+                >
+                  {showPrice ? "Inscribirse" : "Registrarme"}
+                </button>
+                <a
+                  href={courseWa}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-line bg-paper px-7 text-sm font-medium text-ink no-underline hover:bg-wash"
+                >
+                  <MessageCircle size={16} />
+                  WhatsApp
+                </a>
+              </div>
+            ) : null}
+            <CourseSeoInternalLinks slug={course.slug} />
 
             <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-mute">
               <li className="inline-flex items-center gap-1.5">

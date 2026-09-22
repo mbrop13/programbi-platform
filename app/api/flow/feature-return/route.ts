@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getFlowPaymentStatus, FLOW_STATUS } from "@/lib/flow/client";
 import { createAdminClient } from "@/lib/supabase/server";
 import { applyPaidFeatureOrder } from "@/lib/jobs/feature";
+import { SITE_URL } from "@/lib/seo";
 
 /**
  * Retorno del usuario tras pagar un destacado en Flow.
@@ -11,7 +12,7 @@ import { applyPaidFeatureOrder } from "@/lib/jobs/feature";
 export async function GET(req: NextRequest) {
   try {
     const token = req.nextUrl.searchParams.get("token");
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://programbi.com";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || SITE_URL;
 
     if (!token) {
       return NextResponse.redirect(`${appUrl}/comunidad/empleos?feature=error`);
@@ -50,7 +51,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(`${appUrl}/comunidad/empleos?feature=${result}`);
   } catch (error: any) {
     console.error("Flow feature-return error:", error);
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://programbi.com";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || SITE_URL;
     return NextResponse.redirect(`${appUrl}/comunidad/empleos?feature=error`);
   }
 }

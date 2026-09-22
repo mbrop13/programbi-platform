@@ -176,9 +176,71 @@ export const GA_LEAD_EVENTS = {
   CLICK_CTA_PRIMARY: "click_cta_primary",
   CLICK_REGISTRO: "click_registro",
   SUBMIT_REGISTRO: "submit_registro",
+  GENERATE_LEAD: "generate_lead",
   CLICK_WHATSAPP: "click_whatsapp",
   CLICK_COTIZAR_EMPRESAS: "click_cotizar_empresas",
 } as const;
+
+export type GenerateLeadMethod = "form" | "click";
+
+/** Pull /cursos/[slug] or ?curso= from a path or full URL. */
+export function courseSlugFromLocation(raw?: string | null): string | undefined {
+  if (!raw) return undefined;
+  let path = raw;
+  let search = "";
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      const url = new URL(raw);
+      path = url.pathname;
+      search = url.search;
+    } catch {
+      return undefined;
+    }
+  } else {
+    const q = raw.indexOf("?");
+    if (q >= 0) {
+      path = raw.slice(0, q);
+      search = raw.slice(q);
+    }
+  }
+  const courseMatch = path.match(/\/cursos\/([a-z0-9-]+)/i);
+  if (courseMatch?.[1]) return courseMatch[1];
+  const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+  return params.get("curso") || params.get("course") || undefined;
+}
+
+function inferCourseSlug(explicit?: string | null): string | undefined {
+  const given = explicit?.trim();
+  if (given) return given;
+  if (!isBrowser()) return undefined;
+  let stored: string | null = null;
+  try {
+    stored = sessionStorage.getItem("pb_registration_source");
+  } catch {
+    stored = null;
+  }
+  return (
+    courseSlugFromLocation(window.location.pathname + window.location.search) ||
+    courseSlugFromLocation(stored)
+  );
+}
+
+/**
+ * Marcar generate_lead como evento clave en GA4 Admin.
+ * Only call after real success (signUp OK, lead insert OK, OAuth new-user redirect).
+ */
+export function trackGenerateLead(opts: {
+  method: GenerateLeadMethod;
+  course_slug?: string | null;
+  page_path?: string;
+}): void {
+  const course_slug = inferCourseSlug(opts.course_slug);
+  trackEvent(GA_LEAD_EVENTS.GENERATE_LEAD, {
+    method: opts.method,
+    ...(opts.page_path ? { page_path: opts.page_path } : {}),
+    ...(course_slug ? { course_slug } : {}),
+  });
+}
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
 
@@ -379,11 +441,19 @@ export function trackClickRegistro(): void {
 }
 
 let lastSubmitRegistroAt = 0;
-export function trackSubmitRegistro(): void {
+export function trackSubmitRegistro(opts?: {
+  method?: GenerateLeadMethod;
+  course_slug?: string | null;
+}): void {
   const now = Date.now();
   if (now - lastSubmitRegistroAt < 2000) return;
   lastSubmitRegistroAt = now;
   trackEvent(GA_LEAD_EVENTS.SUBMIT_REGISTRO);
+  // Marcar generate_lead como evento clave en GA4 Admin
+  trackGenerateLead({
+    method: opts?.method ?? "form",
+    course_slug: opts?.course_slug,
+  });
 }
 
 export function trackClickCotizarEmpresas(): void {
@@ -409,9 +479,9 @@ export function trackLeadSubmit(leadType: string, source?: string, courseSlug?: 
     source,
     course_slug: courseSlug,
   });
-  trackEvent("generate_lead", {
-    lead_type: leadType,
-    source,
+  // Marcar generate_lead como evento clave en GA4 Admin
+  trackGenerateLead({
+    method: "form",
     course_slug: courseSlug,
   });
 }

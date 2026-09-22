@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     title: seo ? { absolute: title } : title,
     description,
     alternates: {
-      canonical: `/cursos/${slug}`,
+      canonical: absoluteUrl(`/cursos/${slug}`),
     },
     openGraph: {
       title: seo ? title : `${title} | ProgramBI`,
@@ -96,8 +96,8 @@ function getCourseJsonLd(course: ReturnType<typeof getCourseBySlug>) {
 
   return {
     "@type": "Course",
-    name: course.title,
-    description: course.description,
+    name: COURSE_SEO[course.slug]?.h1 || course.title,
+    description: COURSE_SEO[course.slug]?.description || course.description,
     url: absoluteUrl(`/cursos/${course.slug}`),
     provider: {
       "@type": "Organization",
@@ -199,10 +199,6 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
-      <section className="sr-only">
-        <h2>{seo?.h1 || course.title}</h2>
-        <p>{seo?.description || course.description}</p>
-      </section>
       <CourseDetailClient course={course} />
     </>
   );

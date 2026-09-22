@@ -11,7 +11,7 @@ import FaqSection from "@/components/marketing/FaqSection";
 import HomeDeferred from "@/components/marketing/HomeDeferred";
 import { homeFaqs } from "@/lib/data/site";
 import { courses } from "@/lib/data/courses";
-import { SITE_URL, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
+import { SITE_URL, absoluteUrl, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 
 export const revalidate = 3600;
@@ -19,7 +19,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: { absolute: PAGE_SEO.home.title },
   description: PAGE_SEO.home.description,
-  alternates: { canonical: "/" },
+  alternates: { canonical: absoluteUrl("/") },
   openGraph: {
     title: PAGE_SEO.home.title,
     description: PAGE_SEO.home.description,

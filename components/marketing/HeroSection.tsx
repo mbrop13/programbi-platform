@@ -1,7 +1,30 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import RegisterCta from "@/components/marketing/RegisterCta";
 import HeroPreviewLazy from "@/components/marketing/HeroPreviewLazy";
+
+const HERO_COURSES = [
+  {
+    href: "/cursos/analisis-de-datos",
+    slug: "analisis-de-datos",
+    kicker: "144 horas",
+    title: "Análisis de datos",
+    text: "SQL, Power BI y Python. Curso en vivo en Chile.",
+  },
+  {
+    href: "/cursos/power-bi",
+    slug: "power-bi",
+    kicker: "16 h por nivel",
+    title: "Power BI",
+    text: "Query, DAX y dashboards. En vivo en Chile.",
+  },
+  {
+    href: "/cursos/power-automate",
+    slug: "power-automate",
+    kicker: "16 horas",
+    title: "Power Automate",
+    text: "Flujos y RPA. Curso en vivo en Chile.",
+  },
+] as const;
 
 export default function HeroSection() {
   return (
@@ -13,39 +36,48 @@ export default function HeroSection() {
               <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-70" />
               <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
             </span>
-            Clases en vivo online y presencial
+            Cursos en vivo · Chile
           </div>
 
           <h1 className="text-4xl font-bold leading-[1.12] tracking-tight text-ink sm:text-5xl lg:text-[3.5rem] lg:leading-[1.12]">
-            Aprende Análisis de{" "}
+            Cursos de análisis de{" "}
             <br />
-            Datos con <em className="italic font-semibold">Expertos</em>
+            datos en <em className="italic font-semibold">Chile</em>
           </h1>
 
           <p className="mt-6 max-w-xl text-base leading-relaxed text-mute sm:text-lg">
-            Capacitaciones diseñadas para profesionales que buscan potenciar su carrera con Power
-            BI, Python, SQL, Excel y Big Data.
+            Academia de datos en vivo por Zoom: análisis de datos, Power BI y Power Automate.
           </p>
 
-          <div className="mt-8 flex flex-wrap gap-3">
-            <RegisterCta
-              ctaId="home_hero_registrarse"
-              className="inline-flex h-12 items-center gap-2 rounded-full bg-ink px-7 text-base font-semibold text-canvas shadow-md shadow-ink/10 transition-transform active:scale-[0.98]"
-            >
-              Registrarme
-              <ArrowRight size={17} strokeWidth={2.4} />
-            </RegisterCta>
-            <Link
-              href="/cursos"
-              className="inline-flex h-12 items-center rounded-full border border-line bg-paper px-7 text-base font-medium text-ink no-underline transition-colors hover:bg-wash active:scale-[0.98]"
-            >
-              Ver cursos
-            </Link>
+          <div className="mt-8 flex flex-col gap-2.5">
+            {HERO_COURSES.map((course) => (
+              <Link
+                key={course.href}
+                href={course.href}
+                data-analytics-event="click_registro"
+                data-curso-slug={course.slug}
+                className="group flex items-center justify-between gap-3 rounded-2xl border border-line bg-paper px-4 py-3.5 no-underline transition-colors hover:border-ink/25 hover:bg-wash"
+              >
+                <span className="min-w-0">
+                  <span className="block text-[11px] font-bold uppercase tracking-widest text-mute">
+                    {course.kicker}
+                  </span>
+                  <span className="mt-0.5 block text-base font-semibold tracking-tight text-ink">
+                    {course.title}
+                  </span>
+                  <span className="mt-0.5 block text-sm leading-snug text-mute">{course.text}</span>
+                </span>
+                <ArrowRight
+                  size={16}
+                  className="shrink-0 text-ink transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+            ))}
           </div>
 
-          <p className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-mute">
+          <p className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-mute">
             <Link href="/cursos" className="font-semibold text-ink no-underline hover:text-mute">
-              Personas → Cursos
+              Todos los cursos
             </Link>
             <Link href="/empresas" className="font-semibold text-ink no-underline hover:text-mute">
               Empresas → Capacitación

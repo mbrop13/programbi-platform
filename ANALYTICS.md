@@ -45,6 +45,7 @@ Nombres **exactos**. Parámetros custom en snake_case.
 | `click_cta_primary` | CTA primario en home | `cta_id` |
 | `click_registro` | Click que abre / lleva a registro | — |
 | `submit_registro` | Alta **exitosa** (email o Google nuevo). No se dispara en honeypot/bot ni en error. | — |
+| `generate_lead` | Misma conversión: signUp OK, insert de lead OK, o OAuth nuevo (`?reg_ok=1`). **Marcar generate_lead como evento clave en GA4 Admin.** | `method` (`form` \| `click`), `page_path`, `course_slug` (si hay) |
 | `click_whatsapp` | Click a `wa.me` / WhatsApp | `page_path` |
 | `click_cotizar_empresas` | CTA “Pedir una propuesta” en empresas | — |
 
@@ -76,7 +77,7 @@ Google OAuth de usuario nuevo redirige con `?reg_ok=1` (se limpia del URL al ins
    | Click **Registrarme** (hero) | `click_cta_primary` (`cta_id=home_hero_registrarse`) y `click_registro` |
    | Ir a un curso `/cursos/power-bi` (slug real) | `page_view` + `view_curso` (`curso_slug`) |
    | Click **Registrarse** / **Ver precio** en el curso | `click_registro` |
-   | Completar registro (éxito) | `submit_registro` |
+   | Completar registro (éxito) | `submit_registro` + `generate_lead` (`method=form`, `page_path`, `course_slug` si viene de un curso) |
    | Click del botón verde de WhatsApp | `click_whatsapp` (`page_path`) |
    | Abrir `/empresas` | `view_empresas` |
    | Click **Pedir una propuesta** | `click_cotizar_empresas` |

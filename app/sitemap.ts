@@ -2,25 +2,62 @@ import type { MetadataRoute } from "next";
 import { courses } from "@/lib/data/courses";
 import { casesOfUse } from "@/lib/data/cases";
 import { comparisons } from "@/lib/data/comparisons";
-import { SITE_URL } from "@/lib/seo";
+import { sitemapLoc } from "@/lib/seo";
+import { isVanityBlogPost } from "@/lib/seo/money";
 import { createAdminClient } from "@/lib/supabase/server";
+
+const PRIMARY_COURSE_SLUGS = new Set([
+  "analisis-de-datos",
+  "power-bi",
+  "power-automate",
+  "analitica-mineria",
+]);
+
+function loc(path: string): string {
+  const url = sitemapLoc(path);
+  if (!url) throw new Error(`sitemap: rejected loc ${path}`);
+  return url;
+}
+
+function uniqueEntries(entries: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
+  const seen = new Set<string>();
+  const out: MetadataRoute.Sitemap = [];
+  for (const entry of entries) {
+    const url = sitemapLoc(entry.url);
+    if (!url || seen.has(url)) continue;
+    seen.add(url);
+    out.push({ ...entry, url });
+  }
+  return out;
+}
+
+function blogSlug(raw: string): string | null {
+  const slug = raw.trim().split("?")[0].split("#")[0].replace(/^\/+|\/+$/g, "");
+  if (!slug || slug.includes("/") || slug.includes("://") || slug.includes("&")) return null;
+  return slug;
+}
 
 async function publishedBlogUrls(now: Date): Promise<MetadataRoute.Sitemap> {
   try {
     const db = createAdminClient();
     const { data, error } = await db
       .from("newsletter_articles")
-      .select("slug, published_at")
+      .select("slug, title, excerpt, published_at")
       .eq("status", "published");
     if (error || !data) return [];
-    return data
-      .filter((row): row is { slug: string; published_at: string | null } => !!row.slug)
-      .map((row) => ({
-        url: `${SITE_URL}/blog/${row.slug}`,
-        lastModified: row.published_at ? new Date(row.published_at) : now,
-        changeFrequency: "weekly" as const,
-        priority: 0.4,
-      }));
+    return data.flatMap((row) => {
+      const slug = typeof row.slug === "string" ? blogSlug(row.slug) : null;
+      if (!slug) return [];
+      if (isVanityBlogPost(row.title, row.excerpt, slug)) return [];
+      return [
+        {
+          url: loc(`/blog/${slug}`),
+          lastModified: row.published_at ? new Date(row.published_at) : now,
+          changeFrequency: "weekly" as const,
+          priority: 0.4,
+        },
+      ];
+    });
   } catch (err) {
     console.error("sitemap blog posts:", err);
     return [];
@@ -28,139 +65,138 @@ async function publishedBlogUrls(now: Date): Promise<MetadataRoute.Sitemap> {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = SITE_URL;
   const now = new Date();
 
   const staticPages: MetadataRoute.Sitemap = [
-    { url: baseUrl, lastModified: now, changeFrequency: "weekly", priority: 1 },
+    { url: loc("/"), lastModified: now, changeFrequency: "weekly", priority: 1 },
     {
-      url: `${baseUrl}/empresas`,
+      url: loc("/empresas"),
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.95,
     },
     {
-      url: `${baseUrl}/implementacion-power-bi`,
+      url: loc("/implementacion-power-bi"),
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/migrar-excel-a-power-bi`,
+      url: loc("/migrar-excel-a-power-bi"),
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/por-que-fallan-proyectos-power-bi`,
+      url: loc("/por-que-fallan-proyectos-power-bi"),
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/curso-power-bi-vs-pack-adopcion`,
+      url: loc("/curso-power-bi-vs-pack-adopcion"),
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/power-bi-mineria-chile`,
+      url: loc("/power-bi-mineria-chile"),
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: `${baseUrl}/cursos`,
+      url: loc("/cursos"),
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.85,
     },
     {
-      url: `${baseUrl}/nosotros`,
+      url: loc("/nosotros"),
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.5,
     },
     {
-      url: `${baseUrl}/referidos`,
+      url: loc("/referidos"),
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.7,
     },
     {
-      url: `${baseUrl}/referidos/terminos`,
+      url: loc("/referidos/terminos"),
       lastModified: now,
       changeFrequency: "yearly",
       priority: 0.2,
     },
     {
-      url: `${baseUrl}/faq`,
+      url: loc("/faq"),
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.5,
     },
     {
-      url: `${baseUrl}/glosario`,
+      url: loc("/glosario"),
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.45,
     },
     {
-      url: `${baseUrl}/blog`,
+      url: loc("/blog"),
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.25,
     },
     {
-      url: `${baseUrl}/empleos`,
+      url: loc("/empleos"),
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.5,
     },
     {
-      url: `${baseUrl}/empleos/vacantes`,
+      url: loc("/empleos/vacantes"),
       lastModified: now,
       changeFrequency: "daily",
       priority: 0.45,
     },
     {
-      url: `${baseUrl}/empleos/para-empresas`,
+      url: loc("/empleos/para-empresas"),
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.4,
     },
     {
-      url: `${baseUrl}/empleos/talento`,
+      url: loc("/empleos/talento"),
       lastModified: now,
       changeFrequency: "daily",
       priority: 0.4,
     },
     {
-      url: `${baseUrl}/versus`,
+      url: loc("/versus"),
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.4,
     },
     {
-      url: `${baseUrl}/newsletter`,
+      url: loc("/newsletter"),
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.3,
     },
     {
-      url: `${baseUrl}/gran-partido`,
+      url: loc("/gran-partido"),
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.1,
     },
     {
-      url: `${baseUrl}/privacidad`,
+      url: loc("/privacidad"),
       lastModified: now,
       changeFrequency: "yearly",
       priority: 0.1,
     },
     {
-      url: `${baseUrl}/terminos`,
+      url: loc("/terminos"),
       lastModified: now,
       changeFrequency: "yearly",
       priority: 0.1,
@@ -168,26 +204,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   const coursePriority = (slug: string) =>
-    slug === "power-bi" || slug === "analisis-de-datos" || slug === "analitica-mineria"
-      ? 0.85
-      : 0.55;
+    PRIMARY_COURSE_SLUGS.has(slug) ? 0.85 : 0.55;
 
   const coursePages: MetadataRoute.Sitemap = courses.map((course) => ({
-    url: `${baseUrl}/cursos/${course.slug}`,
+    url: loc(`/cursos/${course.slug}`),
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: coursePriority(course.slug),
   }));
 
   const casePages: MetadataRoute.Sitemap = casesOfUse.map((c) => ({
-    url: `${baseUrl}/casos/${c.slug}`,
+    url: loc(`/casos/${c.slug}`),
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.45,
   }));
 
   const versusPages: MetadataRoute.Sitemap = comparisons.map((comp) => ({
-    url: `${baseUrl}/versus/${comp.slug}`,
+    url: loc(`/versus/${comp.slug}`),
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.4,
@@ -195,5 +229,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const blogPages = await publishedBlogUrls(now);
 
-  return [...staticPages, ...coursePages, ...casePages, ...versusPages, ...blogPages];
+  return uniqueEntries([...staticPages, ...coursePages, ...casePages, ...versusPages, ...blogPages]);
 }
