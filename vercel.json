@@ -1,9 +1,73 @@
 {
   "redirects": [
     {
-      "source": "/",
-      "has": [{ "type": "host", "value": "programbi.com" }],
-      "destination": "https://www.programbi.com/",
+      "source": "/products/power-bi",
+      "destination": "https://www.programbi.com/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/power-bi/:rest*",
+      "destination": "https://www.programbi.com/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/sql-server",
+      "destination": "https://www.programbi.com/cursos/sql-server",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/sql-server/:rest*",
+      "destination": "https://www.programbi.com/cursos/sql-server",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(.*python.*)",
+      "destination": "https://www.programbi.com/cursos/python",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(.*python.*)/:rest*",
+      "destination": "https://www.programbi.com/cursos/python",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/power-automate",
+      "destination": "https://www.programbi.com/cursos/power-automate",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/power-automate/:rest*",
+      "destination": "https://www.programbi.com/cursos/power-automate",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(.*machine.*)",
+      "destination": "https://www.programbi.com/cursos/machine-learning",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(.*machine.*)/:rest*",
+      "destination": "https://www.programbi.com/cursos/machine-learning",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:path*",
+      "destination": "https://www.programbi.com/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/pages/bootcamps",
+      "destination": "https://www.programbi.com/cursos/analisis-de-datos",
+      "statusCode": 301
+    },
+    {
+      "source": "/pages/bootcamps/:rest*",
+      "destination": "https://www.programbi.com/cursos/analisis-de-datos",
+      "statusCode": 301
+    },
+    {
+      "source": "/collections/:path*",
+      "destination": "https://www.programbi.com/cursos",
       "statusCode": 301
     },
     {

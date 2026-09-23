@@ -54,18 +54,6 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/",
-        has: [{ type: "host", value: "programbi.com" }],
-        destination: "https://www.programbi.com/",
-        statusCode: 301,
-      },
-      {
-        source: "/:path*",
-        has: [{ type: "host", value: "programbi.com" }],
-        destination: "https://www.programbi.com/:path*",
-        statusCode: 301,
-      },
-      {
         source: "/cursos/copilot-studio",
         destination: "/cursos/copilot",
         permanent: true,

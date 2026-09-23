@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import HeroPreviewLazy from "@/components/marketing/HeroPreviewLazy";
+import { PAGE_SEO } from "@/lib/seo/money";
 
 const HERO_COURSES = [
   {
@@ -26,6 +27,22 @@ const HERO_COURSES = [
   },
 ] as const;
 
+function HomeH1() {
+  const h1 = PAGE_SEO.home.h1;
+  const line = h1.indexOf("datos en vivo");
+  const chile = h1.lastIndexOf("Chile");
+  if (line <= 0 || chile < line) return h1;
+  return (
+    <>
+      {h1.slice(0, line)}
+      <br />
+      {h1.slice(line, chile)}
+      <em className="italic font-semibold">Chile</em>
+      {h1.slice(chile + "Chile".length)}
+    </>
+  );
+}
+
 export default function HeroSection() {
   return (
     <section id="inicio" className="relative overflow-hidden lg:min-h-[calc(100dvh-72px)]">
@@ -40,9 +57,7 @@ export default function HeroSection() {
           </div>
 
           <h1 className="text-4xl font-bold leading-[1.12] tracking-tight text-ink sm:text-5xl lg:text-[3.5rem] lg:leading-[1.12]">
-            Cursos de análisis de{" "}
-            <br />
-            datos en <em className="italic font-semibold">Chile</em>
+            <HomeH1 />
           </h1>
 
           <p className="mt-6 max-w-xl text-base leading-relaxed text-mute sm:text-lg">

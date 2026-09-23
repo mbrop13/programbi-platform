@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { courses } from "@/lib/data/courses";
 import { casesOfUse } from "@/lib/data/cases";
 import { comparisons } from "@/lib/data/comparisons";
-import { sitemapLoc } from "@/lib/seo";
+import { SITE_URL, sitemapLoc } from "@/lib/seo";
 import { isVanityBlogPost } from "@/lib/seo/money";
 import { createAdminClient } from "@/lib/supabase/server";
 
@@ -25,6 +25,8 @@ function uniqueEntries(entries: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
   for (const entry of entries) {
     const url = sitemapLoc(entry.url);
     if (!url || seen.has(url)) continue;
+    if (url !== SITE_URL && !url.startsWith(`${SITE_URL}/`)) continue;
+    if (isVanityBlogPost(url, url, url)) continue;
     seen.add(url);
     out.push({ ...entry, url });
   }
@@ -42,7 +44,7 @@ async function publishedBlogUrls(now: Date): Promise<MetadataRoute.Sitemap> {
     const db = createAdminClient();
     const { data, error } = await db
       .from("newsletter_articles")
-      .select("slug, title, excerpt, published_at")
+      .select("slug, title, excerpt")
       .eq("status", "published");
     if (error || !data) return [];
     return data.flatMap((row) => {
@@ -52,7 +54,7 @@ async function publishedBlogUrls(now: Date): Promise<MetadataRoute.Sitemap> {
       return [
         {
           url: loc(`/blog/${slug}`),
-          lastModified: row.published_at ? new Date(row.published_at) : now,
+          lastModified: now,
           changeFrequency: "weekly" as const,
           priority: 0.4,
         },
@@ -182,12 +184,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.3,
-    },
-    {
-      url: loc("/gran-partido"),
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.1,
     },
     {
       url: loc("/privacidad"),

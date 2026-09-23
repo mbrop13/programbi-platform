@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!course) return { title: "Curso no encontrado" };
 
   const seo = COURSE_SEO[slug];
-  const title = seo?.title || `${course.title} — Curso en vivo Chile`;
+  const title = seo?.title ?? `${course.title} — Curso en vivo Chile`;
   const dbDescription = await getMarketingDescription(slug);
   const description = seo?.description || dbDescription || course.description;
 
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // portadas remotas de estilo antiguo.
   const shareImage = ogImageUrl({
     kicker: "Curso en vivo Chile",
-    title: course.title,
+    title: seo?.h1 || course.title,
     description,
     tags: course.techStack,
     accent: course.accentColor,
@@ -37,13 +37,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   });
 
   return {
-    title: seo ? { absolute: title } : title,
+    title: seo?.title ? { absolute: seo.title } : title,
     description,
     alternates: {
       canonical: absoluteUrl(`/cursos/${slug}`),
     },
     openGraph: {
-      title: seo ? title : `${title} | ProgramBI`,
+      title: seo?.title ?? `${title} | ProgramBI`,
       description,
       url: absoluteUrl(`/cursos/${slug}`),
       type: "website",
@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     },
     twitter: {
       card: "summary_large_image",
-      title: seo ? title : `${title} | ProgramBI`,
+      title: seo?.title ?? `${title} | ProgramBI`,
       description,
       images: [shareImage],
     },

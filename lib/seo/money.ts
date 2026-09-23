@@ -7,6 +7,7 @@ export type MoneyFaq = { q: string; a: string };
 export const PAGE_SEO = {
   home: {
     title: "Cursos de análisis de datos en vivo Chile | ProgramBI",
+    h1: "Cursos de análisis de datos en vivo en Chile",
     description:
       "Academia de datos en Chile: cursos en vivo de análisis de datos, Power BI y Power Automate. Clases por Zoom para profesionales. Inscríbete en ProgramBI.",
   },
@@ -141,7 +142,7 @@ export const COURSE_SEO: Record<
     title: "Curso Python para datos Chile | ProgramBI",
     description:
       "Curso de Python para datos en Chile, en vivo: Pandas, visualización y automatización, desde fundamentos hasta análisis aplicado a negocios.",
-    h1: "Python para Datos",
+    h1: "Curso Python para datos en vivo en Chile",
     audience:
       "Para profesionales que quieren analizar datos con Python y Pandas, sin un programa de ciencia de datos de meses.",
     faqs: [
@@ -163,7 +164,7 @@ export const COURSE_SEO: Record<
     title: "Curso SQL Server Chile en vivo | ProgramBI",
     description:
       "Curso SQL Server en vivo en Chile: consultas, JOINs, procedimientos almacenados y diseño de esquemas. Para analistas que trabajan con datos.",
-    h1: "SQL Server",
+    h1: "Curso SQL Server en vivo en Chile",
     audience:
       "Para analistas que salen de Excel y necesitan extraer datos de bases SQL Server con consultas propias.",
     faqs: [
@@ -276,7 +277,7 @@ export const GUIDE_SEO = {
 } as const;
 
 const VANITY_RE =
-  /tokenizad|neuralink|spacex|glm\b|mundial|criptomoned|bitcoin|openai\b|chatgpt|ia\s+global|gran[\s-]*partido|bolsa de trabajo|neuralink/i;
+  /tokenizad|neuralink|spacex|glm\b|mundial|criptomoned|bitcoin|openai\b|chatgpt|claude|fable|\bgpt\b|anthropic|en-bolsa|ia[-\s]+global|gran[\s-]*partido|bolsa[-\s]de[-\s]trabajo/i;
 
 const SPORTS_RE = /\b(deporte|futbol|fútbol|running|mundial|partido|u de chile|colo[\s-]?colo)\b/i;
 

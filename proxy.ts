@@ -18,26 +18,11 @@ function attachReferralCookie(request: NextRequest, response: NextResponse) {
   return response
 }
 
-function requestHostname(request: NextRequest): string {
-  const raw = request.headers.get('host') || ''
-  return raw.split(':')[0].toLowerCase()
-}
-
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const userAgent = request.headers.get('user-agent') || ''
-  const host = requestHostname(request)
 
-  // Canonical host: apex → www. Previews and localhost are untouched.
-  // 301 (not 308) so crawlers treat it as the classic permanent SEO redirect.
-  // clone() keeps path + query; protocol is forced to https.
-  if (host === 'programbi.com') {
-    const url = request.nextUrl.clone()
-    url.protocol = 'https:'
-    url.hostname = 'www.programbi.com'
-    url.port = ''
-    return attachReferralCookie(request, NextResponse.redirect(url, 301))
-  }
+  // Apex → www is the single 301 in vercel.json. Do not redirect here too.
 
   // Legacy locale prefixes (/es, /en) from the old Maverlang merge — strip and redirect.
   // Language is controlled only from user settings, not the URL.

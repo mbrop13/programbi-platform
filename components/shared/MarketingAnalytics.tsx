@@ -60,7 +60,7 @@ export default function MarketingAnalytics() {
   useEffect(() => {
     if (searchParams?.get("reg_ok") !== "1") return;
     // Google OAuth: new user only (callback sets reg_ok after session insert).
-    trackSubmitRegistro({ method: "click" });
+    trackSubmitRegistro({ method: "oauth" });
     const url = new URL(window.location.href);
     url.searchParams.delete("reg_ok");
     const next = url.pathname + url.search + url.hash;

@@ -294,7 +294,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="min-w-0 lg:col-span-7">
             <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl lg:leading-[1.12]">
-              {seo?.intro && seo.h1 ? seo.h1 : course.title}
+              {seo?.h1 || course.title}
             </h1>
             {introParagraphs.length > 0 ? (
               <div className="mt-4 max-w-[40rem] space-y-4 text-base leading-relaxed text-mute sm:text-lg">

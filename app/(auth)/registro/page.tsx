@@ -19,7 +19,7 @@ import {
   readBrowserReferralCode,
   writeBrowserReferralCode,
 } from "@/lib/referrals/cookie";
-import { courseSlugFromLocation, trackSubmitRegistro } from "@/lib/analytics/marketing";
+import { courseSlugFromLocation, signUpCreatedUser, trackSubmitRegistro } from "@/lib/analytics/marketing";
 import { LEAD_INTERESTS, interestFromCoursePath } from "@/lib/data/lead-interests";
 
 function getFromQueryParam(): string | null {
@@ -197,10 +197,12 @@ export default function RegistroPage() {
         return;
       }
 
-      trackSubmitRegistro({
-        method: "form",
-        course_slug: courseSlugFromLocation(fromParam || registrationSource),
-      });
+      if (signUpCreatedUser(data?.user)) {
+        trackSubmitRegistro({
+          method: "form",
+          course_slug: courseSlugFromLocation(fromParam || registrationSource),
+        });
+      }
 
       // Backup: escribir origen en el perfil si el usuario ya quedó creado
       if (data?.user?.id) {

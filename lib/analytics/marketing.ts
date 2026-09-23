@@ -181,7 +181,40 @@ export const GA_LEAD_EVENTS = {
   CLICK_COTIZAR_EMPRESAS: "click_cotizar_empresas",
 } as const;
 
-export type GenerateLeadMethod = "form" | "click";
+export type GenerateLeadMethod = "form" | "oauth";
+
+const REGISTRO_LEAD_KEY = "pb_generate_lead_registro";
+const REGISTRO_LEAD_WINDOW_MS = 60_000;
+
+function isQuietLeadPath(): boolean {
+  if (!isBrowser()) return false;
+  const path = window.location.pathname;
+  return path === "/login" || path.startsWith("/login/") || path === "/admin" || path.startsWith("/admin/");
+}
+
+function registroLeadFiredRecently(): boolean {
+  if (!isBrowser()) return false;
+  try {
+    const at = Number(sessionStorage.getItem(REGISTRO_LEAD_KEY));
+    return Number.isFinite(at) && Date.now() - at < REGISTRO_LEAD_WINDOW_MS;
+  } catch {
+    return false;
+  }
+}
+
+function markRegistroLeadFired(): void {
+  if (!isBrowser()) return;
+  try {
+    sessionStorage.setItem(REGISTRO_LEAD_KEY, String(Date.now()));
+  } catch {
+    // ignore
+  }
+}
+
+/** Supabase hides an existing email as a user with identities: []. */
+export function signUpCreatedUser(user: { identities?: unknown[] | null } | null | undefined): boolean {
+  return Array.isArray(user?.identities) && user.identities.length > 0;
+}
 
 /** Pull /cursos/[slug] or ?curso= from a path or full URL. */
 export function courseSlugFromLocation(raw?: string | null): string | undefined {
@@ -234,6 +267,7 @@ export function trackGenerateLead(opts: {
   course_slug?: string | null;
   page_path?: string;
 }): void {
+  if (isQuietLeadPath()) return;
   const course_slug = inferCourseSlug(opts.course_slug);
   trackEvent(GA_LEAD_EVENTS.GENERATE_LEAD, {
     method: opts.method,
@@ -448,8 +482,11 @@ export function trackSubmitRegistro(opts?: {
   const now = Date.now();
   if (now - lastSubmitRegistroAt < 2000) return;
   lastSubmitRegistroAt = now;
+  if (isQuietLeadPath()) return;
   trackEvent(GA_LEAD_EVENTS.SUBMIT_REGISTRO);
-  // Marcar generate_lead como evento clave en GA4 Admin
+  // Formulario y confirmación OAuth del mismo alta comparten sesión <60s.
+  if (registroLeadFiredRecently()) return;
+  markRegistroLeadFired();
   trackGenerateLead({
     method: opts?.method ?? "form",
     course_slug: opts?.course_slug,
