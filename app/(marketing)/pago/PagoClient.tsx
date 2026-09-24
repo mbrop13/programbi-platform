@@ -488,7 +488,7 @@ export default function PagoClient() {
     if (!entName || !entEmail || !entCompany || !entPhone) return;
     setIsSubmittingEnterprise(true);
     try {
-      await fetch("/api/leads/create", {
+      const res = await fetch("/api/leads/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -503,7 +503,8 @@ export default function PagoClient() {
           leadType: "enterprise",
         }),
       });
-      trackLeadSubmit("enterprise", "pago_page");
+      if (!res.ok) throw new Error("lead_create_failed");
+      trackLeadSubmit("enterprise", "pago_page", initialSlug || undefined);
       setEnterpriseSuccess(true);
     } catch (err) {
       alert("Error al enviar la solicitud.");

@@ -181,7 +181,7 @@ Nuestros graduados obtienen las competencias requeridas para desempeñarse en ro
 * **Nombre Legal**: ProgramBI SPA, Chile.
 * **Fundador & CEO**: Manuel Oliva (Magíster en Data Science, UAI)
 * **Presencia**: Chile, Colombia, México, Perú, Argentina.
-* **Sitio Web Oficial**: https://programbi.com
-* **Contacto de Asesorías**: https://programbi.com/asesorias
+* **Sitio Web Oficial**: https://www.programbi.com
+* **Contacto de Asesorías**: https://www.programbi.com/empresas
 * **LinkedIn Oficial**: https://cl.linkedin.com/company/programbi
 * **Instagram**: https://www.instagram.com/programbi_capacitaciones/

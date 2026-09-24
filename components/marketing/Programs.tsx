@@ -128,10 +128,26 @@ export default function Programs({ catalog }: { catalog: ProgramCard[] }) {
                 </span>
                 {isNew(current) ? <span className="text-ink">Nuevo</span> : null}
               </div>
-              <p className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">{current.title}</p>
+              <p className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+                {current.slug === "analisis-de-datos"
+                  ? "Curso de análisis de datos"
+                  : current.slug === "power-bi"
+                    ? "Curso Power BI"
+                    : current.slug === "power-automate"
+                      ? "Curso Power Automate"
+                      : current.title}
+              </p>
               <p className="mt-3 max-w-[38rem] text-sm leading-relaxed text-mute">{current.shortDescription}</p>
               <p className="mt-4 text-sm font-semibold text-ink">{current.techStack.join(" · ")}</p>
-              <span className="mt-6 inline-flex text-sm font-semibold text-ink">Ver temario</span>
+              <span className="mt-6 inline-flex text-sm font-semibold text-ink">
+                {current.slug === "analisis-de-datos"
+                  ? "Ver curso de análisis de datos"
+                  : current.slug === "power-bi"
+                    ? "Ver curso Power BI"
+                    : current.slug === "power-automate"
+                      ? "Ver curso Power Automate"
+                      : "Ver temario"}
+              </span>
             </div>
           </Link>
 

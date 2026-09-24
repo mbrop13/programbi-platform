@@ -21,15 +21,8 @@ function attachReferralCookie(request: NextRequest, response: NextResponse) {
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const userAgent = request.headers.get('user-agent') || ''
-  const host = request.headers.get('host') || ''
 
-  // Canonical host: apex → www (previews and localhost untouched).
-  if (host === 'programbi.com') {
-    const url = request.nextUrl.clone()
-    url.protocol = 'https'
-    url.host = 'www.programbi.com'
-    return attachReferralCookie(request, NextResponse.redirect(url, 308))
-  }
+  // Apex → www is the single 301 in vercel.json. Do not redirect here too.
 
   // Legacy locale prefixes (/es, /en) from the old Maverlang merge — strip and redirect.
   // Language is controlled only from user settings, not the URL.

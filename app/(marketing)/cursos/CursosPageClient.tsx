@@ -81,7 +81,9 @@ export default function CursosPageClient({ catalog }: { catalog: CourseCatalogIt
               </div>
               <div className="flex flex-col justify-end px-6 py-6 lg:col-span-5 lg:px-8 lg:py-8">
                 <p className="text-xs font-semibold text-mute">Programa de 144 horas</p>
-                <h2 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">{featured.title}</h2>
+                <h2 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
+                  Curso de análisis de datos
+                </h2>
                 <p className="mt-3 text-sm leading-relaxed text-mute">{featured.shortDescription}</p>
                 <p className="mt-4 text-sm font-semibold text-ink">SQL · Power BI · Python</p>
                 <span className="mt-6 inline-flex text-sm font-semibold text-ink">Ver temario</span>
@@ -108,7 +110,13 @@ export default function CursosPageClient({ catalog }: { catalog: CourseCatalogIt
                   />
                 </div>
                 <div className="px-6 py-5">
-                  <h2 className="text-xl font-bold tracking-tight text-ink">{course.title}</h2>
+                  <h2 className="text-xl font-bold tracking-tight text-ink">
+                    {course.slug === "power-bi"
+                      ? "Curso Power BI"
+                      : course.slug === "power-automate"
+                        ? "Curso Power Automate"
+                        : course.title}
+                  </h2>
                   <p className="mt-1 text-sm text-mute">{course.shortDescription}</p>
                   <p className="mt-3 inline-flex items-center gap-1 text-xs text-faint">
                     <Clock size={12} /> {course.durationHours} h · En vivo

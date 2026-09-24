@@ -9,6 +9,7 @@ import { whatsappHref } from "@/lib/whatsapp";
 export const COURSE_CRO_SLUGS = [
   "analisis-de-datos",
   "power-bi",
+  "power-automate",
   "python",
   "sql-server",
 ] as const;
@@ -188,6 +189,61 @@ export function CourseLeadCtas({
   );
 }
 
+function faqAnswer(text: string) {
+  const parts = text.split(/(\/cursos|\/empresas)/g);
+  return parts.map((part, i) => {
+    if (part === "/cursos") {
+      return (
+        <Link key={i} href="/cursos" className="font-semibold text-ink underline-offset-4 hover:underline">
+          /cursos
+        </Link>
+      );
+    }
+    if (part === "/empresas") {
+      return (
+        <Link key={i} href="/empresas" className="font-semibold text-ink underline-offset-4 hover:underline">
+          /empresas
+        </Link>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
+const COURSE_CASE_LINKS: Record<string, { href: string; label: string }> = {
+  "analisis-de-datos": {
+    href: "/casos/automatizacion-conciliaciones",
+    label: "Caso: conciliación con Python y SQL",
+  },
+  "power-bi": {
+    href: "/casos/dashboards-ventas-bi",
+    label: "Caso: dashboards de ventas en Power BI",
+  },
+  "power-automate": {
+    href: "/casos/automatizacion-conciliaciones",
+    label: "Caso: automatización de conciliaciones",
+  },
+};
+
+export function CourseSeoInternalLinks({ slug }: { slug: string }) {
+  const caseLink = COURSE_CASE_LINKS[slug];
+  if (!caseLink) return null;
+
+  return (
+    <nav aria-label="Enlaces relacionados" className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+      <Link href="/cursos" className="font-semibold text-ink no-underline underline-offset-4 hover:underline">
+        Todos los cursos
+      </Link>
+      <Link href={caseLink.href} className="font-semibold text-ink no-underline underline-offset-4 hover:underline">
+        {caseLink.label}
+      </Link>
+      <Link href="/" className="font-semibold text-ink no-underline underline-offset-4 hover:underline">
+        Inicio
+      </Link>
+    </nav>
+  );
+}
+
 export function CourseFaq({ slug }: { slug: string }) {
   const seo = COURSE_SEO[slug];
   if (!seo?.faqs?.length) return null;
@@ -205,21 +261,12 @@ export function CourseFaq({ slug }: { slug: string }) {
                 <span className="hidden text-2xl leading-none text-faint group-open:block">–</span>
               </summary>
               <p className="mt-3 max-w-[62ch] text-sm leading-relaxed text-mute sm:text-base">
-                {item.a.includes("/empresas") ? (
-                  <>
-                    {item.a.split("/empresas")[0]}
-                    <Link href="/empresas" className="font-semibold text-ink underline-offset-4 hover:underline">
-                      /empresas
-                    </Link>
-                    {item.a.split("/empresas")[1] ?? ""}
-                  </>
-                ) : (
-                  item.a
-                )}
+                {faqAnswer(item.a)}
               </p>
             </details>
           ))}
         </div>
+        <CourseSeoInternalLinks slug={slug} />
       </div>
     </section>
   );

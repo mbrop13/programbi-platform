@@ -6,6 +6,7 @@ import { getFeaturedPlan } from "@/lib/jobs/pricing";
 import { createFlowPayment } from "@/lib/flow/client";
 import { getClientIp } from "@/lib/auth-helpers";
 import { isRateLimited } from "@/lib/security/rate-limiter";
+import { SITE_URL } from "@/lib/seo";
 
 const featureSchema = z.object({
   job_id: z.string().uuid(),
@@ -73,8 +74,8 @@ export async function POST(req: NextRequest) {
       amount: plan.amount_clp,
       email: payerEmail,
       optional: { type: "job_feature", order_id: orderId },
-      urlConfirmation: `${process.env.NEXT_PUBLIC_APP_URL || "https://programbi.com"}/api/flow/feature-confirm`,
-      urlReturn: `${process.env.NEXT_PUBLIC_APP_URL || "https://programbi.com"}/api/flow/feature-return`,
+      urlConfirmation: `${process.env.NEXT_PUBLIC_APP_URL || SITE_URL}/api/flow/feature-confirm`,
+      urlReturn: `${process.env.NEXT_PUBLIC_APP_URL || SITE_URL}/api/flow/feature-return`,
     });
 
     const { error: orderError } = await service.from("job_feature_orders").insert({

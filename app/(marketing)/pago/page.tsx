@@ -7,6 +7,7 @@ import PagoClient from "./PagoClient";
 export const metadata: Metadata = {
   title: "Inscripción | ProgramBI",
   description: "Selecciona tus cursos, revisa fechas disponibles y completa tu inscripción en ProgramBI.",
+  alternates: { canonical: "/pago" },
 };
 
 export default async function PagoPage() {

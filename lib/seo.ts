@@ -1,12 +1,51 @@
 import { ogImageUrl } from "@/lib/og/url";
 
 /** Canonical host for ProgramBI marketing. Always www. */
-export const SITE_URL = "https://www.programbi.com";
+export const CANONICAL_HOST = "www.programbi.com";
+export const SITE_URL = `https://${CANONICAL_HOST}`;
+
+/** Path for <link rel="canonical">: no query, no hash. */
+export function canonicalPath(path = "/"): string {
+  const stripped = (path.split("#")[0] ?? "/").split("?")[0] ?? "/";
+  if (!stripped || stripped === "/") return "/";
+  return stripped.startsWith("/") ? stripped : `/${stripped}`;
+}
 
 export function absoluteUrl(path = "/"): string {
-  if (!path || path === "/") return SITE_URL;
-  if (path.startsWith("http")) return path;
-  return `${SITE_URL}${path.startsWith("/") ? path : `/${path}`}`;
+  if (/^https?:\/\//i.test(path)) {
+    try {
+      const url = new URL(path);
+      if (url.hostname.toLowerCase() === "programbi.com") {
+        url.protocol = "https:";
+        url.hostname = CANONICAL_HOST;
+        url.port = "";
+        return url.toString();
+      }
+    } catch {
+      /* keep original */
+    }
+    return path;
+  }
+  const clean = canonicalPath(path);
+  if (clean === "/") return SITE_URL;
+  return `${SITE_URL}${clean}`;
+}
+
+/** Sitemap/canonical loc: www only, no query/hash. Null if foreign host. */
+export function sitemapLoc(pathOrUrl: string): string | null {
+  const raw = pathOrUrl.trim();
+  if (!raw) return null;
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      const url = new URL(raw);
+      const host = url.hostname.toLowerCase();
+      if (host !== CANONICAL_HOST && host !== "programbi.com") return null;
+      return absoluteUrl(url.pathname);
+    } catch {
+      return null;
+    }
+  }
+  return absoluteUrl(raw);
 }
 
 export const ORG_ID = `${SITE_URL}/#organization`;

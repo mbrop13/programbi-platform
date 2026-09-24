@@ -31,7 +31,7 @@ export default function Flagship() {
               href="/cursos/analisis-de-datos"
               className="inline-flex h-12 items-center rounded-full border border-line bg-paper px-7 text-base font-medium text-ink no-underline transition-colors hover:bg-wash"
             >
-              Temario
+              Curso de análisis de datos
             </Link>
           </div>
         </div>

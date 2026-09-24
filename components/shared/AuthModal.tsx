@@ -13,7 +13,7 @@ import { subscribeToNewsletter } from "@/lib/supabase/comunidad-ai";
 import { honeypotStyle } from "@/lib/antibot";
 import { persistRegistrationSource } from "@/lib/registration-source";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
-import { trackClickRegistro, trackSubmitRegistro } from "@/lib/analytics/marketing";
+import { courseSlugFromLocation, signUpCreatedUser, trackClickRegistro, trackSubmitRegistro } from "@/lib/analytics/marketing";
 import { LEAD_INTERESTS, interestFromCoursePath } from "@/lib/data/lead-interests";
 
 interface AuthModalProps {
@@ -223,7 +223,12 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           setError(error.message);
         }
       } else {
-        trackSubmitRegistro();
+        if (signUpCreatedUser(data?.user)) {
+          trackSubmitRegistro({
+            method: "form",
+            course_slug: courseSlugFromLocation(registrationSource),
+          });
+        }
         // Auto-login after successful registration
         const { error: loginError } = await supabase.auth.signInWithPassword({
           email,

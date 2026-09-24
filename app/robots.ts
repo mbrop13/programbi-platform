@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "@/lib/seo";
+import { CANONICAL_HOST, SITE_URL } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -23,6 +23,6 @@ export default function robots(): MetadataRoute.Robots {
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
-    host: "www.programbi.com",
+    host: CANONICAL_HOST,
   };
 }

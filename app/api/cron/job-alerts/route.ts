@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase";
 import { formatSalaryCLP, type JobPublic } from "@/lib/jobs/types";
 import { mapJobRow } from "@/lib/jobs/queries";
+import { SITE_URL } from "@/lib/seo";
 
 /**
  * Cron de alertas de vacantes (digest semanal por email).
@@ -108,7 +109,7 @@ export async function GET(req: Request) {
           title: job.title,
           company: job.company_name,
           location: job.modality === "remoto" ? "Remoto" : job.location_city ?? "Chile",
-          url: `https://programbi.com/empleos/${job.slug}`,
+          url: `${SITE_URL}/empleos/${job.slug}`,
           salary: job.salary_visible
             ? `${formatSalaryCLP(job.salary_min_clp, job.salary_max_clp)} CLP`
             : null,

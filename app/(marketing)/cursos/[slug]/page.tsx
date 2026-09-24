@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!course) return { title: "Curso no encontrado" };
 
   const seo = COURSE_SEO[slug];
-  const title = seo?.title || `${course.title} — Curso en vivo Chile`;
+  const title = seo?.title ?? `${course.title} — Curso en vivo Chile`;
   const dbDescription = await getMarketingDescription(slug);
   const description = seo?.description || dbDescription || course.description;
 
@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // portadas remotas de estilo antiguo.
   const shareImage = ogImageUrl({
     kicker: "Curso en vivo Chile",
-    title: course.title,
+    title: seo?.h1 || course.title,
     description,
     tags: course.techStack,
     accent: course.accentColor,
@@ -37,13 +37,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   });
 
   return {
-    title: seo ? { absolute: title } : title,
+    title: seo?.title ? { absolute: seo.title } : title,
     description,
     alternates: {
-      canonical: `/cursos/${slug}`,
+      canonical: absoluteUrl(`/cursos/${slug}`),
     },
     openGraph: {
-      title: seo ? title : `${title} | ProgramBI`,
+      title: seo?.title ?? `${title} | ProgramBI`,
       description,
       url: absoluteUrl(`/cursos/${slug}`),
       type: "website",
@@ -58,7 +58,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     },
     twitter: {
       card: "summary_large_image",
-      title: seo ? title : `${title} | ProgramBI`,
+      title: seo?.title ?? `${title} | ProgramBI`,
       description,
       images: [shareImage],
     },
@@ -96,8 +96,8 @@ function getCourseJsonLd(course: ReturnType<typeof getCourseBySlug>) {
 
   return {
     "@type": "Course",
-    name: course.title,
-    description: course.description,
+    name: COURSE_SEO[course.slug]?.h1 || course.title,
+    description: COURSE_SEO[course.slug]?.description || course.description,
     url: absoluteUrl(`/cursos/${course.slug}`),
     provider: {
       "@type": "Organization",
@@ -199,10 +199,6 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
-      <section className="sr-only">
-        <h2>{seo?.h1 || course.title}</h2>
-        <p>{seo?.description || course.description}</p>
-      </section>
       <CourseDetailClient course={course} />
     </>
   );
