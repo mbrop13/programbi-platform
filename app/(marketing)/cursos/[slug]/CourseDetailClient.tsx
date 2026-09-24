@@ -41,7 +41,6 @@ import {
   CourseFaq,
   CourseLeadCtas,
   CourseSeoInternalLinks,
-  CourseSyllabusAndFormat,
   isCourseCroSlug,
 } from "@/components/marketing/CourseLeadSections";
 import { COURSE_SEO } from "@/lib/seo/money";
@@ -339,23 +338,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               />
             </div>
 
-            {isCroTemplate ? (
-              <CourseAudienceAndResults course={course} results={outcomes} />
-            ) : (
-              outcomes.length > 0 && (
-                <div className="mt-12">
-                  <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Qué vas a aprender</h2>
-                  <ul className="mt-6 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
-                    {outcomes.map((item) => (
-                      <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-ink">
-                        <Check size={16} className="mt-0.5 shrink-0" strokeWidth={2.2} />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )
-            )}
+            <CourseAudienceAndResults course={course} selectedLevel={selectedLevel} results={outcomes} />
           </div>
 
           <aside className="lg:col-span-5 lg:row-span-2">
@@ -547,9 +530,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
           </aside>
 
           <div className="min-w-0 lg:col-span-7">
-            {isCroTemplate ? (
-              <CourseSyllabusAndFormat course={course} hours={hours} embedded />
-            ) : null}
             <TemarioSection
               course={course}
               selectedLevel={selectedLevel}
