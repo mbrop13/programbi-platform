@@ -919,6 +919,12 @@ html.dark a.bg-brand-blue svg {
 :root {
   --page-reveal-bg: #f3f3f0;
   --page-reveal-radius: 2rem;
+  /* 72px de navbar + aire. Al ocultarse el navbar, la ficha sube. */
+  --sticky-below-nav: 6rem;
+}
+
+html[data-nav-hidden="true"] {
+  --sticky-below-nav: 1rem;
 }
 
 .page-reveal {

@@ -361,7 +361,7 @@ export default function CourseDetailClient({
           </div>
 
           <aside className="lg:col-span-5 lg:row-span-2">
-            <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-24">
+            <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-[var(--sticky-below-nav,6rem)] lg:transition-[top] lg:duration-300 lg:ease-out motion-reduce:transition-none">
               {levels.length > 1 && (
                 <div className="mb-5">
                   <p className="mb-2 text-sm font-medium text-ink">Nivel</p>
