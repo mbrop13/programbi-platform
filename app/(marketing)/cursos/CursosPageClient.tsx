@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import CourseImage from "@/components/shared/CourseImage";
+import { CourseCohortFacts } from "@/components/marketing/CourseCohortStrip";
 import { Clock, Search } from "lucide-react";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
+import { type CourseSchedule, SCHEDULE_COUNTRIES } from "@/lib/data/course-schedules";
+import { useCountry } from "@/lib/context/CountryContext";
 import { WA_URL } from "@/lib/data/site";
 
 export type CourseCatalogItem = {
@@ -18,6 +21,20 @@ export type CourseCatalogItem = {
 
 export default function CursosPageClient({ catalog }: { catalog: CourseCatalogItem[] }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
+  const [schedulesLoaded, setSchedulesLoaded] = useState(false);
+  const { country } = useCountry();
+  const timeZone = (SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0]).timeZone;
+
+  useEffect(() => {
+    fetch("/api/schedules")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setSchedules(data);
+      })
+      .catch(console.error)
+      .finally(() => setSchedulesLoaded(true));
+  }, []);
 
   const filteredCourses = catalog.filter((course) => {
     const q = searchQuery.toLowerCase();
@@ -66,18 +83,29 @@ export default function CursosPageClient({ catalog }: { catalog: CourseCatalogIt
               onClick={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
               className="group grid overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20 lg:grid-cols-12"
             >
-              <div className="relative aspect-[16/10] bg-wash lg:col-span-7 lg:aspect-auto lg:min-h-[320px]">
-                <CourseImage
-                  src={featured.imageUrl}
-                  alt={featured.title}
-                  fill
-                  preload
-                  fetchPriority="high"
-                  decoding="sync"
-                  quality={80}
-                  sizes="(max-width: 640px) 412px, (max-width: 1024px) 100vw, 58vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                />
+              <div className="lg:col-span-7">
+                <div className="relative aspect-[16/10] bg-wash lg:aspect-auto lg:min-h-[320px]">
+                  <CourseImage
+                    src={featured.imageUrl}
+                    alt={featured.title}
+                    fill
+                    preload
+                    fetchPriority="high"
+                    decoding="sync"
+                    quality={80}
+                    sizes="(max-width: 640px) 412px, (max-width: 1024px) 100vw, 58vw"
+                    className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  />
+                </div>
+                <div className="px-4 py-4 lg:px-5">
+                  <CourseCohortFacts
+                    slug={featured.slug}
+                    schedules={schedules}
+                    timeZone={timeZone}
+                    loaded={schedulesLoaded}
+                    compact
+                  />
+                </div>
               </div>
               <div className="flex flex-col justify-end px-6 py-6 lg:col-span-5 lg:px-8 lg:py-8">
                 <p className="text-xs font-semibold text-mute">Programa de 144 horas</p>
@@ -107,6 +135,15 @@ export default function CursosPageClient({ catalog }: { catalog: CourseCatalogIt
                     loading="lazy"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  />
+                </div>
+                <div className="px-4 pt-4">
+                  <CourseCohortFacts
+                    slug={course.slug}
+                    schedules={schedules}
+                    timeZone={timeZone}
+                    loaded={schedulesLoaded}
+                    compact
                   />
                 </div>
                 <div className="px-6 py-5">
