@@ -222,13 +222,13 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
         } else {
           setError(error.message);
         }
+      } else if (!signUpCreatedUser(data?.user)) {
+        setError("Este correo ya está registrado. Intenta iniciar sesión.");
       } else {
-        if (signUpCreatedUser(data?.user)) {
-          trackSubmitRegistro({
-            method: "form",
-            course_slug: courseSlugFromLocation(registrationSource),
-          });
-        }
+        trackSubmitRegistro({
+          method: "form",
+          course_slug: courseSlugFromLocation(registrationSource),
+        });
         // Auto-login after successful registration
         const { error: loginError } = await supabase.auth.signInWithPassword({
           email,
