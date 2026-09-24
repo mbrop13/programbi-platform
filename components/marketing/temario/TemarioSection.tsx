@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Award,
   BarChart3,
   Bot,
   Check,
-  ChevronDown,
   Clock,
   Code2,
   Database,
@@ -138,17 +137,11 @@ function TopicRow({
 function ModuleCard({
   module,
   index,
-  isOpen,
-  onToggle,
-  accent,
   isFreeTrial,
   isPowerBiTrial,
 }: {
   module: SyllabusModule;
   index: number;
-  isOpen: boolean;
-  onToggle: () => void;
-  accent: string;
   isFreeTrial?: boolean;
   isPowerBiTrial?: boolean;
 }) {
@@ -158,27 +151,10 @@ function ModuleCard({
   const isIa = module.highlight || module.icon === "star" || module.icon === "bot";
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.04, duration: 0.3 }}
-      className={`group/module relative overflow-hidden rounded-[22px] border bg-paper transition-colors ${
-        isOpen ? "border-ink" : "border-line hover:border-ink"
-      }`}
-    >
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        className="relative z-10 flex w-full cursor-pointer items-center gap-3 border-0 bg-transparent p-4 text-left sm:gap-4 sm:p-5 lg:px-6"
-      >
+    <div className="relative overflow-hidden rounded-[22px] border border-line bg-paper">
+      <div className="flex items-center gap-3 p-4 text-left sm:gap-4 sm:p-5 lg:px-6">
         <div className="relative shrink-0">
-          <div
-            className={`flex h-11 w-11 items-center justify-center rounded-xl text-sm font-bold sm:h-12 sm:w-12 ${
-              isOpen ? "bg-ink text-canvas" : "border border-line bg-wash text-ink"
-            }`}
-          >
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-wash text-sm font-bold text-ink sm:h-12 sm:w-12">
             {Icon ? <Icon className="h-5 w-5" /> : index + 1}
           </div>
         </div>
@@ -198,11 +174,11 @@ function ModuleCard({
             {hours != null && hours > 0 && (
               <span className="inline-flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                {hours}h
+                {hours} h
               </span>
             )}
             {module.subtitle && (
-              <span className="truncate" style={{ color: hours ? undefined : accent }}>
+              <span>
                 {hours != null && hours > 0
                   ? module.subtitle
                       .replace(/^\d+\s*Horas?\s*•\s*/i, "")
@@ -212,48 +188,22 @@ function ModuleCard({
             )}
           </div>
         </div>
+      </div>
 
-        <motion.div
-          animate={{ rotate: isOpen ? 180 : 0 }}
-          transition={{ type: "spring", stiffness: 320, damping: 22 }}
-          className="shrink-0"
-        >
-          <ChevronDown
-            className="h-5 w-5"
-            style={{ color: isOpen ? accent : "#94A3B8" }}
-          />
-        </motion.div>
-      </button>
-
-      <AnimatePresence initial={false}>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ type: "spring", stiffness: 280, damping: 30 }}
-            className="overflow-hidden"
-          >
-            <ul className="relative z-10 space-y-2.5 border-t border-slate-100/80 px-4 pb-5 pt-4 sm:px-6 sm:pb-6">
-              {topics.map((topic, ti) => {
-                const locked =
-                  isFreeTrial &&
-                  isPowerBiTrial &&
-                  (index > 0 || ti > 1);
-                return (
-                  <TopicRow
-                    key={`${module.id}-${ti}`}
-                    topic={topic}
-                    locked={locked}
-                    delay={ti * 0.03}
-                  />
-                );
-              })}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.div>
+      <ul className="space-y-2.5 border-t border-line px-4 pb-5 pt-4 sm:px-6 sm:pb-6">
+        {topics.map((topic, ti) => {
+          const locked = isFreeTrial && isPowerBiTrial && (index > 0 || ti > 1);
+          return (
+            <TopicRow
+              key={`${module.id}-${ti}`}
+              topic={topic}
+              locked={locked}
+              delay={0}
+            />
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 
@@ -365,31 +315,7 @@ export default function TemarioSection({
   const hours = levelHours(level) || course.levels?.[selectedLevel]?.durationHours || course.durationHours;
   const modules = level.modules;
 
-  const audience = level.audience || syllabus.audience;
   const benefits = level.benefits || syllabus.benefits;
-  const audienceNote = syllabus.audienceNote;
-
-  const [openIds, setOpenIds] = useState<string[]>([]);
-
-  // Open first module when level changes
-  useEffect(() => {
-    const first = level.modules[0];
-    if (first) setOpenIds([first.id]);
-  }, [level]);
-
-  const allOpen = modules.length > 0 && modules.every((m) => openIds.includes(m.id));
-
-  const toggle = (id: string) => {
-    setOpenIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
-  };
-
-  const expandAll = () => setOpenIds(modules.map((m) => m.id));
-  const collapseAll = () => setOpenIds([]);
-
-  const whatYouLearn =
-    course.levels?.[selectedLevel]?.whatYouLearn ?? course.whatYouLearn;
 
   return (
     <section id="temario" className="border-t border-line bg-canvas py-16 lg:py-24">
@@ -400,48 +326,11 @@ export default function TemarioSection({
         </p>
 
         <div className={embedded ? "mt-12 space-y-10" : "mt-12 max-w-[860px] space-y-10"}>
-            {whatYouLearn && whatYouLearn.length > 0 && (
-              <div>
-                <h3 className="text-xl font-bold tracking-tight text-ink">
-                  {syllabus.levels.length > 1 ? "En este nivel" : "Qué incluye"}
-                </h3>
-                <ul className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  {whatYouLearn.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-ink">
-                      <Check className="mt-0.5 h-4 w-4 shrink-0" strokeWidth={2.2} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Context: Dirigido a / Beneficios */}
-            <ContextCards
-              audience={audience}
-              audienceNote={audienceNote}
-              benefits={benefits}
-              accent={accent}
-            />
+            <ContextCards benefits={benefits} accent={accent} />
 
             {/* Journey */}
             <div>
-              {level.intro && (
-                <p className="mb-6 max-w-[62ch] text-sm leading-relaxed text-mute sm:text-base">
-                  {level.intro}
-                </p>
-              )}
-
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <h3 className="text-xl font-bold tracking-tight text-ink">Módulos</h3>
-                <button
-                  type="button"
-                  onClick={allOpen ? collapseAll : expandAll}
-                  className="rounded-full border border-line bg-paper px-3 py-1.5 text-xs font-semibold text-ink"
-                >
-                  {allOpen ? "Cerrar todos" : "Abrir todos"}
-                </button>
-              </div>
+              <h3 className="mb-4 text-xl font-bold tracking-tight text-ink">Módulos y temas</h3>
 
               <AnimatePresence mode="wait">
                 <motion.div
@@ -465,9 +354,6 @@ export default function TemarioSection({
                         key={mod.id}
                         module={mod}
                         index={idx}
-                        isOpen={openIds.includes(mod.id)}
-                        onToggle={() => toggle(mod.id)}
-                        accent={accent}
                         isFreeTrial={isFreeTrial}
                         isPowerBiTrial={course.slug === "power-bi"}
                       />

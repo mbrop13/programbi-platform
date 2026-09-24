@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Check, MessageCircle } from "lucide-react";
 import type { Course } from "@/lib/data/courses";
+import { getCourseSyllabus, getSyllabusLevel } from "@/lib/data/syllabuses";
 import { COURSE_SEO } from "@/lib/seo/money";
 import { whatsappHref } from "@/lib/whatsapp";
 
@@ -54,23 +55,47 @@ function formatItems(course: Course, hours: number): string[] {
 
 export function CourseAudienceAndResults({
   course,
+  selectedLevel,
   results,
 }: {
   course: Course;
+  selectedLevel: number;
   results: string[];
 }) {
+  const syllabus = getCourseSyllabus(course);
+  const level = getSyllabusLevel(syllabus, selectedLevel);
   const seo = COURSE_SEO[course.slug];
-  if (!seo) return null;
+  const levelText = level.intro || level.audience;
+  const programText =
+    syllabus.audience && syllabus.audience !== levelText
+      ? syllabus.audience
+      : !levelText
+        ? seo?.audience ||
+          (course.description && course.description !== course.shortDescription ? course.description : "")
+        : "";
+  if (!levelText && !programText && !syllabus.audienceNote && results.length === 0) return null;
 
   return (
     <>
-      <div className="mt-12">
-        <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Para quién</h2>
-        <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">{seo.audience}</p>
-      </div>
+      {levelText || programText ? (
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Para quién</h2>
+          {syllabus.levels.length > 1 ? (
+            <p className="mt-3 text-sm font-semibold text-ink">
+              {level.label}
+              {level.shortLabel ? ` · ${level.shortLabel}` : ""}
+            </p>
+          ) : null}
+          {levelText ? <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">{levelText}</p> : null}
+          {programText ? <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">{programText}</p> : null}
+          {syllabus.audienceNote ? (
+            <p className="mt-3 max-w-[40rem] text-sm leading-relaxed text-mute">{syllabus.audienceNote}</p>
+          ) : null}
+        </div>
+      ) : null}
       {results.length > 0 ? (
         <div className="mt-12">
-          <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Resultados</h2>
+          <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">En este nivel</h2>
           <ul className="mt-6 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
             {results.map((item) => (
               <li key={item} className="flex items-start gap-2.5 text-sm leading-relaxed text-ink">
