@@ -522,13 +522,8 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               )}
 
               <CourseCardDescription
-                paragraphs={
-                  introParagraphs.length > 0
-                    ? introParagraphs
-                    : course.shortDescription
-                      ? [course.shortDescription]
-                      : []
-                }
+                lead={course.shortDescription?.trim() || introParagraphs[0] || ""}
+                more={course.shortDescription?.trim() ? introParagraphs : introParagraphs.slice(1)}
               />
 
               <ul className="mt-5 space-y-2 border-t border-line pt-5">
@@ -628,17 +623,16 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   );
 }
 
-function CourseCardDescription({ paragraphs }: { paragraphs: string[] }) {
-  const [lead, ...rest] = paragraphs;
-  if (!lead) return null;
+function CourseCardDescription({ lead, more }: { lead: string; more: string[] }) {
+  if (!lead && more.length === 0) return null;
   return (
     <div className="mt-5 border-t border-line pt-5 text-sm leading-relaxed text-mute">
-      <p>{lead}</p>
-      {rest.length > 0 ? (
+      {lead ? <p>{lead}</p> : null}
+      {more.length > 0 ? (
         <details className="mt-3">
           <summary className="cursor-pointer text-sm font-semibold text-ink">Ver más</summary>
           <div className="mt-3 space-y-3">
-            {rest.map((paragraph) => (
+            {more.map((paragraph) => (
               <p key={paragraph.slice(0, 48)}>{paragraph}</p>
             ))}
           </div>
