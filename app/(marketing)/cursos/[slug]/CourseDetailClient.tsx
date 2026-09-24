@@ -297,17 +297,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               {seo?.h1 || course.title}
             </h1>
             {introParagraphs.length > 0 ? (
-              <div className="mt-4 max-w-[40rem] space-y-4 text-base leading-relaxed text-mute sm:text-lg">
-                {introParagraphs.map((p) => (
-                  <p key={p.slice(0, 48)}>{p}</p>
-                ))}
-              </div>
-            ) : (
-              <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute sm:text-lg">
-                {course.shortDescription}
-              </p>
-            )}
-            {introParagraphs.length > 0 ? (
               <div className="mt-6 flex flex-wrap gap-3">
                 <button
                   type="button"
@@ -532,6 +521,11 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 </>
               )}
 
+              <CourseCardDescription
+                lead={course.shortDescription?.trim() || introParagraphs[0] || ""}
+                more={course.shortDescription?.trim() ? introParagraphs : introParagraphs.slice(1)}
+              />
+
               <ul className="mt-5 space-y-2 border-t border-line pt-5">
                 {includes.map((item) => (
                   <li key={item} className="flex items-start gap-2 text-sm text-ink">
@@ -626,6 +620,25 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         redirectUrl={`/cursos/${course.slug}`}
       />
     </>
+  );
+}
+
+function CourseCardDescription({ lead, more }: { lead: string; more: string[] }) {
+  if (!lead && more.length === 0) return null;
+  return (
+    <div className="mt-5 border-t border-line pt-5 text-sm leading-relaxed text-mute">
+      {lead ? <p>{lead}</p> : null}
+      {more.length > 0 ? (
+        <details className="mt-3">
+          <summary className="cursor-pointer text-sm font-semibold text-ink">Ver más</summary>
+          <div className="mt-3 space-y-3">
+            {more.map((paragraph) => (
+              <p key={paragraph.slice(0, 48)}>{paragraph}</p>
+            ))}
+          </div>
+        </details>
+      ) : null}
+    </div>
   );
 }
 
