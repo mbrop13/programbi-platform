@@ -101,6 +101,15 @@ export default function Navbar() {
   }, [isHidden]);
 
   useEffect(() => {
+    const root = document.documentElement;
+    if (isHidden) root.dataset.navHidden = "true";
+    else delete root.dataset.navHidden;
+    return () => {
+      delete root.dataset.navHidden;
+    };
+  }, [isHidden]);
+
+  useEffect(() => {
     let unsub = () => {};
     import("@/lib/supabase/client").then(({ createClient }) => {
       const supabase = createClient();
