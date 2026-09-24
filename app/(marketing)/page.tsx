@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import HeroSection from "@/components/marketing/HeroSection";
 import LogoSlider from "@/components/marketing/LogoSlider";
 import Metrics from "@/components/marketing/Metrics";
-import Flagship from "@/components/marketing/Flagship";
 import Programs from "@/components/marketing/Programs";
 import JobsBanner from "@/components/marketing/JobsBanner";
 import Team from "@/components/marketing/Team";
@@ -52,7 +51,6 @@ export default function HomePage() {
       <HeroSection />
       <LogoSlider />
       <Metrics />
-      <Flagship />
       <Programs
         catalog={courses.map((c) => ({
           slug: c.slug,

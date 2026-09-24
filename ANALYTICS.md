@@ -52,7 +52,6 @@ Nombres **exactos**. Parámetros custom en snake_case.
 ### `cta_id` (home)
 
 - `home_hero_registrarse`
-- `home_flagship_registrarse`
 - `home_nav_registrarse`
 
 Home “Registrarme” dispara **los dos**: `click_cta_primary` + `click_registro`.
@@ -102,7 +101,7 @@ No se usa `unsafe-eval` extra ni ambos GTM+gtag.
 - `lib/analytics/marketing.ts` — helpers y nombres de evento
 - `components/shared/MarketingAnalytics.tsx` — loader gtag, pageviews, clicks WhatsApp / `data-analytics-event`
 - `components/shared/AnalyticsPageEvent.tsx` — `view_empresas`
-- `components/marketing/RegisterCta.tsx`, `HeroSection.tsx`, `Flagship.tsx`
+- `components/marketing/RegisterCta.tsx`, `HeroSection.tsx`
 - `components/shared/Navbar.tsx`, `AuthModal.tsx`, `WhatsAppButton.tsx`
 - `app/(auth)/registro/page.tsx`, `app/(auth)/login/page.tsx`
 - `app/(marketing)/cursos/[slug]/CourseDetailClient.tsx`
