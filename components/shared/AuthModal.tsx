@@ -13,7 +13,7 @@ import { subscribeToNewsletter } from "@/lib/supabase/comunidad-ai";
 import { honeypotStyle } from "@/lib/antibot";
 import { persistRegistrationSource } from "@/lib/registration-source";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
-import { courseSlugFromLocation, signUpCreatedUser, trackClickRegistro, trackSubmitRegistro } from "@/lib/analytics/marketing";
+import { courseSlugFromLocation, debugSignUpResult, signUpCreatedUser, trackClickRegistro, trackSubmitRegistro } from "@/lib/analytics/marketing";
 import { LEAD_INTERESTS, interestFromCoursePath } from "@/lib/data/lead-interests";
 
 interface AuthModalProps {
@@ -215,6 +215,8 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           },
         },
       });
+
+      debugSignUpResult("auth-modal signUp", data?.user, error);
 
       if (error) {
         if (error.message.includes("already registered")) {

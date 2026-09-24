@@ -19,7 +19,7 @@ import {
   readBrowserReferralCode,
   writeBrowserReferralCode,
 } from "@/lib/referrals/cookie";
-import { courseSlugFromLocation, signUpCreatedUser, trackSubmitRegistro } from "@/lib/analytics/marketing";
+import { courseSlugFromLocation, debugSignUpResult, signUpCreatedUser, trackSubmitRegistro } from "@/lib/analytics/marketing";
 import { LEAD_INTERESTS, interestFromCoursePath } from "@/lib/data/lead-interests";
 
 function getFromQueryParam(): string | null {
@@ -191,6 +191,8 @@ export default function RegistroPage() {
           emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(getNextPath())}&reg_source=${encodeURIComponent(registrationSource)}`,
         },
       });
+
+      debugSignUpResult("registro signUp", data?.user, signUpError);
 
       if (signUpError) {
         setError(signUpError.message);
