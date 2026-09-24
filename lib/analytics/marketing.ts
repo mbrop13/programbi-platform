@@ -274,6 +274,110 @@ function inferCourseSlug(explicit?: string | null): string | undefined {
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
 
+/** ?pb_ga_debug=1, localhost, or a Vercel preview. Never logs on www without the flag. */
+export function gaDebugEnabled(): boolean {
+  if (!isBrowser()) return false;
+  const host = window.location.hostname;
+  if (host === "localhost" || host.endsWith(".vercel.app")) return true;
+  try {
+    if (new URLSearchParams(window.location.search).get("pb_ga_debug") === "1") {
+      sessionStorage.setItem("pb_ga_debug", "1");
+      return true;
+    }
+    return sessionStorage.getItem("pb_ga_debug") === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function gaDebug(label: string, detail?: unknown): void {
+  if (!gaDebugEnabled()) return;
+  console.info("[pb-ga]", label, detail ?? "");
+}
+
+/** Signup fields only. No email, password, or token. */
+export function debugSignUpResult(
+  scope: string,
+  user: {
+    id?: string;
+    role?: string | null;
+    created_at?: string | null;
+    identities?: unknown[] | null;
+  } | null | undefined,
+  error?: { message?: string } | null
+): void {
+  gaDebug(scope, {
+    error: error?.message || null,
+    id: Boolean(user?.id),
+    role: user?.role ?? null,
+    identities: Array.isArray(user?.identities) ? user.identities.length : null,
+    created_at: user?.created_at ?? null,
+    created: signUpCreatedUser(user),
+  });
+}
+
+function gaClientId(): string {
+  try {
+    const match = document.cookie.match(/(?:^|; )_ga=([^;]+)/);
+    if (match) {
+      const parts = decodeURIComponent(match[1]).split(".");
+      const cid = parts.slice(-2).join(".");
+      if (/^\d+\.\d+$/.test(cid)) return cid;
+    }
+  } catch {
+    // fall through
+  }
+  const fresh = `${Math.floor(Math.random() * 1e10)}.${Math.floor(Date.now() / 1000)}`;
+  try {
+    document.cookie = `_ga=GA1.1.${fresh}; path=/; max-age=63072000; samesite=lax`;
+  } catch {
+    // ignore
+  }
+  return fresh;
+}
+
+function gaSessionId(): string | undefined {
+  if (!GA_MEASUREMENT_ID) return undefined;
+  const name = `_ga_${GA_MEASUREMENT_ID.replace(/^G-/, "")}`;
+  try {
+    const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
+    if (!match) return undefined;
+    const value = decodeURIComponent(match[1]);
+    return (value.match(/(?:^|\$|\.)s(\d{6,})/) || value.match(/^GS\d+\.\d+\.(\d{6,})/))?.[1];
+  } catch {
+    return undefined;
+  }
+}
+
+/**
+ * gtag queues generate_lead and the modal's redirect to /comunidad/inicio aborts it.
+ * Clicks survive because the page stays. sendBeacon is delivered on unload.
+ * _dbg=1 makes the same hit visible in DebugView.
+ */
+function sendGenerateLeadBeacon(opts: {
+  method: GenerateLeadMethod;
+  course_slug?: string;
+  page_path?: string;
+}): boolean {
+  if (!GA_MEASUREMENT_ID || typeof navigator.sendBeacon !== "function") return false;
+  const params = new URLSearchParams({
+    v: "2",
+    tid: GA_MEASUREMENT_ID,
+    cid: gaClientId(),
+    en: "generate_lead",
+    dl: window.location.href,
+    dt: document.title,
+    "ep.method": opts.method,
+    "ep.page_path": opts.page_path || window.location.pathname,
+    _dbg: "1",
+  });
+  const sid = gaSessionId();
+  if (sid) params.set("sid", sid);
+  if (opts.course_slug) params.set("ep.course_slug", opts.course_slug);
+  const url = `https://www.google-analytics.com/g/collect?${params.toString()}`;
+  return navigator.sendBeacon(url);
+}
+
 /**
  * Marcar generate_lead como evento clave en GA4 Admin.
  * Only call after real success (signUp OK, lead insert OK, OAuth new-user redirect).
@@ -284,18 +388,17 @@ export function trackGenerateLead(opts: {
   page_path?: string;
 }): void {
   // Public /registro, /referidos and marketing modals must count. Only auth walls stay quiet.
-  if (isQuietLeadPath()) return;
+  if (isQuietLeadPath()) {
+    gaDebug("generate_lead skipped", { reason: "quiet", path: window.location.pathname });
+    return;
+  }
   const course_slug = inferCourseSlug(opts.course_slug);
-  trackEvent(GA_LEAD_EVENTS.GENERATE_LEAD, {
+  const sent = sendGenerateLeadBeacon({
     method: opts.method,
-    // Survives the post-signup redirect. Pins this hit to the ProgramBI stream.
-    transport_type: "beacon",
-    send_to: GA_MEASUREMENT_ID || undefined,
-    // Surfaces this hit in GA4 DebugView without a browser extension.
-    debug_mode: true,
-    ...(opts.page_path ? { page_path: opts.page_path } : {}),
-    ...(course_slug ? { course_slug } : {}),
+    course_slug,
+    page_path: opts.page_path,
   });
+  gaDebug("generate_lead", { sent, method: opts.method, course_slug: course_slug || null });
 }
 
 /**
@@ -510,12 +613,22 @@ export function trackSubmitRegistro(opts?: {
   course_slug?: string | null;
 }): void {
   const now = Date.now();
-  if (now - lastSubmitRegistroAt < 2000) return;
+  if (now - lastSubmitRegistroAt < 2000) {
+    gaDebug("trackSubmitRegistro skipped", { reason: "2s" });
+    return;
+  }
   lastSubmitRegistroAt = now;
-  if (isQuietLeadPath()) return;
+  if (isQuietLeadPath()) {
+    gaDebug("trackSubmitRegistro skipped", { reason: "quiet", path: window.location.pathname });
+    return;
+  }
   trackEvent(GA_LEAD_EVENTS.SUBMIT_REGISTRO);
   // Formulario y confirmación OAuth del mismo alta comparten sesión <60s.
-  if (registroLeadFiredRecently()) return;
+  if (registroLeadFiredRecently()) {
+    gaDebug("trackSubmitRegistro skipped", { reason: "dedupe-60s" });
+    return;
+  }
+  gaDebug("trackSubmitRegistro", { method: opts?.method ?? "form", course_slug: opts?.course_slug || null });
   trackGenerateLead({
     method: opts?.method ?? "form",
     course_slug: opts?.course_slug,

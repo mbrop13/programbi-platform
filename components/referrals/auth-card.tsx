@@ -8,7 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { validatePassword, isBreachedPassword } from "@/lib/security/password";
 import { honeypotStyle } from "@/lib/antibot";
 import { persistRegistrationSource } from "@/lib/registration-source";
-import { signUpCreatedUser, trackSubmitRegistro } from "@/lib/analytics/marketing";
+import { debugSignUpResult, signUpCreatedUser, trackSubmitRegistro } from "@/lib/analytics/marketing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -166,6 +166,8 @@ export function ReferidosRegistro() {
           emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(NEXT)}&reg_source=${encodeURIComponent("/referidos/registro")}`,
         },
       });
+      debugSignUpResult("referidos signUp", data.user, signErr);
+
       if (signErr) {
         setError(signErr.message);
         return;
