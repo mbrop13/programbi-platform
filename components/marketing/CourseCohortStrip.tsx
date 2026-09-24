@@ -30,7 +30,7 @@ export function CourseCohortStrip({
   return (
     <div className={compact ? "" : "mt-4"} aria-live="polite" data-cohort-strip="">
       <p className={compact ? "mb-2 text-xs text-ink" : "mb-2 text-sm text-ink"}>
-        <span className="font-semibold">Próxima clase</span>
+        <span className="font-semibold">Inicio de clases</span>
         {pending ? (
           <span className="ml-2 inline-block h-3 w-28 animate-pulse rounded-full bg-wash align-middle" />
         ) : (

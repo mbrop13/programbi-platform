@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { courses } from "@/lib/data/courses";
 import CursosPageClient from "./CursosPageClient";
+import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
+import type { CourseSchedule } from "@/lib/data/course-schedules";
 import { ogImageUrl } from "@/lib/og/url";
 import { PAGE_SEO } from "@/lib/seo/money";
 import { absoluteUrl, breadcrumbJsonLd, jsonLdString, twitterShare } from "@/lib/seo";
@@ -48,7 +50,8 @@ export const metadata: Metadata = {
   ),
 };
 
-export default function CursosPage() {
+export default async function CursosPage() {
+  const schedules = (await getActiveSchedules()) as CourseSchedule[];
   const featuredImage =
     courses.find((c) => c.slug === "analisis-de-datos")?.imageUrl ??
     "/images/courses/analisis-de-datos-card.webp";
@@ -84,6 +87,7 @@ export default function CursosPage() {
         }}
       />
       <CursosPageClient
+        schedules={schedules}
         catalog={courses.map((c) => ({
           slug: c.slug,
           title: c.title,

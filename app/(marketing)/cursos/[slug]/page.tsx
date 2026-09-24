@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { courses, getCourseBySlug } from "@/lib/data/courses";
-import { getMarketingDescription } from "@/lib/supabase/comunidad-ai";
+import { getActiveSchedules, getMarketingDescription } from "@/lib/supabase/comunidad-ai";
+import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
 import { ogImageUrl } from "@/lib/og/url";
 import { SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
@@ -162,6 +163,8 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
     course.description = seo.description;
   }
 
+  const schedules = (await getActiveSchedules()) as CourseSchedule[];
+
   const courseJsonLd = getCourseJsonLd(course);
   const jsonLd = {
     "@context": "https://schema.org",
@@ -199,7 +202,7 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
-      <CourseDetailClient course={course} />
+      <CourseDetailClient key={course.slug} course={course} initialSchedules={schedules} />
     </>
   );
 }
