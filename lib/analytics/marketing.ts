@@ -211,9 +211,23 @@ function markRegistroLeadFired(): void {
   }
 }
 
-/** Supabase hides an existing email as a user with identities: []. */
-export function signUpCreatedUser(user: { identities?: unknown[] | null } | null | undefined): boolean {
-  return Array.isArray(user?.identities) && user.identities.length > 0;
+/**
+ * True only for a user Supabase just created.
+ * An existing confirmed email comes back as identities: [] and role "" (no error).
+ * A new email signup includes the email identity. An invited user can have a role
+ * and a fresh created_at with identities stripped.
+ */
+export function signUpCreatedUser(user: {
+  id?: string;
+  role?: string | null;
+  created_at?: string | null;
+  identities?: unknown[] | null;
+} | null | undefined): boolean {
+  if (!user?.id) return false;
+  if (Array.isArray(user.identities) && user.identities.length > 0) return true;
+  if (Array.isArray(user.identities) && user.identities.length === 0 && !user.role) return false;
+  const created = user.created_at ? Date.parse(user.created_at) : NaN;
+  return Number.isFinite(created) && Date.now() - created < 120_000;
 }
 
 /** Pull /cursos/[slug] or ?curso= from a path or full URL. */
@@ -258,6 +272,8 @@ function inferCourseSlug(explicit?: string | null): string | undefined {
   );
 }
 
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
+
 /**
  * Marcar generate_lead como evento clave en GA4 Admin.
  * Only call after real success (signUp OK, lead insert OK, OAuth new-user redirect).
@@ -267,16 +283,20 @@ export function trackGenerateLead(opts: {
   course_slug?: string | null;
   page_path?: string;
 }): void {
+  // Public /registro, /referidos and marketing modals must count. Only auth walls stay quiet.
   if (isQuietLeadPath()) return;
   const course_slug = inferCourseSlug(opts.course_slug);
   trackEvent(GA_LEAD_EVENTS.GENERATE_LEAD, {
     method: opts.method,
+    // Survives the post-signup redirect. Pins this hit to the ProgramBI stream.
+    transport_type: "beacon",
+    send_to: GA_MEASUREMENT_ID || undefined,
+    // Surfaces this hit in GA4 DebugView without a browser extension.
+    debug_mode: true,
     ...(opts.page_path ? { page_path: opts.page_path } : {}),
     ...(course_slug ? { course_slug } : {}),
   });
 }
-
-const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
 
 /**
  * Official gtag stub: events pushed here before gtag.js loads are replayed
@@ -302,10 +322,20 @@ export function initGa4(): void {
   });
 }
 
+/** gtag drops a recommended event such as generate_lead when a param is undefined. */
+function definedParams(params: AnalyticsParams): AnalyticsParams {
+  const out: AnalyticsParams = {};
+  for (const [key, value] of Object.entries(params)) {
+    if (value === undefined || value === null || value === "") continue;
+    out[key] = value;
+  }
+  return out;
+}
+
 /** Send event to GA4 (gtag) and tag Clarity custom event when available. */
 export function trackEvent(eventName: string, params?: AnalyticsParams): void {
   if (!isBrowser()) return;
-  const payload = withUtm(params);
+  const payload = definedParams(withUtm(params));
 
   try {
     if (GA_MEASUREMENT_ID && typeof window.gtag === "function") {
@@ -486,11 +516,11 @@ export function trackSubmitRegistro(opts?: {
   trackEvent(GA_LEAD_EVENTS.SUBMIT_REGISTRO);
   // Formulario y confirmación OAuth del mismo alta comparten sesión <60s.
   if (registroLeadFiredRecently()) return;
-  markRegistroLeadFired();
   trackGenerateLead({
     method: opts?.method ?? "form",
     course_slug: opts?.course_slug,
   });
+  markRegistroLeadFired();
 }
 
 export function trackClickCotizarEmpresas(): void {

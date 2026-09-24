@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client";
 import { validatePassword, isBreachedPassword } from "@/lib/security/password";
 import { honeypotStyle } from "@/lib/antibot";
 import { persistRegistrationSource } from "@/lib/registration-source";
+import { signUpCreatedUser, trackSubmitRegistro } from "@/lib/analytics/marketing";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -169,6 +170,11 @@ export function ReferidosRegistro() {
         setError(signErr.message);
         return;
       }
+      if (!signUpCreatedUser(data.user)) {
+        setError("Este correo ya está registrado. Inicia sesión.");
+        return;
+      }
+      trackSubmitRegistro({ method: "form" });
       if (data.session) {
         const res = await fetch("/api/referrals/register", {
           method: "POST",

@@ -197,12 +197,15 @@ export default function RegistroPage() {
         return;
       }
 
-      if (signUpCreatedUser(data?.user)) {
-        trackSubmitRegistro({
-          method: "form",
-          course_slug: courseSlugFromLocation(fromParam || registrationSource),
-        });
+      if (!signUpCreatedUser(data?.user)) {
+        setError("Este correo ya está registrado. Inicia sesión.");
+        return;
       }
+
+      trackSubmitRegistro({
+        method: "form",
+        course_slug: courseSlugFromLocation(fromParam || registrationSource),
+      });
 
       // Backup: escribir origen en el perfil si el usuario ya quedó creado
       if (data?.user?.id) {
