@@ -297,17 +297,6 @@ export default function CourseDetailClient({ course }: { course: Course }) {
               {seo?.h1 || course.title}
             </h1>
             {introParagraphs.length > 0 ? (
-              <div className="mt-4 max-w-[40rem] space-y-4 text-base leading-relaxed text-mute sm:text-lg">
-                {introParagraphs.map((p) => (
-                  <p key={p.slice(0, 48)}>{p}</p>
-                ))}
-              </div>
-            ) : (
-              <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute sm:text-lg">
-                {course.shortDescription}
-              </p>
-            )}
-            {introParagraphs.length > 0 ? (
               <div className="mt-6 flex flex-wrap gap-3">
                 <button
                   type="button"
@@ -349,6 +338,18 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 className="object-cover"
               />
             </div>
+
+            {introParagraphs.length > 0 ? (
+              <div className="mt-8 max-w-[40rem] space-y-4 text-base leading-relaxed text-mute sm:text-lg">
+                {introParagraphs.map((p) => (
+                  <p key={p.slice(0, 48)}>{p}</p>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-8 max-w-[40rem] text-base leading-relaxed text-mute sm:text-lg">
+                {course.shortDescription}
+              </p>
+            )}
 
             {isCroTemplate ? (
               <CourseAudienceAndResults course={course} results={outcomes} />

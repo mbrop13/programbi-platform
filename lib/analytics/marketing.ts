@@ -352,7 +352,7 @@ function gaSessionId(): string | undefined {
 /**
  * gtag queues generate_lead and the modal's redirect to /comunidad/inicio aborts it.
  * Clicks survive because the page stays. sendBeacon is delivered on unload.
- * _dbg=1 makes the same hit visible in DebugView.
+ * _dbg=1 only while gaDebugEnabled(), so DebugView can see a flagged hit.
  */
 function sendGenerateLeadBeacon(opts: {
   method: GenerateLeadMethod;
@@ -369,8 +369,8 @@ function sendGenerateLeadBeacon(opts: {
     dt: document.title,
     "ep.method": opts.method,
     "ep.page_path": opts.page_path || window.location.pathname,
-    _dbg: "1",
   });
+  if (gaDebugEnabled()) params.set("_dbg", "1");
   const sid = gaSessionId();
   if (sid) params.set("sid", sid);
   if (opts.course_slug) params.set("ep.course_slug", opts.course_slug);

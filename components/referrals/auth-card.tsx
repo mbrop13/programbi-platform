@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { validatePassword, isBreachedPassword } from "@/lib/security/password";
+import { validatePassword } from "@/lib/security/password";
 import { honeypotStyle } from "@/lib/antibot";
 import { persistRegistrationSource } from "@/lib/registration-source";
 import { debugSignUpResult, signUpCreatedUser, trackSubmitRegistro } from "@/lib/analytics/marketing";
@@ -146,11 +146,6 @@ export function ReferidosRegistro() {
       return;
     }
     setLoading(true);
-    if (await isBreachedPassword(form.password)) {
-      setError("Esta contraseña aparece en filtraciones. Elige otra.");
-      setLoading(false);
-      return;
-    }
     try {
       const supabase = createClient();
       persistRegistrationSource("/referidos/registro");
@@ -281,7 +276,7 @@ export function ReferidosRegistro() {
               {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             </button>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">Mín. 12 caracteres, mayúscula, número y símbolo.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Mín. 10 caracteres.</p>
         </Field>
         <Field label="Confirmar contraseña" htmlFor="confirm">
           <Input

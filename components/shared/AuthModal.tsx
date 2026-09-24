@@ -7,14 +7,13 @@ import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { validatePassword, isBreachedPassword } from "@/lib/security/password";
+import { validatePassword } from "@/lib/security/password";
 import { useCountry } from "@/lib/context/CountryContext";
 import { subscribeToNewsletter } from "@/lib/supabase/comunidad-ai";
 import { honeypotStyle } from "@/lib/antibot";
 import { persistRegistrationSource } from "@/lib/registration-source";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import { courseSlugFromLocation, debugSignUpResult, signUpCreatedUser, trackClickRegistro, trackSubmitRegistro } from "@/lib/analytics/marketing";
-import { LEAD_INTERESTS, interestFromCoursePath } from "@/lib/data/lead-interests";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -63,7 +62,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
-  const [interest, setInterest] = useState("");
   
   // UI states
   const [showPassword, setShowPassword] = useState(false);
@@ -87,14 +85,13 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     setPassword("");
     setFullName("");
     setWhatsapp("");
-    setInterest(interestFromCoursePath(redirectUrl) || "");
     setHoneypot("");
     formLoadedAt.current = Date.now();
     setShowPassword(false);
     setShowPrefixDropdown(false);
     setAcceptsPrivacy(false);
     setSubscribeToBlog(true);
-  }, [isOpen, tab, redirectUrl]);
+  }, [isOpen, tab]);
 
   // Update tab when defaultTab changes
   useEffect(() => {
@@ -162,9 +159,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
       return;
     }
 
-    // A-01 / V2.5.1 (OWASP ASVS L3): apply the same centralized policy used by
-    // the dedicated registro page. The previous check (< 6 chars) was far too
-    // weak and diverged from the rest of the app.
     if (!fullName.trim() || fullName.trim().length < 2) {
       setError("Escribe tu nombre.");
       return;
@@ -173,29 +167,18 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
       setError("Escribe un WhatsApp válido.");
       return;
     }
-    if (!interest) {
-      setError("Elige en qué estás interesado.");
-      return;
-    }
     if (!acceptsPrivacy) {
       setError("Debes aceptar la política de privacidad.");
       return;
     }
 
-    const pwCheck = validatePassword(password);
+    const pwCheck = validatePassword(password, 6);
     if (!pwCheck.ok) {
       setError(pwCheck.error!);
       return;
     }
 
     setLoading(true);
-
-    // A-02 / V2.5.7 (OWASP ASVS L3): reject passwords found in known breaches.
-    if (await isBreachedPassword(password)) {
-      setError("Esta contraseña aparece en filtraciones conocidas. Elige otra.");
-      setLoading(false);
-      return;
-    }
 
     try {
       const registrationSource = persistRegistrationSource();
@@ -209,7 +192,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           data: {
             full_name: defaultName,
             whatsapp: whatsapp ? `${phonePrefix}${whatsapp}` : null,
-            interest: interest || null,
             registration_source: registrationSource,
             ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
           },
@@ -602,35 +584,15 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                          </div>
                       </div>
                       <div>
-                        <label htmlFor="auth-interest" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-                          Interés *
-                        </label>
-                        <select
-                          id="auth-interest"
-                          required
-                          disabled={loading}
-                          value={interest}
-                          onChange={(e) => setInterest(e.target.value)}
-                          className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
-                        >
-                          <option value="">Elige un programa</option>
-                          {LEAD_INTERESTS.map((item) => (
-                            <option key={item} value={item}>
-                              {item}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Contraseña</label>
                         <div className="relative">
                           <input
                             type={showPassword ? "text" : "password"}
-                            placeholder="Mínimo 12 caracteres"
+                            placeholder="Mínimo 6 caracteres"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            minLength={12}
+                            minLength={6}
                             disabled={loading}
                             autoComplete="new-password"
                             name="new-password"

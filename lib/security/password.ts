@@ -1,43 +1,28 @@
-// Centralized password policy.
-//
-// Background (OWASP ASVS L3 audit, A-01 / V2.5.1, A-02 / V2.5.7):
-// Three different code paths enforced three different minimum lengths
-// (10, 10 and 6 chars). ASVS Level 3 requires >= 12 chars, complexity rules
-// AND a breached-password check (HIBP k-anonymity API). This helper unifies
-// the policy so all auth flows (registro, AuthModal, actualizar-password)
-// validate identically.
+// Length-only password check, restored to the rules from before the
+// complexity policy: registro / actualizar-password / referidos use 10,
+// AuthModal uses 6. No character-class requirements.
 
 export interface PasswordValidation {
   ok: boolean;
   error?: string;
 }
 
-const MIN_LENGTH = 12;
+const DEFAULT_MIN_LENGTH = 10;
 const MAX_LENGTH = 128;
 
 /**
- * Validate a password against the centralized policy.
- * Returns { ok: true } when valid, or { ok: false, error } with a user-facing
- * Spanish message. Pure client/server safe (no I/O).
+ * Returns { ok: true } when valid, or { ok: false, error } with a Spanish message.
+ * Pure client/server safe (no I/O).
  */
-export function validatePassword(pw: string): PasswordValidation {
+export function validatePassword(pw: string, minLength = DEFAULT_MIN_LENGTH): PasswordValidation {
   if (!pw || typeof pw !== "string") {
     return { ok: false, error: "La contraseña es obligatoria." };
   }
-  if (pw.length < MIN_LENGTH) {
-    return { ok: false, error: `La contraseña debe tener al menos ${MIN_LENGTH} caracteres.` };
+  if (pw.length < minLength) {
+    return { ok: false, error: `La contraseña debe tener al menos ${minLength} caracteres.` };
   }
   if (pw.length > MAX_LENGTH) {
     return { ok: false, error: "La contraseña es demasiado larga." };
-  }
-  if (!/[A-Z]/.test(pw) || !/[a-z]/.test(pw)) {
-    return { ok: false, error: "La contraseña debe incluir mayúsculas y minúsculas." };
-  }
-  if (!/[0-9]/.test(pw)) {
-    return { ok: false, error: "La contraseña debe incluir al menos un número." };
-  }
-  if (!/[^A-Za-z0-9]/.test(pw)) {
-    return { ok: false, error: "La contraseña debe incluir al menos un carácter especial." };
   }
   return { ok: true };
 }
