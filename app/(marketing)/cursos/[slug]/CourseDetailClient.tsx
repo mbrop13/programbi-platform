@@ -23,6 +23,7 @@ import TemarioSection from "@/components/marketing/temario/TemarioSection";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import {
   type CourseSchedule,
+  OPEN_COHORT_LABEL,
   SCHEDULE_COUNTRIES,
   convertSchedule,
   getAllActiveSchedules,
@@ -36,6 +37,7 @@ import {
 } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import { whatsappHref } from "@/lib/whatsapp";
+import { CourseCohortFacts, CourseCohortStrip } from "@/components/marketing/CourseCohortStrip";
 import {
   CourseAudienceAndResults,
   CourseFaq,
@@ -76,6 +78,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [isFreeTrial, setIsFreeTrial] = useState(false);
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
+  const [schedulesLoaded, setSchedulesLoaded] = useState(false);
   const [promotions, setPromotions] = useState<any[]>([]);
   const [selectedScheduleIndex, setSelectedScheduleIndex] = useState(0);
   const [isScheduleDropdownOpen, setIsScheduleDropdownOpen] = useState(false);
@@ -180,7 +183,8 @@ export default function CourseDetailClient({ course }: { course: Course }) {
         if (Array.isArray(schData)) setSchedules(schData);
         if (Array.isArray(promoData)) setPromotions(promoData);
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setSchedulesLoaded(true));
   }, []);
 
   const levels = course.levels || [];
@@ -337,6 +341,13 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 className="object-cover"
               />
             </div>
+
+            <CourseCohortStrip
+              pending={!schedulesLoaded && !nextStart}
+              startLabel={nextStart?.date ?? OPEN_COHORT_LABEL}
+              days={nextStart?.days ?? null}
+              time={nextStart?.time ?? null}
+            />
 
             <CourseAudienceAndResults course={course} selectedLevel={selectedLevel} results={outcomes} />
           </div>
@@ -581,6 +592,15 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                 >
                   <div className="relative aspect-[16/10] bg-wash">
                     <CourseImage src={rc.imageUrl} alt={rc.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
+                  </div>
+                  <div className="px-4 pt-4">
+                    <CourseCohortFacts
+                      slug={rc.slug}
+                      schedules={schedules}
+                      timeZone={scheduleCountry.timeZone}
+                      loaded={schedulesLoaded}
+                      compact
+                    />
                   </div>
                   <div className="px-6 py-5">
                     <p className="text-lg font-bold tracking-tight text-ink">{rc.title}</p>

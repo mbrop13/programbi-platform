@@ -98,6 +98,30 @@ export function getCourseDateLabel(
   return `Próxima cohorte: ${formatCohortShort(nearest.start_date)}`;
 }
 
+/** Próxima cohorte activa de un curso. Análisis de datos usa el básico de SQL, Power BI y Python. */
+export function nextCohortForCourse(
+  slug: string,
+  schedules: CourseSchedule[],
+  timeZone: string
+): { date: string; days: string; time: string } | null {
+  const slugs = slug === "analisis-de-datos" ? analisisDeDatosSlugs : [slug];
+  const matched = schedules.filter(
+    (s) =>
+      slugs.includes(s.course_slug) &&
+      (slug !== "analisis-de-datos" || s.level_name === "Básico")
+  );
+  const nearest = getNearestSchedule(
+    matched.map((s) => ({ ...s, is_active: s.is_active !== false }))
+  );
+  if (!nearest) return null;
+  const conv = convertSchedule(nearest.start_date, nearest.schedule_time, nearest.schedule_days, timeZone);
+  return {
+    date: conv.dateFormatted.charAt(0).toUpperCase() + conv.dateFormatted.slice(1),
+    days: conv.days,
+    time: conv.time,
+  };
+}
+
 // Get the nearest start date from a list of schedules
 export function getNearestSchedule(schedules: CourseSchedule[]): CourseSchedule | null {
   const now = new Date();
