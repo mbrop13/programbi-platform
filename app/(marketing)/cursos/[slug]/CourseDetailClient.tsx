@@ -68,7 +68,13 @@ function formatSchedule(
   };
 }
 
-export default function CourseDetailClient({ course }: { course: Course }) {
+export default function CourseDetailClient({
+  course,
+  initialSchedules,
+}: {
+  course: Course;
+  initialSchedules: CourseSchedule[];
+}) {
   const [selectedLevel, setSelectedLevel] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
@@ -77,8 +83,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   const showPrice = isLoggedIn;
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [isFreeTrial, setIsFreeTrial] = useState(false);
-  const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
-  const [schedulesLoaded, setSchedulesLoaded] = useState(false);
+  const [schedules, setSchedules] = useState<CourseSchedule[]>(initialSchedules);
   const [promotions, setPromotions] = useState<any[]>([]);
   const [selectedScheduleIndex, setSelectedScheduleIndex] = useState(0);
   const [isScheduleDropdownOpen, setIsScheduleDropdownOpen] = useState(false);
@@ -178,13 +183,16 @@ export default function CourseDetailClient({ course }: { course: Course }) {
   }, []);
 
   useEffect(() => {
-    Promise.all([fetch("/api/schedules").then((r) => r.json()), fetch("/api/promotions").then((r) => r.json())])
-      .then(([schData, promoData]) => {
-        if (Array.isArray(schData)) setSchedules(schData);
+    setSchedules(initialSchedules);
+  }, [initialSchedules]);
+
+  useEffect(() => {
+    fetch("/api/promotions")
+      .then((r) => r.json())
+      .then((promoData) => {
         if (Array.isArray(promoData)) setPromotions(promoData);
       })
-      .catch(console.error)
-      .finally(() => setSchedulesLoaded(true));
+      .catch(console.error);
   }, []);
 
   const levels = course.levels || [];
@@ -343,7 +351,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
             </div>
 
             <CourseCohortStrip
-              pending={!schedulesLoaded && !nextStart}
+              pending={false}
               startLabel={nextStart?.date ?? OPEN_COHORT_LABEL}
               days={nextStart?.days ?? null}
               time={nextStart?.time ?? null}
@@ -598,7 +606,7 @@ export default function CourseDetailClient({ course }: { course: Course }) {
                       slug={rc.slug}
                       schedules={schedules}
                       timeZone={scheduleCountry.timeZone}
-                      loaded={schedulesLoaded}
+                      loaded
                       compact
                     />
                   </div>

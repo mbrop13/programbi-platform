@@ -1586,6 +1586,7 @@ export async function adminAddSchedule(schedule: {
 
   const { error } = await adminDb.from("course_schedules").insert(schedule);
   if (error) throw new Error(error.message);
+  revalidatePublicSchedules();
 }
 
 export async function adminDeleteSchedule(scheduleId: string) {
@@ -1595,6 +1596,7 @@ export async function adminDeleteSchedule(scheduleId: string) {
 
   const { error } = await adminDb.from("course_schedules").delete().eq("id", scheduleId);
   if (error) throw new Error(error.message);
+  revalidatePublicSchedules();
 }
 
 export async function adminToggleScheduleActive(scheduleId: string) {
@@ -1607,6 +1609,16 @@ export async function adminToggleScheduleActive(scheduleId: string) {
 
   const { error } = await adminDb.from("course_schedules").update({ is_active: !current.is_active }).eq("id", scheduleId);
   if (error) throw new Error(error.message);
+  revalidatePublicSchedules();
+}
+
+function revalidatePublicSchedules() {
+  try {
+    revalidatePath("/cursos");
+    revalidatePath("/cursos/[slug]", "page");
+  } catch {
+    /* revalidate is best-effort outside a request */
+  }
 }
 
 // ─── PROMO POPUPS ───

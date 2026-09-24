@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import CourseImage from "@/components/shared/CourseImage";
 import { CourseCohortFacts } from "@/components/marketing/CourseCohortStrip";
@@ -19,22 +19,16 @@ export type CourseCatalogItem = {
   techStack: string[];
 };
 
-export default function CursosPageClient({ catalog }: { catalog: CourseCatalogItem[] }) {
+export default function CursosPageClient({
+  catalog,
+  schedules,
+}: {
+  catalog: CourseCatalogItem[];
+  schedules: CourseSchedule[];
+}) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
-  const [schedulesLoaded, setSchedulesLoaded] = useState(false);
   const { country } = useCountry();
   const timeZone = (SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0]).timeZone;
-
-  useEffect(() => {
-    fetch("/api/schedules")
-      .then((r) => r.json())
-      .then((data) => {
-        if (Array.isArray(data)) setSchedules(data);
-      })
-      .catch(console.error)
-      .finally(() => setSchedulesLoaded(true));
-  }, []);
 
   const filteredCourses = catalog.filter((course) => {
     const q = searchQuery.toLowerCase();
@@ -102,7 +96,7 @@ export default function CursosPageClient({ catalog }: { catalog: CourseCatalogIt
                     slug={featured.slug}
                     schedules={schedules}
                     timeZone={timeZone}
-                    loaded={schedulesLoaded}
+                    loaded
                     compact
                   />
                 </div>
@@ -142,7 +136,7 @@ export default function CursosPageClient({ catalog }: { catalog: CourseCatalogIt
                     slug={course.slug}
                     schedules={schedules}
                     timeZone={timeZone}
-                    loaded={schedulesLoaded}
+                    loaded
                     compact
                   />
                 </div>
