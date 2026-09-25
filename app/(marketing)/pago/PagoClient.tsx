@@ -710,21 +710,28 @@ export default function PagoClient() {
                                  ? course.levels
                                  : course.slug === initialSlug && initialLevel === "Avanzado"
                                    ? course.levels.filter((lvl) => lvl.name === "Avanzado")
-                                   : course.levels.filter((lvl) => lvl.name !== "Avanzado")
-                               ).map(lvl => (
+                                   : course.levels.filter((lvl) => lvl.name === "Básico")
+                               ).map(lvl => {
+                                 const storedName = lvl.name;
+                                 const label =
+                                   mode !== "enterprise" && isTieredCourse(course) && storedName === "Básico"
+                                     ? "Básico-Intermedio"
+                                     : storedName;
+                                 return (
                                  <button 
-                                   key={lvl.name} 
+                                   key={label} 
                                    type="button"
-                                   onClick={() => changeLevel(course.slug, lvl.name)}
+                                   onClick={() => changeLevel(course.slug, storedName)}
                                    className={`rounded-md border-2 px-3 py-1.5 text-xs font-semibold transition-colors ${
-                                     activeLevel === lvl.name
+                                     activeLevel === storedName
                                        ? "border-[rgb(23_23_22_/_0.28)] bg-canvas text-ink"
                                        : "border-transparent bg-wash text-mute hover:text-ink"
                                    }`}
                                  >
-                                    {lvl.name}
+                                    {label}
                                  </button>
-                               ))}
+                                 );
+                               })}
                             </div>
                           )}
 

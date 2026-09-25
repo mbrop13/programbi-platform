@@ -165,7 +165,7 @@ export async function buildChatbotContext(): Promise<string> {
       }).join(', ')
       line += `. Niveles: ${levelsStr}`
       if (isTieredCourse(c)) {
-        line += `. Inscripción abierta: Básico e Intermedio. Avanzado: /cursos/${c.slug}/avanzado. Empresas (los 3 niveles): /cursos/${c.slug}/empresas`
+        line += `. Inscripción abierta: Básico-Intermedio, un solo temario. Avanzado: /cursos/${c.slug}/avanzado. Empresas (básico, intermedio y avanzado): /cursos/${c.slug}/empresas`
       }
     } else if (c.levels && c.levels.length === 1) {
       const l = c.levels[0]

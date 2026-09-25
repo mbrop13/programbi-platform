@@ -21,6 +21,7 @@ import {
   coursePath,
   empresaQuotePath,
   isTieredCourse,
+  combinedOpenSyllabus,
   levelsForView,
   levelIntro,
   syllabusIndexForLevel,
@@ -125,7 +126,8 @@ export default function CourseDetailClient({
   };
 
   const handleCheckoutCTA = async () => {
-    const levelName = levels[selectedLevel]?.name;
+    const levelName =
+      view === "publico" && tiered ? "Básico" : levels[selectedLevel]?.name;
     trackCtaClick(showPrice ? "Inscribirse" : "Registrarse", "course_detail_sidebar", {
       course_slug: course.slug,
     });
@@ -213,6 +215,7 @@ export default function CourseDetailClient({
 
   const activeLevel = levels[selectedLevel] || null;
   const syllabusIndex = syllabusIndexForLevel(course, activeLevel?.name);
+  const openSyllabus = view === "publico" && tiered ? combinedOpenSyllabus(course) : null;
 
   const levelSchedules = useMemo(() => {
     if (!activeLevel) return [];
@@ -225,16 +228,22 @@ export default function CourseDetailClient({
     const matched = schedules.filter((s) => {
       if (s.course_slug !== course.slug) return false;
       if (catalogLevelCount <= 1) return true;
+      if (view === "publico" && tiered) {
+        return s.level_name === "Básico" || s.level_name === "Intermedio";
+      }
       return s.level_name === activeLevel.name;
     });
     return getAllActiveSchedules(matched);
-  }, [schedules, activeLevel, course.slug, catalogLevelCount]);
+  }, [schedules, activeLevel, course.slug, catalogLevelCount, view, tiered]);
 
   const activeSchedulesList = useMemo(() => {
     if (levelSchedules.length > 0) return levelSchedules;
     const matchedStatic = staticSchedules.filter((s) => {
       if (s.course_slug !== course.slug) return false;
       if (catalogLevelCount <= 1) return true;
+      if (view === "publico" && tiered) {
+        return s.level_name === "Básico" || s.level_name === "Intermedio";
+      }
       return s.level_name === (activeLevel?.name || "Básico");
     });
     const now = new Date();
@@ -384,6 +393,7 @@ export default function CourseDetailClient({
               </li>
               <li>En vivo por Zoom</li>
               <li>Certificado</li>
+              {view === "publico" && tiered ? <li>Básico-Intermedio</li> : null}
               {levels.length > 1 ? <li>{levels.length} niveles</li> : null}
               {view === "avanzado" ? <li>Inscripción aparte</li> : null}
             </ul>
@@ -412,8 +422,9 @@ export default function CourseDetailClient({
               selectedLevel={syllabusIndex}
               results={outcomes}
               levelLabel={
-                view === "avanzado" ? "Curso avanzado" : view === "publico" && tiered ? activeLevel?.name : undefined
+                view === "avanzado" ? "Curso avanzado" : openSyllabus ? openSyllabus.label : undefined
               }
+              levelContent={openSyllabus ?? undefined}
               showLadderNote={view === "empresas" || !tiered}
             />
           </div>
@@ -456,6 +467,9 @@ export default function CourseDetailClient({
                         <span className="block text-sm font-semibold text-ink">{nextStart.date}</span>
                         <span className="mt-0.5 block text-xs text-mute">
                           {nextStart.days} · {nextStart.time}
+                          {view === "publico" && tiered && levelSchedule?.level_name
+                            ? ` · ${levelSchedule.level_name}`
+                            : ""}
                         </span>
                       </span>
                     ) : (
@@ -496,6 +510,7 @@ export default function CourseDetailClient({
                                 <span className="block font-semibold text-ink">{conv.date}</span>
                                 <span className="text-xs text-mute">
                                   {conv.days} · {conv.time}
+                                  {view === "publico" && tiered && sch.level_name ? ` · ${sch.level_name}` : ""}
                                 </span>
                               </span>
                             </button>
@@ -631,7 +646,7 @@ export default function CourseDetailClient({
                 ) : null}
                 {view === "avanzado" ? (
                   <Link href={coursePath(course.slug)} className="no-underline hover:text-mute">
-                    Básico e intermedio
+                    Básico-Intermedio
                   </Link>
                 ) : null}
                 {view === "empresas" ? (
@@ -676,6 +691,7 @@ export default function CourseDetailClient({
               selectedLevel={syllabusIndex}
               isFreeTrial={isFreeTrial}
               embedded
+              levelOverride={openSyllabus ?? undefined}
             />
           </div>
         </div>

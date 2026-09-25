@@ -31,6 +31,7 @@ import {
   levelHours,
   normalizeTopic,
   type BenefitItem,
+  type SyllabusLevelContent,
   type SyllabusModule,
   type SyllabusModuleIcon,
   type SyllabusTopic,
@@ -299,16 +300,18 @@ export default function TemarioSection({
   selectedLevel,
   isFreeTrial,
   embedded,
+  levelOverride,
 }: {
   course: Course;
   selectedLevel: number;
   isFreeTrial?: boolean;
   embedded?: boolean;
+  levelOverride?: SyllabusLevelContent;
 }) {
   const syllabus = useMemo(() => getCourseSyllabus(course), [course]);
   const level = useMemo(
-    () => getSyllabusLevel(syllabus, selectedLevel),
-    [syllabus, selectedLevel]
+    () => levelOverride ?? getSyllabusLevel(syllabus, selectedLevel),
+    [syllabus, selectedLevel, levelOverride]
   );
 
   const accent = "#171716";

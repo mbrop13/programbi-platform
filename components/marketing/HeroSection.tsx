@@ -14,7 +14,7 @@ const HERO_COURSES = [
   {
     href: "/cursos/power-bi",
     slug: "power-bi",
-    kicker: "16 h por nivel",
+    kicker: "32 horas",
     title: "Power BI",
     text: "Query, DAX y dashboards. En vivo en Chile.",
   },

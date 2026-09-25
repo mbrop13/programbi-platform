@@ -103,7 +103,7 @@ export default function CursosPageClient({
                 </div>
               </div>
               <div className="flex flex-col justify-end px-6 py-6 lg:col-span-5 lg:px-8 lg:py-8">
-                <p className="text-xs font-semibold text-mute">96 horas · básico e intermedio</p>
+                <p className="text-xs font-semibold text-mute">96 horas · básico-intermedio</p>
                 <h2 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
                   Curso de análisis de datos
                 </h2>

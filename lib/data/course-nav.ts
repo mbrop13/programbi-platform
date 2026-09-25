@@ -25,10 +25,10 @@ export const NAV_COURSE_GROUPS: { id: string; label: string; items: NavCourse[] 
     id: "herramientas",
     label: "Herramientas",
     items: [
-      { slug: "excel", title: "Excel", imageUrl: "/images/courses/excel-card.webp", durationHours: 16 },
-      { slug: "sql-server", title: "SQL Server", imageUrl: "/images/courses/sql-server-card.webp", durationHours: 16 },
-      { slug: "power-bi", title: "Power BI", imageUrl: "/images/courses/power-bi-card.webp", durationHours: 16 },
-      { slug: "python", title: "Python para Datos", imageUrl: "/images/courses/python-card.webp", durationHours: 16 },
+      { slug: "excel", title: "Excel", imageUrl: "/images/courses/excel-card.webp", durationHours: 32 },
+      { slug: "sql-server", title: "SQL Server", imageUrl: "/images/courses/sql-server-card.webp", durationHours: 32 },
+      { slug: "power-bi", title: "Power BI", imageUrl: "/images/courses/power-bi-card.webp", durationHours: 32 },
+      { slug: "python", title: "Python para Datos", imageUrl: "/images/courses/python-card.webp", durationHours: 32 },
     ],
   },
   {
@@ -63,7 +63,7 @@ export const NAV_COURSE_GROUPS: { id: string; label: string; items: NavCourse[] 
         slug: "ia-productividad",
         title: "IA en Productividad",
         imageUrl: "/images/courses/ia-productividad-card.webp",
-        durationHours: 16,
+        durationHours: 32,
       },
       {
         slug: "copilot",
@@ -81,7 +81,7 @@ export const NAV_COURSE_GROUPS: { id: string; label: string; items: NavCourse[] 
         slug: "machine-learning",
         title: "Machine Learning",
         imageUrl: "/images/courses/machine-learning-card.webp",
-        durationHours: 16,
+        durationHours: 32,
       },
     ],
   },

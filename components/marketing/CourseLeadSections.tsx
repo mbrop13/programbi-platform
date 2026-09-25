@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Check, MessageCircle } from "lucide-react";
 import type { Course } from "@/lib/data/courses";
-import { getCourseSyllabus, getSyllabusLevel } from "@/lib/data/syllabuses";
+import { getCourseSyllabus, getSyllabusLevel, type SyllabusLevelContent } from "@/lib/data/syllabuses";
 import { COURSE_SEO } from "@/lib/seo/money";
 import { whatsappHref } from "@/lib/whatsapp";
 
@@ -42,7 +42,7 @@ function formatItems(course: Course, hours: number): string[] {
   const levels = course.levels?.length ?? 1;
   const items = ["Clases en vivo por Zoom"];
   if (course.slug === "analisis-de-datos") {
-    items.push("96 horas en básico e intermedio");
+    items.push("96 horas de básico-intermedio");
     items.push("SQL Server, Power BI y Python. El curso avanzado es aparte");
   } else {
     if (hours) items.push(`${hours} horas por nivel`);
@@ -59,15 +59,17 @@ export function CourseAudienceAndResults({
   results,
   levelLabel,
   showLadderNote = true,
+  levelContent,
 }: {
   course: Course;
   selectedLevel: number;
   results: string[];
   levelLabel?: string;
   showLadderNote?: boolean;
+  levelContent?: SyllabusLevelContent;
 }) {
   const syllabus = getCourseSyllabus(course);
-  const level = getSyllabusLevel(syllabus, selectedLevel);
+  const level = levelContent ?? getSyllabusLevel(syllabus, selectedLevel);
   const seo = COURSE_SEO[course.slug];
   const levelText = level.intro || level.audience;
   const programText =
@@ -84,7 +86,7 @@ export function CourseAudienceAndResults({
       {levelText || programText ? (
         <div className="mt-12">
           <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Para quién</h2>
-          {syllabus.levels.length > 1 ? (
+          {levelContent || syllabus.levels.length > 1 ? (
             <p className="mt-3 text-sm font-semibold text-ink">
               {levelLabel || level.label}
               {level.shortLabel ? ` · ${level.shortLabel}` : ""}
