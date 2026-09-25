@@ -2,8 +2,6 @@ import { ImageResponse } from "next/og";
 import { loadLogoDataUrl } from "@/lib/og/assets";
 import { OgCard, OG_WIDTH, OG_HEIGHT } from "@/lib/og/card";
 
-export const contentType = "image/png";
-
 /**
  * Generador dinámico de imágenes OG con la marca ProgramBI.
  * Ej: /api/og?t=Power%20BI&k=Curso%20online&tags=Power%20BI,DAX&p=cursos/power-bi
