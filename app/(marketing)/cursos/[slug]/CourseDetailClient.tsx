@@ -491,6 +491,25 @@ export default function CourseDetailClient({
 
           <aside className="lg:col-span-5 lg:row-span-2">
             <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-[var(--sticky-below-nav,6rem)] lg:transition-[top] lg:duration-300 lg:ease-out motion-reduce:transition-none">
+              <div className="mb-4 flex justify-start">
+                {isEmpresa ? (
+                  <button
+                    type="button"
+                    onClick={() => chooseAudience("publico")}
+                    className="inline-flex items-center gap-1 text-xs font-medium text-mute hover:text-ink"
+                  >
+                    <span aria-hidden>←</span> Ver curso individual
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => chooseAudience("empresas")}
+                    className="inline-flex items-center gap-1 text-xs font-medium text-mute hover:text-ink"
+                  >
+                    Ver {course.title} como empresa <span aria-hidden>→</span>
+                  </button>
+                )}
+              </div>
               <LevelOvals
                 levels={levels}
                 selectedLevel={selectedLevel}
@@ -665,26 +684,6 @@ export default function CourseDetailClient({
                   </a>
                 </>
               )}
-
-              <div className="mt-4 text-center">
-                {isEmpresa ? (
-                  <button
-                    type="button"
-                    onClick={() => chooseAudience("publico")}
-                    className="text-xs font-medium text-mute underline underline-offset-4 hover:text-ink"
-                  >
-                    Ver curso individual
-                  </button>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => chooseAudience("empresas")}
-                    className="text-xs font-medium text-mute underline underline-offset-4 hover:text-ink"
-                  >
-                    Ver {course.title} como empresa
-                  </button>
-                )}
-              </div>
 
               <CourseCardDescription lead={offerLead} more={offerMore} />
 

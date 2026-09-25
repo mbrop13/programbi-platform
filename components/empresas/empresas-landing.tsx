@@ -3,6 +3,8 @@ import { ArrowRight, Check } from "lucide-react";
 import { HeroGlyphField } from "@/components/referrals/hero-glyph-field";
 import LogoSlider from "@/components/marketing/LogoSlider";
 import AnalyticsPageEvent from "@/components/shared/AnalyticsPageEvent";
+import CourseImage from "@/components/shared/CourseImage";
+import { courses } from "@/lib/data/courses";
 import { whatsappHref } from "@/lib/whatsapp";
 import { EmpresasContactForm } from "./empresas-contact-form";
 import { EmpresasFaq } from "./empresas-faq";
@@ -54,14 +56,14 @@ const STEPS = [
   },
 ];
 
-const TOPICS = [
-  { name: "Power BI", line: "Dashboards, modelo y DAX." },
-  { name: "SQL Server", line: "Consultas, joins y bases de trabajo." },
-  { name: "Python", line: "Análisis y automatización de reportes." },
-  { name: "Excel", line: "De planilla eterna a proceso claro." },
-  { name: "Power Automate", line: "Flujos, avisos y menos copiar-pegar." },
-  { name: "IA en el trabajo", line: "Copilot y productividad del equipo." },
-];
+const EMPRESA_COURSE_SLUGS = [
+  "power-bi",
+  "sql-server",
+  "python",
+  "excel",
+  "power-automate",
+  "ia-productividad",
+] as const;
 
 export function EmpresasLanding({ curso, nivel }: EmpresasLandingProps) {
   return (
@@ -192,24 +194,51 @@ function How() {
 }
 
 function Topics() {
+  const list = EMPRESA_COURSE_SLUGS.map((slug) => courses.find((c) => c.slug === slug)).filter(
+    (c): c is (typeof courses)[number] => Boolean(c)
+  );
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-20 sm:px-6 lg:px-8">
       <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-        Temas
+        Cursos para empresas
       </p>
       <h2 className="mt-3 max-w-xl text-3xl font-bold tracking-tight sm:text-4xl">
-        Lo que enseñamos al equipo.
+        Los mismos cursos, en formato equipo.
       </h2>
       <p className="mt-4 max-w-xl text-mute">
-        Combinamos lo que el área necesita. No hay que comprar un curso suelto
-        por persona.
+        En vivo, con los datos de la empresa y factura a la empresa. Toca un
+        curso para verlo como empresa.
       </p>
-      <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {TOPICS.map((topic) => (
-          <div key={topic.name} className="rounded-2xl border border-line bg-paper p-5">
-            <h3 className="font-semibold tracking-tight">{topic.name}</h3>
-            <p className="mt-2 text-sm leading-relaxed text-mute">{topic.line}</p>
-          </div>
+      <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {list.map((course) => (
+          <Link
+            key={course.slug}
+            href={`/cursos/${course.slug}?para=empresas`}
+            className="group overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20"
+          >
+            <div className="relative aspect-[16/10] bg-wash">
+              <CourseImage
+                src={course.imageUrl}
+                alt={course.title}
+                fill
+                loading="lazy"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+              />
+            </div>
+            <div className="px-6 py-5">
+              <p className="inline-flex rounded-full bg-wash px-2.5 py-1 text-[11px] font-semibold text-mute">
+                Para empresas
+              </p>
+              <h3 className="mt-2 font-semibold tracking-tight text-ink">{course.title}</h3>
+              <p className="mt-1 line-clamp-2 text-sm leading-relaxed text-mute">
+                {course.shortDescription}
+              </p>
+              <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-ink">
+                Ver como empresa <ArrowRight size={14} />
+              </span>
+            </div>
+          </Link>
         ))}
       </div>
       <p className="mt-8 text-sm text-mute">
