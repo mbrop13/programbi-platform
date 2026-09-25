@@ -2,6 +2,7 @@ import { ArrowRight, Calendar, Check, Flame, Target, Video } from "lucide-react"
 import LogoSlider from "@/components/marketing/LogoSlider";
 import { PRACTICE_UNIT_META } from "@/lib/practice/catalog";
 import { CampusCta } from "./campus-cta";
+import CommunityCalendar from "./CommunityCalendar";
 
 const LIST_CLP = 49990;
 const PROMO_CLP = 29990;
@@ -15,7 +16,7 @@ const listLabel = clp.format(LIST_CLP);
 const priceLabel = clp.format(PROMO_CLP);
 
 const includes = [
-  "1 clase práctica en vivo por semana",
+  "1 clase de 2 horas, en vivo, por semana",
   "La clase queda grabada",
   "Practica estilo Duolingo entre clases",
   `Promoción de ${priceLabel} al mes, para siempre`,
@@ -48,14 +49,18 @@ const moments = [
   {
     when: "Cada semana",
     title: "Una clase, y queda",
-    body: "Una sesión en vivo. Si no alcanzas a entrar, la grabación queda disponible.",
+    body: "Una sesión de 2 horas. Una semana es Clase y la siguiente es Avanzada. Si no alcanzas a entrar, queda grabada.",
   },
 ];
 
 const faqs = [
   {
     q: "¿Cuántas clases hay?",
-    a: "Una clase en vivo por semana. Cada clase queda grabada.",
+    a: "Una clase en vivo por semana. Cada clase dura 2 horas y queda grabada.",
+  },
+  {
+    q: "¿Hay clases normales y avanzadas?",
+    a: "Hay dos tipos, en el mismo horario. Clase trabaja informes comerciales, control de gestión, proyectos e informes financieros. Avanzada toma ese mismo terreno con Power BI, Python y SQL Server en un nivel más alto. Se alternan cada semana y el calendario marca cuál viene.",
   },
   {
     q: "¿Cuánto cuesta?",
@@ -83,7 +88,7 @@ const faqs = [
   },
   {
     q: "¿Cómo son las clases?",
-    a: "Son prácticas. En la sesión se trabaja el informe para apoyar la toma de decisiones de equipos administrativos.",
+    a: "Son prácticas y duran 2 horas. En la sesión se trabaja el informe para apoyar la toma de decisiones de equipos administrativos.",
   },
   {
     q: "¿Qué es Practica?",
@@ -107,7 +112,7 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
                 <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-70" />
                 <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
               </span>
-              En vivo · 1 clase por semana
+              En vivo · 2 horas · 1 por semana
             </div>
 
             <h1 className="max-w-[14ch] text-4xl font-bold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.5rem] lg:leading-[1.08]">
@@ -115,7 +120,7 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
             </h1>
 
             <p className="mt-6 max-w-xl text-base leading-relaxed text-mute sm:text-lg">
-              Cada semana hay una clase práctica en vivo, y queda grabada. Entre clases sigues con Practica, una ruta estilo Duolingo. Un solo plan: {listLabel} al mes, en promoción {priceLabel} para siempre. La suscripción empieza a correr desde la primera clase.
+              Cada semana hay una clase práctica de 2 horas, en vivo, y queda grabada. Hay clase y clase avanzada. Entre medio sigues con Practica, una ruta estilo Duolingo. Un solo plan: {listLabel} al mes, en promoción {priceLabel} para siempre. La suscripción empieza a correr desde la primera clase.
             </p>
 
             <ul className="mt-8 space-y-3">
@@ -154,7 +159,7 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
               <ul className="mt-5 space-y-2.5 border-t border-line pt-5">
                 <li className="flex items-center gap-2.5 text-sm text-ink">
                   <Video className="size-4 shrink-0" />
-                  1 clase práctica en vivo por semana
+                  1 clase de 2 horas por semana
                 </li>
                 <li className="flex items-center gap-2.5 text-sm text-ink">
                   <Check className="size-4 shrink-0" strokeWidth={2.5} />
@@ -194,7 +199,7 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
       <section className="border-b border-line">
         <div className="mx-auto grid max-w-[1400px] grid-cols-2 lg:grid-cols-4">
           {[
-            { value: "1", label: "clase práctica en vivo por semana" },
+            { value: "2 h", label: "cada clase, una por semana" },
             { value: "Grabada", label: "para verla después del vivo" },
             { value: "Practica", label: "ruta estilo Duolingo" },
             { value: priceLabel, label: `al mes para siempre, antes ${listLabel}` },
@@ -240,7 +245,7 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
             Clases prácticas para decidir
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-mute">
-            Para equipos administrativos. Cada semana se trabaja un caso en vivo y se arma el informe con Power BI, Python y SQL Server, para apoyar la toma de decisiones. La clase queda grabada.
+            Para equipos administrativos. Cada clase dura 2 horas: se arma el informe en la sesión con Power BI, Python y SQL Server, para apoyar la toma de decisiones. Hay dos tipos, Clase y Avanzada, y la clase queda grabada.
           </p>
           <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-[26px] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
             {classCases.map((item) => (
@@ -254,14 +259,29 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
           <div className="mt-8 grid grid-cols-1 gap-px overflow-hidden rounded-[26px] border border-line bg-line sm:grid-cols-2">
             <div className="bg-paper p-6 sm:p-8">
               <p className="text-[11px] font-bold uppercase tracking-widest text-mute">En vivo</p>
-              <p className="mt-3 text-2xl font-bold tracking-tight text-ink">1 vez por semana</p>
-              <p className="mt-2 text-sm leading-relaxed text-mute">El informe se arma durante la clase. Hay una sesión por semana.</p>
+              <p className="mt-3 text-2xl font-bold tracking-tight text-ink">2 horas</p>
+              <p className="mt-2 text-sm leading-relaxed text-mute">Una sesión por semana, de 19:30 a 21:30, hora de Chile. El informe se arma durante la clase.</p>
             </div>
             <div className="bg-paper p-6 sm:p-8">
               <p className="text-[11px] font-bold uppercase tracking-widest text-mute">Después</p>
               <p className="mt-3 text-2xl font-bold tracking-tight text-ink">Queda grabada</p>
               <p className="mt-2 text-sm leading-relaxed text-mute">La clase no se pierde. La grabación queda para verla cuando puedas.</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="calendario" className="border-b border-line px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="mx-auto max-w-[1400px]">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-mute">Calendario</p>
+          <h2 className="mt-3 max-w-[16ch] text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
+            Las próximas clases
+          </h2>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-mute">
+            Una clase de 2 horas por semana, los miércoles de 19:30 a 21:30, hora de Chile. Una semana es Clase y la siguiente es Avanzada. Elige un día para ver cuándo empieza y de qué tipo es.
+          </p>
+          <div className="mt-10">
+            <CommunityCalendar />
           </div>
         </div>
       </section>

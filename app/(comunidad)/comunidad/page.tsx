@@ -7,7 +7,7 @@ import CommunityLanding from "@/components/comunidad/CommunityLanding";
 export const metadata: Metadata = {
   title: "Comunidad",
   description:
-    "Clases prácticas semanales para decidir en administración: informes comerciales, control de gestión, proyectos y finanzas, con Power BI, Python y SQL Server. Promoción $29.990 al mes, para siempre.",
+    "Una clase práctica de 2 horas por semana, en dos tipos: clase y avanzada. Informes comerciales, control de gestión, proyectos y finanzas, con Power BI, Python y SQL Server. Promoción $29.990 al mes, para siempre.",
 };
 
 export default async function ComunidadPage() {
