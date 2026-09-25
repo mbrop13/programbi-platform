@@ -10,6 +10,7 @@ export const powerAutomateSyllabus: CourseSyllabusData = {
     "Automatizar tareas repetitivas sin escribir código.",
     "Integrar Outlook, Teams, OneDrive y SharePoint.",
     "Aprobaciones y notificaciones automáticas.",
+    "RPA de escritorio para procesos que viven en el PC.",
     "Ahorro de horas de trabajo manual cada semana.",
     "Herramientas NoCode de alta demanda laboral.",
   ],
@@ -17,7 +18,7 @@ export const powerAutomateSyllabus: CourseSyllabusData = {
     {
       id: "programa",
       label: "Power Automate & RPA",
-      shortLabel: "16h",
+      shortLabel: "20h",
       theme: "#0078D4",
       modules: [
         {
@@ -125,6 +126,31 @@ export const powerAutomateSyllabus: CourseSyllabusData = {
             "Notificaciones automáticas",
             "Extraer texto de mensajes",
             "Obtener información de destinatarios",
+          ],
+        },
+        {
+          id: "n1-9",
+          title: "RPA con Power Automate Desktop (2 horas)",
+          hours: 2,
+          topics: [
+            "Desktop attended vs unattended: cuándo usar cada uno",
+            "Grabadora, selectores y manejo de ventanas",
+            "Automatizar Excel y aplicaciones de escritorio",
+            "Bucles, condiciones y variables en Desktop",
+            "Caso: traspasar datos de Excel a un ERP o web",
+          ],
+        },
+        {
+          id: "n1-10",
+          title: "Proyecto final: automatización publicada (2 horas)",
+          hours: 2,
+          highlight: true,
+          topics: [
+            "Elegir un proceso real de tu trabajo",
+            "Diseñar el flujo end-to-end: nube, aprobación y aviso",
+            "Monitoreo, errores y reintentos",
+            "Publicar, compartir y documentar el flujo",
+            "Presentación de resultados y ahorro logrado",
           ],
         },
       ],

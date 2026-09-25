@@ -69,7 +69,7 @@ export const NAV_COURSE_GROUPS: { id: string; label: string; items: NavCourse[] 
         slug: "copilot",
         title: "Copilot y Copilot Studio",
         imageUrl: "/images/courses/copilot-card.webp",
-        durationHours: 16,
+        durationHours: 20,
       },
       {
         slug: "claude",
@@ -81,7 +81,7 @@ export const NAV_COURSE_GROUPS: { id: string; label: string; items: NavCourse[] 
         slug: "power-automate",
         title: "Power Automate & RPA",
         imageUrl: "/images/courses/power-automate-card.webp",
-        durationHours: 16,
+        durationHours: 20,
       },
       {
         slug: "machine-learning",

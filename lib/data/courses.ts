@@ -138,15 +138,15 @@ export const courses: Course[] = [
     slug: "copilot",
     title: "Copilot y Copilot Studio",
     shortDescription:
-      "Curso de 16 horas: Copilot en Excel, Outlook, PowerPoint y Word, y Copilot Studio para crear agentes a la medida.",
+      "Curso de 20 horas: Copilot en Excel, Outlook, PowerPoint y Word, y Copilot Studio para crear agentes a la medida.",
     description:
-      "Programa de 16 horas que une Microsoft Copilot en Office con Microsoft Copilot Studio. Primero aplicas IA en Excel, Outlook, PowerPoint y Word. Después diseñas, entrenas y publicas un agente propio: conocimiento, temas, entidades y diseño conversacional.",
+      "Programa de 20 horas que une Microsoft Copilot en Office con Microsoft Copilot Studio. Primero aplicas IA en Excel, Outlook, PowerPoint y Word. Después diseñas, entrenas y publicas un agente propio: conocimiento, temas, entidades y diseño conversacional.",
     category: "automatizacion",
     categoryLabel: "NUEVO 2026",
     badgeLabel: "NUEVO 2026",
     badgeColor: "#0078D4",
     techStack: ["Copilot", "Copilot Studio", "Microsoft 365"],
-    durationHours: 16,
+    durationHours: 20,
     modality: "online",
     level: "intermedio a avanzado",
     imageUrl: "/images/courses/copilot-card.webp",
@@ -159,6 +159,7 @@ export const courses: Course[] = [
       "Entender Copilot Studio, Power Platform y cómo se diferencia de Copilot M365 y Copilot Cowork",
       "Crear un agente a la medida: entornos, conocimiento, temas, acciones y canales",
       "Diseñar conversaciones con entidades, variables, condiciones y tarjetas adaptables",
+      "Publicar el agente en Teams y la web, con gobernanza y buenas prácticas",
     ],
     syllabus: [
       {
@@ -206,18 +207,30 @@ export const courses: Course[] = [
         ],
         hours: 4,
       },
+      {
+        module: "Módulo 5: Publicación, gobernanza y proyecto final",
+        topics: [
+          "Publicar el agente en Teams, SharePoint y sitios web",
+          "Permisos, seguridad y directivas de prevención de pérdida de datos (DLP)",
+          "Monitoreo de conversaciones y mejora continua del agente",
+          "Buenas prácticas de adopción en el equipo",
+          "Proyecto final: agente funcional sobre un caso real de tu trabajo",
+        ],
+        hours: 4,
+      },
     ],
     levels: [
       {
         name: "Intermedio-Avanzado",
         price: 199000,
         originalPrice: 249000,
-        durationHours: 16,
+        durationHours: 20,
         whatYouLearn: [
           "Aplicar Copilot en Excel, Outlook, PowerPoint y Word",
           "Crear un agente en Copilot Studio con conocimiento propio",
           "Diseñar temas, entidades, variables y condiciones",
           "Publicar el copiloto con estilo conversacional y tarjetas",
+          "Gobernanza básica y proyecto final con un caso real",
         ],
       },
     ],
@@ -338,7 +351,7 @@ export const courses: Course[] = [
     badgeLabel: "NUEVO 2026",
     badgeColor: "#0078D4",
     techStack: ["RPA", "Cloud Flows", "Copilot IA"],
-    durationHours: 16,
+    durationHours: 20,
     modality: "online",
     level: "intermedio",
     imageUrl: "/images/courses/power-automate-card.webp",
@@ -350,8 +363,10 @@ export const courses: Course[] = [
       "Crear flujos de nube automatizados, instantáneos y programados",
       "Conectores con Outlook, Teams, OneDrive y SharePoint",
       "Expresiones, variables y funciones lógicas",
+      "RPA de escritorio para procesos que viven en el PC",
       "Copilot para diseñar flujos con IA",
       "Automatizar aprobaciones y notificaciones",
+      "Publicar una automatización real de tu trabajo",
     ],
     syllabus: [
       {
@@ -361,19 +376,22 @@ export const courses: Course[] = [
           "Flujos automatizados, instantáneos y programados",
           "Expresiones, variables y funciones lógicas",
           "Aprobaciones e integraciones con Teams y correo",
+          "RPA con Power Automate Desktop",
+          "Proyecto final: automatización publicada",
         ],
-        hours: 16,
+        hours: 20,
       },
     ],
     levels: [
       {
         name: "Básico",
         price: 249000,
-        durationHours: 16,
+        durationHours: 20,
         whatYouLearn: [
           "Crear flujos de nube automatizados, instantáneos y programados",
           "Conectores con Outlook, Teams, OneDrive y SharePoint",
           "Expresiones, variables y funciones lógicas",
+          "RPA de escritorio para procesos que viven en el PC",
           "Copilot para diseñar flujos con IA",
           "Automatizar aprobaciones y notificaciones",
         ],

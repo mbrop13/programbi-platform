@@ -208,11 +208,11 @@ export const COURSE_SEO: Record<
     audience:
       "Para analistas y operaciones que pierden horas en correos, aprobaciones y copiar datos entre Excel, Outlook y Teams.",
     intro:
-      "Este es un curso Power Automate en Chile, en vivo por Zoom, para analistas y operaciones que pierden horas en correos, aprobaciones y copiar datos entre Excel, Outlook y Teams.\n\nEn 16 horas —horario vespertino Chile, con grabaciones en el campus— armas flujos en la nube (automatizados, instantáneos y programados), conectores de Microsoft 365, expresiones y aprobaciones. También ves RPA de escritorio y Copilot para diseñar flujos sin código. Sales con automatizaciones que puedes publicar, no con una demo suelta.\n\nSi buscas un curso Power Automate o cursos Power Automate para el día a día en Chile, este es el programa. No hace falta programar: es no-code, con conectores de Microsoft 365. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor. El catálogo completo está en /cursos.",
+      "Este es un curso Power Automate en Chile, en vivo por Zoom, para analistas y operaciones que pierden horas en correos, aprobaciones y copiar datos entre Excel, Outlook y Teams.\n\nEn 20 horas —horario vespertino Chile, con grabaciones en el campus— armas flujos en la nube (automatizados, instantáneos y programados), conectores de Microsoft 365, expresiones y aprobaciones. También ves RPA de escritorio y Copilot para diseñar flujos sin código. Sales con automatizaciones que puedes publicar, no con una demo suelta.\n\nSi buscas un curso Power Automate o cursos Power Automate para el día a día en Chile, este es el programa. No hace falta programar: es no-code, con conectores de Microsoft 365. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor. El catálogo completo está en /cursos.",
     faqs: [
       {
         q: "¿Hay un curso Power Automate en Chile, en vivo?",
-        a: "Sí. ProgramBI dicta el curso Power Automate en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. Son 16 horas, enfocadas en flujos reales.",
+        a: "Sí. ProgramBI dicta el curso Power Automate en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. Son 20 horas, enfocadas en flujos reales.",
       },
       {
         q: "¿Qué se aprende en un curso Power Automate?",

@@ -21,7 +21,7 @@ const HERO_COURSES = [
   {
     href: "/cursos/power-automate",
     slug: "power-automate",
-    kicker: "16 horas",
+    kicker: "20 horas",
     title: "Power Automate",
     text: "Flujos y RPA. Curso en vivo en Chile.",
   },

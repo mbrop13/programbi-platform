@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
-import { HeroGlyphField } from "@/components/referrals/hero-glyph-field";
 import LogoSlider from "@/components/marketing/LogoSlider";
 import AnalyticsPageEvent from "@/components/shared/AnalyticsPageEvent";
 import CourseImage from "@/components/shared/CourseImage";
 import { courses } from "@/lib/data/courses";
+import { EmpresasHeroGlyph } from "./empresas-hero-glyph";
 import { whatsappHref } from "@/lib/whatsapp";
 import { EmpresasContactForm } from "./empresas-contact-form";
 import { EmpresasFaq } from "./empresas-faq";
@@ -130,7 +130,7 @@ function Hero() {
         </div>
 
         <div className="relative isolate min-h-[280px] border-t border-line sm:min-h-[380px] lg:min-h-full lg:border-t-0 lg:border-l lg:border-line">
-          <HeroGlyphField text="equipo" className="absolute inset-0" />
+          <EmpresasHeroGlyph />
         </div>
       </div>
     </section>
