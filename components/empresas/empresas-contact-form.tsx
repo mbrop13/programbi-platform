@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { getCourseBySlug } from "@/lib/data/courses";
 import { getAntiBotFields } from "@/lib/antibot";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
 import { readBrowserReferralCode } from "@/lib/referrals/cookie";
@@ -25,14 +26,21 @@ const WA = whatsappHref({
   intent: "empresas",
 });
 
-export function EmpresasContactForm() {
+export function EmpresasContactForm({
+  curso,
+  nivel,
+}: {
+  curso?: string;
+  nivel?: string;
+}) {
+  const preset = curso ? getCourseBySlug(curso)?.title : undefined;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [company, setCompany] = useState("");
   const [employeeCount, setEmployeeCount] = useState("");
-  const [selected, setSelected] = useState<string[]>([]);
-  const [message, setMessage] = useState("");
+  const [selected, setSelected] = useState<string[]>(preset ? [preset] : []);
+  const [message, setMessage] = useState(nivel ? `Nos interesa el nivel ${nivel}.` : "");
   const [privacy, setPrivacy] = useState(false);
   const [honeypot, setHoneypot] = useState("");
   const [status, setStatus] = useState<Status>("idle");
@@ -234,7 +242,7 @@ export function EmpresasContactForm() {
           <span className="font-normal text-mute">(opcional)</span>
         </legend>
         <div className="flex flex-wrap gap-2">
-          {TOPICS.map((topic) => {
+          {Array.from(new Set([...(preset ? [preset] : []), ...TOPICS])).map((topic) => {
             const on = selected.includes(topic);
             return (
               <button

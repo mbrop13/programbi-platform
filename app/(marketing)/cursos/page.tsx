@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { courses } from "@/lib/data/courses";
+import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import CursosPageClient from "./CursosPageClient";
 import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
@@ -93,7 +94,8 @@ export default async function CursosPage() {
           title: c.title,
           shortDescription: c.shortDescription,
           imageUrl: c.imageUrl,
-          durationHours: c.durationHours,
+          durationHours: catalogHours(c),
+          levelsCount: publicLevelCount(c),
           techStack: c.techStack,
         }))}
       />

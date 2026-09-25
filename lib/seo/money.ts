@@ -42,11 +42,11 @@ export const COURSE_SEO: Record<
     audience:
       "Para analistas, control de gestión y finanzas que hoy reportan en Excel y quieren armar dashboards propios en Power BI.",
     intro:
-      "Este es un curso Power BI en Chile, en vivo por Zoom, para analistas, control de gestión y finanzas que hoy consolidan cifras en Excel y necesitan un dashboard que ellos mismos puedan mantener.\n\nEn tres niveles de 16 horas —horario vespertino Chile, con grabaciones en el campus— trabajas Power Query (ETL), el modelo estrella, DAX (CALCULATE, FILTER, time intelligence) y la publicación en Power BI Service, incluida la seguridad a nivel de fila. El objetivo es un tablero usable en el trabajo, no una captura de pantalla.\n\nSi buscas cursos de Power BI en Chile para formarte como persona, este es el camino. Si tu empresa necesita el tablero en producción con datos propios y capacitación in-company, eso vive en /empresas. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.",
+      "Este es un curso Power BI en Chile, en vivo por Zoom, para analistas, control de gestión y finanzas que hoy consolidan cifras en Excel y necesitan un dashboard que ellos mismos puedan mantener.\n\nEl curso abierto tiene dos niveles de 16 horas —básico e intermedio, horario vespertino Chile, con grabaciones en el campus—. En el básico trabajas Power Query (ETL). En el intermedio, el modelo estrella y DAX (CALCULATE, FILTER, time intelligence). Publicación en Power BI Service y seguridad a nivel de fila son el curso avanzado. El objetivo es un tablero usable en el trabajo, no una captura de pantalla.\n\nSi buscas cursos de Power BI en Chile para formarte como persona, este es el camino. Si tu empresa necesita los tres niveles, cotiza en la vista para empresas de este curso. Un tablero en producción con datos propios vive en /empresas. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.",
     faqs: [
       {
         q: "¿Hay un curso Power BI en Chile, en vivo?",
-        a: "Sí. ProgramBI dicta el curso Power BI en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. Tres niveles de 16 horas: Query, modelo y DAX, y publicación.",
+        a: "Sí. ProgramBI dicta el curso Power BI en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. El curso abierto son dos niveles de 16 horas: Power Query, y modelo con DAX. Publicación y RLS son el curso avanzado.",
       },
       {
         q: "¿Qué cubren los cursos de Power BI?",
@@ -54,7 +54,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿El curso Power BI es para empresas o para personas?",
-        a: "Esta landing es formación individual. Power BI para empresas en Chile (tablero en producción + equipo) está en /empresas. El catálogo de cursos abiertos está en /cursos.",
+        a: "Esta página es el curso abierto, básico e intermedio. Los tres niveles para un equipo se cotizan en /cursos/power-bi/empresas. Un tablero en producción con datos propios está en /empresas.",
       },
       {
         q: "¿Necesito saber DAX antes de inscribirme?",
@@ -69,20 +69,20 @@ export const COURSE_SEO: Record<
   "analisis-de-datos": {
     title: "Curso de análisis de datos en vivo Chile | ProgramBI",
     description:
-      "Curso de análisis de datos en Chile, en vivo: SQL, Power BI y Python. 144 h para profesionales que salen de Excel y quieren ser analistas de datos. Inscríbete.",
+      "Curso de análisis de datos en Chile, en vivo: SQL, Power BI y Python. Básico e intermedio, 48 h cada uno. El curso avanzado se inscribe aparte.",
     h1: "Curso de análisis de datos en vivo en Chile",
     audience:
       "Para profesionales de finanzas, control de gestión y operaciones que hoy reportan en Excel y quieren el oficio de analista de datos: SQL, Power BI y Python.",
     intro:
-      "Este es un curso de análisis de datos en Chile, en vivo por Zoom, para profesionales de finanzas, control de gestión y operaciones que hoy arman reportes en Excel y necesitan un oficio completo de analista de datos.\n\nEn 144 horas —tres bloques de 48 horas, horario vespertino Chile, con grabaciones en el campus— aprendes a extraer datos con SQL Server, a modelar y publicar tableros en Power BI (Power Query y DAX) y a limpiar y automatizar con Python y Pandas. El cierre es un proyecto integrador, no un módulo teórico suelto.\n\nSi buscas cursos de análisis de datos para dar el salto de Excel a SQL, Power BI y Python, este es el programa largo de ProgramBI. Sales sabiendo consultar una base, armar un modelo de negocio y entregar un dashboard usable. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.",
+      "Este es un curso de análisis de datos en Chile, en vivo por Zoom, para profesionales de finanzas, control de gestión y operaciones que hoy arman reportes en Excel y necesitan un oficio completo de analista de datos.\n\nEl curso abierto tiene dos niveles de 48 horas —básico e intermedio, horario vespertino Chile, con grabaciones en el campus—. En cada uno trabajas SQL Server, Power BI y Python, de fundamentos a modelado y visualización. El bloque avanzado (automatización, inteligencia de tiempo y modelos) es un curso aparte. Las empresas cotizan los tres niveles, 144 horas.\n\nSi buscas cursos de análisis de datos para dar el salto de Excel a SQL, Power BI y Python, este es el programa de ProgramBI. Sales del básico y el intermedio sabiendo consultar una base, armar un modelo y entregar un dashboard usable. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.",
     faqs: [
       {
         q: "¿Hay un curso de análisis de datos en Chile, en vivo?",
-        a: "Sí. ProgramBI dicta el curso de análisis de datos en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. Son 144 horas: SQL Server, Power BI y Python.",
+        a: "Sí. ProgramBI dicta el curso de análisis de datos en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. El curso abierto son dos niveles de 48 horas, básico e intermedio, con SQL Server, Power BI y Python. El curso avanzado es aparte. Las empresas cotizan los tres niveles, 144 horas.",
       },
       {
         q: "¿Qué se aprende en los cursos de análisis de datos?",
-        a: "Extraer datos con SQL Server, armar tableros con Power Query y DAX en Power BI, y limpiar o automatizar con Python y Pandas. Tres bloques de 48 horas y un proyecto integrador.",
+        a: "En básico e intermedio extraes datos con SQL Server, armas tableros con Power Query y DAX, y limpias con Python y Pandas. Son 48 horas por nivel. Automatización, inteligencia de tiempo y modelos están en el curso avanzado.",
       },
       {
         q: "¿Sirve como curso para analista de datos?",
@@ -94,7 +94,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Cómo me inscribo al curso de análisis de datos?",
-        a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor. Si eres empresa y necesitas un proyecto in-company, ve /empresas.",
+        a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor. Para cotizar los tres niveles, entra a /cursos/analisis-de-datos/empresas. Un proyecto in-company sigue en /empresas.",
       },
     ],
   },
@@ -108,7 +108,7 @@ export const COURSE_SEO: Record<
     faqs: [
       {
         q: "¿El curso es Power BI aplicado a minería?",
-        a: "Sí. Power BI para turnos y OEE, SQL a bases de faena y Python para logs. 48 horas en tres niveles, en vivo.",
+        a: "Sí. Power BI para turnos y OEE, SQL a bases de faena y Python para logs. El curso abierto es básico e intermedio, 16 horas por nivel. El curso avanzado se toma aparte. Las empresas cotizan los tres niveles.",
       },
       {
         q: "¿Trabajan con datos de mina reales?",
@@ -134,7 +134,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Qué veo en el temario de Excel?",
-        a: "Fórmulas avanzadas, tablas dinámicas, Power Query para ETL y dashboards. También macros VBA a nivel práctico.",
+        a: "Básico e intermedio cubren fórmulas, tablas dinámicas y Power Query. Macros, VBA y el dashboard final son el curso avanzado.",
       },
     ],
   },
@@ -156,7 +156,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Y si somos una empresa?",
-        a: "Este programa es cupo individual. Para un proyecto in-company, ve /empresas.",
+        a: "El curso abierto es cupo individual. Para cotizar los niveles de un equipo, entra a /cursos/python/empresas. Un proyecto in-company sigue en /empresas.",
       },
     ],
   },
@@ -174,11 +174,11 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Qué cubre el temario?",
-        a: "SELECT, JOINs, CTEs, procedimientos almacenados y diseño de esquemas. Tres niveles de 16 horas.",
+        a: "Básico e intermedio cubren SELECT, JOINs, CTEs y funciones de ventana, 16 horas cada uno. Procedimientos almacenados y diseño de esquemas son el curso avanzado.",
       },
       {
         q: "¿Y si somos una empresa?",
-        a: "Este programa es cupo individual. Para un proyecto in-company, ve /empresas.",
+        a: "El curso abierto es cupo individual. Para cotizar los niveles de un equipo, entra a /cursos/sql-server/empresas. Un proyecto in-company sigue en /empresas.",
       },
     ],
   },

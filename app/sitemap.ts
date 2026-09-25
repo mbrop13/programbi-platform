@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { courses } from "@/lib/data/courses";
+import { isTieredCourse } from "@/lib/data/course-views";
 import { casesOfUse } from "@/lib/data/cases";
 import { comparisons } from "@/lib/data/comparisons";
 import { SITE_URL, sitemapLoc } from "@/lib/seo";
@@ -202,12 +203,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const coursePriority = (slug: string) =>
     PRIMARY_COURSE_SLUGS.has(slug) ? 0.85 : 0.55;
 
-  const coursePages: MetadataRoute.Sitemap = courses.map((course) => ({
-    url: loc(`/cursos/${course.slug}`),
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: coursePriority(course.slug),
-  }));
+  const coursePages: MetadataRoute.Sitemap = courses.flatMap((course) => {
+    const pages: MetadataRoute.Sitemap = [
+      {
+        url: loc(`/cursos/${course.slug}`),
+        lastModified: now,
+        changeFrequency: "weekly" as const,
+        priority: coursePriority(course.slug),
+      },
+    ];
+    if (isTieredCourse(course)) {
+      pages.push({
+        url: loc(`/cursos/${course.slug}/avanzado`),
+        lastModified: now,
+        changeFrequency: "weekly" as const,
+        priority: 0.5,
+      });
+    }
+    return pages;
+  });
 
   const casePages: MetadataRoute.Sitemap = casesOfUse.map((c) => ({
     url: loc(`/casos/${c.slug}`),

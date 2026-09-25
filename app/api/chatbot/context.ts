@@ -10,6 +10,7 @@
  */
 
 import { courses } from '@/lib/data/courses'
+import { isTieredCourse } from '@/lib/data/course-views'
 import { communityPlans } from '@/lib/data/community_plans'
 import { mentors } from '@/lib/data/mentors'
 import { createAdminClient } from '@/lib/supabase/server'
@@ -163,6 +164,9 @@ export async function buildChatbotContext(): Promise<string> {
         return s
       }).join(', ')
       line += `. Niveles: ${levelsStr}`
+      if (isTieredCourse(c)) {
+        line += `. Inscripción abierta: Básico e Intermedio. Avanzado: /cursos/${c.slug}/avanzado. Empresas (los 3 niveles): /cursos/${c.slug}/empresas`
+      }
     } else if (c.levels && c.levels.length === 1) {
       const l = c.levels[0]
       const price = getPrice(c.slug, l.name, l.price ?? 0)

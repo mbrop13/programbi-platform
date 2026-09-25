@@ -83,8 +83,8 @@ export default function Programs({ catalog }: { catalog: ProgramCard[] }) {
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">Cursos</h2>
         <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">
-          {ALL.length} programas en vivo por Zoom. Herramientas, especializaciones y el camino de 144
-          horas.
+          {ALL.length} programas en vivo por Zoom. Herramientas, especializaciones y análisis de datos
+          en básico e intermedio.
         </p>
 
         <div className="mt-8 flex flex-wrap gap-2">

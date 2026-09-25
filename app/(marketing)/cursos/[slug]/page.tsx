@@ -6,6 +6,7 @@ import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
 import { ogImageUrl } from "@/lib/og/url";
 import { SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
+import { getCourseJsonLd } from "@/lib/seo/course-jsonld";
 import { COURSE_SEO } from "@/lib/seo/money";
 
 export const revalidate = 3600;
@@ -66,90 +67,6 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
-// JSON-LD for Course schema
-function getCourseJsonLd(course: ReturnType<typeof getCourseBySlug>) {
-  if (!course) return null;
-
-  const lowestPrice = course.levels
-    ? Math.min(...course.levels.map((l) => l.price || 0))
-    : undefined;
-
-  const occupationalCategories: Record<string, string> = {
-    "analisis-de-datos": "Analista de Datos, Business Intelligence Analyst, Data Analyst",
-    "power-bi": "Especialista en Power BI, Analista de Business Intelligence, BI Developer",
-    "sql-server": "Administrador de Bases de Datos, SQL Developer, Analista de Datos",
-    "python": "Analista de Datos Python, Data Scientist Junior, Programador Python",
-    "machine-learning": "Científico de Datos, Machine Learning Engineer, Analista de Datos Predictivos",
-    "ia-productividad": "Especialista en Productividad con IA, Prompt Engineer",
-    "power-automate": "Analista de Automatización RPA, Consultor Power Automate",
-    "excel": "Analista Financiero, Analista de Operaciones, Analista de Datos Excel"
-  };
-
-  const prerequisites: Record<string, string> = {
-    "power-bi": "Conocimientos básicos de Microsoft Excel y manejo de archivos.",
-    "machine-learning": "Conocimientos intermedios de Python (Pandas/NumPy) y álgebra lineal básica.",
-    "analitica-mineria": "Conocimientos básicos de análisis de datos y Excel.",
-    "analitica-financiera": "Nociones básicas de contabilidad y finanzas corporativas."
-  };
-
-  const jobRole = occupationalCategories[course.slug] || "Analista de Datos, Profesional de Negocios";
-  const prereq = prerequisites[course.slug] || "No se requieren conocimientos previos de programación.";
-
-  return {
-    "@type": "Course",
-    name: COURSE_SEO[course.slug]?.h1 || course.title,
-    description: COURSE_SEO[course.slug]?.description || course.description,
-    url: absoluteUrl(`/cursos/${course.slug}`),
-    provider: {
-      "@type": "Organization",
-      name: "ProgramBI",
-      url: SITE_URL,
-      "@id": `${SITE_URL}/#organization`,
-      sameAs: [
-        "https://www.instagram.com/programbi_capacitaciones/",
-        "https://www.tiktok.com/@programbi",
-        "https://cl.linkedin.com/company/programbi",
-        "https://www.youtube.com/@ProgramBi",
-      ],
-    },
-    image: course.imageUrl,
-    educationalLevel: course.level,
-    inLanguage: "es",
-    courseMode: course.modality === "online" ? "Online" : "Blended",
-    numberOfCredits: course.durationHours,
-    timeRequired: `PT${course.durationHours}H`,
-    teaches: course.whatYouLearn.join(", "),
-    coursePrerequisites: prereq,
-    educationalCredentialAwarded: "Certificado de Aprobación Oficial ProgramBI SPA",
-    occupationalCategory: jobRole,
-    hasCourseInstance: {
-      "@type": "CourseInstance",
-      courseMode: "Online",
-      instructor: {
-        "@type": "Person",
-        name: "Manuel Oliva",
-        jobTitle: "CEO & Fundador ProgramBI",
-        sameAs: "https://cl.linkedin.com/company/programbi"
-      },
-    },
-    ...(lowestPrice && {
-      offers: {
-        "@type": "Offer",
-        price: lowestPrice,
-        priceCurrency: "CLP",
-        availability: "https://schema.org/InStock",
-        url: absoluteUrl(`/cursos/${course.slug}`),
-        validFrom: new Date().toISOString(),
-      },
-    }),
-    syllabusSections: course.syllabus.map((s) => ({
-      "@type": "Syllabus",
-      name: s.module,
-      description: s.topics.join(", "),
-    })),
-  };
-}
-
 export default async function CourseDetailPage({ params }: { params: Params }) {
   const { slug } = await params;
   const course = getCourseBySlug(slug);
@@ -202,7 +119,7 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
-      <CourseDetailClient key={course.slug} course={course} initialSchedules={schedules} />
+      <CourseDetailClient key={course.slug} course={course} initialSchedules={schedules} view="publico" />
     </>
   );
 }

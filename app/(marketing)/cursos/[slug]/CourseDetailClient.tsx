@@ -16,6 +16,16 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { type Course, courses } from "@/lib/data/courses";
+import {
+  advancedHeading,
+  coursePath,
+  empresaQuotePath,
+  isTieredCourse,
+  levelsForView,
+  levelIntro,
+  syllabusIndexForLevel,
+  type CourseOfferView,
+} from "@/lib/data/course-views";
 import { founderImage } from "@/lib/data/images";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/shared/AuthModal";
@@ -71,9 +81,11 @@ function formatSchedule(
 export default function CourseDetailClient({
   course,
   initialSchedules,
+  view = "publico",
 }: {
   course: Course;
   initialSchedules: CourseSchedule[];
+  view?: CourseOfferView;
 }) {
   const [selectedLevel, setSelectedLevel] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -90,6 +102,10 @@ export default function CourseDetailClient({
   const { country } = useCountry();
   const relatedCourses = courses.filter((c) => c.slug !== course.slug).slice(0, 3);
   const scheduleCountry = SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0];
+  const tiered = isTieredCourse(course);
+  const isEmpresa = view === "empresas";
+  const levels = levelsForView(course, view);
+  const catalogLevelCount = course.levels?.length ?? 0;
 
   const convertAndFormat = (priceCLP: number | null | undefined) => {
     if (!priceCLP) return "";
@@ -109,7 +125,7 @@ export default function CourseDetailClient({
   };
 
   const handleCheckoutCTA = async () => {
-    const levelName = (course.levels || [])[selectedLevel]?.name;
+    const levelName = levels[selectedLevel]?.name;
     trackCtaClick(showPrice ? "Inscribirse" : "Registrarse", "course_detail_sidebar", {
       course_slug: course.slug,
     });
@@ -195,8 +211,8 @@ export default function CourseDetailClient({
       .catch(console.error);
   }, []);
 
-  const levels = course.levels || [];
   const activeLevel = levels[selectedLevel] || null;
+  const syllabusIndex = syllabusIndexForLevel(course, activeLevel?.name);
 
   const levelSchedules = useMemo(() => {
     if (!activeLevel) return [];
@@ -208,17 +224,17 @@ export default function CourseDetailClient({
     }
     const matched = schedules.filter((s) => {
       if (s.course_slug !== course.slug) return false;
-      if (levels.length <= 1) return true;
+      if (catalogLevelCount <= 1) return true;
       return s.level_name === activeLevel.name;
     });
     return getAllActiveSchedules(matched);
-  }, [schedules, activeLevel, course.slug, levels.length]);
+  }, [schedules, activeLevel, course.slug, catalogLevelCount]);
 
   const activeSchedulesList = useMemo(() => {
     if (levelSchedules.length > 0) return levelSchedules;
     const matchedStatic = staticSchedules.filter((s) => {
       if (s.course_slug !== course.slug) return false;
-      if (levels.length <= 1) return true;
+      if (catalogLevelCount <= 1) return true;
       return s.level_name === (activeLevel?.name || "Básico");
     });
     const now = new Date();
@@ -282,13 +298,32 @@ export default function CourseDetailClient({
   const hours = activeLevel?.durationHours || course.durationHours;
   const outcomes = activeLevel?.whatYouLearn?.length ? activeLevel.whatYouLearn : course.whatYouLearn;
   const nextStart = levelSchedule ? formatSchedule(levelSchedule, scheduleCountry.timeZone) : null;
-  const isCroTemplate = isCourseCroSlug(course.slug);
+  const isCroTemplate = isCourseCroSlug(course.slug) && view === "publico";
   const seo = COURSE_SEO[course.slug];
-  const introParagraphs = seo?.intro?.split("\n\n").filter(Boolean) ?? [];
+  const heading =
+    view === "avanzado" ? advancedHeading(seo?.h1 || course.title) : seo?.h1 || course.title;
+  const advancedLevel = course.levels?.find((level) => level.name === "Avanzado");
+  const introParagraphs =
+    view === "publico" ? (seo?.intro?.split("\n\n").filter(Boolean) ?? []) : [];
+  const offerLead =
+    view === "avanzado"
+      ? levelIntro(course, "Avanzado") || course.shortDescription
+      : view === "empresas"
+        ? tiered
+          ? `Capacitación de ${course.title} para equipos. Básico, intermedio y avanzado, en vivo.`
+          : `Capacitación de ${course.title} para equipos. ${course.shortDescription}`
+        : course.shortDescription?.trim() || introParagraphs[0] || "";
+  const offerMore =
+    view === "publico" && course.shortDescription?.trim()
+      ? introParagraphs
+      : view === "publico"
+        ? introParagraphs.slice(1)
+        : [];
+  const quoteHref = empresaQuotePath(course.slug, activeLevel?.name);
   const courseWa = whatsappHref({
-    page: `/cursos/${course.slug}`,
-    intent: "curso",
-    course: course.title,
+    page: coursePath(course.slug, view),
+    intent: isEmpresa ? "empresas" : "curso",
+    course: view === "avanzado" ? `${course.title} avanzado` : course.title,
   });
 
   const includes = [
@@ -304,11 +339,24 @@ export default function CourseDetailClient({
       <section className="bg-canvas px-4 pt-10 sm:px-6 lg:px-8 lg:pt-14">
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="min-w-0 lg:col-span-7">
+            {view === "empresas" ? (
+              <p className="mb-3 text-sm font-semibold text-mute">Para empresas</p>
+            ) : view === "avanzado" ? (
+              <p className="mb-3 text-sm font-semibold text-mute">Curso avanzado</p>
+            ) : null}
             <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl lg:leading-[1.12]">
-              {seo?.h1 || course.title}
+              {heading}
             </h1>
-            {introParagraphs.length > 0 ? (
+            {isEmpresa || introParagraphs.length > 0 ? (
               <div className="mt-6 flex flex-wrap gap-3">
+                {isEmpresa ? (
+                  <Link
+                    href={quoteHref}
+                    className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-7 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
+                  >
+                    Cotizar para mi empresa
+                  </Link>
+                ) : (
                 <button
                   type="button"
                   onClick={() => void handleCheckoutCTA()}
@@ -316,6 +364,7 @@ export default function CourseDetailClient({
                 >
                   {showPrice ? "Inscribirse" : "Registrarme"}
                 </button>
+                )}
                 <a
                   href={courseWa}
                   target="_blank"
@@ -336,6 +385,7 @@ export default function CourseDetailClient({
               <li>En vivo por Zoom</li>
               <li>Certificado</li>
               {levels.length > 1 ? <li>{levels.length} niveles</li> : null}
+              {view === "avanzado" ? <li>Inscripción aparte</li> : null}
             </ul>
 
             <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-[26px] border border-line bg-wash">
@@ -357,7 +407,15 @@ export default function CourseDetailClient({
               time={nextStart?.time ?? null}
             />
 
-            <CourseAudienceAndResults course={course} selectedLevel={selectedLevel} results={outcomes} />
+            <CourseAudienceAndResults
+              course={course}
+              selectedLevel={syllabusIndex}
+              results={outcomes}
+              levelLabel={
+                view === "avanzado" ? "Curso avanzado" : view === "publico" && tiered ? activeLevel?.name : undefined
+              }
+              showLadderNote={view === "empresas" || !tiered}
+            />
           </div>
 
           <aside className="lg:col-span-5 lg:row-span-2">
@@ -450,9 +508,15 @@ export default function CourseDetailClient({
               </div>
 
               <div className="mb-5 border-t border-line pt-5">
-                {activeSchedulesList.length === 0 ? (
+                {isEmpresa ? (
                   <p className="text-sm leading-relaxed text-mute">
-                    {levels.length > 1
+                    {tiered
+                      ? "La cotización incluye básico, intermedio y avanzado. Eliges los niveles y el tamaño del equipo."
+                      : "Armamos la cotización según el equipo y el calendario de tu empresa."}
+                  </p>
+                ) : activeSchedulesList.length === 0 ? (
+                  <p className="text-sm leading-relaxed text-mute">
+                    {catalogLevelCount > 1 && view !== "avanzado"
                       ? "Aún no hay una fecha abierta para este nivel. Escríbenos y te avisamos del próximo grupo."
                       : "Aún no hay una fecha abierta para este curso. Escríbenos y te avisamos del próximo grupo."}
                   </p>
@@ -487,12 +551,31 @@ export default function CourseDetailClient({
                 )}
               </div>
 
-              {activeSchedulesList.length === 0 ? (
+              {isEmpresa ? (
+                <>
+                  <Link
+                    href={quoteHref}
+                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
+                  >
+                    Cotizar para mi empresa
+                    <ArrowRight size={16} />
+                  </Link>
+                  <a
+                    href={courseWa}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-medium text-ink no-underline hover:bg-wash"
+                  >
+                    <MessageCircle size={16} />
+                    WhatsApp
+                  </a>
+                </>
+              ) : activeSchedulesList.length === 0 ? (
                 <a
                   href={whatsappHref({
-                    page: `/cursos/${course.slug}`,
+                    page: coursePath(course.slug, view),
                     intent: "fechas",
-                    course: `${course.title}${levels.length > 1 && activeLevel?.name ? ` - ${activeLevel.name}` : ""}`,
+                    course: `${course.title}${catalogLevelCount > 1 && activeLevel?.name ? ` - ${activeLevel.name}` : ""}`,
                   })}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -523,10 +606,7 @@ export default function CourseDetailClient({
                 </>
               )}
 
-              <CourseCardDescription
-                lead={course.shortDescription?.trim() || introParagraphs[0] || ""}
-                more={course.shortDescription?.trim() ? introParagraphs : introParagraphs.slice(1)}
-              />
+              <CourseCardDescription lead={offerLead} more={offerMore} />
 
               <ul className="mt-5 space-y-2 border-t border-line pt-5">
                 {includes.map((item) => (
@@ -544,14 +624,56 @@ export default function CourseDetailClient({
                 <a href={PDF_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 no-underline hover:text-mute">
                   <FileText size={15} /> Folleto
                 </a>
+                {view === "publico" && tiered ? (
+                  <Link href={coursePath(course.slug, "avanzado")} className="no-underline hover:text-mute">
+                    Curso avanzado
+                  </Link>
+                ) : null}
+                {view === "avanzado" ? (
+                  <Link href={coursePath(course.slug)} className="no-underline hover:text-mute">
+                    Básico e intermedio
+                  </Link>
+                ) : null}
+                {view === "empresas" ? (
+                  <Link href={coursePath(course.slug)} className="no-underline hover:text-mute">
+                    Ver curso individual
+                  </Link>
+                ) : (
+                  <Link href={coursePath(course.slug, "empresas")} className="no-underline hover:text-mute">
+                    Ver para empresas
+                  </Link>
+                )}
               </div>
             </div>
           </aside>
 
           <div className="min-w-0 lg:col-span-7">
+            {view === "publico" && tiered && advancedLevel ? (
+              <Link
+                href={coursePath(course.slug, "avanzado")}
+                className="mb-12 block rounded-[26px] border border-line bg-paper p-6 no-underline sm:p-8"
+              >
+                <p className="text-sm font-semibold text-mute">Curso avanzado</p>
+                <p className="mt-2 text-2xl font-bold tracking-tight text-ink">{course.title} avanzado</p>
+                <p className="mt-2 text-sm text-mute">
+                  {advancedLevel.durationHours ? `${advancedLevel.durationHours} h` : "En vivo"} · inscripción aparte
+                </p>
+                <ul className="mt-5 space-y-2">
+                  {advancedLevel.whatYouLearn.slice(0, 4).map((item) => (
+                    <li key={item} className="flex items-start gap-2 text-sm text-ink">
+                      <Check size={15} className="mt-0.5 shrink-0" strokeWidth={2.2} />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink">
+                  Ver temario <ArrowRight size={15} />
+                </p>
+              </Link>
+            ) : null}
             <TemarioSection
               course={course}
-              selectedLevel={selectedLevel}
+              selectedLevel={syllabusIndex}
               isFreeTrial={isFreeTrial}
               embedded
             />

@@ -12,6 +12,7 @@ import {
   Info, Globe, Tag
 } from "lucide-react";
 import { courses as allCourses, Course, COURSE_NAV_GROUPS } from "@/lib/data/courses";
+import { isTieredCourse } from "@/lib/data/course-views";
 
 const CATALOG_FILTERS = [{ id: "todos" as const, label: "Todos" }, ...COURSE_NAV_GROUPS];
 type CatalogFilter = (typeof CATALOG_FILTERS)[number]["id"];
@@ -62,7 +63,12 @@ export default function PagoClient() {
   const { country, countries, setCountryByIso, convertPrice, convertTime } = useCountry();
   const scheduleCountry = useMemo(() => SCHEDULE_COUNTRIES.find(c => c.code === country.iso) || SCHEDULE_COUNTRIES[0], [country.iso]);
 
-  const [mode, setMode] = useState<Mode>("individual");
+  const [mode, setMode] = useState<Mode>(
+    searchParams.get("modo") === "empresa" ? "enterprise" : "individual"
+  );
+  useEffect(() => {
+    if (searchParams.get("modo") === "empresa") setMode("enterprise");
+  }, [searchParams]);
   const [catalogFilter, setCatalogFilter] = useState<CatalogFilter>("todos");
   const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
   const [promotions, setPromotions] = useState<any[]>([]);
@@ -700,7 +706,12 @@ export default function PagoClient() {
 
                           {course.levels && course.levels.length > 1 && (
                             <div className="flex flex-wrap gap-2">
-                               {course.levels.map(lvl => (
+                               {(mode === "enterprise" || !isTieredCourse(course)
+                                 ? course.levels
+                                 : course.slug === initialSlug && initialLevel === "Avanzado"
+                                   ? course.levels.filter((lvl) => lvl.name === "Avanzado")
+                                   : course.levels.filter((lvl) => lvl.name !== "Avanzado")
+                               ).map(lvl => (
                                  <button 
                                    key={lvl.name} 
                                    type="button"

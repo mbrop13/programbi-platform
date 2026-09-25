@@ -7,6 +7,11 @@ import { whatsappHref } from "@/lib/whatsapp";
 import { EmpresasContactForm } from "./empresas-contact-form";
 import { EmpresasFaq } from "./empresas-faq";
 
+type EmpresasLandingProps = {
+  curso?: string;
+  nivel?: string;
+};
+
 const WA = whatsappHref({
   page: "/empresas",
   intent: "empresas",
@@ -58,7 +63,7 @@ const TOPICS = [
   { name: "IA en el trabajo", line: "Copilot y productividad del equipo." },
 ];
 
-export function EmpresasLanding() {
+export function EmpresasLanding({ curso, nivel }: EmpresasLandingProps) {
   return (
     <div className="bg-canvas text-ink">
       <AnalyticsPageEvent event="view_empresas" />
@@ -68,7 +73,7 @@ export function EmpresasLanding() {
       <How />
       <Topics />
       <Faq />
-      <Contact />
+      <Contact curso={curso} nivel={nivel} />
     </div>
   );
 }
@@ -232,7 +237,7 @@ function Faq() {
   );
 }
 
-function Contact() {
+function Contact({ curso, nivel }: EmpresasLandingProps) {
   return (
     <section id="contacto" className="scroll-mt-24">
       <div className="mx-auto grid max-w-[1400px] gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-start lg:px-8">
@@ -259,7 +264,7 @@ function Contact() {
             ))}
           </ul>
         </div>
-        <EmpresasContactForm />
+        <EmpresasContactForm curso={curso} nivel={nivel} />
       </div>
     </section>
   );

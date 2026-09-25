@@ -10,6 +10,7 @@ import FaqSection from "@/components/marketing/FaqSection";
 import HomeDeferred from "@/components/marketing/HomeDeferred";
 import { homeFaqs } from "@/lib/data/site";
 import { courses } from "@/lib/data/courses";
+import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import { SITE_URL, absoluteUrl, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 
@@ -57,10 +58,10 @@ export default function HomePage() {
           title: c.title,
           shortDescription: c.shortDescription,
           imageUrl: c.imageUrl,
-          durationHours: c.durationHours,
+          durationHours: catalogHours(c),
           techStack: c.techStack,
           badgeLabel: c.badgeLabel,
-          levelsCount: c.levels?.length ?? 1,
+          levelsCount: publicLevelCount(c),
         }))}
       />
       <JobsBanner />

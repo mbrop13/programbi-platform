@@ -45,7 +45,12 @@ export const metadata: Metadata = {
   ),
 };
 
-export default function EmpresasPage() {
+export default async function EmpresasPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ curso?: string; nivel?: string }>;
+}) {
+  const { curso, nivel } = await searchParams;
   const serviceJsonLd = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -73,7 +78,7 @@ export default function EmpresasPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(serviceJsonLd) }}
       />
-      <EmpresasClient />
+      <EmpresasClient curso={curso} nivel={nivel} />
     </>
   );
 }

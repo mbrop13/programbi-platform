@@ -16,6 +16,7 @@ export type CourseCatalogItem = {
   shortDescription: string;
   imageUrl: string;
   durationHours: number;
+  levelsCount?: number;
   techStack: string[];
 };
 
@@ -49,7 +50,7 @@ export default function CursosPageClient({
         <div className="mx-auto max-w-[1400px]">
           <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">Cursos</h1>
           <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">
-            Programas en vivo por Zoom. Elige una herramienta o el programa completo de 144 horas.
+            Programas en vivo por Zoom. Elige una herramienta o el programa de análisis de datos.
           </p>
           <div className="relative mt-8 max-w-xl">
             <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-faint" />
@@ -102,7 +103,7 @@ export default function CursosPageClient({
                 </div>
               </div>
               <div className="flex flex-col justify-end px-6 py-6 lg:col-span-5 lg:px-8 lg:py-8">
-                <p className="text-xs font-semibold text-mute">Programa de 144 horas</p>
+                <p className="text-xs font-semibold text-mute">96 horas · básico e intermedio</p>
                 <h2 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
                   Curso de análisis de datos
                 </h2>
@@ -151,6 +152,7 @@ export default function CursosPageClient({
                   <p className="mt-1 text-sm text-mute">{course.shortDescription}</p>
                   <p className="mt-3 inline-flex items-center gap-1 text-xs text-faint">
                     <Clock size={12} /> {course.durationHours} h · En vivo
+                    {course.levelsCount && course.levelsCount > 1 ? ` · ${course.levelsCount} niveles` : ""}
                   </p>
                 </div>
               </Link>

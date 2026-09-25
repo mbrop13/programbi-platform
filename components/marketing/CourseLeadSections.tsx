@@ -42,8 +42,8 @@ function formatItems(course: Course, hours: number): string[] {
   const levels = course.levels?.length ?? 1;
   const items = ["Clases en vivo por Zoom"];
   if (course.slug === "analisis-de-datos") {
-    items.push("144 horas en total");
-    items.push("3 niveles de 48 horas: SQL Server, Power BI y Python");
+    items.push("96 horas en básico e intermedio");
+    items.push("SQL Server, Power BI y Python. El curso avanzado es aparte");
   } else {
     if (hours) items.push(`${hours} horas por nivel`);
     if (levels > 1) items.push(`${levels} niveles`);
@@ -57,10 +57,14 @@ export function CourseAudienceAndResults({
   course,
   selectedLevel,
   results,
+  levelLabel,
+  showLadderNote = true,
 }: {
   course: Course;
   selectedLevel: number;
   results: string[];
+  levelLabel?: string;
+  showLadderNote?: boolean;
 }) {
   const syllabus = getCourseSyllabus(course);
   const level = getSyllabusLevel(syllabus, selectedLevel);
@@ -82,13 +86,13 @@ export function CourseAudienceAndResults({
           <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Para quién</h2>
           {syllabus.levels.length > 1 ? (
             <p className="mt-3 text-sm font-semibold text-ink">
-              {level.label}
+              {levelLabel || level.label}
               {level.shortLabel ? ` · ${level.shortLabel}` : ""}
             </p>
           ) : null}
           {levelText ? <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">{levelText}</p> : null}
           {programText ? <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">{programText}</p> : null}
-          {syllabus.audienceNote ? (
+          {showLadderNote && syllabus.audienceNote ? (
             <p className="mt-3 max-w-[40rem] text-sm leading-relaxed text-mute">{syllabus.audienceNote}</p>
           ) : null}
         </div>

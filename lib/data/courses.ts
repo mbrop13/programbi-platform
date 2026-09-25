@@ -39,7 +39,7 @@ export const courses: Course[] = [
     shortDescription:
       "Programa integral de 48 horas por nivel donde dominarás SQL Server, Power BI y Python.",
     description:
-      "Programa integral de 48 horas por nivel (3 niveles) diseñado para dominar SQL Server, Power BI y Python de extremo a extremo. Aprende a extraer, transformar y visualizar datos para tomar decisiones estratégicas.",
+      "Programa en vivo de SQL Server, Power BI y Python, 48 horas por nivel. El curso abierto es básico e intermedio. El nivel avanzado se inscribe aparte. Las empresas cotizan los tres niveles.",
     category: "programacion",
     categoryLabel: "MÁS POPULAR",
     badgeLabel: "MÁS POPULAR",
