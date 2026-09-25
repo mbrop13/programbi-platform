@@ -56,14 +56,7 @@ const STEPS = [
   },
 ];
 
-const EMPRESA_COURSE_SLUGS = [
-  "power-bi",
-  "sql-server",
-  "python",
-  "excel",
-  "power-automate",
-  "ia-productividad",
-] as const;
+const EMPRESA_COURSES = [...courses].sort((a, b) => a.sortOrder - b.sortOrder);
 
 export function EmpresasLanding({ curso, nivel }: EmpresasLandingProps) {
   return (
@@ -194,9 +187,7 @@ function How() {
 }
 
 function Topics() {
-  const list = EMPRESA_COURSE_SLUGS.map((slug) => courses.find((c) => c.slug === slug)).filter(
-    (c): c is (typeof courses)[number] => Boolean(c)
-  );
+  const list = EMPRESA_COURSES;
   return (
     <section className="mx-auto max-w-[1400px] px-4 py-20 sm:px-6 lg:px-8">
       <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
