@@ -7,7 +7,7 @@ import CommunityLanding from "@/components/comunidad/CommunityLanding";
 export const metadata: Metadata = {
   title: "Comunidad",
   description:
-    "Una clase semanal en vivo que queda grabada. Un solo plan de $29.990 al mes. La suscripción empieza a correr desde la primera clase.",
+    "Clases prácticas semanales para decidir en administración: informes comerciales, control de gestión, proyectos y finanzas, con Power BI, Python y SQL Server. Promoción $29.990 al mes, para siempre.",
 };
 
 export default async function ComunidadPage() {

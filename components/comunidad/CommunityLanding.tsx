@@ -1,19 +1,37 @@
-import { ArrowRight, Calendar, Check, Video } from "lucide-react";
+import { ArrowRight, Calendar, Check, Flame, Target, Video } from "lucide-react";
+import LogoSlider from "@/components/marketing/LogoSlider";
+import { PRACTICE_UNIT_META } from "@/lib/practice/catalog";
 import { CampusCta } from "./campus-cta";
 
-const MONTHLY_CLP = 29990;
+const LIST_CLP = 49990;
+const PROMO_CLP = 29990;
 
-const priceLabel = new Intl.NumberFormat("es-CL", {
+const clp = new Intl.NumberFormat("es-CL", {
   style: "currency",
   currency: "CLP",
   maximumFractionDigits: 0,
-}).format(MONTHLY_CLP);
+});
+const listLabel = clp.format(LIST_CLP);
+const priceLabel = clp.format(PROMO_CLP);
 
 const includes = [
-  "1 clase semanal en vivo",
+  "1 clase práctica en vivo por semana",
   "La clase queda grabada",
-  "La ves después, cuando puedas",
-  "Un solo plan, sin otros precios",
+  "Practica estilo Duolingo entre clases",
+  `Promoción de ${priceLabel} al mes, para siempre`,
+];
+
+const classCases = [
+  { title: "Informes comerciales", body: "Ventas, margen y qué está moviendo el resultado." },
+  { title: "Control de gestión", body: "Indicadores del área y el seguimiento de lo comprometido." },
+  { title: "Proyectos", body: "Avance, plazos y dónde se está yendo el trabajo." },
+  { title: "Informes financieros", body: "Resultado, costos y la lectura para administrar." },
+];
+
+const practicePoints = [
+  { icon: Target, title: "Ruta de niveles", body: "Eliges un track y avanzas lección a lección. Lo que sigue se desbloquea cuando terminas lo anterior." },
+  { icon: Flame, title: "XP, racha y meta diaria", body: "Ganas XP, mantienes la racha y eliges un ritmo de 5 a 25 minutos." },
+  { icon: Check, title: "Feedback al instante", body: "Cada respuesta se corrige en el momento, con la explicación." },
 ];
 
 const moments = [
@@ -25,7 +43,7 @@ const moments = [
   {
     when: "Primera clase",
     title: "Ahí parte el mes",
-    body: "El día de la primera clase en vivo empieza a correr la suscripción de " + priceLabel + ".",
+    body: "El día de la primera clase en vivo empieza a correr la suscripción de " + priceLabel + ". Ese precio se conserva para siempre.",
   },
   {
     when: "Cada semana",
@@ -41,7 +59,7 @@ const faqs = [
   },
   {
     q: "¿Cuánto cuesta?",
-    a: `Hay un solo plan: ${priceLabel} al mes.`,
+    a: `El precio original es ${listLabel} al mes. Por promoción queda en ${priceLabel}, y ese precio se conserva para siempre.`,
   },
   {
     q: "¿Cuándo empieza a correr la suscripción?",
@@ -53,12 +71,30 @@ const faqs = [
   },
   {
     q: "¿Hay más de un plan?",
-    a: `No. La comunidad tiene un solo plan de ${priceLabel} al mes.`,
+    a: `Hay un solo plan. El precio original es ${listLabel} al mes y la promoción lo deja en ${priceLabel} para siempre.`,
+  },
+  {
+    q: "¿El precio de promoción sube después?",
+    a: `Se conserva para siempre. Quien entra con la promoción sigue pagando ${priceLabel} al mes.`,
+  },
+  {
+    q: "¿Qué se ve en las clases?",
+    a: "Casos para decidir en administración: informes comerciales, control de gestión, proyectos e informes financieros, entre otros. Se arman con Power BI, Python y SQL Server.",
+  },
+  {
+    q: "¿Cómo son las clases?",
+    a: "Son prácticas. En la sesión se trabaja el informe para apoyar la toma de decisiones de equipos administrativos.",
+  },
+  {
+    q: "¿Qué es Practica?",
+    a: "Una ruta estilo Duolingo. Eliges Power BI, SQL Server, Python, Excel o Inteligencia Artificial, avanzas por niveles, ganas XP y mantienes una racha.",
   },
 ];
 
 const btnPrimary =
   "inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98] border-0 cursor-pointer";
+const btnInline =
+  "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98] border-0 cursor-pointer";
 
 export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
@@ -79,7 +115,7 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
             </h1>
 
             <p className="mt-6 max-w-xl text-base leading-relaxed text-mute sm:text-lg">
-              La comunidad de ProgramBI tiene un solo plan de {priceLabel} al mes. La suscripción empieza a correr desde la primera clase.
+              Cada semana hay una clase práctica en vivo, y queda grabada. Entre clases sigues con Practica, una ruta estilo Duolingo. Un solo plan: {listLabel} al mes, en promoción {priceLabel} para siempre. La suscripción empieza a correr desde la primera clase.
             </p>
 
             <ul className="mt-8 space-y-3">
@@ -100,8 +136,12 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
           <aside id="membresia" className="scroll-mt-28">
             <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-[var(--sticky-below-nav,6rem)] lg:transition-[top] lg:duration-300 lg:ease-out motion-reduce:transition-none">
               <p className="text-sm font-medium text-ink">Plan único</p>
-              <p className="mt-3 text-4xl font-bold tracking-tight text-ink">{priceLabel}</p>
-              <p className="mt-1 text-sm text-mute">al mes</p>
+              <p className="mt-3 text-sm text-faint">
+                <span className="line-through">{listLabel}</span>
+                <span className="ml-2 font-semibold text-ink">Promoción</span>
+              </p>
+              <p className="text-4xl font-bold tracking-tight text-ink">{priceLabel}</p>
+              <p className="mt-1 text-sm text-mute">al mes, para siempre</p>
 
               <div className="mt-5 flex items-start gap-3 rounded-2xl border border-line bg-canvas px-3.5 py-3">
                 <Calendar className="mt-0.5 size-4 shrink-0" />
@@ -114,11 +154,19 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
               <ul className="mt-5 space-y-2.5 border-t border-line pt-5">
                 <li className="flex items-center gap-2.5 text-sm text-ink">
                   <Video className="size-4 shrink-0" />
-                  1 clase en vivo por semana
+                  1 clase práctica en vivo por semana
                 </li>
                 <li className="flex items-center gap-2.5 text-sm text-ink">
                   <Check className="size-4 shrink-0" strokeWidth={2.5} />
                   Queda grabada
+                </li>
+                <li className="flex items-center gap-2.5 text-sm text-ink">
+                  <Target className="size-4 shrink-0" />
+                  Practica estilo Duolingo
+                </li>
+                <li className="flex items-center gap-2.5 text-sm text-ink">
+                  <Check className="size-4 shrink-0" strokeWidth={2.5} />
+                  {priceLabel} se conserva para siempre
                 </li>
               </ul>
 
@@ -128,7 +176,7 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
                   <ArrowRight className="size-4" />
                 </CampusCta>
                 <p className="mt-3 text-center text-xs leading-relaxed text-mute">
-                  Crear la cuenta no adelanta el cobro. El mes de {priceLabel} parte el día de la primera clase.
+                  Crear la cuenta no adelanta el cobro. El mes de {priceLabel} parte el día de la primera clase y ese precio se conserva para siempre.
                 </p>
               </div>
             </div>
@@ -136,16 +184,24 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
         </div>
       </section>
 
+      <section className="border-b border-line bg-wash/40">
+        <p className="px-4 pt-8 text-center text-[11px] font-bold uppercase tracking-widest text-mute sm:pt-10">
+          Empresas que se han capacitado con nosotros
+        </p>
+        <LogoSlider className="border-0 bg-transparent" />
+      </section>
+
       <section className="border-b border-line">
-        <div className="mx-auto grid max-w-[1400px] grid-cols-1 sm:grid-cols-3">
+        <div className="mx-auto grid max-w-[1400px] grid-cols-2 lg:grid-cols-4">
           {[
-            { value: "1", label: "clase en vivo por semana" },
+            { value: "1", label: "clase práctica en vivo por semana" },
             { value: "Grabada", label: "para verla después del vivo" },
-            { value: priceLabel, label: "un solo plan, al mes" },
+            { value: "Practica", label: "ruta estilo Duolingo" },
+            { value: priceLabel, label: `al mes para siempre, antes ${listLabel}` },
           ].map((item, i) => (
             <div
               key={item.label}
-              className={`px-6 py-10 lg:px-10 lg:py-12 ${i > 0 ? "border-t border-line sm:border-t-0 sm:border-l" : ""}`}
+              className={`px-6 py-10 lg:px-10 lg:py-12 ${i % 2 === 1 ? "border-l border-line" : ""} ${i >= 2 ? "border-t border-line lg:border-t-0" : ""} ${i > 0 ? "lg:border-l lg:border-line" : ""}`}
             >
               <p className="text-3xl font-bold tracking-tight text-ink lg:text-4xl">{item.value}</p>
               <p className="mt-1.5 text-sm text-mute">{item.label}</p>
@@ -179,24 +235,109 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
       </section>
 
       <section className="border-b border-line px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
-        <div className="mx-auto grid max-w-[1400px] gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-center lg:gap-16">
-          <div>
-            <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">La clase queda grabada</h2>
-            <p className="mt-4 max-w-md text-base leading-relaxed text-mute">
-              Entras al vivo una vez por semana. Si ese horario no te acomoda, la misma clase queda grabada para verla después.
-            </p>
+        <div className="mx-auto max-w-[1400px]">
+          <h2 className="max-w-[18ch] text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
+            Clases prácticas para decidir
+          </h2>
+          <p className="mt-4 max-w-2xl text-base leading-relaxed text-mute">
+            Para equipos administrativos. Cada semana se trabaja un caso en vivo y se arma el informe con Power BI, Python y SQL Server, para apoyar la toma de decisiones. La clase queda grabada.
+          </p>
+          <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-[26px] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
+            {classCases.map((item) => (
+              <article key={item.title} className="bg-paper p-6">
+                <h3 className="text-lg font-bold tracking-tight text-ink">{item.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-mute">{item.body}</p>
+              </article>
+            ))}
           </div>
-          <div className="grid grid-cols-1 gap-px overflow-hidden rounded-[26px] border border-line bg-line sm:grid-cols-2">
+          <p className="mt-4 text-sm text-mute">Power BI · Python · SQL Server</p>
+          <div className="mt-8 grid grid-cols-1 gap-px overflow-hidden rounded-[26px] border border-line bg-line sm:grid-cols-2">
             <div className="bg-paper p-6 sm:p-8">
               <p className="text-[11px] font-bold uppercase tracking-widest text-mute">En vivo</p>
               <p className="mt-3 text-2xl font-bold tracking-tight text-ink">1 vez por semana</p>
-              <p className="mt-2 text-sm leading-relaxed text-mute">Una sesión en vivo. No hay un calendario de varias clases por semana.</p>
+              <p className="mt-2 text-sm leading-relaxed text-mute">El informe se arma durante la clase. Hay una sesión por semana.</p>
             </div>
             <div className="bg-paper p-6 sm:p-8">
               <p className="text-[11px] font-bold uppercase tracking-widest text-mute">Después</p>
               <p className="mt-3 text-2xl font-bold tracking-tight text-ink">Queda grabada</p>
               <p className="mt-2 text-sm leading-relaxed text-mute">La clase no se pierde. La grabación queda para verla cuando puedas.</p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="practica" className="border-b border-line px-4 py-20 sm:px-6 lg:px-8 lg:py-28">
+        <div className="mx-auto grid max-w-[1400px] items-start gap-12 lg:grid-cols-2 lg:gap-16">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-widest text-mute">Practica</p>
+            <h2 className="mt-3 max-w-[16ch] text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">
+              Una ruta estilo Duolingo para datos
+            </h2>
+            <p className="mt-4 max-w-xl text-base leading-relaxed text-mute">
+              Entre la clase semanal sigues practicando solo: niveles, XP y racha. Eliges el track y avanzas a tu ritmo.
+            </p>
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-1">
+              {practicePoints.map((point) => {
+                const Icon = point.icon;
+                return (
+                  <div key={point.title} className="rounded-[22px] border border-line bg-paper p-4">
+                    <Icon className="size-4" />
+                    <h3 className="mt-3 text-sm font-bold text-ink">{point.title}</h3>
+                    <p className="mt-1 text-sm leading-relaxed text-mute">{point.body}</p>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="mt-6 flex flex-wrap gap-2">
+              {PRACTICE_UNIT_META.map((track) => (
+                <span key={track.id} className="inline-flex items-center gap-2 rounded-full border border-line bg-paper px-3 py-1.5 text-xs font-semibold text-ink">
+                  <span className="size-2 rounded-full" style={{ backgroundColor: track.accentColor }} />
+                  {track.title}
+                </span>
+              ))}
+            </div>
+            <CampusCta isLoggedIn={isLoggedIn} href="/comunidad/practicar" className={`${btnInline} mt-8`}>
+              Empezar a practicar
+              <ArrowRight className="size-4" />
+            </CampusCta>
+          </div>
+
+          <div className="rounded-[26px] border border-line bg-paper p-6 sm:p-8">
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-[11px] font-bold uppercase tracking-widest text-mute">Tu ruta</p>
+                <p className="mt-1 text-lg font-bold tracking-tight text-ink">SQL Server</p>
+              </div>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-line px-3 py-1 text-xs font-semibold text-ink">
+                <Flame className="size-3.5" />
+                120 XP
+              </span>
+            </div>
+            <ol className="mt-8 space-y-0">
+              {[
+                { label: "SELECT básico", state: "Hecho" },
+                { label: "WHERE y filtros", state: "Hecho" },
+                { label: "JOINs", state: "Ahora" },
+                { label: "GROUP BY", state: "Después" },
+              ].map((step, index) => (
+                <li key={step.label} className="flex gap-4">
+                  <div className="flex flex-col items-center">
+                    <span
+                      className={`flex size-9 items-center justify-center rounded-full border text-xs font-bold ${
+                        step.state === "Después" ? "border-line bg-canvas text-faint" : "border-ink bg-ink text-canvas"
+                      }`}
+                    >
+                      {step.state === "Hecho" ? <Check className="size-4" strokeWidth={2.5} /> : index + 1}
+                    </span>
+                    {index < 3 ? <span className="h-8 w-px bg-line" /> : null}
+                  </div>
+                  <div className="pb-6">
+                    <p className={`text-sm font-semibold ${step.state === "Después" ? "text-faint" : "text-ink"}`}>{step.label}</p>
+                    <p className="text-xs text-mute">{step.state}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       </section>
@@ -222,9 +363,9 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
       <section className="border-t border-line px-4 pb-20 sm:px-6 lg:px-8 lg:pb-28">
         <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-8 rounded-[26px] border border-line bg-paper px-6 py-10 sm:px-10 lg:flex-row lg:items-center">
           <div>
-            <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Un solo plan. {priceLabel} al mes.</h2>
+            <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Un solo plan. {priceLabel} al mes, para siempre.</h2>
             <p className="mt-3 max-w-lg text-base leading-relaxed text-mute">
-              1 clase semanal en vivo, que queda grabada. La suscripción empieza a correr desde la primera clase.
+              Precio original {listLabel}. Por promoción queda en {priceLabel} y ese precio se conserva para siempre. La suscripción empieza a correr desde la primera clase.
             </p>
           </div>
           <div className="w-full max-w-xs shrink-0">
