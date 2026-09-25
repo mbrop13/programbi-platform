@@ -237,7 +237,7 @@ export const courses: Course[] = [
     durationHours: 20,
     modality: "online",
     level: "principiante",
-    imageUrl: "/images/courses/ia-productividad-card.webp",
+    imageUrl: "/images/courses/claude-card.webp",
     icon: "Sparkles",
     accentColor: "#D97757",
     isFeatured: false,

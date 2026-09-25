@@ -78,6 +78,7 @@ const PROGRAM_PRESETS = [
   "Análisis de Datos",
   "Power Automate",
   "Copilot",
+  "Claude",
   "Machine Learning",
   "Analítica Financiera",
 ];

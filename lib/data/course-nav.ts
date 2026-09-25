@@ -74,7 +74,7 @@ export const NAV_COURSE_GROUPS: { id: string; label: string; items: NavCourse[] 
       {
         slug: "claude",
         title: "Claude",
-        imageUrl: "/images/courses/ia-productividad-card.webp",
+        imageUrl: "/images/courses/claude-card.webp",
         durationHours: 20,
       },
       {
