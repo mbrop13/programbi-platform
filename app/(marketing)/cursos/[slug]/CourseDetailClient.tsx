@@ -19,7 +19,6 @@ import {
 import { type Course, courses } from "@/lib/data/courses";
 import {
   advancedHeading,
-  coursePath,
   empresaQuotePath,
   isTieredCourse,
   offerSyllabusLevel,
@@ -81,63 +80,32 @@ function formatSchedule(
   };
 }
 
-function OfferOvals({
-  tiered,
-  audience,
+function LevelOvals({
   levels,
   selectedLevel,
-  onAudience,
   onLevel,
-  compact,
 }: {
-  tiered: boolean;
-  audience: CourseOfferView;
   levels: { name: string }[];
   selectedLevel: number;
-  onAudience: (next: CourseOfferView) => void;
   onLevel: (index: number) => void;
-  compact?: boolean;
 }) {
-  if (!tiered && levels.length < 2) return null;
+  if (levels.length < 2) return null;
   return (
-    <div className={compact ? "mb-5 space-y-3" : "mt-6 space-y-3"}>
-      {tiered ? (
-        <div className="flex gap-1 rounded-full border border-line bg-wash p-1">
-          {(
-            [
-              ["publico", "Particulares"],
-              ["empresas", "Empresas"],
-            ] as const
-          ).map(([id, label]) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => onAudience(id)}
-              className={`flex-1 rounded-full py-2 text-xs font-semibold sm:text-sm ${
-                audience === id ? "bg-ink text-canvas" : "text-mute hover:text-ink"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      ) : null}
-      {levels.length > 1 ? (
-        <div className="flex gap-1 rounded-full border border-line bg-wash p-1">
-          {levels.map((level, idx) => (
-            <button
-              key={`${level.name}-${idx}`}
-              type="button"
-              onClick={() => onLevel(idx)}
-              className={`flex-1 rounded-full px-2 py-2 text-xs font-semibold sm:text-sm ${
-                selectedLevel === idx ? "bg-ink text-canvas" : "text-mute hover:text-ink"
-              }`}
-            >
-              {level.name}
-            </button>
-          ))}
-        </div>
-      ) : null}
+    <div className="mb-5">
+      <div className="flex gap-1 rounded-full border border-line bg-wash p-1">
+        {levels.map((level, idx) => (
+          <button
+            key={`${level.name}-${idx}`}
+            type="button"
+            onClick={() => onLevel(idx)}
+            className={`flex-1 rounded-full px-2 py-2 text-xs font-semibold sm:text-sm ${
+              selectedLevel === idx ? "bg-ink text-canvas" : "text-mute hover:text-ink"
+            }`}
+          >
+            {level.name}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -523,14 +491,10 @@ export default function CourseDetailClient({
 
           <aside className="lg:col-span-5 lg:row-span-2">
             <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-[var(--sticky-below-nav,6rem)] lg:transition-[top] lg:duration-300 lg:ease-out motion-reduce:transition-none">
-              <OfferOvals
-                tiered={tiered}
-                audience={view}
+              <LevelOvals
                 levels={levels}
                 selectedLevel={selectedLevel}
-                onAudience={chooseAudience}
                 onLevel={setSelectedLevel}
-                compact
               />
 
               <div className="relative mb-4">
@@ -702,6 +666,26 @@ export default function CourseDetailClient({
                 </>
               )}
 
+              <div className="mt-4 text-center">
+                {isEmpresa ? (
+                  <button
+                    type="button"
+                    onClick={() => chooseAudience("publico")}
+                    className="text-xs font-medium text-mute underline underline-offset-4 hover:text-ink"
+                  >
+                    Ver curso individual
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => chooseAudience("empresas")}
+                    className="text-xs font-medium text-mute underline underline-offset-4 hover:text-ink"
+                  >
+                    Ver {course.title} como empresa
+                  </button>
+                )}
+              </div>
+
               <CourseCardDescription lead={offerLead} more={offerMore} />
 
               <ul className="mt-5 space-y-2 border-t border-line pt-5">
@@ -720,19 +704,6 @@ export default function CourseDetailClient({
                 <a href={PDF_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 no-underline hover:text-mute">
                   <FileText size={15} /> Folleto
                 </a>
-                {view === "empresas" ? (
-                  <button type="button" onClick={() => chooseAudience("publico")} className="hover:text-mute">
-                    Ver curso individual
-                  </button>
-                ) : tiered ? (
-                  <button type="button" onClick={() => chooseAudience("empresas")} className="hover:text-mute">
-                    Ver para empresas
-                  </button>
-                ) : (
-                  <Link href={coursePath(course.slug, "empresas")} className="no-underline hover:text-mute">
-                    Ver para empresas
-                  </Link>
-                )}
               </div>
             </div>
           </aside>

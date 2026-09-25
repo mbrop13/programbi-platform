@@ -156,6 +156,14 @@ export function EmpresasContactForm({
       className="relative rounded-2xl border border-line bg-paper p-5 sm:p-7"
       noValidate
     >
+      {preset ? (
+        <div className="mb-5 flex flex-wrap gap-2">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-xs font-semibold text-canvas">
+            Para empresas · {preset}
+            {nivel ? ` · ${nivel}` : ""}
+          </span>
+        </div>
+      ) : null}
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0"
