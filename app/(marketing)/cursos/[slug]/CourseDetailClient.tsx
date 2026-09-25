@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import CourseImage from "@/components/shared/CourseImage";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -21,7 +22,8 @@ import {
   coursePath,
   empresaQuotePath,
   isTieredCourse,
-  combinedOpenSyllabus,
+  offerSyllabusLevel,
+  OPEN_LEVEL_NAME,
   levelsForView,
   levelIntro,
   syllabusIndexForLevel,
@@ -79,16 +81,104 @@ function formatSchedule(
   };
 }
 
+function OfferOvals({
+  tiered,
+  audience,
+  levels,
+  selectedLevel,
+  onAudience,
+  onLevel,
+  compact,
+}: {
+  tiered: boolean;
+  audience: CourseOfferView;
+  levels: { name: string }[];
+  selectedLevel: number;
+  onAudience: (next: CourseOfferView) => void;
+  onLevel: (index: number) => void;
+  compact?: boolean;
+}) {
+  if (!tiered && levels.length < 2) return null;
+  return (
+    <div className={compact ? "mb-5 space-y-3" : "mt-6 space-y-3"}>
+      {tiered ? (
+        <div className="flex gap-1 rounded-full border border-line bg-wash p-1">
+          {(
+            [
+              ["publico", "Particulares"],
+              ["empresas", "Empresas"],
+            ] as const
+          ).map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => onAudience(id)}
+              className={`flex-1 rounded-full py-2 text-xs font-semibold sm:text-sm ${
+                audience === id ? "bg-ink text-canvas" : "text-mute hover:text-ink"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {levels.length > 1 ? (
+        <div className="flex gap-1 rounded-full border border-line bg-wash p-1">
+          {levels.map((level, idx) => (
+            <button
+              key={`${level.name}-${idx}`}
+              type="button"
+              onClick={() => onLevel(idx)}
+              className={`flex-1 rounded-full px-2 py-2 text-xs font-semibold sm:text-sm ${
+                selectedLevel === idx ? "bg-ink text-canvas" : "text-mute hover:text-ink"
+              }`}
+            >
+              {level.name}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function levelIndex(course: Course, audience: CourseOfferView, levelName?: string) {
+  const levels = levelsForView(course, audience);
+  if (!levelName) return 0;
+  const index = levels.findIndex((level) => level.name === levelName);
+  return index >= 0 ? index : 0;
+}
+
 export default function CourseDetailClient({
   course,
   initialSchedules,
-  view = "publico",
+  initialView = "publico",
+  initialLevelName,
 }: {
   course: Course;
   initialSchedules: CourseSchedule[];
-  view?: CourseOfferView;
+  initialView?: CourseOfferView;
+  initialLevelName?: string;
 }) {
-  const [selectedLevel, setSelectedLevel] = useState(0);
+  const router = useRouter();
+  const pathname = usePathname();
+  const startingView: CourseOfferView = initialView === "avanzado" ? "publico" : initialView;
+  const [audience, setAudience] = useState<CourseOfferView>(startingView);
+  const [selectedLevel, setSelectedLevel] = useState(() =>
+    levelIndex(course, startingView, initialView === "avanzado" ? "Avanzado" : initialLevelName)
+  );
+  const view = audience;
+
+  const chooseAudience = (next: CourseOfferView) => {
+    setAudience(next);
+    setSelectedLevel(0);
+    const params = new URLSearchParams(window.location.search);
+    if (next === "empresas") params.set("para", "empresas");
+    else params.delete("para");
+    params.delete("nivel");
+    const query = params.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+  };
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -126,8 +216,8 @@ export default function CourseDetailClient({
   };
 
   const handleCheckoutCTA = async () => {
-    const levelName =
-      view === "publico" && tiered ? "Básico" : levels[selectedLevel]?.name;
+    const picked = levels[selectedLevel];
+    const levelName = picked?.name === OPEN_LEVEL_NAME ? "Básico" : picked?.name;
     trackCtaClick(showPrice ? "Inscribirse" : "Registrarse", "course_detail_sidebar", {
       course_slug: course.slug,
     });
@@ -214,37 +304,42 @@ export default function CourseDetailClient({
   }, []);
 
   const activeLevel = levels[selectedLevel] || null;
-  const syllabusIndex = syllabusIndexForLevel(course, activeLevel?.name);
-  const openSyllabus = view === "publico" && tiered ? combinedOpenSyllabus(course) : null;
+  const syllabusIndex = syllabusIndexForLevel(course, activeLevel?.name === OPEN_LEVEL_NAME ? "Básico" : activeLevel?.name);
+  const offerSyllabus =
+    tiered && view !== "empresas"
+      ? offerSyllabusLevel(course, activeLevel?.name === "Avanzado" ? "avanzado" : "publico")
+      : null;
 
   const levelSchedules = useMemo(() => {
     if (!activeLevel) return [];
+    const storedLevel = activeLevel.name === OPEN_LEVEL_NAME ? "Básico" : activeLevel.name;
+    const openCohorts = view !== "empresas" && activeLevel.name === OPEN_LEVEL_NAME;
     if (course.slug === "analisis-de-datos") {
       const adSchedules = schedules.filter(
-        (s) => ["sql-server", "power-bi", "python"].includes(s.course_slug) && s.level_name === "Básico"
+        (s) =>
+          ["sql-server", "power-bi", "python"].includes(s.course_slug) &&
+          (openCohorts ? s.level_name === "Básico" || s.level_name === "Intermedio" : s.level_name === storedLevel)
       );
       return getAllActiveSchedules(adSchedules);
     }
     const matched = schedules.filter((s) => {
       if (s.course_slug !== course.slug) return false;
       if (catalogLevelCount <= 1) return true;
-      if (view === "publico" && tiered) {
-        return s.level_name === "Básico" || s.level_name === "Intermedio";
-      }
-      return s.level_name === activeLevel.name;
+      if (openCohorts) return s.level_name === "Básico" || s.level_name === "Intermedio";
+      return s.level_name === storedLevel;
     });
     return getAllActiveSchedules(matched);
-  }, [schedules, activeLevel, course.slug, catalogLevelCount, view, tiered]);
+  }, [schedules, activeLevel, course.slug, catalogLevelCount, view]);
 
   const activeSchedulesList = useMemo(() => {
     if (levelSchedules.length > 0) return levelSchedules;
     const matchedStatic = staticSchedules.filter((s) => {
       if (s.course_slug !== course.slug) return false;
       if (catalogLevelCount <= 1) return true;
-      if (view === "publico" && tiered) {
+      if (view !== "empresas" && activeLevel?.name === OPEN_LEVEL_NAME) {
         return s.level_name === "Básico" || s.level_name === "Intermedio";
       }
-      return s.level_name === (activeLevel?.name || "Básico");
+      return s.level_name === (activeLevel?.name === OPEN_LEVEL_NAME ? "Básico" : activeLevel?.name || "Básico");
     });
     const now = new Date();
     const futureStatic = matchedStatic.filter((s) => new Date(s.start_date + "T12:00:00") >= now);
@@ -311,7 +406,6 @@ export default function CourseDetailClient({
   const seo = COURSE_SEO[course.slug];
   const heading =
     view === "avanzado" ? advancedHeading(seo?.h1 || course.title) : seo?.h1 || course.title;
-  const advancedLevel = course.levels?.find((level) => level.name === "Avanzado");
   const introParagraphs =
     view === "publico" ? (seo?.intro?.split("\n\n").filter(Boolean) ?? []) : [];
   const offerLead =
@@ -330,7 +424,7 @@ export default function CourseDetailClient({
         : [];
   const quoteHref = empresaQuotePath(course.slug, activeLevel?.name);
   const courseWa = whatsappHref({
-    page: coursePath(course.slug, view),
+    page: view === "empresas" ? `/cursos/${course.slug}?para=empresas` : `/cursos/${course.slug}`,
     intent: isEmpresa ? "empresas" : "curso",
     course: view === "avanzado" ? `${course.title} avanzado` : course.title,
   });
@@ -393,10 +487,17 @@ export default function CourseDetailClient({
               </li>
               <li>En vivo por Zoom</li>
               <li>Certificado</li>
-              {view === "publico" && tiered ? <li>Básico-Intermedio</li> : null}
-              {levels.length > 1 ? <li>{levels.length} niveles</li> : null}
-              {view === "avanzado" ? <li>Inscripción aparte</li> : null}
+              {activeLevel ? <li>{activeLevel.name}</li> : null}
             </ul>
+
+            <OfferOvals
+              tiered={tiered}
+              audience={view}
+              levels={levels}
+              selectedLevel={selectedLevel}
+              onAudience={chooseAudience}
+              onLevel={setSelectedLevel}
+            />
 
             <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-[26px] border border-line bg-wash">
               <CourseImage
@@ -422,35 +523,24 @@ export default function CourseDetailClient({
               selectedLevel={syllabusIndex}
               results={outcomes}
               levelLabel={
-                view === "avanzado" ? "Curso avanzado" : openSyllabus ? openSyllabus.label : undefined
+                view === "avanzado" ? "Curso avanzado" : offerSyllabus ? offerSyllabus.label : undefined
               }
-              levelContent={openSyllabus ?? undefined}
+              levelContent={offerSyllabus ?? undefined}
               showLadderNote={view === "empresas" || !tiered}
             />
           </div>
 
           <aside className="lg:col-span-5 lg:row-span-2">
             <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-[var(--sticky-below-nav,6rem)] lg:transition-[top] lg:duration-300 lg:ease-out motion-reduce:transition-none">
-              {levels.length > 1 && (
-                <div className="mb-5">
-                  <p className="mb-2 text-sm font-medium text-ink">Nivel</p>
-                  <div className="flex gap-1 rounded-full border border-line bg-wash p-1">
-                    {levels.map((level, idx) => (
-                      <button
-                        key={`${level.name}-${idx}`}
-                        type="button"
-                        suppressHydrationWarning
-                        onClick={() => setSelectedLevel(idx)}
-                        className={`flex-1 rounded-full py-2 text-xs font-semibold sm:text-sm ${
-                          selectedLevel === idx ? "bg-ink text-canvas" : "text-mute hover:text-ink"
-                        }`}
-                      >
-                        {level.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <OfferOvals
+                tiered={tiered}
+                audience={view}
+                levels={levels}
+                selectedLevel={selectedLevel}
+                onAudience={chooseAudience}
+                onLevel={setSelectedLevel}
+                compact
+              />
 
               <div className="relative mb-4">
                 <p className="mb-2 text-sm font-medium text-ink">Próxima fecha</p>
@@ -588,7 +678,7 @@ export default function CourseDetailClient({
               ) : activeSchedulesList.length === 0 ? (
                 <a
                   href={whatsappHref({
-                    page: coursePath(course.slug, view),
+                    page: view === "empresas" ? `/cursos/${course.slug}?para=empresas` : `/cursos/${course.slug}`,
                     intent: "fechas",
                     course: `${course.title}${catalogLevelCount > 1 && activeLevel?.name ? ` - ${activeLevel.name}` : ""}`,
                   })}
@@ -639,20 +729,14 @@ export default function CourseDetailClient({
                 <a href={PDF_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 no-underline hover:text-mute">
                   <FileText size={15} /> Folleto
                 </a>
-                {view === "publico" && tiered ? (
-                  <Link href={coursePath(course.slug, "avanzado")} className="no-underline hover:text-mute">
-                    Curso avanzado
-                  </Link>
-                ) : null}
-                {view === "avanzado" ? (
-                  <Link href={coursePath(course.slug)} className="no-underline hover:text-mute">
-                    Básico-Intermedio
-                  </Link>
-                ) : null}
                 {view === "empresas" ? (
-                  <Link href={coursePath(course.slug)} className="no-underline hover:text-mute">
+                  <button type="button" onClick={() => chooseAudience("publico")} className="hover:text-mute">
                     Ver curso individual
-                  </Link>
+                  </button>
+                ) : tiered ? (
+                  <button type="button" onClick={() => chooseAudience("empresas")} className="hover:text-mute">
+                    Ver para empresas
+                  </button>
                 ) : (
                   <Link href={coursePath(course.slug, "empresas")} className="no-underline hover:text-mute">
                     Ver para empresas
@@ -663,35 +747,12 @@ export default function CourseDetailClient({
           </aside>
 
           <div className="min-w-0 lg:col-span-7">
-            {view === "publico" && tiered && advancedLevel ? (
-              <Link
-                href={coursePath(course.slug, "avanzado")}
-                className="mb-12 block rounded-[26px] border border-line bg-paper p-6 no-underline sm:p-8"
-              >
-                <p className="text-sm font-semibold text-mute">Curso avanzado</p>
-                <p className="mt-2 text-2xl font-bold tracking-tight text-ink">{course.title} avanzado</p>
-                <p className="mt-2 text-sm text-mute">
-                  {advancedLevel.durationHours ? `${advancedLevel.durationHours} h` : "En vivo"} · inscripción aparte
-                </p>
-                <ul className="mt-5 space-y-2">
-                  {advancedLevel.whatYouLearn.slice(0, 4).map((item) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-ink">
-                      <Check size={15} className="mt-0.5 shrink-0" strokeWidth={2.2} />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-5 inline-flex items-center gap-1.5 text-sm font-semibold text-ink">
-                  Ver temario <ArrowRight size={15} />
-                </p>
-              </Link>
-            ) : null}
             <TemarioSection
               course={course}
               selectedLevel={syllabusIndex}
               isFreeTrial={isFreeTrial}
               embedded
-              levelOverride={openSyllabus ?? undefined}
+              levelOverride={offerSyllabus ?? undefined}
             />
           </div>
         </div>

@@ -12,7 +12,7 @@ import {
   Info, Globe, Tag
 } from "lucide-react";
 import { courses as allCourses, Course, COURSE_NAV_GROUPS } from "@/lib/data/courses";
-import { isTieredCourse } from "@/lib/data/course-views";
+import { isTieredCourse, PARTICULAR_COURSE_HOURS } from "@/lib/data/course-views";
 
 const CATALOG_FILTERS = [{ id: "todos" as const, label: "Todos" }, ...COURSE_NAV_GROUPS];
 type CatalogFilter = (typeof CATALOG_FILTERS)[number]["id"];
@@ -660,6 +660,7 @@ export default function PagoClient() {
                const hasScheduleActive = courseSchedules.length > 0 || alwaysAvailable;
                // Overwrite hasScheduleActive if fetching schedules is done but it evaluates to false, we assume you cannot purchase and must notify.
                const canBuy = mode === 'individual' && hasScheduleActive && currentLevelData?.price;
+               const particularHours = mode === "individual" && isTieredCourse(course) ? PARTICULAR_COURSE_HOURS : null;
 
                const cartKey = `${course.slug}-${activeLevel}`;
                const itemQty = cart[cartKey]?.quantity || 0;
@@ -695,7 +696,7 @@ export default function PagoClient() {
                               ) : null}
                             </div>
                             <p className="mt-1 text-xs font-semibold text-mute">
-                              {course.durationHours} h · En vivo
+                              {particularHours ?? course.durationHours} h · En vivo
                               {course.techStack.length ? ` · ${course.techStack.join(" · ")}` : ""}
                             </p>
                             {isBundle && (
@@ -866,12 +867,12 @@ export default function PagoClient() {
                                     <Bell className="h-3.5 w-3.5" /> Próxima fecha por confirmar
                                   </span>
                                )}
-                               {currentLevelData?.durationHours && (
+                               {(particularHours ?? currentLevelData?.durationHours) ? (
                                  <span className="flex min-w-0 flex-1 flex-wrap items-center gap-x-1.5 gap-y-0.5 text-mute">
                                     <Globe className="h-3.5 w-3.5 shrink-0 text-faint" />
-                                    <span>{currentLevelData.durationHours} h en vivo por Zoom</span>
+                                    <span>{particularHours ?? currentLevelData?.durationHours} h en vivo por Zoom</span>
                                  </span>
-                               )}
+                               ) : null}
                           </div>
                        </div>
 

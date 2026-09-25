@@ -7,14 +7,14 @@ const HERO_COURSES = [
   {
     href: "/cursos/analisis-de-datos",
     slug: "analisis-de-datos",
-    kicker: "96 horas",
+    kicker: "20 horas",
     title: "Análisis de datos",
     text: "SQL, Power BI y Python. Curso en vivo en Chile.",
   },
   {
     href: "/cursos/power-bi",
     slug: "power-bi",
-    kicker: "32 horas",
+    kicker: "20 horas",
     title: "Power BI",
     text: "Query, DAX y dashboards. En vivo en Chile.",
   },

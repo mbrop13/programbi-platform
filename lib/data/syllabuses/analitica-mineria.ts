@@ -5,7 +5,7 @@ export const analiticaMineriaSyllabus: CourseSyllabusData = {
   accent: "#B45309",
   programYear: "2026",
   audience:
-    "Especialización técnica de 48h para profesionales mineros e industriales. Domina el ciclo completo del dato, desde la automatización de flotas hasta el mantenimiento predictivo.",
+    "Especialización técnica para profesionales mineros e industriales. Domina el ciclo completo del dato, desde la automatización de flotas hasta el mantenimiento predictivo.",
   audienceNote: "Respaldo ProgramBI: CAP, AngloAmerican y Minera Meridian.",
   benefits: [
     { title: "Visibilidad Operativa", description: "Dashboards en tiempo real de producción y mantenimiento." },

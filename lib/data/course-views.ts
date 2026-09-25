@@ -1,8 +1,14 @@
 import type { Course, CourseLevel } from "@/lib/data/courses";
-import { getCourseSyllabus, levelHours, type SyllabusLevelContent } from "@/lib/data/syllabuses";
+import { getCourseSyllabus, type SyllabusLevelContent, type SyllabusModule } from "@/lib/data/syllabuses";
 
 /** Ladder sold today as three named levels. Copilot and Power Automate are not in this set. */
 export const TIER_NAMES = ["Básico", "Intermedio", "Avanzado"] as const;
+
+/** Básico-Intermedio and Avanzado, each, when sold to individuals. Empresas keep each level's own hours. */
+export const PARTICULAR_COURSE_HOURS = 20;
+
+const MODULE_HOUR_PREFIX = /^(?:\d+\s*horas?|\d+\s*h)\s*[•·]\s*/i;
+const MODULE_TITLE_HOURS = /\s*\(\d+\s*h(?:oras?)?\)/gi;
 
 export type CourseOfferView = "publico" | "avanzado" | "empresas";
 
@@ -27,8 +33,27 @@ export function openCourseLevel(course: Course): CourseLevel | null {
     name: OPEN_LEVEL_NAME,
     price: basico.price,
     originalPrice: basico.originalPrice,
-    durationHours: (basico.durationHours || 0) + (intermedio.durationHours || 0),
+    durationHours: PARTICULAR_COURSE_HOURS,
     whatYouLearn: learn.filter((item, index) => learn.indexOf(item) === index),
+  };
+}
+
+function particularModule(mod: SyllabusModule): SyllabusModule {
+  const subtitle = mod.subtitle?.replace(MODULE_HOUR_PREFIX, "").trim();
+  return {
+    ...mod,
+    title: mod.title.replace(MODULE_TITLE_HOURS, "").trim(),
+    hours: undefined,
+    subtitle: subtitle || undefined,
+  };
+}
+
+/** Particular pages state one course length. Per-module hour chips stay on the empresas temario. */
+function asParticularLevel(level: SyllabusLevelContent): SyllabusLevelContent {
+  return {
+    ...level,
+    shortLabel: `${PARTICULAR_COURSE_HOURS}h`,
+    modules: level.modules.map(particularModule),
   };
 }
 
@@ -53,27 +78,41 @@ export function combinedOpenSyllabus(course: Course): SyllabusLevelContent | nul
       title: mod.title.startsWith(name) ? mod.title : `${name} · ${mod.title}`,
     }));
   });
-  const hours = parts.reduce((sum, part) => sum + levelHours(part), 0);
   const benefits = parts.flatMap((part) => part.benefits ?? []);
   const intros = parts.map((part) => part.intro).filter((intro): intro is string => Boolean(intro));
 
-  return {
+  return asParticularLevel({
     id: "basico-intermedio",
     label: OPEN_LEVEL_NAME,
-    shortLabel: hours > 0 ? `${hours}h` : undefined,
     audience: parts.find((part) => part.audience)?.audience,
     benefits: benefits.filter((item, index) => benefits.indexOf(item) === index),
     intro: intros.join(" "),
     modules,
     theme: parts[0].theme,
-  };
+  });
+}
+
+/** Temario shown on a particular page. Empresas keeps each level's own hours. */
+export function offerSyllabusLevel(course: Course, view: CourseOfferView): SyllabusLevelContent | null {
+  if (!isTieredCourse(course) || view === "empresas") return null;
+  if (view === "publico") return combinedOpenSyllabus(course);
+  const part = getCourseSyllabus(course).levels[syllabusIndexForLevel(course, "Avanzado")];
+  return part ? asParticularLevel(part) : null;
 }
 
 export function levelsForView(course: Course, view: CourseOfferView): CourseLevel[] {
   const levels = course.levels ?? [];
   if (!isTieredCourse(course) || view === "empresas") return levels;
-  if (view === "avanzado") return levels.filter((level) => level.name === "Avanzado");
+  if (view === "avanzado") {
+    return levels
+      .filter((level) => level.name === "Avanzado")
+      .map((level) => ({ ...level, durationHours: PARTICULAR_COURSE_HOURS }));
+  }
   const open = openCourseLevel(course);
+  const advanced = levelByName(course, "Avanzado");
+  if (open && advanced) {
+    return [open, { ...advanced, durationHours: PARTICULAR_COURSE_HOURS }];
+  }
   return open ? [open] : levels.filter((level) => level.name === "Básico" || level.name === "Intermedio");
 }
 
@@ -88,13 +127,14 @@ export function publicLevelCount(course: Course): number {
   return count > 0 ? count : 1;
 }
 
-/** Hours of the open course: básico and intermedio together. */
+/** Hours on the public catalog: 20 for each particular course, the stored length otherwise. */
 export function catalogHours(course: Course): number {
   if (!isTieredCourse(course)) return course.durationHours;
   return openCourseLevel(course)?.durationHours || course.durationHours;
 }
 
 export function offerHours(course: Course, view: CourseOfferView): number {
+  if (isTieredCourse(course) && view !== "empresas") return PARTICULAR_COURSE_HOURS;
   const levels = levelsForView(course, view);
   const sum = levels.reduce((total, level) => total + (level.durationHours ?? 0), 0);
   return sum > 0 ? sum : course.durationHours;
@@ -121,10 +161,10 @@ export function offerSyllabusSections(
   course: Course,
   view: CourseOfferView
 ): { name: string; description: string }[] {
-  if (view === "publico") {
-    const combined = combinedOpenSyllabus(course);
-    if (combined) {
-      return combined.modules.map((mod) => ({
+  if (view !== "empresas") {
+    const offered = offerSyllabusLevel(course, view);
+    if (offered) {
+      return offered.modules.map((mod) => ({
         name: mod.title,
         description: mod.topics
           .map((topic) => (typeof topic === "string" ? topic : topic.title))

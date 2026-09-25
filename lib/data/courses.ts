@@ -37,9 +37,9 @@ export const courses: Course[] = [
     slug: "analisis-de-datos",
     title: "Análisis de Datos",
     shortDescription:
-      "Programa integral de 48 horas por nivel donde dominarás SQL Server, Power BI y Python.",
+      "SQL Server, Power BI y Python. Básico-intermedio y avanzado, 20 horas cada uno, en la misma página.",
     description:
-      "Programa en vivo de SQL Server, Power BI y Python, 48 horas por nivel. El curso abierto es básico e intermedio. El nivel avanzado se inscribe aparte. Las empresas cotizan los tres niveles.",
+      "Programa en vivo de SQL Server, Power BI y Python. Para particulares, básico-intermedio y avanzado duran 20 horas cada uno. Las empresas cotizan los tres niveles.",
     category: "programacion",
     categoryLabel: "MÁS POPULAR",
     badgeLabel: "MÁS POPULAR",
@@ -280,9 +280,9 @@ export const courses: Course[] = [
     slug: "analitica-mineria",
     title: "Análisis de Datos para la Minería",
     shortDescription:
-      "Optimización de Procesos y Toma de Decisiones en Entornos Mineros. Un trayecto integral de 48 horas para optimizar procesos y predecir fallas.",
+      "Optimización de procesos y decisiones en minería. Básico-intermedio y avanzado, 20 horas cada uno, en la misma página.",
     description:
-      "Especialización técnica de 48h para profesionales mineros e industriales. Domina el ciclo completo del dato, desde la automatización de flotas hasta el mantenimiento predictivo, respaldado por nuestra experiencia en CAP y AngloAmerican.",
+      "Especialización para profesionales mineros e industriales. Para particulares, básico-intermedio y avanzado duran 20 horas cada uno. Las empresas cotizan los tres niveles.",
     category: "especializacion",
     categoryLabel: "ESPECIALIZACIÓN",
     badgeLabel: "ESPECIALIZACIÓN",

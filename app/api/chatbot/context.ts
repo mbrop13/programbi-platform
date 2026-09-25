@@ -10,7 +10,7 @@
  */
 
 import { courses } from '@/lib/data/courses'
-import { isTieredCourse } from '@/lib/data/course-views'
+import { isTieredCourse, PARTICULAR_COURSE_HOURS } from '@/lib/data/course-views'
 import { communityPlans } from '@/lib/data/community_plans'
 import { mentors } from '@/lib/data/mentors'
 import { createAdminClient } from '@/lib/supabase/server'
@@ -152,7 +152,8 @@ export async function buildChatbotContext(): Promise<string> {
   // ═══════════════════════════════════════════
   const coursesSection = courses.map(c => {
     const techStr = c.techStack.join(', ')
-    let line = `• ${c.title} [/${c.slug}] (${c.durationHours}h) — ${techStr}`
+    const hours = isTieredCourse(c) ? PARTICULAR_COURSE_HOURS : c.durationHours
+    let line = `• ${c.title} [/${c.slug}] (${hours}h) — ${techStr}`
 
     if (c.levels && c.levels.length > 1) {
       const levelsStr = c.levels.map(l => {
@@ -165,7 +166,7 @@ export async function buildChatbotContext(): Promise<string> {
       }).join(', ')
       line += `. Niveles: ${levelsStr}`
       if (isTieredCourse(c)) {
-        line += `. Inscripción abierta: Básico-Intermedio, un solo temario. Avanzado: /cursos/${c.slug}/avanzado. Empresas (básico, intermedio y avanzado): /cursos/${c.slug}/empresas`
+        line += `. En /cursos/${c.slug} el óvalo de particulares cambia entre Básico-Intermedio y Avanzado, ${PARTICULAR_COURSE_HOURS}h cada uno. En la misma página, Empresas muestra Básico, Intermedio y Avanzado por separado, cada uno con su duración.`
       }
     } else if (c.levels && c.levels.length === 1) {
       const l = c.levels[0]

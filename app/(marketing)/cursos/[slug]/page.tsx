@@ -12,6 +12,11 @@ import { COURSE_SEO } from "@/lib/seo/money";
 export const revalidate = 3600;
 
 type Params = Promise<{ slug: string }>;
+type SearchParams = Promise<{ para?: string | string[]; nivel?: string | string[] }>;
+
+function one(value: string | string[] | undefined) {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 export async function generateStaticParams() {
   return courses.map((course) => ({ slug: course.slug }));
@@ -67,8 +72,17 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
-export default async function CourseDetailPage({ params }: { params: Params }) {
+export default async function CourseDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
   const { slug } = await params;
+  const query = await searchParams;
+  const para = one(query.para);
+  const nivel = one(query.nivel);
   const course = getCourseBySlug(slug);
   if (!course) notFound();
 
@@ -119,7 +133,13 @@ export default async function CourseDetailPage({ params }: { params: Params }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
-      <CourseDetailClient key={course.slug} course={course} initialSchedules={schedules} view="publico" />
+      <CourseDetailClient
+        key={course.slug}
+        course={course}
+        initialSchedules={schedules}
+        initialView={para === "empresas" ? "empresas" : "publico"}
+        initialLevelName={nivel}
+      />
     </>
   );
 }

@@ -21,16 +21,16 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
 ## 2. Plan de Estudios Detallado de los Cursos
 
 ### Curso de Análisis de Datos (Programa Completo)
-* **Duración**: 48 horas en vivo.
+* **Duración para particulares**: básico-intermedio, 20 horas. El curso avanzado dura 20 horas. Las empresas cotizan básico, intermedio y avanzado por separado.
 * **Inversión**: $299.000 CLP.
 * **Dirigido a**: Profesionales de administración, finanzas, marketing, operaciones, ingeniería y cualquier persona que busque dominar el ciclo completo del dato.
 * **Módulos**:
-  * **Módulo 1: Fundamentos de SQL Server (16 horas)**: Consultas básicas, filtros, ordenamiento, funciones de agregación, uniones (JOINs), subconsultas y Common Table Expressions (CTEs).
-  * **Módulo 2: Business Intelligence con Power BI (16 horas)**: Extracción y transformación de datos con Power Query, modelado dimensional estrella, diseño de dashboards de impacto y fórmulas DAX esenciales.
-  * **Módulo 3: Automatización y Análisis con Python (16 horas)**: Sintaxis de Python, manipulación de datos con la librería Pandas, visualización de datos con Matplotlib y Seaborn, y automatización de reportes Excel.
+  * **Módulo 1: Fundamentos de SQL Server**: Consultas básicas, filtros, ordenamiento, funciones de agregación, uniones (JOINs), subconsultas y Common Table Expressions (CTEs).
+  * **Módulo 2: Business Intelligence con Power BI**: Extracción y transformación de datos con Power Query, modelado dimensional estrella, diseño de dashboards de impacto y fórmulas DAX esenciales.
+  * **Módulo 3: Automatización y Análisis con Python**: Sintaxis de Python, manipulación de datos con la librería Pandas, visualización de datos con Matplotlib y Seaborn, y automatización de reportes Excel.
 
 ### Curso de Power BI (Dashboards e Ingeniería de Datos)
-* **Duración**: 16 horas en vivo.
+* **Duración para particulares**: básico-intermedio, 20 horas. El curso avanzado dura 20 horas.
 * **Inversión**: $249.000 CLP.
 * **Temario**:
   * Conexiones de datos (SQL Server, Excel, Web, APIs).
@@ -41,7 +41,7 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
   * Publicación y gobernanza en Power BI Service (Áreas de trabajo, Roles RLS, Actualizaciones automáticas).
 
 ### Curso de SQL Server (Base de Datos para Analistas)
-* **Duración**: 16 horas en vivo.
+* **Duración para particulares**: básico-intermedio, 20 horas. El curso avanzado dura 20 horas.
 * **Inversión**: $249.000 CLP.
 * **Temario**:
   * Arquitectura de bases de datos relacionales y esquemas de tablas.
@@ -51,7 +51,7 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
   * Optimización de consultas y creación de índices.
 
 ### Curso de Python para Datos (Programación y Automatización)
-* **Duración**: 16 horas en vivo.
+* **Duración para particulares**: básico-intermedio, 20 horas. El curso avanzado dura 20 horas.
 * **Inversión**: $249.000 CLP.
 * **Temario**:
   * Conceptos fundamentales de programación en Python.
@@ -61,7 +61,7 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
   * Conexión de Python a bases de datos relacionales (SQLAlchemy, PyODBC).
 
 ### Curso de Machine Learning (Analítica Predictiva y Modelos)
-* **Duración**: 16 horas en vivo.
+* **Duración para particulares**: básico-intermedio, 20 horas. El curso avanzado dura 20 horas.
 * **Inversión**: $249.000 CLP.
 * **Temario**:
   * Introducción al aprendizaje automático y ciclo de vida de un modelo de ML.
@@ -71,7 +71,7 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
   * Despliegue de modelos predictivos básicos.
 
 ### Curso de Inteligencia Artificial para la Productividad
-* **Duración**: 16 horas en vivo.
+* **Duración para particulares**: básico-intermedio, 20 horas. El curso avanzado dura 20 horas.
 * **Inversión**: $249.000 CLP.
 * **Temario**:
   * Prompt Engineering profesional para tareas de análisis de datos y reportabilidad.

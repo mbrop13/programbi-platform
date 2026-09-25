@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "¿Hay un curso Power BI para minería en Chile?",
-    a: "Sí: Análisis de datos para la minería (48 h en vivo) con Power BI, SQL y Python aplicados a faena. Es cupo individual.",
+    a: "Sí: Análisis de datos para la minería, básico-intermedio de 20 horas y avanzado de 20 horas, con Power BI, SQL y Python aplicados a faena. Es cupo individual.",
   },
   {
     q: "¿Y si la minera necesita el tablero en producción?",
@@ -93,7 +93,7 @@ export default function Page() {
           {
             h2: "Dos caminos",
             paragraphs: [
-              "Persona / analista de mina: curso Análisis de datos para la minería (Power BI, SQL, Python, 48 h en vivo). Temario de turnos, OEE y predictivo a nivel de formación.",
+              "Persona / analista de mina: curso Análisis de datos para la minería (Power BI, SQL y Python). Básico-intermedio y avanzado, 20 horas cada uno. Temario de turnos, OEE y predictivo a nivel de formación.",
               "Empresa minera / área: Pack Adopción. Construimos 1–3 dashboards con tus datos y capacitamos al equipo 4–6 semanas. Mentores con experiencia en minería citada en el sitio (CAP, AngloAmerican, Pucobre, SQM en el contexto de instructores y logos reales).",
             ],
           },

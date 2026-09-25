@@ -87,7 +87,7 @@ export default function Page() {
           {
             h2: "Curso Power BI (particulares)",
             paragraphs: [
-              "Formación en vivo por Zoom: Power Query, modelo, DAX y publicación. Niveles de 16 horas. Sirve si tú quieres la herramienta. Cupos abiertos; consulta fecha. Certificado al completar.",
+              "Formación en vivo por Zoom: Power Query, modelo, DAX y publicación. Básico-intermedio y avanzado, 20 horas cada uno. Sirve si tú quieres la herramienta. Cupos abiertos; consulta fecha. Certificado al completar.",
               "No incluye construir el reporte de tu empresa ni capacitar al equipo sobre ese reporte.",
             ],
           },

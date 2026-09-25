@@ -16,7 +16,7 @@ const paths = [
   },
   {
     href: "/cursos/analisis-de-datos",
-    kicker: "Programa 144 h",
+    kicker: "Programa 20 h",
     title: "Cursos de análisis de datos",
     text: "SQL Server + Power BI + Python. El programa largo para salir de Excel.",
   },
