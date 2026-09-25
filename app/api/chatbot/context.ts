@@ -70,7 +70,8 @@ async function fetchDynamicData() {
     supabase
       .from('course_schedules')
       .select('course_slug, level_name, start_date, schedule_days, schedule_time, duration_hours')
-      .eq('is_active', true),
+      .eq('is_active', true)
+      .neq('course_slug', 'comunidad'),
 
     // Promociones activas y vigentes
     supabase

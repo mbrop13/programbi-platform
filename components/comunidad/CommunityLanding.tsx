@@ -1,6 +1,7 @@
 import { ArrowRight, Calendar, Check, Flame, Target, Video } from "lucide-react";
 import LogoSlider from "@/components/marketing/LogoSlider";
 import { PRACTICE_UNIT_META } from "@/lib/practice/catalog";
+import type { CommunityClass } from "@/lib/comunidad/community-class";
 import { CampusCta } from "./campus-cta";
 import CommunityCalendar from "./CommunityCalendar";
 
@@ -49,7 +50,7 @@ const moments = [
   {
     when: "Cada semana",
     title: "Una clase, y queda",
-    body: "Una sesión de 2 horas. Una semana es Clase y la siguiente es Avanzada. Si no alcanzas a entrar, queda grabada.",
+    body: "Una sesión de 2 horas, Clase o Clase avanzada. Si no alcanzas a entrar, queda grabada.",
   },
 ];
 
@@ -60,7 +61,7 @@ const faqs = [
   },
   {
     q: "¿Hay clases normales y avanzadas?",
-    a: "Hay dos tipos, en el mismo horario. Clase trabaja informes comerciales, control de gestión, proyectos e informes financieros. Avanzada toma ese mismo terreno con Power BI, Python y SQL Server en un nivel más alto. Se alternan cada semana y el calendario marca cuál viene.",
+    a: "Hay dos tipos. Clase trabaja informes comerciales, control de gestión, proyectos e informes financieros. Clase avanzada toma ese mismo terreno con Power BI, Python y SQL Server en un nivel más alto. El calendario muestra la fecha de cada una.",
   },
   {
     q: "¿Cuánto cuesta?",
@@ -101,7 +102,13 @@ const btnPrimary =
 const btnInline =
   "inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98] border-0 cursor-pointer";
 
-export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }) {
+export default function CommunityLanding({
+  isLoggedIn,
+  classes,
+}: {
+  isLoggedIn: boolean;
+  classes: CommunityClass[];
+}) {
   return (
     <div className="bg-canvas text-ink">
       <section className="border-b border-line">
@@ -132,13 +139,13 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
               ))}
             </ul>
 
-            <a href="#membresia" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-ink no-underline hover:text-mute">
+            <a href="#plan" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-ink no-underline hover:text-mute">
               Ver el plan
               <ArrowRight className="size-4" />
             </a>
           </div>
 
-          <aside id="membresia" className="scroll-mt-28">
+          <aside className="scroll-mt-28">
             <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-[var(--sticky-below-nav,6rem)] lg:transition-[top] lg:duration-300 lg:ease-out motion-reduce:transition-none">
               <p className="text-sm font-medium text-ink">Plan único</p>
               <p className="mt-3 text-sm text-faint">
@@ -245,7 +252,7 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
             Clases prácticas para decidir
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-mute">
-            Para equipos administrativos. Cada clase dura 2 horas: se arma el informe en la sesión con Power BI, Python y SQL Server, para apoyar la toma de decisiones. Hay dos tipos, Clase y Avanzada, y la clase queda grabada.
+            Para equipos administrativos. Cada clase dura 2 horas: se arma el informe en la sesión con Power BI, Python y SQL Server, para apoyar la toma de decisiones. Hay dos tipos, Clase y Clase avanzada, y la clase queda grabada.
           </p>
           <div className="mt-10 grid grid-cols-1 gap-px overflow-hidden rounded-[26px] border border-line bg-line sm:grid-cols-2 lg:grid-cols-4">
             {classCases.map((item) => (
@@ -278,10 +285,10 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
             Las próximas clases
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-relaxed text-mute">
-            Una clase de 2 horas por semana, los miércoles de 19:30 a 21:30, hora de Chile. Una semana es Clase y la siguiente es Avanzada. Elige un día para ver cuándo empieza y de qué tipo es.
+            Cada clase dura 2 horas. Acá están las próximas, con su fecha y si es Clase o Clase avanzada. Elige un día para ver el horario.
           </p>
           <div className="mt-10">
-            <CommunityCalendar />
+            <CommunityCalendar classes={classes} />
           </div>
         </div>
       </section>
@@ -380,7 +387,7 @@ export default function CommunityLanding({ isLoggedIn }: { isLoggedIn: boolean }
         </div>
       </section>
 
-      <section className="border-t border-line px-4 pb-20 sm:px-6 lg:px-8 lg:pb-28">
+      <section id="plan" className="scroll-mt-28 border-t border-line px-4 pb-20 sm:px-6 lg:px-8 lg:pb-28">
         <div className="mx-auto flex max-w-[1400px] flex-col items-start justify-between gap-8 rounded-[26px] border border-line bg-paper px-6 py-10 sm:px-10 lg:flex-row lg:items-center">
           <div>
             <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Un solo plan. {priceLabel} al mes, para siempre.</h2>

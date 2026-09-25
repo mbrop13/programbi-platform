@@ -6,6 +6,7 @@ import {
   Briefcase,
   Building,
   Calendar,
+  CalendarDays,
   CreditCard,
   Download,
   GraduationCap,
@@ -73,6 +74,7 @@ export const ADMIN_NAV: AdminNavGroup[] = [
     items: [
       { href: "/admin/cursos", label: "Cursos", icon: GraduationCap },
       { href: "/admin/vivo", label: "Clases en vivo", icon: Radio },
+      { href: "/admin/clases", label: "Clases comunidad", icon: CalendarDays },
       { href: "/admin/horarios", label: "Horarios", icon: Calendar },
       { href: "/admin/diplomas", label: "Diplomas", icon: Award },
       { href: "/admin/planes", label: "Planes", icon: CreditCard },

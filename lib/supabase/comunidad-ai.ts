@@ -1552,6 +1552,7 @@ export async function getActiveSchedules() {
     .from("course_schedules")
     .select("*")
     .eq("is_active", true)
+    .neq("course_slug", "comunidad")
     .order("start_date", { ascending: true });
 
   if (error) { console.error("Error fetching schedules:", error); return []; }
@@ -1566,6 +1567,7 @@ export async function adminGetSchedules() {
   const { data, error } = await adminDb
     .from("course_schedules")
     .select("*")
+    .neq("course_slug", "comunidad")
     .order("start_date", { ascending: true });
 
   if (error) { console.error("Error fetching schedules:", error); return []; }
