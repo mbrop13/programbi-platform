@@ -678,7 +678,7 @@ export default function CourseDetailClient({
               ) : activeSchedulesList.length === 0 ? (
                 <a
                   href={whatsappHref({
-                    page: view === "empresas" ? `/cursos/${course.slug}?para=empresas` : `/cursos/${course.slug}`,
+                    page: `/cursos/${course.slug}`,
                     intent: "fechas",
                     course: `${course.title}${catalogLevelCount > 1 && activeLevel?.name ? ` - ${activeLevel.name}` : ""}`,
                   })}
