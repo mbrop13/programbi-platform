@@ -156,30 +156,25 @@ export default function CommunityCalendar({ classes }: { classes: CommunityClass
                   onClick={() => session && setSelectedId(session.id)}
                   aria-label={session ? `${longDate(cell.iso)}, ${COMMUNITY_CLASS_LEVELS[session.level].label}` : undefined}
                   aria-pressed={isSelected}
-                  className={`flex min-h-12 flex-col items-center justify-center rounded-2xl px-1 py-2 text-sm disabled:opacity-100 sm:min-h-16 ${
-                    isSelected
+                  className={`flex min-h-12 items-center justify-center rounded-2xl px-1 py-2 text-sm disabled:opacity-100 sm:min-h-16 ${
+                    session?.level === "avanzada"
                       ? "bg-ink text-canvas"
-                      : cell.inMonth
-                        ? "text-ink"
-                        : "text-faint/50"
-                  } ${session && !isSelected ? "bg-canvas" : ""} ${session ? "cursor-pointer" : "cursor-default"} ${
-                    isToday && !isSelected ? "ring-1 ring-ink/30" : ""
-                  }`}
+                      : session
+                        ? "bg-canvas text-ink"
+                        : cell.inMonth
+                          ? "text-ink"
+                          : "text-faint/50"
+                  } ${session ? "cursor-pointer" : "cursor-default"} ${
+                    isSelected ? "ring-2 ring-ink ring-offset-2 ring-offset-paper" : ""
+                  } ${isToday && !session ? "ring-1 ring-ink/30" : ""}`}
                 >
-                  <span className={`font-semibold tabular-nums ${isSelected ? "text-canvas" : ""}`}>{cell.day}</span>
-                  {session ? (
-                    <span
-                      className={`mt-1 size-1.5 rounded-full ${
-                        isSelected
-                          ? "bg-canvas"
-                          : session.level === "avanzada"
-                            ? "bg-transparent ring-2 ring-ink"
-                            : "bg-ink"
-                      }`}
-                    />
-                  ) : (
-                    <span className="mt-1 size-1.5" />
-                  )}
+                  <span
+                    className={`font-semibold tabular-nums ${
+                      session?.level === "avanzada" ? "text-canvas" : ""
+                    }`}
+                  >
+                    {cell.day}
+                  </span>
                 </button>
               );
             })}
@@ -187,11 +182,11 @@ export default function CommunityCalendar({ classes }: { classes: CommunityClass
 
           <div className="mt-5 flex flex-wrap gap-4 text-xs font-semibold text-mute">
             <span className="inline-flex items-center gap-2">
-              <span className="size-2 rounded-full bg-ink" />
+              <span className="size-4 rounded-md border border-line bg-canvas" />
               Clase
             </span>
             <span className="inline-flex items-center gap-2">
-              <span className="size-2 rounded-full ring-2 ring-ink" />
+              <span className="size-4 rounded-md bg-ink" />
               Clase avanzada
             </span>
           </div>
