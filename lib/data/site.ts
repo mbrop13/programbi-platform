@@ -64,6 +64,7 @@ export const leadCourses = [
   "Minería",
   "Finanzas",
   "Copilot",
+  "Claude",
 ] as const;
 
 export const homeFaqs = [

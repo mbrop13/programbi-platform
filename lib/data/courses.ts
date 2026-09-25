@@ -223,6 +223,110 @@ export const courses: Course[] = [
     ],
   },
   {
+    slug: "claude",
+    title: "Claude",
+    shortDescription:
+      "Usa Claude en tu trabajo diario: prompts efectivos, documentos, Excel y automatización sin programar.",
+    description:
+      "Curso de 20 horas para usar Claude (Anthropic) en el trabajo administrativo: prompts que funcionan, Projects, Docs y Slides, Excel y automatización ligera sin programar. En vivo por Zoom, el mismo programa para particulares y empresas.",
+    category: "ia",
+    categoryLabel: "IA & Automatización",
+    badgeLabel: "NUEVO 2026",
+    badgeColor: "#D97757",
+    techStack: ["Claude", "Anthropic", "Excel"],
+    durationHours: 20,
+    modality: "online",
+    level: "principiante",
+    imageUrl: "/images/courses/ia-productividad-card.webp",
+    icon: "Sparkles",
+    accentColor: "#D97757",
+    isFeatured: false,
+    sortOrder: 3,
+    whatYouLearn: [
+      "Usar Claude de forma efectiva y segura en tareas administrativas diarias",
+      "Escribir prompts claros que generen resultados útiles de inmediato",
+      "Organizar el trabajo con Projects, Artifacts, Docs y Slides",
+      "Aplicar Claude en Excel, documentos y presentaciones",
+      "Usar Claude Code y Cowork como asistente de automatización, sin programar",
+      "Aplicar verificación, privacidad y ética en el uso de IA",
+    ],
+    syllabus: [
+      {
+        module: "Módulo 1: Introducción a Claude y primeros pasos",
+        topics: [
+          "Qué es Claude (Anthropic) y en qué se diferencia de otras IAs",
+          "Interfaces: web, app de escritorio y móvil",
+          "Planes y privacidad de datos para empresas",
+          "Crear cuenta, interfaz principal y primera conversación",
+          "Qué puede y qué no puede hacer: limitaciones reales",
+          "Configuración inicial: estilo de respuesta y preferencias",
+        ],
+        hours: 4,
+      },
+      {
+        module: "Módulo 2: El arte de pedir bien (prompting práctico)",
+        topics: [
+          "Estructura de un buen prompt: contexto, tarea, formato, tono y restricciones",
+          "Técnicas simples: rol, ejemplos y pasos",
+          "Resúmenes, correcciones, tablas y listas",
+          "Documentos largos: subir archivos y pedir extractos",
+          "Reescribir correos y generar actas desde notas desordenadas",
+          "Plantillas reutilizables y errores comunes",
+        ],
+        hours: 4,
+      },
+      {
+        module: "Módulo 3: Projects, Artifacts, Docs y Slides",
+        topics: [
+          "Projects: espacios con documentos de referencia del área",
+          "Artifacts: resultados interactivos que se ven y editan al lado",
+          "Claude Docs y Slides: crear y editar documentos y presentaciones",
+          "Exportar a Word, PDF, PowerPoint o Google Docs",
+          "Del informe semanal a las diapositivas",
+          "Plantilla de presentación corporativa simple",
+        ],
+        hours: 4,
+      },
+      {
+        module: "Módulo 4: Claude para Excel y tareas administrativas",
+        topics: [
+          "Análisis y limpieza de hojas de cálculo",
+          "Fórmulas, tablas resumen y resúmenes automáticos",
+          "Tendencias y anomalías sin ser experto en datos",
+          "Control de gastos, seguimiento de tareas y reportes mensuales",
+          "Conectores básicos: correo, Drive y calendario",
+          "Claude Cowork: el asistente que trabaja con tus archivos",
+        ],
+        hours: 4,
+      },
+      {
+        module: "Módulo 5: Automatización ligera y proyecto final",
+        topics: [
+          "Claude Code y Cowork en lenguaje sencillo",
+          "Automatizar reportes repetitivos y limpieza de datos",
+          "Límites y cuándo pedir ayuda al área de TI",
+          "Seguridad, privacidad y verificación de información",
+          "Ética y uso responsable de la IA en el trabajo",
+          "Proyecto final integrador con un proceso real de tu trabajo",
+        ],
+        hours: 4,
+      },
+    ],
+    levels: [
+      {
+        name: "Completo",
+        price: 249000,
+        durationHours: 20,
+        whatYouLearn: [
+          "Prompts efectivos para tareas administrativas",
+          "Projects, Docs y Slides para el trabajo diario",
+          "Excel y reportes con ayuda de Claude",
+          "Automatización ligera sin programar",
+        ],
+      },
+    ],
+  },
+  {
     slug: "power-automate",
     title: "Power Automate & RPA",
     shortDescription:
@@ -780,7 +884,7 @@ export const COURSE_NAV_GROUPS = [
   {
     id: "ia",
     label: "IA",
-    slugs: ["ia-productividad", "copilot", "power-automate", "machine-learning"],
+    slugs: ["ia-productividad", "copilot", "claude", "power-automate", "machine-learning"],
   },
 ] as const;
 

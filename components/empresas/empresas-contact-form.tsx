@@ -17,6 +17,7 @@ const TOPICS = [
   "Excel",
   "Power Automate",
   "IA en Productividad",
+  "Claude",
 ] as const;
 
 const TEAM_SIZES = ["1–5", "6–12", "13–30", "Más de 30"] as const;
