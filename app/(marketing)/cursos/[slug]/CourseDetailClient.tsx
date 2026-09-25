@@ -490,15 +490,6 @@ export default function CourseDetailClient({
               {activeLevel ? <li>{activeLevel.name}</li> : null}
             </ul>
 
-            <OfferOvals
-              tiered={tiered}
-              audience={view}
-              levels={levels}
-              selectedLevel={selectedLevel}
-              onAudience={chooseAudience}
-              onLevel={setSelectedLevel}
-            />
-
             <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-[26px] border border-line bg-wash">
               <CourseImage
                 src={course.imageUrl}
