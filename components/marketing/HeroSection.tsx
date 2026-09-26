@@ -82,14 +82,6 @@ export default function HeroSection() {
             ))}
           </div>
 
-          <p className="mt-5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-mute">
-            <Link href="/cursos" className="font-semibold text-ink no-underline hover:text-mute">
-              Todos los cursos
-            </Link>
-            <Link href="/empresas" className="font-semibold text-ink no-underline hover:text-mute">
-              Empresas → Capacitación
-            </Link>
-          </p>
         </div>
 
         <HeroPreviewLazy />
