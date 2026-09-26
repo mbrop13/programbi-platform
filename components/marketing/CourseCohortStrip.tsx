@@ -33,9 +33,9 @@ export function CourseCohortStrip({
         <span className="font-semibold">Inicio de clases</span>
         {pending ? (
           <span className="ml-2 inline-block h-3 w-28 animate-pulse rounded-full bg-wash align-middle" />
-        ) : (
+        ) : startLabel ? (
           <span className="text-mute"> · {startLabel}</span>
-        )}
+        ) : null}
       </p>
       <div
         className={
@@ -76,12 +76,15 @@ export function CourseCohortFacts({
   timeZone,
   loaded,
   compact = false,
+  openLabel = OPEN_COHORT_LABEL,
 }: {
   slug: string;
   schedules: CourseSchedule[];
   timeZone: string;
   loaded: boolean;
   compact?: boolean;
+  /** Texto cuando no hay cohorte futura. null = solo "Inicio de clases". */
+  openLabel?: string | null;
 }) {
   const next = useMemo(
     () => (schedules.length ? nextCohortForCourse(slug, schedules, timeZone) : null),
@@ -92,7 +95,7 @@ export function CourseCohortFacts({
     <CourseCohortStrip
       compact={compact}
       pending={!loaded && !next}
-      startLabel={next?.date ?? OPEN_COHORT_LABEL}
+      startLabel={next?.date ?? openLabel}
       days={next?.days ?? null}
       time={next?.time ?? null}
     />

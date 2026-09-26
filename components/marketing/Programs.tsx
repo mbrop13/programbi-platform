@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ChevronDown, Clock } from "lucide-react";
 import CourseImage from "@/components/shared/CourseImage";
 import { CourseCohortFacts } from "@/components/marketing/CourseCohortStrip";
-import { getCourseDateLabel, SCHEDULE_COUNTRIES, type CourseSchedule } from "@/lib/data/course-schedules";
+import { SCHEDULE_COUNTRIES, type CourseSchedule } from "@/lib/data/course-schedules";
 import { useCountry } from "@/lib/context/CountryContext";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
 
@@ -15,9 +15,9 @@ const ORDER = [
   "sql-server",
   "python",
   "excel",
+  "claude",
   "analitica-mineria",
   "analitica-financiera",
-  "claude",
   "ia-productividad",
   "copilot",
   "power-automate",
@@ -108,6 +108,7 @@ export default function Programs({ catalog, schedules }: { catalog: ProgramCard[
                   timeZone={timeZone}
                   loaded
                   compact
+                  openLabel={null}
                 />
               </div>
               <div className="px-6 py-5">
@@ -117,8 +118,6 @@ export default function Programs({ catalog, schedules }: { catalog: ProgramCard[
                   <Clock size={12} /> {course.durationHours} h · En vivo
                   {course.levelsCount > 1 ? ` · ${course.levelsCount} niveles` : ""}
                 </p>
-                <p className="mt-2 text-xs font-semibold text-ink">{getCourseDateLabel(course.slug)}</p>
-                <span className="mt-4 inline-flex text-sm font-semibold text-ink">Ver temario</span>
               </div>
             </Link>
           ))}
