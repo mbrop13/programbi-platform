@@ -25,6 +25,7 @@ export default function LogoSlider({ className }: { className?: string }) {
                 height={48}
                 fetchPriority="low"
                 unoptimized
+                style={logo.zoom ? { scale: String(logo.zoom) } : undefined}
                 className="max-h-8 w-auto object-contain lg:max-h-10"
               />
             </div>

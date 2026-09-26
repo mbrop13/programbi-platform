@@ -3,23 +3,23 @@ export const WA_URL =
 
 export const WA_NUMBER = "56935409699";
 
-export const logos = [
+export const logos: { name: string; src: string; zoom?: number }[] = [
   { name: "Tottus", src: "/images/logos/tottus.webp" },
   { name: "Deloitte", src: "/images/logos/deloitte.webp" },
   { name: "Cencosud", src: "/images/logos/cencosud.webp" },
   { name: "Banco de Chile", src: "/images/logos/banco-chile.webp" },
-  { name: "SQM", src: "/images/logos/sqm.webp" },
+  { name: "SQM", src: "/images/logos/sqm.webp", zoom: 1.25 },
   { name: "BCI", src: "/images/logos/bci.webp" },
   { name: "Midea", src: "/images/logos/midea.webp" },
   { name: "Pucobre", src: "/images/logos/pucobre.webp" },
   { name: "Fonasa", src: "/images/logos/fonasa.webp" },
-  { name: "Alto Norte", src: "/images/logos/alto-norte.webp" },
-  { name: "Verisure", src: "/images/logos/verisure.webp" },
+  { name: "Alto Norte", src: "/images/logos/alto-norte.webp", zoom: 1.2 },
+  { name: "Verisure", src: "/images/logos/verisure.webp", zoom: 1.2 },
   { name: "Icafal", src: "/images/logos/icafal.webp" },
   { name: "Ariztia", src: "/images/logos/ariztia.webp" },
   { name: "Anglo American", src: "/images/logos/anglo-american.webp" },
   { name: "Bridgestone", src: "/images/logos/bridgestone.webp" },
-] as const;
+];
 
 export const programs = [
   {
