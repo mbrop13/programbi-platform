@@ -48,14 +48,6 @@ export default function HeroSection() {
     <section id="inicio" className="relative overflow-hidden lg:min-h-[calc(100dvh-72px)]">
       <div className="relative z-10 mx-auto grid max-w-[1400px] gap-8 px-4 pt-6 pb-10 sm:px-6 sm:pt-10 sm:pb-12 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:items-center lg:gap-12 lg:pt-16 lg:pb-16 xl:gap-14">
         <div className="min-w-0">
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-line bg-ink/[0.03] px-3 py-1 text-xs font-semibold text-mute lg:mb-6">
-            <span className="relative flex size-2">
-              <span className="absolute inline-flex size-full animate-ping rounded-full bg-emerald-500 opacity-70" />
-              <span className="relative inline-flex size-2 rounded-full bg-emerald-500" />
-            </span>
-            Cursos en vivo · Chile
-          </div>
-
           <h1 className="text-4xl font-bold leading-[1.12] tracking-tight text-ink sm:text-5xl lg:text-[3.5rem] lg:leading-[1.12]">
             <HomeH1 />
           </h1>
