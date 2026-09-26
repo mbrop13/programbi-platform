@@ -46,7 +46,7 @@ function HomeH1() {
 export default function HeroSection() {
   return (
     <section id="inicio" className="relative overflow-hidden lg:min-h-[calc(100dvh-72px)]">
-      <div className="relative z-10 mx-auto grid max-w-[1400px] gap-8 px-4 pt-6 pb-10 sm:px-6 sm:pt-10 sm:pb-12 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:items-center lg:gap-12 lg:pt-16 lg:pb-16 xl:gap-14">
+      <div className="relative z-10 mx-auto grid max-w-[1400px] gap-8 px-4 pt-2 pb-10 sm:px-6 sm:pt-3 sm:pb-12 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:items-center lg:gap-12 lg:pt-6 lg:pb-16 xl:gap-14">
         <div className="min-w-0">
           <h1 className="text-4xl font-bold leading-[1.12] tracking-tight text-ink sm:text-5xl lg:text-[3.5rem] lg:leading-[1.12]">
             <HomeH1 />
