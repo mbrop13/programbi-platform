@@ -100,8 +100,7 @@ export const courses: Course[] = [
     levels: [
       { 
         name: "Básico", 
-        price: 299000, 
-        originalPrice: 747000,
+        price: 747000,
         durationHours: 48, 
         whatYouLearn: [
           "Fundamentos y bases de datos con SQL Server", 
