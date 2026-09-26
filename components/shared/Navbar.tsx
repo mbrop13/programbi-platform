@@ -39,7 +39,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(true);
+  const [isMobileCoursesOpen, setIsMobileCoursesOpen] = useState(false);
   const [isMegaOpen, setIsMegaOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [authModal, setAuthModal] = useState<{ isOpen: boolean; tab: "login" | "register"; redirectUrl?: string }>({
@@ -182,7 +182,7 @@ export default function Navbar() {
   }, [user]);
 
   useEffect(() => {
-    if (!isMobileOpen) setIsMobileCoursesOpen(true);
+    if (!isMobileOpen) setIsMobileCoursesOpen(false);
   }, [isMobileOpen]);
 
   useEffect(() => {
