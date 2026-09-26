@@ -11,15 +11,31 @@ type Props = {
 type Dot = {
   x: number;
   y: number;
+  ox: number;
+  oy: number;
+  os: number;
+  tx: number;
+  ty: number;
+  ts: number;
+  s: number;
   r: number;
   phase: number;
   amp: number;
   speed: number;
-  glyph: number;
+  delay: number;
 };
+
+const MORPH_DUR = 950;
+const STAGGER = 350;
+
+const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
+const easeInOut = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - (-2 * k + 2) ** 3 / 2);
 
 export function HeroGlyphField({ text = "15%", className }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const textRef = useRef(text);
+  textRef.current = text;
+  const morphToRef = useRef<(next: string) => void>(() => {});
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -33,7 +49,152 @@ export function HeroGlyphField({ text = "15%", className }: Props) {
     let started = 0;
     let width = 0;
     let height = 0;
+    let cols = 0;
+    let rows = 0;
+    let morphStart = -1e9;
     const mouse = { x: -9999, y: -9999, on: false };
+
+    const progress = (d: Dot, now: number) =>
+      reduce ? 1 : easeInOut(clamp01((now - morphStart - d.delay) / MORPH_DUR));
+
+    const current = (d: Dot, now: number) => {
+      const e = progress(d, now);
+      return {
+        x: d.ox + (d.tx - d.ox) * e,
+        y: d.oy + (d.ty - d.oy) * e,
+        s: d.os + (d.ts - d.os) * e,
+      };
+    };
+
+    const buildDots = (word: string) => {
+      const sample = sampleGlyph(word, cols, rows);
+      const cell = width < 480 ? 10 : width < 800 ? 9 : 8;
+      const next: Dot[] = [];
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          const t = sample[y * cols + x] ?? 0;
+          if (t < 0.22) continue;
+          const px = x * cell + cell / 2;
+          const py = y * cell + cell / 2;
+          next.push({
+            x: px,
+            y: py,
+            ox: px,
+            oy: py,
+            os: 1,
+            tx: px,
+            ty: py,
+            ts: 1,
+            s: 1,
+            r: t > 0.55 ? 2.8 : 2.1,
+            phase: (x * 0.37 + y * 0.51) % (Math.PI * 2),
+            amp: 1.6,
+            speed: 0.28 + ((x + y) % 5) * 0.04,
+            delay: 0,
+          });
+        }
+      }
+      dots = next;
+    };
+
+    /** Reacomoda las partículas existentes hacia la nueva palabra. */
+    const morphTo = (word: string) => {
+      if (!cols || !rows) return;
+      const now = performance.now();
+      const sample = sampleGlyph(word, cols, rows);
+      const cell = width < 480 ? 10 : width < 800 ? 9 : 8;
+      const targets: { x: number; y: number; t: number }[] = [];
+      for (let y = 0; y < rows; y++) {
+        for (let x = 0; x < cols; x++) {
+          const t = sample[y * cols + x] ?? 0;
+          if (t < 0.22) continue;
+          targets.push({ x: x * cell + cell / 2, y: y * cell + cell / 2, t });
+        }
+      }
+
+      // Empareja por orden espacial para un morph coherente.
+      const byPos = (a: { x: number; y: number }, b: { x: number; y: number }) =>
+        a.y === b.y ? a.x - b.x : a.y - b.y;
+      const placed = dots.map((d) => ({ d, ...current(d, now) }));
+      placed.sort(byPos);
+      targets.sort(byPos);
+
+      if (reduce) {
+        dots = targets.map((tg) => ({
+          x: tg.x,
+          y: tg.y,
+          ox: tg.x,
+          oy: tg.y,
+          os: 1,
+          tx: tg.x,
+          ty: tg.y,
+          ts: 1,
+          s: 1,
+          r: tg.t > 0.55 ? 2.8 : 2.1,
+          phase: 0,
+          amp: 0,
+          speed: 0.3,
+          delay: 0,
+        }));
+        return;
+      }
+
+      const total = Math.max(placed.length, targets.length, 1);
+      const paired = Math.min(placed.length, targets.length);
+      const next: Dot[] = [];
+      for (let i = 0; i < paired; i++) {
+        const p = placed[i];
+        const tg = targets[i];
+        next.push({
+          ...p.d,
+          ox: p.x,
+          oy: p.y,
+          os: p.s,
+          tx: tg.x,
+          ty: tg.y,
+          ts: 1,
+          r: tg.t > 0.55 ? 2.8 : 2.1,
+          delay: (i / total) * STAGGER,
+        });
+      }
+      // Destinos nuevos: nacen en su lugar.
+      for (let i = paired; i < targets.length; i++) {
+        const tg = targets[i];
+        next.push({
+          x: tg.x,
+          y: tg.y,
+          ox: tg.x,
+          oy: tg.y,
+          os: 0,
+          tx: tg.x,
+          ty: tg.y,
+          ts: 1,
+          s: 0,
+          r: tg.t > 0.55 ? 2.8 : 2.1,
+          phase: (i * 0.37) % (Math.PI * 2),
+          amp: 1.6,
+          speed: 0.3,
+          delay: (i / total) * STAGGER,
+        });
+      }
+      // Partículas sobrantes: se encogen en su lugar.
+      for (let i = paired; i < placed.length; i++) {
+        const p = placed[i];
+        next.push({
+          ...p.d,
+          ox: p.x,
+          oy: p.y,
+          os: p.s,
+          tx: p.x,
+          ty: p.y,
+          ts: 0,
+          delay: (i / total) * STAGGER,
+        });
+      }
+      dots = next;
+      morphStart = now;
+    };
+    morphToRef.current = morphTo;
 
     const resample = () => {
       const rect = canvas.getBoundingClientRect();
@@ -45,27 +206,9 @@ export function HeroGlyphField({ text = "15%", className }: Props) {
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
       const cell = width < 480 ? 10 : width < 800 ? 9 : 8;
-      const cols = Math.max(8, Math.floor(width / cell));
-      const rows = Math.max(6, Math.floor(height / cell));
-      const sample = sampleGlyph(text, cols, rows);
-      const next: Dot[] = [];
-
-      for (let y = 0; y < rows; y++) {
-        for (let x = 0; x < cols; x++) {
-          const t = sample[y * cols + x] ?? 0;
-          if (t < 0.22) continue;
-          next.push({
-            x: x * cell + cell / 2,
-            y: y * cell + cell / 2,
-            r: t > 0.55 ? 2.8 : 2.1,
-            phase: (x * 0.37 + y * 0.51) % (Math.PI * 2),
-            amp: 1.6,
-            speed: 0.28 + ((x + y) % 5) * 0.04,
-            glyph: t,
-          });
-        }
-      }
-      dots = next;
+      cols = Math.max(8, Math.floor(width / cell));
+      rows = Math.max(6, Math.floor(height / cell));
+      buildDots(textRef.current);
     };
 
     const draw = (now: number) => {
@@ -77,12 +220,14 @@ export function HeroGlyphField({ text = "15%", className }: Props) {
       ctx.fillStyle = "#000000";
 
       for (const d of dots) {
-        let px = d.x;
-        let py = d.y;
-        let r = d.r * boot;
+        const c = current(d, now);
+        if (c.s < 0.02) continue;
+        let px = c.x;
+        let py = c.y;
+        let r = d.r * c.s * boot;
 
         if (!reduce) {
-          const wave = Math.sin(t * 0.45 + d.x * 0.012 + d.y * 0.01);
+          const wave = Math.sin(t * 0.45 + c.x * 0.012 + c.y * 0.01);
           const orbit = t * d.speed + d.phase;
           px += Math.cos(orbit) * d.amp * 0.55;
           py += Math.sin(orbit * 0.9) * d.amp * 0.45 + wave * 1.1;
@@ -132,6 +277,11 @@ export function HeroGlyphField({ text = "15%", className }: Props) {
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerleave", onLeave);
     };
+  }, []);
+
+  useEffect(() => {
+    morphToRef.current(text);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text]);
 
   return (
