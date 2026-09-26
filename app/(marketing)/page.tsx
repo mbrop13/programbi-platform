@@ -3,7 +3,6 @@ import HeroSection from "@/components/marketing/HeroSection";
 import LogoSlider from "@/components/marketing/LogoSlider";
 import Metrics from "@/components/marketing/Metrics";
 import Programs from "@/components/marketing/Programs";
-import JobsBanner from "@/components/marketing/JobsBanner";
 import Team from "@/components/marketing/Team";
 import Quote from "@/components/marketing/Quote";
 import FaqSection from "@/components/marketing/FaqSection";
@@ -68,7 +67,6 @@ export default async function HomePage() {
           levelsCount: publicLevelCount(c),
         }))}
       />
-      <JobsBanner />
       <Team />
       <Quote />
       <FaqSection />
