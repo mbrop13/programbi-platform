@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Bell, LogOut, Menu, Search, X } from "lucide-react";
+import { Bell, LogOut, Menu, PanelLeft, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
@@ -47,6 +47,26 @@ export function CampusShell({ children }: { children: React.ReactNode }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [unread, setUnread] = useState(0);
   const [hasActiveLive, setHasActiveLive] = useState(false);
+  const [sidebarHidden, setSidebarHidden] = useState(false);
+
+  useEffect(() => {
+    try {
+      setSidebarHidden(window.localStorage.getItem("campus-sidebar") === "hidden");
+    } catch {
+      setSidebarHidden(false);
+    }
+  }, []);
+
+  const toggleSidebar = () => {
+    setSidebarHidden((v) => {
+      try {
+        window.localStorage.setItem("campus-sidebar", v ? "visible" : "hidden");
+      } catch {
+        /* sin persistencia */
+      }
+      return !v;
+    });
+  };
 
   useEffect(() => {
     setMobileOpen(false);
@@ -115,28 +135,38 @@ export function CampusShell({ children }: { children: React.ReactNode }) {
   return (
     <CampusUiContext.Provider value={ui}>
       <div className="campus-app flex h-dvh overflow-hidden bg-bg text-foreground">
-        <aside className="hidden lg:flex w-[232px] shrink-0 flex-col border-r border-border bg-bg">
-          <SidebarBrand />
-          <div className="px-3 pt-3">
+        {!sidebarHidden ? (
+          <aside className="hidden lg:flex w-[232px] shrink-0 flex-col border-r border-border bg-bg">
+            <SidebarBrand />
+            <div className="px-3 pt-3">
+              <button
+                type="button"
+                onClick={() => setSearchOpen(true)}
+                className="w-full h-8 px-2 rounded-md border border-border bg-surface text-[13px] text-muted-foreground flex items-center gap-2 hover:bg-muted"
+              >
+                <Search className="size-3.5" />
+                <span className="flex-1 text-left truncate">Buscar</span>
+                <kbd className="text-[10px] text-muted-foreground">⌘K</kbd>
+              </button>
+            </div>
+            <nav className="flex-1 overflow-y-auto px-3 py-3">
+              <CampusNavList pathname={pathname} isOrgManager={isOrgManager} hasActiveLive={hasActiveLive} />
+            </nav>
             <button
               type="button"
-              onClick={() => setSearchOpen(true)}
-              className="w-full h-8 px-2 rounded-md border border-border bg-surface text-[13px] text-muted-foreground flex items-center gap-2 hover:bg-muted"
+              onClick={toggleSidebar}
+              className="mx-3 mb-2 flex items-center gap-2 rounded-md px-2 h-8 text-[13px] text-muted-foreground hover:bg-muted hover:text-foreground bg-transparent border-0 cursor-pointer"
             >
-              <Search className="size-3.5" />
-              <span className="flex-1 text-left truncate">Buscar</span>
-              <kbd className="text-[10px] text-muted-foreground">⌘K</kbd>
+              <PanelLeft className="size-3.5" />
+              Ocultar barra lateral
             </button>
-          </div>
-          <nav className="flex-1 overflow-y-auto px-3 py-3">
-            <CampusNavList pathname={pathname} isOrgManager={isOrgManager} hasActiveLive={hasActiveLive} />
-          </nav>
-          <UserChip
-            name={userProfile?.full_name || userProfile?.email || ""}
-            plan={userProfile?.subscription_plan}
-            onUpgrade={() => setUpgradeOpen(true)}
-          />
-        </aside>
+            <UserChip
+              name={userProfile?.full_name || userProfile?.email || ""}
+              plan={userProfile?.subscription_plan}
+              onUpgrade={() => setUpgradeOpen(true)}
+            />
+          </aside>
+        ) : null}
 
         {mobileOpen && (
           <div className="fixed inset-0 z-50 lg:hidden">
@@ -184,6 +214,18 @@ export function CampusShell({ children }: { children: React.ReactNode }) {
             >
               <Menu />
             </Button>
+            {!sidebarHidden ? null : (
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="hidden lg:inline-flex"
+                onClick={toggleSidebar}
+                aria-label="Mostrar barra lateral"
+                title="Mostrar barra lateral"
+              >
+                <PanelLeft />
+              </Button>
+            )}
             <div className="text-sm font-medium text-foreground truncate">{campusTitleFromPath(pathname)}</div>
             <div className="ml-auto flex items-center gap-1">
               <Button variant="ghost" size="icon-sm" onClick={() => setSearchOpen(true)} aria-label="Buscar" className="hidden sm:inline-flex">
@@ -248,7 +290,7 @@ function CampusNavList({
   return (
     <div className="space-y-5">
       {CAMPUS_NAV.map((group) => {
-        const items = group.items.filter((item) => !item.orgOnly || isOrgManager);
+        const items = group.items.filter((item) => !item.hidden && (!item.orgOnly || isOrgManager));
         if (items.length === 0) return null;
         return (
           <div key={group.label}>

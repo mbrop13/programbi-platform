@@ -18,10 +18,13 @@ export function MobileTabBar({
   const [moreOpen, setMoreOpen] = useState(false);
   const moreActive =
     moreOpen ||
-    CAMPUS_MORE_LINKS.some((item) => !item.orgOnly && isCampusNavActive(pathname, item.href)) ||
+    CAMPUS_MORE_LINKS.filter((item) => !item.hidden).some(
+      (item) => !item.orgOnly && isCampusNavActive(pathname, item.href)
+    ) ||
     (isOrgManager && pathname.startsWith("/comunidad/business"));
 
-  const moreItems = CAMPUS_MORE_LINKS.filter((item) => !item.orgOnly || isOrgManager);
+  const moreItems = CAMPUS_MORE_LINKS.filter((item) => !item.hidden && (!item.orgOnly || isOrgManager));
+  const tabItems = MOBILE_TAB_ITEMS.filter((item) => !item.hidden);
 
   return (
     <>
@@ -53,7 +56,7 @@ export function MobileTabBar({
       ) : null}
 
       <nav className="lg:hidden fixed bottom-0 inset-x-0 z-40 h-14 border-t border-border bg-surface/95 flex items-stretch">
-        {MOBILE_TAB_ITEMS.map((item) => {
+        {tabItems.map((item) => {
           const Icon = item.icon;
           const active = isCampusNavActive(pathname, item.href);
           return (

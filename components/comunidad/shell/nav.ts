@@ -19,6 +19,8 @@ export type CampusNavItem = {
   external?: boolean;
   pingKey?: "live";
   orgOnly?: boolean;
+  /** Oculto temporalmente: no se renderiza en el menú, pero la ruta sigue existiendo. */
+  hidden?: boolean;
 };
 
 export type CampusNavGroup = {
@@ -32,8 +34,8 @@ export const CAMPUS_NAV: CampusNavGroup[] = [
     items: [
       { href: "/comunidad/inicio", label: "Inicio", icon: LayoutDashboard, prefetch: true },
       { href: "/comunidad/cursos", label: "Cursos", icon: GraduationCap, prefetch: true },
-      { href: "/comunidad/live", label: "En Vivo", icon: Radio, pingKey: "live" },
-      { href: "/ai", label: "Mentor IA", icon: Sparkles, external: true },
+      { href: "/comunidad/live", label: "En Vivo", icon: Radio, pingKey: "live", hidden: true },
+      { href: "/ai", label: "Mentor IA", icon: Sparkles, external: true, hidden: true },
       { href: "/comunidad/practicar", label: "Practica", icon: Target },
     ],
   },
@@ -41,7 +43,7 @@ export const CAMPUS_NAV: CampusNavGroup[] = [
     label: "Personal",
     items: [
       { href: "/comunidad/certificados", label: "Certificados", icon: Award },
-      { href: "/comunidad/empleos", label: "Empleos", icon: Briefcase },
+      { href: "/comunidad/empleos", label: "Empleos", icon: Briefcase, hidden: true },
     ],
   },
   {
@@ -51,9 +53,9 @@ export const CAMPUS_NAV: CampusNavGroup[] = [
 ];
 
 export const CAMPUS_MORE_LINKS: CampusNavItem[] = [
-  { href: "/comunidad/empleos", label: "Empleos", icon: Briefcase },
+  { href: "/comunidad/empleos", label: "Empleos", icon: Briefcase, hidden: true },
   { href: "/comunidad/certificados", label: "Certificados", icon: Award },
-  { href: "/ai", label: "Mentor IA", icon: Sparkles, external: true },
+  { href: "/ai", label: "Mentor IA", icon: Sparkles, external: true, hidden: true },
   { href: "/comunidad/ajustes", label: "Ajustes", icon: Settings },
   { href: "/comunidad/business", label: "Empresa", icon: Building2, orgOnly: true },
 ];
@@ -61,7 +63,7 @@ export const CAMPUS_MORE_LINKS: CampusNavItem[] = [
 export const MOBILE_TAB_ITEMS: CampusNavItem[] = [
   { href: "/comunidad/inicio", label: "Inicio", icon: LayoutDashboard },
   { href: "/comunidad/cursos", label: "Cursos", icon: GraduationCap },
-  { href: "/comunidad/live", label: "Live", icon: Radio, pingKey: "live" },
+  { href: "/comunidad/live", label: "Live", icon: Radio, pingKey: "live", hidden: true },
   { href: "/comunidad/practicar", label: "Practica", icon: Target },
 ];
 
