@@ -25,11 +25,11 @@ type Dot = {
   delay: number;
 };
 
-const MORPH_DUR = 950;
-const STAGGER = 350;
+const MORPH_DUR = 1500;
+const STAGGER = 500;
 
 const clamp01 = (v: number) => (v < 0 ? 0 : v > 1 ? 1 : v);
-const easeInOut = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - (-2 * k + 2) ** 3 / 2);
+const easeInOut = (k: number) => -(Math.cos(Math.PI * k) - 1) / 2;
 
 export function HeroGlyphField({ text = "15%", className }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -88,8 +88,8 @@ export function HeroGlyphField({ text = "15%", className }: Props) {
             s: 1,
             r: t > 0.55 ? 2.8 : 2.1,
             phase: (x * 0.37 + y * 0.51) % (Math.PI * 2),
-            amp: 1.6,
-            speed: 0.28 + ((x + y) % 5) * 0.04,
+            amp: 1.0,
+            speed: 0.18 + ((x + y) % 5) * 0.025,
             delay: 0,
           });
         }
@@ -172,8 +172,8 @@ export function HeroGlyphField({ text = "15%", className }: Props) {
           s: 0,
           r: tg.t > 0.55 ? 2.8 : 2.1,
           phase: (i * 0.37) % (Math.PI * 2),
-          amp: 1.6,
-          speed: 0.3,
+          amp: 1.0,
+          speed: 0.2,
           delay: (i / total) * STAGGER,
         });
       }
@@ -227,11 +227,11 @@ export function HeroGlyphField({ text = "15%", className }: Props) {
         let r = d.r * c.s * boot;
 
         if (!reduce) {
-          const wave = Math.sin(t * 0.45 + c.x * 0.012 + c.y * 0.01);
+          const wave = Math.sin(t * 0.3 + c.x * 0.012 + c.y * 0.01);
           const orbit = t * d.speed + d.phase;
-          px += Math.cos(orbit) * d.amp * 0.55;
-          py += Math.sin(orbit * 0.9) * d.amp * 0.45 + wave * 1.1;
-          r *= 0.94 + 0.08 * Math.sin(t * 0.7 + d.phase);
+          px += Math.cos(orbit) * d.amp * 0.35;
+          py += Math.sin(orbit * 0.9) * d.amp * 0.3 + wave * 0.6;
+          r *= 0.965 + 0.035 * Math.sin(t * 0.5 + d.phase);
 
           if (mouse.on) {
             const dx = px - mouse.x;

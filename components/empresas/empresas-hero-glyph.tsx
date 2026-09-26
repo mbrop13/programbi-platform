@@ -12,7 +12,7 @@ const SECTORS = [
   { word: "energía", label: "Energía y utilities" },
 ] as const;
 
-const HOLD_MS = 3600;
+const HOLD_MS = 4400;
 
 /** Hero visual de /empresas: las partículas se reacomodan por sector. */
 export function EmpresasHeroGlyph() {
