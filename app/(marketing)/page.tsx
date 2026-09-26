@@ -11,6 +11,8 @@ import HomeDeferred from "@/components/marketing/HomeDeferred";
 import { homeFaqs } from "@/lib/data/site";
 import { courses } from "@/lib/data/courses";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
+import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
+import type { CourseSchedule } from "@/lib/data/course-schedules";
 import { SITE_URL, absoluteUrl, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 
@@ -45,7 +47,8 @@ const faqJsonLd = {
   })),
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const schedules = (await getActiveSchedules()) as CourseSchedule[];
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqJsonLd) }} />
@@ -53,6 +56,7 @@ export default function HomePage() {
       <LogoSlider />
       <Metrics />
       <Programs
+        schedules={schedules}
         catalog={courses.map((c) => ({
           slug: c.slug,
           title: c.title,

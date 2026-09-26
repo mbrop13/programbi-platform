@@ -4,7 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronDown, Clock } from "lucide-react";
 import CourseImage from "@/components/shared/CourseImage";
-import { getCourseDateLabel } from "@/lib/data/course-schedules";
+import { CourseCohortFacts } from "@/components/marketing/CourseCohortStrip";
+import { getCourseDateLabel, SCHEDULE_COUNTRIES, type CourseSchedule } from "@/lib/data/course-schedules";
+import { useCountry } from "@/lib/context/CountryContext";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
 
 const ORDER = [
@@ -52,9 +54,11 @@ function courseTitle(course: ProgramCard) {
   return course.title;
 }
 
-export default function Programs({ catalog }: { catalog: ProgramCard[] }) {
+export default function Programs({ catalog, schedules }: { catalog: ProgramCard[]; schedules: CourseSchedule[] }) {
   const ALL = orderCatalog(catalog);
   const [expanded, setExpanded] = useState(false);
+  const { country } = useCountry();
+  const timeZone = (SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0]).timeZone;
   if (!ALL.length) return null;
   const visible = expanded ? ALL : ALL.slice(0, VISIBLE_COUNT);
 
@@ -96,6 +100,15 @@ export default function Programs({ catalog }: { catalog: ProgramCard[] }) {
                     Nuevo
                   </span>
                 ) : null}
+              </div>
+              <div className="px-4 pt-4">
+                <CourseCohortFacts
+                  slug={course.slug}
+                  schedules={schedules}
+                  timeZone={timeZone}
+                  loaded
+                  compact
+                />
               </div>
               <div className="px-6 py-5">
                 <h3 className="text-xl font-bold tracking-tight text-ink">{courseTitle(course)}</h3>
