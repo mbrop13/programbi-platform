@@ -25,7 +25,7 @@ export default function LogoSlider({ className }: { className?: string }) {
                 height={48}
                 fetchPriority="low"
                 unoptimized
-                className="max-h-8 w-auto object-contain opacity-50 grayscale lg:max-h-10"
+                className="max-h-8 w-auto object-contain lg:max-h-10"
               />
             </div>
           ))}
