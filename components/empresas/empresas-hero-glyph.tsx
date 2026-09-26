@@ -17,14 +17,26 @@ const HOLD_MS = 4400;
 /** Hero visual de /empresas: las partículas se reacomodan por sector. */
 export function EmpresasHeroGlyph() {
   const [index, setIndex] = useState(0);
+  const [desktop, setDesktop] = useState(false);
 
   useEffect(() => {
+    const mq = window.matchMedia("(min-width: 1024px)");
+    setDesktop(mq.matches);
+    const onChange = (e: MediaQueryListEvent) => setDesktop(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
+  useEffect(() => {
+    if (!desktop) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const id = window.setInterval(() => {
       setIndex((v) => (v + 1) % SECTORS.length);
     }, HOLD_MS);
     return () => window.clearInterval(id);
-  }, []);
+  }, [desktop]);
+
+  if (!desktop) return null;
 
   const sector = SECTORS[index];
 

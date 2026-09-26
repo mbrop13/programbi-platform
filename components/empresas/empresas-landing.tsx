@@ -129,7 +129,7 @@ function Hero() {
           </p>
         </div>
 
-        <div className="relative isolate min-h-[280px] border-t border-line sm:min-h-[380px] lg:min-h-full lg:border-t-0 lg:border-l lg:border-line">
+        <div className="relative isolate hidden min-h-[280px] border-t border-line sm:min-h-[380px] lg:block lg:min-h-full lg:border-t-0 lg:border-l lg:border-line">
           <EmpresasHeroGlyph />
         </div>
       </div>
