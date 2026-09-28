@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
-import { Bell, LogOut, Menu, PanelLeft, Search, X } from "lucide-react";
+import { Bell, LogOut, Menu, PanelLeftClose, PanelLeftOpen, Search, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
@@ -47,20 +47,20 @@ export function CampusShell({ children }: { children: React.ReactNode }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const [unread, setUnread] = useState(0);
   const [hasActiveLive, setHasActiveLive] = useState(false);
-  const [sidebarHidden, setSidebarHidden] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   useEffect(() => {
     try {
-      setSidebarHidden(window.localStorage.getItem("campus-sidebar") === "hidden");
+      setSidebarCollapsed(window.localStorage.getItem("campus-sidebar-collapsed") === "1");
     } catch {
-      setSidebarHidden(false);
+      setSidebarCollapsed(false);
     }
   }, []);
 
   const toggleSidebar = () => {
-    setSidebarHidden((v) => {
+    setSidebarCollapsed((v) => {
       try {
-        window.localStorage.setItem("campus-sidebar", v ? "visible" : "hidden");
+        window.localStorage.setItem("campus-sidebar-collapsed", v ? "0" : "1");
       } catch {
         /* sin persistencia */
       }
@@ -135,38 +135,60 @@ export function CampusShell({ children }: { children: React.ReactNode }) {
   return (
     <CampusUiContext.Provider value={ui}>
       <div className="campus-app flex h-dvh overflow-hidden bg-bg text-foreground">
-        {!sidebarHidden ? (
-          <aside className="hidden lg:flex w-[232px] shrink-0 flex-col border-r border-border bg-bg">
-            <SidebarBrand />
-            <div className="px-3 pt-3">
-              <button
-                type="button"
-                onClick={() => setSearchOpen(true)}
-                className="w-full h-8 px-2 rounded-md border border-border bg-surface text-[13px] text-muted-foreground flex items-center gap-2 hover:bg-muted"
-              >
-                <Search className="size-3.5" />
-                <span className="flex-1 text-left truncate">Buscar</span>
-                <kbd className="text-[10px] text-muted-foreground">⌘K</kbd>
-              </button>
-            </div>
-            <nav className="flex-1 overflow-y-auto px-3 py-3">
-              <CampusNavList pathname={pathname} isOrgManager={isOrgManager} hasActiveLive={hasActiveLive} />
-            </nav>
+        <aside
+          className={cn(
+            "hidden lg:flex shrink-0 flex-col border-r border-border bg-bg transition-[width] duration-200",
+            sidebarCollapsed ? "w-[60px]" : "w-[232px]"
+          )}
+        >
+          <SidebarBrand collapsed={sidebarCollapsed} />
+          <div className={cn("pt-3", sidebarCollapsed ? "px-2.5" : "px-3")}>
             <button
               type="button"
-              onClick={toggleSidebar}
-              className="mx-3 mb-2 flex items-center gap-2 rounded-md px-2 h-8 text-[13px] text-muted-foreground hover:bg-muted hover:text-foreground bg-transparent border-0 cursor-pointer"
+              onClick={() => setSearchOpen(true)}
+              title="Buscar"
+              className={cn(
+                "h-8 rounded-md border border-border bg-surface text-[13px] text-muted-foreground flex items-center gap-2 hover:bg-muted",
+                sidebarCollapsed ? "w-8 justify-center px-0" : "w-full px-2"
+              )}
             >
-              <PanelLeft className="size-3.5" />
-              Ocultar barra lateral
+              <Search className="size-3.5 shrink-0" />
+              {sidebarCollapsed ? null : (
+                <>
+                  <span className="flex-1 text-left truncate">Buscar</span>
+                  <kbd className="text-[10px] text-muted-foreground">⌘K</kbd>
+                </>
+              )}
             </button>
-            <UserChip
-              name={userProfile?.full_name || userProfile?.email || ""}
-              plan={userProfile?.subscription_plan}
-              onUpgrade={() => setUpgradeOpen(true)}
+          </div>
+          <nav className={cn("flex-1 overflow-y-auto py-3", sidebarCollapsed ? "px-2.5" : "px-3")}>
+            <CampusNavList
+              pathname={pathname}
+              isOrgManager={isOrgManager}
+              hasActiveLive={hasActiveLive}
+              collapsed={sidebarCollapsed}
             />
-          </aside>
-        ) : null}
+          </nav>
+          <button
+            type="button"
+            onClick={toggleSidebar}
+            title={sidebarCollapsed ? "Expandir barra lateral" : "Minimizar barra lateral"}
+            aria-label={sidebarCollapsed ? "Expandir barra lateral" : "Minimizar barra lateral"}
+            className={cn(
+              "flex items-center gap-2 rounded-md h-8 text-[13px] text-muted-foreground hover:bg-muted hover:text-foreground bg-transparent border-0 cursor-pointer",
+              sidebarCollapsed ? "mx-2.5 mb-2 justify-center px-0" : "mx-3 mb-2 px-2"
+            )}
+          >
+            {sidebarCollapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-3.5" />}
+            {sidebarCollapsed ? null : "Minimizar"}
+          </button>
+          <UserChip
+            name={userProfile?.full_name || userProfile?.email || ""}
+            plan={userProfile?.subscription_plan}
+            onUpgrade={() => setUpgradeOpen(true)}
+            collapsed={sidebarCollapsed}
+          />
+        </aside>
 
         {mobileOpen && (
           <div className="fixed inset-0 z-50 lg:hidden">
@@ -214,18 +236,6 @@ export function CampusShell({ children }: { children: React.ReactNode }) {
             >
               <Menu />
             </Button>
-            {!sidebarHidden ? null : (
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                className="hidden lg:inline-flex"
-                onClick={toggleSidebar}
-                aria-label="Mostrar barra lateral"
-                title="Mostrar barra lateral"
-              >
-                <PanelLeft />
-              </Button>
-            )}
             <div className="text-sm font-medium text-foreground truncate">{campusTitleFromPath(pathname)}</div>
             <div className="ml-auto flex items-center gap-1">
               <Button variant="ghost" size="icon-sm" onClick={() => setSearchOpen(true)} aria-label="Buscar" className="hidden sm:inline-flex">
@@ -263,7 +273,18 @@ export function CampusShell({ children }: { children: React.ReactNode }) {
   );
 }
 
-function SidebarBrand({ compact = false }: { compact?: boolean }) {
+function SidebarBrand({ compact = false, collapsed = false }: { compact?: boolean; collapsed?: boolean }) {
+  if (collapsed) {
+    return (
+      <Link
+        href="/comunidad/inicio"
+        title="ProgramBI Campus"
+        className="flex items-center justify-center h-12 border-b border-border"
+      >
+        <Image src="/logo.png" alt="ProgramBI" width={22} height={22} className="rounded-sm" />
+      </Link>
+    );
+  }
   return (
     <Link
       href="/comunidad/inicio"
@@ -282,10 +303,12 @@ function CampusNavList({
   pathname,
   isOrgManager,
   hasActiveLive,
+  collapsed = false,
 }: {
   pathname: string;
   isOrgManager: boolean;
   hasActiveLive: boolean;
+  collapsed?: boolean;
 }) {
   return (
     <div className="space-y-5">
@@ -294,30 +317,67 @@ function CampusNavList({
         if (items.length === 0) return null;
         return (
           <div key={group.label}>
-            <div className="px-2 mb-1.5 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
-              {group.label}
-            </div>
+            {collapsed ? null : (
+              <div className="px-2 mb-1.5 text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                {group.label}
+              </div>
+            )}
             <div className="space-y-0.5">
               {items.map((item) => {
                 const Icon = item.icon;
                 const active = isCampusNavActive(pathname, item.href);
-                return (
+  if (collapsed) {
+    return (
+      <div className="px-2.5 py-3 border-t border-border flex flex-col items-center gap-1">
+        <Link
+          href="/comunidad/ajustes"
+          title={name || "Cuenta"}
+          className="size-8 rounded-full bg-foreground text-background text-[10px] font-semibold flex items-center justify-center shrink-0"
+        >
+          {initials}
+        </Link>
+        <button
+          type="button"
+          onClick={() => {
+            void logout();
+          }}
+          title="Cerrar sesión"
+          aria-label="Cerrar sesión"
+          className="size-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground bg-transparent border-0 cursor-pointer"
+        >
+          <LogOut className="size-4" />
+        </button>
+      </div>
+    );
+  }
+
+  return (
                   <Link
                     key={item.href}
                     href={item.href}
                     prefetch={item.prefetch ?? false}
+                    title={item.label}
+                    aria-label={item.label}
                     className={cn(
-                      "flex items-center gap-2.5 rounded-md px-2 h-8 text-[13px] transition-colors",
+                      "flex items-center gap-2.5 rounded-md h-8 text-[13px] transition-colors",
+                      collapsed ? "justify-center px-0" : "px-2",
                       active
                         ? "bg-foreground text-background font-medium"
                         : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     )}
                   >
-                    <Icon className="size-3.5 shrink-0" />
-                    <span className="truncate flex-1">{item.label}</span>
-                    {item.pingKey === "live" && hasActiveLive ? (
-                      <span className={cn("size-1.5 rounded-full bg-rose-500", active && "bg-background")} />
-                    ) : null}
+                    <span className="relative shrink-0">
+                      <Icon className="size-4" />
+                      {item.pingKey === "live" && hasActiveLive ? (
+                        <span
+                          className={cn(
+                            "absolute -top-0.5 -right-0.5 size-1.5 rounded-full bg-rose-500",
+                            active && "bg-background"
+                          )}
+                        />
+                      ) : null}
+                    </span>
+                    {collapsed ? null : <span className="truncate flex-1">{item.label}</span>}
                   </Link>
                 );
               })}
@@ -333,10 +393,12 @@ function UserChip({
   name,
   plan,
   onUpgrade,
+  collapsed = false,
 }: {
   name: string;
   plan?: string | null;
   onUpgrade: () => void;
+  collapsed?: boolean;
 }) {
   const initials = name
     ? name
