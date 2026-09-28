@@ -42,8 +42,9 @@ function formatItems(course: Course, hours: number): string[] {
   const levels = course.levels?.length ?? 1;
   const items = ["Clases en vivo por Zoom"];
   if (course.slug === "analisis-de-datos") {
-    items.push("20 horas de básico-intermedio");
-    items.push("SQL Server, Power BI y Python. El curso avanzado es aparte");
+    items.push("60 horas por nivel: básico-intermedio y avanzado");
+    items.push("SQL Server, Power BI y Python, 20 horas de cada una");
+    items.push("120 horas el programa completo");
   } else {
     if (hours) items.push(`${hours} horas por nivel`);
     if (levels > 1) items.push(`${levels} niveles`);

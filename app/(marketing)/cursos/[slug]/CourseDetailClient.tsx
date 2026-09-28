@@ -19,6 +19,7 @@ import {
 import { type Course, courses } from "@/lib/data/courses";
 import {
   advancedHeading,
+  checkoutLevelName,
   empresaQuotePath,
   isTieredCourse,
   offerSyllabusLevel,
@@ -185,7 +186,7 @@ export default function CourseDetailClient({
 
   const handleCheckoutCTA = async () => {
     const picked = levels[selectedLevel];
-    const levelName = picked?.name === OPEN_LEVEL_NAME ? "Básico" : picked?.name;
+    const levelName = checkoutLevelName(course, picked?.name);
     trackCtaClick(showPrice ? "Inscribirse" : "Registrarse", "course_detail_sidebar", {
       course_slug: course.slug,
     });
@@ -272,7 +273,7 @@ export default function CourseDetailClient({
   }, []);
 
   const activeLevel = levels[selectedLevel] || null;
-  const syllabusIndex = syllabusIndexForLevel(course, activeLevel?.name === OPEN_LEVEL_NAME ? "Básico" : activeLevel?.name);
+  const syllabusIndex = syllabusIndexForLevel(course, activeLevel?.name);
   const offerSyllabus =
     tiered && view !== "empresas"
       ? offerSyllabusLevel(course, activeLevel?.name === "Avanzado" ? "avanzado" : "publico")
@@ -382,7 +383,9 @@ export default function CourseDetailClient({
       : view === "empresas"
         ? tiered
           ? `Capacitación de ${course.title} para equipos. Básico, intermedio y avanzado, en vivo.`
-          : `Capacitación de ${course.title} para equipos. ${course.shortDescription}`
+          : course.slug === "analisis-de-datos"
+            ? "Capacitación de Análisis de Datos para tu equipo. Dos niveles de 60 horas —básico-intermedio y avanzado— con SQL Server, Power BI y Python, y el tamaño de equipo que necesites."
+            : `Capacitación de ${course.title} para equipos. ${course.shortDescription}`
         : course.shortDescription?.trim() || introParagraphs[0] || "";
   const offerMore =
     view === "publico" && course.shortDescription?.trim()
@@ -591,7 +594,9 @@ export default function CourseDetailClient({
                   <p className="text-sm leading-relaxed text-mute">
                     {tiered
                       ? "La cotización incluye básico, intermedio y avanzado. Eliges los niveles y el tamaño del equipo."
-                      : "Armamos la cotización según el equipo y el calendario de tu empresa."}
+                      : course.slug === "analisis-de-datos"
+                        ? "La cotización incluye los dos niveles de 60 horas. Eliges el nivel y el tamaño del equipo."
+                        : "Armamos la cotización según el equipo y el calendario de tu empresa."}
                   </p>
                 ) : activeSchedulesList.length === 0 ? (
                   <p className="text-sm leading-relaxed text-mute">

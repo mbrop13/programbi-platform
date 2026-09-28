@@ -69,20 +69,20 @@ export const COURSE_SEO: Record<
   "analisis-de-datos": {
     title: "Curso de análisis de datos en vivo Chile | ProgramBI",
     description:
-      "Curso de análisis de datos en Chile, en vivo por Zoom: SQL, Power BI y Python para profesionales. Básico-intermedio y avanzado, 20 horas cada uno.",
+      "Curso de análisis de datos en Chile, en vivo por Zoom: SQL, Power BI y Python. Dos niveles de 60 horas: básico-intermedio y avanzado.",
     h1: "Curso de análisis de datos en vivo en Chile",
     audience:
       "Para profesionales de finanzas, control de gestión y operaciones que hoy reportan en Excel y quieren el oficio de analista de datos: SQL, Power BI y Python.",
     intro:
-      "Este es un curso de análisis de datos en Chile, en vivo por Zoom, para profesionales de finanzas, control de gestión y operaciones que hoy arman reportes en Excel y necesitan un oficio completo de analista de datos.\n\nEl curso abierto es básico-intermedio, 20 horas —horario vespertino Chile, con grabaciones en el campus—. Junta SQL Server, Power BI y Python, de fundamentos a modelado y visualización. El curso avanzado, también de 20 horas, cubre automatización, inteligencia de tiempo y modelos. Las empresas cotizan los tres niveles, 144 horas.\n\nSi buscas cursos de análisis de datos para dar el salto de Excel a SQL, Power BI y Python, este es el programa de ProgramBI. Sales del básico y el intermedio sabiendo consultar una base, armar un modelo y entregar un dashboard usable. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.",
+      "Este es un curso de análisis de datos en Chile, en vivo por Zoom, para profesionales de finanzas, control de gestión y operaciones que hoy arman reportes en Excel y necesitan un oficio completo de analista de datos.\n\nSon dos niveles de 60 horas cada uno —horario vespertino Chile, con grabaciones en el campus—. El básico-intermedio junta SQL Server, Power BI y Python, de fundamentos a modelado y visualización: 20 horas por herramienta. El avanzado, también de 60 horas, cubre automatización, inteligencia de tiempo y modelos. El programa completo son 120 horas.\n\nSi buscas cursos de análisis de datos para dar el salto de Excel a SQL, Power BI y Python, este es el programa de ProgramBI. Sales del básico-intermedio sabiendo consultar una base, armar un modelo y entregar un dashboard usable. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.",
     faqs: [
       {
         q: "¿Hay un curso de análisis de datos en Chile, en vivo?",
-        a: "Sí. ProgramBI dicta el curso de análisis de datos en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. En la misma página eliges básico-intermedio o avanzado, 20 horas cada uno, con SQL Server, Power BI y Python. Las empresas cotizan básico, intermedio y avanzado, 144 horas.",
+        a: "Sí. ProgramBI dicta el curso de análisis de datos en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. En la misma página eliges básico-intermedio o avanzado, 60 horas cada uno, con SQL Server, Power BI y Python —20 horas por herramienta—. El programa completo son 120 horas.",
       },
       {
         q: "¿Qué se aprende en los cursos de análisis de datos?",
-        a: "En básico-intermedio extraes datos con SQL Server, armas tableros con Power Query y DAX, y limpias con Python y Pandas. Son 20 horas. Automatización, inteligencia de tiempo y modelos están en el curso avanzado, también de 20 horas.",
+        a: "En básico-intermedio, 60 horas, extraes datos con SQL Server, armas tableros con Power Query y DAX, y limpias con Python y Pandas. En el nivel avanzado, también de 60 horas, automatización, inteligencia de tiempo y modelos con las mismas tres herramientas.",
       },
       {
         q: "¿Sirve como curso para analista de datos?",
@@ -90,11 +90,11 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Es lo mismo que un curso Power BI suelto?",
-        a: "El curso Power BI tiene básico-intermedio y avanzado, 20 horas cada uno, en la misma página. Este programa cubre extracción (SQL), tableros (Power BI) y Python. El catálogo de cursos sueltos está en /cursos.",
+        a: "El curso Power BI tiene básico-intermedio y avanzado, 20 horas cada uno, en la misma página. Este programa cubre extracción (SQL), tableros (Power BI) y Python, 60 horas por nivel. El catálogo de cursos sueltos está en /cursos.",
       },
       {
         q: "¿Cómo me inscribo al curso de análisis de datos?",
-        a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor. Para cotizar los tres niveles, entra a /cursos/analisis-de-datos/empresas. Un proyecto in-company sigue en /empresas.",
+        a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor. Para cotizar para una empresa, entra a /cursos/analisis-de-datos/empresas. Un proyecto in-company sigue en /empresas.",
       },
     ],
   },

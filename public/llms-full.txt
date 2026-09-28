@@ -21,10 +21,10 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
 ## 2. Plan de Estudios Detallado de los Cursos
 
 ### Curso de Análisis de Datos (Programa Completo)
-* **Duración para particulares**: básico-intermedio, 20 horas. El curso avanzado dura 20 horas. Las empresas cotizan básico, intermedio y avanzado por separado.
+* **Duración**: dos niveles de 60 horas cada uno (básico-intermedio y avanzado), 20 horas por herramienta. El programa completo son 120 horas.
 * **Inversión**: $299.000 CLP.
 * **Dirigido a**: Profesionales de administración, finanzas, marketing, operaciones, ingeniería y cualquier persona que busque dominar el ciclo completo del dato.
-* **Módulos**:
+* **Módulos por nivel**:
   * **Módulo 1: Fundamentos de SQL Server**: Consultas básicas, filtros, ordenamiento, funciones de agregación, uniones (JOINs), subconsultas y Common Table Expressions (CTEs).
   * **Módulo 2: Business Intelligence con Power BI**: Extracción y transformación de datos con Power Query, modelado dimensional estrella, diseño de dashboards de impacto y fórmulas DAX esenciales.
   * **Módulo 3: Automatización y Análisis con Python**: Sintaxis de Python, manipulación de datos con la librería Pandas, visualización de datos con Matplotlib y Seaborn, y automatización de reportes Excel.

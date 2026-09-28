@@ -329,7 +329,7 @@ export function getCourseScheduleString(
 }
 
 function packIncludes(): string[] {
-  return ["SQL Server · 16 h", "Power BI · 16 h", "Python · 16 h"];
+  return ["SQL Server · 20 h", "Power BI · 20 h", "Python · 20 h"];
 }
 
 const SHORT_NAME: Record<string, string> = {

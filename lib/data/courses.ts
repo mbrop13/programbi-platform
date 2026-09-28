@@ -37,15 +37,15 @@ export const courses: Course[] = [
     slug: "analisis-de-datos",
     title: "Análisis de Datos",
     shortDescription:
-      "SQL Server, Power BI y Python. Básico-intermedio y avanzado, 20 horas cada uno, en la misma página.",
+      "SQL Server, Power BI y Python. Dos niveles de 60 horas: básico-intermedio y avanzado, en la misma página.",
     description:
-      "Programa en vivo de SQL Server, Power BI y Python. Para particulares, básico-intermedio y avanzado duran 20 horas cada uno. Las empresas cotizan los tres niveles.",
+      "Programa en vivo de SQL Server, Power BI y Python. Dos niveles de 60 horas cada uno —básico-intermedio y avanzado—, con las tres herramientas en cada nivel. El programa completo son 120 horas.",
     category: "programacion",
     categoryLabel: "MÁS POPULAR",
     badgeLabel: "MÁS POPULAR",
     badgeColor: "#1890FF",
     techStack: ["SQL", "Power BI", "Python"],
-    durationHours: 144,
+    durationHours: 60,
     modality: "online",
     level: "principiante",
     imageUrl: "/images/courses/analisis-de-datos-card.webp",
@@ -64,72 +64,50 @@ export const courses: Course[] = [
     ],
     syllabus: [
       {
-        module: "Nivel 1: SQL Server",
+        module: "Básico-Intermedio (60 horas)",
         topics: [
-          "Fundamentos de bases de datos relacionales",
-          "Consultas SELECT, JOINs y subqueries",
-          "Funciones de agregación y agrupamiento",
-          "Procedimientos almacenados",
-          "Diseño de esquemas y normalización",
+          "SQL Server: SELECT, JOIN, GROUP BY y consultas a bases reales",
+          "Power BI: Power Query, modelo estrella y DAX",
+          "Python: Pandas, Matplotlib y limpieza de datos",
+          "Dashboards y reportes automatizados",
         ],
-        hours: 48,
+        hours: 60,
       },
       {
-        module: "Nivel 2: Power BI",
+        module: "Avanzado (60 horas)",
         topics: [
-          "Conexión a fuentes de datos múltiples",
-          "Power Query y transformación ETL",
-          "Modelado dimensional (estrella/copo de nieve)",
-          "Fórmulas DAX intermedias y avanzadas",
-          "Dashboards interactivos y publicación",
+          "SQL Server: procedimientos almacenados y automatización",
+          "Power BI: inteligencia de tiempo, RLS y publicación",
+          "Python: Plotly, funciones propias y análisis predictivo",
+          "Proyecto final integrador con las tres herramientas",
         ],
-        hours: 48,
-      },
-      {
-        module: "Nivel 3: Python para Datos",
-        topics: [
-          "Fundamentos de Python y entorno Colab",
-          "Pandas: manipulación y limpieza de datos",
-          "Visualización con Matplotlib y Seaborn",
-          "Automatización de reportes",
-          "Capstone Project integrador",
-        ],
-        hours: 48,
+        hours: 60,
       },
     ],
     levels: [
-      { 
-        name: "Básico", 
+      {
+        name: "Básico-Intermedio",
         price: 747000,
-        durationHours: 48, 
+        durationHours: 60,
         whatYouLearn: [
-          "Fundamentos y bases de datos con SQL Server", 
-          "Consultas SELECT, JOINs y subqueries", 
-          "Funciones de agregación y agrupamiento", 
-          "Procedimientos almacenados y diseño"
-        ] 
+          "Consultas SQL desde cero hasta avanzado",
+          "Modelado de datos y DAX en Power BI",
+          "Análisis exploratorio con Python y Pandas",
+          "Dashboards interactivos y reportes automáticos",
+          "ETL con Power Query y conexiones a BDs",
+          "Proyecto final con datos reales",
+        ],
       },
-      { 
-        name: "Intermedio", 
-        price: 498000, 
-        durationHours: 48, 
+      {
+        name: "Avanzado",
+        price: 498000,
+        durationHours: 60,
         whatYouLearn: [
-          "Conexión a fuentes, ETL y modelado con Power Query", 
-          "Modelado dimensional y relaciones", 
-          "Fórmulas DAX intermedias y avanzadas", 
-          "Dashboards interactivos y publicación"
-        ] 
-      },
-      { 
-        name: "Avanzado", 
-        price: 498000, 
-        durationHours: 48, 
-        whatYouLearn: [
-          "Fundamentos de Python y entorno Colab", 
-          "Manipulación y limpieza de datos con Pandas", 
-          "Visualización con Matplotlib y Seaborn", 
-          "Automatización de reportes"
-        ] 
+          "Automatización de consultas y procedimientos almacenados",
+          "Inteligencia de tiempo, RLS y publicación en Power BI Service",
+          "Automatización de reportes y análisis exploratorio con Python",
+          "Modelos y dashboards finales integradores",
+        ],
       },
     ],
   },

@@ -39,7 +39,7 @@ export const NAV_COURSE_GROUPS: { id: string; label: string; items: NavCourse[] 
         slug: "analisis-de-datos",
         title: "Análisis de Datos",
         imageUrl: "/images/courses/analisis-de-datos-card.webp",
-        durationHours: 20,
+        durationHours: 60,
       },
       {
         slug: "analitica-mineria",

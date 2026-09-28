@@ -12,7 +12,7 @@ import {
   Info, Globe, Tag
 } from "lucide-react";
 import { courses as allCourses, Course, COURSE_NAV_GROUPS } from "@/lib/data/courses";
-import { isTieredCourse, PARTICULAR_COURSE_HOURS } from "@/lib/data/course-views";
+import { isTieredCourse, resolveCheckoutLevel, PARTICULAR_COURSE_HOURS } from "@/lib/data/course-views";
 
 const CATALOG_FILTERS = [{ id: "todos" as const, label: "Todos" }, ...COURSE_NAV_GROUPS];
 type CatalogFilter = (typeof CATALOG_FILTERS)[number]["id"];
@@ -26,7 +26,7 @@ const chipClass = (on: boolean) =>
 
 const fieldClass =
   "w-full rounded-md border border-line bg-wash px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-[rgb(23_23_22_/_0.28)] focus:bg-paper";
-import { type CourseSchedule, analisisDeDatosSlugs, formatScheduleDate, getNearestSchedule, getAllActiveSchedules, convertSchedule, SCHEDULE_COUNTRIES } from "@/lib/data/course-schedules";
+import { type CourseSchedule, analisisDeDatosSlugs, analisisDeDatosSchedules, formatScheduleDate, getNearestSchedule, getAllActiveSchedules, convertSchedule, SCHEDULE_COUNTRIES } from "@/lib/data/course-schedules";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { useCountry } from "@/lib/context/CountryContext";
 import { validateCouponAction } from "@/lib/supabase/comunidad-ai";
@@ -218,7 +218,7 @@ export default function PagoClient() {
       const initialLevels: Record<string, string> = {};
       allCourses.forEach(c => {
         if (c.slug === initialSlug) {
-           initialLevels[c.slug] = initialLevel || c.levels?.[0]?.name || "Básico";
+           initialLevels[c.slug] = resolveCheckoutLevel(c, initialLevel);
         } else {
            initialLevels[c.slug] = c.levels?.[0]?.name || "Básico";
         }
@@ -228,7 +228,7 @@ export default function PagoClient() {
       // Auto-add if came from a course detail
       if (initialSlug) {
         const course = allCourses.find(c => c.slug === initialSlug);
-        const levelName = initialLevel || course?.levels?.[0]?.name || "Básico";
+        const levelName = resolveCheckoutLevel(course, initialLevel);
         const level = course?.levels?.find(l => l.name === levelName);
         if (course && level && level.price) {
           const pricing = getDiscountedPrice(course.slug, level.price, levelName);
@@ -275,10 +275,7 @@ export default function PagoClient() {
           
           let courseSchedules: CourseSchedule[] = [];
           if (course.slug === "analisis-de-datos") {
-             if (lvl.name.includes("Básico") || lvl.name.includes("Completo")) {
-                 const adSchedules = schedules.filter(s => analisisDeDatosSlugs.includes(s.course_slug) && s.level_name.includes("Básico"));
-                 courseSchedules = getAllActiveSchedules(adSchedules);
-             }
+             courseSchedules = analisisDeDatosSchedules(schedules, lvl.name);
           } else {
              courseSchedules = getAllActiveSchedules(
                schedules.filter((s) => {
@@ -643,10 +640,7 @@ export default function PagoClient() {
                const alwaysAvailable = ["analitica-mineria", "analitica-financiera"].includes(course.slug);
                
                if (course.slug === "analisis-de-datos") {
-                  if (activeLevel?.includes("Básico") || activeLevel?.includes("Completo")) {
-                      const adSchedules = schedules.filter(s => analisisDeDatosSlugs.includes(s.course_slug) && s.level_name.includes("Básico"));
-                      courseSchedules = getAllActiveSchedules(adSchedules);
-                  }
+                  courseSchedules = analisisDeDatosSchedules(schedules, activeLevel || "Básico");
                } else if (!alwaysAvailable) {
                   courseSchedules = getAllActiveSchedules(
                     schedules.filter((s) => {

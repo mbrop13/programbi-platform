@@ -46,6 +46,26 @@ export const staticSchedules: Omit<CourseSchedule, 'id'>[] = [
 // Cursos que son parte del programa "Análisis de Datos"
 export const analisisDeDatosSlugs = ["sql-server", "power-bi", "python"];
 
+/**
+ * Horarios del pack "Análisis de Datos": los tres cursos del programa en el
+ * nivel pedido. El nivel abierto ("Básico-Intermedio") agrupa las cohortes de
+ * básico e intermedio de las tres herramientas.
+ */
+export function analisisDeDatosSchedules(
+  schedules: CourseSchedule[],
+  levelName: string
+): CourseSchedule[] {
+  const isOpenLevel = /b[áa]sico/i.test(levelName);
+  const matched = schedules.filter(
+    (s) =>
+      analisisDeDatosSlugs.includes(s.course_slug) &&
+      (isOpenLevel
+        ? s.level_name === "Básico" || s.level_name === "Intermedio"
+        : s.level_name === levelName)
+  );
+  return getAllActiveSchedules(matched);
+}
+
 export function formatScheduleDate(dateStr: string): string {
   const date = new Date(dateStr + "T12:00:00"); // Avoid timezone issues
   return date.toLocaleDateString("es-CL", {

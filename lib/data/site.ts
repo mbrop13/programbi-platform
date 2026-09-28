@@ -25,7 +25,7 @@ export const programs = [
   {
     slug: "analisis-de-datos",
     name: "Análisis de Datos",
-    hours: "20 h",
+    hours: "60 h",
     line: "Programa integral de SQL Server, Power BI y Python.",
     image: "/images/courses/analisis-de-datos-card.webp",
     href: "/cursos/analisis-de-datos",

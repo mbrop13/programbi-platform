@@ -122,6 +122,31 @@ export function syllabusIndexForLevel(course: Course, levelName: string | undefi
   return index >= 0 ? index : 0;
 }
 
+/** ¿El curso tiene un nivel con este nombre exacto? */
+export function hasLevelNamed(course: Course | undefined, name: string): boolean {
+  return (course?.levels ?? []).some((level) => level.name === name);
+}
+
+/**
+ * Nivel a mandar al checkout. El curso abierto se rotula "Básico-Intermedio" en la
+ * UI, pero en la escalera de 3 niveles el bloque se guarda como "Básico". Los
+ * cursos de dos niveles (Análisis de Datos) ya guardan el nombre real.
+ */
+export function checkoutLevelName(course: Course, levelName?: string): string | undefined {
+  if (!levelName) return undefined;
+  if (levelName !== OPEN_LEVEL_NAME) return levelName;
+  return hasLevelNamed(course, "Básico") ? "Básico" : OPEN_LEVEL_NAME;
+}
+
+/** Resuelve el `?nivel=` de una URL contra los niveles reales del curso. */
+export function resolveCheckoutLevel(course: Course | undefined, rawLevel?: string | null): string {
+  const levels = course?.levels ?? [];
+  const raw = (rawLevel ?? "").trim();
+  if (raw && levels.some((level) => level.name === raw)) return raw;
+  if (raw === "Básico" && hasLevelNamed(course, OPEN_LEVEL_NAME)) return OPEN_LEVEL_NAME;
+  return levels[0]?.name || raw || "Básico";
+}
+
 export function publicLevelCount(course: Course): number {
   const count = levelsForView(course, "publico").length;
   return count > 0 ? count : 1;
@@ -136,6 +161,11 @@ export function catalogHours(course: Course): number {
 export function offerHours(course: Course, view: CourseOfferView): number {
   if (isTieredCourse(course) && view !== "empresas") return PARTICULAR_COURSE_HOURS;
   const levels = levelsForView(course, view);
+  // En el catálogo público cada nivel se vende por separado: la oferta es un nivel.
+  if (view !== "empresas" && levels.length > 0) {
+    const first = levels[0].durationHours;
+    if (first) return first;
+  }
   const sum = levels.reduce((total, level) => total + (level.durationHours ?? 0), 0);
   return sum > 0 ? sum : course.durationHours;
 }
