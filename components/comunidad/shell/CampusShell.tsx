@@ -326,32 +326,7 @@ function CampusNavList({
               {items.map((item) => {
                 const Icon = item.icon;
                 const active = isCampusNavActive(pathname, item.href);
-  if (collapsed) {
-    return (
-      <div className="px-2.5 py-3 border-t border-border flex flex-col items-center gap-1">
-        <Link
-          href="/comunidad/ajustes"
-          title={name || "Cuenta"}
-          className="size-8 rounded-full bg-foreground text-background text-[10px] font-semibold flex items-center justify-center shrink-0"
-        >
-          {initials}
-        </Link>
-        <button
-          type="button"
-          onClick={() => {
-            void logout();
-          }}
-          title="Cerrar sesión"
-          aria-label="Cerrar sesión"
-          className="size-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground bg-transparent border-0 cursor-pointer"
-        >
-          <LogOut className="size-4" />
-        </button>
-      </div>
-    );
-  }
-
-  return (
+                return (
                   <Link
                     key={item.href}
                     href={item.href}
@@ -414,6 +389,31 @@ function UserChip({
     await supabase.auth.signOut({ scope: "global" });
     window.location.replace("/");
   };
+
+  if (collapsed) {
+    return (
+      <div className="px-2.5 py-3 border-t border-border flex flex-col items-center gap-1">
+        <Link
+          href="/comunidad/ajustes"
+          title={name || "Cuenta"}
+          className="size-8 rounded-full bg-foreground text-background text-[10px] font-semibold flex items-center justify-center shrink-0"
+        >
+          {initials}
+        </Link>
+        <button
+          type="button"
+          onClick={() => {
+            void logout();
+          }}
+          title="Cerrar sesión"
+          aria-label="Cerrar sesión"
+          className="size-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:bg-muted hover:text-foreground bg-transparent border-0 cursor-pointer"
+        >
+          <LogOut className="size-4" />
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="px-3 py-3 border-t border-border space-y-1">
