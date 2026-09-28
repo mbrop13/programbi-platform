@@ -813,6 +813,7 @@ function CourseCardDescription({ lead, more }: { lead: string; more: string[] })
 function CourseContactForm({ course }: { course: Course }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
   const [contactType, setContactType] = useState<"personal" | "empresa">("personal");
   const [selectedServices, setSelectedServices] = useState<string[]>(["Capacitación In-Company"]);
   const [honeypot, setHoneypot] = useState("");
@@ -872,7 +873,6 @@ function CourseContactForm({ course }: { course: Course }) {
       if (contactType === "empresa") {
         payload.company = formData.get("company");
         payload.position = formData.get("position");
-        payload.employeeCount = formData.get("employeeCount");
       }
       const res = await fetch("/api/leads/create", {
         method: "POST",
@@ -880,6 +880,7 @@ function CourseContactForm({ course }: { course: Course }) {
         body: JSON.stringify(payload),
       });
       if (!res.ok) throw new Error("Error submitting form");
+      setSubmittedEmail(String(formData.get("email") || ""));
       setIsSuccess(true);
     } catch {
       alert("Hubo un problema al enviar tu solicitud. Inténtalo de nuevo.");
@@ -907,11 +908,18 @@ function CourseContactForm({ course }: { course: Course }) {
         <div className="border-t border-line px-4 py-16 sm:px-6 lg:border-t-0 lg:border-l lg:px-16 lg:py-24">
           {isSuccess ? (
             <div className="rounded-2xl border border-line bg-paper px-5 py-6">
-              <p className="text-base font-semibold text-ink">Recibimos tu solicitud.</p>
+              <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
+                {isPersonal ? "Solicitud recibida" : "Cotización enviada"}
+              </p>
+              <p className="mt-2 text-base font-semibold text-ink">
+                {isPersonal
+                  ? "Recibimos tu solicitud."
+                  : `Revisa tu email${submittedEmail ? `, te enviamos una copia a ${submittedEmail}` : ""}.`}
+              </p>
               <p className="mt-2 text-sm leading-relaxed text-mute">
                 {isPersonal
                   ? "Te escribimos por email o WhatsApp con fechas y el siguiente paso."
-                  : "Te escribimos con una propuesta para el equipo."}
+                  : "Un asesor te contactará por WhatsApp con la propuesta para tu equipo: temas, formato y valor."}
               </p>
               <a
                 href={whatsappHref({
@@ -1009,7 +1017,7 @@ function CourseContactForm({ course }: { course: Course }) {
 
               {!isPersonal && (
                 <>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     <div className="flex flex-col gap-2">
                       <label htmlFor="company" className="text-sm font-medium text-ink">
                         Empresa
@@ -1018,19 +1026,13 @@ function CourseContactForm({ course }: { course: Course }) {
                     </div>
                     <div className="flex flex-col gap-2">
                       <label htmlFor="position" className="text-sm font-medium text-ink">
-                        Cargo
+                        Cargo <span className="font-normal text-mute">(opcional)</span>
                       </label>
                       <input id="position" name="position" className={fieldClass} />
                     </div>
-                    <div className="flex flex-col gap-2">
-                      <label htmlFor="employeeCount" className="text-sm font-medium text-ink">
-                        Personas
-                      </label>
-                      <input id="employeeCount" name="employeeCount" type="number" min={1} className={fieldClass} />
-                    </div>
                   </div>
                   <div className="flex flex-col gap-2">
-                    <p className="text-sm font-medium text-ink">Servicios</p>
+                    <p className="text-sm font-medium text-ink">Servicios <span className="font-normal text-mute">(opcional)</span></p>
                     <div className="flex flex-wrap gap-2">
                       {enterpriseServices.map((service) => {
                         const selected = selectedServices.includes(service);

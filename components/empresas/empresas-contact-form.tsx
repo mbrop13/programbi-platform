@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { Check } from "lucide-react";
 import { getCourseBySlug } from "@/lib/data/courses";
 import { getAntiBotFields } from "@/lib/antibot";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
@@ -20,8 +21,6 @@ const TOPICS = [
   "Claude",
 ] as const;
 
-const TEAM_SIZES = ["1–5", "6–12", "13–30", "Más de 30"] as const;
-
 const WA = whatsappHref({
   page: "/empresas",
   intent: "empresas",
@@ -39,7 +38,6 @@ export function EmpresasContactForm({
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [company, setCompany] = useState("");
-  const [employeeCount, setEmployeeCount] = useState("");
   const [selected, setSelected] = useState<string[]>(preset ? [preset] : []);
   const [message, setMessage] = useState(nivel ? `Nos interesa el nivel ${nivel}.` : "");
   const [privacy, setPrivacy] = useState(false);
@@ -96,7 +94,6 @@ export function EmpresasContactForm({
           email: email.trim(),
           whatsapp: whatsapp.trim(),
           company: company.trim(),
-          employeeCount: employeeCount || null,
           message: message.trim() || null,
           selectedCourses: selected,
           leadType: "asesoria_b2b",
@@ -129,15 +126,20 @@ export function EmpresasContactForm({
   if (status === "success") {
     return (
       <div className="rounded-2xl border border-line bg-paper px-6 py-8 sm:px-8">
-        <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-          Listo
+        <span className="inline-flex size-11 items-center justify-center rounded-full bg-ink text-canvas">
+          <Check size={20} strokeWidth={2.5} />
+        </span>
+        <p className="mt-4 text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
+          Cotización enviada
         </p>
-        <h3 className="mt-3 text-xl font-semibold tracking-tight text-ink">
-          Recibimos tu mensaje.
+        <h3 className="mt-2 text-xl font-semibold tracking-tight text-ink">
+          Revisa tu email, {name.split(" ")[0] || "gracias"}.
         </h3>
         <p className="mt-3 text-sm leading-relaxed text-mute">
-          Te escribimos por WhatsApp o email con una propuesta: temas, formato y
-          valor. Si quieres adelantar, escríbenos ahora.
+          Te enviamos una copia de tu cotización a{" "}
+          <span className="font-semibold text-ink">{email}</span>. Un asesor
+          te contactará por WhatsApp con la propuesta: temas, formato y valor
+          para {company || "tu empresa"}.
         </p>
         <a
           href={WA}
@@ -145,8 +147,11 @@ export function EmpresasContactForm({
           rel="noopener noreferrer"
           className="mt-6 inline-flex h-12 items-center rounded-full bg-ink px-7 text-[14.5px] font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
         >
-          Escribir por WhatsApp
+          Hablar ahora por WhatsApp
         </a>
+        <p className="mt-4 text-xs leading-relaxed text-faint">
+          ¿No ves el correo? Revisa spam o promociones.
+        </p>
       </div>
     );
   }
@@ -217,33 +222,6 @@ export function EmpresasContactForm({
           helper="Incluye código de país. Chile: +56 9..."
         />
       </div>
-
-      <fieldset className="mt-5 flex flex-col gap-2">
-        <legend className="text-sm font-medium text-ink">
-          Personas a capacitar{" "}
-          <span className="font-normal text-mute">(opcional)</span>
-        </legend>
-        <div className="flex flex-wrap gap-2">
-          {TEAM_SIZES.map((size) => {
-            const on = employeeCount === size;
-            return (
-              <button
-                key={size}
-                type="button"
-                onClick={() => setEmployeeCount(on ? "" : size)}
-                aria-pressed={on}
-                className={`rounded-md border px-3 py-2 text-sm font-semibold transition-colors ${
-                  on
-                    ? "border-ink bg-ink text-canvas"
-                    : "border-line-strong bg-paper text-ink hover:border-ink/40"
-                }`}
-              >
-                {size}
-              </button>
-            );
-          })}
-        </div>
-      </fieldset>
 
       <fieldset className="mt-5 flex flex-col gap-2">
         <legend className="text-sm font-medium text-ink">
