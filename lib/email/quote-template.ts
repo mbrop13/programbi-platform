@@ -9,13 +9,23 @@ import { escapeHtml } from "@/lib/security/escape";
 export interface EmailCourseItem {
   slug: string;
   title: string;
+  heroLabel: string;
+  tagline: string;
   levelName: string;
   durationHours: number;
   startDate: string;
+  startDateLines?: string[];
   originalPrice: string;
   finalPrice: string;
+  originalPriceValue: number;
+  finalPriceValue: number;
   hasDiscount: boolean;
+  discountPercent: number;
+  savings: string;
   color: string;
+  checkoutUrl: string;
+  courseUrl: string;
+  includes?: string[];
 }
 
 export interface EmailPackInfo {
@@ -24,6 +34,7 @@ export interface EmailPackInfo {
   offerPrice: string;
   savingPercent: number;
   url: string;
+  checkoutUrl: string;
 }
 
 // Helpers para colores según el curso en el nuevo diseño
