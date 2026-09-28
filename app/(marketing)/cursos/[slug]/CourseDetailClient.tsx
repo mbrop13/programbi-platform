@@ -736,7 +736,7 @@ export default function CourseDetailClient({
             <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Instructor</h2>
             <p className="mt-2 text-lg font-semibold text-ink">Manuel Oliva</p>
             <p className="mt-4 max-w-[54ch] text-base leading-relaxed text-mute">
-              Magíster en Data Science (UAI). Ha liderado proyectos de datos en AngloAmerican, CAP, Deloitte y SQM, y
+              Magíster en Data Science (UAI). Ha liderado capacitaciones y proyectos de datos en AngloAmerican, CAP, Deloitte y SQM, y
               formado a más de 5.000 profesionales en SQL, Power BI, Python e IA.
             </p>
           </div>

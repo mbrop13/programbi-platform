@@ -3,30 +3,6 @@ import { ArrowRight } from "lucide-react";
 import HeroPreviewLazy from "@/components/marketing/HeroPreviewLazy";
 import { PAGE_SEO } from "@/lib/seo/money";
 
-const HERO_COURSES = [
-  {
-    href: "/cursos/analisis-de-datos",
-    slug: "analisis-de-datos",
-    kicker: "20 horas",
-    title: "Análisis de datos",
-    text: "SQL, Power BI y Python. Curso en vivo en Chile.",
-  },
-  {
-    href: "/cursos/power-bi",
-    slug: "power-bi",
-    kicker: "20 horas",
-    title: "Power BI",
-    text: "Query, DAX y dashboards. En vivo en Chile.",
-  },
-  {
-    href: "/cursos/power-automate",
-    slug: "power-automate",
-    kicker: "20 horas",
-    title: "Power Automate",
-    text: "Flujos y RPA. Curso en vivo en Chile.",
-  },
-] as const;
-
 function HomeH1() {
   const h1 = PAGE_SEO.home.h1;
   const line = h1.indexOf("datos en vivo");
@@ -46,9 +22,9 @@ function HomeH1() {
 export default function HeroSection() {
   return (
     <section id="inicio" className="relative overflow-hidden lg:min-h-[calc(100dvh-72px)]">
-      <div className="relative z-10 mx-auto grid max-w-[1400px] gap-8 px-4 pt-2 pb-10 sm:px-6 sm:pt-3 sm:pb-12 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:items-center lg:gap-12 lg:pt-6 lg:pb-16 xl:gap-14">
+      <div className="relative z-10 mx-auto grid max-w-[1400px] gap-8 px-4 pt-10 pb-10 sm:px-6 sm:pt-14 sm:pb-12 lg:grid-cols-[minmax(0,0.78fr)_minmax(0,1.22fr)] lg:items-center lg:gap-12 lg:pt-20 lg:pb-20 xl:gap-14">
         <div className="min-w-0">
-          <h1 className="text-4xl font-bold leading-[1.12] tracking-tight text-ink sm:text-5xl lg:text-[3.5rem] lg:leading-[1.12]">
+          <h1 className="max-w-[22ch] text-balance text-4xl font-bold leading-[1.2] tracking-tight text-ink sm:text-5xl sm:leading-[1.16] lg:text-[3.5rem] lg:leading-[1.16]">
             <HomeH1 />
           </h1>
 
@@ -57,29 +33,23 @@ export default function HeroSection() {
           </p>
 
           <div className="mt-8 flex flex-col gap-2.5">
-            {HERO_COURSES.map((course) => (
-              <Link
-                key={course.href}
-                href={course.href}
-                data-analytics-event="click_registro"
-                data-curso-slug={course.slug}
-                className="group flex items-center justify-between gap-3 rounded-2xl border border-line bg-paper px-4 py-3.5 no-underline transition-colors hover:border-ink/25 hover:bg-wash"
-              >
-                <span className="min-w-0">
-                  <span className="block text-[11px] font-bold uppercase tracking-widest text-mute">
-                    {course.kicker}
-                  </span>
-                  <span className="mt-0.5 block text-base font-semibold tracking-tight text-ink">
-                    {course.title}
-                  </span>
-                  <span className="mt-0.5 block text-sm leading-snug text-mute">{course.text}</span>
+            <Link
+              href="/cursos"
+              className="group flex items-center justify-between gap-3 rounded-2xl border border-line bg-paper px-4 py-3.5 no-underline transition-colors hover:border-ink/25 hover:bg-wash"
+            >
+              <span className="min-w-0">
+                <span className="mt-0.5 block text-base font-semibold tracking-tight text-ink">
+                  Ver cursos
                 </span>
-                <ArrowRight
-                  size={16}
-                  className="shrink-0 text-ink transition-transform group-hover:translate-x-0.5"
-                />
-              </Link>
-            ))}
+                <span className="mt-0.5 block text-sm leading-snug text-mute">
+                  Explora el catálogo completo.
+                </span>
+              </span>
+              <ArrowRight
+                size={16}
+                className="shrink-0 text-ink transition-transform group-hover:translate-x-0.5"
+              />
+            </Link>
           </div>
 
         </div>
