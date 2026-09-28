@@ -81,14 +81,14 @@ function Hero() {
       <div className="relative mx-auto grid h-full min-h-0 max-w-[1400px] lg:min-h-[calc(100dvh-72px)] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-stretch">
         <div className="flex flex-col justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20 xl:px-10">
           <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-            Adopción BI · Empresas Chile
+            Cursos para empresas · Chile
           </p>
           <h1 className="mt-5 max-w-[16ch] text-4xl font-bold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.35rem] lg:leading-[1.08]">
-            De Excel a Power BI en tu empresa.
+            Capacita a tu equipo en datos e IA.
           </h1>
           <p className="mt-5 max-w-md text-base leading-relaxed text-mute sm:text-lg">
-            Capacitación in-company para adoptar Power BI con las planillas y
-            sistemas que ya usan. En vivo, con factura a la empresa.
+            Cursos cerrados para tu empresa: Power BI, Excel, SQL, Python,
+            automatización e IA. En vivo, con tus datos y factura corporativa.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">
