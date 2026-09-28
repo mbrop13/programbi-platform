@@ -10,7 +10,7 @@ import {
 import type { ReferralWithCommission } from "@/lib/referrals/types";
 import { StatusBadge } from "../status-badge";
 import { formatClp, formatDateCl } from "@/lib/referrals/format";
-import { SOURCE_LABELS } from "@/lib/referrals/status";
+import { SOURCE_LABELS, referralSignedUpLabel } from "@/lib/referrals/status";
 import {
   Table,
   TableBody,
@@ -34,7 +34,8 @@ const columns = helper.columns([
       <div>
         <div className="font-medium">{c.getValue()}</div>
         <div className="text-xs text-mute">
-          {c.row.original.prospect_email || c.row.original.prospect_role}
+          {referralSignedUpLabel(c.row.original.prospect_user_id)}
+          {c.row.original.prospect_email ? ` · ${c.row.original.prospect_email}` : ""}
         </div>
       </div>
     ),

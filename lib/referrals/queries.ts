@@ -10,6 +10,27 @@ import type {
 } from "./types";
 import { toPublicReferrer } from "./auth";
 
+function isMissingRelation(error: { message?: string; code?: string } | null): boolean {
+  const msg = error?.message || "";
+  return (
+    error?.code === "42P01" ||
+    /schema cache|does not exist|could not find the table/i.test(msg)
+  );
+}
+
+export function referralsSetupErrorMessage(err: unknown): string {
+  const raw =
+    err && typeof err === "object" && "message" in err
+      ? String((err as { message?: string }).message || "")
+      : err instanceof Error
+        ? err.message
+        : "";
+  if (isMissingRelation({ message: raw })) {
+    return "Faltan las tablas de referidos en Supabase. En SQL Editor corre 20260906000000_referrals.sql y después 20260907000000_referrals_signup.sql.";
+  }
+  return raw || "No se pudo cargar referidos.";
+}
+
 export async function getReferrerByUserId(userId: string): Promise<Referrer | null> {
   const admin = createAdminClient();
   const { data, error } = await admin
@@ -211,7 +232,10 @@ export async function listLeadHints(): Promise<LeadHint[]> {
     .eq("status", "suggested")
     .order("created_at", { ascending: false })
     .limit(50);
-  if (error) throw error;
+  if (error) {
+    if (isMissingRelation(error)) return [];
+    throw error;
+  }
   return (data || []) as LeadHint[];
 }
 

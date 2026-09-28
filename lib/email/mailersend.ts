@@ -14,10 +14,10 @@
 
 import nodemailer from "nodemailer";
 import { buildQuoteEmailHtml } from "./quote-template";
+import { buildQuoteModel, type PriceOverrideRow, type PromotionRow, type ScheduleRow } from "./quote-data";
 import { buildEnterpriseEmailHtml } from "./enterprise-template";
-import { staticSchedules, formatScheduleDate, getNearestSchedule } from "../data/course-schedules";
+import { staticSchedules, formatScheduleDate } from "../data/course-schedules";
 import { createAdminClient } from "../supabase/server";
-import { courses as masterCourses } from "../data/courses";
 
 // ─── Config ────────────────────────────────────────────────────────────────────
 const SMTP_HOST = process.env.SES_SMTP_HOST || "email-smtp.us-east-1.amazonaws.com";
@@ -122,7 +122,7 @@ function wrapHtml(title: string, content: string) {
           <td style="padding:24px 40px;border-top:1px solid #EAEAE6;background-color:#F7F7F4;" class="mp">
             <p style="margin:0;font-size:11px;color:#8C8B85;text-align:center;line-height:1.6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
               © ${new Date().getFullYear()} ProgramBI — Todos los derechos reservados<br/>
-              <a href="https://programbi.com" style="color:#171716;text-decoration:none;font-weight:700;">programbi.com</a> · 
+              <a href="https://www.programbi.com" style="color:#171716;text-decoration:none;font-weight:700;">programbi.com</a> · 
               <a href="mailto:${ADMIN_EMAIL}" style="color:#171716;text-decoration:none;font-weight:700;">${ADMIN_EMAIL}</a>
             </p>
           </td>
@@ -135,202 +135,7 @@ function wrapHtml(title: string, content: string) {
 </html>`;
 }
 
-// ─── Helpers de Precios y Horarios para Cotizaciones ────────────────────────────
-
-function calculateCoursePrice(
-  slug: string,
-  levelName: string,
-  masterCoursesList: any[],
-  priceOverridesList: any[],
-  promotionsList: any[]
-) {
-  const masterCourse = masterCoursesList.find(c => c.slug === slug);
-  if (!masterCourse) {
-    return { finalPrice: 0, originalPrice: 0, hasDiscount: false };
-  }
-  
-  let basePrice = 0;
-  let originalPrice = 0;
-  if (levelName) {
-    const masterLevel = masterCourse.levels?.find((l: any) => 
-      l.name.toLowerCase().includes(levelName.toLowerCase()) || 
-      levelName.toLowerCase().includes(l.name.toLowerCase())
-    );
-    if (masterLevel) {
-      basePrice = masterLevel.price || 0;
-      originalPrice = masterLevel.originalPrice || basePrice;
-    }
-  } else if (masterCourse.levels && masterCourse.levels.length > 0) {
-    basePrice = masterCourse.levels[0].price || 0;
-    originalPrice = masterCourse.levels[0].originalPrice || basePrice;
-  }
-
-  // Si es analisis-de-datos y originalPrice es igual a basePrice o no está, forzar a 747000
-  if (slug === "analisis-de-datos" && (originalPrice === basePrice || !originalPrice)) {
-    originalPrice = 747000;
-  }
-
-  // Apply price override if exists
-  const override = priceOverridesList.find(
-    (o: any) => o.item_type === 'course' && o.item_id === slug && o.level_name === levelName
-  );
-  const effectiveBase = override ? override.price : basePrice;
-
-  // Find promotions
-  const promo = promotionsList.find(
-    (pr: any) => pr.target_type === 'all' || pr.target_type === 'courses' || (pr.target_type === 'specific_course' && pr.target_id === slug)
-  );
-
-  if (promo) {
-    if (promo.promo_price) {
-      return { finalPrice: promo.promo_price, originalPrice: effectiveBase === basePrice ? originalPrice : effectiveBase, hasDiscount: true };
-    }
-    const ratio = (100 - promo.discount_percentage) / 100;
-    const finalPrice = Math.round(effectiveBase * ratio);
-    return { finalPrice, originalPrice: effectiveBase === basePrice ? originalPrice : effectiveBase, hasDiscount: true };
-  }
-
-  return { finalPrice: effectiveBase, originalPrice: effectiveBase === basePrice ? originalPrice : effectiveBase, hasDiscount: false };
-}
-
-function formatEmailDate(dateStr: string): string {
-  const date = new Date(dateStr + "T12:00:00");
-  const day = date.getDate();
-  const months = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-  ];
-  const month = months[date.getMonth()];
-  return `${day} de ${month}`;
-}
-
-function formatEmailDays(daysStr: string): string {
-  let res = daysStr.toLowerCase();
-  res = res.replace("lunes y miércoles", "Lun y Mié");
-  res = res.replace("lunes y miercoles", "Lun y Mié");
-  res = res.replace("martes y jueves", "Mar y Jue");
-  res = res.replace("sábado", "Sáb");
-  res = res.replace("sabado", "Sáb");
-  return res.charAt(0).toUpperCase() + res.slice(1);
-}
-
-function formatEmailTime(timeStr: string): string {
-  const match = timeStr.match(/^(\d{1,2}:\d{2})/);
-  return match ? match[1] : timeStr;
-}
-
-function hasAvailableSchedules(
-  slug: string,
-  levelName: string,
-  schedulesList: any[],
-  staticList: any[]
-): boolean {
-  const now = new Date();
-  
-  // 1. Check dynamic database schedules that are active and in the future
-  const dbScheds = schedulesList.filter(
-    s => s.course_slug === slug && 
-         s.level_name === levelName && 
-         s.is_active && 
-         new Date(s.start_date + "T12:00:00") >= now
-  );
-  if (dbScheds.length > 0) return true;
-  
-  // 2. Check static schedules that are active and in the future
-  const staticScheds = staticList.filter(
-    s => s.course_slug === slug && 
-         s.level_name === levelName && 
-         s.is_active && 
-         new Date(s.start_date + "T12:00:00") >= now
-  );
-  if (staticScheds.length > 0) return true;
-
-  // 3. Check default schedules as legacy fallback (only if active and in the future)
-  const defaultSchedules: Record<string, { start_date: string, is_active: boolean }> = {
-    "power-bi-Básico": { start_date: "2026-05-19", is_active: true },
-    "sql-server-Básico": { start_date: "2026-06-22", is_active: true },
-    "python-Básico": { start_date: "2026-05-25", is_active: true },
-    "power-bi-Intermedio": { start_date: "2026-05-25", is_active: true },
-    "sql-server-Intermedio": { start_date: "2026-06-22", is_active: true },
-    "python-Intermedio": { start_date: "2026-07-27", is_active: true },
-  };
-  const key = `${slug}-${levelName}`;
-  const def = defaultSchedules[key];
-  return !!(def && def.is_active && new Date(def.start_date + "T12:00:00") >= now);
-}
-
-function getCourseScheduleString(
-  slug: string,
-  levelName: string,
-  schedulesList: any[],
-  staticList: any[],
-  type: "basic" | "intermediate"
-): string {
-  const now = new Date();
-  
-  // Get dynamic schedules
-  let courseSchedules = schedulesList.filter(
-    s => s.course_slug === slug && 
-         s.level_name === levelName && 
-         s.is_active && 
-         new Date(s.start_date + "T12:00:00") >= now
-  );
-  
-  // If none, use static schedules
-  if (courseSchedules.length === 0) {
-    courseSchedules = staticList.filter(
-      s => s.course_slug === slug && 
-           s.level_name === levelName && 
-           s.is_active && 
-           new Date(s.start_date + "T12:00:00") >= now
-    ) as any[];
-  }
-  
-  // If still none, use default legacy schedules
-  if (courseSchedules.length === 0) {
-    const defaultSchedules: Record<string, { start_date: string, schedule_days: string, schedule_time: string, is_active: boolean }> = {
-      "power-bi-Básico": { start_date: "2026-05-19", schedule_days: "Martes y Jueves", schedule_time: "19:30 a 21:30", is_active: true },
-      "sql-server-Básico": { start_date: "2026-06-22", schedule_days: "Lunes y Miércoles", schedule_time: "19:30 a 21:30", is_active: true },
-      "python-Básico": { start_date: "2026-05-25", schedule_days: "Lunes y Miércoles", schedule_time: "19:30 a 21:30", is_active: true },
-      "power-bi-Intermedio": { start_date: "2026-05-25", schedule_days: "Lunes y Miércoles", schedule_time: "19:30 a 21:30", is_active: true },
-      "sql-server-Intermedio": { start_date: "2026-06-22", schedule_days: "Lunes y Miércoles", schedule_time: "19:30 a 21:30", is_active: true },
-      "python-Intermedio": { start_date: "2026-07-27", schedule_days: "Lunes y Miércoles", schedule_time: "19:30 a 21:30", is_active: true },
-    };
-    const key = `${slug}-${levelName}`;
-    const def = defaultSchedules[key];
-    if (def && new Date(def.start_date + "T12:00:00") >= now) {
-      courseSchedules = [def];
-    }
-  }
-  
-  if (courseSchedules.length === 0) {
-    return type === "basic" ? "Próximamente · Consultar horarios" : "Próximamente";
-  }
-
-  // Sort schedules by start_date ascending
-  courseSchedules.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
-
-  // Format all active future schedules
-  return courseSchedules.map((sched, idx) => {
-    const dateFormatted = formatEmailDate(sched.start_date);
-    const daysFormatted = formatEmailDays(sched.schedule_days);
-    
-    let scheduleStr = "";
-    if (type === "basic") {
-      const timeFormatted = formatEmailTime(sched.schedule_time);
-      scheduleStr = `${dateFormatted} · ${daysFormatted} · ${timeFormatted}`;
-    } else {
-      scheduleStr = `${dateFormatted} · ${daysFormatted}`;
-    }
-
-    if (courseSchedules.length > 1) {
-      return `<div style="margin-top: ${idx > 0 ? '4px' : '0px'}; font-size: 13px;">Opción ${idx + 1}: ${scheduleStr}</div>`;
-    }
-    return scheduleStr;
-  }).join("");
-}
-
-// ─── Email 1: Cotización Individual (al lead) — Template Premium ────────────
+// ─── Email 1: Cotización Individual (al lead) ────────────────────────────────
 export async function sendQuoteConfirmationToLead(params: {
   name: string;
   email: string;
@@ -340,206 +145,55 @@ export async function sendQuoteConfirmationToLead(params: {
   const { name, email, courses: leadSelectedCourses } = params;
   const firstName = name.split(" ")[0] || name;
 
-  // Intentar cargar datos desde Supabase
-  let schedules: any[] = [];
-  let promotions: any[] = [];
-  let priceOverrides: any[] = [];
+  let schedules: ScheduleRow[] = [];
+  let promotions: PromotionRow[] = [];
+  let priceOverrides: PriceOverrideRow[] = [];
 
   try {
     const supabase = createAdminClient();
     const [schRes, promoRes, overRes] = await Promise.all([
       supabase.from("course_schedules").select("*").eq("is_active", true),
       supabase.from("promotions").select("*").eq("is_active", true),
-      supabase.from("price_overrides").select("*")
+      supabase.from("price_overrides").select("*"),
     ]);
-    
-    if (schRes.data) schedules = schRes.data;
+
+    if (schRes.data) schedules = schRes.data as ScheduleRow[];
     if (promoRes.data) {
       const now = new Date().toISOString();
-      promotions = promoRes.data.filter((p: any) => !p.valid_until || p.valid_until > now);
+      promotions = (promoRes.data as PromotionRow[]).filter((p) => !p.valid_until || p.valid_until > now);
     }
-    if (overRes.data) priceOverrides = overRes.data;
+    if (overRes.data) priceOverrides = overRes.data as PriceOverrideRow[];
   } catch (err) {
     console.error("Error al obtener datos dinámicos de Supabase para el email de cotización:", err);
   }
 
-  // Normalizar los cursos cotizados recibidos de la web
-  const normalizedItems: { slug: string; level: string; title: string; color: string; hours: number }[] = [];
-  const processedSlugs = new Set<string>();
+  const { selected, related, pack } = buildQuoteModel(
+    leadSelectedCourses,
+    schedules,
+    promotions,
+    priceOverrides
+  );
 
-  for (const rawCourse of leadSelectedCourses) {
-    const s = rawCourse.toLowerCase().trim();
-    let slug = "";
-    let level = "Básico";
-    let title = "";
-    let color = "#1890FF";
-    let hours = 16;
+  const html = buildQuoteEmailHtml(firstName, selected, related, pack);
+  const featured = selected[0];
+  const subject = featured
+    ? `Tu cotización ProgramBI — ${featured.title}`
+    : "Tu cotización ProgramBI — Cursos de datos 100% aplicados";
 
-    if (s.includes("analisis de datos") || s.includes("análisis de datos") || s.includes("analisis-de-datos")) {
-      slug = "analisis-de-datos";
-      level = "Especialización";
-      title = "Pack de Análisis de Datos";
-      color = "#1890FF";
-      hours = 48; // Especialización son 48 horas
-    } else if (s.includes("power bi") || s.includes("powerbi") || s.includes("power-bi")) {
-      slug = "power-bi";
-      level = s.includes("intermedio") ? "Intermedio" : "Básico";
-      title = `Power BI ${level}`;
-      color = "#eab308";
-      hours = 16;
-    } else if (s.includes("python")) {
-      slug = "python";
-      level = s.includes("intermedio") ? "Intermedio" : "Básico";
-      title = `Python ${level}`;
-      color = "#3b82f6";
-      hours = 16;
-    } else if (s.includes("sql")) {
-      slug = "sql-server";
-      level = s.includes("intermedio") ? "Intermedio" : "Básico";
-      title = `SQL Server ${level}`;
-      color = "#ef4444";
-      hours = 16;
-    } else if (s.includes("excel")) {
-      slug = "excel";
-      level = "Básico";
-      title = "Excel para Negocios";
-      color = "#217346";
-      hours = 16;
-    } else if (s.includes("miner") || s.includes("analitica-mineria")) {
-      slug = "analitica-mineria";
-      level = "Especialización";
-      title = "Análisis de Datos para la Minería";
-      color = "#B45309";
-      hours = 144;
-    } else if (s.includes("finan") || s.includes("analitica-financiera")) {
-      slug = "analitica-financiera";
-      level = "Especialización";
-      title = "Analítica Financiera";
-      color = "#1E3A8A";
-      hours = 144;
-    } else if (s.includes("automate") || s.includes("power-automate")) {
-      slug = "power-automate";
-      level = "Básico";
-      title = "Power Automate & RPA";
-      color = "#0078D4";
-      hours = 16;
-    } else if (s.includes("ia") || s.includes("inteligencia artificial") || s.includes("ia-productividad") || s.includes("machine learning")) {
-      slug = "ia-productividad";
-      level = "Básico";
-      title = "IA en Productividad";
-      color = "#7C3AED";
-      hours = 16;
-    }
-
-    if (slug && !processedSlugs.has(`${slug}-${level}`)) {
-      processedSlugs.add(`${slug}-${level}`);
-      normalizedItems.push({ slug, level, title, color, hours });
-    }
-  }
-
-  // Fallback por defecto si no se seleccionó nada válido
-  if (normalizedItems.length === 0) {
-    normalizedItems.push({
-      slug: "analisis-de-datos",
-      level: "Especialización",
-      title: "Pack de Análisis de Datos",
-      color: "#1890FF",
-      hours: 48
-    });
-  }
-
-  // Filtrar los cursos cotizados para mostrar solo los que tienen fecha disponible
-  let filteredItems = normalizedItems.filter(item => {
-    const isSpec = item.level === "Especialización";
-    return hasAvailableSchedules(item.slug, isSpec ? "Básico" : item.level, schedules, staticSchedules);
-  });
-
-  // Si todos quedan filtrados, mostramos todos los originales como fallback de seguridad
-  if (filteredItems.length === 0) {
-    filteredItems = normalizedItems;
-  }
-
-  // Mapear a EmailCourseItem calculando precios y horarios
-  const selectedCourses = filteredItems.map(item => {
-    const isSpec = item.level === "Especialización";
-    const pricing = calculateCoursePrice(item.slug, isSpec ? "Básico" : item.level, masterCourses, priceOverrides, promotions);
-    const dateStr = getCourseScheduleString(item.slug, isSpec ? "Básico" : item.level, schedules, staticSchedules, item.hours > 48 ? "intermediate" : "basic");
-    return {
-      slug: item.slug,
-      title: item.title,
-      levelName: item.level.toUpperCase(),
-      durationHours: item.hours,
-      startDate: dateStr,
-      originalPrice: formatCLP(pricing.originalPrice),
-      finalPrice: formatCLP(pricing.finalPrice),
-      hasDiscount: pricing.hasDiscount || pricing.originalPrice > pricing.finalPrice,
-      color: item.color,
-    };
-  });
-
-  // Determinar recomendación inteligente del Pack de Análisis de Datos
-  const hasIndividualAnalisisCursos = normalizedItems.some(item => ["power-bi", "sql-server", "python"].includes(item.slug));
-  const hasPackAnalisis = normalizedItems.some(item => item.slug === "analisis-de-datos");
-  const showPackRecommendation = hasIndividualAnalisisCursos && !hasPackAnalisis;
-
-  let packRecommendation = {
-    showPackRecommendation,
-    origPrice: "$0",
-    offerPrice: "$0",
-    savingPercent: 0,
-    url: "https://www.programbi.com/cursos/analisis-de-datos",
-  };
-
-  if (showPackRecommendation) {
-    const packPricing = calculateCoursePrice("analisis-de-datos", "Básico", masterCourses, priceOverrides, promotions);
-    const savingPercent = Math.round(((packPricing.originalPrice - packPricing.finalPrice) / packPricing.originalPrice) * 100);
-    packRecommendation = {
-      showPackRecommendation: true,
-      origPrice: formatCLP(packPricing.originalPrice),
-      offerPrice: formatCLP(packPricing.finalPrice),
-      savingPercent,
-      url: "https://www.programbi.com/cursos/analisis-de-datos",
-    };
-  }
-
-  // Cursos recomendados (hasta 3 cursos que el usuario NO cotizó y que tienen fecha disponible)
-  const cotizedSlugs = new Set(normalizedItems.map(item => item.slug));
-  const recommendedItems = masterCourses
-    .filter(c => c.slug !== "analisis-de-datos" && !cotizedSlugs.has(c.slug))
-    .filter(c => c.slug !== "analitica-mineria" && c.slug !== "analitica-financiera")
-    .filter(c => {
-      const levels = c.levels || [{ name: "Básico" }];
-      return levels.some(l => hasAvailableSchedules(c.slug, l.name, schedules, staticSchedules));
-    })
-    .slice(0, 3);
-
-  const recommendedCourses = recommendedItems.map(item => {
-    const level = "Básico";
-    const color = item.accentColor || "#1890FF";
-    const hours = item.levels?.[0]?.durationHours || item.durationHours || 16;
-    const pricing = calculateCoursePrice(item.slug, level, masterCourses, priceOverrides, promotions);
-    const dateStr = getCourseScheduleString(item.slug, level, schedules, staticSchedules, hours > 48 ? "intermediate" : "basic");
-    return {
-      slug: item.slug,
-      title: item.title,
-      levelName: level.toUpperCase(),
-      durationHours: hours,
-      startDate: dateStr,
-      originalPrice: formatCLP(pricing.originalPrice),
-      finalPrice: formatCLP(pricing.finalPrice),
-      hasDiscount: pricing.hasDiscount || pricing.originalPrice > pricing.finalPrice,
-      color,
-    };
-  });
-
-  const html = buildQuoteEmailHtml(firstName, selectedCourses, recommendedCourses, packRecommendation);
+  const priceLines = selected
+    .map((c) =>
+      c.hasDiscount
+        ? `${c.title}: ${c.finalPrice} (antes ${c.originalPrice})`
+        : `${c.title}: ${c.finalPrice}`
+    )
+    .join(". ");
 
   await sendEmail({
     to: email,
     toName: name,
-    subject: "Tu Cotización en ProgramBI — Cursos de Datos 100% Aplicados",
+    subject,
     html,
-    text: `Hola ${firstName}, gracias por tu interés en ProgramBI. Diseñamos cursos de programación y análisis de datos 100% aplicados al mercado laboral actual. Revisa tu cotización completa en tu correo. Cursos: ${leadSelectedCourses.join(", ")}.`,
+    text: `Hola ${firstName}, aquí está tu cotización de ProgramBI. ${priceLines}. Puedes inscribirte en programbi.com/pago o escribirnos al +56 9 3540 9699.`,
     replyTo: ADMIN_EMAIL,
   });
 }
@@ -728,7 +382,7 @@ export async function sendNotifyMeConfirmation(params: {
     </p>
 
     <div style="text-align:center;">
-      <a href="https://programbi.com/cursos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 28px;border-radius:9999px;letter-spacing:0.2px;">
+      <a href="https://www.programbi.com/cursos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 28px;border-radius:9999px;letter-spacing:0.2px;">
         Explorar catálogo de cursos →
       </a>
     </div>
@@ -957,7 +611,7 @@ export async function sendPaymentConfirmation(params: {
             </p>
             <p style="margin:0;font-size:11px;color:#8C8B85;text-align:center;line-height:1.5;">
               © ${new Date().getFullYear()} ProgramBI — Todos los derechos reservados<br/>
-              <a href="https://programbi.com" style="color:#171716;text-decoration:none;font-weight:700;">programbi.com</a> · 
+              <a href="https://www.programbi.com" style="color:#171716;text-decoration:none;font-weight:700;">programbi.com</a> · 
               <a href="mailto:${ADMIN_EMAIL}" style="color:#171716;text-decoration:none;font-weight:700;">${ADMIN_EMAIL}</a>
             </p>
           </td>
@@ -1149,7 +803,7 @@ export async function sendMembershipWelcome(params: {
     </div>
 
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.com/comunidad" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:9999px;letter-spacing:0.2px;">
+      <a href="https://www.programbi.com/comunidad" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:14px;font-weight:700;text-decoration:none;padding:14px 32px;border-radius:9999px;letter-spacing:0.2px;">
         Acceder al Campus de la Comunidad →
       </a>
     </div>
@@ -1185,7 +839,7 @@ export async function sendCompanyApprovalEmail(params: {
         Bolsa de Trabajo de ProgramBI. Ya puedes crear tu primera vacante desde tu panel.
       </p>
       <div style="text-align:center;margin-top:24px;">
-        <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
+        <a href="https://www.programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
           Publicar mi primera vacante →
         </a>
       </div>`
@@ -1246,7 +900,7 @@ export async function sendNewApplicationEmail(params: {
     }
     ${hasCv ? `<p style="margin:12px 0 0;font-size:12.5px;color:#8C8B85;">El candidato adjuntó su CV (descargable desde el panel).</p>` : ""}
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
+      <a href="https://www.programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
         Revisar postulación →
       </a>
     </div>
@@ -1281,7 +935,7 @@ export async function sendCandidateStatusEmail(params: {
       <div style="font-size:20px;font-weight:900;color:#171716;margin-top:4px;">${statusLabel}</div>
     </div>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
+      <a href="https://www.programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
         Ver mis postulaciones →
       </a>
     </div>
@@ -1319,7 +973,7 @@ export async function sendJobExpiringEmail(params: {
       Extiende su vigencia 30 días más con un clic desde tu panel si el cargo sigue abierto.
     </p>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
+      <a href="https://www.programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
         Gestionar mis vacantes →
       </a>
     </div>
@@ -1361,7 +1015,7 @@ export async function sendFeatureConfirmationEmail(params: {
       «Destacada», recibiendo en promedio mucha más visibilidad.
     </p>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
+      <a href="https://www.programbi.com/comunidad/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
         Ver mis vacantes →
       </a>
     </div>
@@ -1404,7 +1058,7 @@ export async function sendJobAlertsDigestEmail(params: {
     </p>
     <div style="margin-top:16px;">${rows}</div>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.com/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
+      <a href="https://www.programbi.com/empleos" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
         Ver todas las vacantes →
       </a>
     </div>
@@ -1444,7 +1098,7 @@ export async function sendTalentContactEmail(params: {
       aparece en la notificación dentro de tu portal ProgramBI.
     </p>
     <div style="text-align:center;margin-top:24px;">
-      <a href="https://programbi.com/comunidad" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
+      <a href="https://www.programbi.com/comunidad" style="display:inline-block;background-color:#171716;color:#FFFFFF;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13.5px;font-weight:700;text-decoration:none;padding:13px 26px;border-radius:9999px;">
         Ir a mi portal →
       </a>
     </div>

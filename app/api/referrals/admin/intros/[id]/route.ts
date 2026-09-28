@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { requireReferralAdmin } from "@/lib/referrals/auth";
 import { calculateCommissionClp, isWithinClawbackWindow } from "@/lib/referrals/commission";
 import { REFERRAL_COMMISSION_PERCENT } from "@/lib/referrals/constants";
-import { canTransition } from "@/lib/referrals/status";
+import { canTransition, CONFIRMABLE_STATUSES } from "@/lib/referrals/status";
 import { clawbackSchema, lostSchema, statusPatchSchema, wonSchema } from "@/lib/referrals/schemas";
 import { writeAudit } from "@/lib/referrals/queries";
 import { notifyCommissionPaid, notifyStatusChange } from "@/lib/referrals/emails";
@@ -109,9 +109,9 @@ export async function PATCH(req: Request, ctx: Ctx) {
         { status: 400 }
       );
     }
-    if (current !== "proposal_sent" && current !== "won") {
+    if (!CONFIRMABLE_STATUSES.includes(current) && current !== "won") {
       return NextResponse.json(
-        { error: "Marca won solo desde propuesta enviada (Pack cerrado y cobrado)." },
+        { error: "Este referido ya no se puede confirmar." },
         { status: 400 }
       );
     }
@@ -120,7 +120,7 @@ export async function PATCH(req: Request, ctx: Ctx) {
       ? row.referral_commissions[0]
       : row.referral_commissions;
     if (existing) {
-      return NextResponse.json({ error: "Esta intro ya tiene comisión (un Pack = una comisión)." }, { status: 409 });
+      return NextResponse.json({ error: "Este referido ya tiene una comisión." }, { status: 409 });
     }
 
     const amount = calculateCommissionClp(parsed.data.dealAmountClp);

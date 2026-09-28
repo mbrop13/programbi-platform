@@ -15,6 +15,7 @@ import { persistRegistrationSource } from "@/lib/registration-source";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import { courseSlugFromLocation, debugSignUpResult, signUpCreatedUser, trackClickRegistro, trackSubmitRegistro } from "@/lib/analytics/marketing";
 import { LEAD_INTERESTS, interestFromCoursePath } from "@/lib/data/lead-interests";
+import { readBrowserReferralCode } from "@/lib/referrals/cookie";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -200,6 +201,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     try {
       const registrationSource = persistRegistrationSource();
       const pricingVariant = readClientPricingVariant();
+      const referralCode = readBrowserReferralCode();
       const defaultName = fullName.trim() || email.split("@")[0] || "Usuario";
 
       const { data, error } = await supabase.auth.signUp({
@@ -211,6 +213,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
             whatsapp: whatsapp ? `${phonePrefix}${whatsapp}` : null,
             interest: interest || null,
             registration_source: registrationSource,
+            ...(referralCode ? { referral_code: referralCode } : {}),
             ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
           },
         },

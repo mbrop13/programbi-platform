@@ -21,8 +21,8 @@ export default function ReferrerDashboardPage() {
           {referrer ? `Hola, ${referrer.name.split(" ")[0]}` : "Panel"}
         </h1>
         <p className="mt-1 text-sm text-mute">
-          Comparte tu link. Si se registran y después se cobra un curso o una capacitación, ganas el
-          15%.
+          Comparte tu link. Si se inscriben o dejan sus datos, aparecen acá. El 15% se confirma cuando
+          se cobra, en hasta 24 horas.
         </p>
       </div>
       {error ? (
@@ -36,8 +36,8 @@ export default function ReferrerDashboardPage() {
           </p>
           <p className="mt-3 break-all font-mono text-sm text-ink">{track}</p>
           <p className="mt-3 max-w-xl text-sm text-mute">
-            Quien entre con este link y cree una cuenta ProgramBI aparece acá como referido. También
-            sirve si primero visita /cursos o /empresas: la cookie dura 90 días.
+            Quien entre con este link y cree una cuenta, o deje sus datos en un curso o en empresas,
+            aparece acá. La cookie dura 90 días. La comisión se confirma al cobro, en hasta 24 horas.
           </p>
           <div className="mt-5">
             <CopyLinkButton code={referrer.referral_code} always />
@@ -61,7 +61,7 @@ export default function ReferrerDashboardPage() {
           <EmptyState
             icon={Inbox}
             title="Todavía no hay referidos"
-            description="Copia tu link y mándaselo a un amigo o a alguien de una empresa. Cuando se registren, aparecen acá."
+            description="Copia tu link y mándaselo a un amigo o a alguien de una empresa. Cuando se inscriban o dejen sus datos, aparecen acá."
           />
         ) : loading ? (
           <div className="h-40 animate-pulse rounded-2xl bg-wash" />

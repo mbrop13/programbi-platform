@@ -12,14 +12,15 @@ import {
   Share2,
   Users,
 } from "lucide-react";
-import { PIPELINE_STATUSES, WON_STATUSES } from "@/lib/referrals/constants";
-import { formatClp, formatDateCl } from "@/lib/referrals/format";
+import { WON_STATUSES } from "@/lib/referrals/constants";
+import { formatClp, formatDateCl, referralCompanyLabel, referralSignupUrl } from "@/lib/referrals/format";
 import {
   COMMISSION_LABELS,
+  CONFIRMABLE_STATUSES,
   REFERRER_STATUS_LABELS,
   REFERRER_TYPE_LABELS,
-  SOURCE_LABELS,
   STATUS_LABELS,
+  referralSignedUpLabel,
 } from "@/lib/referrals/status";
 import type {
   CommissionStatus,
@@ -28,13 +29,18 @@ import type {
   ReferralWithCommission,
   Referrer,
 } from "@/lib/referrals/types";
-import { SITE_URL } from "@/lib/seo";
-
 type ReferrerRow = Referrer & { intros: number };
 type View = "referidores" | "intros";
 
 function referralLink(code: string) {
-  return `${SITE_URL}/empresas?ref=${encodeURIComponent(code)}`;
+  return referralSignupUrl(code);
+}
+
+function partyLine(company: string, role: string, email: string | null): string {
+  const roleLabel =
+    role === "Inscrito" || role === "Dejó sus datos" || role === "Registrado por link" ? null : role;
+  const parts = [referralCompanyLabel(company), roleLabel, email].filter(Boolean);
+  return parts.join(" · ");
 }
 
 function statusClass(status: ReferralStatus): string {
@@ -50,21 +56,22 @@ function referrerStatusClass(status: Referrer["status"]): string {
   return "bg-amber-50 text-amber-700";
 }
 
-function sourceLabel(source: string) {
-  return SOURCE_LABELS[source as keyof typeof SOURCE_LABELS] || source;
-}
+
 
 export default function AdminReferidos() {
-  const [view, setView] = useState<View>("referidores");
   const [referrers, setReferrers] = useState<ReferrerRow[]>([]);
   const [intros, setIntros] = useState<ReferralWithCommission[]>([]);
   const [hints, setHints] = useState<LeadHint[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+  const [deal, setDeal] = useState("");
+  const [view, setView] = useState<View>("intros");
 
   const load = useCallback(async () => {
     setError(null);
@@ -94,10 +101,10 @@ export default function AdminReferidos() {
 
   const kpis = useMemo(() => {
     const active = referrers.filter((r) => r.status === "active").length;
-    const pipeline = intros.filter((r) =>
-      (PIPELINE_STATUSES as readonly string[]).includes(r.status)
+    const pending = intros.filter((r) =>
+      (CONFIRMABLE_STATUSES as readonly string[]).includes(r.status)
     ).length;
-    const won = intros.filter((r) => (WON_STATUSES as readonly string[]).includes(r.status)).length;
+    const signedUp = intros.filter((r) => Boolean(r.prospect_user_id)).length;
     const commissions = intros.map((r) => r.commission).filter(Boolean);
     const payable = commissions
       .filter((c) => c && (c.status === "payable" || c.status === "accrued"))
@@ -105,8 +112,65 @@ export default function AdminReferidos() {
     const paid = commissions
       .filter((c) => c?.status === "paid")
       .reduce((s, c) => s + Number(c?.commission_amount_clp || 0), 0);
-    return { active, total: referrers.length, intros: intros.length, pipeline, won, payable, paid };
+    return {
+      active,
+      total: referrers.length,
+      intros: intros.length,
+      pending,
+      signedUp,
+      unsigned: intros.length - signedUp,
+      payable,
+      paid,
+    };
   }, [referrers, intros]);
+
+  const pendingRows = useMemo(
+    () => intros.filter((r) => (CONFIRMABLE_STATUSES as readonly string[]).includes(r.status)),
+    [intros]
+  );
+
+  const knownEmails = useMemo(() => {
+    const set = new Set<string>();
+    for (const row of intros) {
+      if (row.prospect_email) set.add(row.prospect_email.toLowerCase());
+    }
+    return set;
+  }, [intros]);
+
+  const orphanHints = useMemo(
+    () =>
+      hints.filter((h) => {
+        const email = h.lead_email?.toLowerCase();
+        return !email || !knownEmails.has(email);
+      }),
+    [hints, knownEmails]
+  );
+
+  const confirmWon = async (id: string) => {
+    const amount = Number(deal);
+    if (!Number.isFinite(amount) || amount <= 0) {
+      setActionError("Indica el neto cobrado en pesos.");
+      return;
+    }
+    setBusyId(id);
+    setActionError(null);
+    try {
+      const res = await fetch(`/api/referrals/admin/intros/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "won", dealAmountClp: amount }),
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(json.error || "No se pudo confirmar el cobro.");
+      setConfirmId(null);
+      setDeal("");
+      await load();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : "No se pudo confirmar el cobro.");
+    } finally {
+      setBusyId(null);
+    }
+  };
 
   const q = query.trim().toLowerCase();
 
@@ -179,17 +243,30 @@ export default function AdminReferidos() {
   }
 
   if (error) {
+    const needsSql = /tablas de referidos|SQL Editor/i.test(error);
     return (
       <div className="p-6 sm:p-8">
-        <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-8 text-center">
-          <p className="text-sm font-semibold text-neutral-600">{error}</p>
+        <div className="rounded-2xl border border-amber-100 bg-amber-50 p-6 sm:p-8">
+          <p className="text-sm font-bold text-neutral-900">{error}</p>
+          {needsSql ? (
+            <ol className="mt-4 list-decimal space-y-2 pl-5 text-left text-xs font-semibold leading-relaxed text-neutral-600">
+              <li>Abre Supabase → SQL Editor → New query.</li>
+              <li>
+                Pega y corre <span className="font-mono">supabase/migrations/20260906000000_referrals.sql</span>
+              </li>
+              <li>
+                Después corre <span className="font-mono">supabase/migrations/20260907000000_referrals_signup.sql</span>
+              </li>
+              <li>Vuelve acá y dale a Reintentar. No hace falta seed.</li>
+            </ol>
+          ) : null}
           <button
             type="button"
             onClick={() => {
               setLoading(true);
               void load();
             }}
-            className="mt-4 inline-flex h-9 items-center rounded-full bg-neutral-900 px-5 text-xs font-semibold text-white"
+            className="mt-5 inline-flex h-9 items-center rounded-full bg-neutral-900 px-5 text-xs font-semibold text-white"
           >
             Reintentar
           </button>
@@ -204,8 +281,9 @@ export default function AdminReferidos() {
         <div>
           <h2 className="text-lg font-bold text-neutral-900">Referidos</h2>
           <p className="mt-1 max-w-xl text-xs leading-relaxed text-neutral-500">
-            Quién se inscribió como referidor, su link, a quién invitó y en qué estado está cada intro.
-            Comisión 15% del Pack Adopción cuando se cobra.
+            Cada aviso dice quién refirió a quién y si esa persona se inscribió. El 15% se genera
+            solo cuando confirmas acá que el curso o la capacitación se cobró. Puedes hacerlo hasta
+            24 horas después del cobro.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -214,7 +292,7 @@ export default function AdminReferidos() {
             className="inline-flex h-9 items-center gap-1.5 rounded-full border border-neutral-200 px-3.5 text-xs font-semibold text-neutral-700 no-underline hover:bg-neutral-50"
           >
             <ExternalLink size={13} />
-            Cola y comisiones
+            Comisiones y clawback
           </a>
           <a
             href="/api/referrals/admin/export"
@@ -229,10 +307,10 @@ export default function AdminReferidos() {
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {[
           { label: "Referidores", value: String(kpis.total), hint: `${kpis.active} activos` },
-          { label: "Intros", value: String(kpis.intros), hint: "Invitaciones enviadas" },
-          { label: "En pipeline", value: String(kpis.pipeline), hint: "Aún abiertas" },
-          { label: "Ganadas", value: String(kpis.won), hint: "Pack cobrado" },
-          { label: "Por pagar", value: formatClp(kpis.payable), hint: "Comisión pendiente" },
+          { label: "Por confirmar", value: String(kpis.pending), hint: "Cobro todavía abierto" },
+          { label: "Se inscribieron", value: String(kpis.signedUp), hint: "Crearon cuenta" },
+          { label: "Sin inscripción", value: String(kpis.unsigned), hint: "Solo dejaron datos" },
+          { label: "Por pagar", value: formatClp(kpis.payable), hint: "15% ya confirmado" },
           { label: "Pagado", value: formatClp(kpis.paid), hint: "Ya transferido" },
         ].map((card) => (
           <div key={card.label} className="rounded-2xl border border-neutral-100 bg-neutral-50 p-4">
@@ -243,27 +321,83 @@ export default function AdminReferidos() {
         ))}
       </div>
 
-      {hints.length > 0 ? (
-        <div className="mb-5 rounded-2xl border border-amber-100 bg-amber-50 p-4">
-          <p className="text-xs font-bold text-amber-800">
-            Atribución sugerida por cookie (?ref=) — confirmar en la cola
+      <div className="mb-5 rounded-2xl border border-neutral-200 bg-white p-4">
+        <p className="text-xs font-bold text-neutral-900">Avisos</p>
+        <p className="mt-1 text-[11px] leading-relaxed text-neutral-500">
+          Quién refirió a quién, y si esa persona ya se inscribió. Confirma el cobro cuando el
+          proceso esté listo.
+        </p>
+        {actionError ? (
+          <p className="mt-3 rounded-xl bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">
+            {actionError}
           </p>
-          <ul className="mt-2 space-y-1 text-xs text-amber-800/80">
-            {hints.slice(0, 8).map((h) => (
-              <li key={h.id}>
-                {h.referral_code} · {h.lead_name || "—"} · {h.lead_company || "—"} · {h.lead_email || "—"}
+        ) : null}
+        {pendingRows.length === 0 && orphanHints.length === 0 ? (
+          <p className="mt-3 text-xs font-semibold text-neutral-400">No hay referidos pendientes.</p>
+        ) : (
+          <ul className="mt-3 space-y-2">
+            {pendingRows.map((row) => (
+              <li key={row.id} className="rounded-xl border border-neutral-100 bg-neutral-50 px-3 py-3">
+                <p className="text-sm font-bold text-neutral-900">
+                  {row.referrer?.name || "Referidor"} refirió a {row.prospect_name}
+                </p>
+                <p className="mt-0.5 text-[11px] text-neutral-500">
+                  {referralSignedUpLabel(row.prospect_user_id)}
+                  {row.prospect_email ? ` · ${row.prospect_email}` : ""}
+                  {referralCompanyLabel(row.prospect_company)
+                    ? ` · ${referralCompanyLabel(row.prospect_company)}`
+                    : ""}
+                </p>
+                {confirmId === row.id ? (
+                  <ConfirmCobro
+                    id={row.id}
+                    deal={deal}
+                    busy={busyId === row.id}
+                    onDeal={setDeal}
+                    onCancel={() => {
+                      setConfirmId(null);
+                      setDeal("");
+                      setActionError(null);
+                    }}
+                    onConfirm={() => void confirmWon(row.id)}
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setConfirmId(row.id);
+                      setDeal("");
+                      setActionError(null);
+                    }}
+                    className="mt-2 inline-flex h-8 items-center rounded-full bg-neutral-900 px-3 text-[11px] font-semibold text-white"
+                  >
+                    Confirmar cobro
+                  </button>
+                )}
+              </li>
+            ))}
+            {orphanHints.slice(0, 6).map((h) => (
+              <li key={h.id} className="rounded-xl border border-amber-100 bg-amber-50 px-3 py-3">
+                <p className="text-sm font-bold text-amber-900">
+                  {h.referral_code} refirió a {h.lead_name || "un contacto"}
+                </p>
+                <p className="mt-0.5 text-[11px] text-amber-800/80">
+                  No se ha inscrito
+                  {h.lead_email ? ` · ${h.lead_email}` : ""}
+                  {h.lead_company ? ` · ${h.lead_company}` : ""}
+                </p>
               </li>
             ))}
           </ul>
-        </div>
-      ) : null}
+        )}
+      </div>
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex gap-1 rounded-full bg-neutral-100 p-1">
           {(
             [
               { id: "referidores", label: "Referidores", icon: Users },
-              { id: "intros", label: "Quién invitó a quién", icon: Share2 },
+              { id: "intros", label: "Referidos", icon: Share2 },
             ] as const
           ).map((tab) => {
             const TabIcon = tab.icon;
@@ -349,9 +483,9 @@ export default function AdminReferidos() {
       ) : filteredIntros.length === 0 ? (
         <div className="rounded-2xl border-2 border-dashed border-neutral-100 bg-neutral-50 py-14 text-center">
           <Share2 className="mx-auto mb-3 h-10 w-10 text-neutral-300" />
-          <p className="font-bold text-neutral-900">Nadie ha enviado intros todavía</p>
+          <p className="font-bold text-neutral-900">Todavía no hay referidos</p>
           <p className="mt-1 text-sm text-neutral-400">
-            Cuando un referidor invite a un prospecto, aparece acá quién invitó a quién.
+            Cuando alguien use un link, aparece acá quién refirió a quién y si se inscribió.
           </p>
         </div>
       ) : (
@@ -359,11 +493,9 @@ export default function AdminReferidos() {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-neutral-200 bg-[#F8FAFC]">
-                <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-neutral-500">Invitó</th>
+                <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-neutral-500">Refirió</th>
                 <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-neutral-500">A quién</th>
-                <th className="hidden px-4 py-3 text-xs font-bold uppercase tracking-wider text-neutral-500 lg:table-cell">
-                  Canal
-                </th>
+                <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-neutral-500">Inscripción</th>
                 <th className="px-4 py-3 text-xs font-bold uppercase tracking-wider text-neutral-500">Estado</th>
                 <th className="hidden px-4 py-3 text-xs font-bold uppercase tracking-wider text-neutral-500 md:table-cell">
                   Comisión
@@ -385,17 +517,19 @@ export default function AdminReferidos() {
                   <td className="px-4 py-3">
                     <p className="text-sm font-semibold text-neutral-900">{intro.prospect_name}</p>
                     <p className="text-[11px] text-neutral-500">
-                      {intro.prospect_company} · {intro.prospect_role}
-                      {intro.prospect_email ? ` · ${intro.prospect_email}` : ""}
+                      {partyLine(intro.prospect_company, intro.prospect_role, intro.prospect_email)}
                     </p>
-                    {intro.suggested_from_cookie ? (
-                      <span className="mt-1 inline-block rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700">
-                        Vino con el link
-                      </span>
-                    ) : null}
                   </td>
-                  <td className="hidden px-4 py-3 text-xs font-semibold text-neutral-500 lg:table-cell">
-                    {sourceLabel(intro.source)}
+                  <td className="px-4 py-3">
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                        intro.prospect_user_id
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "bg-amber-50 text-amber-700"
+                      }`}
+                    >
+                      {referralSignedUpLabel(intro.prospect_user_id)}
+                    </span>
                   </td>
                   <td className="px-4 py-3">
                     <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${statusClass(intro.status)}`}>
@@ -479,7 +613,7 @@ function FragmentRow({
         </td>
         <td className="px-4 py-3 text-sm font-black tabular-nums text-neutral-900">
           {referrer.intros}
-          <span className="ml-1 text-[11px] font-semibold text-neutral-400">{won} ganadas</span>
+          <span className="ml-1 text-[11px] font-semibold text-neutral-400">{won} confirmadas</span>
         </td>
         <td className="hidden px-4 py-3 md:table-cell">
           <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${referrerStatusClass(referrer.status)}`}>
@@ -524,8 +658,10 @@ function FragmentRow({
                     <div>
                       <p className="text-sm font-bold text-neutral-900">{intro.prospect_name}</p>
                       <p className="text-[11px] text-neutral-500">
-                        {intro.prospect_company} · {intro.prospect_role}
-                        {intro.prospect_email ? ` · ${intro.prospect_email}` : ""}
+                        {referralSignedUpLabel(intro.prospect_user_id)}
+                        {partyLine(intro.prospect_company, intro.prospect_role, intro.prospect_email)
+                          ? ` · ${partyLine(intro.prospect_company, intro.prospect_role, intro.prospect_email)}`
+                          : ""}
                       </p>
                     </div>
                     <div className="flex items-center gap-2">
@@ -542,5 +678,57 @@ function FragmentRow({
         </tr>
       ) : null}
     </>
+  );
+}
+
+function ConfirmCobro({
+  id,
+  deal,
+  busy,
+  onDeal,
+  onCancel,
+  onConfirm,
+}: {
+  id: string;
+  deal: string;
+  busy: boolean;
+  onDeal: (value: string) => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <form
+      className="mt-2 flex flex-wrap items-center gap-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        onConfirm();
+      }}
+    >
+      <label className="sr-only" htmlFor={`deal-${id}`}>
+        Neto cobrado en pesos
+      </label>
+      <input
+        id={`deal-${id}`}
+        inputMode="numeric"
+        placeholder="Neto cobrado, ej. 249000"
+        value={deal}
+        onChange={(e) => onDeal(e.target.value.replace(/\D/g, ""))}
+        className="h-8 w-44 rounded-full border border-neutral-200 bg-white px-3 text-xs text-neutral-800 outline-none focus:border-neutral-400"
+      />
+      <button
+        type="submit"
+        disabled={busy || !deal}
+        className="inline-flex h-8 items-center rounded-full bg-neutral-900 px-3 text-[11px] font-semibold text-white disabled:opacity-50"
+      >
+        {busy ? "Confirmando…" : "Confirmar cobro"}
+      </button>
+      <button
+        type="button"
+        onClick={onCancel}
+        className="inline-flex h-8 items-center rounded-full px-2 text-[11px] font-semibold text-neutral-500"
+      >
+        Cancelar
+      </button>
+    </form>
   );
 }

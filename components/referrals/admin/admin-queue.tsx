@@ -3,10 +3,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import type { LeadHint, ReferralStatus, ReferralWithCommission } from "@/lib/referrals/types";
-import { KANBAN_COLUMNS, ADMIN_TRANSITIONS } from "@/lib/referrals/status";
+import type { LeadHint, ReferralWithCommission } from "@/lib/referrals/types";
+import { KANBAN_COLUMNS, ADMIN_TRANSITIONS, CONFIRMABLE_STATUSES, referralSignedUpLabel } from "@/lib/referrals/status";
 import { StatusBadge } from "../status-badge";
-import { formatClp, formatDateCl } from "@/lib/referrals/format";
+import { formatClp, formatDateCl, referralCompanyLabel } from "@/lib/referrals/format";
 import { calculateCommissionClp } from "@/lib/referrals/commission";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,7 +54,7 @@ export function AdminQueue() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-2">
-        <h1 className="mr-auto text-2xl font-semibold tracking-tight">Cola de intros</h1>
+        <h1 className="mr-auto text-2xl font-semibold tracking-tight">Por confirmar</h1>
         <select
           className="h-9 rounded-lg border border-input bg-transparent px-2 text-sm"
           value={filter}
@@ -74,7 +74,7 @@ export function AdminQueue() {
 
       {hints.length > 0 ? (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm dark:border-amber-500/20 dark:bg-amber-500/10">
-          <p className="font-medium">Atribución sugerida (cookie ?ref=) — confirmar a mano</p>
+          <p className="font-medium">Llegaron con un link y todavía no tienen ficha. No se han inscrito.</p>
           <ul className="mt-2 space-y-1 text-xs">
             {hints.map((h) => (
               <li key={h.id}>
@@ -104,8 +104,13 @@ export function AdminQueue() {
                       onClick={() => setActive(r)}
                       className="w-full rounded-xl border border-border bg-card p-3 text-left text-sm"
                     >
-                      <div className="font-medium">{r.prospect_company}</div>
-                      <div className="text-xs text-muted-foreground">{r.prospect_name}</div>
+                      <div className="font-medium">{r.prospect_name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {referralSignedUpLabel(r.prospect_user_id)}
+                        {referralCompanyLabel(r.prospect_company)
+                          ? ` · ${referralCompanyLabel(r.prospect_company)}`
+                          : ""}
+                      </div>
                       <div className="mt-1 text-[11px] text-muted-foreground">
                         {r.referrer?.name}
                       </div>
@@ -134,7 +139,10 @@ export function AdminQueue() {
                   <TableCell>
                     <div className="font-medium">{r.prospect_name}</div>
                     <div className="text-xs text-muted-foreground">
-                      {r.prospect_company} · {r.prospect_role}
+                      {referralSignedUpLabel(r.prospect_user_id)}
+                      {referralCompanyLabel(r.prospect_company)
+                        ? ` · ${referralCompanyLabel(r.prospect_company)}`
+                        : ""}
                     </div>
                   </TableCell>
                   <TableCell className="text-sm">
@@ -214,12 +222,16 @@ function ActionDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>
-            {row.prospect_name} · {row.prospect_company}
+            {row.prospect_name}
+            {referralCompanyLabel(row.prospect_company)
+              ? ` · ${referralCompanyLabel(row.prospect_company)}`
+              : ""}
           </DialogTitle>
         </DialogHeader>
         <div className="space-y-3 text-sm">
           <p className="text-muted-foreground">
-            {row.prospect_role} · {row.prospect_email || "sin email"} · {row.prospect_phone || "sin tel"}
+            {referralSignedUpLabel(row.prospect_user_id)} · {row.prospect_email || "sin email"} ·{" "}
+            {row.prospect_phone || "sin teléfono"}
           </p>
           <p>{row.notes}</p>
           <StatusBadge status={row.status} />
@@ -229,45 +241,22 @@ function ActionDialog({
             </p>
           ) : null}
 
-          {nexts.filter((s) => s !== "won" && s !== "lost").length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {nexts
-                .filter((s) => s !== "won" && s !== "lost")
-                .map((s) => (
-                  <Button
-                    key={s}
-                    size="sm"
-                    variant="outline"
-                    disabled={busy}
-                    onClick={() => act("status", { status: s as ReferralStatus, note })}
-                  >
-                    {s === "qualified"
-                      ? "Calificar"
-                      : s === "diagnosis_scheduled"
-                        ? "Agendar diagnóstico"
-                        : s === "proposal_sent"
-                          ? "Propuesta enviada"
-                          : s === "in_review"
-                            ? "En revisión"
-                            : s}
-                  </Button>
-                ))}
-            </div>
-          ) : null}
-
           <Textarea
             placeholder="Nota interna (opcional)"
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
 
-          {row.status === "proposal_sent" ? (
+          {CONFIRMABLE_STATUSES.includes(row.status) ? (
             <div className="rounded-xl border border-border p-3">
-              <p className="text-xs font-medium">Won + cobrado (monto neto CLP)</p>
+              <p className="text-xs font-medium">Confirmar cobro (neto en pesos)</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Hazlo cuando el curso o la capacitación ya se cobró. Puedes tardar hasta 24 horas.
+              </p>
               <Input
                 className="mt-2 h-10"
                 inputMode="numeric"
-                placeholder="2900000"
+                placeholder="249000"
                 value={deal}
                 onChange={(e) => setDeal(e.target.value.replace(/\D/g, ""))}
               />
@@ -279,7 +268,7 @@ function ActionDialog({
                 disabled={busy || !deal}
                 onClick={() => act("won", { dealAmountClp: Number(deal), note })}
               >
-                {busy ? <Loader2 className="size-4 animate-spin" /> : "Marcar ganada"}
+                {busy ? <Loader2 className="size-4 animate-spin" /> : "Confirmar cobro"}
               </Button>
             </div>
           ) : null}

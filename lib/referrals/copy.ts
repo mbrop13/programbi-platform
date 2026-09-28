@@ -9,7 +9,7 @@ export const REFERRAL_FAQS = [
   },
   {
     q: "¿Cuándo me pagan?",
-    a: "Solo al cobro: cuando la factura o la OC está liquidada. Transferencia a la cuenta que registres (banco, tipo, número, RUT). No hay wallet ni cripto.",
+    a: "Cuando el curso o la capacitación se cobra, ProgramBI lo confirma en el panel de admin. Esa confirmación puede demorar hasta 24 horas. Después transferimos el 15% a la cuenta que registres (banco, tipo, número, RUT).",
   },
   {
     q: "¿Qué es el clawback de 60 días?",
@@ -17,7 +17,7 @@ export const REFERRAL_FAQS = [
   },
   {
     q: "¿El registro basta para cobrar?",
-    a: "El registro te atribuye a esa persona. La comisión se genera cuando se cobra un curso o una capacitación de esa persona o de su empresa.",
+    a: "El registro, o el formulario con tu link, te atribuye a esa persona. La comisión se genera cuando ProgramBI confirma que se cobró. Esa confirmación puede demorar hasta 24 horas.",
   },
   {
     q: "¿Quién puede unirse?",

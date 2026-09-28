@@ -4,6 +4,15 @@ export function referralSignupUrl(code: string): string {
   return `${SITE_URL}/registro?ref=${encodeURIComponent(code)}`;
 }
 
+const GENERIC_COMPANIES = new Set(["persona", "cuenta programbi"]);
+
+/** Oculta el relleno que usamos cuando el referido no tiene empresa. */
+export function referralCompanyLabel(company: string | null | undefined): string | null {
+  const value = (company || "").trim();
+  if (!value || GENERIC_COMPANIES.has(value.toLowerCase())) return null;
+  return value;
+}
+
 export function formatClp(amount: number): string {
   return new Intl.NumberFormat("es-CL", {
     style: "currency",

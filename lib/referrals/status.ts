@@ -1,28 +1,46 @@
 import type { ReferralStatus } from "./types";
 
 export const STATUS_LABELS: Record<ReferralStatus, string> = {
-  submitted: "Registrado",
+  submitted: "Por confirmar",
   in_review: "En revisión",
-  qualified: "Calificada",
-  diagnosis_scheduled: "Diagnóstico agendado",
-  proposal_sent: "Propuesta enviada",
-  won: "Ganada",
-  lost: "Perdida",
+  qualified: "En revisión",
+  diagnosis_scheduled: "En revisión",
+  proposal_sent: "En revisión",
+  won: "Cobro confirmado",
+  lost: "No avanzó",
   paid: "Comisión pagada",
   clawback: "Clawback",
 };
 
 export const STATUS_HELP: Record<ReferralStatus, string> = {
-  submitted: "Se creó una cuenta con tu link. La comisión se genera cuando se cobra un curso o una capacitación.",
+  submitted:
+    "Llegó con tu link. ProgramBI confirma en el panel si el curso o la capacitación se cobró. Esa confirmación puede demorar hasta 24 horas.",
   in_review: "ProgramBI está revisando el caso.",
-  qualified: "El referido entra al proceso comercial.",
-  diagnosis_scheduled: "Agendamos la conversación.",
-  proposal_sent: "Enviamos propuesta de curso o de capacitación a empresas.",
-  won: "Venta cerrada y cobrada. Tu comisión 15% quedó generada.",
+  qualified: "ProgramBI está revisando el caso.",
+  diagnosis_scheduled: "ProgramBI está revisando el caso.",
+  proposal_sent: "ProgramBI está revisando el caso.",
+  won: "Confirmamos que se cobró. Tu comisión del 15% quedó generada.",
   lost: "No avanzó.",
   paid: "Transferimos tu comisión.",
-  clawback: "Nota de crédito / devolución dentro de 60 días.",
+  clawback: "Nota de crédito o devolución dentro de 60 días.",
 };
+
+/** El admin confirma el cobro desde estos estados. No hace falta recorrer un embudo previo. */
+export const CONFIRMABLE_STATUSES: ReferralStatus[] = [
+  "submitted",
+  "in_review",
+  "qualified",
+  "diagnosis_scheduled",
+  "proposal_sent",
+];
+
+export function referralSignedUp(userId: string | null | undefined): boolean {
+  return Boolean(userId);
+}
+
+export function referralSignedUpLabel(userId: string | null | undefined): string {
+  return referralSignedUp(userId) ? "Se inscribió" : "No se ha inscrito";
+}
 
 export const STATUS_TONE: Record<
   ReferralStatus,
@@ -65,6 +83,7 @@ export const SOURCE_LABELS = {
   email: "Email",
   in_person: "Presencial",
   signup: "Link",
+  form: "Formulario",
   other: "Otro",
 } as const;
 

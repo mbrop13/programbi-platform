@@ -35,7 +35,7 @@ export function WelcomeReferrerEmail({ name, code, panelUrl, trackUrl }: Props) 
             Código opcional (cookie 90 días en /cursos o /empresas): <strong>{code}</strong>
           </Text>
           <Text style={{ ...p, fontSize: 13 }}>
-            El código sugiere atribución. Una intro calificada la confirma el equipo.
+            Si se inscriben o dejan sus datos, los ves en el panel. Confirmamos el cobro en hasta 24 horas.
           </Text>
           <Section style={{ marginTop: 24 }}>
             <Button href={panelUrl} style={btn}>

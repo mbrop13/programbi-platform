@@ -148,7 +148,7 @@ export async function renderWelcomeReferrerEmail(params: {
       `<p>Hola ${escapeHtml(params.name)},</p>
        <p>Ya puedes invitar a un amigo a un curso o a una empresa a una capacitación. Nosotros cerramos; tú cobras 15% al cobro.</p>
        <p>Tu código (opcional, 90 días en cookie): <strong>${escapeHtml(params.code)}</strong></p>
-       ${cta(`${SITE_URL}/referidos/app/nueva`, "Enviar primera intro")}`
+       ${cta(`${SITE_URL}/referidos/app`, "Abrir panel")}`
     );
   }
 }

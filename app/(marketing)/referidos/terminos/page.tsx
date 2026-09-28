@@ -16,7 +16,7 @@ export default function TerminosReferidosPage() {
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           Programa de referidos
         </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Términos v1</h1>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Términos del programa</h1>
         <p className="mt-3 text-muted-foreground">
           Español Chile. Vigentes para referidos de cursos abiertos y de capacitaciones a empresas en
           www.programbi.com. No aplican a capacitaciones.programbi.cl.
@@ -31,8 +31,9 @@ export default function TerminosReferidosPage() {
         </Section>
         <Section title="2. Cuándo pagamos">
           <p>
-            Solo al cobro: transferencia o OC liquidada. No hay anticipos. Pago por transferencia a la
-            cuenta chilena registrada (banco, tipo, número, RUT). Sin cripto ni wallet.
+            Solo al cobro: transferencia u orden de compra liquidada. ProgramBI confirma ese cobro en
+            el panel de admin. La confirmación puede demorar hasta 24 horas desde el pago. Después
+            transferimos el 15% a la cuenta chilena registrada (banco, tipo, número, RUT).
           </p>
         </Section>
         <Section title="3. Clawback">
@@ -58,8 +59,8 @@ export default function TerminosReferidosPage() {
         <Section title="6. Tracking">
           <p>
             El parámetro <code>?ref=CODIGO</code> en /registro, /cursos o /empresas guarda una cookie
-            90 días. El registro con esa cookie atribuye al referidor. El cobro de la comisión lo
-            confirma el equipo al liquidar la venta.
+            de 90 días. Si la persona crea una cuenta o deja sus datos, queda atribuida. El equipo
+            confirma el cobro en el panel. Esa confirmación puede demorar hasta 24 horas.
           </p>
         </Section>
         <Section title="7. Cuenta">

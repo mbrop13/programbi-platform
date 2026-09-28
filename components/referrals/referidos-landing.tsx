@@ -127,7 +127,7 @@ function How() {
     {
       n: "04",
       title: "Cobras el 15%",
-      text: "Cuando se cobra un curso o una capacitación atribuida. Transferencia a tu cuenta.",
+      text: "Cuando se cobra, lo confirmamos en el panel. Puede demorar hasta 24 horas. Después va a tu cuenta.",
     },
   ];
   return (
@@ -265,7 +265,7 @@ function Rules() {
   const rules = [
     "Pago solo al cobro (transferencia / OC liquidada).",
     "Clawback 60 días si hay nota de crédito o devolución.",
-    "El link atribuye el registro. La comisión se paga cuando se cobra la venta.",
+    "El link atribuye a la persona. Confirmamos el cobro en el panel, en hasta 24 horas.",
     "Una venta atribuida = una comisión. Curso o capacitación a empresas.",
   ];
   return (
@@ -296,7 +296,7 @@ function Faq() {
   return (
     <section className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
       <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">Preguntas</p>
-      <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">FAQ</h2>
+      <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">Preguntas frecuentes</h2>
       <div className="mt-10 divide-y divide-line border-y border-line">
         {REFERRAL_FAQS.map((item, i) => {
           const isOpen = open === i;

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { isRateLimited } from "@/lib/security/rate-limiter";
 import { normalizeReferralCode } from "@/lib/referrals/cookie";
 import { REFERRAL_COOKIE_NAME } from "@/lib/referrals/constants";
+import { recordOpenReferral } from "@/lib/referrals/open-lead";
 import {
   sendQuoteConfirmationToLead,
   sendEnterpriseQuoteToLead,
@@ -160,6 +161,15 @@ export async function POST(req: NextRequest) {
     }
 
     if (suggestedCode) {
+      await recordOpenReferral({
+        code: suggestedCode,
+        name,
+        email,
+        phone: whatsapp || null,
+        company: company || null,
+        role: position || null,
+      }).catch((err) => console.warn("[referrals] open lead:", err));
+
       const { error: hintErr } = await adminDb.from("referral_lead_hints").insert({
         referral_code: suggestedCode,
         lead_name: name,

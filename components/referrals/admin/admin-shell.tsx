@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 
 const NAV = [
-  { href: "/referidos/admin", label: "Cola" },
+  { href: "/referidos/admin", label: "Por confirmar" },
   { href: "/referidos/admin/referidores", label: "Referidores" },
   { href: "/referidos/admin/comisiones", label: "Comisiones" },
 ];

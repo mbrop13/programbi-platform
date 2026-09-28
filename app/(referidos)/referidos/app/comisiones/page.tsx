@@ -13,7 +13,7 @@ import {
 import { useReferralData } from "@/components/referrals/app/use-referral-data";
 import { EmptyState } from "@/components/referrals/empty-state";
 import { CommissionBadge } from "@/components/referrals/status-badge";
-import { formatClp, formatDateCl } from "@/lib/referrals/format";
+import { formatClp, formatDateCl, referralCompanyLabel } from "@/lib/referrals/format";
 import { NumberTicker } from "@/components/referrals/magic/number-ticker";
 import {
   Table,
@@ -28,7 +28,7 @@ export default function ComisionesPage() {
   const { loading, stats, referrals } = useReferralData();
   const rows = referrals.filter((r) => r.commission);
   const chart = rows.map((r) => ({
-    name: r.prospect_company.slice(0, 16),
+    name: (referralCompanyLabel(r.prospect_company) || r.prospect_name).slice(0, 16),
     comisión: r.commission ? Number(r.commission.commission_amount_clp) : 0,
   }));
 
@@ -37,7 +37,8 @@ export default function ComisionesPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Comisiones</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          15% del neto cobrado. Pagada = transferencia hecha. Clawback 60 días.
+          15% del neto cobrado, después de que ProgramBI confirma el pago. Esa confirmación puede
+          demorar hasta 24 horas. Pagada = transferencia hecha. Clawback 60 días.
         </p>
       </div>
 
@@ -72,7 +73,7 @@ export default function ComisionesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Empresa</TableHead>
+                  <TableHead>Referido</TableHead>
                   <TableHead>Deal</TableHead>
                   <TableHead>15%</TableHead>
                   <TableHead>Estado</TableHead>
@@ -83,7 +84,9 @@ export default function ComisionesPage() {
                 {rows.map((r) => (
                   <TableRow key={r.id}>
                     <TableCell>
-                      <div className="font-medium">{r.prospect_company}</div>
+                      <div className="font-medium">
+                        {referralCompanyLabel(r.prospect_company) || r.prospect_name}
+                      </div>
                       <div className="text-xs text-muted-foreground">{r.prospect_name}</div>
                     </TableCell>
                     <TableCell className="tabular-nums">

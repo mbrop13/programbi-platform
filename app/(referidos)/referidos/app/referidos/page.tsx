@@ -5,8 +5,10 @@ import { useReferralData } from "@/components/referrals/app/use-referral-data";
 import { ReferralTable } from "@/components/referrals/app/referral-table";
 import { EmptyState } from "@/components/referrals/empty-state";
 import { StatusBadge } from "@/components/referrals/status-badge";
-import { STATUS_HELP, STATUS_LABELS } from "@/lib/referrals/status";
+import { STATUS_HELP } from "@/lib/referrals/status";
 import type { ReferralStatus } from "@/lib/referrals/types";
+
+const GUIDE: ReferralStatus[] = ["submitted", "won", "paid", "lost", "clawback"];
 
 export default function ReferidosListPage() {
   const { loading, referrals } = useReferralData();
@@ -16,7 +18,8 @@ export default function ReferidosListPage() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Tus referidos</h1>
         <p className="mt-1 text-sm text-mute">
-          Personas que se registraron con tu link. La comisión aparece cuando se cobra.
+          Quién llegó con tu link, si ya se inscribió, y si el cobro ya está confirmado. La
+          confirmación puede demorar hasta 24 horas.
         </p>
       </div>
       {loading ? (
@@ -25,13 +28,13 @@ export default function ReferidosListPage() {
         <EmptyState
           icon={Inbox}
           title="Todavía no hay referidos"
-          description="Comparte tu link. Cuando alguien cree una cuenta ProgramBI, aparece acá."
+          description="Comparte tu link. Cuando alguien se inscriba o deje sus datos, aparece acá."
         />
       ) : (
         <ReferralTable data={referrals} />
       )}
       <div className="grid gap-2 sm:grid-cols-2">
-        {(Object.keys(STATUS_LABELS) as ReferralStatus[]).map((s) => (
+        {GUIDE.map((s) => (
           <div key={s} className="flex items-start gap-3 rounded-xl border border-border px-3 py-2">
             <StatusBadge status={s} />
             <p className="text-xs text-muted-foreground">{STATUS_HELP[s]}</p>

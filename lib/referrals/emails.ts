@@ -84,14 +84,14 @@ export async function notifyStatusChange(params: {
   });
   const subject =
     params.status === "won"
-      ? `Venta cerrada: ${params.prospectCompany} — comisión 15% generada`
-      : `Intro calificada: ${params.prospectName} · ${params.prospectCompany}`;
+      ? `Cobro confirmado: ${params.prospectName} — comisión 15% generada`
+      : `Referido en revisión: ${params.prospectName}`;
   await sendHtml({
     to: params.referrerEmail,
     toName: params.referrerName,
     subject,
     html,
-    text: `Hola ${params.referrerName}, tu intro de ${params.prospectName} (${params.prospectCompany}) pasó a ${STATUS_LABELS[params.status]}. ${SITE_URL}/referidos/app`,
+    text: `Hola ${params.referrerName}, el referido ${params.prospectName} pasó a ${STATUS_LABELS[params.status]}. ${SITE_URL}/referidos/app`,
   });
 }
 
@@ -110,6 +110,37 @@ export async function notifyCommissionPaid(params: {
     html,
     text: `Hola ${params.referrerName}, transferimos ${formatClp(params.amountClp)} por la venta de ${params.prospectCompany}. Ref: ${params.paymentRef}.`,
   });
+}
+
+export async function notifyAdminReferral(params: {
+  referrerName: string;
+  referrerCode: string;
+  prospectName: string;
+  prospectEmail?: string | null;
+  signedUp: boolean;
+}): Promise<void> {
+  const account = params.signedUp ? "Se inscribió en ProgramBI." : "Dejó sus datos y todavía no se inscribe.";
+  const who = params.prospectEmail
+    ? `${params.prospectName} (${params.prospectEmail})`
+    : params.prospectName;
+  const subject = params.signedUp
+    ? `Referido inscrito: ${params.prospectName}`
+    : `Referido sin inscripción: ${params.prospectName}`;
+  const text = `${params.referrerName} (${params.referrerCode}) refirió a ${who}. ${account} Confirma el cobro en el panel cuando el proceso esté listo. Puede demorar hasta 24 horas. ${SITE_URL}/admin/referidos`;
+  await sendHtml({
+    to: ADMIN_EMAIL,
+    subject,
+    html: `<p>${escapeHtml(params.referrerName)} (<strong>${escapeHtml(params.referrerCode)}</strong>) refirió a ${escapeHtml(who)}.</p><p>${escapeHtml(account)}</p><p>Confirma el cobro en el panel de admin cuando el curso o la capacitación se haya cobrado. Esa confirmación puede demorar hasta 24 horas.</p><p><a href="${SITE_URL}/admin/referidos">Abrir panel de referidos</a></p>`,
+    text,
+  });
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 export async function notifyWelcomeReferrer(params: {

@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
         await sendQuoteConfirmationToLead({
           name: "Ignacio Martínez",
           email,
-          courses: ["Análisis de Datos (SQL + Power BI + Python)", "Machine Learning"],
+          courses: ["Análisis de Datos", "Copilot"],
           message: "Me interesa el horario vespertino.",
         });
         break;

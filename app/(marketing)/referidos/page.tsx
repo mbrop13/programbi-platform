@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title,
     description:
-      "15% de cursos y capacitaciones a empresas, pagado al cobro. Intros calificadas a mano.",
+      "15% de cursos y capacitaciones a empresas. ProgramBI confirma el cobro en hasta 24 horas.",
     url: absoluteUrl("/referidos"),
     type: "website",
     images: share.images,
