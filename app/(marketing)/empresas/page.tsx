@@ -3,12 +3,16 @@ import EmpresasClient from "./EmpresasClient";
 import { ogImageUrl } from "@/lib/og/url";
 import { SITE_URL, absoluteUrl, jsonLdString, twitterShare } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
+import { normalizarPais } from "@/config/paises";
+import { hreflangDe } from "@/lib/paises/rutas";
+import { localizarMercado } from "@/lib/paises/precios";
 
 export const metadata: Metadata = {
   title: { absolute: PAGE_SEO.empresas.title },
   description: PAGE_SEO.empresas.description,
   alternates: {
     canonical: "/empresas",
+    languages: hreflangDe("/empresas"),
   },
   openGraph: {
     title: PAGE_SEO.empresas.title,
@@ -46,10 +50,13 @@ export const metadata: Metadata = {
 };
 
 export default async function EmpresasPage({
+  params,
   searchParams,
 }: {
+  params: Promise<{ pais?: string }>;
   searchParams: Promise<{ curso?: string; nivel?: string }>;
 }) {
+  const pais = normalizarPais((await params).pais);
   const { curso, nivel } = await searchParams;
   const serviceJsonLd = {
     "@context": "https://schema.org",
@@ -62,14 +69,19 @@ export default async function EmpresasPage({
       "@id": `${SITE_URL}/#organization`,
     },
     serviceType: "Corporate training in Power BI, SQL, Python and automation",
-    areaServed: [
-      { "@type": "Country", name: "Chile" },
-      { "@type": "Country", name: "Colombia" },
-      { "@type": "Country", name: "México" },
-      { "@type": "Country", name: "Perú" },
-    ],
-    description:
+    areaServed:
+      pais === "cl"
+        ? [
+            { "@type": "Country", name: "Chile" },
+            { "@type": "Country", name: "Colombia" },
+            { "@type": "Country", name: "México" },
+            { "@type": "Country", name: "Perú" },
+          ]
+        : [{ "@type": "Country", name: localizarMercado("Chile", pais) }],
+    description: localizarMercado(
       "Adopción de Power BI en empresas de Chile: de Excel a tableros, con SQL, Python y automatización. Programas in-company en vivo, con los datos de la empresa y factura corporativa.",
+      pais
+    ),
   };
 
   return (
@@ -79,6 +91,11 @@ export default async function EmpresasPage({
         dangerouslySetInnerHTML={{ __html: jsonLdString(serviceJsonLd) }}
       />
       <EmpresasClient curso={curso} nivel={nivel} />
+      {pais !== "cl" ? (
+        <p className="mx-auto max-w-[1400px] px-4 pb-10 text-sm text-mute sm:px-6">
+          {`[PENDIENTE CONTENIDO ${pais.toUpperCase()}]`}
+        </p>
+      ) : null}
     </>
   );
 }

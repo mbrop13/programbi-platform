@@ -20,6 +20,10 @@ import {
 } from "lucide-react";
 import { NAV_COURSE_GROUPS } from "@/lib/data/course-nav";
 import { trackNavRegistro } from "@/lib/analytics/marketing";
+import { ISO_CHILE } from "@/config/paises";
+import { etiquetaBoton } from "@/config/textos";
+import { paisDesdeRuta, rutaLocal } from "@/lib/paises/rutas";
+import SelectorPais from "@/components/shared/SelectorPais";
 
 const AuthModal = dynamic(() => import("./AuthModal"), { ssr: false });
 const SupportModal = dynamic(() => import("./SupportModal"), { ssr: false });
@@ -59,6 +63,8 @@ export default function Navbar() {
   const megaTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const userMenuTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pathname = usePathname();
+  const paisNav = paisDesdeRuta(pathname) ?? ISO_CHILE;
+  const hrefLocal = (href: string) => rutaLocal(paisNav, href);
   const isNewsletter = pathname?.startsWith("/newsletter");
 
   const [nlCategories, setNlCategories] = useState<any[]>([]);
@@ -266,7 +272,7 @@ export default function Navbar() {
         }`}
       >
         <div className="relative mx-auto flex h-full max-w-[1400px] items-center px-4 sm:px-6 lg:px-8">
-          <Link href="/" className="relative z-10 h-8 w-[150px] shrink-0" aria-label="ProgramBI">
+          <Link href={hrefLocal("/")} className="relative z-10 h-8 w-[150px] shrink-0" aria-label="ProgramBI">
             <Image
               src="/images/logo-nav.webp"
               alt="ProgramBI"
@@ -287,7 +293,7 @@ export default function Navbar() {
                   onMouseEnter={handleMegaEnter}
                   onMouseLeave={handleMegaLeave}
                 >
-                  <Link href={link.href} className="inline-flex items-center gap-1 transition-colors hover:text-ink no-underline">
+                  <Link href={hrefLocal(link.href)} className="inline-flex items-center gap-1 transition-colors hover:text-ink no-underline">
                     {link.label}
                     <ChevronDown size={14} className={isMegaOpen ? "rotate-180" : ""} />
                   </Link>
@@ -306,7 +312,7 @@ export default function Navbar() {
                                 {group.items.map((course) => (
                                   <li key={course.slug}>
                                     <Link
-                                      href={`/cursos/${course.slug}`}
+                                      href={hrefLocal(`/cursos/${course.slug}`)}
                                       onClick={() => setIsMegaOpen(false)}
                                       className="flex items-center gap-2.5 rounded-md px-1.5 py-2 no-underline transition-colors hover:bg-wash"
                                     >
@@ -337,7 +343,7 @@ export default function Navbar() {
                         </div>
                         <div className="border-t border-line px-5 py-3">
                           <Link
-                            href="/cursos"
+                            href={hrefLocal("/cursos")}
                             onClick={() => setIsMegaOpen(false)}
                             className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline"
                           >
@@ -348,14 +354,15 @@ export default function Navbar() {
                   ) : null}
                 </div>
               ) : (
-                <Link key={link.href} href={link.href} className="transition-colors hover:text-ink no-underline">
+                <Link key={link.href} href={hrefLocal(link.href)} className="transition-colors hover:text-ink no-underline">
                   {link.label}
                 </Link>
               )
             )}
           </nav>
 
-          <div className="relative z-10 ml-auto flex items-center justify-end gap-5 lg:min-w-[17.5rem]">
+          <div className="relative z-10 ml-auto flex items-center justify-end gap-3 lg:min-w-[17.5rem]">
+            <SelectorPais className="hidden sm:inline-flex" />
             {loading ? (
               <div className="hidden h-10 w-28 rounded-full bg-surface sm:block" />
             ) : user ? (
@@ -466,7 +473,7 @@ export default function Navbar() {
                 }}
                 className="hidden h-10 items-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas transition-transform active:scale-95 sm:inline-flex"
               >
-                Registrarse
+                {etiquetaBoton(paisNav, "Registrarse")}
               </button>
             ) : null}
 
@@ -525,6 +532,9 @@ export default function Navbar() {
             className="absolute inset-x-0 top-[72px] max-h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain border-b border-line bg-canvas px-4 py-5 lg:hidden"
           >
             <nav className="flex flex-col" aria-label="Móvil">
+              <div className="pb-3">
+                <SelectorPais />
+              </div>
               {navLinks.map((link) =>
                 link.hasMega ? (
                   <div key={link.href} className="border-b border-line py-1">
@@ -549,7 +559,7 @@ export default function Navbar() {
                               {group.items.map((course) => (
                                 <li key={course.slug}>
                                   <Link
-                                    href={`/cursos/${course.slug}`}
+                                    href={hrefLocal(`/cursos/${course.slug}`)}
                                     onClick={() => setIsMobileOpen(false)}
                                     className="flex items-baseline justify-between gap-3 rounded-md px-1 py-2.5 no-underline"
                                   >
@@ -564,7 +574,7 @@ export default function Navbar() {
                           </div>
                         ))}
                         <Link
-                          href="/cursos"
+                          href={hrefLocal("/cursos")}
                           onClick={() => setIsMobileOpen(false)}
                           className="mt-2 inline-flex items-center gap-1.5 px-1 py-2 text-sm font-semibold text-ink no-underline"
                         >
@@ -576,7 +586,7 @@ export default function Navbar() {
                 ) : (
                   <Link
                     key={link.href}
-                    href={link.href}
+                    href={hrefLocal(link.href)}
                     onClick={() => setIsMobileOpen(false)}
                     className="border-b border-line py-3 text-lg font-medium text-ink no-underline"
                   >
@@ -644,7 +654,7 @@ export default function Navbar() {
                     }}
                     className="mt-2 inline-flex h-12 w-full items-center justify-center rounded-full bg-ink px-6 text-[14.5px] font-semibold text-canvas"
                   >
-                    Registrarse
+                    {etiquetaBoton(paisNav, "Registrarse")}
                   </button>
                 ) : null}
               </div>

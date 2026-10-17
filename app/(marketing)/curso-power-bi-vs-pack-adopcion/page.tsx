@@ -3,6 +3,9 @@ import SeoGuide from "@/components/marketing/SeoGuide";
 import { SITE_URL, absoluteUrl, jsonLdString, pageOg } from "@/lib/seo";
 import { GUIDE_SEO } from "@/lib/seo/money";
 import { PACK } from "@/lib/data/pack-adopcion";
+import { normalizarPais } from "@/config/paises";
+import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
+import { localizarMercado } from "@/lib/paises/precios";
 
 const copy = GUIDE_SEO["curso-power-bi-vs-pack-adopcion"];
 
@@ -17,7 +20,7 @@ const share = pageOg({
 export const metadata: Metadata = {
   title: { absolute: copy.title },
   description: copy.description,
-  alternates: { canonical: copy.path },
+  alternates: { canonical: copy.path, languages: hreflangDe(copy.path) },
   openGraph: {
     title: copy.title,
     description: copy.description,
@@ -39,15 +42,26 @@ const faqs = [
   },
 ];
 
-export default function Page() {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ pais?: string }>;
+}) {
+  const pais = normalizarPais((await params).pais);
+  const L = (texto: string) => localizarMercado(texto, pais);
+  const href = (destino: string) => rutaLocal(pais, destino);
+  const parrafoPack =
+    pais === "cl"
+      ? `${PACK.headline} Construimos ${PACK.dashboards} dashboards con los datos del área, capacitamos ${PACK.trainingWeeks} semanas y nos quedamos ${PACK.postGoLiveWeeks} semanas post go-live. Inversión referencial ${PACK.priceLabel} (${PACK.priceFromLabel}). Factura directa, sin SENCE por ahora.`
+      : `${PACK.headline} Construimos ${PACK.dashboards} dashboards con los datos del área, capacitamos ${PACK.trainingWeeks} semanas y nos quedamos ${PACK.postGoLiveWeeks} semanas post go-live. [PENDIENTE CONTENIDO ${pais.toUpperCase()}]`;
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Article",
-        headline: copy.h1,
-        description: copy.description,
-        url: absoluteUrl(copy.path),
+        headline: L(copy.h1),
+        description: L(copy.description),
+        url: absoluteUrl(href(copy.path)),
         inLanguage: "es-CL",
         author: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
       },
@@ -62,9 +76,9 @@ export default function Page() {
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-          { "@type": "ListItem", position: 2, name: "Empresas", item: absoluteUrl("/empresas") },
-          { "@type": "ListItem", position: 3, name: copy.h1, item: absoluteUrl(copy.path) },
+          { "@type": "ListItem", position: 1, name: "Inicio", item: absoluteUrl(href("/")) },
+          { "@type": "ListItem", position: 2, name: "Empresas", item: absoluteUrl(href("/empresas")) },
+          { "@type": "ListItem", position: 3, name: L(copy.h1), item: absoluteUrl(href(copy.path)) },
         ],
       },
     ],
@@ -74,14 +88,16 @@ export default function Page() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <SeoGuide
-        kicker="Curso vs Pack · Chile"
-        h1={copy.h1}
-        lead="Si buscas “curso Power BI Chile”, hay una ficha para eso. Si eres Controller y el área vive en Excel, el producto correcto es el Pack Adopción — tablero en producción, no una clase."
-        pagePath={copy.path}
+        kicker={L("Curso vs Pack · Chile")}
+        h1={L(copy.h1)}
+        lead={L("Si buscas “curso Power BI Chile”, hay una ficha para eso. Si eres Controller y el área vive en Excel, el producto correcto es el Pack Adopción — tablero en producción, no una clase.")}
+        pagePath={href(copy.path)}
+        empresasHref={href("/empresas")}
+        nota={pais === "cl" ? undefined : `[PENDIENTE CONTENIDO ${pais.toUpperCase()}]`}
         crumbs={[
-          { href: "/", label: "Inicio" },
-          { href: "/cursos/power-bi", label: "Curso Power BI" },
-          { href: copy.path, label: "vs Pack Adopción" },
+          { href: href("/"), label: "Inicio" },
+          { href: href("/cursos/power-bi"), label: "Curso Power BI" },
+          { href: href(copy.path), label: "vs Pack Adopción" },
         ]}
         sections={[
           {
@@ -94,7 +110,7 @@ export default function Page() {
           {
             h2: "Pack Adopción BI (empresas)",
             paragraphs: [
-              `${PACK.headline} Construimos ${PACK.dashboards} dashboards con los datos del área, capacitamos ${PACK.trainingWeeks} semanas y nos quedamos ${PACK.postGoLiveWeeks} semanas post go-live. Inversión referencial ${PACK.priceLabel} (${PACK.priceFromLabel}). Factura directa, sin SENCE por ahora.`,
+              parrafoPack,
               "Diagnóstico 30 minutos. Propuesta en menos de 24 h. WhatsApp +56 9 3540 9699.",
             ],
           },
@@ -107,10 +123,10 @@ export default function Page() {
         ]}
         faqs={faqs}
         related={[
-          { href: "/empresas", label: "Soluciones para empresas" },
-          { href: "/cursos/power-bi", label: "Curso Power BI en vivo Chile" },
-          { href: "/cursos/analisis-de-datos", label: "Cursos de análisis de datos (SQL + Power BI + Python)" },
-          { href: "/por-que-fallan-proyectos-power-bi", label: "Por qué fallan los proyectos Power BI" },
+          { href: href("/empresas"), label: "Soluciones para empresas" },
+          { href: href("/cursos/power-bi"), label: L("Curso Power BI en vivo Chile") },
+          { href: href("/cursos/analisis-de-datos"), label: "Cursos de análisis de datos (SQL + Power BI + Python)" },
+          { href: href("/por-que-fallan-proyectos-power-bi"), label: "Por qué fallan los proyectos Power BI" },
         ]}
       />
     </>

@@ -1,6 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
+import { usePathname } from "next/navigation";
+import { esRutaComercial, paisDesdeRuta } from "@/lib/paises/rutas";
 
 /* ═══════════════════════════════════════════════════════════════ */
 /* TYPES                                                           */
@@ -131,18 +133,22 @@ function getCountry(iso: string): CountryData {
 /* PROVIDER                                                        */
 /* ═══════════════════════════════════════════════════════════════ */
 export function CountryProvider({ children }: { children: React.ReactNode }) {
-  const [iso, setIso] = useState<string>(DEFAULT_ISO);
+  const pathname = usePathname() || "/";
+  const [savedIso, setSavedIso] = useState<string>(DEFAULT_ISO);
   const [isDetecting] = useState(false);
+  const rutaIso = paisDesdeRuta(pathname);
+  const iso = rutaIso ?? (esRutaComercial(pathname) ? DEFAULT_ISO : savedIso);
 
   // localStorage only — ipapi.co is blocked by CSP and raced the LCP path.
+  // En las rutas comerciales el país lo marca la URL, no esta preferencia.
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved && COUNTRIES.some((c) => c.iso === saved)) setIso(saved);
+    if (saved && COUNTRIES.some((c) => c.iso === saved)) setSavedIso(saved);
   }, []);
 
   const setCountryByIso = useCallback((newIso: string) => {
     if (COUNTRIES.some((c) => c.iso === newIso)) {
-      setIso(newIso);
+      setSavedIso(newIso);
       localStorage.setItem(STORAGE_KEY, newIso);
     }
   }, []);

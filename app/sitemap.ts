@@ -3,6 +3,8 @@ import { courses } from "@/lib/data/courses";
 import { casesOfUse } from "@/lib/data/cases";
 import { comparisons } from "@/lib/data/comparisons";
 import { SITE_URL, sitemapLoc } from "@/lib/seo";
+import { PAISES_CARPETA } from "@/config/paises";
+import { rutaLocal } from "@/lib/paises/rutas";
 import { isVanityBlogPost } from "@/lib/seo/money";
 import { createAdminClient } from "@/lib/supabase/server";
 
@@ -225,5 +227,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const blogPages = await publishedBlogUrls(now);
 
-  return uniqueEntries([...staticPages, ...coursePages, ...casePages, ...versusPages, ...blogPages]);
+  const localizedPaths: { path: string; priority: number; changeFrequency: "weekly" | "monthly" }[] = [
+    { path: "/", priority: 1, changeFrequency: "weekly" },
+    { path: "/empresas", priority: 0.95, changeFrequency: "weekly" },
+    { path: "/implementacion-power-bi", priority: 0.9, changeFrequency: "monthly" },
+    { path: "/migrar-excel-a-power-bi", priority: 0.9, changeFrequency: "monthly" },
+    { path: "/por-que-fallan-proyectos-power-bi", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/curso-power-bi-vs-pack-adopcion", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/cursos", priority: 0.85, changeFrequency: "weekly" },
+    { path: "/nosotros", priority: 0.5, changeFrequency: "monthly" },
+    { path: "/faq", priority: 0.5, changeFrequency: "monthly" },
+    ...courses.map((course) => ({
+      path: `/cursos/${course.slug}`,
+      priority: coursePriority(course.slug),
+      changeFrequency: "weekly" as const,
+    })),
+  ];
+
+  const countryPages: MetadataRoute.Sitemap = PAISES_CARPETA.flatMap((pais) =>
+    localizedPaths.map((item) => ({
+      url: loc(rutaLocal(pais.iso, item.path)),
+      lastModified: now,
+      changeFrequency: item.changeFrequency,
+      priority: item.priority,
+    }))
+  );
+
+  return uniqueEntries([
+    ...staticPages,
+    ...coursePages,
+    ...casePages,
+    ...versusPages,
+    ...blogPages,
+    ...countryPages,
+  ]);
 }

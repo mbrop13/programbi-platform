@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import SeoGuide from "@/components/marketing/SeoGuide";
 import { SITE_URL, absoluteUrl, breadcrumbJsonLd, jsonLdString, pageOg } from "@/lib/seo";
+import { normalizarPais } from "@/config/paises";
+import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
+import { localizarMercado } from "@/lib/paises/precios";
 
 const path = "/implementacion-power-bi";
 const title = "Implementación Power BI Chile | ProgramBI";
@@ -17,7 +20,7 @@ const share = pageOg({
 export const metadata: Metadata = {
   title: { absolute: title },
   description,
-  alternates: { canonical: path },
+  alternates: { canonical: path, languages: hreflangDe(path) },
   openGraph: {
     title,
     description:
@@ -40,16 +43,23 @@ const faqs = [
   },
 ];
 
-export default function Page() {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ pais?: string }>;
+}) {
+  const pais = normalizarPais((await params).pais);
+  const L = (texto: string) => localizarMercado(texto, pais);
+  const href = (destino: string) => rutaLocal(pais, destino);
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Service",
-        name: "Implementación Power BI Chile",
-        url: absoluteUrl(path),
+        name: L("Implementación Power BI Chile"),
+        url: absoluteUrl(href(path)),
         provider: { "@type": "Organization", name: "ProgramBI SPA", url: SITE_URL },
-        areaServed: { "@type": "Country", name: "Chile" },
+        areaServed: { "@type": "Country", name: L("Chile") },
       },
       {
         "@type": "FAQPage",
@@ -60,9 +70,9 @@ export default function Page() {
         })),
       },
       breadcrumbJsonLd([
-        { name: "Inicio", path: "/" },
-        { name: "Empresas", path: "/empresas" },
-        { name: "Implementación Power BI", path: path },
+        { name: "Inicio", path: href("/") },
+        { name: "Empresas", path: href("/empresas") },
+        { name: "Implementación Power BI", path: href(path) },
       ]),
     ],
   };
@@ -71,14 +81,16 @@ export default function Page() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <SeoGuide
-        kicker="Implementación Power BI · Chile"
-        h1="Implementación Power BI en Chile, con el equipo usando el tablero"
+        kicker={L("Implementación Power BI · Chile")}
+        h1={L("Implementación Power BI en Chile, con el equipo usando el tablero")}
         lead="No entregamos un archivo y desaparecemos. Armamos dashboards con tus datos y capacitamos al área para mantenerlos."
-        pagePath={path}
+        pagePath={href(path)}
+        empresasHref={href("/empresas")}
+        nota={pais === "cl" ? undefined : `[PENDIENTE CONTENIDO ${pais.toUpperCase()}]`}
         crumbs={[
-          { href: "/", label: "Inicio" },
-          { href: "/empresas", label: "Empresas" },
-          { href: path, label: "Implementación Power BI" },
+          { href: href("/"), label: "Inicio" },
+          { href: href("/empresas"), label: "Empresas" },
+          { href: href(path), label: "Implementación Power BI" },
         ]}
         sections={[
           {
@@ -91,9 +103,9 @@ export default function Page() {
         ]}
         faqs={faqs}
         related={[
-          { href: "/empresas", label: "Soluciones para empresas" },
-          { href: "/cursos/power-bi", label: "Curso Power BI en vivo" },
-          { href: "/migrar-excel-a-power-bi", label: "Migrar Excel a Power BI" },
+          { href: href("/empresas"), label: "Soluciones para empresas" },
+          { href: href("/cursos/power-bi"), label: "Curso Power BI en vivo" },
+          { href: href("/migrar-excel-a-power-bi"), label: "Migrar Excel a Power BI" },
         ]}
       />
     </>

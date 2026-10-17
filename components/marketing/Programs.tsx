@@ -8,6 +8,7 @@ import { CourseCohortFacts } from "@/components/marketing/CourseCohortStrip";
 import { SCHEDULE_COUNTRIES, type CourseSchedule } from "@/lib/data/course-schedules";
 import { useCountry } from "@/lib/context/CountryContext";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
+import { useRutaLocal } from "@/lib/paises/cliente";
 
 const ORDER = [
   "analisis-de-datos",
@@ -58,6 +59,7 @@ export default function Programs({ catalog, schedules }: { catalog: ProgramCard[
   const ALL = orderCatalog(catalog);
   const [expanded, setExpanded] = useState(false);
   const { country } = useCountry();
+  const hrefLocal = useRutaLocal();
   const timeZone = (SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0]).timeZone;
   if (!ALL.length) return null;
   const visible = expanded ? ALL : ALL.slice(0, VISIBLE_COUNT);
@@ -73,7 +75,7 @@ export default function Programs({ catalog, schedules }: { catalog: ProgramCard[
               en básico-intermedio.
             </p>
           </div>
-          <Link href="/cursos" className="shrink-0 text-sm font-semibold text-ink no-underline hover:text-mute">
+          <Link href={hrefLocal("/cursos")} className="shrink-0 text-sm font-semibold text-ink no-underline hover:text-mute">
             Ver catálogo
           </Link>
         </div>
@@ -82,7 +84,7 @@ export default function Programs({ catalog, schedules }: { catalog: ProgramCard[
           {visible.map((course) => (
             <Link
               key={course.slug}
-              href={`/cursos/${course.slug}`}
+              href={hrefLocal(`/cursos/${course.slug}`)}
               onClick={() => trackCourseCardClick(course.slug, "home_programs")}
               className="group overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20"
             >

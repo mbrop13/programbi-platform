@@ -1,6 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { NAV_COURSE_GROUPS } from "@/lib/data/course-nav";
+import { getPais, ISO_CHILE } from "@/config/paises";
+import { etiquetaBoton } from "@/config/textos";
+import { usePaisRuta } from "@/lib/paises/cliente";
+import { rutaLocal } from "@/lib/paises/rutas";
+import SelectorPais from "@/components/shared/SelectorPais";
 
 const socialLinks = [
   { name: "Instagram", href: "https://www.instagram.com/programbi_capacitaciones/" },
@@ -21,13 +28,15 @@ const companyLinks = [
 ];
 
 export default function Footer({ compact: _compact = false }: { compact?: boolean }) {
+  const pais = usePaisRuta();
+  const hrefLocal = (href: string) => rutaLocal(pais, href);
   const topCourses = NAV_COURSE_GROUPS.flatMap((g) => g.items).slice(0, 6);
 
   return (
     <footer className="border-t border-line bg-paper px-4 py-12 sm:px-6 lg:px-8" aria-label="Pie de página">
       <div className="mx-auto flex max-w-[1400px] flex-col gap-10 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <Link href="/" className="relative block h-8 w-[148px]" aria-label="ProgramBI">
+          <Link href={hrefLocal("/")} className="relative block h-8 w-[148px]" aria-label="ProgramBI">
             <Image
               src="/images/logo-nav.webp"
               alt="ProgramBI"
@@ -38,21 +47,29 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
             />
           </Link>
           <p className="mt-4 max-w-[28rem] text-sm leading-relaxed text-mute">
-            Centro de capacitaciones en análisis de datos. Santiago, Chile.
+            {pais === ISO_CHILE
+              ? "Centro de capacitaciones en análisis de datos. Santiago, Chile."
+              : "Centro de capacitaciones en análisis de datos."}
           </p>
+          {pais === ISO_CHILE ? null : (
+            <p className="mt-2 text-sm text-mute">{getPais(pais).contacto.ciudad}</p>
+          )}
+          <div className="mt-4">
+            <SelectorPais />
+          </div>
         </div>
 
         <nav className="flex flex-col gap-3 text-sm font-medium text-ink" aria-label="Sitio">
           {companyLinks.map((item) => (
-            <Link key={item.href} href={item.href} className="no-underline hover:text-mute">
-              {item.label}
+            <Link key={item.href} href={hrefLocal(item.href)} className="no-underline hover:text-mute">
+              {item.label === "Registrarse" ? etiquetaBoton(pais, item.label) : item.label}
             </Link>
           ))}
         </nav>
 
         <nav className="flex flex-col gap-3 text-sm font-medium text-ink" aria-label="Cursos">
           {topCourses.map((course) => (
-            <Link key={course.slug} href={`/cursos/${course.slug}`} className="no-underline hover:text-mute">
+            <Link key={course.slug} href={hrefLocal(`/cursos/${course.slug}`)} className="no-underline hover:text-mute">
               {course.title}
             </Link>
           ))}
@@ -74,7 +91,9 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
           </Link>
         </div>
       </div>
-      <p className="mx-auto mt-12 max-w-[1400px] text-xs text-faint">ProgramBI SPA · Chile</p>
+      <p className="mx-auto mt-12 max-w-[1400px] text-xs text-faint">
+        ProgramBI SPA · {pais === ISO_CHILE ? "Chile" : getPais(pais).nombre}
+      </p>
     </footer>
   );
 }

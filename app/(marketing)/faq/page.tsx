@@ -3,6 +3,9 @@ import Link from "next/link";
 import FaqClient from "./FaqClient";
 import { ogImageUrl } from "@/lib/og/url";
 import { jsonLdString, twitterShare } from "@/lib/seo";
+import { normalizarPais } from "@/config/paises";
+import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
+import { localizarMercado } from "@/lib/paises/precios";
 
 export const metadata: Metadata = {
   title: "Preguntas frecuentes — Soporte y consultas",
@@ -10,6 +13,7 @@ export const metadata: Metadata = {
     "Resuelve tus dudas sobre los cursos de análisis de datos en vivo, metodologías, grabaciones de clases, certificados oficiales y asesorías corporativas de ProgramBI.",
   alternates: {
     canonical: "/faq",
+    languages: hreflangDe("/faq"),
   },
   openGraph: {
     title: "Preguntas Frecuentes — Soporte y Consultas | ProgramBI",
@@ -98,11 +102,41 @@ const FAQ_DATA = [
   }
 ];
 
-export default function FAQPage() {
+function preguntasDe(pais: string) {
+  if (pais === "cl") return FAQ_DATA;
+  return FAQ_DATA.map((item) => {
+    if (item.question.startsWith("¿Tienen capacitaciones SENCE")) {
+      return {
+        ...item,
+        question: `¿Hay un crédito fiscal para capacitación en ${localizarMercado("Chile", pais)}?`,
+        answer: `[PENDIENTE CONTENIDO ${pais.toUpperCase()}]`,
+      };
+    }
+    if (item.question.startsWith("¿Qué métodos de pago")) {
+      return {
+        ...item,
+        answer: "El pago del curso se hace con Mercado Pago. Si la cuenta de ese país todavía no está conectada, el checkout se abre con la cuenta de Chile.",
+      };
+    }
+    return {
+      ...item,
+      question: localizarMercado(item.question, pais),
+      answer: localizarMercado(item.answer, pais),
+    };
+  });
+}
+
+export default async function FAQPage({
+  params,
+}: {
+  params: Promise<{ pais?: string }>;
+}) {
+  const pais = normalizarPais((await params).pais);
+  const preguntas = preguntasDe(pais);
   const faqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: FAQ_DATA.map((item) => ({
+    mainEntity: preguntas.map((item) => ({
       "@type": "Question",
       name: item.question,
       acceptedAnswer: {
@@ -116,8 +150,8 @@ export default function FAQPage() {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: "https://www.programbi.com" },
-      { "@type": "ListItem", position: 2, name: "Preguntas Frecuentes", item: "https://www.programbi.com/faq" }
+      { "@type": "ListItem", position: 1, name: "Inicio", item: `https://www.programbi.com${rutaLocal(pais, "/") === "/" ? "" : rutaLocal(pais, "/")}` },
+      { "@type": "ListItem", position: 2, name: "Preguntas Frecuentes", item: `https://www.programbi.com${rutaLocal(pais, "/faq")}` }
     ]
   };
 
@@ -132,7 +166,7 @@ export default function FAQPage() {
         dangerouslySetInnerHTML={{ __html: jsonLdString(breadcrumbJsonLd) }}
       />
 
-      <FaqClient faqItems={FAQ_DATA} />
+      <FaqClient faqItems={preguntas} />
     </>
   );
 }

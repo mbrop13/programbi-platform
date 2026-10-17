@@ -7,6 +7,8 @@ import type { CourseSchedule } from "@/lib/data/course-schedules";
 import { ogImageUrl } from "@/lib/og/url";
 import { PAGE_SEO } from "@/lib/seo/money";
 import { absoluteUrl, breadcrumbJsonLd, jsonLdString, twitterShare } from "@/lib/seo";
+import { normalizarPais } from "@/config/paises";
+import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 
 export const revalidate = 3600;
 
@@ -15,6 +17,7 @@ export const metadata: Metadata = {
   description: PAGE_SEO.cursos.description,
   alternates: {
     canonical: "/cursos",
+    languages: hreflangDe("/cursos"),
   },
   openGraph: {
     title: PAGE_SEO.cursos.title,
@@ -51,7 +54,12 @@ export const metadata: Metadata = {
   ),
 };
 
-export default async function CursosPage() {
+export default async function CursosPage({
+  params,
+}: {
+  params: Promise<{ pais?: string }>;
+}) {
+  const pais = normalizarPais((await params).pais);
   const schedules = (await getActiveSchedules()) as CourseSchedule[];
   const featuredImage =
     courses.find((c) => c.slug === "analisis-de-datos")?.imageUrl ??
@@ -64,7 +72,7 @@ export default async function CursosPage() {
     itemListElement: courses.map((course, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      url: absoluteUrl(`/cursos/${course.slug}`),
+      url: absoluteUrl(rutaLocal(pais, `/cursos/${course.slug}`)),
       name: course.title,
     })),
   };
@@ -81,8 +89,8 @@ export default async function CursosPage() {
         dangerouslySetInnerHTML={{
           __html: jsonLdString(
             breadcrumbJsonLd([
-              { name: "Inicio", path: "/" },
-              { name: "Cursos", path: "/cursos" },
+              { name: "Inicio", path: rutaLocal(pais, "/") },
+              { name: "Cursos", path: rutaLocal(pais, "/cursos") },
             ])
           ),
         }}

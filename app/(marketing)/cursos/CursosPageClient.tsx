@@ -9,6 +9,7 @@ import { trackCourseCardClick } from "@/lib/analytics/marketing";
 import { type CourseSchedule, SCHEDULE_COUNTRIES } from "@/lib/data/course-schedules";
 import { useCountry } from "@/lib/context/CountryContext";
 import { WA_URL } from "@/lib/data/site";
+import { useRutaLocal } from "@/lib/paises/cliente";
 
 export type CourseCatalogItem = {
   slug: string;
@@ -29,6 +30,7 @@ export default function CursosPageClient({
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const { country } = useCountry();
+  const hrefLocal = useRutaLocal();
   const timeZone = (SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0]).timeZone;
 
   const filteredCourses = catalog.filter((course) => {
@@ -74,7 +76,7 @@ export default function CursosPageClient({
         <div className="mx-auto max-w-[1400px] space-y-5">
           {featured && (
             <Link
-              href={`/cursos/${featured.slug}`}
+              href={hrefLocal(`/cursos/${featured.slug}`)}
               onClick={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
               className="group grid overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20 lg:grid-cols-12"
             >
@@ -120,7 +122,7 @@ export default function CursosPageClient({
             {rest.map((course) => (
               <Link
                 key={course.slug}
-                href={`/cursos/${course.slug}`}
+                href={hrefLocal(`/cursos/${course.slug}`)}
                 onClick={() => trackCourseCardClick(course.slug, "cursos_catalog")}
                 className="group overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20"
               >
@@ -173,7 +175,7 @@ export default function CursosPageClient({
                   Ver todos los cursos
                 </button>
                 <Link
-                  href="/empresas"
+                  href={hrefLocal("/empresas")}
                   className="inline-flex h-11 items-center rounded-full border border-line bg-paper px-6 text-sm font-semibold text-ink no-underline"
                 >
                   Capacitación para empresas

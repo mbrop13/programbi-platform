@@ -3,7 +3,10 @@ import Link from "next/link";
 import { Award, BookOpen, Users, Building, ShieldCheck, UserCheck } from "lucide-react";
 import MentorsSection from "@/components/marketing/MentorsSection";
 import { ogImageUrl } from "@/lib/og/url";
-import { twitterShare } from "@/lib/seo";
+import { twitterShare, absoluteUrl } from "@/lib/seo";
+import { normalizarPais } from "@/config/paises";
+import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
+import { localizarMercado } from "@/lib/paises/precios";
 
 export const metadata: Metadata = {
   title: "Sobre nosotros — Academia de análisis de datos",
@@ -11,6 +14,7 @@ export const metadata: Metadata = {
     "Conoce ProgramBI: la institución de capacitación profesional líder en Power BI, SQL, Python y Machine Learning en Chile y Latinoamérica. Fundada por Manuel Oliva.",
   alternates: {
     canonical: "/nosotros",
+    languages: hreflangDe("/nosotros"),
   },
   openGraph: {
     title: "Sobre Nosotros — Academia de Análisis de Datos | ProgramBI",
@@ -53,14 +57,19 @@ const STATS = [
   { value: "30+", label: "Clientes corporativos", icon: Building },
 ];
 
-export default function NosotrosPage() {
+export default async function NosotrosPage({
+  params,
+}: {
+  params: Promise<{ pais?: string }>;
+}) {
+  const pais = normalizarPais((await params).pais);
   const aboutJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "AboutPage",
         "@id": "https://www.programbi.com/nosotros/#webpage",
-        url: "https://www.programbi.com/nosotros",
+        url: absoluteUrl(rutaLocal(pais, "/nosotros")),
         name: "Sobre Nosotros — Academia de Análisis de Datos | ProgramBI",
         description: "Información institucional sobre la academia ProgramBI, fundadores, equipo docente y misión.",
         isPartOf: { "@id": "https://www.programbi.com/#website" },
@@ -75,7 +84,10 @@ export default function NosotrosPage() {
           "@type": "ImageObject",
           url: "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
         },
-        description: "Institución líder de formación profesional y consultoría de Business Intelligence en Chile y Latinoamérica."
+        description: localizarMercado(
+          "Institución líder de formación profesional y consultoría de Business Intelligence en Chile y Latinoamérica.",
+          pais
+        )
       }
     ]
   };
@@ -140,6 +152,9 @@ export default function NosotrosPage() {
               <p className="text-mute leading-relaxed text-base">
                 Decidimos diferenciarnos radicalmente de los cursos pregrabados tradicionales. Diseñamos una metodología interactiva basada en clases 100% online en vivo, con bases de datos que simulan problemas reales de negocios y soporte permanente fuera de clases. Hoy, contamos con estudiantes activos en más de 5 países de Latinoamérica.
               </p>
+              {pais !== "cl" ? (
+                <p className="text-sm text-mute">[PENDIENTE CONTENIDO {pais.toUpperCase()}]</p>
+              ) : null}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0">

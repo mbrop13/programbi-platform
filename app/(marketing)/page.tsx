@@ -14,13 +14,15 @@ import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import { SITE_URL, absoluteUrl, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
+import { normalizarPais } from "@/config/paises";
+import { hreflangDe } from "@/lib/paises/rutas";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: { absolute: PAGE_SEO.home.title },
   description: PAGE_SEO.home.description,
-  alternates: { canonical: absoluteUrl("/") },
+  alternates: { canonical: absoluteUrl("/"), languages: hreflangDe("/") },
   openGraph: {
     title: PAGE_SEO.home.title,
     description: PAGE_SEO.home.description,
@@ -46,12 +48,18 @@ const faqJsonLd = {
   })),
 };
 
-export default async function HomePage() {
+export default async function HomePage({
+  params,
+}: {
+  params: Promise<{ pais?: string }>;
+}) {
+  const { pais: raw } = await params;
+  const pais = normalizarPais(raw);
   const schedules = (await getActiveSchedules()) as CourseSchedule[];
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqJsonLd) }} />
-      <HeroSection />
+      <HeroSection pais={pais} />
       <LogoSlider />
       <Metrics />
       <Programs

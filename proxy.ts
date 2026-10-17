@@ -24,6 +24,14 @@ export async function proxy(request: NextRequest) {
 
   // Apex → www is the single 301 in vercel.json. Do not redirect here too.
 
+  // /cl no es una carpeta: Chile vive en la raíz. Evita una copia indexable.
+  if (pathname === "/cl" || pathname.startsWith("/cl/")) {
+    const url = request.nextUrl.clone()
+    const rest = pathname.slice(3)
+    url.pathname = rest === "" ? "/" : rest
+    return NextResponse.redirect(url, 301)
+  }
+
   // Legacy locale prefixes (/es, /en) from the old Maverlang merge — strip and redirect.
   // Language is controlled only from user settings, not the URL.
   const localeMatch = pathname.match(/^\/(es|en)(\/.*)?$/)

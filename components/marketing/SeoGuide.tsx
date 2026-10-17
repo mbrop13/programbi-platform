@@ -14,6 +14,8 @@ export default function SeoGuide({
   faqs,
   related,
   pagePath,
+  empresasHref = "/empresas",
+  nota,
 }: {
   kicker: string;
   h1: string;
@@ -23,6 +25,8 @@ export default function SeoGuide({
   faqs: GuideFaq[];
   related: GuideLink[];
   pagePath: string;
+  empresasHref?: string;
+  nota?: string;
 }) {
   return (
     <article className="bg-canvas px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
@@ -50,7 +54,7 @@ export default function SeoGuide({
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link
-            href="/empresas"
+            href={empresasHref}
             className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
           >
             Soluciones para empresas
@@ -80,7 +84,7 @@ export default function SeoGuide({
           <p className="mt-3 text-sm leading-relaxed text-mute">
             Capacitación in-company, dashboards Power BI e implementación con tus datos. Agenda o escribe por WhatsApp.
           </p>
-          <Link href="/empresas" className="mt-4 inline-flex text-sm font-semibold text-ink">
+          <Link href={empresasHref} className="mt-4 inline-flex text-sm font-semibold text-ink">
             Ir a empresas
           </Link>
         </section>
@@ -100,6 +104,8 @@ export default function SeoGuide({
             </div>
           </section>
         ) : null}
+
+        {nota ? <p className="mt-10 text-sm text-mute">{nota}</p> : null}
 
         <nav className="mt-14 border-t border-line pt-8" aria-label="Relacionados">
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-mute">Sigue leyendo</p>

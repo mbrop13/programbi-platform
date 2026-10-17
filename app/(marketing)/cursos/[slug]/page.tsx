@@ -8,10 +8,14 @@ import { ogImageUrl } from "@/lib/og/url";
 import { SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
 import { getCourseJsonLd } from "@/lib/seo/course-jsonld";
 import { COURSE_SEO } from "@/lib/seo/money";
+import { normalizarPais } from "@/config/paises";
+import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
+import { localizarMercado } from "@/lib/paises/precios";
+import { resolverCobro } from "@/lib/paises/cobro";
 
 export const revalidate = 3600;
 
-type Params = Promise<{ slug: string }>;
+type Params = Promise<{ slug: string; pais?: string }>;
 type SearchParams = Promise<{ para?: string | string[]; nivel?: string | string[] }>;
 
 function one(value: string | string[] | undefined) {
@@ -23,20 +27,23 @@ export async function generateStaticParams() {
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug, pais: rawPais } = await params;
+  const pais = normalizarPais(rawPais);
   const course = getCourseBySlug(slug);
   if (!course) return { title: "Curso no encontrado" };
 
   const seo = COURSE_SEO[slug];
-  const title = seo?.title ?? `${course.title} — Curso en vivo Chile`;
+  const titleBase = seo?.title ?? `${course.title} — Curso en vivo Chile`;
+  const title = localizarMercado(titleBase, pais);
   const dbDescription = await getMarketingDescription(slug);
-  const description = seo?.description || dbDescription || course.description;
+  const description = localizarMercado(seo?.description || dbDescription || course.description, pais);
+  const canon = absoluteUrl(rutaLocal(pais, `/cursos/${slug}`));
 
   // Tarjeta OG de marca (tipográfica, papel-monócromo) — reemplaza las
   // portadas remotas de estilo antiguo.
   const shareImage = ogImageUrl({
-    kicker: "Curso en vivo Chile",
-    title: seo?.h1 || course.title,
+    kicker: localizarMercado("Curso en vivo Chile", pais),
+    title: localizarMercado(seo?.h1 || course.title, pais),
     description,
     tags: course.techStack,
     accent: course.accentColor,
@@ -44,15 +51,16 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   });
 
   return {
-    title: seo?.title ? { absolute: seo.title } : title,
+    title: pais === "cl" ? (seo?.title ? { absolute: seo.title } : titleBase) : { absolute: title },
     description,
     alternates: {
-      canonical: absoluteUrl(`/cursos/${slug}`),
+      canonical: canon,
+      languages: hreflangDe(`/cursos/${slug}`),
     },
     openGraph: {
-      title: seo?.title ?? `${title} | ProgramBI`,
+      title,
       description,
-      url: absoluteUrl(`/cursos/${slug}`),
+      url: canon,
       type: "website",
       images: [
         {
@@ -65,7 +73,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     },
     twitter: {
       card: "summary_large_image",
-      title: seo?.title ?? `${title} | ProgramBI`,
+      title,
       description,
       images: [shareImage],
     },
@@ -79,7 +87,8 @@ export default async function CourseDetailPage({
   params: Params;
   searchParams: SearchParams;
 }) {
-  const { slug } = await params;
+  const { slug, pais: rawPais } = await params;
+  const pais = normalizarPais(rawPais);
   const query = await searchParams;
   const para = one(query.para);
   const nivel = one(query.nivel);
@@ -96,7 +105,8 @@ export default async function CourseDetailPage({
 
   const schedules = (await getActiveSchedules()) as CourseSchedule[];
 
-  const courseJsonLd = getCourseJsonLd(course);
+  const courseJsonLd = getCourseJsonLd(course, "publico", pais);
+  const cobro = resolverCobro(pais);
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -104,13 +114,13 @@ export default async function CourseDetailPage({
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-          { "@type": "ListItem", position: 2, name: "Cursos", item: absoluteUrl("/cursos") },
+          { "@type": "ListItem", position: 1, name: "Inicio", item: absoluteUrl(rutaLocal(pais, "/")) },
+          { "@type": "ListItem", position: 2, name: "Cursos", item: absoluteUrl(rutaLocal(pais, "/cursos")) },
           {
             "@type": "ListItem",
             position: 3,
-            name: seo?.h1 || course.title,
-            item: absoluteUrl(`/cursos/${slug}`),
+            name: localizarMercado(seo?.h1 || course.title, pais),
+            item: absoluteUrl(rutaLocal(pais, `/cursos/${slug}`)),
           },
         ],
       },
@@ -119,8 +129,8 @@ export default async function CourseDetailPage({
             "@type": "FAQPage",
             mainEntity: seo.faqs.map((faq) => ({
               "@type": "Question",
-              name: faq.q,
-              acceptedAnswer: { "@type": "Answer", text: faq.a },
+              name: localizarMercado(faq.q, pais),
+              acceptedAnswer: { "@type": "Answer", text: localizarMercado(faq.a, pais) },
             })),
           }
         : null,
@@ -139,6 +149,8 @@ export default async function CourseDetailPage({
         initialSchedules={schedules}
         initialView={para === "empresas" ? "empresas" : "publico"}
         initialLevelName={nivel}
+        cobroLocal={cobro.modo === "local" || cobro.modo === "usd-chile"}
+        avisoPago={cobro.marker}
       />
     </>
   );

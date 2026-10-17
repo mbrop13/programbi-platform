@@ -59,10 +59,16 @@ import {
   isCourseCroSlug,
 } from "@/components/marketing/CourseLeadSections";
 import { COURSE_SEO } from "@/lib/seo/money";
+import { etiquetaBoton } from "@/config/textos";
+import { usePaisRuta } from "@/lib/paises/cliente";
+import { rutaLocal } from "@/lib/paises/rutas";
+import { formatMoneda, localizarMercado, MARCA_DEFINIR_PRECIO, precioCurso } from "@/lib/paises/precios";
+import { ISO_CHILE } from "@/config/paises";
 
-function courseCheckoutUrl(slug: string, levelName?: string) {
+function courseCheckoutUrl(slug: string, levelName?: string, pais?: string) {
   const params = new URLSearchParams({ curso: slug });
   if (levelName) params.set("nivel", levelName);
+  if (pais && pais !== ISO_CHILE) params.set("pais", pais);
   return `/pago?${params.toString()}`;
 }
 
@@ -123,11 +129,15 @@ export default function CourseDetailClient({
   initialSchedules,
   initialView = "publico",
   initialLevelName,
+  cobroLocal = false,
+  avisoPago = null,
 }: {
   course: Course;
   initialSchedules: CourseSchedule[];
   initialView?: CourseOfferView;
   initialLevelName?: string;
+  cobroLocal?: boolean;
+  avisoPago?: string | null;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -160,6 +170,7 @@ export default function CourseDetailClient({
   const [selectedScheduleIndex, setSelectedScheduleIndex] = useState(0);
   const [isScheduleDropdownOpen, setIsScheduleDropdownOpen] = useState(false);
   const { country } = useCountry();
+  const pais = usePaisRuta();
   const relatedCourses = courses.filter((c) => c.slug !== course.slug).slice(0, 3);
   const scheduleCountry = SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0];
   const tiered = isTieredCourse(course);
@@ -167,27 +178,23 @@ export default function CourseDetailClient({
   const levels = levelsForView(course, view);
   const catalogLevelCount = course.levels?.length ?? 0;
 
+  const precioLocal = pais === ISO_CHILE ? null : precioCurso(pais, course.slug);
+  const mostrarLocal = pais !== ISO_CHILE && cobroLocal && precioLocal != null;
   const convertAndFormat = (priceCLP: number | null | undefined) => {
+    if (mostrarLocal && precioLocal != null) return formatMoneda(pais, precioLocal);
+    if (pais !== ISO_CHILE && precioLocal == null) return MARCA_DEFINIR_PRECIO;
     if (!priceCLP) return "";
-    if (country.currency.code === "CLP") {
-      return new Intl.NumberFormat("es-CL", {
-        style: "currency",
-        currency: "CLP",
-        maximumFractionDigits: 0,
-      }).format(priceCLP);
-    }
-    const converted = priceCLP * country.currency.rate;
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("es-CL", {
       style: "currency",
-      currency: country.currency.code,
+      currency: "CLP",
       maximumFractionDigits: 0,
-    }).format(converted);
+    }).format(priceCLP);
   };
 
   const handleCheckoutCTA = async () => {
     const picked = levels[selectedLevel];
     const levelName = checkoutLevelName(course, picked?.name);
-    trackCtaClick(showPrice ? "Inscribirse" : "Registrarse", "course_detail_sidebar", {
+    trackCtaClick(etiquetaBoton(pais, showPrice ? "Inscribirse" : "Registrarme"), "course_detail_sidebar", {
       course_slug: course.slug,
     });
 
@@ -214,12 +221,12 @@ export default function CourseDetailClient({
     } catch {
       /* lead is best-effort */
     }
-    window.location.href = courseCheckoutUrl(course.slug, levelName);
+    window.location.href = courseCheckoutUrl(course.slug, levelName, pais);
   };
 
   useEffect(() => {
-    trackCourseView(course.slug, course.title);
-  }, [course.slug, course.title]);
+    trackCourseView(course.slug, course.title, undefined, pais);
+  }, [course.slug, course.title, pais]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -373,10 +380,14 @@ export default function CourseDetailClient({
   const nextStart = levelSchedule ? formatSchedule(levelSchedule, scheduleCountry.timeZone) : null;
   const isCroTemplate = isCourseCroSlug(course.slug) && view === "publico";
   const seo = COURSE_SEO[course.slug];
-  const heading =
-    view === "avanzado" ? advancedHeading(seo?.h1 || course.title) : seo?.h1 || course.title;
+  const heading = localizarMercado(
+    view === "avanzado" ? advancedHeading(seo?.h1 || course.title) : seo?.h1 || course.title,
+    pais
+  );
   const introParagraphs =
-    view === "publico" ? (seo?.intro?.split("\n\n").filter(Boolean) ?? []) : [];
+    view === "publico"
+      ? (localizarMercado(seo?.intro || "", pais).split("\n\n").filter(Boolean) ?? [])
+      : [];
   const offerLead =
     view === "avanzado"
       ? levelIntro(course, "Avanzado") || course.shortDescription
@@ -393,7 +404,7 @@ export default function CourseDetailClient({
       : view === "publico"
         ? introParagraphs.slice(1)
         : [];
-  const quoteHref = empresaQuotePath(course.slug, activeLevel?.name);
+  const quoteHref = rutaLocal(pais, empresaQuotePath(course.slug, activeLevel?.name));
   const courseWa = whatsappHref({
     page: view === "empresas" ? `/cursos/${course.slug}?para=empresas` : `/cursos/${course.slug}`,
     intent: isEmpresa ? "empresas" : "curso",
@@ -436,7 +447,7 @@ export default function CourseDetailClient({
                   onClick={() => void handleCheckoutCTA()}
                   className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-7 text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
                 >
-                  {showPrice ? "Inscribirse" : "Registrarme"}
+                  {etiquetaBoton(pais, showPrice ? "Inscribirse" : "Registrarme")}
                 </button>
                 )}
                 <a
@@ -608,7 +619,7 @@ export default function CourseDetailClient({
                   <div className="h-10 w-40 rounded-lg bg-wash" />
                 ) : showPrice ? (
                   <div>
-                    {originalGrandTotal && totalDiscountPercentage > 0 && (
+                    {pais === ISO_CHILE && originalGrandTotal && totalDiscountPercentage > 0 && (
                       <p className="text-sm text-faint">
                         <span className="line-through">{convertAndFormat(originalGrandTotal)}</span>
                         <span className="ml-2 font-semibold text-ink">{totalDiscountPercentage}% off</span>
@@ -633,6 +644,17 @@ export default function CourseDetailClient({
                     </span>
                   </button>
                 )}
+                {pais !== ISO_CHILE && (avisoPago || precioLocal == null) ? (
+                  <p className="mt-3 text-xs text-mute">
+                    {[
+                      precioLocal == null ? MARCA_DEFINIR_PRECIO : null,
+                      avisoPago,
+                      !mostrarLocal ? "El pago se abre en pesos chilenos." : null,
+                    ]
+                      .filter(Boolean)
+                      .join(" ")}
+                  </p>
+                ) : null}
               </div>
 
               {isEmpresa ? (
@@ -675,7 +697,7 @@ export default function CourseDetailClient({
                     onClick={handleCheckoutCTA}
                     className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
                   >
-                    {showPrice ? "Inscribirse" : "Registrarme"}
+                    {etiquetaBoton(pais, showPrice ? "Inscribirse" : "Registrarme")}
                     <ArrowRight size={16} />
                   </button>
                   <a
@@ -728,7 +750,7 @@ export default function CourseDetailClient({
         <CourseLeadCtas
           course={course}
           onRegister={() => void handleCheckoutCTA()}
-          primaryLabel={showPrice ? "Inscribirse" : "Registrarme"}
+          primaryLabel={etiquetaBoton(pais, showPrice ? "Inscribirse" : "Registrarme")}
         />
       ) : null}
 

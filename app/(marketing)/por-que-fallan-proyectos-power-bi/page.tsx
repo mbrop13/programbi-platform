@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import SeoGuide from "@/components/marketing/SeoGuide";
 import { SITE_URL, absoluteUrl, jsonLdString, pageOg } from "@/lib/seo";
 import { GUIDE_SEO } from "@/lib/seo/money";
+import { normalizarPais } from "@/config/paises";
+import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
+import { localizarMercado } from "@/lib/paises/precios";
 
 const copy = GUIDE_SEO["por-que-fallan-proyectos-power-bi"];
 
@@ -16,7 +19,7 @@ const share = pageOg({
 export const metadata: Metadata = {
   title: { absolute: copy.title },
   description: copy.description,
-  alternates: { canonical: copy.path },
+  alternates: { canonical: copy.path, languages: hreflangDe(copy.path) },
   openGraph: {
     title: copy.title,
     description: copy.description,
@@ -38,15 +41,22 @@ const faqs = [
   },
 ];
 
-export default function Page() {
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ pais?: string }>;
+}) {
+  const pais = normalizarPais((await params).pais);
+  const L = (texto: string) => localizarMercado(texto, pais);
+  const href = (destino: string) => rutaLocal(pais, destino);
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "Article",
-        headline: copy.h1,
-        description: copy.description,
-        url: absoluteUrl(copy.path),
+        headline: L(copy.h1),
+        description: L(copy.description),
+        url: absoluteUrl(href(copy.path)),
         inLanguage: "es-CL",
         author: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
       },
@@ -61,9 +71,9 @@ export default function Page() {
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-          { "@type": "ListItem", position: 2, name: "Empresas", item: absoluteUrl("/empresas") },
-          { "@type": "ListItem", position: 3, name: copy.h1, item: absoluteUrl(copy.path) },
+          { "@type": "ListItem", position: 1, name: "Inicio", item: absoluteUrl(href("/")) },
+          { "@type": "ListItem", position: 2, name: "Empresas", item: absoluteUrl(href("/empresas")) },
+          { "@type": "ListItem", position: 3, name: L(copy.h1), item: absoluteUrl(href(copy.path)) },
         ],
       },
     ],
@@ -73,18 +83,20 @@ export default function Page() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <SeoGuide
-        kicker="Adopción Power BI · Chile"
-        h1={copy.h1}
+        kicker={L("Adopción Power BI · Chile")}
+        h1={L(copy.h1)}
         lead="El .pbix se ve bien en la demo. A las tres semanas el área volvió a Excel. Eso no es un problema de DAX: es un problema de adopción."
-        pagePath={copy.path}
+        pagePath={href(copy.path)}
+        empresasHref={href("/empresas")}
+        nota={pais === "cl" ? undefined : `[PENDIENTE CONTENIDO ${pais.toUpperCase()}]`}
         crumbs={[
-          { href: "/", label: "Inicio" },
-          { href: "/empresas", label: "Empresas" },
-          { href: copy.path, label: "Proyectos Power BI" },
+          { href: href("/"), label: "Inicio" },
+          { href: href("/empresas"), label: "Empresas" },
+          { href: href(copy.path), label: "Proyectos Power BI" },
         ]}
         sections={[
           {
-            h2: "Qué suele pasar en empresas chilenas",
+            h2: pais === "cl" ? "Qué suele pasar en empresas chilenas" : "Qué suele pasar en las empresas",
             paragraphs: [
               "Control de gestión pide un tablero. TI o una consultora arma un dashboard. Lo presentan. Aplausos. El lunes el analista héroe sigue pegando planillas porque el modelo no habla el idioma del cierre, nadie sabe refrescar el gateway y cada filtro nuevo es un ticket.",
               "Power BI no falló. Falló el traspaso: no hay dueño del modelo, no hay práctica sobre datos reales y no hay las 2–4 semanas post go-live donde se caen la mayoría de los proyectos BI.",
@@ -106,10 +118,10 @@ export default function Page() {
         ]}
         faqs={faqs}
         related={[
-          { href: "/empresas", label: "Soluciones para empresas" },
-          { href: "/curso-power-bi-vs-pack-adopcion", label: "Curso Power BI vs Pack Adopción" },
-          { href: "/migrar-excel-a-power-bi", label: "Migrar Excel a Power BI en control de gestión" },
-          { href: "/cursos/power-bi", label: "Curso Power BI en vivo (particulares)" },
+          { href: href("/empresas"), label: "Soluciones para empresas" },
+          { href: href("/curso-power-bi-vs-pack-adopcion"), label: "Curso Power BI vs Pack Adopción" },
+          { href: href("/migrar-excel-a-power-bi"), label: "Migrar Excel a Power BI en control de gestión" },
+          { href: href("/cursos/power-bi"), label: "Curso Power BI en vivo (particulares)" },
         ]}
       />
     </>

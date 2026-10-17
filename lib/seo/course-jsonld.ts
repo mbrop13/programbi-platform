@@ -11,6 +11,9 @@ import {
 } from "@/lib/data/course-views";
 import { SITE_URL, absoluteUrl } from "@/lib/seo";
 import { COURSE_SEO } from "@/lib/seo/money";
+import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
+import { rutaLocal } from "@/lib/paises/rutas";
+import { localizarMercado, precioCurso } from "@/lib/paises/precios";
 
 const OCCUPATIONAL: Record<string, string> = {
   "analisis-de-datos": "Analista de Datos, Business Intelligence Analyst, Data Analyst",
@@ -30,21 +33,30 @@ const PREREQUISITES: Record<string, string> = {
   "analitica-financiera": "Nociones básicas de contabilidad y finanzas corporativas.",
 };
 
-export function getCourseJsonLd(course: Course, view: CourseOfferView = "publico") {
+export function getCourseJsonLd(
+  course: Course,
+  view: CourseOfferView = "publico",
+  iso: string = ISO_CHILE
+) {
+  const pais = normalizarPais(iso);
   const seo = COURSE_SEO[course.slug];
-  const baseName = seo?.h1 || course.title;
+  const baseName = localizarMercado(seo?.h1 || course.title, pais);
   const name = view === "avanzado" ? advancedHeading(baseName) : baseName;
   const hours = offerHours(course, view);
-  const lowestPrice = offerLowPrice(course, view);
-  const path = coursePath(course.slug, view);
+  const catalogPrice = offerLowPrice(course, view);
+  const lowestPrice = pais === ISO_CHILE ? catalogPrice : precioCurso(pais, course.slug) ?? undefined;
+  const path = rutaLocal(pais, coursePath(course.slug, view));
+  const moneda = pais === ISO_CHILE ? "CLP" : getPais(pais).moneda;
 
   return {
     "@type": "Course",
     name,
-    description:
+    description: localizarMercado(
       view === "avanzado"
         ? levelIntro(course, "Avanzado") || seo?.description || course.description
         : seo?.description || course.description,
+      pais
+    ),
     url: absoluteUrl(path),
     provider: {
       "@type": "Organization",
@@ -60,7 +72,7 @@ export function getCourseJsonLd(course: Course, view: CourseOfferView = "publico
     },
     image: course.imageUrl,
     educationalLevel: view === "avanzado" ? "avanzado" : course.level,
-    inLanguage: "es",
+    inLanguage: pais === ISO_CHILE ? "es" : getPais(pais).idioma,
     courseMode: course.modality === "online" ? "Online" : "Blended",
     numberOfCredits: hours,
     timeRequired: `PT${hours}H`,
@@ -83,7 +95,7 @@ export function getCourseJsonLd(course: Course, view: CourseOfferView = "publico
       offers: {
         "@type": "Offer",
         price: lowestPrice,
-        priceCurrency: "CLP",
+        priceCurrency: moneda,
         availability: "https://schema.org/InStock",
         url: absoluteUrl(path),
         validFrom: new Date().toISOString(),
