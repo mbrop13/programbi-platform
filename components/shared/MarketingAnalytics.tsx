@@ -53,6 +53,9 @@ export default function MarketingAnalytics() {
     if (payment === "success") {
       trackPurchase({
         transactionId: searchParams?.get("payment_id") || searchParams?.get("collection_id") || undefined,
+        pais: searchParams?.get("pais") || undefined,
+        currency: searchParams?.get("moneda") || undefined,
+        value: searchParams?.get("valor") ? Number(searchParams.get("valor")) : undefined,
       });
     }
   }, [searchParams]);

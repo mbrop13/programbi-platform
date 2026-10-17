@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import PagoClient from "./PagoClient";
+import { estadosPublicos } from "@/lib/paises/cobro";
 
 export const metadata: Metadata = {
   title: "Inscripción | ProgramBI",
@@ -27,7 +28,7 @@ export default async function PagoPage() {
         </div>
       </section>
     }>
-      <PagoClient />
+      <PagoClient estados={estadosPublicos()} />
     </Suspense>
   );
 }

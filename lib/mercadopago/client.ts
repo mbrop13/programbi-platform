@@ -8,15 +8,16 @@ const MP_API_URL = "https://api.mercadopago.com";
 
 // ─── Helper ───
 
-async function mpFetch<T = any>(path: string, options: RequestInit = {}): Promise<T> {
-  if (!MP_ACCESS_TOKEN) {
+async function mpFetch<T = any>(path: string, options: RequestInit = {}, accessToken?: string): Promise<T> {
+  const token = accessToken || MP_ACCESS_TOKEN;
+  if (!token) {
     throw new Error("MERCADOPAGO_ACCESS_TOKEN not configured");
   }
 
   const res = await fetch(`${MP_API_URL}${path}`, {
     ...options,
     headers: {
-      "Authorization": `Bearer ${MP_ACCESS_TOKEN}`,
+      "Authorization": `Bearer ${token}`,
       "Content-Type": "application/json",
       ...options.headers,
     },
@@ -129,8 +130,8 @@ export async function createMPSubscription(data: {
 /**
  * Get subscription details by ID.
  */
-export async function getMPSubscription(subscriptionId: string): Promise<MPSubscription> {
-  return mpFetch<MPSubscription>(`/preapproval/${subscriptionId}`);
+export async function getMPSubscription(subscriptionId: string, accessToken?: string): Promise<MPSubscription> {
+  return mpFetch<MPSubscription>(`/preapproval/${subscriptionId}`, {}, accessToken);
 }
 
 /**
@@ -184,7 +185,9 @@ export async function createMPPreference(data: {
   notificationUrl?: string;
   metadata?: Record<string, any>;
   autoReturn?: "approved" | "all";
+  accessToken?: string;
 }): Promise<MPPreference> {
+  const { accessToken, ...payload } = data;
   return mpFetch<MPPreference>("/checkout/preferences", {
     method: "POST",
     body: JSON.stringify({
@@ -201,16 +204,16 @@ export async function createMPPreference(data: {
       metadata: data.metadata || {},
       back_urls: data.backUrls,
       auto_return: data.autoReturn || "approved",
-      ...(data.notificationUrl ? { notification_url: data.notificationUrl } : {}),
+      ...(payload.notificationUrl ? { notification_url: payload.notificationUrl } : {}),
     }),
-  });
+  }, accessToken);
 }
 
 /**
  * Get Payment Details (for webhook)
  */
-export async function getMPPayment(paymentId: string | number): Promise<any> {
-  return mpFetch<any>(`/v1/payments/${paymentId}`);
+export async function getMPPayment(paymentId: string | number, accessToken?: string): Promise<any> {
+  return mpFetch<any>(`/v1/payments/${paymentId}`, {}, accessToken);
 }
 
 // ─── Plan ID Mapping ───

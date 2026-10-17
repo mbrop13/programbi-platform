@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { getMPSubscription, getMPPayment, MP_PLAN_MAP } from "@/lib/mercadopago/client";
-import { verifyMercadoPagoSignature } from "@/lib/security/webhook-signature";
+import { cuentaFirmaMercadoPago } from "@/lib/security/webhook-signature";
+import { tokenPorCuenta } from "@/lib/paises/cobro";
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,10 +11,12 @@ export async function POST(req: NextRequest) {
     // CR-3 (OWASP ASVS L3): verify the MercadoPago HMAC signature before
     // trusting the payload. Without this, anyone could forge a notification
     // and activate premium plans or self-enroll in paid courses for free.
-    if (!verifyMercadoPagoSignature(req, body)) {
+    const cuenta = cuentaFirmaMercadoPago(req, body);
+    if (!cuenta) {
       console.warn("⚠️ MP Webhook rejected: invalid signature");
       return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
     }
+    const mpToken = tokenPorCuenta(cuenta);
 
     // Webhooks de Preapproval envían action="created" o "updated"
     // Webhooks de Pagos Únicos (Preferences) envían type="payment" y action="payment.created" o similar.
@@ -26,7 +29,7 @@ export async function POST(req: NextRequest) {
         const subscriptionId = dataInfo.id;
         
         // Consultar la suscripción completa
-        const subscription = await getMPSubscription(subscriptionId);
+        const subscription = await getMPSubscription(subscriptionId, mpToken);
 
         if (subscription.status === "authorized") {
           // Si MP_PLAN_MAP no está definido, esto no lanzará un error y asumirá 'pro_mensual'.
@@ -92,7 +95,7 @@ export async function POST(req: NextRequest) {
     if (body.type === "payment" || body.action?.includes("payment")) {
       const paymentId = body.data?.id;
       if (paymentId) {
-         const payment = await getMPPayment(paymentId);
+         const payment = await getMPPayment(paymentId, mpToken);
          
          if (payment.status === "approved") {
            const isCourse = payment.metadata?.type === "course_purchase";

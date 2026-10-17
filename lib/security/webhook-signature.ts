@@ -24,21 +24,11 @@ import type { NextRequest } from "next/server";
  * @returns true if the signature is valid (or if no secret is configured AND
  *          the request is local/development, to keep dev usable); false otherwise.
  */
-export function verifyMercadoPagoSignature(req: NextRequest, body: any): boolean {
-  const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
-
-  // If the secret is not configured we fail CLOSED in production and allow
-  // the request in development so local testing is not blocked. This MUST
-  // be configured before deploying to production.
-  if (!secret) {
-    return process.env.NODE_ENV !== "production";
-  }
-
+function firmaConSecreto(req: NextRequest, body: any, secret: string): boolean {
   const signatureHeader = req.headers.get("x-signature") || "";
   const requestId = req.headers.get("x-request-id") || "";
   if (!signatureHeader || !requestId) return false;
 
-  // Parse "ts=...,v1=..."
   const parts: Record<string, string> = {};
   for (const token of signatureHeader.split(",")) {
     const [k, ...rest] = token.split("=");
@@ -48,18 +38,44 @@ export function verifyMercadoPagoSignature(req: NextRequest, body: any): boolean
   const v1 = parts.v1;
   if (!ts || !v1) return false;
 
-  // data.id can come from the query (?data.id=...) or from the body.
   const url = new URL(req.url);
   const dataId = url.searchParams.get("data.id") || body?.data?.id || "";
-
   const manifest = `id:${dataId};request-id:${requestId};ts:${ts};`;
   const expected = crypto.createHmac("sha256", secret).update(manifest).digest("hex");
-
-  // Constant-time comparison to avoid timing attacks.
   const a = Buffer.from(expected);
   const b = Buffer.from(v1);
   if (a.length !== b.length) return false;
   return crypto.timingSafeEqual(a, b);
+}
+
+function secretosMercadoPago(): { cuenta: string; secret: string }[] {
+  const pares: { cuenta: string; secret: string }[] = [];
+  const chile = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+  if (chile) pares.push({ cuenta: "cl", secret: chile });
+  for (const iso of ["AR", "MX", "PE", "CO", "UY"]) {
+    const secret = process.env[`MERCADOPAGO_WEBHOOK_SECRET_${iso}`];
+    if (secret) pares.push({ cuenta: iso.toLowerCase(), secret });
+  }
+  return pares;
+}
+
+/**
+ * Cuenta cuya firma HMAC calza. null si ninguna calza.
+ * Sin secretos configurados: en desarrollo devuelve "cl"; en producción, null.
+ */
+export function cuentaFirmaMercadoPago(req: NextRequest, body: any): string | null {
+  const pares = secretosMercadoPago();
+  if (pares.length === 0) {
+    return process.env.NODE_ENV !== "production" ? "cl" : null;
+  }
+  for (const par of pares) {
+    if (firmaConSecreto(req, body, par.secret)) return par.cuenta;
+  }
+  return null;
+}
+
+export function verifyMercadoPagoSignature(req: NextRequest, body: any): boolean {
+  return cuentaFirmaMercadoPago(req, body) !== null;
 }
 
 /**

@@ -534,12 +534,18 @@ export function trackEventOnce(key: string, eventName: string, params?: Analytic
   trackEvent(eventName, params);
 }
 
-export function trackCourseView(courseSlug: string, courseTitle?: string, value?: number): void {
-  trackEventOnce(`view_curso:${courseSlug}`, GA_LEAD_EVENTS.VIEW_CURSO, {
+export function trackCourseView(
+  courseSlug: string,
+  courseTitle?: string,
+  value?: number,
+  pais?: string
+): void {
+  trackEventOnce(`view_curso:${pais || "cl"}:${courseSlug}`, GA_LEAD_EVENTS.VIEW_CURSO, {
     curso_slug: courseSlug,
     course_title: courseTitle,
     value: value ?? undefined,
     currency: value != null ? "CLP" : undefined,
+    pais: pais || "cl",
   });
 }
 
@@ -548,17 +554,20 @@ export function trackCheckoutStart(opts: {
   value?: number;
   currency?: string;
   location?: string;
+  pais?: string;
 }): void {
   trackEvent("checkout_start", {
     course_slugs: opts.courseSlugs.join(","),
     value: opts.value,
     currency: opts.currency || "CLP",
     location: opts.location || "pago",
+    pais: opts.pais || "cl",
   });
   trackEvent("begin_checkout", {
     currency: opts.currency || "CLP",
     value: opts.value ?? 0,
     course_slugs: opts.courseSlugs.join(","),
+    pais: opts.pais || "cl",
   });
 }
 
@@ -567,6 +576,7 @@ export function trackPurchase(opts?: {
   value?: number;
   currency?: string;
   courseSlugs?: string[];
+  pais?: string;
 }): void {
   if (!isBrowser()) return;
   try {
@@ -583,6 +593,7 @@ export function trackPurchase(opts?: {
     value: opts?.value,
     currency: opts?.currency || "CLP",
     course_slugs: opts?.courseSlugs?.join(","),
+    pais: opts?.pais || "cl",
   });
 }
 

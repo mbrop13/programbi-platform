@@ -171,6 +171,29 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // País: Chile mantiene el cálculo CLP de arriba. Otras monedas usan el precio fijo
+    // de config/paises.ts. Si falta credencial o precio, se cobra con la cuenta de Chile.
+    const pais = typeof body.pais === "string" ? body.pais : "cl";
+    const { resolverCobro } = await import("@/lib/paises/cobro");
+    const { totalLocal } = await import("@/lib/paises/precios");
+    const cobro = resolverCobro(pais);
+    let chargeAmount = grandTotalClp;
+    let chargeCurrency = "CLP";
+    let chargeToken: string | undefined;
+    let chargeCuenta = "cl";
+    if (cobro.modo === "local" || cobro.modo === "usd-chile") {
+      const local = totalLocal(
+        pais,
+        validatedItems.map((item) => ({ slug: item.slug, quantity: item.quantity }))
+      );
+      if (local != null && cobro.token) {
+        chargeAmount = local;
+        chargeCurrency = cobro.moneda;
+        chargeToken = cobro.token;
+        chargeCuenta = cobro.cuenta;
+      }
+    }
+
     // ── Create MercadoPago Checkout Pro preference ──
     const { createMPPreference } = await import("@/lib/mercadopago/client");
     const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
@@ -185,11 +208,13 @@ export async function POST(req: NextRequest) {
     const mpItems = [{
       title: subjectStr,
       quantity: 1,
-      unitPrice: grandTotalClp,
+      unitPrice: chargeAmount,
+      currencyId: chargeCurrency,
     }];
 
     const preference = await createMPPreference({
       items: mpItems,
+      accessToken: chargeToken,
       payerEmail: email,
       externalReference: commerceOrder,
       backUrls: {
@@ -202,6 +227,8 @@ export async function POST(req: NextRequest) {
         type: "course_purchase",
         user_id: user.id,
         commerce_order: commerceOrder,
+        pais,
+        mp_account: chargeCuenta,
       },
       autoReturn: "approved",
     });
@@ -216,7 +243,10 @@ export async function POST(req: NextRequest) {
     const tempMetadata = JSON.stringify({
       items: validatedItems,
       slots: body.scheduling_slots || [],
-      couponCode: couponCode || null
+      couponCode: couponCode || null,
+      pais,
+      mpAccount: chargeCuenta,
+      currency: chargeCurrency,
     });
 
     const pricingVariant = await getPricingVariantForUser(adminDb, user.id);
@@ -225,8 +255,8 @@ export async function POST(req: NextRequest) {
       course_id: firstCourseId?.id || null,
       flow_order: commerceOrder, // Reusing column for commerce order ID
       flow_token: preference.id, // Reusing column for MP preference ID
-      amount: grandTotalClp,
-      currency: "CLP",
+      amount: chargeAmount,
+      currency: chargeCurrency,
       status: "pending",
       payment_method: tempMetadata,
     };

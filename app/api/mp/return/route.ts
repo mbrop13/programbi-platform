@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { getMPPayment } from "@/lib/mercadopago/client";
+import { tokenPorCuenta } from "@/lib/paises/cobro";
 import { sendPaymentConfirmation, sendNewPurchaseNotificationToAdmin } from "@/lib/email/mailersend";
 
 /**
@@ -17,6 +18,37 @@ import { sendPaymentConfirmation, sendNewPurchaseNotificationToAdmin } from "@/l
  * is not `approved`, we redirect with a neutral label and let the verified
  * webhook (which checks HMAC) do the final mutation.
  */
+function leerMetaPago(raw: unknown): { pais: string; mpAccount: string; currency: string } {
+  try {
+    const data = typeof raw === "string" ? JSON.parse(raw) : raw;
+    if (data && typeof data === "object") {
+      const meta = data as { pais?: unknown; mpAccount?: unknown; currency?: unknown };
+      return {
+        pais: typeof meta.pais === "string" ? meta.pais : "cl",
+        mpAccount: typeof meta.mpAccount === "string" ? meta.mpAccount : "cl",
+        currency: typeof meta.currency === "string" ? meta.currency : "CLP",
+      };
+    }
+  } catch {
+    /* el registro viejo no trae país */
+  }
+  return { pais: "cl", mpAccount: "cl", currency: "CLP" };
+}
+
+function redirectConPais(
+  req: NextRequest,
+  estado: string,
+  meta: { pais: string; currency: string },
+  amount: number | null
+) {
+  const url = new URL("/comunidad/inicio", req.url);
+  url.searchParams.set("payment", estado);
+  url.searchParams.set("pais", meta.pais || "cl");
+  url.searchParams.set("moneda", meta.currency || "CLP");
+  if (amount != null) url.searchParams.set("valor", String(amount));
+  return NextResponse.redirect(url);
+}
+
 export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const externalReference = url.searchParams.get("external_reference"); // Our commerceOrder
@@ -43,8 +75,12 @@ export async function GET(req: NextRequest) {
     }
 
     // Already processed by the verified webhook? Just redirect to success.
+    const metaPago = leerMetaPago(payment.payment_method);
+    const destino = (estado: string) =>
+      redirectConPais(req, estado, metaPago, payment.amount);
+
     if (payment.status === "paid") {
-      return NextResponse.redirect(new URL("/comunidad/inicio?payment=success", req.url));
+      return destino("success");
     }
 
     // Re-query MercadoPago to get the AUTHORITATIVE payment status. We do not
@@ -52,16 +88,16 @@ export async function GET(req: NextRequest) {
     let mpPayment: any = null;
     if (collectionId) {
       try {
-        mpPayment = await getMPPayment(collectionId);
+        mpPayment = await getMPPayment(collectionId, tokenPorCuenta(metaPago.mpAccount));
       } catch (err) {
         console.error("MP Return: Error fetching MP payment details:", err);
         // Cannot verify — redirect to a neutral "processing" page. The verified
         // webhook will finalize the payment when MP calls it.
-        return NextResponse.redirect(new URL("/comunidad/inicio?payment=pending", req.url));
+        return destino("pending");
       }
     } else {
       // Without the payment id we cannot verify — defer to the webhook.
-      return NextResponse.redirect(new URL("/comunidad/inicio?payment=pending", req.url));
+      return destino("pending");
     }
 
     // Only mutate state if MP's API confirms approval.
@@ -71,7 +107,7 @@ export async function GET(req: NextRequest) {
         mpPayment?.status === "rejected" ? "rejected"
         : mpPayment?.status === "cancelled" ? "cancelled"
         : "pending";
-      return NextResponse.redirect(new URL(`/comunidad/inicio?payment=${label}`, req.url));
+      return destino(label);
     }
 
     // Mark as paid (idempotent — webhook may have already done this)
@@ -213,7 +249,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.redirect(new URL("/comunidad/inicio?payment=success", req.url));
+    return destino("success");
 
   } catch (error: any) {
     console.error("❌ MP return error:", error.message);
