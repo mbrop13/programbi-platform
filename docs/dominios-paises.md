@@ -8,7 +8,7 @@ Brasil no está: el sitio es en español.
 
 ## Precios
 
-`config/paises.ts`. `null` se muestra como `[DEFINIR PRECIO]`.
+`config/paises.ts`. `precios` es lo que se cobra. `listas` es el precio tachado. En Chile el original es 249.000 para un curso y 747.000 para Análisis de datos, y el panel deja el cobro en 169.000 y 338.000. En el resto, el tachado guarda esa misma relación: cerca de 32% off en un curso y 55% off en Análisis de datos. El cobro de Análisis de datos sigue siendo el doble de un curso. Analítica minería y analítica financiera usan el precio de un curso normal.
 
 Argentina se actualiza solo en `PRECIOS_ARS`. No hay conversión automática desde el peso chileno. Chile sigue cobrando el catálogo de `lib/data/courses.ts` más los overrides y las promos de Supabase.
 
@@ -21,9 +21,7 @@ Sin claves en el código. Variables:
 
 Si la variable del país no existe, el checkout usa la cuenta de Chile en CLP y la página muestra `[CONFIGURAR MP XX]`.
 
-Mercado Pago no opera en Ecuador, Panamá, El Salvador ni Venezuela. Esos países muestran `[REVISAR PAGO XX]`. Si el precio en USD está definido, la preferencia sale en USD por la cuenta de Chile. Si no, el cobro cae a CLP.
-
-Bolivia, Paraguay, Costa Rica, Guatemala, Honduras, Nicaragua y República Dominicana tampoco tienen Mercado Pago. Muestran `[REVISAR PAGO XX]` y cobran por la cuenta de Chile en CLP.
+Mercado Pago no opera en Ecuador, Panamá, Costa Rica, El Salvador, Guatemala, Paraguay, Bolivia, Honduras, Venezuela, Nicaragua ni República Dominicana. Esos países cobran en USD por la cuenta de Chile y muestran `[REVISAR PAGO XX]`. Si la cuenta de Chile rechaza el dólar, el cobro no se completa: no se reemplaza por el precio chileno.
 
 El teléfono y la ciudad local que falten están como `[PENDIENTE CONTENIDO XX]`. No inventes alumnos, cifras ni casos.
 

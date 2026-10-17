@@ -12,6 +12,7 @@ import {
 import { SITE_URL, absoluteUrl } from "@/lib/seo";
 import { COURSE_SEO } from "@/lib/seo/money";
 import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
+import { resolverCobro } from "@/lib/paises/cobro";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado, precioCurso } from "@/lib/paises/precios";
 
@@ -44,9 +45,12 @@ export function getCourseJsonLd(
   const name = view === "avanzado" ? advancedHeading(baseName) : baseName;
   const hours = offerHours(course, view);
   const catalogPrice = offerLowPrice(course, view);
-  const lowestPrice = pais === ISO_CHILE ? catalogPrice : precioCurso(pais, course.slug) ?? undefined;
+  const modo = pais === ISO_CHILE ? "catalogo" : resolverCobro(pais).modo;
+  const cobraLocal = modo === "local" || modo === "usd-chile";
+  const localPrice = precioCurso(pais, course.slug);
+  const lowestPrice = pais === ISO_CHILE ? catalogPrice : cobraLocal ? localPrice ?? undefined : undefined;
   const path = rutaLocal(pais, coursePath(course.slug, view));
-  const moneda = pais === ISO_CHILE ? "CLP" : getPais(pais).moneda;
+  const moneda = pais === ISO_CHILE || !cobraLocal ? "CLP" : getPais(pais).moneda;
 
   return {
     "@type": "Course",

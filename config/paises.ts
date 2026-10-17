@@ -29,11 +29,47 @@ function preciosVacios(): PreciosCurso {
 }
 
 /**
- * Pesos argentinos (ARS). Actualiza este bloque cuando haya inflación.
- * null = [DEFINIR PRECIO]
+ * Monto que se cobra, ya con el descuento habitual.
+ * `normal` es un curso. Análisis de datos es el doble.
  */
+function precios(normal: number, analisis: number): PreciosCurso {
+  const tabla = preciosVacios();
+  for (const slug of SLUGS_CURSO) {
+    tabla[slug] = slug === "analisis-de-datos" ? analisis : normal;
+  }
+  return tabla;
+}
+
+/**
+ * Precio tachado. En Chile un curso vale 249.000 y Análisis de datos 747.000 (el triple).
+ * `normal` es ese original local. Análisis de datos queda en normal × 3.
+ */
+function listas(normal: number): PreciosCurso {
+  const tabla = preciosVacios();
+  for (const slug of SLUGS_CURSO) {
+    tabla[slug] = slug === "analisis-de-datos" ? normal * 3 : normal;
+  }
+  return tabla;
+}
+
+/**
+ * Pesos argentinos (ARS). PRECIOS_ARS es el cobro. PRECIOS_LISTA_ARS es el tachado.
+ * Actualiza los dos cuando haya inflación.
+ */
+export const PRECIOS_LISTA_ARS: PreciosCurso = listas(236000);
 export const PRECIOS_ARS: PreciosCurso = {
-  ...preciosVacios(),
+  "analisis-de-datos": 319900,
+  copilot: 159900,
+  claude: 159900,
+  "power-automate": 159900,
+  "analitica-mineria": 159900,
+  "ia-productividad": 159900,
+  "power-bi": 159900,
+  python: 159900,
+  "sql-server": 159900,
+  excel: 159900,
+  "analitica-financiera": 159900,
+  "machine-learning": 159900,
 };
 
 export type PagoPais = "catalogo" | "mp" | "usd-chile" | "clp-chile";
@@ -55,7 +91,10 @@ export type Pais = {
    * clp-chile: Mercado Pago no opera; checkout de Chile en CLP.
    */
   pago: PagoPais;
+  /** Lo que se cobra. Chile usa el catálogo y la promo del admin. */
   precios: PreciosCurso | "catalogo";
+  /** Precio tachado. Chile lo arma el catálogo (249.000 y 747.000). */
+  listas: PreciosCurso | "catalogo";
   dispositivo: "computador" | "computadora";
   /** Voseo solo en titulares y botones. */
   voseo: boolean;
@@ -88,6 +127,7 @@ export const PAISES: Pais[] = [
     decimales: 0,
     pago: "catalogo",
     precios: "catalogo",
+    listas: "catalogo",
     dispositivo: "computador",
     voseo: false,
     contacto: { email: EMAIL, whatsapp: WHATSAPP_CL, ciudad: "Santiago, Chile" },
@@ -102,6 +142,7 @@ export const PAISES: Pais[] = [
     decimales: 0,
     pago: "mp",
     precios: PRECIOS_ARS,
+    listas: PRECIOS_LISTA_ARS,
     dispositivo: "computadora",
     voseo: true,
     contacto: contactoPendiente("ar"),
@@ -110,12 +151,13 @@ export const PAISES: Pais[] = [
     iso: "bo",
     nombre: "Bolivia",
     idioma: "es-BO",
-    moneda: "BOB",
-    simbolo: "Bs",
+    moneda: "USD",
+    simbolo: "$",
     locale: "es-BO",
     decimales: 2,
-    pago: "clp-chile",
-    precios: preciosVacios(),
+    pago: "usd-chile",
+    precios: precios(79, 159),
+    listas: listas(117),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("bo"),
@@ -129,7 +171,8 @@ export const PAISES: Pais[] = [
     locale: "es-CO",
     decimales: 0,
     pago: "mp",
-    precios: preciosVacios(),
+    precios: precios(299900, 599900),
+    listas: listas(440000),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("co"),
@@ -138,12 +181,14 @@ export const PAISES: Pais[] = [
     iso: "cr",
     nombre: "Costa Rica",
     idioma: "es-CR",
-    moneda: "CRC",
-    simbolo: "₡",
+    moneda: "USD",
+    simbolo: "$",
     locale: "es-CR",
-    decimales: 0,
-    pago: "clp-chile",
-    precios: preciosVacios(),
+    decimales: 2,
+    pago: "usd-chile",
+    // 87% del básico chileno: USD 149. Análisis 299, el doble al corte de 99→199.
+    precios: precios(149, 299),
+    listas: listas(220),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("cr"),
@@ -157,7 +202,8 @@ export const PAISES: Pais[] = [
     locale: "es-EC",
     decimales: 2,
     pago: "usd-chile",
-    precios: preciosVacios(),
+    precios: precios(99, 199),
+    listas: listas(146),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("ec"),
@@ -171,7 +217,8 @@ export const PAISES: Pais[] = [
     locale: "es-SV",
     decimales: 2,
     pago: "usd-chile",
-    precios: preciosVacios(),
+    precios: precios(89, 179),
+    listas: listas(131),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("sv"),
@@ -180,12 +227,13 @@ export const PAISES: Pais[] = [
     iso: "gt",
     nombre: "Guatemala",
     idioma: "es-GT",
-    moneda: "GTQ",
-    simbolo: "Q",
+    moneda: "USD",
+    simbolo: "$",
     locale: "es-GT",
     decimales: 2,
-    pago: "clp-chile",
-    precios: preciosVacios(),
+    pago: "usd-chile",
+    precios: precios(89, 179),
+    listas: listas(131),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("gt"),
@@ -194,12 +242,13 @@ export const PAISES: Pais[] = [
     iso: "hn",
     nombre: "Honduras",
     idioma: "es-HN",
-    moneda: "HNL",
-    simbolo: "L",
+    moneda: "USD",
+    simbolo: "$",
     locale: "es-HN",
     decimales: 2,
-    pago: "clp-chile",
-    precios: preciosVacios(),
+    pago: "usd-chile",
+    precios: precios(79, 159),
+    listas: listas(117),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("hn"),
@@ -213,7 +262,8 @@ export const PAISES: Pais[] = [
     locale: "es-MX",
     decimales: 0,
     pago: "mp",
-    precios: preciosVacios(),
+    precios: precios(2190, 4390),
+    listas: listas(3220),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("mx"),
@@ -222,12 +272,13 @@ export const PAISES: Pais[] = [
     iso: "ni",
     nombre: "Nicaragua",
     idioma: "es-NI",
-    moneda: "NIO",
-    simbolo: "C$",
+    moneda: "USD",
+    simbolo: "$",
     locale: "es-NI",
     decimales: 2,
-    pago: "clp-chile",
-    precios: preciosVacios(),
+    pago: "usd-chile",
+    precios: precios(69, 139),
+    listas: listas(102),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("ni"),
@@ -241,7 +292,9 @@ export const PAISES: Pais[] = [
     locale: "es-PA",
     decimales: 2,
     pago: "usd-chile",
-    precios: preciosVacios(),
+    // Mismo precio que Costa Rica: USD 149 y análisis 299.
+    precios: precios(149, 299),
+    listas: listas(220),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("pa"),
@@ -250,12 +303,13 @@ export const PAISES: Pais[] = [
     iso: "py",
     nombre: "Paraguay",
     idioma: "es-PY",
-    moneda: "PYG",
-    simbolo: "₲",
+    moneda: "USD",
+    simbolo: "$",
     locale: "es-PY",
-    decimales: 0,
-    pago: "clp-chile",
-    precios: preciosVacios(),
+    decimales: 2,
+    pago: "usd-chile",
+    precios: precios(89, 179),
+    listas: listas(131),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("py"),
@@ -269,7 +323,8 @@ export const PAISES: Pais[] = [
     locale: "es-PE",
     decimales: 2,
     pago: "mp",
-    precios: preciosVacios(),
+    precios: precios(349, 699),
+    listas: listas(514),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("pe"),
@@ -278,12 +333,13 @@ export const PAISES: Pais[] = [
     iso: "do",
     nombre: "República Dominicana",
     idioma: "es-DO",
-    moneda: "DOP",
-    simbolo: "RD$",
+    moneda: "USD",
+    simbolo: "$",
     locale: "es-DO",
-    decimales: 0,
-    pago: "clp-chile",
-    precios: preciosVacios(),
+    decimales: 2,
+    pago: "usd-chile",
+    precios: precios(109, 219),
+    listas: listas(161),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("do"),
@@ -297,7 +353,8 @@ export const PAISES: Pais[] = [
     locale: "es-UY",
     decimales: 0,
     pago: "mp",
-    precios: preciosVacios(),
+    precios: precios(5990, 11990),
+    listas: listas(8790),
     dispositivo: "computadora",
     voseo: true,
     contacto: contactoPendiente("uy"),
@@ -311,7 +368,8 @@ export const PAISES: Pais[] = [
     locale: "es-VE",
     decimales: 2,
     pago: "usd-chile",
-    precios: preciosVacios(),
+    precios: precios(69, 139),
+    listas: listas(102),
     dispositivo: "computadora",
     voseo: false,
     contacto: contactoPendiente("ve"),

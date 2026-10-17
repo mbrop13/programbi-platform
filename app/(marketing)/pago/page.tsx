@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import PagoClient from "./PagoClient";
 import { estadosPublicos } from "@/lib/paises/cobro";
+import { getCheckoutCatalog } from "@/lib/pago/catalogo";
 
 export const metadata: Metadata = {
   title: "Inscripción | ProgramBI",
@@ -11,13 +12,25 @@ export const metadata: Metadata = {
   alternates: { canonical: "/pago" },
 };
 
-export default async function PagoPage() {
+function uno(value: string | string[] | undefined) {
+  return typeof value === "string" ? value : "";
+}
+
+export default async function PagoPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ curso?: string | string[]; nivel?: string | string[]; servicio?: string | string[] }>;
+}) {
+  const query = await searchParams;
   const supabase = await createClient();
+  const catalogPromise = getCheckoutCatalog();
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user) {
     redirect("/");
   }
+
+  const catalog = await catalogPromise;
 
   return (
     <Suspense fallback={
@@ -28,7 +41,14 @@ export default async function PagoPage() {
         </div>
       </section>
     }>
-      <PagoClient estados={estadosPublicos()} />
+      <PagoClient
+        estados={estadosPublicos()}
+        catalog={catalog}
+        curso={uno(query.curso)}
+        nivel={uno(query.nivel)}
+        servicio={uno(query.servicio)}
+        userEmail={user.email ?? ""}
+      />
     </Suspense>
   );
 }

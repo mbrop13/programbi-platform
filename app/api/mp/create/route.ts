@@ -287,7 +287,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    console.log("💰 MP Payment created:", commerceOrder, "Items:", validatedItems.length, "user:", user.id, "Total:", grandTotalClp);
+    console.log("💰 MP Payment created:", commerceOrder, "Items:", validatedItems.length, "user:", user.id, "Total:", chargeAmount, chargeCurrency);
 
     return NextResponse.json({
       url: preference.init_point,

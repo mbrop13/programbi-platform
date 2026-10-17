@@ -10,6 +10,21 @@ export function precioCurso(iso: string | null | undefined, slug: string): numbe
   return typeof valor === "number" && valor > 0 ? valor : null;
 }
 
+/** Precio tachado. Null en Chile: ahí lo pone el catálogo y la promo. */
+export function precioLista(iso: string | null | undefined, slug: string): number | null {
+  const pais = getPais(normalizarPais(iso));
+  if (pais.listas === "catalogo") return null;
+  const lista = pais.listas[slug as SlugCurso];
+  const cobro = precioCurso(iso, slug);
+  if (typeof lista !== "number" || lista <= 0 || cobro == null || lista <= cobro) return null;
+  return lista;
+}
+
+export function porcentajeDescuento(lista: number, cobro: number): number {
+  if (lista <= cobro) return 0;
+  return Math.round(((lista - cobro) / lista) * 100);
+}
+
 export function formatMoneda(iso: string | null | undefined, monto: number): string {
   const pais = getPais(normalizarPais(iso));
   return new Intl.NumberFormat(pais.locale, {

@@ -31,8 +31,10 @@ import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { useCountry } from "@/lib/context/CountryContext";
 import { validateCouponAction } from "@/lib/supabase/comunidad-ai";
 import { trackCheckoutStart, trackLeadSubmit } from "@/lib/analytics/marketing";
+import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import { normalizarPais } from "@/config/paises";
-import { formatMoneda, MARCA_DEFINIR_PRECIO, precioCurso, totalLocal } from "@/lib/paises/precios";
+import { formatMoneda, MARCA_DEFINIR_PRECIO, porcentajeDescuento, precioCurso, precioLista, totalLocal } from "@/lib/paises/precios";
+import type { CheckoutCatalog, CheckoutPriceOverride, CheckoutPromotion } from "@/lib/pago/catalogo";
 
 type Mode = "individual" | "enterprise";
 
@@ -54,19 +56,109 @@ function cartShowsLevelName(item: CartItem) {
   return (allCourses.find((c) => c.slug === item.slug)?.levels?.length ?? 0) > 1;
 }
 
+const BUNDLE_SLUGS = ["analisis-de-datos", "analitica-mineria", "analitica-financiera"];
+
+function discountedPrice(
+  slug: string,
+  basePrice: number | undefined,
+  levelName: string | undefined,
+  priceOverrides: CheckoutPriceOverride[],
+  promotions: CheckoutPromotion[]
+) {
+  if (!basePrice) return { finalPrice: 0, originalPrice: 0, hasDiscount: false };
+  const override = levelName
+    ? priceOverrides.find((o) => o.item_type === "course" && o.item_id === slug && o.level_name === levelName)
+    : undefined;
+  const effectiveBase = override?.price ?? basePrice;
+  const applicablePromo = promotions.find(
+    (p) =>
+      p.target_type === "all" ||
+      p.target_type === "courses" ||
+      (p.target_type === "specific_course" && p.target_id === slug)
+  );
+
+  if (applicablePromo) {
+    if (applicablePromo.promo_price) {
+      return { finalPrice: applicablePromo.promo_price, originalPrice: effectiveBase, hasDiscount: true };
+    }
+    const ratio = (100 - (applicablePromo.discount_percentage ?? 0)) / 100;
+    return {
+      finalPrice: Math.round(effectiveBase * ratio),
+      originalPrice: effectiveBase,
+      hasDiscount: true,
+    };
+  }
+  return { finalPrice: effectiveBase, originalPrice: effectiveBase, hasDiscount: false };
+}
+
+function selectionFromQuery(
+  slug: string,
+  level: string,
+  servicio: string,
+  promotions: CheckoutPromotion[],
+  priceOverrides: CheckoutPriceOverride[]
+): { levels: Record<string, string>; cart: Record<string, CartItem> } {
+  const levels: Record<string, string> = {};
+  allCourses.forEach((c) => {
+    levels[c.slug] = c.slug === slug ? resolveCheckoutLevel(c, level) : c.levels?.[0]?.name || "Básico";
+  });
+
+  const cart: Record<string, CartItem> = {};
+  if (slug) {
+    const course = allCourses.find((c) => c.slug === slug);
+    const levelName = resolveCheckoutLevel(course, level);
+    const picked = course?.levels?.find((l) => l.name === levelName);
+    if (course && picked?.price) {
+      const pricing = discountedPrice(course.slug, picked.price, levelName, priceOverrides, promotions);
+      const isBundle = BUNDLE_SLUGS.includes(course.slug);
+      cart[`${course.slug}-${levelName}`] = {
+        slug: course.slug,
+        title: course.title,
+        levelName: picked.name,
+        price: pricing.finalPrice,
+        quantity: 1,
+        originalPrice: isBundle ? 747000 : pricing.originalPrice,
+        hasDiscount: isBundle ? true : pricing.hasDiscount,
+      };
+    }
+  } else if (servicio === "asesoria") {
+    cart["asesoria-Hora"] = {
+      slug: "asesoria",
+      title: "Mentoría y Asesoría 1 a 1",
+      levelName: "Hora",
+      price: 60000,
+      quantity: 1,
+      originalPrice: 60000,
+      hasDiscount: false,
+    };
+  }
+
+  return { levels, cart };
+}
+
 export default function PagoClient({
   estados = {},
+  catalog,
+  curso = "",
+  nivel = "",
+  servicio = "",
+  userEmail = "",
 }: {
   estados?: Record<string, { marker: string | null; moneda: string; modo: string }>;
+  catalog: CheckoutCatalog;
+  curso?: string;
+  nivel?: string;
+  servicio?: string;
+  userEmail?: string;
 }) {
   const searchParams = useSearchParams();
   const paisPago = normalizarPais(searchParams.get("pais"));
   const estadoPago = estados[paisPago];
-  const initialSlug = searchParams.get("curso") || "";
-  const initialLevel = searchParams.get("nivel") || "";
+  const initialSlug = curso || searchParams.get("curso") || "";
+  const initialLevel = nivel || searchParams.get("nivel") || "";
   const initialName = searchParams.get("nombre") || "";
   const initialEmail = searchParams.get("email") || "";
-  const initialServicio = searchParams.get("servicio") || "";
+  const initialServicio = servicio || searchParams.get("servicio") || "";
 
   const { country, countries, setCountryByIso, convertPrice, convertTime } = useCountry();
   const scheduleCountry = useMemo(() => SCHEDULE_COUNTRIES.find(c => c.code === paisPago) || SCHEDULE_COUNTRIES[0], [paisPago]);
@@ -78,23 +170,28 @@ export default function PagoClient({
     if (searchParams.get("modo") === "empresa") setMode("enterprise");
   }, [searchParams]);
   const [catalogFilter, setCatalogFilter] = useState<CatalogFilter>("todos");
-  const [schedules, setSchedules] = useState<CourseSchedule[]>([]);
-  const [promotions, setPromotions] = useState<any[]>([]);
-  const [priceOverrides, setPriceOverrides] = useState<any[]>([]);
-  const [courseDescriptions, setCourseDescriptions] = useState<any[]>([]);
-  const [loadingData, setLoadingData] = useState(true);
+  const [schedules, setSchedules] = useState<CourseSchedule[]>(catalog.schedules);
+  const [promotions, setPromotions] = useState(catalog.promotions);
+  const [priceOverrides, setPriceOverrides] = useState(catalog.priceOverrides);
+  const [courseDescriptions, setCourseDescriptions] = useState(catalog.descriptions);
 
   // Country state for dropdown
 
 
-  // Cart state
-  const [cart, setCart] = useState<Record<string, CartItem>>({});
+  const [checkoutSeed] = useState(() =>
+    selectionFromQuery(initialSlug, initialLevel, initialServicio, catalog.promotions, catalog.priceOverrides)
+  );
+  // Cart state — el curso de la URL ya entra en el primer render, sin esperar APIs.
+  const [cart, setCart] = useState<Record<string, CartItem>>(checkoutSeed.cart);
   const [isMobileCartOpen, setIsMobileCartOpen] = useState(false);
   // Enterprise toggles
-  const [enterpriseToggles, setEnterpriseToggles] = useState<Set<string>>(new Set());
+  const [enterpriseToggles, setEnterpriseToggles] = useState<Set<string>>(() => {
+    const key = initialSlug ? Object.keys(checkoutSeed.cart)[0] : undefined;
+    return key ? new Set([key]) : new Set();
+  });
   
   // Selected levels per course slug
-  const [selectedLevels, setSelectedLevels] = useState<Record<string, string>>({});
+  const [selectedLevels, setSelectedLevels] = useState<Record<string, string>>(checkoutSeed.levels);
 
   // Selected start dates per course level combination
   const [selectedDates, setSelectedDates] = useState<Record<string, string>>({});
@@ -189,6 +286,13 @@ export default function PagoClient({
     if (local == null) return MARCA_DEFINIR_PRECIO;
     return formatMoneda(paisPago, local);
   };
+  const tachadoLocal = (slug: string | undefined, qty = 1) => {
+    if (!slug || slug === "asesoria" || paisPago === "cl" || !puedeMonedaLocal) return null;
+    const lista = precioLista(paisPago, slug);
+    const cobro = precioCurso(paisPago, slug);
+    if (lista == null || cobro == null) return null;
+    return { texto: formatMoneda(paisPago, lista * qty), pct: porcentajeDescuento(lista, cobro) };
+  };
 
   const getCourseDescription = (course: Course) => {
     const descObj = courseDescriptions.find(d => d.slug === course.slug);
@@ -196,91 +300,64 @@ export default function PagoClient({
   };
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/schedules").then(r => r.json()),
-      fetch("/api/promotions").then(r => r.json()),
-      fetch("/api/prices").then(r => r.json()),
-      fetch("/api/courses/descriptions").then(r => r.json())
-    ]).then(([schData, promoData, pricesData, descData]) => {
-      if (Array.isArray(schData)) setSchedules(schData);
-      if (Array.isArray(promoData)) setPromotions(promoData);
-      if (Array.isArray(pricesData)) setPriceOverrides(pricesData);
-      if (Array.isArray(descData)) setCourseDescriptions(descData);
-    })
-    .catch(console.error)
-    .finally(() => setLoadingData(false));
-  }, []);
+    setSchedules(catalog.schedules);
+    setPromotions(catalog.promotions);
+    setPriceOverrides(catalog.priceOverrides);
+    setCourseDescriptions(catalog.descriptions);
+  }, [catalog]);
 
-  const getEffectiveBasePrice = (slug: string, levelName: string, codePrice: number) => {
-    const override = priceOverrides.find((o: any) => o.item_type === 'course' && o.item_id === slug && o.level_name === levelName);
-    return override ? override.price : codePrice;
-  };
-
-  const getDiscountedPrice = (slug: string, basePrice: number | undefined, levelName?: string) => {
-    if (!basePrice) return { finalPrice: 0, originalPrice: 0, hasDiscount: false };
-    const effectiveBase = levelName ? getEffectiveBasePrice(slug, levelName, basePrice) : basePrice;
-    const applicablePromo = promotions.find(p => p.target_type === 'all' || p.target_type === 'courses' || (p.target_type === 'specific_course' && p.target_id === slug));
-    
-    if (applicablePromo) {
-       if (applicablePromo.promo_price) {
-         return { finalPrice: applicablePromo.promo_price, originalPrice: effectiveBase, hasDiscount: true };
-       }
-       const ratio = (100 - applicablePromo.discount_percentage) / 100;
-       const finalPrice = Math.round(effectiveBase * ratio);
-       return { finalPrice, originalPrice: effectiveBase, hasDiscount: true };
-    }
-    return { finalPrice: effectiveBase, originalPrice: effectiveBase, hasDiscount: false };
-  };
-
-  // Initialize selected levels and cart
   useEffect(() => {
-    if (!loadingData) {
-      const initialLevels: Record<string, string> = {};
-      allCourses.forEach(c => {
-        if (c.slug === initialSlug) {
-           initialLevels[c.slug] = resolveCheckoutLevel(c, initialLevel);
-        } else {
-           initialLevels[c.slug] = c.levels?.[0]?.name || "Básico";
-        }
-      });
-      setSelectedLevels(initialLevels);
-
-      // Auto-add if came from a course detail
-      if (initialSlug) {
-        const course = allCourses.find(c => c.slug === initialSlug);
-        const levelName = resolveCheckoutLevel(course, initialLevel);
-        const level = course?.levels?.find(l => l.name === levelName);
-        if (course && level && level.price) {
-          const pricing = getDiscountedPrice(course.slug, level.price, levelName);
-          const isBundle = ["analisis-de-datos", "analitica-mineria", "analitica-financiera"].includes(course.slug);
-          setCart({
-             [`${course.slug}-${levelName}`]: {
-                slug: course.slug,
-                title: course.title,
-                levelName: level.name,
-                price: pricing.finalPrice,
-                quantity: 1,
-                originalPrice: isBundle ? 747000 : pricing.originalPrice,
-                hasDiscount: isBundle ? true : pricing.hasDiscount
-             }
-          });
-          setEnterpriseToggles(new Set([`${course.slug}-${levelName}`]));
-        }
-      } else if (initialServicio === "asesoria") {
-        setCart({
-           "asesoria-Hora": {
-              slug: "asesoria",
-              title: "Mentoría y Asesoría 1 a 1",
-              levelName: "Hora",
-              price: 60000,
-              quantity: 1,
-              originalPrice: 60000,
-              hasDiscount: false
-           }
-        });
-      }
+    if (!initialSlug || !userEmail) return;
+    const key = `pb_abandoned_cart:${initialSlug}`;
+    try {
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, "1");
+    } catch {
+      /* modo privado: igual se avisa el carrito */
     }
-  }, [loadingData, initialSlug, initialLevel, initialServicio, promotions]);
+    const title = allCourses.find((c) => c.slug === initialSlug)?.title || initialSlug;
+    fetch("/api/leads/create", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      keepalive: true,
+      body: JSON.stringify({
+        name: "Usuario Logueado",
+        email: userEmail,
+        selectedCourses: [title],
+        sourceCourse: initialSlug,
+        leadType: "abandoned_cart",
+        pricingVariant: readClientPricingVariant(),
+      }),
+    }).catch(() => {});
+  }, [initialSlug, userEmail]);
+
+  const getDiscountedPrice = (slug: string, basePrice: number | undefined, levelName?: string) =>
+    discountedPrice(slug, basePrice, levelName, priceOverrides, promotions);
+
+  // Si cambia el curso de la URL o el precio de promo, rearma la selección.
+  // Si el ítem ya está, conserva cantidad y fecha para no borrar el carrito.
+  useEffect(() => {
+    const next = selectionFromQuery(initialSlug, initialLevel, initialServicio, promotions, priceOverrides);
+    setSelectedLevels(next.levels);
+    if (!(initialSlug || initialServicio === "asesoria")) return;
+    const key = Object.keys(next.cart)[0];
+    if (initialSlug && key) {
+      setEnterpriseToggles((current) => (current.has(key) ? current : new Set([key])));
+    }
+    setCart((current) => {
+      const incoming = key ? next.cart[key] : undefined;
+      const existing = key ? current[key] : undefined;
+      if (
+        incoming &&
+        existing &&
+        existing.price === incoming.price &&
+        existing.levelName === incoming.levelName
+      ) {
+        return current;
+      }
+      return Object.keys(next.cart).length > 0 ? next.cart : current;
+    });
+  }, [initialSlug, initialLevel, initialServicio, promotions, priceOverrides]);
 
   // Pre-select nearest starting dates once schedules are loaded
   useEffect(() => {
@@ -899,9 +976,11 @@ export default function PagoClient({
                                  {(() => {
                                     const pricing = getDiscountedPrice(course.slug, currentLevelData.price, activeLevel);
                                     if (isBundle) {
+                                      const tachado = tachadoLocal(course.slug);
                                       return (
                                         <>
                                            {paisPago === "cl" ? <span className="text-xs font-semibold text-faint line-through">{convertAndFormat(747000)}</span> : null}
+                                           {tachado ? <span className="text-xs font-semibold text-faint line-through">{tachado.texto} · {tachado.pct}% off</span> : null}
                                            <div className="flex flex-col items-start sm:items-end">
                                               <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice, course.slug)}</span>
                                               {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
@@ -910,11 +989,12 @@ export default function PagoClient({
                                            </div>
                                         </>
                                       );
-                                    } else if (pricing.hasDiscount) {
+                                    } else if (pricing.hasDiscount || tachadoLocal(course.slug)) {
+                                      const tachado = tachadoLocal(course.slug);
                                       return (
                                         <>
                                            <span className="mb-1 text-xs font-semibold text-ink">Promoción</span>
-                                           <span className="text-xs font-semibold text-faint line-through">{convertAndFormat(pricing.originalPrice)}</span>
+                                           <span className="text-xs font-semibold text-faint line-through">{tachado ? `${tachado.texto} · ${tachado.pct}% off` : convertAndFormat(pricing.originalPrice)}</span>
                                            <div className="flex flex-col items-start sm:items-end">
                                               <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice, course.slug)}</span>
                                               {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
@@ -1065,7 +1145,16 @@ export default function PagoClient({
                                           })()}
                                        </div>
                                        <div className="flex shrink-0 flex-col items-end">
-                                          {item.hasDiscount && item.originalPrice && item.originalPrice > item.price && (
+                                          {tachadoLocal(item.slug, item.quantity) ? (
+                                            <div className="mb-1 flex items-center gap-1.5">
+                                              <span className="text-[11px] font-semibold text-faint line-through">
+                                                {tachadoLocal(item.slug, item.quantity)?.texto}
+                                              </span>
+                                              <span className="rounded-md bg-ink px-1.5 py-0.5 text-[10px] font-semibold text-paper">
+                                                −{tachadoLocal(item.slug, item.quantity)?.pct}%
+                                              </span>
+                                            </div>
+                                          ) : item.hasDiscount && item.originalPrice && item.originalPrice > item.price ? (
                                             <div className="mb-1 flex items-center gap-1.5">
                                               <span className="text-[11px] font-semibold text-faint line-through">
                                                 {convertAndFormat(item.originalPrice * item.quantity)}
@@ -1074,7 +1163,7 @@ export default function PagoClient({
                                                 −{Math.round((1 - item.price / item.originalPrice) * 100)}%
                                               </span>
                                             </div>
-                                          )}
+                                          ) : null}
                                           <span className="text-sm font-semibold tabular-nums text-ink">{convertAndFormat(item.price * item.quantity, item.slug, item.quantity)}</span>
                                           {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                                             <span className="mt-0.5 text-[10px] font-semibold text-faint">
@@ -1234,6 +1323,9 @@ export default function PagoClient({
                                     estadoPago?.marker,
                                     cartItems.some((item) => item.slug !== "asesoria" && precioCurso(paisPago, item.slug) == null)
                                       ? MARCA_DEFINIR_PRECIO
+                                      : null,
+                                    !puedeMonedaLocal && totalLocal(paisPago, cartItems) != null
+                                      ? `Precio configurado: ${formatMoneda(paisPago, totalLocal(paisPago, cartItems) as number)}.`
                                       : null,
                                     puedeMonedaLocal && cartItems.every((item) => item.slug === "asesoria" || precioCurso(paisPago, item.slug) != null)
                                       ? null
@@ -1443,7 +1535,16 @@ export default function PagoClient({
                             ) : null}
                           </div>
                           <div className="flex shrink-0 flex-col items-end">
-                            {item.hasDiscount && item.originalPrice && item.originalPrice > item.price && (
+                            {tachadoLocal(item.slug, item.quantity) ? (
+                              <div className="mb-0.5 flex items-center gap-1.5">
+                                <span className="text-[11px] font-semibold text-faint line-through">
+                                  {tachadoLocal(item.slug, item.quantity)?.texto}
+                                </span>
+                                <span className="rounded-md bg-ink px-1 py-px text-[10px] font-semibold text-paper">
+                                  −{tachadoLocal(item.slug, item.quantity)?.pct}%
+                                </span>
+                              </div>
+                            ) : item.hasDiscount && item.originalPrice && item.originalPrice > item.price ? (
                               <div className="mb-0.5 flex items-center gap-1.5">
                                 <span className="text-[11px] font-semibold text-faint line-through">
                                   {convertAndFormat(item.originalPrice * item.quantity)}
@@ -1452,7 +1553,7 @@ export default function PagoClient({
                                   −{Math.round((1 - item.price / item.originalPrice) * 100)}%
                                 </span>
                               </div>
-                            )}
+                            ) : null}
                             <span className="text-[15px] font-bold tabular-nums text-ink">{convertAndFormat(item.price * item.quantity, item.slug, item.quantity)}</span>
                             {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                               <span className="mt-0.5 text-[10px] font-semibold text-faint">

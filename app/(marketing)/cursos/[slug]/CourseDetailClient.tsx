@@ -62,7 +62,7 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { formatMoneda, localizarMercado, MARCA_DEFINIR_PRECIO, precioCurso } from "@/lib/paises/precios";
+import { formatMoneda, localizarMercado, MARCA_DEFINIR_PRECIO, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
 import { ISO_CHILE } from "@/config/paises";
 
 function courseCheckoutUrl(slug: string, levelName?: string, pais?: string) {
@@ -161,6 +161,7 @@ export default function CourseDetailClient({
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [authRedirect, setAuthRedirect] = useState(`/cursos/${course.slug}`);
   const pricingReady = !checkingAuth;
   const showPrice = isLoggedIn;
   const [userPlan, setUserPlan] = useState<string | null>(null);
@@ -179,7 +180,11 @@ export default function CourseDetailClient({
   const catalogLevelCount = course.levels?.length ?? 0;
 
   const precioLocal = pais === ISO_CHILE ? null : precioCurso(pais, course.slug);
-  const mostrarLocal = pais !== ISO_CHILE && cobroLocal && precioLocal != null;
+  const listaLocal = pais === ISO_CHILE ? null : precioLista(pais, course.slug);
+  const cobraLocal = pais !== ISO_CHILE && cobroLocal && precioLocal != null;
+  const mostrarLocal = pais !== ISO_CHILE && precioLocal != null;
+  const descuentoLocal =
+    listaLocal != null && precioLocal != null ? porcentajeDescuento(listaLocal, precioLocal) : 0;
   const convertAndFormat = (priceCLP: number | null | undefined) => {
     if (mostrarLocal && precioLocal != null) return formatMoneda(pais, precioLocal);
     if (pais !== ISO_CHILE && precioLocal == null) return MARCA_DEFINIR_PRECIO;
@@ -191,37 +196,22 @@ export default function CourseDetailClient({
     }).format(priceCLP);
   };
 
-  const handleCheckoutCTA = async () => {
+  const handleCheckoutCTA = () => {
     const picked = levels[selectedLevel];
     const levelName = checkoutLevelName(course, picked?.name);
+    const dest = courseCheckoutUrl(course.slug, levelName, pais);
     trackCtaClick(etiquetaBoton(pais, showPrice ? "Inscribirse" : "Registrarme"), "course_detail_sidebar", {
       course_slug: course.slug,
     });
 
     if (!isLoggedIn) {
       trackClickRegistro();
+      setAuthRedirect(dest);
       setShowAuthModal(true);
       return;
     }
 
-    try {
-      const userEmail = (await createClient().auth.getUser()).data.user?.email || "Registrado";
-      await fetch("/api/leads/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: "Usuario Logueado",
-          email: userEmail,
-          selectedCourses: [course.title],
-          sourceCourse: course.slug,
-          leadType: "abandoned_cart",
-          pricingVariant: readClientPricingVariant(),
-        }),
-      });
-    } catch {
-      /* lead is best-effort */
-    }
-    window.location.href = courseCheckoutUrl(course.slug, levelName, pais);
+    router.push(dest);
   };
 
   useEffect(() => {
@@ -278,6 +268,16 @@ export default function CourseDetailClient({
       })
       .catch(console.error);
   }, []);
+
+  const nextCheckoutUrl = courseCheckoutUrl(
+    course.slug,
+    checkoutLevelName(course, levels[selectedLevel]?.name),
+    pais
+  );
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    router.prefetch(nextCheckoutUrl);
+  }, [isLoggedIn, nextCheckoutUrl, router]);
 
   const activeLevel = levels[selectedLevel] || null;
   const syllabusIndex = syllabusIndexForLevel(course, activeLevel?.name);
@@ -615,16 +615,27 @@ export default function CourseDetailClient({
                       ? "Aún no hay una fecha abierta para este nivel. Escríbenos y te avisamos del próximo grupo."
                       : "Aún no hay una fecha abierta para este curso. Escríbenos y te avisamos del próximo grupo."}
                   </p>
+                ) : mostrarLocal && precioLocal != null ? (
+                  <div>
+                    {listaLocal != null && descuentoLocal > 0 ? (
+                      <p className="text-sm text-faint">
+                        <span className="line-through">{formatMoneda(pais, listaLocal)}</span>
+                        <span className="ml-2 font-semibold text-ink">{descuentoLocal}% off</span>
+                      </p>
+                    ) : null}
+                    <p className="text-3xl font-bold tracking-tight text-ink">{formatMoneda(pais, precioLocal)}</p>
+                    {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
+                  </div>
                 ) : !pricingReady ? (
                   <div className="h-10 w-40 rounded-lg bg-wash" />
                 ) : showPrice ? (
                   <div>
-                    {pais === ISO_CHILE && originalGrandTotal && totalDiscountPercentage > 0 && (
+                    {pais === ISO_CHILE && originalGrandTotal && totalDiscountPercentage > 0 ? (
                       <p className="text-sm text-faint">
                         <span className="line-through">{convertAndFormat(originalGrandTotal)}</span>
                         <span className="ml-2 font-semibold text-ink">{totalDiscountPercentage}% off</span>
                       </p>
-                    )}
+                    ) : null}
                     <p className="text-3xl font-bold tracking-tight text-ink">{convertAndFormat(grandTotal)}</p>
                     {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
                   </div>
@@ -633,6 +644,7 @@ export default function CourseDetailClient({
                     type="button"
                     onClick={() => {
                       trackClickRegistro();
+                      setAuthRedirect(`/cursos/${course.slug}`);
                       setShowAuthModal(true);
                     }}
                     className="flex w-full items-start gap-3 rounded-xl border border-line bg-canvas px-3 py-3 text-left"
@@ -644,12 +656,19 @@ export default function CourseDetailClient({
                     </span>
                   </button>
                 )}
-                {pais !== ISO_CHILE && (avisoPago || precioLocal == null) ? (
+                {pais !== ISO_CHILE && !showPrice && activeSchedulesList.length === 0 && listaLocal != null && precioLocal != null ? (
+                  <p className="mt-3 text-sm text-faint">
+                    <span className="line-through">{formatMoneda(pais, listaLocal)}</span>
+                    <span className="ml-2 font-semibold text-ink">{formatMoneda(pais, precioLocal)}</span>
+                    <span className="ml-2 font-semibold text-ink">{descuentoLocal}% off</span>
+                  </p>
+                ) : null}
+                {pais !== ISO_CHILE && (avisoPago || precioLocal == null || !cobraLocal) ? (
                   <p className="mt-3 text-xs text-mute">
                     {[
                       precioLocal == null ? MARCA_DEFINIR_PRECIO : null,
                       avisoPago,
-                      !mostrarLocal ? "El pago se abre en pesos chilenos." : null,
+                      !cobraLocal ? "El pago se abre en pesos chilenos." : null,
                     ]
                       .filter(Boolean)
                       .join(" ")}
@@ -812,7 +831,7 @@ export default function CourseDetailClient({
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}
         defaultTab="register"
-        redirectUrl={`/cursos/${course.slug}`}
+        redirectUrl={authRedirect}
       />
     </>
   );
