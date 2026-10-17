@@ -115,7 +115,7 @@ function preguntasDe(pais: string) {
     if (item.question.startsWith("¿Qué métodos de pago")) {
       return {
         ...item,
-        answer: "El pago del curso se hace con Mercado Pago. Si la cuenta de ese país todavía no está conectada, el checkout se abre con la cuenta de Chile.",
+        answer: "El pago del curso se hace con Mercado Pago.",
       };
     }
     return {

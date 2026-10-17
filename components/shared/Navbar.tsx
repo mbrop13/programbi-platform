@@ -23,8 +23,6 @@ import { trackNavRegistro } from "@/lib/analytics/marketing";
 import { ISO_CHILE } from "@/config/paises";
 import { etiquetaBoton } from "@/config/textos";
 import { paisDesdeRuta, rutaLocal } from "@/lib/paises/rutas";
-import SelectorPais from "@/components/shared/SelectorPais";
-
 const AuthModal = dynamic(() => import("./AuthModal"), { ssr: false });
 const SupportModal = dynamic(() => import("./SupportModal"), { ssr: false });
 const ProfileSettingsModal = dynamic(() => import("./ProfileSettingsModal"), { ssr: false });
@@ -362,7 +360,6 @@ export default function Navbar() {
           </nav>
 
           <div className="relative z-10 ml-auto flex items-center justify-end gap-3 lg:min-w-[17.5rem]">
-            <SelectorPais className="hidden sm:inline-flex" />
             {loading ? (
               <div className="hidden h-10 w-28 rounded-full bg-surface sm:block" />
             ) : user ? (
@@ -532,9 +529,6 @@ export default function Navbar() {
             className="absolute inset-x-0 top-[72px] max-h-[calc(100dvh-72px)] overflow-y-auto overscroll-contain border-b border-line bg-canvas px-4 py-5 lg:hidden"
           >
             <nav className="flex flex-col" aria-label="Móvil">
-              <div className="pb-3">
-                <SelectorPais />
-              </div>
               {navLinks.map((link) =>
                 link.hasMega ? (
                   <div key={link.href} className="border-b border-line py-1">

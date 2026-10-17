@@ -7,8 +7,6 @@ import { getPais, ISO_CHILE } from "@/config/paises";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
-import SelectorPais from "@/components/shared/SelectorPais";
-
 const socialLinks = [
   { name: "Instagram", href: "https://www.instagram.com/programbi_capacitaciones/" },
   { name: "LinkedIn", href: "https://cl.linkedin.com/company/programbi" },
@@ -51,12 +49,9 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
               ? "Centro de capacitaciones en análisis de datos. Santiago, Chile."
               : "Centro de capacitaciones en análisis de datos."}
           </p>
-          {pais === ISO_CHILE ? null : (
+          {pais !== ISO_CHILE && !getPais(pais).contacto.ciudad.startsWith("[PENDIENTE") ? (
             <p className="mt-2 text-sm text-mute">{getPais(pais).contacto.ciudad}</p>
-          )}
-          <div className="mt-4">
-            <SelectorPais />
-          </div>
+          ) : null}
         </div>
 
         <nav className="flex flex-col gap-3 text-sm font-medium text-ink" aria-label="Sitio">

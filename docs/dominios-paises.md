@@ -2,7 +2,7 @@
 
 Chile sigue en la raíz (`/`, `/cursos`, `/cursos/power-bi`). El resto vive en carpeta: `/ar`, `/mx`, `/pe`, `/co`, `/ec`, `/uy`, `/bo`, `/py`, `/pa`, `/cr`, `/gt`, `/sv`, `/hn`, `/ni`, `/do`, `/ve`.
 
-No hay redirección por IP. El selector del header y del footer cambia la carpeta. Un aviso discreto puede sugerir el país que Vercel detecta (`x-vercel-ip-country`).
+No hay redirección por IP ni selector de país. El precio lo fija la carpeta de la URL, para que alguien en Chile no cambie a un país más barato desde el menú.
 
 Brasil no está: el sitio es en español.
 
@@ -14,14 +14,7 @@ Argentina se actualiza solo en `PRECIOS_ARS`. No hay conversión automática des
 
 ## Mercado Pago
 
-Sin claves en el código. Variables:
-
-- Chile (la de hoy): `MERCADOPAGO_ACCESS_TOKEN` y `MERCADOPAGO_WEBHOOK_SECRET`
-- Argentina, México, Perú, Colombia, Uruguay: `MERCADOPAGO_ACCESS_TOKEN_AR` (y `_MX`, `_PE`, `_CO`, `_UY`) y el webhook `MERCADOPAGO_WEBHOOK_SECRET_AR` (mismo sufijo)
-
-Si la variable del país no existe, el checkout usa la cuenta de Chile en CLP y la página muestra `[CONFIGURAR MP XX]`.
-
-Mercado Pago no opera en Ecuador, Panamá, Costa Rica, El Salvador, Guatemala, Paraguay, Bolivia, Honduras, Venezuela, Nicaragua ni República Dominicana. Esos países cobran en USD por la cuenta de Chile y muestran `[REVISAR PAGO XX]`. Si la cuenta de Chile rechaza el dólar, el cobro no se completa: no se reemplaza por el precio chileno.
+Por ahora todos los países cobran con el token de Chile (`MERCADOPAGO_ACCESS_TOKEN` y `MERCADOPAGO_WEBHOOK_SECRET`), en pesos chilenos. No hay cuenta de Mercado Pago por país ni mensajes de configuración en la página. La cuenta de Chile no puede cobrar en otra moneda.
 
 El teléfono y la ciudad local que falten están como `[PENDIENTE CONTENIDO XX]`. No inventes alumnos, cifras ni casos.
 

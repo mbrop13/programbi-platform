@@ -1317,22 +1317,6 @@ export default function PagoClient({
                                 </div>
                               )}
 
-                              {paisPago !== "cl" ? (
-                                <p className="text-xs leading-snug text-mute">
-                                  {[
-                                    estadoPago?.marker,
-                                    cartItems.some((item) => item.slug !== "asesoria" && precioCurso(paisPago, item.slug) == null)
-                                      ? MARCA_DEFINIR_PRECIO
-                                      : null,
-                                    !puedeMonedaLocal && totalLocal(paisPago, cartItems) != null
-                                      ? `Precio configurado: ${formatMoneda(paisPago, totalLocal(paisPago, cartItems) as number)}.`
-                                      : null,
-                                    puedeMonedaLocal && cartItems.every((item) => item.slug === "asesoria" || precioCurso(paisPago, item.slug) != null)
-                                      ? null
-                                      : "El pago se abre en pesos chilenos.",
-                                  ].filter(Boolean).join(" ")}
-                                </p>
-                              ) : null}
                               <motion.button
                                 type="button"
                                 onClick={handleCheckout}

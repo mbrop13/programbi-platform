@@ -22,47 +22,16 @@ function tokenLocal(iso: string): string {
 }
 
 /**
- * Resuelve la cuenta de Mercado Pago sin escribir claves en el código.
- * Si falta la credencial del país, el cobro cae en la cuenta de Chile.
+ * Todos los países cobran con el token de Chile, en pesos chilenos.
+ * La cuenta de Chile no puede crear un cobro en otra moneda.
  */
 export function resolverCobro(iso: string | null | undefined): CobroPais {
   const pais = getPais(normalizarPais(iso));
   const chile = tokenChile();
-
   if (pais.iso === "cl" || pais.pago === "catalogo") {
     return { iso: "cl", modo: "catalogo", moneda: "CLP", marker: null, token: chile, cuenta: "cl" };
   }
-
-  if (pais.pago === "mp") {
-    const propio = tokenLocal(pais.iso);
-    if (propio) {
-      return {
-        iso: pais.iso,
-        modo: "local",
-        moneda: pais.moneda,
-        marker: null,
-        token: propio,
-        cuenta: pais.iso,
-      };
-    }
-    return {
-      iso: pais.iso,
-      modo: "fallback-cl",
-      moneda: "CLP",
-      marker: `[CONFIGURAR MP ${pais.iso.toUpperCase()}]`,
-      token: chile,
-      cuenta: "cl",
-    };
-  }
-
-  return {
-    iso: pais.iso,
-    modo: pais.pago === "usd-chile" ? "usd-chile" : "fallback-cl",
-    moneda: pais.pago === "usd-chile" ? "USD" : "CLP",
-    marker: `[REVISAR PAGO ${pais.iso.toUpperCase()}]`,
-    token: chile,
-    cuenta: "cl",
-  };
+  return { iso: pais.iso, modo: "fallback-cl", moneda: "CLP", marker: null, token: chile, cuenta: "cl" };
 }
 
 export function tokenPorCuenta(cuenta: string | null | undefined): string {

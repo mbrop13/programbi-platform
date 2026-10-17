@@ -130,14 +130,12 @@ export default function CourseDetailClient({
   initialView = "publico",
   initialLevelName,
   cobroLocal = false,
-  avisoPago = null,
 }: {
   course: Course;
   initialSchedules: CourseSchedule[];
   initialView?: CourseOfferView;
   initialLevelName?: string;
   cobroLocal?: boolean;
-  avisoPago?: string | null;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -182,7 +180,7 @@ export default function CourseDetailClient({
   const precioLocal = pais === ISO_CHILE ? null : precioCurso(pais, course.slug);
   const listaLocal = pais === ISO_CHILE ? null : precioLista(pais, course.slug);
   const cobraLocal = pais !== ISO_CHILE && cobroLocal && precioLocal != null;
-  const mostrarLocal = pais !== ISO_CHILE && precioLocal != null;
+  const mostrarLocal = cobraLocal;
   const descuentoLocal =
     listaLocal != null && precioLocal != null ? porcentajeDescuento(listaLocal, precioLocal) : 0;
   const convertAndFormat = (priceCLP: number | null | undefined) => {
@@ -630,7 +628,7 @@ export default function CourseDetailClient({
                   <div className="h-10 w-40 rounded-lg bg-wash" />
                 ) : showPrice ? (
                   <div>
-                    {pais === ISO_CHILE && originalGrandTotal && totalDiscountPercentage > 0 ? (
+                    {originalGrandTotal && totalDiscountPercentage > 0 ? (
                       <p className="text-sm text-faint">
                         <span className="line-through">{convertAndFormat(originalGrandTotal)}</span>
                         <span className="ml-2 font-semibold text-ink">{totalDiscountPercentage}% off</span>
@@ -656,24 +654,6 @@ export default function CourseDetailClient({
                     </span>
                   </button>
                 )}
-                {pais !== ISO_CHILE && !showPrice && activeSchedulesList.length === 0 && listaLocal != null && precioLocal != null ? (
-                  <p className="mt-3 text-sm text-faint">
-                    <span className="line-through">{formatMoneda(pais, listaLocal)}</span>
-                    <span className="ml-2 font-semibold text-ink">{formatMoneda(pais, precioLocal)}</span>
-                    <span className="ml-2 font-semibold text-ink">{descuentoLocal}% off</span>
-                  </p>
-                ) : null}
-                {pais !== ISO_CHILE && (avisoPago || precioLocal == null || !cobraLocal) ? (
-                  <p className="mt-3 text-xs text-mute">
-                    {[
-                      precioLocal == null ? MARCA_DEFINIR_PRECIO : null,
-                      avisoPago,
-                      !cobraLocal ? "El pago se abre en pesos chilenos." : null,
-                    ]
-                      .filter(Boolean)
-                      .join(" ")}
-                  </p>
-                ) : null}
               </div>
 
               {isEmpresa ? (

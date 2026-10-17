@@ -150,7 +150,6 @@ export default async function CourseDetailPage({
         initialView={para === "empresas" ? "empresas" : "publico"}
         initialLevelName={nivel}
         cobroLocal={cobro.modo === "local" || cobro.modo === "usd-chile"}
-        avisoPago={cobro.marker}
       />
     </>
   );

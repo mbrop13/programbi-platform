@@ -48,7 +48,7 @@ export function getCourseJsonLd(
   const modo = pais === ISO_CHILE ? "catalogo" : resolverCobro(pais).modo;
   const cobraLocal = modo === "local" || modo === "usd-chile";
   const localPrice = precioCurso(pais, course.slug);
-  const lowestPrice = pais === ISO_CHILE ? catalogPrice : cobraLocal ? localPrice ?? undefined : undefined;
+  const lowestPrice = cobraLocal ? localPrice ?? undefined : catalogPrice;
   const path = rutaLocal(pais, coursePath(course.slug, view));
   const moneda = pais === ISO_CHILE || !cobraLocal ? "CLP" : getPais(pais).moneda;
 

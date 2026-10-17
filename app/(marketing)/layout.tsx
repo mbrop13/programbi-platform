@@ -1,8 +1,6 @@
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import MarketingChrome from "@/components/shared/MarketingChrome";
-import AvisoPais from "@/components/shared/AvisoPais";
-
 export default function MarketingLayout({
   children,
 }: {
@@ -17,7 +15,6 @@ export default function MarketingLayout({
         Saltar al contenido
       </a>
       <Navbar />
-      <AvisoPais />
       <main id="contenido" className="flex-1 bg-canvas">
         {children}
       </main>

@@ -171,8 +171,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // País: Chile mantiene el cálculo CLP de arriba. Otras monedas usan el precio fijo
-    // de config/paises.ts. Si falta credencial o precio, se cobra con la cuenta de Chile.
+    // Todos los países usan el token de Chile y el total en CLP calculado arriba.
     const pais = typeof body.pais === "string" ? body.pais : "cl";
     const { resolverCobro } = await import("@/lib/paises/cobro");
     const { totalLocal } = await import("@/lib/paises/precios");
