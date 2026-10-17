@@ -5,6 +5,7 @@
 
 import { courses, getCourseBySlug, type Course } from "@/lib/data/courses";
 import { staticSchedules, OPEN_COHORT_LABEL } from "@/lib/data/course-schedules";
+import { isTieredCourse } from "@/lib/data/course-views";
 import type { EmailCourseItem, EmailPackInfo } from "./quote-template";
 
 export type PriceOverrideRow = {
@@ -210,8 +211,33 @@ export function calculateQuotePrice(
   return { finalPrice, originalPrice, hasDiscount, discountPercent };
 }
 
+const QUOTE_TIME_ZONE = "America/Santiago";
+
+/** Calendar day as YYYY-MM-DD. The stored start date is a cohort day, not a UTC instant. */
+export function scheduleDateKey(raw: string): string | null {
+  const match = (raw || "").trim().match(/^(\d{4}-\d{2}-\d{2})/);
+  return match ? match[1] : null;
+}
+
+function todayKey(timeZone = QUOTE_TIME_ZONE): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date());
+}
+
+/** True when the cohort has not started yet in Chile, including a start dated today. */
+export function isUpcomingScheduleDate(raw: string, today = todayKey()): boolean {
+  const key = scheduleDateKey(raw);
+  return Boolean(key && key >= today);
+}
+
 function formatEmailDate(dateStr: string): string {
-  const date = new Date(dateStr + "T12:00:00");
+  const key = scheduleDateKey(dateStr);
+  if (!key) return dateStr;
+  const date = new Date(key + "T12:00:00");
   if (Number.isNaN(date.getTime())) return dateStr;
   const months = [
     "enero",
@@ -246,57 +272,78 @@ function formatEmailTime(timeStr: string): string {
   return match ? match[1] : timeStr;
 }
 
-function isFutureDate(dateStr: string): boolean {
-  const d = new Date(dateStr + "T12:00:00");
-  if (Number.isNaN(d.getTime())) return false;
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return d >= today;
+/**
+ * Levels whose published dates may appear on a quote.
+ * The open course (Básico, Intermedio, or Básico-Intermedio) uses those two
+ * cohorts. Avanzado never borrows a date from the other level, and a missing
+ * date stays "consulta fecha" instead of showing a cohort that already started.
+ * null means any level of that slug (courses sold as a single cohort).
+ */
+function quotedScheduleLevels(course: Course, levelName: string): string[] | null {
+  const raw = levelName.toLowerCase();
+  const advancedOnly =
+    raw.includes("avanzado") && !raw.includes("básico") && !raw.includes("basico") && !raw.includes("intermedio");
+
+  if (course.slug === "analisis-de-datos") {
+    return advancedOnly ? ["Avanzado"] : ["Básico", "Intermedio"];
+  }
+  if (isTieredCourse(course)) {
+    return advancedOnly ? ["Avanzado"] : ["Básico", "Intermedio"];
+  }
+  return null;
 }
 
 function pickSchedules(
   list: ScheduleRow[],
   slug: string,
-  levelName: string
+  levels: string[] | null,
+  today = todayKey()
 ): ScheduleRow[] {
-  const future = list.filter(
-    (s) =>
-      s.course_slug === slug &&
-      s.is_active !== false &&
-      isFutureDate(s.start_date)
-  );
-  const levelMatch = future.filter((s) => s.level_name === levelName);
-  const rows = (levelMatch.length > 0 ? levelMatch : future).slice();
-  rows.sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime());
-  return rows;
+  return list
+    .filter((s) => {
+      if (s.course_slug !== slug || s.is_active === false) return false;
+      if (!isUpcomingScheduleDate(s.start_date, today)) return false;
+      if (levels && !levels.includes(s.level_name)) return false;
+      return true;
+    })
+    .sort((a, b) => (scheduleDateKey(a.start_date) || "").localeCompare(scheduleDateKey(b.start_date) || ""));
 }
 
-function formatScheduleLine(sched: ScheduleRow, withTime: boolean): string {
+function formatScheduleLine(sched: ScheduleRow, withTime: boolean, withLevel = false): string {
   const dateFormatted = formatEmailDate(sched.start_date);
   const daysFormatted = formatEmailDays(sched.schedule_days);
-  if (withTime) {
-    const timeFormatted = formatEmailTime(sched.schedule_time);
-    return [dateFormatted, daysFormatted, timeFormatted].filter(Boolean).join(" · ");
-  }
-  return [dateFormatted, daysFormatted].filter(Boolean).join(" · ");
+  const level = withLevel ? sched.level_name : "";
+  const timeFormatted = withTime ? formatEmailTime(sched.schedule_time) : "";
+  return [dateFormatted, level, daysFormatted, timeFormatted].filter(Boolean).join(" · ");
 }
 
-function getAnalisisSchedule(schedulesList: ScheduleRow[]): { summary: string; lines: string[] } {
+function rowsForSlug(
+  schedulesList: ScheduleRow[],
+  slug: string,
+  levels: string[] | null
+): ScheduleRow[] {
+  const live = pickSchedules(schedulesList, slug, levels);
+  if (live.length > 0) return live;
+  return pickSchedules(staticSchedules as ScheduleRow[], slug, levels);
+}
+
+function getAnalisisSchedule(
+  schedulesList: ScheduleRow[],
+  levels: string[]
+): { summary: string; lines: string[] } {
   const lines: string[] = [];
-  let earliest: { time: number; label: string } | null = null;
+  let earliest: { key: string; label: string } | null = null;
 
   for (const mod of PACK_MODULES) {
-    let modRows = pickSchedules(schedulesList, mod.slug, "Básico");
-    if (modRows.length === 0) {
-      modRows = pickSchedules(staticSchedules as ScheduleRow[], mod.slug, "Básico");
+    const row = rowsForSlug(schedulesList, mod.slug, levels)[0];
+    if (!row) {
+      lines.push(`${mod.label} · ${OPEN_COHORT_LABEL}`);
+      continue;
     }
-    if (!modRows[0]) continue;
-    const dateLabel = formatEmailDate(modRows[0].start_date);
-    lines.push(`${mod.label} · ${dateLabel}`);
-    const time = new Date(modRows[0].start_date + "T12:00:00").getTime();
-    if (!earliest || time < earliest.time) {
-      earliest = { time, label: dateLabel };
-    }
+    lines.push(`${mod.label} · ${formatScheduleLine(row, true)}`);
+    const key = scheduleDateKey(row.start_date) || "";
+    const label = formatEmailDate(row.start_date);
+    if (!earliest || key < earliest.key) earliest = { key, label };
   }
 
   return {
@@ -311,20 +358,19 @@ export function getCourseScheduleString(
   schedulesList: ScheduleRow[],
   withTime = true
 ): string {
+  const course = getCourseBySlug(slug);
+  const levels = course ? quotedScheduleLevels(course, levelName) : [levelName];
   if (slug === "analisis-de-datos") {
-    return getAnalisisSchedule(schedulesList).summary;
+    return getAnalisisSchedule(schedulesList, levels ?? ["Básico", "Intermedio"]).summary;
   }
 
-  let rows = pickSchedules(schedulesList, slug, levelName);
-  if (rows.length === 0) {
-    rows = pickSchedules(staticSchedules as ScheduleRow[], slug, levelName);
-  }
-
+  const rows = rowsForSlug(schedulesList, slug, levels);
   if (rows.length === 0) return OPEN_COHORT_LABEL;
-  if (rows.length === 1) return formatScheduleLine(rows[0], withTime);
+  const showLevel = (levels?.length ?? 0) > 1;
+  if (rows.length === 1) return formatScheduleLine(rows[0], withTime, showLevel);
   return rows
     .slice(0, 3)
-    .map((sched, idx) => `Opción ${idx + 1}: ${formatScheduleLine(sched, withTime)}`)
+    .map((sched, idx) => `Opción ${idx + 1}: ${formatScheduleLine(sched, withTime, showLevel)}`)
     .join("  |  ");
 }
 
@@ -376,8 +422,11 @@ function toEmailItem(
   const hours = level?.durationHours || course.durationHours || 16;
   const pricing = calculateQuotePrice(course.slug, resolvedLevel, priceOverrides, promotions);
   const savings = Math.max(0, pricing.originalPrice - pricing.finalPrice);
+  const scheduleLevels = quotedScheduleLevels(course, resolvedLevel);
   const packSchedule =
-    course.slug === "analisis-de-datos" ? getAnalisisSchedule(schedules) : null;
+    course.slug === "analisis-de-datos"
+      ? getAnalisisSchedule(schedules, scheduleLevels ?? ["Básico", "Intermedio"])
+      : null;
 
   return {
     slug: course.slug,

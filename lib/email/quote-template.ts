@@ -98,8 +98,15 @@ export function buildQuoteEmailHtml(
                     ${c.title}
                   </h3>
                   <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13px; color: #5F5E59; line-height: 1.5;">
-                    <strong style="color: #171716;">📅 Horario & Clases:</strong> ${c.startDate}
+                    <strong style="color: #171716;">📅 Horario & Clases:</strong> ${escapeHtml(c.startDate)}
                   </p>
+                  ${
+                    c.startDateLines && c.startDateLines.length > 0
+                      ? `<p style="margin: 8px 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12.5px; color: #5F5E59; line-height: 1.55;">${c.startDateLines
+                          .map((line) => escapeHtml(line))
+                          .join("<br/>")}</p>`
+                      : ""
+                  }
                 </td>
                 <td valign="top" align="right" class="ms" style="width: 140px; min-width: 140px; text-align: right;">
                   ${c.hasDiscount ? `<p style="margin: 0 0 2px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #8C8B85; text-decoration: line-through; font-weight: 500;">${c.originalPrice}</p>` : ""}
@@ -194,7 +201,7 @@ export function buildQuoteEmailHtml(
                       ${c.title}
                     </h4>
                     <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #5F5E59;">
-                      📅 Inicio: <strong style="color: #171716;">${c.startDate}</strong>
+                      📅 Inicio: <strong style="color: #171716;">${escapeHtml(c.startDate)}</strong>
                     </p>
                   </td>
                   <td valign="middle" align="right" class="ms" style="width: 130px; min-width: 130px; text-align: right;">

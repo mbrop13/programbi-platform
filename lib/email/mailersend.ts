@@ -14,7 +14,14 @@
 
 import nodemailer from "nodemailer";
 import { buildQuoteEmailHtml } from "./quote-template";
-import { buildQuoteModel, type PriceOverrideRow, type PromotionRow, type ScheduleRow } from "./quote-data";
+import {
+  buildQuoteModel,
+  isUpcomingScheduleDate,
+  scheduleDateKey,
+  type PriceOverrideRow,
+  type PromotionRow,
+  type ScheduleRow,
+} from "./quote-data";
 import { buildEnterpriseEmailHtml } from "./enterprise-template";
 import { staticSchedules, formatScheduleDate } from "../data/course-schedules";
 import { createAdminClient } from "../supabase/server";
@@ -47,6 +54,36 @@ function formatCLP(price: number) {
 
 function fromAddress() {
   return `"${FROM_NAME}" <${FROM_EMAIL}>`;
+}
+
+/** Cohorte del mail de inscripción: la fecha elegida, o la próxima del mismo nivel que aún no empieza. */
+function scheduleForEnrollment(
+  activeSchedules: ScheduleRow[],
+  slug: string | undefined,
+  levelName: string,
+  selectedStartDate?: string | null
+): ScheduleRow | null {
+  if (!slug) return null;
+  const selectedKey = selectedStartDate ? scheduleDateKey(selectedStartDate) : null;
+  const sameLevel = (row: ScheduleRow) =>
+    row.course_slug === slug && row.level_name === levelName && row.is_active !== false;
+
+  if (selectedKey) {
+    const chosen = [...activeSchedules, ...(staticSchedules as ScheduleRow[])].find(
+      (row) => sameLevel(row) && scheduleDateKey(row.start_date) === selectedKey
+    );
+    if (chosen) return chosen;
+  }
+
+  const upcoming = activeSchedules
+    .filter((row) => sameLevel(row) && isUpcomingScheduleDate(row.start_date))
+    .sort((a, b) => (scheduleDateKey(a.start_date) || "").localeCompare(scheduleDateKey(b.start_date) || ""));
+  if (upcoming[0]) return upcoming[0];
+
+  const fallback = (staticSchedules as ScheduleRow[])
+    .filter((row) => sameLevel(row) && isUpcomingScheduleDate(row.start_date))
+    .sort((a, b) => (scheduleDateKey(a.start_date) || "").localeCompare(scheduleDateKey(b.start_date) || ""));
+  return fallback[0] || null;
 }
 
 async function sendEmail(params: {
@@ -152,16 +189,24 @@ export async function sendQuoteConfirmationToLead(params: {
   try {
     const supabase = createAdminClient();
     const [schRes, promoRes, overRes] = await Promise.all([
-      supabase.from("course_schedules").select("*").eq("is_active", true),
+      supabase
+        .from("course_schedules")
+        .select("course_slug, level_name, start_date, schedule_days, schedule_time, is_active")
+        .eq("is_active", true)
+        .neq("course_slug", "comunidad")
+        .order("start_date", { ascending: true }),
       supabase.from("promotions").select("*").eq("is_active", true),
       supabase.from("price_overrides").select("*"),
     ]);
 
+    if (schRes.error) console.error("Cotización: no se pudieron leer las fechas:", schRes.error.message);
     if (schRes.data) schedules = schRes.data as ScheduleRow[];
+    if (promoRes.error) console.error("Cotización: no se pudieron leer las promos:", promoRes.error.message);
     if (promoRes.data) {
       const now = new Date().toISOString();
       promotions = (promoRes.data as PromotionRow[]).filter((p) => !p.valid_until || p.valid_until > now);
     }
+    if (overRes.error) console.error("Cotización: no se pudieron leer los precios:", overRes.error.message);
     if (overRes.data) priceOverrides = overRes.data as PriceOverrideRow[];
   } catch (err) {
     console.error("Error al obtener datos dinámicos de Supabase para el email de cotización:", err);
@@ -181,11 +226,15 @@ export async function sendQuoteConfirmationToLead(params: {
     : "Tu cotización ProgramBI — Cursos de datos 100% aplicados";
 
   const priceLines = selected
-    .map((c) =>
-      c.hasDiscount
-        ? `${c.title}: ${c.finalPrice} (antes ${c.originalPrice})`
-        : `${c.title}: ${c.finalPrice}`
-    )
+    .map((c) => {
+      const price = c.hasDiscount
+        ? `${c.finalPrice} (antes ${c.originalPrice})`
+        : c.finalPrice;
+      const dates = c.startDateLines?.length
+        ? `${c.startDate}. ${c.startDateLines.join(". ")}`
+        : c.startDate;
+      return `${c.title}: ${price}. Inicio: ${dates}`;
+    })
     .join(". ");
 
   await sendEmail({
@@ -415,7 +464,9 @@ export async function sendPaymentConfirmation(params: {
     const { data } = await supabase
       .from("course_schedules")
       .select("*")
-      .eq("is_active", true);
+      .eq("is_active", true)
+      .neq("course_slug", "comunidad")
+      .order("start_date", { ascending: true });
     if (data) activeSchedules = data;
   } catch (err) {
     console.warn("No se pudieron cargar los horarios dinámicos para el email de confirmación, usando fallbacks.", err);
@@ -423,20 +474,7 @@ export async function sendPaymentConfirmation(params: {
 
   // Generar tarjetas para cada curso comprado con información detallada de fechas e inicio
   const courseDetailCards = courses.map(c => {
-    // Buscar horario
-    let sched = null;
-    if (c.selectedStartDate) {
-      sched = activeSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName && s.start_date === c.selectedStartDate);
-      if (!sched && c.slug) {
-        sched = staticSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName && s.start_date === c.selectedStartDate);
-      }
-    }
-    if (!sched) {
-      sched = activeSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName);
-      if (!sched && c.slug) {
-        sched = staticSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName);
-      }
-    }
+    const sched = scheduleForEnrollment(activeSchedules, c.slug, c.levelName, c.selectedStartDate);
 
     const hasSchedule = !!sched;
     const startDateFormatted = hasSchedule && sched.start_date ? formatScheduleDate(sched.start_date) : (c.selectedStartDate ? formatScheduleDate(c.selectedStartDate) : "Por confirmar");
@@ -652,27 +690,16 @@ export async function sendNewPurchaseNotificationToAdmin(params: {
     const { data } = await supabase
       .from("course_schedules")
       .select("*")
-      .eq("is_active", true);
+      .eq("is_active", true)
+      .neq("course_slug", "comunidad")
+      .order("start_date", { ascending: true });
     if (data) activeSchedules = data;
   } catch (err) {
     console.warn("Could not load schedules for admin notification:", err);
   }
 
   const courseRows = courses.map(c => {
-    // Buscar horario
-    let sched = null;
-    if (c.selectedStartDate) {
-      sched = activeSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName && s.start_date === c.selectedStartDate);
-      if (!sched && c.slug) {
-        sched = staticSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName && s.start_date === c.selectedStartDate);
-      }
-    }
-    if (!sched) {
-      sched = activeSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName);
-      if (!sched && c.slug) {
-        sched = staticSchedules.find(s => s.course_slug === c.slug && s.level_name === c.levelName);
-      }
-    }
+    const sched = scheduleForEnrollment(activeSchedules, c.slug, c.levelName, c.selectedStartDate);
 
     const hasSchedule = !!sched;
     const dateFormatted = hasSchedule ? formatScheduleDate(sched.start_date) : (c.selectedStartDate ? formatScheduleDate(c.selectedStartDate) : "Por confirmar");
