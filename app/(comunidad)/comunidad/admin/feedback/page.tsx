@@ -4,7 +4,7 @@ import { getFeedbackAnalytics } from "@/lib/supabase/feedback";
 import FeedbackAdminClient from "./FeedbackAdminClient";
 
 export const metadata = {
-  title: "Encuesta de satisfacción - Admin | ProgramBI",
+  title: "Encuesta de satisfacción - Admin",
 };
 
 export default async function FeedbackAdminPage() {

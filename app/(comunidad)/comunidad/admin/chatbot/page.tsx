@@ -4,7 +4,7 @@ import ChatbotAdminClient from "./ChatbotAdminClient";
 import { getChatbotConversations, getChatbotStats } from "@/lib/supabase/comunidad-ai";
 
 export const metadata = {
-  title: "Chatbot IA - Admin | ProgramBI",
+  title: "Chatbot IA - Admin",
 };
 
 export default async function ChatbotAdminPage() {
