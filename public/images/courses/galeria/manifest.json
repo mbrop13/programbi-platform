@@ -1,0 +1,196 @@
+{
+  "analisis-de-datos": [
+    {
+      "src": "/images/courses/galeria/analisis-de-datos/01.webp",
+      "width": 1280,
+      "height": 676,
+      "bytes": 76172
+    },
+    {
+      "src": "/images/courses/galeria/analisis-de-datos/02.webp",
+      "width": 1280,
+      "height": 678,
+      "bytes": 71858
+    },
+    {
+      "src": "/images/courses/galeria/analisis-de-datos/03.webp",
+      "width": 1280,
+      "height": 676,
+      "bytes": 79872
+    },
+    {
+      "src": "/images/courses/galeria/analisis-de-datos/04.webp",
+      "width": 1280,
+      "height": 673,
+      "bytes": 43612
+    },
+    {
+      "src": "/images/courses/galeria/analisis-de-datos/05.webp",
+      "width": 1280,
+      "height": 658,
+      "bytes": 79940
+    },
+    {
+      "src": "/images/courses/galeria/analisis-de-datos/06.webp",
+      "width": 1280,
+      "height": 679,
+      "bytes": 54386
+    },
+    {
+      "src": "/images/courses/galeria/analisis-de-datos/07.webp",
+      "width": 1280,
+      "height": 718,
+      "bytes": 44788
+    },
+    {
+      "src": "/images/courses/galeria/analisis-de-datos/08.webp",
+      "width": 1280,
+      "height": 719,
+      "bytes": 25450
+    },
+    {
+      "src": "/images/courses/galeria/analisis-de-datos/09.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 56996
+    }
+  ],
+  "power-bi": [
+    {
+      "src": "/images/courses/galeria/power-bi/01.webp",
+      "width": 1280,
+      "height": 676,
+      "bytes": 79872
+    },
+    {
+      "src": "/images/courses/galeria/power-bi/02.webp",
+      "width": 1280,
+      "height": 676,
+      "bytes": 76172
+    },
+    {
+      "src": "/images/courses/galeria/power-bi/03.webp",
+      "width": 1280,
+      "height": 677,
+      "bytes": 89374
+    },
+    {
+      "src": "/images/courses/galeria/power-bi/04.webp",
+      "width": 1280,
+      "height": 674,
+      "bytes": 63792
+    },
+    {
+      "src": "/images/courses/galeria/power-bi/05.webp",
+      "width": 1280,
+      "height": 673,
+      "bytes": 43612
+    },
+    {
+      "src": "/images/courses/galeria/power-bi/06.webp",
+      "width": 1280,
+      "height": 678,
+      "bytes": 71858
+    },
+    {
+      "src": "/images/courses/galeria/power-bi/07.webp",
+      "width": 1280,
+      "height": 676,
+      "bytes": 86726
+    }
+  ],
+  "python": [
+    {
+      "src": "/images/courses/galeria/python/01.webp",
+      "width": 1280,
+      "height": 647,
+      "bytes": 54586
+    },
+    {
+      "src": "/images/courses/galeria/python/02.webp",
+      "width": 1280,
+      "height": 685,
+      "bytes": 57410
+    },
+    {
+      "src": "/images/courses/galeria/python/03.webp",
+      "width": 1280,
+      "height": 714,
+      "bytes": 37616
+    },
+    {
+      "src": "/images/courses/galeria/python/04.webp",
+      "width": 1280,
+      "height": 718,
+      "bytes": 44788
+    },
+    {
+      "src": "/images/courses/galeria/python/05.webp",
+      "width": 1280,
+      "height": 719,
+      "bytes": 25450
+    },
+    {
+      "src": "/images/courses/galeria/python/06.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 29472
+    },
+    {
+      "src": "/images/courses/galeria/python/07.webp",
+      "width": 1280,
+      "height": 718,
+      "bytes": 40006
+    },
+    {
+      "src": "/images/courses/galeria/python/08.webp",
+      "width": 1280,
+      "height": 720,
+      "bytes": 56996
+    }
+  ],
+  "sql-server": [
+    {
+      "src": "/images/courses/galeria/sql-server/01.webp",
+      "width": 1280,
+      "height": 662,
+      "bytes": 86940
+    },
+    {
+      "src": "/images/courses/galeria/sql-server/02.webp",
+      "width": 1280,
+      "height": 658,
+      "bytes": 79940
+    },
+    {
+      "src": "/images/courses/galeria/sql-server/03.webp",
+      "width": 1280,
+      "height": 686,
+      "bytes": 85756
+    },
+    {
+      "src": "/images/courses/galeria/sql-server/04.webp",
+      "width": 1280,
+      "height": 675,
+      "bytes": 81552
+    },
+    {
+      "src": "/images/courses/galeria/sql-server/05.webp",
+      "width": 1280,
+      "height": 686,
+      "bytes": 100072
+    },
+    {
+      "src": "/images/courses/galeria/sql-server/06.webp",
+      "width": 1280,
+      "height": 679,
+      "bytes": 54386
+    },
+    {
+      "src": "/images/courses/galeria/sql-server/07.webp",
+      "width": 1280,
+      "height": 676,
+      "bytes": 79872
+    }
+  ]
+}

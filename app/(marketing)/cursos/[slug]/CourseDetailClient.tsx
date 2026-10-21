@@ -4,6 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import CourseImage from "@/components/shared/CourseImage";
+import CourseGallery from "@/components/marketing/CourseGallery";
+import { hasCourseGallery } from "@/lib/data/course-gallery";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -420,6 +422,8 @@ export default function CourseDetailClient({
     "Proyectos con datos reales",
   ];
 
+  const hasGallery = hasCourseGallery(course.slug);
+
   return (
     <>
       <section className="bg-canvas px-4 pt-10 sm:px-6 lg:px-8 lg:pt-14">
@@ -473,17 +477,26 @@ export default function CourseDetailClient({
               {activeLevel ? <li>{activeLevel.name}</li> : null}
             </ul>
 
-            <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-[26px] border border-line bg-wash">
-              <CourseImage
-                src={course.imageUrl}
-                alt={course.title}
-                fill
-                preload
-                fetchPriority="high"
-                sizes="(max-width: 1024px) 100vw, 58vw"
-                className="object-cover"
+            {hasGallery ? (
+              <CourseGallery
+                slug={course.slug}
+                title={course.title}
+                coverSrc={course.imageUrl}
+                coverAlt={course.title}
               />
-            </div>
+            ) : (
+              <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-[26px] border border-line bg-wash">
+                <CourseImage
+                  src={course.imageUrl}
+                  alt={course.title}
+                  fill
+                  preload
+                  fetchPriority="high"
+                  sizes="(max-width: 1024px) 100vw, 58vw"
+                  className="object-cover"
+                />
+              </div>
+            )}
 
             <CourseCohortStrip
               pending={false}
