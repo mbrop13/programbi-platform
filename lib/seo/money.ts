@@ -42,11 +42,11 @@ export const COURSE_SEO: Record<
     audience:
       "Para analistas, control de gestión y finanzas que hoy reportan en Excel y quieren armar dashboards propios en Power BI.",
     intro:
-      "Este es un curso Power BI en Chile, en vivo por Zoom, para analistas, control de gestión y finanzas que hoy consolidan cifras en Excel y necesitan un dashboard que ellos mismos puedan mantener.\n\nEl curso abierto es básico-intermedio, 20 horas —horario vespertino Chile, con grabaciones en el campus—. Une Power Query (ETL) con el modelo estrella y DAX (CALCULATE, FILTER, time intelligence). El curso avanzado, también de 20 horas, cubre publicación en Power BI Service y seguridad a nivel de fila. El objetivo es un tablero usable en el trabajo, no una captura de pantalla.\n\nSi buscas cursos de Power BI en Chile para formarte como persona, este es el camino. Si tu empresa necesita los tres niveles, cotiza en la vista para empresas de este curso. Un tablero en producción con datos propios vive en /empresas. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.",
+      "Este es un curso Power BI en Chile, en vivo por Zoom, para analistas, control de gestión y finanzas que hoy consolidan cifras en Excel y necesitan un dashboard que ellos mismos puedan mantener.\n\nEl curso abierto es básico-intermedio, 20 horas —horario vespertino (hora de Chile), con grabaciones en el campus—. Une Power Query (ETL) con el modelo estrella y DAX (CALCULATE, FILTER, time intelligence). El curso avanzado, también de 20 horas, cubre publicación en Power BI Service y seguridad a nivel de fila. El objetivo es un tablero usable en el trabajo, no una captura de pantalla.\n\nSi buscas cursos de Power BI en Chile para formarte como persona, este es el camino. Si tu empresa necesita los tres niveles, cotiza en la vista para empresas de este curso. Un tablero en producción con datos propios vive en /empresas. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.",
     faqs: [
       {
         q: "¿Hay un curso Power BI en Chile, en vivo?",
-        a: "Sí. ProgramBI dicta el curso Power BI en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. El curso abierto es básico-intermedio, 20 horas: Power Query, modelo y DAX. El curso avanzado, de 20 horas, cubre publicación y RLS.",
+        a: "Sí. ProgramBI dicta el curso Power BI en vivo por Zoom, en horario vespertino (hora de Chile), con grabaciones en el campus. El curso abierto es básico-intermedio, 20 horas: Power Query, modelo y DAX. El curso avanzado, de 20 horas, cubre publicación y RLS.",
       },
       {
         q: "¿Qué cubren los cursos de Power BI?",
@@ -74,11 +74,11 @@ export const COURSE_SEO: Record<
     audience:
       "Para profesionales de finanzas, control de gestión y operaciones que hoy reportan en Excel y quieren el oficio de analista de datos: SQL, Power BI y Python.",
     intro:
-      "Este es un curso de análisis de datos en Chile, en vivo por Zoom, para profesionales de finanzas, control de gestión y operaciones que hoy arman reportes en Excel y necesitan un oficio completo de analista de datos.\n\nSon dos niveles de 60 horas cada uno —horario vespertino Chile, con grabaciones en el campus—. El básico-intermedio junta SQL Server, Power BI y Python, de fundamentos a modelado y visualización: 20 horas por herramienta. El avanzado, también de 60 horas, cubre automatización, inteligencia de tiempo y modelos. El programa completo son 120 horas.\n\nSi buscas cursos de análisis de datos para dar el salto de Excel a SQL, Power BI y Python, este es el programa de ProgramBI. Sales del básico-intermedio sabiendo consultar una base, armar un modelo y entregar un dashboard usable. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.",
+      "Este es un curso de análisis de datos en Chile, en vivo por Zoom, para profesionales de finanzas, control de gestión y operaciones que hoy arman reportes en Excel y necesitan un oficio completo de analista de datos.\n\nSon dos niveles de 60 horas cada uno —horario vespertino (hora de Chile), con grabaciones en el campus—. El básico-intermedio junta SQL Server, Power BI y Python, de fundamentos a modelado y visualización: 20 horas por herramienta. El avanzado, también de 60 horas, cubre automatización, inteligencia de tiempo y modelos. El programa completo son 120 horas.\n\nSi buscas cursos de análisis de datos para dar el salto de Excel a SQL, Power BI y Python, este es el programa de ProgramBI. Sales del básico-intermedio sabiendo consultar una base, armar un modelo y entregar un dashboard usable. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor de la próxima cohorte.",
     faqs: [
       {
         q: "¿Hay un curso de análisis de datos en Chile, en vivo?",
-        a: "Sí. ProgramBI dicta el curso de análisis de datos en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. En la misma página eliges básico-intermedio o avanzado, 60 horas cada uno, con SQL Server, Power BI y Python —20 horas por herramienta—. El programa completo son 120 horas.",
+        a: "Sí. ProgramBI dicta el curso de análisis de datos en vivo por Zoom, en horario vespertino (hora de Chile), con grabaciones en el campus. En la misma página eliges básico-intermedio o avanzado, 60 horas cada uno, con SQL Server, Power BI y Python —20 horas por herramienta—. El programa completo son 120 horas.",
       },
       {
         q: "¿Qué se aprende en los cursos de análisis de datos?",
@@ -208,11 +208,11 @@ export const COURSE_SEO: Record<
     audience:
       "Para analistas y operaciones que pierden horas en correos, aprobaciones y copiar datos entre Excel, Outlook y Teams.",
     intro:
-      "Este es un curso Power Automate en Chile, en vivo por Zoom, para analistas y operaciones que pierden horas en correos, aprobaciones y copiar datos entre Excel, Outlook y Teams.\n\nEn 20 horas —horario vespertino Chile, con grabaciones en el campus— armas flujos en la nube (automatizados, instantáneos y programados), conectores de Microsoft 365, expresiones y aprobaciones. También ves RPA de escritorio y Copilot para diseñar flujos sin código. Sales con automatizaciones que puedes publicar, no con una demo suelta.\n\nSi buscas un curso Power Automate o cursos Power Automate para el día a día en Chile, este es el programa. No hace falta programar: es no-code, con conectores de Microsoft 365. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor. El catálogo completo está en /cursos.",
+      "Este es un curso Power Automate en Chile, en vivo por Zoom, para analistas y operaciones que pierden horas en correos, aprobaciones y copiar datos entre Excel, Outlook y Teams.\n\nEn 20 horas —horario vespertino (hora de Chile), con grabaciones en el campus— armas flujos en la nube (automatizados, instantáneos y programados), conectores de Microsoft 365, expresiones y aprobaciones. También ves RPA de escritorio y Copilot para diseñar flujos sin código. Sales con automatizaciones que puedes publicar, no con una demo suelta.\n\nSi buscas un curso Power Automate o cursos Power Automate para el día a día en Chile, este es el programa. No hace falta programar: es no-code, con conectores de Microsoft 365. El siguiente paso es registrarte: con una cuenta ves fechas, cupos y el valor. El catálogo completo está en /cursos.",
     faqs: [
       {
         q: "¿Hay un curso Power Automate en Chile, en vivo?",
-        a: "Sí. ProgramBI dicta el curso Power Automate en vivo por Zoom, en horario vespertino Chile, con grabaciones en el campus. Son 20 horas, enfocadas en flujos reales.",
+        a: "Sí. ProgramBI dicta el curso Power Automate en vivo por Zoom, en horario vespertino (hora de Chile), con grabaciones en el campus. Son 20 horas, enfocadas en flujos reales.",
       },
       {
         q: "¿Qué se aprende en un curso Power Automate?",

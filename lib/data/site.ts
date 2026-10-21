@@ -78,7 +78,7 @@ export const homeFaqs = [
   },
   {
     q: "¿Cómo son las clases?",
-    a: "En vivo por Zoom, dos horas por sesión, en horario vespertino Chile. Todas las clases quedan grabadas de por vida.",
+    a: "En vivo por Zoom, dos horas por sesión, en horario vespertino (hora de Chile). Todas las clases quedan grabadas de por vida.",
   },
   {
     q: "¿Qué pasa si falto a una clase?",
