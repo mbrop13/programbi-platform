@@ -12,7 +12,6 @@ import {
 import { SITE_URL, absoluteUrl } from "@/lib/seo";
 import { COURSE_SEO } from "@/lib/seo/money";
 import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
-import { resolverCobro } from "@/lib/paises/cobro";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado, precioCurso } from "@/lib/paises/precios";
 
@@ -45,12 +44,11 @@ export function getCourseJsonLd(
   const name = view === "avanzado" ? advancedHeading(baseName) : baseName;
   const hours = offerHours(course, view);
   const catalogPrice = offerLowPrice(course, view);
-  const modo = pais === ISO_CHILE ? "catalogo" : resolverCobro(pais).modo;
-  const cobraLocal = modo === "local" || modo === "usd-chile";
   const localPrice = precioCurso(pais, course.slug);
-  const lowestPrice = cobraLocal ? localPrice ?? undefined : catalogPrice;
+  // Chile cobra el catálogo en CLP; el resto de países, su precio local.
+  const lowestPrice = pais === ISO_CHILE ? catalogPrice : (localPrice ?? catalogPrice);
+  const moneda = pais === ISO_CHILE ? "CLP" : getPais(pais).moneda;
   const path = rutaLocal(pais, coursePath(course.slug, view));
-  const moneda = pais === ISO_CHILE || !cobraLocal ? "CLP" : getPais(pais).moneda;
 
   return {
     "@type": "Course",
@@ -85,6 +83,8 @@ export function getCourseJsonLd(
       PREREQUISITES[course.slug] || "No se requieren conocimientos previos de programación.",
     educationalCredentialAwarded: "Certificado de Aprobación Oficial ProgramBI SPA",
     occupationalCategory: OCCUPATIONAL[course.slug] || "Analista de Datos, Profesional de Negocios",
+    // El curso se ofrece en el mercado de esta versión de la página.
+    areaServed: { "@type": "Country", name: getPais(pais).nombre },
     hasCourseInstance: {
       "@type": "CourseInstance",
       courseMode: "Online",

@@ -68,6 +68,8 @@ import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { formatMoneda, localizarMercado, MARCA_DEFINIR_PRECIO, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
+import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
+import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
 import { ISO_CHILE } from "@/config/paises";
 
 function courseCheckoutUrl(slug: string, levelName?: string, pais?: string) {
@@ -134,13 +136,16 @@ export default function CourseDetailClient({
   initialSchedules,
   initialView = "publico",
   initialLevelName,
-  cobroLocal = false,
+  mostrarPrecioLocal = false,
+  detalleLocal,
 }: {
   course: Course;
   initialSchedules: CourseSchedule[];
   initialView?: CourseOfferView;
   initialLevelName?: string;
-  cobroLocal?: boolean;
+  /** Muestra el precio del mercado local (por país) en vez del catálogo en CLP. */
+  mostrarPrecioLocal?: boolean;
+  detalleLocal?: DetalleCursoLocal;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -184,7 +189,7 @@ export default function CourseDetailClient({
 
   const precioLocal = pais === ISO_CHILE ? null : precioCurso(pais, course.slug);
   const listaLocal = pais === ISO_CHILE ? null : precioLista(pais, course.slug);
-  const cobraLocal = pais !== ISO_CHILE && cobroLocal && precioLocal != null;
+  const cobraLocal = pais !== ISO_CHILE && mostrarPrecioLocal && precioLocal != null;
   const mostrarLocal = cobraLocal;
   const descuentoLocal =
     listaLocal != null && precioLocal != null ? porcentajeDescuento(listaLocal, precioLocal) : 0;
@@ -793,6 +798,8 @@ export default function CourseDetailClient({
       </section>
 
       {isCroTemplate ? <CourseFaq slug={course.slug} /> : null}
+
+      {detalleLocal ? <CourseLocalSeo detalle={detalleLocal} /> : null}
 
       <CourseContactForm course={course} />
 
