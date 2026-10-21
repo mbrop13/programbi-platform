@@ -2,12 +2,12 @@ import type { Metadata } from "next";
 import { esIsoPais, ISO_CHILE } from "@/config/paises";
 import { metadataLocal } from "@/lib/paises/metadata";
 
-const path = "/implementacion-power-bi";
-const title = "Implementación Power BI Chile | ProgramBI";
+const path = "/migrar-excel-a-power-bi";
+const title = "Migrar Excel a Power BI Chile | Control de gestión";
 const description =
-  "Implementación Power BI en Chile para control de gestión: dashboards, capacitación in-company y acompañamiento. Diagnóstico por WhatsApp.";
+  "Migrar Excel a Power BI en Chile: tableros para control de gestión y capacitación del equipo. Cotiza in-company o el curso abierto.";
 
-export { default } from "../../implementacion-power-bi/page";
+export { default } from "../../../(marketing)/migrar-excel-a-power-bi/page";
 
 export async function generateMetadata({
   params,

@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
     root: path.join(__dirname),
   },
   experimental: {
+    // Cada grupo de rutas tiene su propio root layout, así que el 404 global
+    // se declara en app/global-not-found.tsx.
+    globalNotFound: true,
     optimizePackageImports: [
       "lucide-react",
       "framer-motion",

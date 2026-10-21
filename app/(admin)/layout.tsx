@@ -1,9 +1,14 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AdminShell } from "@/components/admin/AdminShell";
+import RootShell from "@/components/shared/RootShell";
+import { METADATA_BASE } from "@/lib/seo/metadata-base";
 
-export const metadata = {
-  title: "Admin | ProgramBI",
+export const metadata: Metadata = {
+  ...METADATA_BASE,
+  title: "Admin",
+  alternates: { canonical: null },
   robots: { index: false, follow: false },
 };
 
@@ -26,5 +31,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/comunidad/inicio");
   }
 
-  return <AdminShell>{children}</AdminShell>;
+  return (
+    <RootShell lang="es-CL">
+      <AdminShell>{children}</AdminShell>
+    </RootShell>
+  );
 }

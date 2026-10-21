@@ -1,14 +1,13 @@
-import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Suspense } from "react";
 import { Geist, Dancing_Script } from "next/font/google";
-import "./globals.css";
-import Providers from "./providers";
 import { Analytics } from "@vercel/analytics/react";
+import Providers from "@/app/providers";
 import MarketingAnalytics from "@/components/shared/MarketingAnalytics";
 import AttributionCapture from "@/components/shared/AttributionCapture";
 import ReferralClaim from "@/components/shared/ReferralClaim";
-import { SITE_URL, ORG_ID, WEBSITE_ID, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
-import { PAGE_SEO } from "@/lib/seo/money";
+import { ORG_ID, SITE_URL, WEBSITE_ID, jsonLdString } from "@/lib/seo";
+import "@/app/globals.css";
 
 const geist = Geist({
   variable: "--font-sans",
@@ -23,67 +22,6 @@ const dancing = Dancing_Script({
   weight: ["700"],
   preload: false,
 });
-
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: PAGE_SEO.home.title,
-    template: "%s | ProgramBI",
-  },
-  description: PAGE_SEO.home.description,
-  keywords: [
-    "curso Power BI Chile",
-    "cursos de power bi chile",
-    "cursos analisis de datos",
-    "Power BI empresas Chile",
-    "capacitación Power BI Chile",
-    "SQL Server",
-    "Python datos",
-    "Business Intelligence Chile",
-    "ProgramBI",
-  ],
-  authors: [{ name: "ProgramBI", url: SITE_URL }],
-  creator: "ProgramBI",
-  publisher: "ProgramBI",
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  alternates: {
-    canonical: "/",
-  },
-  openGraph: {
-    type: "website",
-    locale: "es_CL",
-    url: SITE_URL,
-    siteName: "ProgramBI",
-    title: PAGE_SEO.home.title,
-    description: PAGE_SEO.home.description,
-    images: [DEFAULT_OG_IMAGE],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: PAGE_SEO.home.title,
-    description: PAGE_SEO.home.description,
-    images: [DEFAULT_OG_IMAGE.url],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  verification: {
-    // Add your Google Search Console verification code here when you have it
-    // google: "your-verification-code",
-  },
-};
 
 // JSON-LD Structured Data: Organization + WebSite
 const jsonLd = {
@@ -154,13 +92,20 @@ const jsonLd = {
   ],
 };
 
-export default function RootLayout({
+/**
+ * Cáscara HTML compartida por los root layouts.
+ * Cada grupo de rutas tiene su propio root layout (Chile, versiones por país,
+ * auth, admin y comunidad) para poder poner su propio <html lang>.
+ */
+export default function RootShell({
+  lang,
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: {
+  lang: string;
+  children: ReactNode;
+}) {
   return (
-    <html lang="es" suppressHydrationWarning className={`${geist.variable} ${dancing.variable}`}>
+    <html lang={lang} suppressHydrationWarning className={`${geist.variable} ${dancing.variable}`}>
       <head>
         <script
           type="application/ld+json"

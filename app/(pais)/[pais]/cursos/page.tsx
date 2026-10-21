@@ -5,7 +5,7 @@ import { PAGE_SEO } from "@/lib/seo/money";
 
 export const revalidate = 3600;
 
-export { default } from "../page";
+export { default } from "../../../(marketing)/cursos/page";
 
 export async function generateMetadata({
   params,
@@ -16,8 +16,8 @@ export async function generateMetadata({
   if (!esIsoPais(pais) || pais === ISO_CHILE) return {};
   return metadataLocal({
     pais,
-    path: "/",
-    title: PAGE_SEO.home.title,
-    description: PAGE_SEO.home.description,
+    path: "/cursos",
+    title: PAGE_SEO.cursos.title,
+    description: PAGE_SEO.cursos.description,
   });
 }

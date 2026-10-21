@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import { esIsoPais, ISO_CHILE } from "@/config/paises";
 import { metadataLocal } from "@/lib/paises/metadata";
 
-const path = "/migrar-excel-a-power-bi";
-const title = "Migrar Excel a Power BI Chile | Control de gestión";
+const title = "Sobre nosotros — Academia de análisis de datos";
 const description =
-  "Migrar Excel a Power BI en Chile: tableros para control de gestión y capacitación del equipo. Cotiza in-company o el curso abierto.";
+  "Conoce ProgramBI: la institución de capacitación profesional líder en Power BI, SQL, Python y Machine Learning en Chile y Latinoamérica. Fundada por Manuel Oliva.";
 
-export { default } from "../../migrar-excel-a-power-bi/page";
+export { default } from "../../../(marketing)/nosotros/page";
 
 export async function generateMetadata({
   params,
@@ -16,5 +15,5 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { pais } = await params;
   if (!esIsoPais(pais) || pais === ISO_CHILE) return {};
-  return metadataLocal({ pais, path, title, description });
+  return metadataLocal({ pais, path: "/nosotros", title, description });
 }

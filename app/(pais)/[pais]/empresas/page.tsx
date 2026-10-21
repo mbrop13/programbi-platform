@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import { esIsoPais, ISO_CHILE } from "@/config/paises";
 import { metadataLocal } from "@/lib/paises/metadata";
-import { GUIDE_SEO } from "@/lib/seo/money";
+import { PAGE_SEO } from "@/lib/seo/money";
 
-const copy = GUIDE_SEO["por-que-fallan-proyectos-power-bi"];
-
-export { default } from "../../por-que-fallan-proyectos-power-bi/page";
+export { default } from "../../../(marketing)/empresas/page";
 
 export async function generateMetadata({
   params,
@@ -16,8 +14,8 @@ export async function generateMetadata({
   if (!esIsoPais(pais) || pais === ISO_CHILE) return {};
   return metadataLocal({
     pais,
-    path: copy.path,
-    title: copy.title,
-    description: copy.description,
+    path: "/empresas",
+    title: PAGE_SEO.empresas.title,
+    description: PAGE_SEO.empresas.description,
   });
 }

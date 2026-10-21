@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import { esIsoPais, ISO_CHILE } from "@/config/paises";
 import { metadataLocal } from "@/lib/paises/metadata";
 
-const title = "Sobre nosotros — Academia de análisis de datos";
+const title = "Preguntas frecuentes — Soporte y consultas";
 const description =
-  "Conoce ProgramBI: la institución de capacitación profesional líder en Power BI, SQL, Python y Machine Learning en Chile y Latinoamérica. Fundada por Manuel Oliva.";
+  "Resuelve tus dudas sobre los cursos de análisis de datos en vivo, metodologías, grabaciones de clases, certificados oficiales y asesorías corporativas de ProgramBI.";
 
-export { default } from "../../nosotros/page";
+export { default } from "../../../(marketing)/faq/page";
 
 export async function generateMetadata({
   params,
@@ -15,5 +15,5 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { pais } = await params;
   if (!esIsoPais(pais) || pais === ISO_CHILE) return {};
-  return metadataLocal({ pais, path: "/nosotros", title, description });
+  return metadataLocal({ pais, path: "/faq", title, description });
 }
