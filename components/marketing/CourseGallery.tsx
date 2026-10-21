@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Expand, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import CourseImage from "@/components/shared/CourseImage";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { getCourseGallery } from "@/lib/data/course-gallery";
@@ -18,12 +18,9 @@ function prefersReducedMotion() {
 }
 
 /**
- * Portada del curso + carrusel de clases reales.
- *
- * La portada se mantiene a la izquierda (es la identidad del curso) y a la
- * derecha corre un riel horizontal con las capturas de las clases en vivo.
- * El usuario desplaza con el dedo, con las flechas o abriendo cualquier
- * captura en pantalla completa.
+ * Una sola tira: la imagen principal grande y la siguiente asomando a la
+ * derecha. Sin el recuadro de "clases reales". El contador, las flechas y
+ * la línea de avance quedan debajo, sueltos.
  */
 export default function CourseGallery({
   slug,
@@ -39,7 +36,7 @@ export default function CourseGallery({
   const shots = getCourseGallery(slug);
 
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const slideRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const slideRefs = useRef<(HTMLElement | null)[]>([]);
   const dragRef = useRef({ x: 0, moved: false });
 
   const [active, setActive] = useState(0);
@@ -48,7 +45,7 @@ export default function CourseGallery({
   const [canNext, setCanNext] = useState(false);
   const [lightbox, setLightbox] = useState<number | null>(null);
 
-  const total = shots.length;
+  const total = shots.length === 0 ? 0 : shots.length + 1;
 
   const syncFromScroll = useCallback(() => {
     const track = trackRef.current;
@@ -60,13 +57,11 @@ export default function CourseGallery({
     setCanNext(track.scrollLeft < maxScroll - 4);
 
     const trackRect = track.getBoundingClientRect();
-    const center = trackRect.left + trackRect.width / 2;
     let closest = 0;
     let closestDistance = Number.POSITIVE_INFINITY;
     slideRefs.current.forEach((slide, index) => {
       if (!slide) return;
-      const rect = slide.getBoundingClientRect();
-      const distance = Math.abs(rect.left + rect.width / 2 - center);
+      const distance = Math.abs(slide.getBoundingClientRect().left - trackRect.left);
       if (distance < closestDistance) {
         closestDistance = distance;
         closest = index;
@@ -138,7 +133,7 @@ export default function CourseGallery({
     return () => document.removeEventListener("keydown", onKeyDown, true);
   }, [lightbox, stepLightbox]);
 
-  if (total === 0) return null;
+  if (shots.length === 0) return null;
 
   const openLightbox = (index: number) => {
     if (dragRef.current.moved) return;
@@ -149,128 +144,90 @@ export default function CourseGallery({
 
   const shot = lightbox !== null ? shots[lightbox] : null;
 
+  const slideClass =
+    "relative aspect-[16/9] w-[calc(100%-6.5rem)] shrink-0 snap-start overflow-hidden rounded-[22px] border border-line bg-wash";
+
   return (
-    <section className="mt-8" aria-label={`Clases reales de ${title}`}>
-      <div className="grid gap-4 lg:grid-cols-2 lg:items-center">
-        {/* ── Portada del curso ─────────────────────────────────────── */}
-        <div className="relative aspect-[8/5] w-full overflow-hidden rounded-[22px] border border-line bg-wash shadow-[0_18px_50px_rgba(23,23,22,0.10)]">
+    <section className="mt-8" aria-label={`Imágenes de ${title}`}>
+      <div
+        ref={trackRef}
+        className="flex snap-x snap-mandatory gap-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        onPointerDown={(event) => {
+          dragRef.current = { x: event.clientX, moved: false };
+        }}
+        onPointerMove={(event) => {
+          if (Math.abs(event.clientX - dragRef.current.x) > 8) dragRef.current.moved = true;
+        }}
+      >
+        <div
+          ref={(node) => {
+            slideRefs.current[0] = node;
+          }}
+          className={slideClass}
+        >
           <CourseImage
             src={coverSrc}
             alt={coverAlt}
             fill
             preload
             fetchPriority="high"
-            sizes="(max-width: 1024px) 100vw, 34vw"
+            sizes="(max-width: 1024px) 86vw, 52vw"
             className="object-cover object-center"
           />
         </div>
-
-        {/* ── Carrusel de clases reales ──────────────────────────────── */}
-        <div className="flex flex-col rounded-[22px] border border-line bg-paper p-3 sm:p-4">
-          <div className="flex items-start justify-between gap-3 px-1">
-            <div className="min-w-0">
-              <p className="flex items-center gap-2 text-sm font-semibold tracking-tight text-ink">
-                <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ink/40" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-ink" />
-                </span>
-                Clases reales en vivo
-              </p>
-              <p
-                className="mt-1 truncate text-xs leading-relaxed text-mute"
-                title={shots[active]?.caption}
-              >
-                {shots[active]?.caption}
-              </p>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-1.5">
-              <span className="font-mono text-xs tabular-nums text-mute">
-                {pad(active + 1)}
-                <span className="mx-1 text-faint">/</span>
-                {pad(total)}
-              </span>
-              <button
-                type="button"
-                onClick={() => go(active - 1)}
-                disabled={!canPrev}
-                aria-label="Captura anterior"
-                className="grid h-8 w-8 place-items-center rounded-full border border-line bg-canvas text-ink transition-colors hover:bg-wash disabled:cursor-not-allowed disabled:opacity-35"
-              >
-                <ChevronLeft size={16} />
-              </button>
-              <button
-                type="button"
-                onClick={() => go(active + 1)}
-                disabled={!canNext}
-                aria-label="Captura siguiente"
-                className="grid h-8 w-8 place-items-center rounded-full border border-line bg-canvas text-ink transition-colors hover:bg-wash disabled:cursor-not-allowed disabled:opacity-35"
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
-          </div>
-
-          <div className="relative mt-3">
-            <div
-              ref={trackRef}
-              className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-              onPointerDown={(event) => {
-                dragRef.current = { x: event.clientX, moved: false };
-              }}
-              onPointerMove={(event) => {
-                if (Math.abs(event.clientX - dragRef.current.x) > 8) dragRef.current.moved = true;
-              }}
-            >
-              {shots.map((item, index) => (
-                <button
-                  key={item.src}
-                  ref={(node) => {
-                    slideRefs.current[index] = node;
-                  }}
-                  type="button"
-                  onClick={() => openLightbox(index)}
-                  onFocus={() => go(index)}
-                  aria-label={`Ampliar: ${item.caption}`}
-                  className={cn(
-                    "group relative aspect-[16/9] w-[clamp(200px,72%,320px)] shrink-0 snap-start overflow-hidden rounded-2xl border bg-wash text-left transition-[border-color,box-shadow,opacity]",
-                    index === active
-                      ? "border-ink/35 shadow-[0_10px_30px_rgba(23,23,22,0.12)]"
-                      : "border-line opacity-90 hover:opacity-100"
-                  )}
-                >
-                  <Image
-                    src={item.src}
-                    alt={item.caption}
-                    fill
-                    sizes="(max-width: 1024px) 72vw, 320px"
-                    className="object-cover object-top transition-transform duration-500 group-hover:scale-[1.03]"
-                  />
-                  <span className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent px-3 pb-2.5 pt-8">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2 py-0.5 text-[11px] font-semibold text-ink">
-                      {item.tool}
-                    </span>
-                  </span>
-                  <span className="pointer-events-none absolute right-2 top-2 grid h-7 w-7 place-items-center rounded-full bg-black/55 text-white opacity-0 transition-opacity group-hover:opacity-100">
-                    <Expand size={13} />
-                  </span>
-                </button>
-              ))}
-            </div>
-            {/* Pista visual de que el riel sigue hacia la derecha. */}
-            <span
-              aria-hidden
-              className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-paper to-transparent"
+        {shots.map((item, index) => (
+          <button
+            key={item.src}
+            ref={(node) => {
+              slideRefs.current[index + 1] = node;
+            }}
+            type="button"
+            onClick={() => openLightbox(index)}
+            onFocus={() => go(index + 1)}
+            aria-label={`Ampliar: ${item.caption}`}
+            className={cn(slideClass, "cursor-pointer text-left")}
+          >
+            <Image
+              src={item.src}
+              alt={item.caption}
+              fill
+              sizes="(max-width: 1024px) 86vw, 52vw"
+              className="object-cover object-top"
             />
-          </div>
+          </button>
+        ))}
+      </div>
 
-          <div className="mt-3 h-[3px] overflow-hidden rounded-full bg-wash" aria-hidden>
-            <div
-              className="h-full rounded-full bg-ink/60 transition-[width] duration-200 ease-out"
-              style={{ width: `${Math.max(progress, 6)}%` }}
-            />
-          </div>
+      <div className="mt-3 flex items-center gap-3">
+        <div className="h-[3px] min-w-0 flex-1 overflow-hidden rounded-full bg-wash" aria-hidden>
+          <div
+            className="h-full rounded-full bg-ink/60 transition-[width] duration-200 ease-out motion-reduce:transition-none"
+            style={{ width: `${Math.max(progress, 8)}%` }}
+          />
         </div>
+        <span className="font-mono text-xs tabular-nums text-mute">
+          {pad(active + 1)}
+          <span className="mx-1 text-faint">/</span>
+          {pad(total)}
+        </span>
+        <button
+          type="button"
+          onClick={() => go(active - 1)}
+          disabled={!canPrev}
+          aria-label="Imagen anterior"
+          className="grid h-8 w-8 place-items-center rounded-full border border-line bg-canvas text-ink transition-colors hover:bg-wash disabled:cursor-not-allowed disabled:opacity-35"
+        >
+          <ChevronLeft size={16} />
+        </button>
+        <button
+          type="button"
+          onClick={() => go(active + 1)}
+          disabled={!canNext}
+          aria-label="Imagen siguiente"
+          className="grid h-8 w-8 place-items-center rounded-full border border-line bg-canvas text-ink transition-colors hover:bg-wash disabled:cursor-not-allowed disabled:opacity-35"
+        >
+          <ChevronRight size={16} />
+        </button>
       </div>
 
       {/* ── Vista ampliada ──────────────────────────────────────────── */}
@@ -340,7 +297,7 @@ export default function CourseGallery({
             <p className="font-mono text-xs tabular-nums text-white/60">
               {lightbox !== null ? pad(lightbox + 1) : "01"}
               <span className="mx-1">/</span>
-              {pad(total)}
+              {pad(shots.length)}
             </p>
           </div>
         </DialogContent>
