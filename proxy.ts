@@ -34,13 +34,14 @@ export async function proxy(request: NextRequest) {
 
   // Legacy locale prefixes (/es, /en) from the old Maverlang merge — strip and redirect.
   // Language is controlled only from user settings, not the URL.
+  // 301 (permanente): el prefijo /es ya no vuelve, no es una redirección temporal.
   const localeMatch = pathname.match(/^\/(es|en)(\/.*)?$/)
   if (localeMatch) {
     const rest = localeMatch[2] || '/'
     const cleanPath = rest === '' ? '/' : rest
     const url = request.nextUrl.clone()
     url.pathname = cleanPath
-    return NextResponse.redirect(url)
+    return NextResponse.redirect(url, 301)
   }
 
   // Bloqueo inmediato en Edge de bots agresivos en rutas sensibles (auth/registro/api)
