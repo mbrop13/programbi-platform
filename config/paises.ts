@@ -98,12 +98,30 @@ export type Pais = {
   dispositivo: "computador" | "computadora";
   /** Voseo solo en titulares y botones. */
   voseo: boolean;
+  /**
+   * ¿La versión por país puede indexarse?
+   * Indexables: Chile (raíz), Argentina, México, Perú, Colombia y Uruguay.
+   * El resto queda en noindex, follow y fuera del sitemap y de los hreflang.
+   */
+  indexable: boolean;
+  /** Zona horaria IANA. Sirve para convertir el horario de las clases. */
+  zonaHoraria: string;
+  /** Medios de pago disponibles en ese país. */
+  mediosPago: string[];
   contacto: {
     email: string;
     whatsapp: string | null;
     ciudad: string;
   };
 };
+
+/**
+ * Referencia para mostrar el precio en dólares: 1 USD = 900 CLP.
+ * Es la misma referencia que usa el checkout (ver app/(marketing)/pago).
+ * Actualízala cuando el dólar se mueva.
+ */
+export const TIPO_CAMBIO_USD = 900;
+
 
 const EMAIL = "contacto@programbi.cl";
 const WHATSAPP_CL = "https://wa.me/56935409699";
@@ -130,6 +148,9 @@ export const PAISES: Pais[] = [
     listas: "catalogo",
     dispositivo: "computador",
     voseo: false,
+    indexable: true,
+    zonaHoraria: "America/Santiago",
+    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en pesos"],
     contacto: { email: EMAIL, whatsapp: WHATSAPP_CL, ciudad: "Santiago, Chile" },
   },
   {
@@ -145,6 +166,9 @@ export const PAISES: Pais[] = [
     listas: PRECIOS_LISTA_ARS,
     dispositivo: "computadora",
     voseo: true,
+    indexable: true,
+    zonaHoraria: "America/Argentina/Buenos_Aires",
+    mediosPago: ["Mercado Pago Argentina (tarjeta de crédito o débito)", "Mercado Pago Wallet", "Transferencia bancaria en pesos"],
     contacto: contactoPendiente("ar"),
   },
   {
@@ -160,6 +184,9 @@ export const PAISES: Pais[] = [
     listas: listas(117),
     dispositivo: "computadora",
     voseo: false,
+    indexable: false,
+    zonaHoraria: "America/La_Paz",
+    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("bo"),
   },
   {
@@ -175,6 +202,9 @@ export const PAISES: Pais[] = [
     listas: listas(440000),
     dispositivo: "computadora",
     voseo: false,
+    indexable: true,
+    zonaHoraria: "America/Bogota",
+    mediosPago: ["Mercado Pago Colombia (tarjeta de crédito o débito)", "PSE", "Nequi", "Transferencia bancaria en pesos"],
     contacto: contactoPendiente("co"),
   },
   {
@@ -191,6 +221,9 @@ export const PAISES: Pais[] = [
     listas: listas(220),
     dispositivo: "computadora",
     voseo: false,
+    indexable: false,
+    zonaHoraria: "America/Costa_Rica",
+    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("cr"),
   },
   {
@@ -206,6 +239,9 @@ export const PAISES: Pais[] = [
     listas: listas(146),
     dispositivo: "computadora",
     voseo: false,
+    indexable: false,
+    zonaHoraria: "America/Guayaquil",
+    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("ec"),
   },
   {
@@ -221,6 +257,9 @@ export const PAISES: Pais[] = [
     listas: listas(131),
     dispositivo: "computadora",
     voseo: false,
+    indexable: false,
+    zonaHoraria: "America/El_Salvador",
+    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("sv"),
   },
   {
@@ -236,6 +275,9 @@ export const PAISES: Pais[] = [
     listas: listas(131),
     dispositivo: "computadora",
     voseo: false,
+    indexable: false,
+    zonaHoraria: "America/Guatemala",
+    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("gt"),
   },
   {
@@ -251,6 +293,9 @@ export const PAISES: Pais[] = [
     listas: listas(117),
     dispositivo: "computadora",
     voseo: false,
+    indexable: false,
+    zonaHoraria: "America/Tegucigalpa",
+    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("hn"),
   },
   {
@@ -266,6 +311,9 @@ export const PAISES: Pais[] = [
     listas: listas(3220),
     dispositivo: "computadora",
     voseo: false,
+    indexable: true,
+    zonaHoraria: "America/Mexico_City",
+    mediosPago: ["Mercado Pago México (tarjeta de crédito o débito)", "SPEI", "OXXO", "Mercado Pago Wallet"],
     contacto: contactoPendiente("mx"),
   },
   {
@@ -281,6 +329,9 @@ export const PAISES: Pais[] = [
     listas: listas(102),
     dispositivo: "computadora",
     voseo: false,
+    indexable: false,
+    zonaHoraria: "America/Managua",
+    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("ni"),
   },
   {
@@ -297,6 +348,9 @@ export const PAISES: Pais[] = [
     listas: listas(220),
     dispositivo: "computadora",
     voseo: false,
+    indexable: false,
+    zonaHoraria: "America/Panama",
+    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("pa"),
   },
   {
@@ -312,6 +366,9 @@ export const PAISES: Pais[] = [
     listas: listas(131),
     dispositivo: "computadora",
     voseo: false,
+    indexable: false,
+    zonaHoraria: "America/Asuncion",
+    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("py"),
   },
   {
@@ -327,6 +384,9 @@ export const PAISES: Pais[] = [
     listas: listas(514),
     dispositivo: "computadora",
     voseo: false,
+    indexable: true,
+    zonaHoraria: "America/Lima",
+    mediosPago: ["Mercado Pago Perú (tarjeta de crédito o débito)", "Yape o Plin", "Transferencia bancaria en soles"],
     contacto: contactoPendiente("pe"),
   },
   {
@@ -342,6 +402,9 @@ export const PAISES: Pais[] = [
     listas: listas(161),
     dispositivo: "computadora",
     voseo: false,
+    indexable: false,
+    zonaHoraria: "America/Santo_Domingo",
+    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("do"),
   },
   {
@@ -357,6 +420,9 @@ export const PAISES: Pais[] = [
     listas: listas(8790),
     dispositivo: "computadora",
     voseo: true,
+    indexable: true,
+    zonaHoraria: "America/Montevideo",
+    mediosPago: ["Mercado Pago Uruguay (tarjeta de crédito o débito)", "Mercado Pago Wallet", "Transferencia bancaria en pesos uruguayos"],
     contacto: contactoPendiente("uy"),
   },
   {
@@ -372,6 +438,9 @@ export const PAISES: Pais[] = [
     listas: listas(102),
     dispositivo: "computadora",
     voseo: false,
+    indexable: false,
+    zonaHoraria: "America/Caracas",
+    mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("ve"),
   },
 ];
@@ -390,6 +459,17 @@ export function getPais(iso: string | null | undefined): Pais {
 
 /** Países con carpeta. Chile no está. */
 export const PAISES_CARPETA = PAISES.filter((pais) => pais.iso !== ISO_CHILE);
+
+/**
+ * Versiones por país que Google puede indexar.
+ * Chile entra por la raíz (sin carpeta), el resto por su carpeta /xx.
+ */
+export const PAISES_INDEXABLES = PAISES.filter((pais) => pais.indexable);
+
+/** ¿La versión de ese país se puede indexar? */
+export function esIndexable(iso: string | null | undefined): boolean {
+  return esIsoPais(iso) ? POR_ISO.get(iso)!.indexable : false;
+}
 
 export function normalizarPais(iso: string | null | undefined): string {
   return esIsoPais(iso) ? iso : ISO_CHILE;
