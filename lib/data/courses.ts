@@ -53,7 +53,7 @@ export const courses: Course[] = [
     accentColor: "#1890FF",
     isFeatured: true,
     sortOrder: 1,
-    youtubeVideoId: "LiupEKDc3Ms",
+    youtubeVideoId: "LBjYkdFpKxc",
     whatYouLearn: [
       "Consultas SQL desde cero hasta avanzado",
       "Modelado de datos y DAX en Power BI",
@@ -506,7 +506,7 @@ export const courses: Course[] = [
     accentColor: "#F2C811",
     isFeatured: true,
     sortOrder: 2,
-    youtubeVideoId: "7197F-yNw04",
+    youtubeVideoId: "LBjYkdFpKxc",
     whatYouLearn: [
       "ETL con Power Query",
       "Modelado dimensional estrella",
@@ -571,7 +571,7 @@ export const courses: Course[] = [
     accentColor: "#3776AB",
     isFeatured: true,
     sortOrder: 6,
-    youtubeVideoId: "csPtN5bI_cw",
+    youtubeVideoId: "eFzPRidlzxk",
     whatYouLearn: [
       "Fundamentos de Python desde cero",
       "Estructuras de datos y funciones",
@@ -635,7 +635,7 @@ export const courses: Course[] = [
     accentColor: "#64748B",
     isFeatured: true,
     sortOrder: 3,
-    youtubeVideoId: "HOObY8gOVQg",
+    youtubeVideoId: "9WBTHDYEHlQ",
     whatYouLearn: [
       "Consultas SELECT complejas",
       "JOINs, subqueries y CTEs",
