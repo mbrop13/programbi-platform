@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: { absolute: PAGE_SEO.empresas.title },
   description: PAGE_SEO.empresas.description,
   alternates: {
-    canonical: "/empresas",
+    canonical: absoluteUrl("/empresas"),
     languages: hreflangDe("/empresas"),
   },
   openGraph: {

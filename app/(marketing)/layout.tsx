@@ -7,7 +7,8 @@ import { METADATA_BASE } from "@/lib/seo/metadata-base";
 
 export const metadata: Metadata = {
   ...METADATA_BASE,
-  alternates: { canonical: "/" },
+  // Sin canonical de layout: uno global en "/" hace que el resto de páginas
+  // herede la home. Cada página indexable declara el suyo.
 };
 
 export default function MarketingLayout({
