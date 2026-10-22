@@ -22,14 +22,21 @@ function tokenLocal(iso: string): string {
 }
 
 /**
- * Todos los países cobran con el token de Chile, en pesos chilenos.
- * La cuenta de Chile no puede crear un cobro en otra moneda.
+ * Si existe MERCADOPAGO_ACCESS_TOKEN_<PAIS>, cobra en la moneda de ese país.
+ * Si no existe, usa la cuenta de Chile y cobra en CLP.
+ * No crea tokens: solo lee la variable si ya está en el entorno.
  */
 export function resolverCobro(iso: string | null | undefined): CobroPais {
   const pais = getPais(normalizarPais(iso));
   const chile = tokenChile();
   if (pais.iso === "cl" || pais.pago === "catalogo") {
     return { iso: "cl", modo: "catalogo", moneda: "CLP", marker: null, token: chile, cuenta: "cl" };
+  }
+  if (pais.pago === "mp") {
+    const local = tokenLocal(pais.iso);
+    if (local) {
+      return { iso: pais.iso, modo: "local", moneda: pais.moneda, marker: null, token: local, cuenta: pais.iso };
+    }
   }
   return { iso: pais.iso, modo: "fallback-cl", moneda: "CLP", marker: null, token: chile, cuenta: "cl" };
 }

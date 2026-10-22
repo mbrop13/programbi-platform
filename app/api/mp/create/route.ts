@@ -142,6 +142,8 @@ export async function POST(req: NextRequest) {
         grandTotalClp += bumpAddTotal;
     }
 
+    const baseClp = grandTotalClp;
+
     // Apply coupon discount if present
     if (couponCode) {
       const { validateCouponAction } = await import("@/lib/supabase/comunidad-ai");
@@ -171,7 +173,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Todos los países usan el token de Chile y el total en CLP calculado arriba.
+    // Sin token del país, se cobra el total en CLP con la cuenta de Chile.
+    // Con MERCADOPAGO_ACCESS_TOKEN_<PAIS>, el mismo carrito sale en la moneda local.
     const pais = typeof body.pais === "string" ? body.pais : "cl";
     const { resolverCobro } = await import("@/lib/paises/cobro");
     const { totalLocal } = await import("@/lib/paises/precios");
@@ -180,13 +183,14 @@ export async function POST(req: NextRequest) {
     let chargeCurrency = "CLP";
     let chargeToken: string | undefined;
     let chargeCuenta = "cl";
-    if (cobro.modo === "local" || cobro.modo === "usd-chile") {
+    if (cobro.modo === "local" && cobro.token) {
       const local = totalLocal(
         pais,
         validatedItems.map((item) => ({ slug: item.slug, quantity: item.quantity }))
       );
-      if (local != null && cobro.token) {
-        chargeAmount = local;
+      if (local != null) {
+        const ratio = baseClp > 0 ? grandTotalClp / baseClp : 1;
+        chargeAmount = Math.max(1, Math.round(local * ratio));
         chargeCurrency = cobro.moneda;
         chargeToken = cobro.token;
         chargeCuenta = cobro.cuenta;
