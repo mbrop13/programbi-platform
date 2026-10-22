@@ -7,6 +7,7 @@ import { getPais, ISO_CHILE } from "@/config/paises";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
+import { COMUNIDAD_PUBLICA } from "@/lib/comunidad/visibilidad";
 const socialLinks = [
   { name: "Instagram", href: "https://www.instagram.com/programbi_capacitaciones/" },
   { name: "LinkedIn", href: "https://cl.linkedin.com/company/programbi" },
@@ -19,7 +20,7 @@ const companyLinks = [
   { label: "Empresas", href: "/empresas" },
   { label: "Referidos", href: "/referidos" },
   { label: "Bolsa de Trabajo", href: "/empleos" },
-  { label: "Comunidad", href: "/comunidad" },
+  ...(COMUNIDAD_PUBLICA ? [{ label: "Comunidad", href: "/comunidad" }] : []),
   { label: "Blog", href: "/blog" },
   { label: "Preguntas frecuentes", href: "/#faq" },
   { label: "Registrarse", href: "/?auth=register" },

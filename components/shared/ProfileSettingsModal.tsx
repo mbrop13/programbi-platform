@@ -40,6 +40,7 @@ import {
 } from "@/lib/supabase/comunidad-ai";
 import { useCountry } from "@/lib/context/CountryContext";
 import { cn } from "@/lib/utils";
+import { COMUNIDAD_PUBLICA } from "@/lib/comunidad/visibilidad";
 
 interface ProfileSettingsModalProps {
   isOpen: boolean;
@@ -982,7 +983,7 @@ export default function ProfileSettingsModal({
                       >
                         {[
                           {
-                            href: "/comunidad",
+                            href: COMUNIDAD_PUBLICA ? "/comunidad" : "/comunidad/inicio",
                             icon: LayoutDashboard,
                             title: "Comunidad",
                             desc: "Muro, cursos y asistente IA",
@@ -1183,6 +1184,7 @@ export default function ProfileSettingsModal({
                   </div>
                 )}
 
+                {COMUNIDAD_PUBLICA ? (
                 <div className="p-3.5 sm:p-4 bg-slate-950 rounded-2xl relative overflow-hidden flex items-center justify-between border border-white/10">
                   <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(99,102,241,0.15),transparent_60%)] pointer-events-none" />
                   <div className="relative z-10 flex items-center gap-2.5 min-w-0">
@@ -1202,6 +1204,7 @@ export default function ProfileSettingsModal({
                     Ver planes
                   </Link>
                 </div>
+                ) : null}
               </div>
             )}
           </div>

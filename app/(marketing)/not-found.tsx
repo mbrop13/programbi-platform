@@ -1,5 +1,6 @@
 import Link from "next/link";
 import StatusPage from "@/components/shared/StatusPage";
+import { COMUNIDAD_PUBLICA } from "@/lib/comunidad/visibilidad";
 
 export default function MarketingNotFound() {
   return (
@@ -24,7 +25,7 @@ export default function MarketingNotFound() {
         </>
       }
       links={[
-        { href: "/comunidad", label: "Comunidad" },
+        ...(COMUNIDAD_PUBLICA ? [{ href: "/comunidad", label: "Comunidad" }] : []),
         { href: "/blog", label: "Blog" },
       ]}
     />

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import StatusPage from "@/components/shared/StatusPage";
+import { COMUNIDAD_PUBLICA } from "@/lib/comunidad/visibilidad";
 
 export const metadata: Metadata = {
   title: "Página no encontrada",
@@ -35,7 +36,7 @@ export default function NotFound() {
             </>
           }
           links={[
-            { href: "/comunidad", label: "Comunidad" },
+            ...(COMUNIDAD_PUBLICA ? [{ href: "/comunidad", label: "Comunidad" }] : []),
             { href: "/blog", label: "Blog" },
           ]}
         />
