@@ -23,6 +23,7 @@ import { trackNavRegistro } from "@/lib/analytics/marketing";
 import { ISO_CHILE } from "@/config/paises";
 import { etiquetaBoton } from "@/config/textos";
 import { paisDesdeRuta, rutaLocal } from "@/lib/paises/rutas";
+import { COMUNIDAD_PUBLICA } from "@/lib/comunidad/visibilidad";
 const AuthModal = dynamic(() => import("./AuthModal"), { ssr: false });
 const SupportModal = dynamic(() => import("./SupportModal"), { ssr: false });
 const ProfileSettingsModal = dynamic(() => import("./ProfileSettingsModal"), { ssr: false });
@@ -31,7 +32,7 @@ const navLinks = [
   { href: "/cursos", label: "Ver Cursos", hasMega: true },
   { href: "/empresas", label: "Empresas" },
   { href: "/empleos", label: "Empleos" },
-  { href: "/comunidad", label: "Comunidad" },
+  ...(COMUNIDAD_PUBLICA ? [{ href: "/comunidad", label: "Comunidad" }] : []),
   { href: "/blog", label: "Blog" },
 ];
 

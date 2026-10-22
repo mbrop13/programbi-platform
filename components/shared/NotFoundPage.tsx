@@ -1,5 +1,6 @@
 import Link from "next/link";
 import StatusPage from "@/components/shared/StatusPage";
+import { COMUNIDAD_PUBLICA } from "@/lib/comunidad/visibilidad";
 
 /** Pantalla 404 compartida por los grupos de rutas. */
 export default function NotFoundPage() {
@@ -25,7 +26,7 @@ export default function NotFoundPage() {
         </>
       }
       links={[
-        { href: "/comunidad", label: "Comunidad" },
+        ...(COMUNIDAD_PUBLICA ? [{ href: "/comunidad", label: "Comunidad" }] : []),
         { href: "/blog", label: "Blog" },
       ]}
     />
