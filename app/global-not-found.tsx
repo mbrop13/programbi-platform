@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "@/app/globals.css";
 import NotFoundPage from "@/components/shared/NotFoundPage";
+import { SITE_URL } from "@/lib/seo";
 
 const geist = Geist({
   variable: "--font-sans",
@@ -10,6 +11,7 @@ const geist = Geist({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Página no encontrada | ProgramBI",
   robots: { index: false, follow: false },
 };
