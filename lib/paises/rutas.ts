@@ -1,4 +1,4 @@
-import { esIsoPais, getPais, ISO_CHILE, normalizarPais, PAISES, PAISES_CARPETA } from "@/config/paises";
+import { esIsoPais, getPais, ISO_CHILE, normalizarPais, PAISES_CARPETA, PAISES_INDEXABLES } from "@/config/paises";
 import { absoluteUrl } from "@/lib/seo";
 
 /** Rutas con versión por país. El resto (blog, empleos, comunidad, pago) no lleva carpeta. */
@@ -75,11 +75,16 @@ export function cambiarPais(pathname: string, iso: string): string {
   return `${rutaLocal(destino, path)}${query}${hash}`;
 }
 
+/**
+ * Hreflang recíproco entre las versiones indexables.
+ * Solo entran Chile (raíz), Argentina, México, Perú, Colombia y Uruguay.
+ * El x-default apunta a la versión chilena.
+ */
 export function hreflangDe(path: string): Record<string, string> {
   const languages: Record<string, string> = {
-    "x-default": absoluteUrl(path),
+    "x-default": absoluteUrl(rutaLocal(ISO_CHILE, path)),
   };
-  for (const pais of PAISES) {
+  for (const pais of PAISES_INDEXABLES) {
     languages[pais.idioma] = absoluteUrl(rutaLocal(pais.iso, path));
   }
   return languages;

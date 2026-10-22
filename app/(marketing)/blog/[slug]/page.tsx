@@ -4,6 +4,7 @@ import { getArticleBySlug, getPublishedArticles } from "@/lib/supabase/comunidad
 import BlogArticleClient from "./BlogArticleClient";
 import { isVideoUrl, getOptimizedShareImage } from "@/lib/utils";
 import { ogImageUrl } from "@/lib/og/url";
+import { absoluteUrl } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -65,7 +66,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: article.title,
     description,
-    alternates: { canonical: `/blog/${slug}` },
+    alternates: { canonical: absoluteUrl(`/blog/${slug}`) },
     openGraph: {
       title: `${article.title} | ProgramBI`,
       description,

@@ -244,13 +244,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  const countryPages: MetadataRoute.Sitemap = PAISES_CARPETA.flatMap((pais) =>
-    localizedPaths.map((item) => ({
-      url: loc(rutaLocal(pais.iso, item.path)),
-      lastModified: now,
-      changeFrequency: item.changeFrequency,
-      priority: item.priority,
-    }))
+  // Solo las versiones indexables: Chile (raíz), Argentina, México, Perú,
+  // Colombia y Uruguay. El resto de países queda en noindex y fuera del sitemap.
+  const countryPages: MetadataRoute.Sitemap = PAISES_CARPETA.filter((pais) => pais.indexable).flatMap(
+    (pais) =>
+      localizedPaths.map((item) => ({
+        url: loc(rutaLocal(pais.iso, item.path)),
+        lastModified: now,
+        changeFrequency: item.changeFrequency,
+        priority: item.priority,
+      }))
   );
 
   return uniqueEntries([

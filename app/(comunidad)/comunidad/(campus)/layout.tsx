@@ -5,8 +5,8 @@ import { ToastProvider } from "@/components/comunidad/ui/Toast";
 import { getCampusSession } from "@/lib/comunidad/session";
 
 export const metadata = {
-  title: "Comunidad | ProgramBI",
-  robots: { index: false, follow: false },
+  title: "Comunidad",
+  robots: { index: false, follow: true },
 };
 
 export default async function CampusLayout({ children }: { children: React.ReactNode }) {

@@ -8,10 +8,14 @@ import { ogImageUrl } from "@/lib/og/url";
 import { SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
 import { getCourseJsonLd } from "@/lib/seo/course-jsonld";
 import { COURSE_SEO } from "@/lib/seo/money";
-import { normalizarPais } from "@/config/paises";
+import { normalizarPais, esIndexable, ISO_CHILE } from "@/config/paises";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
-import { localizarMercado } from "@/lib/paises/precios";
-import { resolverCobro } from "@/lib/paises/cobro";
+import { localizarMercado, precioCurso } from "@/lib/paises/precios";
+import { robotsLocal } from "@/lib/paises/metadata";
+import { detalleCursoLocal, textosPreciosLocales } from "@/lib/paises/detalle-curso";
+import { precioTarjetaPublico } from "@/lib/paises/precio-publico";
+import { horarioDeCohorte } from "@/lib/paises/horarios";
+import { offerLowPrice } from "@/lib/data/course-views";
 
 export const revalidate = 3600;
 
@@ -50,13 +54,17 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     path: `cursos/${slug}`,
   });
 
+  // Solo los países indexables entran en el juego de hreflang.
+  const indexable = esIndexable(pais);
+
   return {
     title: pais === "cl" ? (seo?.title ? { absolute: seo.title } : titleBase) : { absolute: title },
     description,
     alternates: {
       canonical: canon,
-      languages: hreflangDe(`/cursos/${slug}`),
+      ...(indexable ? { languages: hreflangDe(`/cursos/${slug}`) } : {}),
     },
+    ...(indexable ? {} : { robots: robotsLocal(pais) }),
     openGraph: {
       title,
       description,
@@ -105,8 +113,22 @@ export default async function CourseDetailPage({
 
   const schedules = (await getActiveSchedules()) as CourseSchedule[];
 
+  // Detalle local del mercado: horario en la hora del país, precio y moneda,
+  // medios de pago y las tres preguntas del FAQ local. Todo en el servidor.
+  const cohorte = schedules.find((s) => s.course_slug === course.slug) ?? schedules[0];
+  const { inicio, fin } = horarioDeCohorte(cohorte?.schedule_time);
+  const precioPais =
+    pais === ISO_CHILE ? (offerLowPrice(course, "publico") ?? null) : precioCurso(pais, course.slug);
+  const precioTarjeta = await precioTarjetaPublico(pais, course.slug);
+  const detalle = detalleCursoLocal({
+    iso: pais,
+    precio: precioPais,
+    inicio,
+    fin,
+    notaCobro: precioTarjeta?.nota,
+  });
+
   const courseJsonLd = getCourseJsonLd(course, "publico", pais);
-  const cobro = resolverCobro(pais);
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -124,16 +146,24 @@ export default async function CourseDetailPage({
           },
         ],
       },
-      seo
-        ? {
-            "@type": "FAQPage",
-            mainEntity: seo.faqs.map((faq) => ({
-              "@type": "Question",
-              name: localizarMercado(faq.q, pais),
-              acceptedAnswer: { "@type": "Answer", text: localizarMercado(faq.a, pais) },
-            })),
-          }
-        : null,
+      {
+        "@type": "FAQPage",
+        mainEntity: [
+          ...(seo
+            ? seo.faqs.map((faq) => ({
+                "@type": "Question",
+                name: localizarMercado(faq.q, pais),
+                acceptedAnswer: { "@type": "Answer", text: localizarMercado(faq.a, pais) },
+              }))
+            : []),
+          // Preguntas del mercado: horario local, pago y certificado.
+          ...detalle.faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.q,
+            acceptedAnswer: { "@type": "Answer", text: faq.a },
+          })),
+        ],
+      },
     ].filter(Boolean),
   };
 
@@ -149,7 +179,10 @@ export default async function CourseDetailPage({
         initialSchedules={schedules}
         initialView={para === "empresas" ? "empresas" : "publico"}
         initialLevelName={nivel}
-        cobroLocal={cobro.modo === "local" || cobro.modo === "usd-chile"}
+        mostrarPrecioLocal={pais !== ISO_CHILE && precioCurso(pais, course.slug) != null}
+        precioTarjeta={precioTarjeta}
+        preciosLocales={textosPreciosLocales(pais)}
+        detalleLocal={detalle}
       />
     </>
   );

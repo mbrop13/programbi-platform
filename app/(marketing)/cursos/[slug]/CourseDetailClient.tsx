@@ -68,6 +68,9 @@ import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { formatMoneda, localizarMercado, MARCA_DEFINIR_PRECIO, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
+import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
+import type { PrecioTarjeta } from "@/lib/paises/precio-publico";
+import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
 import { ISO_CHILE } from "@/config/paises";
 
 function courseCheckoutUrl(slug: string, levelName?: string, pais?: string) {
@@ -134,13 +137,21 @@ export default function CourseDetailClient({
   initialSchedules,
   initialView = "publico",
   initialLevelName,
-  cobroLocal = false,
+  mostrarPrecioLocal = false,
+  precioTarjeta = null,
+  preciosLocales = {},
+  detalleLocal,
 }: {
   course: Course;
   initialSchedules: CourseSchedule[];
   initialView?: CourseOfferView;
   initialLevelName?: string;
-  cobroLocal?: boolean;
+  /** Muestra el precio del mercado local (por país) en vez del catálogo en CLP. */
+  mostrarPrecioLocal?: boolean;
+  /** Precio del mercado (ARS, MXN, PEN, COP, UYU) ya armado en el servidor. */
+  precioTarjeta?: PrecioTarjeta | null;
+  preciosLocales?: Record<string, string>;
+  detalleLocal?: DetalleCursoLocal;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -182,9 +193,15 @@ export default function CourseDetailClient({
   const levels = levelsForView(course, view);
   const catalogLevelCount = course.levels?.length ?? 0;
 
+  const notaTarjeta =
+    (precioTarjeta && levels[selectedLevel]?.name
+      ? precioTarjeta.notasPorNivel[levels[selectedLevel].name]
+      : null) ||
+    precioTarjeta?.nota ||
+    null;
   const precioLocal = pais === ISO_CHILE ? null : precioCurso(pais, course.slug);
   const listaLocal = pais === ISO_CHILE ? null : precioLista(pais, course.slug);
-  const cobraLocal = pais !== ISO_CHILE && cobroLocal && precioLocal != null;
+  const cobraLocal = pais !== ISO_CHILE && mostrarPrecioLocal && precioLocal != null;
   const mostrarLocal = cobraLocal;
   const descuentoLocal =
     listaLocal != null && precioLocal != null ? porcentajeDescuento(listaLocal, precioLocal) : 0;
@@ -625,6 +642,18 @@ export default function CourseDetailClient({
                         ? "La cotización incluye los dos niveles de 60 horas. Eliges el nivel y el tamaño del equipo."
                         : "Armamos la cotización según el equipo y el calendario de tu empresa."}
                   </p>
+                ) : precioTarjeta ? (
+                  <div>
+                    {precioTarjeta.lista && precioTarjeta.descuento > 0 ? (
+                      <p className="text-sm text-faint">
+                        <span className="line-through">{precioTarjeta.lista}</span>
+                        <span className="ml-2 font-semibold text-ink">{precioTarjeta.descuento}% off</span>
+                      </p>
+                    ) : null}
+                    <p className="text-3xl font-bold tracking-tight text-ink">{precioTarjeta.actual}</p>
+                    {notaTarjeta ? <p className="mt-2 text-xs leading-snug text-mute">{notaTarjeta}</p> : null}
+                    {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
+                  </div>
                 ) : activeSchedulesList.length === 0 ? (
                   <p className="text-sm leading-relaxed text-mute">
                     {catalogLevelCount > 1 && view !== "avanzado"
@@ -794,6 +823,8 @@ export default function CourseDetailClient({
 
       {isCroTemplate ? <CourseFaq slug={course.slug} /> : null}
 
+      {detalleLocal ? <CourseLocalSeo detalle={detalleLocal} /> : null}
+
       <CourseContactForm course={course} />
 
       {relatedCourses.length > 0 && (
@@ -804,7 +835,7 @@ export default function CourseDetailClient({
               {relatedCourses.map((rc) => (
                 <Link
                   key={rc.slug}
-                  href={`/cursos/${rc.slug}`}
+                  href={rutaLocal(pais, `/cursos/${rc.slug}`)}
                   className="group overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20"
                 >
                   <div className="relative aspect-[16/10] bg-wash">
@@ -822,6 +853,9 @@ export default function CourseDetailClient({
                   <div className="px-6 py-5">
                     <p className="text-lg font-bold tracking-tight text-ink">{rc.title}</p>
                     <p className="mt-1 text-sm text-mute">{rc.shortDescription}</p>
+                    {preciosLocales[rc.slug] ? (
+                      <p className="mt-2 text-sm font-semibold text-ink">{preciosLocales[rc.slug]}</p>
+                    ) : null}
                   </div>
                 </Link>
               ))}

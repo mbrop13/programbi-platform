@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 import BlogClient from "./BlogClient";
 import { ogImageUrl } from "@/lib/og/url";
+import { absoluteUrl } from "@/lib/seo";
 import { blogIcpScore } from "@/lib/seo/money";
 
 export const revalidate = 3600;
@@ -10,7 +11,7 @@ export const metadata: Metadata = {
   title: "Blog — Recursos y artículos de análisis de datos",
   description:
     "Artículos, tutoriales y guías prácticas sobre Power BI, SQL, Python, Machine Learning y análisis de datos. Contenido técnico y actualizado por expertos de ProgramBI.",
-  alternates: { canonical: "/blog" },
+  alternates: { canonical: absoluteUrl("/blog") },
   openGraph: {
     title: "Blog — Recursos de análisis de datos",
     description:

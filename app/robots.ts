@@ -19,7 +19,9 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/auth/", "/comunidad/", "/_next/", "/admin/", "/login", "/pago", "/referidos/app", "/referidos/admin"],
+        // /login y /comunidad NO se bloquean: llevan meta robots noindex, follow y
+        // para que Google los lea tiene que poder rastrearlos.
+        disallow: ["/api/", "/auth/", "/admin/", "/pago", "/referidos/app", "/referidos/admin"],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
