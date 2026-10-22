@@ -7,7 +7,9 @@ import type { CourseSchedule } from "@/lib/data/course-schedules";
 import { ogImageUrl } from "@/lib/og/url";
 import { PAGE_SEO } from "@/lib/seo/money";
 import { absoluteUrl, breadcrumbJsonLd, jsonLdString, twitterShare } from "@/lib/seo";
-import { normalizarPais } from "@/config/paises";
+import { getPais, normalizarPais } from "@/config/paises";
+import { textosPreciosLocales } from "@/lib/paises/detalle-curso";
+import { muestraPrecioLocal, precioCurso } from "@/lib/paises/precios";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 
 export const revalidate = 3600;
@@ -60,6 +62,7 @@ export default async function CursosPage({
   params: Promise<{ pais?: string }>;
 }) {
   const pais = normalizarPais((await params).pais);
+  const preciosLocales = textosPreciosLocales(pais);
   const schedules = (await getActiveSchedules()) as CourseSchedule[];
   const featuredImage =
     courses.find((c) => c.slug === "analisis-de-datos")?.imageUrl ??
@@ -69,12 +72,31 @@ export default async function CursosPage({
     "@context": "https://schema.org",
     "@type": "ItemList",
     numberOfItems: courses.length,
-    itemListElement: courses.map((course, index) => ({
-      "@type": "ListItem",
-      position: index + 1,
-      url: absoluteUrl(rutaLocal(pais, `/cursos/${course.slug}`)),
-      name: course.title,
-    })),
+    itemListElement: courses.map((course, index) => {
+      const url = absoluteUrl(rutaLocal(pais, `/cursos/${course.slug}`));
+      const local = muestraPrecioLocal(pais) ? precioCurso(pais, course.slug) : null;
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        url,
+        name: course.title,
+        ...(local != null
+          ? {
+              item: {
+                "@type": "Course",
+                name: course.title,
+                url,
+                offers: {
+                  "@type": "Offer",
+                  price: local,
+                  priceCurrency: getPais(pais).moneda,
+                  availability: "https://schema.org/InStock",
+                },
+              },
+            }
+          : {}),
+      };
+    }),
   };
 
   return (
@@ -97,6 +119,7 @@ export default async function CursosPage({
       />
       <CursosPageClient
         schedules={schedules}
+        preciosLocales={preciosLocales}
         catalog={courses.map((c) => ({
           slug: c.slug,
           title: c.title,

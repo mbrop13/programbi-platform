@@ -55,7 +55,16 @@ function courseTitle(course: ProgramCard) {
   return course.title;
 }
 
-export default function Programs({ catalog, schedules }: { catalog: ProgramCard[]; schedules: CourseSchedule[] }) {
+export default function Programs({
+  catalog,
+  schedules,
+  preciosLocales = {},
+}: {
+  catalog: ProgramCard[];
+  schedules: CourseSchedule[];
+  /** Precio ya formateado por curso, por ejemplo "$159.900 ARS". Vacío en Chile. */
+  preciosLocales?: Record<string, string>;
+}) {
   const ALL = orderCatalog(catalog);
   const [expanded, setExpanded] = useState(false);
   const { country } = useCountry();
@@ -120,6 +129,9 @@ export default function Programs({ catalog, schedules }: { catalog: ProgramCard[
                   <Clock size={12} /> {course.durationHours} h · En vivo
                   {course.levelsCount > 1 ? ` · ${course.levelsCount} niveles` : ""}
                 </p>
+                {preciosLocales[course.slug] ? (
+                  <p className="mt-2 text-sm font-semibold text-ink">{preciosLocales[course.slug]}</p>
+                ) : null}
               </div>
             </Link>
           ))}

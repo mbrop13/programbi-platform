@@ -45,8 +45,9 @@ export function getCourseJsonLd(
   const hours = offerHours(course, view);
   const catalogPrice = offerLowPrice(course, view);
   const localPrice = precioCurso(pais, course.slug);
-  // Chile cobra el catálogo en CLP; el resto de países, su precio local.
-  const lowestPrice = pais === ISO_CHILE ? catalogPrice : (localPrice ?? catalogPrice);
+  // Chile publica el catálogo en CLP. El resto solo entra si tiene precio local:
+  // no se reetiqueta un monto en CLP con otra moneda.
+  const lowestPrice = pais === ISO_CHILE ? (catalogPrice ?? null) : localPrice;
   const moneda = pais === ISO_CHILE ? "CLP" : getPais(pais).moneda;
   const path = rutaLocal(pais, coursePath(course.slug, view));
 

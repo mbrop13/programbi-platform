@@ -43,6 +43,17 @@ export function formatCLP(monto: number): string {
   }).format(monto);
 }
 
+/** Argentina, México, Perú, Colombia y Uruguay: precio propio y Mercado Pago local. */
+export function muestraPrecioLocal(iso: string | null | undefined): boolean {
+  return getPais(normalizarPais(iso)).pago === "mp";
+}
+
+/** Nota junto al precio local mientras el cobro siga en la cuenta de Chile. */
+export function notaCobroClp(montoClp: number): string {
+  const numero = new Intl.NumberFormat("es-CL", { maximumFractionDigits: 0 }).format(montoClp);
+  return `Se cobra en pesos chilenos (CLP $${numero}), equivalente aprox.`;
+}
+
 /**
  * Sustituye el mercado "Chile" en títulos, metas y H1.
  * En es-CL devuelve el texto igual, para no tocar la versión chilena.

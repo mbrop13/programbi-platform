@@ -4,8 +4,9 @@
  * Todo se calcula en el servidor para que llegue en el HTML.
  */
 
-import { getPais, ISO_CHILE, normalizarPais, TIPO_CAMBIO_USD, type Pais } from "@/config/paises";
+import { getPais, ISO_CHILE, normalizarPais, SLUGS_CURSO, TIPO_CAMBIO_USD, type Pais } from "@/config/paises";
 import { horarioLocal, type HorarioLocal } from "@/lib/paises/horarios";
+import { muestraPrecioLocal, precioCurso } from "@/lib/paises/precios";
 
 export type DetalleCursoLocal = {
   pais: Pais;
@@ -16,6 +17,8 @@ export type DetalleCursoLocal = {
   precioTexto: string | null;
   /** Precio aproximado en dólares (solo Chile). */
   precioUsdTexto: string | null;
+  /** Nota de cobro en CLP, si el pago todavía no sale en la moneda local. */
+  notaCobro: string | null;
   /** Medios de pago del país, en una frase. */
   mediosPagoTexto: string;
   /** Tres preguntas frecuentes del mercado. */
@@ -30,6 +33,17 @@ export function montoConCodigo(iso: string | null | undefined, monto: number): s
     maximumFractionDigits: pais.decimales,
   }).format(monto);
   return `${pais.simbolo}${numero} ${pais.moneda}`;
+}
+
+/** Precio de cada curso para el HTML de un mercado local. Vacío fuera de esos países. */
+export function textosPreciosLocales(iso: string | null | undefined): Record<string, string> {
+  if (!muestraPrecioLocal(iso)) return {};
+  const textos: Record<string, string> = {};
+  for (const slug of SLUGS_CURSO) {
+    const monto = precioCurso(iso, slug);
+    if (monto != null) textos[slug] = montoConCodigo(iso, monto);
+  }
+  return textos;
 }
 
 /** Dólares de referencia a partir del precio en pesos chilenos. */
@@ -55,6 +69,8 @@ export function detalleCursoLocal(opts: {
   fin?: string;
   /** Fecha de referencia para el desfase horario. */
   referencia?: Date;
+  /** Nota ya armada: se cobra en CLP. Null si el cobro es en la moneda local. */
+  notaCobro?: string | null;
 }): DetalleCursoLocal {
   const pais = getPais(normalizarPais(opts.iso));
   const horario = horarioLocal(pais.iso, {
@@ -66,6 +82,7 @@ export function detalleCursoLocal(opts: {
   const precioTexto = opts.precio != null ? montoConCodigo(pais.iso, opts.precio) : null;
   const precioUsdTexto =
     pais.iso === ISO_CHILE && opts.precio != null ? montoEnUsd(opts.precio) : null;
+  const notaCobro = opts.notaCobro?.trim() || null;
 
   const esChile = pais.iso === ISO_CHILE;
   const lugar = esChile ? "Chile" : pais.nombre;
@@ -86,8 +103,8 @@ export function detalleCursoLocal(opts: {
     {
       q: `¿Cómo se paga el curso en ${lugar}?`,
       a: precioTexto
-        ? `El valor es ${precioTexto}${precioUsdTexto ? ` (${precioUsdTexto} de referencia)` : ""}. ${mediosPagoTexto}`
-        : mediosPagoTexto,
+        ? `El valor es ${precioTexto}${precioUsdTexto ? ` (${precioUsdTexto} de referencia)` : ""}. ${notaCobro || mediosPagoTexto}`
+        : notaCobro || mediosPagoTexto,
     },
     {
       q: "¿Qué recibo al terminar el curso?",
@@ -101,6 +118,7 @@ export function detalleCursoLocal(opts: {
     horarioTexto,
     precioTexto,
     precioUsdTexto,
+    notaCobro,
     mediosPagoTexto,
     faqs,
   };

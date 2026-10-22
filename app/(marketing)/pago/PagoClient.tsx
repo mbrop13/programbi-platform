@@ -33,7 +33,9 @@ import { validateCouponAction } from "@/lib/supabase/comunidad-ai";
 import { trackCheckoutStart, trackLeadSubmit } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import { normalizarPais } from "@/config/paises";
-import { formatMoneda, MARCA_DEFINIR_PRECIO, porcentajeDescuento, precioCurso, precioLista, totalLocal } from "@/lib/paises/precios";
+import { montoConCodigo } from "@/lib/paises/detalle-curso";
+import { formatMoneda, MARCA_DEFINIR_PRECIO, muestraPrecioLocal, notaCobroClp, porcentajeDescuento, precioCurso, precioLista, totalLocal } from "@/lib/paises/precios";
+import { precioDescontadoClp } from "@/lib/pago/precio-clp";
 import type { CheckoutCatalog, CheckoutPriceOverride, CheckoutPromotion } from "@/lib/pago/catalogo";
 
 type Mode = "individual" | "enterprise";
@@ -65,30 +67,7 @@ function discountedPrice(
   priceOverrides: CheckoutPriceOverride[],
   promotions: CheckoutPromotion[]
 ) {
-  if (!basePrice) return { finalPrice: 0, originalPrice: 0, hasDiscount: false };
-  const override = levelName
-    ? priceOverrides.find((o) => o.item_type === "course" && o.item_id === slug && o.level_name === levelName)
-    : undefined;
-  const effectiveBase = override?.price ?? basePrice;
-  const applicablePromo = promotions.find(
-    (p) =>
-      p.target_type === "all" ||
-      p.target_type === "courses" ||
-      (p.target_type === "specific_course" && p.target_id === slug)
-  );
-
-  if (applicablePromo) {
-    if (applicablePromo.promo_price) {
-      return { finalPrice: applicablePromo.promo_price, originalPrice: effectiveBase, hasDiscount: true };
-    }
-    const ratio = (100 - (applicablePromo.discount_percentage ?? 0)) / 100;
-    return {
-      finalPrice: Math.round(effectiveBase * ratio),
-      originalPrice: effectiveBase,
-      hasDiscount: true,
-    };
-  }
-  return { finalPrice: effectiveBase, originalPrice: effectiveBase, hasDiscount: false };
+  return precioDescontadoClp(slug, basePrice, levelName, priceOverrides, promotions);
 }
 
 function selectionFromQuery(
@@ -272,27 +251,35 @@ export default function PagoClient({
   const [entAcceptsPrivacy, setEntAcceptsPrivacy] = useState(false);
 
   const puedeMonedaLocal = estadoPago?.modo === "local" || estadoPago?.modo === "usd-chile";
+  const mercadoLocal = muestraPrecioLocal(paisPago);
+  const cobraEnClp = mercadoLocal && estadoPago?.modo !== "local";
+  const textoLocal = (monto: number) =>
+    mercadoLocal ? montoConCodigo(paisPago, monto) : formatMoneda(paisPago, monto);
   const convertAndFormat = (clpAmount: number, slug?: string, qty = 1) => {
-    if (paisPago !== "cl" && slug && slug !== "asesoria" && puedeMonedaLocal) {
+    if ((mercadoLocal || puedeMonedaLocal) && paisPago !== "cl" && slug && slug !== "asesoria") {
       const local = precioCurso(paisPago, slug);
       if (local == null) return MARCA_DEFINIR_PRECIO;
-      return formatMoneda(paisPago, local * qty);
+      return textoLocal(local * qty);
     }
     return convertPrice(clpAmount);
   };
   const textoTotal = (clpAmount: number, items: { slug: string; quantity: number }[]) => {
-    if (paisPago === "cl" || !puedeMonedaLocal) return convertPrice(clpAmount);
+    if (paisPago === "cl" || (!mercadoLocal && !puedeMonedaLocal)) return convertPrice(clpAmount);
     const local = totalLocal(paisPago, items);
     if (local == null) return MARCA_DEFINIR_PRECIO;
-    return formatMoneda(paisPago, local);
+    return textoLocal(local);
   };
   const tachadoLocal = (slug: string | undefined, qty = 1) => {
-    if (!slug || slug === "asesoria" || paisPago === "cl" || !puedeMonedaLocal) return null;
+    if (!slug || slug === "asesoria" || paisPago === "cl" || (!mercadoLocal && !puedeMonedaLocal)) return null;
     const lista = precioLista(paisPago, slug);
     const cobro = precioCurso(paisPago, slug);
     if (lista == null || cobro == null) return null;
-    return { texto: formatMoneda(paisPago, lista * qty), pct: porcentajeDescuento(lista, cobro) };
+    return { texto: textoLocal(lista * qty), pct: porcentajeDescuento(lista, cobro) };
   };
+  const notaClp = (montoClp: number) =>
+    cobraEnClp && montoClp > 0 ? (
+      <p className="mt-1 max-w-[18rem] text-[11px] leading-snug text-mute">{notaCobroClp(montoClp)}</p>
+    ) : null;
 
   const getCourseDescription = (course: Course) => {
     const descObj = courseDescriptions.find(d => d.slug === course.slug);
@@ -983,7 +970,7 @@ export default function PagoClient({
                                            {tachado ? <span className="text-xs font-semibold text-faint line-through">{tachado.texto} · {tachado.pct}% off</span> : null}
                                            <div className="flex flex-col items-start sm:items-end">
                                               <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice, course.slug)}</span>
-                                              {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
+                                              {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                                                 <span className="text-xs font-semibold text-faint">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
                                               )}
                                            </div>
@@ -997,7 +984,7 @@ export default function PagoClient({
                                            <span className="text-xs font-semibold text-faint line-through">{tachado ? `${tachado.texto} · ${tachado.pct}% off` : convertAndFormat(pricing.originalPrice)}</span>
                                            <div className="flex flex-col items-start sm:items-end">
                                               <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice, course.slug)}</span>
-                                              {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
+                                              {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                                                 <span className="text-xs font-semibold text-faint">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
                                               )}
                                            </div>
@@ -1007,13 +994,14 @@ export default function PagoClient({
                                       return (
                                         <div className="flex flex-col items-start sm:items-end">
                                            <span className="text-xl font-bold tabular-nums text-ink">{convertAndFormat(pricing.finalPrice, course.slug)}</span>
-                                           {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
+                                           {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                                              <span className="text-xs font-semibold text-faint">≈ ${Math.round(pricing.finalPrice / 900)} USD</span>
                                            )}
                                         </div>
                                       );
                                     }
                                  })()}
+                                 {notaClp(getDiscountedPrice(course.slug, currentLevelData.price, activeLevel).finalPrice)}
                               </div>
                            ) : mode === "enterprise" ? null : (
                                <div className="flex flex-col items-start sm:items-end">
@@ -1165,7 +1153,7 @@ export default function PagoClient({
                                             </div>
                                           ) : null}
                                           <span className="text-sm font-semibold tabular-nums text-ink">{convertAndFormat(item.price * item.quantity, item.slug, item.quantity)}</span>
-                                          {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
+                                          {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                                             <span className="mt-0.5 text-[10px] font-semibold text-faint">
                                               ≈ ${Math.round((item.price * item.quantity) / 900)} USD
                                             </span>
@@ -1287,15 +1275,16 @@ export default function PagoClient({
                                    <span className="block text-2xl font-bold tabular-nums text-ink">
                                      {textoTotal(appliedCoupon ? finalPriceWithCoupon : totalPrice, cartItems)}
                                    </span>
-                                   {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
+                                   {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                                      <span className="text-xs font-semibold text-faint">
                                        ≈ ${Math.round((appliedCoupon ? finalPriceWithCoupon : totalPrice) / 900)} USD
                                      </span>
                                    )}
+                                   {notaClp(appliedCoupon ? finalPriceWithCoupon : totalPrice)}
                                  </div>
                               </div>
 
-                              {country.currency.code !== "CLP" && (
+                              {!mercadoLocal && country.currency.code !== "CLP" && (
                                 <div className="mb-6 rounded-md border border-line bg-wash p-4 text-left">
                                   <div className="flex items-start gap-2.5">
                                     <Info className="mt-0.5 h-4 w-4 shrink-0 text-mute" />
@@ -1539,7 +1528,7 @@ export default function PagoClient({
                               </div>
                             ) : null}
                             <span className="text-[15px] font-bold tabular-nums text-ink">{convertAndFormat(item.price * item.quantity, item.slug, item.quantity)}</span>
-                            {country.currency.code !== "USD" && country.currency.code !== "CLP" && (
+                            {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && (
                               <span className="mt-0.5 text-[10px] font-semibold text-faint">
                                 ≈ ${Math.round((item.price * item.quantity) / 900)} USD
                               </span>
@@ -1574,8 +1563,9 @@ export default function PagoClient({
                     Ver detalle {isMobileCartOpen ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronUp className="h-3.5 w-3.5" />}
                   </span>
                   <span className="mt-1 block text-xl font-bold leading-none tabular-nums text-ink">
-                    {textoTotal(appliedCoupon ? finalPriceWithCoupon : totalPrice, cartItems)} {country.currency.code !== "USD" && country.currency.code !== "CLP" && <span className="text-[11px] font-semibold text-mute">≈ ${Math.round((appliedCoupon ? finalPriceWithCoupon : totalPrice) / 900)} USD</span>}
+                    {textoTotal(appliedCoupon ? finalPriceWithCoupon : totalPrice, cartItems)} {!mercadoLocal && country.currency.code !== "USD" && country.currency.code !== "CLP" && <span className="text-[11px] font-semibold text-mute">≈ ${Math.round((appliedCoupon ? finalPriceWithCoupon : totalPrice) / 900)} USD</span>}
                   </span>
+                  {notaClp(appliedCoupon ? finalPriceWithCoupon : totalPrice)}
                 </div>
               </div>
               

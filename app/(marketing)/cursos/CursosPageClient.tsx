@@ -24,9 +24,12 @@ export type CourseCatalogItem = {
 export default function CursosPageClient({
   catalog,
   schedules,
+  preciosLocales = {},
 }: {
   catalog: CourseCatalogItem[];
   schedules: CourseSchedule[];
+  /** Precio ya formateado por curso, por ejemplo "$159.900 ARS". Vacío en Chile. */
+  preciosLocales?: Record<string, string>;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const { country } = useCountry();
@@ -113,6 +116,9 @@ export default function CursosPageClient({
                 </h2>
                 <p className="mt-3 text-sm leading-relaxed text-mute">{featured.shortDescription}</p>
                 <p className="mt-4 text-sm font-semibold text-ink">SQL · Power BI · Python</p>
+                {preciosLocales[featured.slug] ? (
+                  <p className="mt-3 text-sm font-semibold text-ink">{preciosLocales[featured.slug]}</p>
+                ) : null}
                 <span className="mt-6 inline-flex text-sm font-semibold text-ink">Ver temario</span>
               </div>
             </Link>
@@ -158,6 +164,9 @@ export default function CursosPageClient({
                     <Clock size={12} /> {course.durationHours} h · En vivo
                     {course.levelsCount && course.levelsCount > 1 ? ` · ${course.levelsCount} niveles` : ""}
                   </p>
+                  {preciosLocales[course.slug] ? (
+                    <p className="mt-2 text-sm font-semibold text-ink">{preciosLocales[course.slug]}</p>
+                  ) : null}
                 </div>
               </Link>
             ))}

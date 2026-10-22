@@ -22,7 +22,7 @@ export default function CourseLocalSeo({ detalle }: { detalle: DetalleCursoLocal
                 {detalle.precioUsdTexto ? ` (${detalle.precioUsdTexto} de referencia)` : ""}.{" "}
               </>
             ) : null}
-            {detalle.mediosPagoTexto}
+            {detalle.notaCobro ? `${detalle.notaCobro} ` : detalle.mediosPagoTexto}
           </p>
         </div>
 

@@ -12,7 +12,8 @@ import { normalizarPais, esIndexable, ISO_CHILE } from "@/config/paises";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado, precioCurso } from "@/lib/paises/precios";
 import { robotsLocal } from "@/lib/paises/metadata";
-import { detalleCursoLocal } from "@/lib/paises/detalle-curso";
+import { detalleCursoLocal, textosPreciosLocales } from "@/lib/paises/detalle-curso";
+import { precioTarjetaPublico } from "@/lib/paises/precio-publico";
 import { horarioDeCohorte } from "@/lib/paises/horarios";
 import { offerLowPrice } from "@/lib/data/course-views";
 
@@ -118,11 +119,13 @@ export default async function CourseDetailPage({
   const { inicio, fin } = horarioDeCohorte(cohorte?.schedule_time);
   const precioPais =
     pais === ISO_CHILE ? (offerLowPrice(course, "publico") ?? null) : precioCurso(pais, course.slug);
+  const precioTarjeta = await precioTarjetaPublico(pais, course.slug);
   const detalle = detalleCursoLocal({
     iso: pais,
     precio: precioPais,
     inicio,
     fin,
+    notaCobro: precioTarjeta?.nota,
   });
 
   const courseJsonLd = getCourseJsonLd(course, "publico", pais);
@@ -177,6 +180,8 @@ export default async function CourseDetailPage({
         initialView={para === "empresas" ? "empresas" : "publico"}
         initialLevelName={nivel}
         mostrarPrecioLocal={pais !== ISO_CHILE && precioCurso(pais, course.slug) != null}
+        precioTarjeta={precioTarjeta}
+        preciosLocales={textosPreciosLocales(pais)}
         detalleLocal={detalle}
       />
     </>
