@@ -36,15 +36,15 @@ import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/shared/AuthModal";
 import TemarioSection from "@/components/marketing/temario/TemarioSection";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
+import { captureAndReadAttribution } from "@/lib/utm";
 import {
   type CourseSchedule,
   OPEN_COHORT_LABEL,
-  SCHEDULE_COUNTRIES,
   convertSchedule,
   getAllActiveSchedules,
   staticSchedules,
 } from "@/lib/data/course-schedules";
-import { useCountry } from "@/lib/context/CountryContext";
+import { conHoraPais, zonaDe } from "@/lib/paises/horarios";
 import {
   trackClickRegistro,
   trackCourseView,
@@ -82,13 +82,14 @@ const PDF_URL =
 
 function formatSchedule(
   sch: CourseSchedule,
-  timeZone: string
+  timeZone: string,
+  pais: string
 ): { date: string; days: string; time: string } {
   const conv = convertSchedule(sch.start_date, sch.schedule_time, sch.schedule_days, timeZone);
   return {
     date: conv.dateFormatted.charAt(0).toUpperCase() + conv.dateFormatted.slice(1),
     days: conv.days,
-    time: conv.time,
+    time: conHoraPais(pais, conv.time),
   };
 }
 
@@ -181,10 +182,9 @@ export default function CourseDetailClient({
   const [promotions, setPromotions] = useState<any[]>([]);
   const [selectedScheduleIndex, setSelectedScheduleIndex] = useState(0);
   const [isScheduleDropdownOpen, setIsScheduleDropdownOpen] = useState(false);
-  const { country } = useCountry();
   const pais = usePaisRuta();
   const relatedCourses = courses.filter((c) => c.slug !== course.slug).slice(0, 3);
-  const scheduleCountry = SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0];
+  const scheduleZone = zonaDe(pais);
   const tiered = isTieredCourse(course);
   const isEmpresa = view === "empresas";
   const levels = levelsForView(course, view);
@@ -394,7 +394,7 @@ export default function CourseDetailClient({
 
   const hours = activeLevel?.durationHours || course.durationHours;
   const outcomes = activeLevel?.whatYouLearn?.length ? activeLevel.whatYouLearn : course.whatYouLearn;
-  const nextStart = levelSchedule ? formatSchedule(levelSchedule, scheduleCountry.timeZone) : null;
+  const nextStart = levelSchedule ? formatSchedule(levelSchedule, scheduleZone, pais) : null;
   const isCroTemplate = isCourseCroSlug(course.slug) && view === "publico";
   const seo = COURSE_SEO[course.slug];
   const heading = localizarMercado(
@@ -598,7 +598,7 @@ export default function CourseDetailClient({
                         className="absolute left-0 right-0 z-40 mt-2 max-h-64 overflow-y-auto rounded-2xl border border-line bg-paper py-1 shadow-[0_16px_40px_rgba(23,23,22,0.10)]"
                       >
                         {activeSchedulesList.map((sch, idx) => {
-                          const conv = formatSchedule(sch, scheduleCountry.timeZone);
+                          const conv = formatSchedule(sch, scheduleZone, pais);
                           return (
                             <button
                               key={sch.id || idx}
@@ -835,7 +835,8 @@ export default function CourseDetailClient({
                     <CourseCohortFacts
                       slug={rc.slug}
                       schedules={schedules}
-                      timeZone={scheduleCountry.timeZone}
+                      timeZone={scheduleZone}
+                      pais={pais}
                       loaded
                       compact
                     />
@@ -893,6 +894,7 @@ function CourseContactForm({ course }: { course: Course }) {
   const [phonePrefix, setPhonePrefix] = useState("+56");
   const [showPrefixDropdown, setShowPrefixDropdown] = useState(false);
   const formLoadedAt = useRef(Date.now());
+  const pais = usePaisRuta();
 
   const COUNTRIES = [
     { code: "+56", iso: "cl", name: "Chile" },
@@ -941,6 +943,8 @@ function CourseContactForm({ course }: { course: Course }) {
         selectedCourses: contactType === "personal" ? [course.title] : selectedServices,
         leadType: contactType,
         pricingVariant: readClientPricingVariant(),
+        pais,
+        ...captureAndReadAttribution(),
         ...getAntiBotFields(formLoadedAt.current, honeypot),
       };
       if (contactType === "empresa") {

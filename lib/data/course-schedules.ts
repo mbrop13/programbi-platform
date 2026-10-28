@@ -205,7 +205,7 @@ export function convertSchedule(
   const sourceTimeZone = "America/Santiago";
 
   // Parse time
-  const timeMatch = scheduleTimeStr.match(/(\d{1,2}):(\d{2})\s*(?:a|y|-)\s*(\d{1,2}):(\d{2})/i);
+  const timeMatch = scheduleTimeStr.match(/(\d{1,2}):(\d{2})\s*(?:a|y|al|-|–|—)\s*(\d{1,2}):(\d{2})/i);
   if (!timeMatch) {
     // If layout is different, return original values as fallback
     const dateParts = startDateStr.split("-").map(n => parseInt(n, 10));

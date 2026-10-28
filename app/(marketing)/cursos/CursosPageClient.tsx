@@ -6,10 +6,10 @@ import CourseImage from "@/components/shared/CourseImage";
 import { CourseCohortFacts } from "@/components/marketing/CourseCohortStrip";
 import { Clock, Search } from "lucide-react";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
-import { type CourseSchedule, SCHEDULE_COUNTRIES } from "@/lib/data/course-schedules";
-import { useCountry } from "@/lib/context/CountryContext";
+import { type CourseSchedule } from "@/lib/data/course-schedules";
 import { WA_URL } from "@/lib/data/site";
-import { useRutaLocal } from "@/lib/paises/cliente";
+import { usePaisRuta, useRutaLocal } from "@/lib/paises/cliente";
+import { zonaDe } from "@/lib/paises/horarios";
 
 export type CourseCatalogItem = {
   slug: string;
@@ -32,9 +32,9 @@ export default function CursosPageClient({
   preciosLocales?: Record<string, string>;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
-  const { country } = useCountry();
+  const pais = usePaisRuta();
   const hrefLocal = useRutaLocal();
-  const timeZone = (SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0]).timeZone;
+  const timeZone = zonaDe(pais);
 
   const filteredCourses = catalog.filter((course) => {
     const q = searchQuery.toLowerCase();
@@ -102,6 +102,7 @@ export default function CursosPageClient({
                     slug={featured.slug}
                     schedules={schedules}
                     timeZone={timeZone}
+                    pais={pais}
                     loaded
                     compact
                   />
@@ -147,6 +148,7 @@ export default function CursosPageClient({
                     slug={course.slug}
                     schedules={schedules}
                     timeZone={timeZone}
+                    pais={pais}
                     loaded
                     compact
                   />

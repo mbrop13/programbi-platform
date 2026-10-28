@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { Send, Building2, User, CheckCircle2 } from "lucide-react";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { readBrowserReferralCode } from "@/lib/referrals/cookie";
+import { usePaisRuta } from "@/lib/paises/cliente";
+import { captureAndReadAttribution } from "@/lib/utm";
 
 interface AsesoriasFormProps {
   type: "empresas" | "particulares";
@@ -16,6 +18,7 @@ export default function AsesoriasForm({ type }: AsesoriasFormProps) {
   const [errorMsg, setErrorMsg] = useState("");
   const [honeypot, setHoneypot] = useState("");
   const formLoadedAt = useRef(Date.now());
+  const pais = usePaisRuta();
 
   // Fields
   const [name, setName] = useState("");
@@ -39,6 +42,8 @@ export default function AsesoriasForm({ type }: AsesoriasFormProps) {
         whatsapp: whatsapp.trim(),
         message: message.trim() || null,
         leadType: type === "empresas" ? "asesoria_b2b" : "asesoria_b2c",
+        pais,
+        ...captureAndReadAttribution(),
         referral_code: readBrowserReferralCode(),
         ...getAntiBotFields(formLoadedAt.current, honeypot),
       };

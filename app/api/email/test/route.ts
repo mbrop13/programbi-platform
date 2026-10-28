@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
           email,
           courses: ["Análisis de Datos", "Copilot"],
           message: "Me interesa el horario vespertino.",
+          pais: searchParams.get("pais"),
         });
         break;
 

@@ -6,6 +6,7 @@ import {
   OPEN_COHORT_LABEL,
   nextCohortForCourse,
 } from "@/lib/data/course-schedules";
+import { conHoraPais } from "@/lib/paises/horarios";
 
 export function CourseCohortStrip({
   pending,
@@ -74,6 +75,7 @@ export function CourseCohortFacts({
   slug,
   schedules,
   timeZone,
+  pais,
   loaded,
   compact = false,
   openLabel = OPEN_COHORT_LABEL,
@@ -81,6 +83,8 @@ export function CourseCohortFacts({
   slug: string;
   schedules: CourseSchedule[];
   timeZone: string;
+  /** Si el país tiene precio propio, el horario dice "hora de Perú". */
+  pais?: string;
   loaded: boolean;
   compact?: boolean;
   /** Texto cuando no hay cohorte futura. null = solo "Inicio de clases". */
@@ -97,7 +101,7 @@ export function CourseCohortFacts({
       pending={!loaded && !next}
       startLabel={next?.date ?? openLabel}
       days={next?.days ?? null}
-      time={next?.time ?? null}
+      time={next?.time ? conHoraPais(pais, next.time) : null}
     />
   );
 }

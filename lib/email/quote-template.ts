@@ -22,6 +22,8 @@ export interface EmailCourseItem {
   hasDiscount: boolean;
   discountPercent: number;
   savings: string;
+  /** Nota de cobro, por ejemplo el monto en CLP cuando el precio visible es local. */
+  priceNote?: string;
   color: string;
   checkoutUrl: string;
   courseUrl: string;
@@ -71,7 +73,8 @@ export function buildQuoteEmailHtml(
   nombre: string,
   selectedCourses: EmailCourseItem[],
   recommendedCourses: EmailCourseItem[],
-  packRecommendation: EmailPackInfo
+  packRecommendation: EmailPackInfo,
+  catalogUrl = "https://www.programbi.com/cursos"
 ): string {
   // A-15 / V5.4.7 (OWASP ASVS L3): escape user-controlled string before
   // interpolating into the HTML email body to prevent HTML/CSS injection.
@@ -113,9 +116,13 @@ export function buildQuoteEmailHtml(
                   <p style="margin: 0 0 4px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 21px; font-weight: 900; color: #171716; line-height: 1;">
                     ${c.finalPrice}
                   </p>
+                  ${c.priceNote ? `<p style="margin: 0 0 6px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; line-height: 1.4; color: #8C8B85; font-weight: 500;">${escapeHtml(c.priceNote)}</p>` : ""}
                   <span style="display: inline-block; background-color: #DCFCE7; color: #166534; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 8px; border-radius: 9999px;">
                     Matrícula Gratis
                   </span>
+                  <div style="margin-top: 8px;">
+                    <a href="${c.checkoutUrl}" target="_blank" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 700; color: #171716; text-decoration: underline;">Inscribirme →</a>
+                  </div>
                 </td>
               </tr>
             </table>
@@ -143,7 +150,7 @@ export function buildQuoteEmailHtml(
                 </h2>
                 <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13px; color: #A1A1AA; margin: 0 0 20px; line-height: 1.5;">
                   SQL Server + Power BI + Python <br/>
-                  <span style="color: #FCD34D; font-weight: 700;">48 Horas de formación completa · Clases en vivo vía Zoom</span>
+                  <span style="color: #FCD34D; font-weight: 700;">60 horas de formación completa · Clases en vivo vía Zoom</span>
                 </p>
                 
                 <table align="center" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 22px;">
@@ -210,7 +217,7 @@ export function buildQuoteEmailHtml(
                       ${c.finalPrice}
                     </span>
                     <div style="margin-top: 6px;">
-                      <a href="https://www.programbi.com/cursos/${c.slug}" target="_blank" style="display: inline-block; background-color: #FFFFFF; border: 1px solid #D4D4D0; color: #171716; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 700; text-decoration: none; padding: 5px 12px; border-radius: 9999px;">
+                      <a href="${c.courseUrl}" target="_blank" style="display: inline-block; background-color: #FFFFFF; border: 1px solid #D4D4D0; color: #171716; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 700; text-decoration: none; padding: 5px 12px; border-radius: 9999px;">
                         Ver Temario →
                       </a>
                     </div>
@@ -428,7 +435,7 @@ export function buildQuoteEmailHtml(
                     Recibiste este correo porque solicitaste información de cursos en nuestro sitio web.
                   </td>
                   <td class="ms" align="right" valign="top" style="padding-top: 4px; text-align: right;">
-                    <a href="https://www.programbi.com/cursos" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; color: #171716; text-decoration: none; font-weight: 700;">
+                    <a href="${catalogUrl}" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; color: #171716; text-decoration: none; font-weight: 700;">
                       Ver todos los cursos →
                     </a>
                   </td>

@@ -8,6 +8,8 @@ import { getAntiBotFields } from "@/lib/antibot";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
 import { readBrowserReferralCode } from "@/lib/referrals/cookie";
 import { whatsappHref } from "@/lib/whatsapp";
+import { usePaisRuta } from "@/lib/paises/cliente";
+import { captureAndReadAttribution } from "@/lib/utm";
 
 type Status = "idle" | "error" | "success";
 
@@ -46,6 +48,7 @@ export function EmpresasContactForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sending, setSending] = useState(false);
   const formLoadedAt = useRef(Date.now());
+  const pais = usePaisRuta();
 
   const toggleTopic = (topic: string) => {
     setSelected((prev) =>
@@ -97,7 +100,8 @@ export function EmpresasContactForm({
           message: message.trim() || null,
           selectedCourses: selected,
           leadType: "asesoria_b2b",
-          landing_path: "/empresas",
+          pais,
+          ...captureAndReadAttribution(),
           referral_code: readBrowserReferralCode(),
           ...getAntiBotFields(formLoadedAt.current, ""),
         }),

@@ -4,8 +4,16 @@
  */
 
 import { courses, getCourseBySlug, type Course } from "@/lib/data/courses";
-import { staticSchedules, OPEN_COHORT_LABEL } from "@/lib/data/course-schedules";
-import { isTieredCourse } from "@/lib/data/course-views";
+import { convertSchedule, staticSchedules, OPEN_COHORT_LABEL } from "@/lib/data/course-schedules";
+import { isTieredCourse, OPEN_LEVEL_NAME, PARTICULAR_COURSE_HOURS } from "@/lib/data/course-views";
+import { esIsoPais, ISO_CHILE, normalizarPais } from "@/config/paises";
+import { precioDescontadoClp } from "@/lib/pago/precio-clp";
+import { montoConCodigo } from "@/lib/paises/detalle-curso";
+import { conHoraPais, zonaDe } from "@/lib/paises/horarios";
+import { notaCobroClp, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
+import { resolverCobro } from "@/lib/paises/cobro";
+import { paisDesdeRuta, rutaLocal } from "@/lib/paises/rutas";
+import { SITE_URL } from "@/lib/seo";
 import type { EmailCourseItem, EmailPackInfo } from "./quote-template";
 
 export type PriceOverrideRow = {
@@ -176,39 +184,30 @@ export function calculateQuotePrice(
   const catalogOriginal =
     catalogOriginalCandidate > basePrice ? catalogOriginalCandidate : basePrice;
 
-  const override = priceOverrides.find(
-    (o) =>
-      o.item_type === "course" &&
-      o.item_id === slug &&
-      (o.level_name === (level?.name || levelName) || !o.level_name)
+  const priced = precioDescontadoClp(
+    slug,
+    basePrice,
+    level?.name || levelName,
+    priceOverrides,
+    promotions
   );
-  const effectiveBase = override?.price && override.price > 0 ? override.price : basePrice;
-
-  const promo = promotions.find(
-    (pr) =>
-      pr.target_type === "all" ||
-      pr.target_type === "courses" ||
-      (pr.target_type === "specific_course" && pr.target_id === slug)
+  const originalPrice = Math.max(
+    priced.originalPrice,
+    catalogOriginal > priced.finalPrice ? catalogOriginal : priced.finalPrice
   );
-
-  let finalPrice = effectiveBase;
-  let originalPrice = catalogOriginal > effectiveBase ? catalogOriginal : effectiveBase;
-
-  if (promo) {
-    if (promo.promo_price && promo.promo_price > 0) {
-      finalPrice = promo.promo_price;
-    } else if (promo.discount_percentage && promo.discount_percentage > 0) {
-      finalPrice = Math.round((effectiveBase * (100 - promo.discount_percentage)) / 100);
-    }
-    originalPrice = Math.max(originalPrice, effectiveBase);
-  }
-
-  const hasDiscount = originalPrice > finalPrice && finalPrice > 0;
+  const hasDiscount = originalPrice > priced.finalPrice && priced.finalPrice > 0;
   const discountPercent = hasDiscount
-    ? Math.round(((originalPrice - finalPrice) / originalPrice) * 100)
+    ? Math.round(((originalPrice - priced.finalPrice) / originalPrice) * 100)
     : 0;
 
-  return { finalPrice, originalPrice, hasDiscount, discountPercent };
+  return { finalPrice: priced.finalPrice, originalPrice, hasDiscount, discountPercent };
+}
+
+/** País de la cotización: el que manda el formulario, o la carpeta de la página (/pe/...). */
+export function paisDeCotizacion(pais?: string | null, landingPath?: string | null): string {
+  const directo = (pais || "").trim().toLowerCase();
+  if (esIsoPais(directo)) return directo;
+  return paisDesdeRuta(landingPath || "") ?? ISO_CHILE;
 }
 
 const QUOTE_TIME_ZONE = "America/Santiago";
@@ -267,11 +266,6 @@ function formatEmailDays(daysStr: string): string {
   return res.charAt(0).toUpperCase() + res.slice(1);
 }
 
-function formatEmailTime(timeStr: string): string {
-  const match = (timeStr || "").match(/^(\d{1,2}:\d{2})/);
-  return match ? match[1] : timeStr;
-}
-
 /**
  * Levels whose published dates may appear on a quote.
  * The open course (Básico, Intermedio, or Básico-Intermedio) uses those two
@@ -309,11 +303,12 @@ function pickSchedules(
     .sort((a, b) => (scheduleDateKey(a.start_date) || "").localeCompare(scheduleDateKey(b.start_date) || ""));
 }
 
-function formatScheduleLine(sched: ScheduleRow, withTime: boolean, withLevel = false): string {
-  const dateFormatted = formatEmailDate(sched.start_date);
-  const daysFormatted = formatEmailDays(sched.schedule_days);
+function formatScheduleLine(sched: ScheduleRow, withTime: boolean, withLevel: boolean, pais: string): string {
+  const conv = convertSchedule(sched.start_date, sched.schedule_time, sched.schedule_days, zonaDe(pais));
+  const dateFormatted = formatEmailDate(conv.date || sched.start_date);
+  const daysFormatted = formatEmailDays(conv.days || sched.schedule_days);
   const level = withLevel ? sched.level_name : "";
-  const timeFormatted = withTime ? formatEmailTime(sched.schedule_time) : "";
+  const timeFormatted = withTime ? conHoraPais(pais, conv.time) : "";
   return [dateFormatted, level, daysFormatted, timeFormatted].filter(Boolean).join(" · ");
 }
 
@@ -329,7 +324,8 @@ function rowsForSlug(
 
 function getAnalisisSchedule(
   schedulesList: ScheduleRow[],
-  levels: string[]
+  levels: string[],
+  pais: string
 ): { summary: string; lines: string[] } {
   const lines: string[] = [];
   let earliest: { key: string; label: string } | null = null;
@@ -340,7 +336,7 @@ function getAnalisisSchedule(
       lines.push(`${mod.label} · ${OPEN_COHORT_LABEL}`);
       continue;
     }
-    lines.push(`${mod.label} · ${formatScheduleLine(row, true)}`);
+    lines.push(`${mod.label} · ${formatScheduleLine(row, true, false, pais)}`);
     const key = scheduleDateKey(row.start_date) || "";
     const label = formatEmailDate(row.start_date);
     if (!earliest || key < earliest.key) earliest = { key, label };
@@ -356,21 +352,22 @@ export function getCourseScheduleString(
   slug: string,
   levelName: string,
   schedulesList: ScheduleRow[],
-  withTime = true
+  withTime = true,
+  pais: string = ISO_CHILE
 ): string {
   const course = getCourseBySlug(slug);
   const levels = course ? quotedScheduleLevels(course, levelName) : [levelName];
   if (slug === "analisis-de-datos") {
-    return getAnalisisSchedule(schedulesList, levels ?? ["Básico", "Intermedio"]).summary;
+    return getAnalisisSchedule(schedulesList, levels ?? ["Básico", "Intermedio"], pais).summary;
   }
 
   const rows = rowsForSlug(schedulesList, slug, levels);
   if (rows.length === 0) return OPEN_COHORT_LABEL;
   const showLevel = (levels?.length ?? 0) > 1;
-  if (rows.length === 1) return formatScheduleLine(rows[0], withTime, showLevel);
+  if (rows.length === 1) return formatScheduleLine(rows[0], withTime, showLevel, pais);
   return rows
     .slice(0, 3)
-    .map((sched, idx) => `Opción ${idx + 1}: ${formatScheduleLine(sched, withTime, showLevel)}`)
+    .map((sched, idx) => `Opción ${idx + 1}: ${formatScheduleLine(sched, withTime, showLevel, pais)}`)
     .join("  |  ");
 }
 
@@ -394,12 +391,22 @@ const SHORT_NAME: Record<string, string> = {
 
 const LEVEL_IN_TITLE = new Set(["power-bi", "python", "sql-server", "excel"]);
 
+/** En la ficha pública, Básico e Intermedio se venden juntos como Básico-Intermedio. */
+function visibleLevel(course: Course, levelName: string): string {
+  if (!isTieredCourse(course)) return levelName;
+  const raw = levelName.toLowerCase();
+  const advancedOnly =
+    raw.includes("avanzado") && !raw.includes("básico") && !raw.includes("basico") && !raw.includes("intermedio");
+  return advancedOnly ? "Avanzado" : OPEN_LEVEL_NAME;
+}
+
 function displayTitle(course: Course, levelName: string): string {
   if (course.slug === "copilot") return "Copilot y Copilot Studio";
   const base = SHORT_NAME[course.slug] || course.title;
-  const isGenericLevel = /básico|basico|intermedio|avanzado/i.test(levelName);
+  const visible = visibleLevel(course, levelName);
+  const isGenericLevel = /básico|basico|intermedio|avanzado/i.test(visible);
   if (LEVEL_IN_TITLE.has(course.slug) && isGenericLevel) {
-    return `${base} ${levelName}`;
+    return `${base} ${visible}`;
   }
   return base;
 }
@@ -407,7 +414,65 @@ function displayTitle(course: Course, levelName: string): string {
 function displayLevel(course: Course, levelName: string): string {
   if (course.slug === "analisis-de-datos") return "Especialización";
   if (course.slug === "copilot") return "Nuevo";
-  return levelName;
+  return visibleLevel(course, levelName);
+}
+
+function quoteHours(course: Course, levelName: string): number {
+  if (isTieredCourse(course)) return PARTICULAR_COURSE_HOURS;
+  const level = findLevel(course, levelName);
+  return level?.durationHours || course.durationHours || 16;
+}
+
+function presentedPrice(
+  slug: string,
+  levelName: string,
+  priceOverrides: PriceOverrideRow[],
+  promotions: PromotionRow[],
+  pais: string
+) {
+  const iso = normalizarPais(pais);
+  const clp = calculateQuotePrice(slug, levelName, priceOverrides, promotions);
+  const local = precioCurso(iso, slug);
+  if (local == null) {
+    const savings = Math.max(0, clp.originalPrice - clp.finalPrice);
+    return {
+      originalPrice: formatCLP(clp.originalPrice),
+      finalPrice: formatCLP(clp.finalPrice),
+      originalPriceValue: clp.originalPrice,
+      finalPriceValue: clp.finalPrice,
+      hasDiscount: clp.hasDiscount,
+      discountPercent: clp.discountPercent,
+      savings: savings > 0 ? formatCLP(savings) : "",
+      priceNote: "",
+    };
+  }
+
+  const lista = precioLista(iso, slug);
+  const original = lista ?? local;
+  const hasDiscount = original > local;
+  const priceNote =
+    resolverCobro(iso).modo === "local" || clp.finalPrice <= 0 ? "" : notaCobroClp(clp.finalPrice);
+  return {
+    originalPrice: montoConCodigo(iso, original),
+    finalPrice: montoConCodigo(iso, local),
+    originalPriceValue: original,
+    finalPriceValue: local,
+    hasDiscount,
+    discountPercent: hasDiscount ? porcentajeDescuento(original, local) : 0,
+    savings: hasDiscount ? montoConCodigo(iso, original - local) : "",
+    priceNote,
+  };
+}
+
+function coursePublicUrl(pais: string, slug: string): string {
+  return `${SITE_URL}${rutaLocal(pais, `/cursos/${slug}`)}`;
+}
+
+function checkoutPublicUrl(pais: string, slug: string): string {
+  const params = new URLSearchParams({ curso: slug });
+  const iso = normalizarPais(pais);
+  if (iso !== ISO_CHILE) params.set("pais", iso);
+  return `${SITE_URL}/pago?${params.toString()}`;
 }
 
 function toEmailItem(
@@ -415,17 +480,17 @@ function toEmailItem(
   levelName: string,
   priceOverrides: PriceOverrideRow[],
   promotions: PromotionRow[],
-  schedules: ScheduleRow[]
+  schedules: ScheduleRow[],
+  pais: string
 ): EmailCourseItem {
   const level = findLevel(course, levelName);
   const resolvedLevel = level?.name || levelName;
-  const hours = level?.durationHours || course.durationHours || 16;
-  const pricing = calculateQuotePrice(course.slug, resolvedLevel, priceOverrides, promotions);
-  const savings = Math.max(0, pricing.originalPrice - pricing.finalPrice);
+  const hours = quoteHours(course, resolvedLevel);
+  const pricing = presentedPrice(course.slug, resolvedLevel, priceOverrides, promotions, pais);
   const scheduleLevels = quotedScheduleLevels(course, resolvedLevel);
   const packSchedule =
     course.slug === "analisis-de-datos"
-      ? getAnalisisSchedule(schedules, scheduleLevels ?? ["Básico", "Intermedio"])
+      ? getAnalisisSchedule(schedules, scheduleLevels ?? ["Básico", "Intermedio"], pais)
       : null;
 
   return {
@@ -437,18 +502,19 @@ function toEmailItem(
     durationHours: hours,
     startDate: packSchedule
       ? packSchedule.summary
-      : getCourseScheduleString(course.slug, resolvedLevel, schedules, hours <= 48),
+      : getCourseScheduleString(course.slug, resolvedLevel, schedules, hours <= 48, pais),
     startDateLines: packSchedule && packSchedule.lines.length > 0 ? packSchedule.lines : undefined,
-    originalPrice: formatCLP(pricing.originalPrice),
-    finalPrice: formatCLP(pricing.finalPrice),
-    originalPriceValue: pricing.originalPrice,
-    finalPriceValue: pricing.finalPrice,
+    originalPrice: pricing.originalPrice,
+    finalPrice: pricing.finalPrice,
+    originalPriceValue: pricing.originalPriceValue,
+    finalPriceValue: pricing.finalPriceValue,
     hasDiscount: pricing.hasDiscount,
     discountPercent: pricing.discountPercent,
-    savings: savings > 0 ? formatCLP(savings) : "",
+    savings: pricing.savings,
+    priceNote: pricing.priceNote,
     color: course.accentColor || "#171716",
-    checkoutUrl: `https://www.programbi.com/pago?curso=${course.slug}`,
-    courseUrl: `https://www.programbi.com/cursos/${course.slug}`,
+    checkoutUrl: checkoutPublicUrl(pais, course.slug),
+    courseUrl: coursePublicUrl(pais, course.slug),
     includes: course.slug === "analisis-de-datos" ? packIncludes() : undefined,
   };
 }
@@ -457,7 +523,8 @@ export function buildQuoteModel(
   rawCourses: string[],
   schedules: ScheduleRow[],
   promotions: PromotionRow[],
-  priceOverrides: PriceOverrideRow[]
+  priceOverrides: PriceOverrideRow[],
+  pais: string = ISO_CHILE
 ): {
   selected: EmailCourseItem[];
   related: EmailCourseItem[];
@@ -475,14 +542,14 @@ export function buildQuoteModel(
     const key = `${slug}::${levelName}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    selected.push(toEmailItem(course, levelName, priceOverrides, promotions, schedules));
+    selected.push(toEmailItem(course, levelName, priceOverrides, promotions, schedules, pais));
   }
 
   if (selected.length === 0) {
     const fallback = getCourseBySlug("analisis-de-datos");
     if (fallback) {
       selected.push(
-        toEmailItem(fallback, fallback.levels?.[0]?.name || "Básico", priceOverrides, promotions, schedules)
+        toEmailItem(fallback, fallback.levels?.[0]?.name || "Básico", priceOverrides, promotions, schedules, pais)
       );
     }
   }
@@ -509,7 +576,7 @@ export function buildQuoteModel(
     if (!course) continue;
     relatedSeen.add(slug);
     related.push(
-      toEmailItem(course, course.levels?.[0]?.name || "Básico", priceOverrides, promotions, schedules)
+      toEmailItem(course, course.levels?.[0]?.name || "Básico", priceOverrides, promotions, schedules, pais)
     );
     if (related.length >= 3) break;
   }
@@ -525,30 +592,19 @@ export function buildQuoteModel(
     origPrice: "$0",
     offerPrice: "$0",
     savingPercent: 0,
-    url: "https://www.programbi.com/cursos/analisis-de-datos",
-    checkoutUrl: "https://www.programbi.com/pago?curso=analisis-de-datos",
+    url: coursePublicUrl(pais, "analisis-de-datos"),
+    checkoutUrl: checkoutPublicUrl(pais, "analisis-de-datos"),
   };
 
   if (showPackRecommendation) {
-    const packPricing = calculateQuotePrice(
-      "analisis-de-datos",
-      "Básico",
-      priceOverrides,
-      promotions
-    );
-    const savingPercent =
-      packPricing.originalPrice > 0
-        ? Math.round(
-            ((packPricing.originalPrice - packPricing.finalPrice) / packPricing.originalPrice) * 100
-          )
-        : 0;
+    const packPricing = presentedPrice("analisis-de-datos", "Básico", priceOverrides, promotions, pais);
     pack = {
       showPackRecommendation: true,
-      origPrice: formatCLP(packPricing.originalPrice),
-      offerPrice: formatCLP(packPricing.finalPrice),
-      savingPercent,
-      url: "https://www.programbi.com/cursos/analisis-de-datos",
-      checkoutUrl: "https://www.programbi.com/pago?curso=analisis-de-datos",
+      origPrice: packPricing.originalPrice,
+      offerPrice: packPricing.finalPrice,
+      savingPercent: packPricing.discountPercent,
+      url: coursePublicUrl(pais, "analisis-de-datos"),
+      checkoutUrl: checkoutPublicUrl(pais, "analisis-de-datos"),
     };
   }
 

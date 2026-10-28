@@ -26,7 +26,9 @@ const chipClass = (on: boolean) =>
 
 const fieldClass =
   "w-full rounded-md border border-line bg-wash px-3 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-faint focus:border-[rgb(23_23_22_/_0.28)] focus:bg-paper";
-import { type CourseSchedule, analisisDeDatosSlugs, analisisDeDatosSchedules, formatScheduleDate, getNearestSchedule, getAllActiveSchedules, convertSchedule, SCHEDULE_COUNTRIES } from "@/lib/data/course-schedules";
+import { type CourseSchedule, analisisDeDatosSlugs, analisisDeDatosSchedules, formatScheduleDate, getNearestSchedule, getAllActiveSchedules, convertSchedule } from "@/lib/data/course-schedules";
+import { conHoraPais, zonaDe } from "@/lib/paises/horarios";
+import { captureAndReadAttribution } from "@/lib/utm";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 import { useCountry } from "@/lib/context/CountryContext";
 import { validateCouponAction } from "@/lib/supabase/comunidad-ai";
@@ -140,7 +142,8 @@ export default function PagoClient({
   const initialServicio = servicio || searchParams.get("servicio") || "";
 
   const { country, countries, setCountryByIso, convertPrice, convertTime } = useCountry();
-  const scheduleCountry = useMemo(() => SCHEDULE_COUNTRIES.find(c => c.code === paisPago) || SCHEDULE_COUNTRIES[0], [paisPago]);
+  const scheduleZone = zonaDe(paisPago);
+  const horaLocal = (time: string) => conHoraPais(paisPago, time);
 
   const [mode, setMode] = useState<Mode>(
     searchParams.get("modo") === "empresa" ? "enterprise" : "individual"
@@ -313,6 +316,8 @@ export default function PagoClient({
         selectedCourses: [title],
         sourceCourse: initialSlug,
         leadType: "abandoned_cart",
+        pais: paisPago,
+        ...captureAndReadAttribution(),
         pricingVariant: readClientPricingVariant(),
       }),
     }).catch(() => {});
@@ -591,6 +596,8 @@ export default function PagoClient({
           message: entMessage,
           selectedCourses: Array.from(enterpriseToggles),
           leadType: "enterprise",
+          pais: paisPago,
+          ...captureAndReadAttribution(),
         }),
       });
       if (!res.ok) throw new Error("lead_create_failed");
@@ -836,7 +843,7 @@ export default function PagoClient({
                                             selectedSchedule.start_date,
                                             selectedSchedule.schedule_time,
                                             selectedSchedule.schedule_days,
-                                            scheduleCountry.timeZone
+                                            scheduleZone
                                           );
 
                                           return (
@@ -861,7 +868,7 @@ export default function PagoClient({
                                                       <span className="capitalize">{selectedConverted.dateFormatted}</span>
                                                     </span>
                                                     <span className="hidden shrink-0 font-semibold text-faint sm:inline">·</span>
-                                                    <span className="truncate text-[11px] font-semibold text-mute">{selectedConverted.days} {selectedConverted.time}</span>
+                                                    <span className="truncate text-[11px] font-semibold text-mute">{selectedConverted.days} {horaLocal(selectedConverted.time)}</span>
                                                   </span>
                                                   <ChevronDown className={`h-4 w-4 shrink-0 text-faint transition-transform duration-200 ${isDropdownOpen ? "rotate-180 text-ink" : ""}`} />
                                                 </button>
@@ -881,7 +888,7 @@ export default function PagoClient({
                                                           sch.start_date,
                                                           sch.schedule_time,
                                                           sch.schedule_days,
-                                                          scheduleCountry.timeZone
+                                                          scheduleZone
                                                         );
 
                                                         return (
@@ -899,7 +906,7 @@ export default function PagoClient({
                                                                 {converted.dateFormatted}
                                                               </span>
                                                               <span className="mt-0.5 block truncate text-[11px] font-semibold text-mute">
-                                                                {converted.days} · {converted.time}
+                                                                {converted.days} · {horaLocal(converted.time)}
                                                               </span>
                                                             </div>
                                                             {isSelected && (
@@ -925,7 +932,7 @@ export default function PagoClient({
                                               courseSchedules[0].start_date,
                                               courseSchedules[0].schedule_time,
                                               courseSchedules[0].schedule_days,
-                                              scheduleCountry.timeZone
+                                              scheduleZone
                                             );
                                             return converted.dateFormatted;
                                           })()}</span>
@@ -936,9 +943,9 @@ export default function PagoClient({
                                             courseSchedules[0].start_date,
                                             courseSchedules[0].schedule_time,
                                             courseSchedules[0].schedule_days,
-                                            scheduleCountry.timeZone
+                                            scheduleZone
                                           );
-                                          return `${converted.days} ${converted.time}`;
+                                          return `${converted.days} ${horaLocal(converted.time)}`;
                                         })()}</span>
                                       </span>
                                     )}
@@ -1113,7 +1120,7 @@ export default function PagoClient({
                                               item.selectedStartDate,
                                               item.selectedScheduleTime || "19:30 a 21:30",
                                               item.selectedScheduleDays || "Martes y Jueves",
-                                              scheduleCountry.timeZone
+                                              scheduleZone
                                             );
                                             return (
                                               <div className="mt-2.5 space-y-1.5 rounded-md border border-line bg-wash p-2.5">
@@ -1125,7 +1132,7 @@ export default function PagoClient({
                                                   <Clock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-mute" />
                                                   <div className="flex flex-col">
                                                     <span className="text-xs font-semibold leading-tight text-ink">{converted.days}</span>
-                                                    <span className="mt-0.5 text-[11px] font-semibold text-mute">{converted.time}</span>
+                                                    <span className="mt-0.5 text-[11px] font-semibold text-mute">{horaLocal(converted.time)}</span>
                                                   </div>
                                                 </div>
                                               </div>

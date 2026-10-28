@@ -5,10 +5,10 @@ import Link from "next/link";
 import { ChevronDown, Clock } from "lucide-react";
 import CourseImage from "@/components/shared/CourseImage";
 import { CourseCohortFacts } from "@/components/marketing/CourseCohortStrip";
-import { SCHEDULE_COUNTRIES, type CourseSchedule } from "@/lib/data/course-schedules";
-import { useCountry } from "@/lib/context/CountryContext";
+import { type CourseSchedule } from "@/lib/data/course-schedules";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
-import { useRutaLocal } from "@/lib/paises/cliente";
+import { usePaisRuta, useRutaLocal } from "@/lib/paises/cliente";
+import { zonaDe } from "@/lib/paises/horarios";
 
 const ORDER = [
   "analisis-de-datos",
@@ -67,9 +67,9 @@ export default function Programs({
 }) {
   const ALL = orderCatalog(catalog);
   const [expanded, setExpanded] = useState(false);
-  const { country } = useCountry();
+  const pais = usePaisRuta();
   const hrefLocal = useRutaLocal();
-  const timeZone = (SCHEDULE_COUNTRIES.find((c) => c.code === country.iso) || SCHEDULE_COUNTRIES[0]).timeZone;
+  const timeZone = zonaDe(pais);
   if (!ALL.length) return null;
   const visible = expanded ? ALL : ALL.slice(0, VISIBLE_COUNT);
 
@@ -117,6 +117,7 @@ export default function Programs({
                   slug={course.slug}
                   schedules={schedules}
                   timeZone={timeZone}
+                  pais={pais}
                   loaded
                   compact
                   openLabel={null}

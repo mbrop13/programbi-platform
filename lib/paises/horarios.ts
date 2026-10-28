@@ -86,6 +86,16 @@ export function zonaDe(iso: string | null | undefined): string {
   return getPais(normalizarPais(iso)).zonaHoraria;
 }
 
+/**
+ * Agrega "hora de Perú" cuando el país tiene un precio propio.
+ * Chile usa el catálogo y se queda con la hora sola.
+ */
+export function conHoraPais(iso: string | null | undefined, horario: string): string {
+  const pais = getPais(normalizarPais(iso));
+  if (!horario || pais.precios === "catalogo") return horario;
+  return `${horario} · hora de ${pais.nombre}`;
+}
+
 /** Extrae "19:30 a 21:30" del horario guardado en la base de datos. */
 export function horarioDeCohorte(scheduleTime: string | null | undefined): {
   inicio: string;

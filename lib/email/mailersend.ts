@@ -17,11 +17,15 @@ import { buildQuoteEmailHtml } from "./quote-template";
 import {
   buildQuoteModel,
   isUpcomingScheduleDate,
+  paisDeCotizacion,
   scheduleDateKey,
   type PriceOverrideRow,
   type PromotionRow,
   type ScheduleRow,
 } from "./quote-data";
+import { getPais } from "@/config/paises";
+import { rutaLocal } from "@/lib/paises/rutas";
+import { SITE_URL } from "@/lib/seo";
 import { buildEnterpriseEmailHtml } from "./enterprise-template";
 import { staticSchedules, formatScheduleDate } from "../data/course-schedules";
 import { createAdminClient } from "../supabase/server";
@@ -178,8 +182,10 @@ export async function sendQuoteConfirmationToLead(params: {
   email: string;
   courses: string[];
   message?: string;
+  pais?: string | null;
 }) {
   const { name, email, courses: leadSelectedCourses } = params;
+  const pais = paisDeCotizacion(params.pais);
   const firstName = name.split(" ")[0] || name;
 
   let schedules: ScheduleRow[] = [];
@@ -216,10 +222,17 @@ export async function sendQuoteConfirmationToLead(params: {
     leadSelectedCourses,
     schedules,
     promotions,
-    priceOverrides
+    priceOverrides,
+    pais
   );
 
-  const html = buildQuoteEmailHtml(firstName, selected, related, pack);
+  const html = buildQuoteEmailHtml(
+    firstName,
+    selected,
+    related,
+    pack,
+    `${SITE_URL}${rutaLocal(pais, "/cursos")}`
+  );
   const featured = selected[0];
   const subject = featured
     ? `Tu cotización ProgramBI — ${featured.title}`
@@ -260,8 +273,10 @@ export async function sendNewLeadNotificationToAdmin(params: {
   company?: string;
   position?: string;
   employeeCount?: string;
+  pais?: string | null;
 }) {
   const { name, email, phone, courses, message, leadType, company, position, employeeCount } = params;
+  const paisNombre = getPais(paisDeCotizacion(params.pais)).nombre;
 
   const isEnterprise = leadType === "enterprise" || leadType === "empresa";
   const courseList = courses.map(c => `<li style="padding:4px 0;font-size:13.5px;color:#171716;">${c}</li>`).join("");
@@ -276,6 +291,7 @@ export async function sendNewLeadNotificationToAdmin(params: {
 
     <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
       <tr><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;width:130px;">Nombre</td><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:700;color:#171716;">${name}</td></tr>
+      <tr><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;">País</td><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:700;color:#171716;">${paisNombre}</td></tr>
       <tr><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;">Email</td><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:600;"><a href="mailto:${email}" style="color:#171716;text-decoration:underline;">${email}</a></td></tr>
       ${phone ? `<tr><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;">WhatsApp</td><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:700;"><a href="https://wa.me/${phone.replace(/[^0-9]/g, "")}" style="color:#166534;text-decoration:none;">${phone}</a></td></tr>` : ""}
       ${isEnterprise && company ? `<tr><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;">Empresa</td><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:700;color:#171716;">${company}</td></tr>` : ""}
@@ -311,7 +327,7 @@ export async function sendNewLeadNotificationToAdmin(params: {
   `);
 
   const subject = `🚨 Nuevo contacto ${isEnterprise ? "empresarial" : ""}: ${name} — ${courses[0] || "General"}`;
-  const text = `Nuevo contacto: ${name} | ${email}${phone ? ` | ${phone}` : ""} | Cursos: ${courses.join(", ")}${message ? ` | Msg: ${message}` : ""}`;
+  const text = `Nuevo contacto: ${name} | ${email}${phone ? ` | ${phone}` : ""} | País: ${paisNombre} | Cursos: ${courses.join(", ")}${message ? ` | Msg: ${message}` : ""}`;
 
   const transporter = getTransporter();
   await transporter.sendMail({

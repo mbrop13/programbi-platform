@@ -7,6 +7,8 @@ import { contactGallery } from "@/lib/data/images";
 import { getAntiBotFields } from "@/lib/antibot";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
 import CourseImage from "@/components/shared/CourseImage";
+import { usePaisRuta } from "@/lib/paises/cliente";
+import { captureAndReadAttribution } from "@/lib/utm";
 
 type Status = "idle" | "error" | "success";
 
@@ -36,6 +38,7 @@ export default function LeadForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sending, setSending] = useState(false);
   const formLoadedAt = useRef(Date.now());
+  const pais = usePaisRuta();
 
   const toggleCourse = (c: string) => {
     setSelected((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
@@ -82,6 +85,8 @@ export default function LeadForm() {
           message: message.trim() || null,
           selectedCourses: selected,
           leadType: "contact",
+          pais,
+          ...captureAndReadAttribution(),
           ...getAntiBotFields(formLoadedAt.current, ""),
         }),
       });

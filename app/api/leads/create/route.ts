@@ -10,6 +10,8 @@ import {
   sendEnterpriseQuoteToLead,
   sendNewLeadNotificationToAdmin,
 } from "@/lib/email/mailersend";
+import { paisDeCotizacion } from "@/lib/email/quote-data";
+import { getPais } from "@/config/paises";
 
 // ─── Input Validation Schema ───
 const leadSchema = z.object({
@@ -26,6 +28,7 @@ const leadSchema = z.object({
   employeeCount: z.string().max(50).optional().nullable(),
   area: z.string().max(120).optional().nullable(),
   landing_path: z.string().max(256).optional().nullable(),
+  pais: z.string().max(8).optional().nullable(),
   utm_source: z.string().max(120).optional().nullable(),
   utm_medium: z.string().max(120).optional().nullable(),
   utm_campaign: z.string().max(120).optional().nullable(),
@@ -107,8 +110,10 @@ export async function POST(req: NextRequest) {
     const {
       name, email, message, selectedCourses, sourceCourse, leadType, company, position,
       employeeCount, area, landing_path, utm_source, utm_medium, utm_campaign, utm_content, utm_term,
-      referral_code,
+      referral_code, pais: paisRaw,
     } = data;
+    const pais = paisDeCotizacion(paisRaw, landing_path);
+    const paisNombre = getPais(pais).nombre;
     const whatsapp = whatsappClean;
 
     if (looksLikeSpam(name, email, message || undefined)) {
@@ -141,6 +146,7 @@ export async function POST(req: NextRequest) {
       isEnterprise && position ? `Cargo: ${position}` : null,
       isEnterprise && area ? `Área: ${area}` : null,
       isEnterprise && employeeCount ? `Empleados a capacitar: ${employeeCount}` : null,
+      `pais=${paisNombre}`,
       landing_path ? `page=${landing_path}` : null,
       utm_source ? `utm_source=${utm_source}` : null,
       utm_medium ? `utm_medium=${utm_medium}` : null,
@@ -192,6 +198,7 @@ export async function POST(req: NextRequest) {
       await sendNewLeadNotificationToAdmin({
         name, email, phone: whatsapp ?? undefined, courses, message: insertData.message ?? message ?? undefined,
         leadType: leadType ?? undefined, company: company ?? undefined, position: position ?? undefined, employeeCount: employeeCount ?? undefined,
+        pais,
       });
       console.log("✅ Admin notification sent");
     } catch (err: any) {
@@ -204,7 +211,7 @@ export async function POST(req: NextRequest) {
         if (isEnterprise && company) {
           await sendEnterpriseQuoteToLead({ name, email, company, courses, employeeCount: employeeCount ?? undefined });
         } else {
-          await sendQuoteConfirmationToLead({ name, email, courses, message: message ?? undefined });
+          await sendQuoteConfirmationToLead({ name, email, courses, message: message ?? undefined, pais });
         }
         console.log("✅ Quote email sent to:", email);
       } catch (err: any) {
