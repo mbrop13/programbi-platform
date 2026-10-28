@@ -17,7 +17,6 @@ import {
   FileText,
   Lock,
   MessageCircle,
-  Play,
 } from "lucide-react";
 import { type Course, courses } from "@/lib/data/courses";
 import {
@@ -54,8 +53,6 @@ import {
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import { whatsappHref } from "@/lib/whatsapp";
 import { CourseCohortFacts, CourseCohortStrip } from "@/components/marketing/CourseCohortStrip";
-import CourseFreeClass from "@/components/marketing/CourseFreeClass";
-import { getFreeClass } from "@/lib/data/free-classes";
 import {
   CourseAudienceAndResults,
   CourseFaq,
@@ -522,8 +519,6 @@ export default function CourseDetailClient({
               time={nextStart?.time ?? null}
             />
 
-            <CourseFreeClass slug={course.slug} />
-
             <CourseAudienceAndResults
               course={course}
               selectedLevel={syllabusIndex}
@@ -770,11 +765,6 @@ export default function CourseDetailClient({
               </ul>
 
               <div className="mt-5 flex flex-wrap gap-4 text-sm font-semibold text-ink">
-                {getFreeClass(course.slug) ? (
-                  <a href="#clase-gratis" className="inline-flex items-center gap-1.5 no-underline hover:text-mute">
-                    <Play size={15} /> Clase gratis
-                  </a>
-                ) : null}
                 <a href="#temario" className="inline-flex items-center gap-1.5 no-underline hover:text-mute">
                   <BookOpen size={15} /> Temario
                 </a>
