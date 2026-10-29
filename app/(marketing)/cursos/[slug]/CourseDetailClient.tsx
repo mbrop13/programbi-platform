@@ -56,7 +56,6 @@ import { CourseCohortFacts, CourseCohortStrip } from "@/components/marketing/Cou
 import {
   CourseAudienceAndResults,
   CourseFaq,
-  CourseLeadCtas,
   CourseSeoInternalLinks,
   isCourseCroSlug,
 } from "@/components/marketing/CourseLeadSections";
@@ -442,96 +441,73 @@ export default function CourseDetailClient({
     <>
       <section className="bg-canvas px-4 pt-10 sm:px-6 lg:px-8 lg:pt-14">
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
-          <div className="min-w-0 lg:col-span-7">
-            {view === "empresas" ? (
-              <p className="mb-3 text-sm font-semibold text-mute">Para empresas</p>
-            ) : view === "avanzado" ? (
-              <p className="mb-3 text-sm font-semibold text-mute">Curso avanzado</p>
-            ) : null}
-            <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl lg:leading-[1.12]">
-              {heading}
-            </h1>
-            {isEmpresa || introParagraphs.length > 0 ? (
-              <div className="mt-6 flex flex-wrap gap-3">
-                {isEmpresa ? (
-                  <Link
-                    href={quoteHref}
-                    className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-7 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
-                  >
-                    Cotizar para mi empresa
-                  </Link>
-                ) : (
-                <button
-                  type="button"
-                  onClick={() => void handleCheckoutCTA()}
-                  className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-7 text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
-                >
-                  {etiquetaBoton(pais, showPrice ? "Inscribirse" : "Registrarme")}
-                </button>
-                )}
-                <a
-                  href={courseWa}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-line bg-paper px-7 text-sm font-medium text-ink no-underline hover:bg-wash"
-                >
-                  <MessageCircle size={16} />
-                  WhatsApp
-                </a>
-              </div>
-            ) : null}
-            <CourseSeoInternalLinks slug={course.slug} />
+          <div className="contents lg:col-span-7 lg:block lg:min-w-0">
+            <div className="min-w-0">
+              {view === "empresas" ? (
+                <p className="mb-3 text-sm font-semibold text-mute">Para empresas</p>
+              ) : view === "avanzado" ? (
+                <p className="mb-3 text-sm font-semibold text-mute">Curso avanzado</p>
+              ) : null}
+              <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl lg:leading-[1.12]">
+                {heading}
+              </h1>
+              <CourseSeoInternalLinks slug={course.slug} />
 
-            <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-mute">
-              <li className="inline-flex items-center gap-1.5">
-                <Clock size={15} /> {hours} h
-              </li>
-              <li>En vivo por Zoom</li>
-              <li>Certificado</li>
-              {activeLevel ? <li>{activeLevel.name}</li> : null}
-            </ul>
+              <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-mute">
+                <li className="inline-flex items-center gap-1.5">
+                  <Clock size={15} /> {hours} h
+                </li>
+                <li>En vivo por Zoom</li>
+                <li>Certificado</li>
+                {activeLevel ? <li>{activeLevel.name}</li> : null}
+              </ul>
 
-            {hasGallery ? (
-              <CourseGallery
-                slug={course.slug}
-                title={course.title}
-                coverSrc={course.imageUrl}
-                coverAlt={course.title}
-              />
-            ) : (
-              <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-[26px] border border-line bg-wash">
-                <CourseImage
-                  src={course.imageUrl}
-                  alt={course.title}
-                  fill
-                  preload
-                  fetchPriority="high"
-                  sizes="(max-width: 1024px) 100vw, 58vw"
-                  className="object-cover"
+              {hasGallery ? (
+                <CourseGallery
+                  slug={course.slug}
+                  title={course.title}
+                  coverSrc={course.imageUrl}
+                  coverAlt={course.title}
                 />
-              </div>
-            )}
+              ) : (
+                <div className="relative mt-8 aspect-[16/9] overflow-hidden rounded-[26px] border border-line bg-wash">
+                  <CourseImage
+                    src={course.imageUrl}
+                    alt={course.title}
+                    fill
+                    preload
+                    fetchPriority="high"
+                    sizes="(max-width: 1024px) 100vw, 58vw"
+                    className="object-cover"
+                  />
+                </div>
+              )}
+            </div>
 
-            <CourseCohortStrip
-              pending={false}
-              startLabel={nextStart?.date ?? OPEN_COHORT_LABEL}
-              days={nextStart?.days ?? null}
-              time={nextStart?.time ?? null}
-            />
+            <div className="order-2 min-w-0 max-lg:-mt-10 lg:order-none">
+              <CourseCohortStrip
+                pending={false}
+                startLabel={nextStart?.date ?? OPEN_COHORT_LABEL}
+                days={nextStart?.days ?? null}
+                time={nextStart?.time ?? null}
+              />
+            </div>
 
-            <CourseAudienceAndResults
-              course={course}
-              selectedLevel={syllabusIndex}
-              results={outcomes}
-              levelLabel={
-                view === "avanzado" ? "Curso avanzado" : offerSyllabus ? offerSyllabus.label : undefined
-              }
-              levelContent={offerSyllabus ?? undefined}
-              showLadderNote={view === "empresas" || !tiered}
-            />
+            <div className="order-4 min-w-0 max-lg:-mt-12 lg:order-none">
+              <CourseAudienceAndResults
+                course={course}
+                selectedLevel={syllabusIndex}
+                results={outcomes}
+                levelLabel={
+                  view === "avanzado" ? "Curso avanzado" : offerSyllabus ? offerSyllabus.label : undefined
+                }
+                levelContent={offerSyllabus ?? undefined}
+                showLadderNote={view === "empresas" || !tiered}
+              />
+            </div>
           </div>
 
-          <aside className="lg:col-span-5 lg:row-span-2">
+          <aside className="order-3 min-w-0 lg:order-none lg:col-span-5 lg:row-span-2">
             <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-[var(--sticky-below-nav,6rem)] lg:transition-[top] lg:duration-300 lg:ease-out motion-reduce:transition-none">
               <div className="mb-4 flex justify-start">
                 {isEmpresa ? (
@@ -732,25 +708,14 @@ export default function CourseDetailClient({
                   Consultar fechas
                 </a>
               ) : (
-                <>
-                  <button
-                    type="button"
-                    onClick={handleCheckoutCTA}
-                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
-                  >
-                    {etiquetaBoton(pais, showPrice ? "Inscribirse" : "Registrarme")}
-                    <ArrowRight size={16} />
-                  </button>
-                  <a
-                    href={courseWa}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-medium text-ink no-underline hover:bg-wash"
-                  >
-                    <MessageCircle size={16} />
-                    WhatsApp
-                  </a>
-                </>
+                <button
+                  type="button"
+                  onClick={handleCheckoutCTA}
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
+                >
+                  {etiquetaBoton(pais, showPrice ? "Inscribirse" : "Registrarme")}
+                  <ArrowRight size={16} />
+                </button>
               )}
 
               <CourseCardDescription lead={offerLead} more={offerMore} />
@@ -775,7 +740,7 @@ export default function CourseDetailClient({
             </div>
           </aside>
 
-          <div className="min-w-0 lg:col-span-7">
+          <div className="order-5 min-w-0 lg:order-none lg:col-span-7">
             <TemarioSection
               course={course}
               selectedLevel={syllabusIndex}
@@ -786,14 +751,6 @@ export default function CourseDetailClient({
           </div>
         </div>
       </section>
-
-      {isCroTemplate ? (
-        <CourseLeadCtas
-          course={course}
-          onRegister={() => void handleCheckoutCTA()}
-          primaryLabel={etiquetaBoton(pais, showPrice ? "Inscribirse" : "Registrarme")}
-        />
-      ) : null}
 
       <section className="border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-16">

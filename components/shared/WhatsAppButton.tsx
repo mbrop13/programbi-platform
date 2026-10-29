@@ -1,19 +1,39 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { trackWhatsAppClick } from "@/lib/analytics/marketing";
 import { whatsappHref, withPageUtms } from "@/lib/whatsapp";
 
+const MENSAJES = [
+  "¿Necesitas más información?",
+  "¿Te interesa aprender IA?",
+  "¿Quieres ver los cursos en vivo?",
+];
+
 export default function WhatsAppButton() {
   const pathname = usePathname();
   const [showTooltip, setShowTooltip] = useState(false);
   const [href, setHref] = useState("");
+  const [mensaje, setMensaje] = useState(0);
+  const abierto = useRef(false);
+
+  const abrir = () => {
+    abierto.current = true;
+    setShowTooltip(true);
+  };
+
+  const cerrar = () => {
+    setShowTooltip(false);
+    if (!abierto.current) return;
+    abierto.current = false;
+    setMensaje((i) => (i + 1) % MENSAJES.length);
+  };
 
   useEffect(() => {
-    const showTimer = setTimeout(() => setShowTooltip(true), 2000);
-    const hideTimer = setTimeout(() => setShowTooltip(false), 7000);
+    const showTimer = setTimeout(abrir, 2000);
+    const hideTimer = setTimeout(cerrar, 7000);
     return () => {
       clearTimeout(showTimer);
       clearTimeout(hideTimer);
@@ -51,12 +71,6 @@ export default function WhatsAppButton() {
   if (pathname?.startsWith("/blog")) return null;
   if (!href) return null;
 
-  const isPackPath =
-    pathname?.startsWith("/empresas") ||
-    pathname?.startsWith("/implementacion-power-bi") ||
-    pathname?.startsWith("/migrar-excel-a-power-bi") ||
-    pathname === "/";
-
   return (
     <div className="pointer-events-none fixed right-6 bottom-6 z-[9998] flex items-center justify-end select-none">
       <AnimatePresence>
@@ -72,7 +86,7 @@ export default function WhatsAppButton() {
               window.open(href, "_blank", "noopener,noreferrer");
             }}
           >
-            <span>{isPackPath ? "Diagnóstico Pack" : "¿Dudas? Escríbenos"}</span>
+            <span>{MENSAJES[mensaje]}</span>
             <div className="absolute top-1/2 right-[-4px] h-2 w-2 -translate-y-1/2 rotate-45 bg-ink" />
           </motion.div>
         )}
@@ -80,8 +94,8 @@ export default function WhatsAppButton() {
 
       <div
         className="relative pointer-events-auto"
-        onMouseEnter={() => setShowTooltip(true)}
-        onMouseLeave={() => setShowTooltip(false)}
+        onMouseEnter={abrir}
+        onMouseLeave={cerrar}
       >
         <a
           href={href}

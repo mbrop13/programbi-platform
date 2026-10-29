@@ -70,14 +70,17 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
   * Evaluación de modelos (Matriz de confusión, Curva ROC, F1-Score, Validación Cruzada).
   * Despliegue de modelos predictivos básicos.
 
-### Curso de Inteligencia Artificial para la Productividad
-* **Duración para particulares**: básico-intermedio, 20 horas. El curso avanzado dura 20 horas.
-* **Inversión**: $249.000 CLP.
+### Curso de Inteligencia Artificial en Productividad para Administrativos
+* **Duración total**: 20 horas.
+* **Público objetivo**: Personal administrativo que necesite automatizar informes diarios, resúmenes, reportes recurrentes y tareas repetitivas de oficina.
+* **Enfoque**: 100 % práctico, con ejercicios reales sobre informes diarios administrativos, financieros, control de gestión, contables.
 * **Temario**:
-  * Prompt Engineering profesional para tareas de análisis de datos y reportabilidad.
-  * Programación asistida por IA (Cursor, GitHub Copilot, Vibe Coding).
-  * Construcción de agentes autónomos y flujos de automatización de tareas.
-  * Herramientas de productividad y análisis predictivo en la nube.
+  * Módulo 1 – Fundamentos de IA para la productividad: Qué es la IA generativa, herramientas (ChatGPT, Claude, Gemini, Copilot), privacidad y buenas prácticas, demo de informe diario en menos de 5 min.
+  * Módulo 2 – Ingeniería de prompts para informes: Estructura de un buen prompt (rol + contexto + tarea + formato + restricciones), few-shot, chain-of-thought, plantillas reutilizables y ejercicio práctico (5 plantillas de informes).
+  * Módulo 3 – Automatización de informes a partir de datos: Extracción y limpieza desde Excel/CSV/correos, tablas y gráficos descriptivos, datos crudos a narrativos, ejercicio con archivo Excel.
+  * Módulo 4 – Documentos y presentaciones automáticas: Informes en Word / Google Docs con formato profesional, presentaciones PowerPoint / Slides automáticas, tono y claridad, ejercicio formal + 5 diapositivas.
+  * Módulo 5 – Automatización de flujos de trabajo: Conectar IA con herramientas del día a día (Outlook/Gmail, Excel, Teams, Drive), automatizaciones sin código, programación de envío de informes.
+  * Módulo 6 – Buenas prácticas, seguridad y proyecto final: Privacidad de datos, confidencialidad, límites legales, validación anti-alucinaciones, proyecto final automatizando informe real y feedback colectivo.
 
 ---
 
