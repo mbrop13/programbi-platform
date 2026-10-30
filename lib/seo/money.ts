@@ -120,6 +120,28 @@ export const COURSE_SEO: Record<
       },
     ],
   },
+  access: {
+    title: "Curso Microsoft Access Chile | ProgramBI",
+    description:
+      "Curso de Microsoft Access en Chile, en vivo: tablas, consultas, formularios, informes y macros para personal administrativo. 20 horas.",
+    h1: "Curso de Access para administrativos",
+    audience:
+      "Para personal administrativo que necesita ordenar información de varias áreas y dejar de manejarla solo en Excel.",
+    faqs: [
+      {
+        q: "¿El curso de Access es en vivo?",
+        a: "Sí. Clases en vivo por Zoom, con grabaciones en el campus. Son 20 horas, en un solo programa.",
+      },
+      {
+        q: "¿Qué veo en el temario de Access?",
+        a: "Tablas y relaciones, consultas (incluido SQL básico), formularios, informes exportables a PDF y Excel, macros y un proyecto de un proceso empresarial.",
+      },
+      {
+        q: "¿Necesito saber programar?",
+        a: "No. El curso parte de la interfaz de Access. SQL aparece al final, en consultas básicas y de acción.",
+      },
+    ],
+  },
   excel: {
     title: "Curso Excel Chile en vivo | ProgramBI",
     description:
@@ -179,6 +201,28 @@ export const COURSE_SEO: Record<
       {
         q: "¿Y si somos una empresa?",
         a: "El curso abierto es cupo individual. Para cotizar los niveles de un equipo, entra a /cursos/sql-server/empresas. Un proyecto in-company sigue en /empresas.",
+      },
+    ],
+  },
+  "mercado-financiero": {
+    title: "Curso mercado financiero Chile | ProgramBI",
+    description:
+      "Curso para el mercado financiero en Chile, en vivo: Python, SQL, Power BI e IA para valorizar carteras, medir riesgo y armar dashboards. 30 horas.",
+    h1: "Curso para el mercado financiero",
+    audience:
+      "Para profesionales de finanzas, contabilidad, tesorería, riesgos, middle office y gestión de carteras.",
+    faqs: [
+      {
+        q: "¿El curso de mercado financiero es en vivo?",
+        a: "Sí. Son 30 horas en vivo por Zoom, en un solo programa, con grabaciones en el campus. La fecha de inicio se confirma con la cohorte.",
+      },
+      {
+        q: "¿Necesito saber Python, SQL o Power BI?",
+        a: "No. Esas herramientas y la inteligencia artificial se enseñan desde cero. El requisito es Excel intermedio: tablas dinámicas, fórmulas avanzadas, gráficos y manejo de datos.",
+      },
+      {
+        q: "¿Cómo se obtiene el certificado?",
+        a: "Con asistencia mínima, participación en los ejercicios de los módulos y aprobación del Trabajo Aplicado Integrador. Ese trabajo reúne extracción de datos, SQL, análisis en Python, al menos dos técnicas de IA y un dashboard en Power BI.",
       },
     ],
   },

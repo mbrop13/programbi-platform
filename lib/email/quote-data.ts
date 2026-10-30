@@ -51,9 +51,11 @@ export const RELATED_BY_SLUG: Record<string, string[]> = {
   "ia-productividad": ["copilot", "power-automate", "python"],
   "power-automate": ["copilot", "ia-productividad", "power-bi"],
   excel: ["power-bi", "analisis-de-datos", "copilot"],
+  access: ["excel", "sql-server", "power-bi"],
   "machine-learning": ["python", "analisis-de-datos", "ia-productividad"],
   "analitica-mineria": ["power-bi", "python", "analisis-de-datos"],
   "analitica-financiera": ["excel", "power-bi", "python"],
+  "mercado-financiero": ["python", "sql-server", "power-bi"],
 };
 
 const PACK_MODULES = [
@@ -68,6 +70,10 @@ const ALIAS_RULES: Array<{ test: (s: string) => boolean; slug: string }> = [
   {
     test: (s) => /an[aá]lisis[\s-]*de[\s-]*datos/.test(s) || s.includes("analisis-de-datos"),
     slug: "analisis-de-datos",
+  },
+  {
+    test: (s) => s.includes("mercado-financiero") || s.includes("mercado financiero"),
+    slug: "mercado-financiero",
   },
   { test: (s) => s.includes("copilot"), slug: "copilot" },
   {
@@ -94,6 +100,7 @@ const ALIAS_RULES: Array<{ test: (s: string) => boolean; slug: string }> = [
   },
   { test: (s) => s.includes("python"), slug: "python" },
   { test: (s) => s.includes("sql"), slug: "sql-server" },
+  { test: (s) => s.includes("access"), slug: "access" },
   { test: (s) => s.includes("excel"), slug: "excel" },
   {
     test: (s) => s.includes("miner") || s.includes("analitica-mineria") || s === "minería" || s === "mineria",
@@ -382,11 +389,13 @@ const SHORT_NAME: Record<string, string> = {
   python: "Python",
   "sql-server": "SQL Server",
   excel: "Excel",
+  access: "Microsoft Access",
   "power-automate": "Power Automate",
   "ia-productividad": "IA en Productividad",
   "machine-learning": "Machine Learning",
   "analitica-mineria": "Analítica Minera",
   "analitica-financiera": "Analítica Financiera",
+  "mercado-financiero": "Mercado Financiero",
 };
 
 const LEVEL_IN_TITLE = new Set(["power-bi", "python", "sql-server", "excel"]);

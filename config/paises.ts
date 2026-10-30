@@ -1,6 +1,6 @@
 /**
  * Un país = una entrada. Chile no usa carpeta: sus URLs siguen en la raíz.
- * Los precios locales se fijan a mano. null se muestra como [DEFINIR PRECIO].
+ * Los precios locales se fijan a mano. null usa el precio del catálogo en CLP.
  *
  * Argentina: edita solo PRECIOS_ARS cuando cambie el peso.
  * No pongas claves de Mercado Pago aquí. Van en variables de entorno.
@@ -17,8 +17,10 @@ export const SLUGS_CURSO = [
   "python",
   "sql-server",
   "excel",
+  "access",
   "analitica-financiera",
   "machine-learning",
+  "mercado-financiero",
 ] as const;
 
 export type SlugCurso = (typeof SLUGS_CURSO)[number];
@@ -26,6 +28,26 @@ export type PreciosCurso = Record<SlugCurso, number | null>;
 
 function preciosVacios(): PreciosCurso {
   return Object.fromEntries(SLUGS_CURSO.map((slug) => [slug, null])) as PreciosCurso;
+}
+
+/**
+ * Power BI se cobra a $169.000 y Mercado financiero a $249.000.
+ * El precio local de Mercado financiero es el de Power BI más 47,34 %.
+ * En Chile el catálogo queda en $349.000. El descuento lo pone el panel.
+ */
+const FACTOR_MERCADO = 249 / 169;
+
+/** El cobro termina en 9, como el resto: 119, 3.190, 235.900. */
+function cobroMercado(normal: number): number {
+  const paso = normal >= 10000 ? 100 : normal >= 1000 ? 10 : 1;
+  const unidad = paso * 10;
+  return Math.round((normal * FACTOR_MERCADO - 9 * paso) / unidad) * unidad + 9 * paso;
+}
+
+/** Tachado, con el mismo aumento y el corte de la lista normal. */
+function listaMercado(normal: number): number {
+  const paso = normal >= 10000 ? 1000 : normal >= 1000 ? 10 : 1;
+  return Math.round((normal * FACTOR_MERCADO) / paso) * paso;
 }
 
 /**
@@ -37,6 +59,7 @@ function precios(normal: number, analisis: number): PreciosCurso {
   for (const slug of SLUGS_CURSO) {
     tabla[slug] = slug === "analisis-de-datos" ? analisis : normal;
   }
+  tabla["mercado-financiero"] = cobroMercado(normal);
   return tabla;
 }
 
@@ -49,6 +72,7 @@ function listas(normal: number): PreciosCurso {
   for (const slug of SLUGS_CURSO) {
     tabla[slug] = slug === "analisis-de-datos" ? normal * 3 : normal;
   }
+  tabla["mercado-financiero"] = listaMercado(normal);
   return tabla;
 }
 
@@ -68,8 +92,11 @@ export const PRECIOS_ARS: PreciosCurso = {
   python: 159900,
   "sql-server": 159900,
   excel: 159900,
+  access: 159900,
   "analitica-financiera": 159900,
   "machine-learning": 159900,
+  // 159900 × 249/169, al corte de 900. En Chile el catálogo es $349.000.
+  "mercado-financiero": 235900,
 };
 
 export type PagoPais = "catalogo" | "mp" | "usd-chile" | "clp-chile";

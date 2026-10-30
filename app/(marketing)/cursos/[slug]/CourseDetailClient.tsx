@@ -63,7 +63,7 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { formatMoneda, localizarMercado, MARCA_DEFINIR_PRECIO, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
+import { formatMoneda, localizarMercado, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
 import type { PrecioTarjeta } from "@/lib/paises/precio-publico";
 import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
@@ -203,7 +203,6 @@ export default function CourseDetailClient({
     listaLocal != null && precioLocal != null ? porcentajeDescuento(listaLocal, precioLocal) : 0;
   const convertAndFormat = (priceCLP: number | null | undefined) => {
     if (mostrarLocal && precioLocal != null) return formatMoneda(pais, precioLocal);
-    if (pais !== ISO_CHILE && precioLocal == null) return MARCA_DEFINIR_PRECIO;
     if (!priceCLP) return "";
     return new Intl.NumberFormat("es-CL", {
       style: "currency",

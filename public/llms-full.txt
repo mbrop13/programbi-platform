@@ -70,6 +70,32 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
   * Evaluación de modelos (Matriz de confusión, Curva ROC, F1-Score, Validación Cruzada).
   * Despliegue de modelos predictivos básicos.
 
+### Curso para el mercado financiero con Python, Power BI y SQL
+* **Duración total**: 30 horas.
+* **Precio**: $349.000 CLP.
+* **Para quién**: profesionales financieros y contables (contabilidad, tesorería, middle office, riesgos, carteras, banca, corredoras, AGF, seguros e inversión).
+* **Requisito**: Excel intermedio. Python, SQL, Power BI e Inteligencia Artificial se enseñan desde cero.
+* **Objetivo**: analizar, valorizar, monitorear y reportar carteras con Python, SQL, Power BI e IA. El certificado sale del Trabajo Aplicado Integrador.
+* **Temario**:
+  * Módulo 1 (4 h). Fundamentos, entorno (Python, VS Code/Jupyter, Power BI, SQL) e introducción a la IA.
+  * Módulo 2 (5 h). SQL de carteras: joins, agregaciones, ventanas, exposición por moneda, país y sector, con apoyo de IA.
+  * Módulo 3 (8 h). Python: Yahoo Finance, bancos centrales, retornos, VaR, valorización, derivados, rebalanceo e IA.
+  * Módulo 4 (7 h). Dashboards de Power BI, medidas DAX, P&L, riesgo y narrativas de IA.
+  * Módulo 5 (6 h). Trabajo Aplicado Integrador evaluado para la certificación.
+
+### Curso de Microsoft Access para administrativos
+* **Duración total**: 20 horas.
+* **Objetivo**: Diseñar, construir y administrar bases de datos relacionales con Microsoft Access para almacenar, organizar, consultar y analizar información, y generar reportes.
+* **Inversión**: $249.000 CLP.
+* **Temario**:
+  * Módulo 1. Introducción a Microsoft Access: conceptos de bases de datos, diferencias con Excel, interfaz, tipos de datos e importación desde Excel.
+  * Módulo 2. Diseño y construcción: modelo relacional, claves, relaciones, integridad referencial, normalización básica y una base de gestión empresarial.
+  * Módulo 3. Consultas: selección, filtros, varias tablas, campos calculados, SUMA, PROMEDIO, CONTAR, MÁXIMO, MÍNIMO, parámetros y SQL básico (SELECT, WHERE, ORDER BY, GROUP BY, JOIN).
+  * Módulo 4. Formularios: diseño, controles, listas, subformularios y validación de datos.
+  * Módulo 5. Informes: agrupación, totales, informes desde consultas y exportación a PDF y Excel.
+  * Módulo 6. Automatización: macros, botones, SQL en Access y consultas de acción.
+  * Módulo 7. Proyecto práctico: base de datos de un proceso empresarial, consultas, formularios, informes y presentación.
+
 ### Curso de Inteligencia Artificial en Productividad para Administrativos
 * **Duración total**: 20 horas.
 * **Público objetivo**: Personal administrativo que necesite automatizar informes diarios, resúmenes, reportes recurrentes y tareas repetitivas de oficina.

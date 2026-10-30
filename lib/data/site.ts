@@ -62,11 +62,13 @@ export const leadCourses = [
   "Python",
   "SQL Server",
   "Excel",
+  "Microsoft Access",
   "Machine Learning",
   "IA en Productividad",
   "Power Automate",
   "Minería",
   "Finanzas",
+  "Mercado financiero",
   "Copilot",
   "Claude",
 ] as const;

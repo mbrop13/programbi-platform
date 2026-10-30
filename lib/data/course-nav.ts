@@ -7,11 +7,11 @@ export type NavCourse = {
 };
 
 export const COURSE_FILTER_GROUPS = [
-  { id: "herramientas" as const, label: "Herramientas", slugs: ["excel", "sql-server", "power-bi", "python"] },
+  { id: "herramientas" as const, label: "Herramientas", slugs: ["excel", "access", "sql-server", "power-bi", "python"] },
   {
     id: "especializacion" as const,
     label: "Especializaciones",
-    slugs: ["analisis-de-datos", "analitica-mineria", "analitica-financiera"],
+    slugs: ["analisis-de-datos", "analitica-mineria", "analitica-financiera", "mercado-financiero"],
   },
   {
     id: "ia" as const,
@@ -26,6 +26,7 @@ export const NAV_COURSE_GROUPS: { id: string; label: string; items: NavCourse[] 
     label: "Herramientas",
     items: [
       { slug: "excel", title: "Excel", imageUrl: "/images/courses/excel-card.webp", durationHours: 20 },
+      { slug: "access", title: "Microsoft Access", imageUrl: "/images/courses/access-card.webp", durationHours: 20 },
       { slug: "sql-server", title: "SQL Server", imageUrl: "/images/courses/sql-server-card.webp", durationHours: 20 },
       { slug: "power-bi", title: "Power BI", imageUrl: "/images/courses/power-bi-card.webp", durationHours: 20 },
       { slug: "python", title: "Python para Datos", imageUrl: "/images/courses/python-card.webp", durationHours: 20 },
@@ -52,6 +53,12 @@ export const NAV_COURSE_GROUPS: { id: string; label: string; items: NavCourse[] 
         title: "Analítica Financiera",
         imageUrl: "/images/courses/analitica-financiera-card.webp",
         durationHours: 20,
+      },
+      {
+        slug: "mercado-financiero",
+        title: "Mercado Financiero",
+        imageUrl: "/images/courses/mercado-financiero-card.webp",
+        durationHours: 30,
       },
     ],
   },

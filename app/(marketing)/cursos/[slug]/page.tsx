@@ -115,14 +115,15 @@ export default async function CourseDetailPage({
 
   // Detalle local del mercado: horario en la hora del país, precio y moneda,
   // medios de pago y las tres preguntas del FAQ local. Todo en el servidor.
-  const cohorte = schedules.find((s) => s.course_slug === course.slug) ?? schedules[0];
+  const cohorte = schedules.find((s) => s.course_slug === course.slug);
   const { inicio, fin } = horarioDeCohorte(cohorte?.schedule_time);
-  const precioPais =
-    pais === ISO_CHILE ? (offerLowPrice(course, "publico") ?? null) : precioCurso(pais, course.slug);
+  const precioCatalogo = offerLowPrice(course, "publico") ?? null;
+  const precioPais = pais === ISO_CHILE ? precioCatalogo : precioCurso(pais, course.slug);
   const precioTarjeta = await precioTarjetaPublico(pais, course.slug);
   const detalle = detalleCursoLocal({
     iso: pais,
     precio: precioPais,
+    precioClp: precioPais == null ? precioCatalogo : null,
     inicio,
     fin,
     notaCobro: precioTarjeta?.nota,

@@ -9,6 +9,8 @@ import { analiticaFinancieraSyllabus } from "./analitica-financiera";
 import { analiticaMineriaSyllabus } from "./analitica-mineria";
 import { powerAutomateSyllabus } from "./power-automate";
 import { iaProductividadSyllabus } from "./ia-productividad";
+import { accessSyllabus } from "./access";
+import { mercadoFinancieroSyllabus } from "./mercado-financiero";
 
 const dedicatedSyllabuses: Record<string, CourseSyllabusData> = {
   "power-bi": powerBiSyllabus,
@@ -20,6 +22,8 @@ const dedicatedSyllabuses: Record<string, CourseSyllabusData> = {
   "analitica-financiera": analiticaFinancieraSyllabus,
   "analitica-mineria": analiticaMineriaSyllabus,
   "ia-productividad": iaProductividadSyllabus,
+  access: accessSyllabus,
+  "mercado-financiero": mercadoFinancieroSyllabus,
 };
 
 /** Build a full syllabus from the coarse course.syllabus fallback. */

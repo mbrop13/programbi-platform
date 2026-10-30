@@ -51,8 +51,14 @@ function getCourseTheme(slug: string, fallbackColor: string) {
   if (s.includes("python")) {
     return { badgeBg: "#EFF6FF", badgeText: "#1E40AF", borderAccent: "#2563EB" };
   }
+  if (s.includes("access")) {
+    return { badgeBg: "#FEF2F2", badgeText: "#881337", borderAccent: "#A4373A" };
+  }
   if (s.includes("excel")) {
     return { badgeBg: "#F0FDF4", badgeText: "#166534", borderAccent: "#16A34A" };
+  }
+  if (s.includes("mercado-financiero") || s.includes("mercado financiero")) {
+    return { badgeBg: "#F0FDFA", badgeText: "#134E4A", borderAccent: "#0F3D4C" };
   }
   if (s.includes("miner")) {
     return { badgeBg: "#FEF3C7", badgeText: "#78350F", borderAccent: "#B45309" };

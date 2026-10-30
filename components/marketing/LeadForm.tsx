@@ -18,11 +18,13 @@ const courseSlugMap: Record<string, string> = {
   Python: "python",
   "SQL Server": "sql-server",
   Excel: "excel",
+  "Microsoft Access": "access",
   "Machine Learning": "machine-learning",
   "IA en Productividad": "ia-productividad",
   "Power Automate": "power-automate",
   Minería: "analitica-mineria",
   Finanzas: "analitica-financiera",
+  "Mercado financiero": "mercado-financiero",
   Copilot: "copilot",
 };
 

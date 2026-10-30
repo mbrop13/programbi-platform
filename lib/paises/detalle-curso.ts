@@ -6,7 +6,7 @@
 
 import { getPais, ISO_CHILE, normalizarPais, SLUGS_CURSO, TIPO_CAMBIO_USD, type Pais } from "@/config/paises";
 import { horarioLocal, type HorarioLocal } from "@/lib/paises/horarios";
-import { muestraPrecioLocal, precioCurso } from "@/lib/paises/precios";
+import { formatCLP, muestraPrecioLocal, precioCurso } from "@/lib/paises/precios";
 
 export type DetalleCursoLocal = {
   pais: Pais;
@@ -64,6 +64,8 @@ export function detalleCursoLocal(opts: {
   precio: number | null;
   /** Precio del catálogo en CLP, para la referencia en dólares (Chile). */
   precioCatalogo?: number | null;
+  /** Catálogo en CLP cuando el país no tiene un monto propio. */
+  precioClp?: number | null;
   /** Hora de inicio y fin de la clase en Chile. */
   inicio?: string;
   fin?: string;
@@ -79,10 +81,14 @@ export function detalleCursoLocal(opts: {
     referencia: opts.referencia,
   });
 
-  const precioTexto = opts.precio != null ? montoConCodigo(pais.iso, opts.precio) : null;
+  const precioClpTexto =
+    opts.precio == null && opts.precioClp != null ? `${formatCLP(opts.precioClp)} CLP` : null;
+  const precioTexto = opts.precio != null ? montoConCodigo(pais.iso, opts.precio) : precioClpTexto;
   const precioUsdTexto =
     pais.iso === ISO_CHILE && opts.precio != null ? montoEnUsd(opts.precio) : null;
-  const notaCobro = opts.notaCobro?.trim() || null;
+  const notaCobro = precioClpTexto
+    ? "El pago se abre en pesos chilenos."
+    : opts.notaCobro?.trim() || null;
 
   const esChile = pais.iso === ISO_CHILE;
   const lugar = esChile ? "Chile" : pais.nombre;

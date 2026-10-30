@@ -36,7 +36,7 @@ import { trackCheckoutStart, trackLeadSubmit } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import { normalizarPais } from "@/config/paises";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
-import { formatMoneda, MARCA_DEFINIR_PRECIO, muestraPrecioLocal, notaCobroClp, porcentajeDescuento, precioCurso, precioLista, totalLocal } from "@/lib/paises/precios";
+import { formatMoneda, muestraPrecioLocal, notaCobroClp, porcentajeDescuento, precioCurso, precioLista, totalLocal } from "@/lib/paises/precios";
 import { precioDescontadoClp } from "@/lib/pago/precio-clp";
 import type { CheckoutCatalog, CheckoutPriceOverride, CheckoutPromotion } from "@/lib/pago/catalogo";
 
@@ -261,16 +261,15 @@ export default function PagoClient({
   const convertAndFormat = (clpAmount: number, slug?: string, qty = 1) => {
     if ((mercadoLocal || puedeMonedaLocal) && paisPago !== "cl" && slug && slug !== "asesoria") {
       const local = precioCurso(paisPago, slug);
-      if (local == null) return MARCA_DEFINIR_PRECIO;
-      return textoLocal(local * qty);
+      if (local != null) return textoLocal(local * qty);
     }
     return convertPrice(clpAmount);
   };
   const textoTotal = (clpAmount: number, items: { slug: string; quantity: number }[]) => {
     if (paisPago === "cl" || (!mercadoLocal && !puedeMonedaLocal)) return convertPrice(clpAmount);
     const local = totalLocal(paisPago, items);
-    if (local == null) return MARCA_DEFINIR_PRECIO;
-    return textoLocal(local);
+    if (local != null) return textoLocal(local);
+    return convertPrice(clpAmount);
   };
   const tachadoLocal = (slug: string | undefined, qty = 1) => {
     if (!slug || slug === "asesoria" || paisPago === "cl" || (!mercadoLocal && !puedeMonedaLocal)) return null;

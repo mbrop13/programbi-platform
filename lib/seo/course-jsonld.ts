@@ -24,6 +24,8 @@ const OCCUPATIONAL: Record<string, string> = {
   "ia-productividad": "Especialista en Productividad con IA, Prompt Engineer",
   "power-automate": "Analista de Automatización RPA, Consultor Power Automate",
   excel: "Analista Financiero, Analista de Operaciones, Analista de Datos Excel",
+  access: "Administrativo, Analista de gestión, Encargado de reportes",
+  "mercado-financiero": "Analista financiero, Middle Office, Portfolio Manager, Analista de riesgos",
 };
 
 const PREREQUISITES: Record<string, string> = {
@@ -31,6 +33,8 @@ const PREREQUISITES: Record<string, string> = {
   "machine-learning": "Conocimientos intermedios de Python (Pandas/NumPy) y álgebra lineal básica.",
   "analitica-mineria": "Conocimientos básicos de análisis de datos y Excel.",
   "analitica-financiera": "Nociones básicas de contabilidad y finanzas corporativas.",
+  "mercado-financiero":
+    "Excel intermedio (tablas dinámicas, fórmulas avanzadas, gráficos y manejo de datos). No se requiere Python, SQL, Power BI ni Inteligencia Artificial.",
 };
 
 export function getCourseJsonLd(
@@ -47,8 +51,8 @@ export function getCourseJsonLd(
   const localPrice = precioCurso(pais, course.slug);
   // Chile publica el catálogo en CLP. El resto solo entra si tiene precio local:
   // no se reetiqueta un monto en CLP con otra moneda.
-  const lowestPrice = pais === ISO_CHILE ? (catalogPrice ?? null) : localPrice;
-  const moneda = pais === ISO_CHILE ? "CLP" : getPais(pais).moneda;
+  const lowestPrice = pais === ISO_CHILE ? (catalogPrice ?? null) : (localPrice ?? catalogPrice ?? null);
+  const moneda = pais === ISO_CHILE || localPrice == null ? "CLP" : getPais(pais).moneda;
   const path = rutaLocal(pais, coursePath(course.slug, view));
 
   return {
