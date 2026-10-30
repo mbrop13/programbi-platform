@@ -47,7 +47,7 @@ const COURSE_TITLES: Record<string, string> = {
   "analitica-mineria": "Analítica Minería",
   excel: "Excel",
   access: "Microsoft Access",
-  "mercado-financiero": "Mercado Financiero",
+  "mercado-financiero": "Curso para el mercado financiero con Python Power BI y SQL",
   "power-bi": "Power BI",
   python: "Python",
   "sql-server": "SQL Server",

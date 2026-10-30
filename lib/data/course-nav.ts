@@ -56,7 +56,7 @@ export const NAV_COURSE_GROUPS: { id: string; label: string; items: NavCourse[] 
       },
       {
         slug: "mercado-financiero",
-        title: "Mercado Financiero",
+        title: "Curso para el mercado financiero con Python Power BI y SQL",
         imageUrl: "/images/courses/mercado-financiero-card.webp",
         durationHours: 30,
       },

@@ -1064,7 +1064,7 @@ export const courses: Course[] = [
   },
   {
     slug: "mercado-financiero",
-    title: "Mercado Financiero",
+    title: "Curso para el mercado financiero con Python Power BI y SQL",
     shortDescription:
       "Python, SQL, Power BI e IA para valorizar carteras, medir riesgo y reportar portafolios.",
     description:

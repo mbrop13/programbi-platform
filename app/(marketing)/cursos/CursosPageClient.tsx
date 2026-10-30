@@ -11,6 +11,32 @@ import { WA_URL } from "@/lib/data/site";
 import { usePaisRuta, useRutaLocal } from "@/lib/paises/cliente";
 import { zonaDe } from "@/lib/paises/horarios";
 
+const CATALOG_ORDER = [
+  "analisis-de-datos",
+  "power-bi",
+  "mercado-financiero",
+  "claude",
+  "sql-server",
+  "python",
+  "excel",
+  "access",
+  "copilot",
+  "power-automate",
+  "ia-productividad",
+  "analitica-mineria",
+  "analitica-financiera",
+  "machine-learning",
+] as const;
+
+const NUEVOS = new Set(["access", "mercado-financiero"]);
+
+function orderCatalog(list: CourseCatalogItem[]): CourseCatalogItem[] {
+  const bySlug = new Map(list.map((course) => [course.slug, course]));
+  const listed = CATALOG_ORDER.map((slug) => bySlug.get(slug)).filter((course): course is CourseCatalogItem => Boolean(course));
+  const rest = list.filter((course) => !CATALOG_ORDER.includes(course.slug as (typeof CATALOG_ORDER)[number]));
+  return [...listed, ...rest];
+}
+
 export type CourseCatalogItem = {
   slug: string;
   title: string;
@@ -46,8 +72,9 @@ export default function CursosPageClient({
     );
   });
 
-  const featured = filteredCourses.find((c) => c.slug === "analisis-de-datos");
-  const rest = filteredCourses.filter((c) => c.slug !== "analisis-de-datos");
+  const orderedCourses = orderCatalog(filteredCourses);
+  const featured = orderedCourses.find((c) => c.slug === "analisis-de-datos");
+  const rest = orderedCourses.filter((c) => c.slug !== "analisis-de-datos");
 
   return (
     <>
@@ -142,6 +169,11 @@ export default function CursosPageClient({
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                   />
+                  {NUEVOS.has(course.slug) ? (
+                    <span className="absolute right-4 top-4 rounded-full bg-ink px-2.5 py-1 text-xs font-semibold text-canvas shadow-sm">
+                      Nuevo
+                    </span>
+                  ) : null}
                 </div>
                 <div className="px-4 pt-4">
                   <CourseCohortFacts

@@ -395,7 +395,7 @@ const SHORT_NAME: Record<string, string> = {
   "machine-learning": "Machine Learning",
   "analitica-mineria": "Analítica Minera",
   "analitica-financiera": "Analítica Financiera",
-  "mercado-financiero": "Mercado Financiero",
+  "mercado-financiero": "Curso para el mercado financiero con Python Power BI y SQL",
 };
 
 const LEVEL_IN_TITLE = new Set(["power-bi", "python", "sql-server", "excel"]);

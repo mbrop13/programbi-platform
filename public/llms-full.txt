@@ -70,7 +70,7 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
   * Evaluación de modelos (Matriz de confusión, Curva ROC, F1-Score, Validación Cruzada).
   * Despliegue de modelos predictivos básicos.
 
-### Curso para el mercado financiero con Python, Power BI y SQL
+### Curso para el mercado financiero con Python Power BI y SQL
 * **Duración total**: 30 horas.
 * **Precio**: $349.000 CLP.
 * **Para quién**: profesionales financieros y contables (contabilidad, tesorería, middle office, riesgos, carteras, banca, corredoras, AGF, seguros e inversión).

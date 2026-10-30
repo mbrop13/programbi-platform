@@ -208,7 +208,7 @@ export const COURSE_SEO: Record<
     title: "Curso mercado financiero Chile | ProgramBI",
     description:
       "Curso para el mercado financiero en Chile, en vivo: Python, SQL, Power BI e IA para valorizar carteras, medir riesgo y armar dashboards. 30 horas.",
-    h1: "Curso para el mercado financiero",
+    h1: "Curso para el mercado financiero con Python Power BI y SQL",
     audience:
       "Para profesionales de finanzas, contabilidad, tesorería, riesgos, middle office y gestión de carteras.",
     faqs: [

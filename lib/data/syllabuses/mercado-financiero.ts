@@ -20,7 +20,7 @@ export const mercadoFinancieroSyllabus: CourseSyllabusData = {
   levels: [
     {
       id: "programa",
-      label: "Curso para el mercado financiero",
+      label: "Curso para el mercado financiero con Python Power BI y SQL",
       shortLabel: "30h",
       theme: "#0F3D4C",
       intro:

@@ -11,7 +11,7 @@
 - [Análisis de Datos](https://www.programbi.com/cursos/analisis-de-datos)
 - [Analítica minería](https://www.programbi.com/cursos/analitica-mineria)
 - [Analítica financiera](https://www.programbi.com/cursos/analitica-financiera)
-- [Mercado financiero](https://www.programbi.com/cursos/mercado-financiero)
+- [Curso para el mercado financiero con Python Power BI y SQL](https://www.programbi.com/cursos/mercado-financiero)
 
 ## Empresas
 
