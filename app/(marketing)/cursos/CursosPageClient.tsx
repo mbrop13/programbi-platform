@@ -170,12 +170,12 @@ export default function CursosPageClient({
 
   return (
     <>
-      <section className="px-4 pt-24 pb-2 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl">
+      <section className="px-4 pt-2 pb-2 sm:px-6 sm:pt-8 lg:px-8 lg:pt-10">
+        <div className="mx-auto max-w-3xl">
           <h1 className="sr-only">Cursos</h1>
           <p
             aria-hidden="true"
-            className="min-h-[3.25rem] text-center text-xl font-semibold tracking-tight text-ink sm:min-h-[3rem] sm:text-2xl"
+            className="min-h-[5.4rem] text-center text-[1.85rem] font-semibold leading-tight tracking-tight text-ink sm:min-h-[3.25rem] sm:text-4xl lg:min-h-[3.5rem] lg:text-[2.65rem]"
           >
             {searchQuery ? (
               "\u00a0"
@@ -188,7 +188,7 @@ export default function CursosPageClient({
               </>
             )}
           </p>
-          <div className="relative mt-4">
+          <div className="relative mx-auto mt-3 max-w-2xl sm:mt-5">
             <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-faint" />
             <label htmlFor="course-search" className="sr-only">
               Buscar curso
