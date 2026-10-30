@@ -204,7 +204,17 @@ export default function CursosPageClient({
                 {preciosLocales[featured.slug] ? (
                   <p className="mt-3 text-sm font-semibold text-ink">{preciosLocales[featured.slug]}</p>
                 ) : null}
-                <span className="mt-6 inline-flex text-sm font-semibold text-ink">Ver temario</span>
+                <span className="mt-5 inline-flex text-sm font-semibold text-ink">Ver temario</span>
+                <div className="mt-5">
+                  <CourseCohortFacts
+                    slug={featured.slug}
+                    schedules={schedules}
+                    timeZone={timeZone}
+                    pais={pais}
+                    loaded
+                    medium
+                  />
+                </div>
               </Link>
             </article>
           )}
