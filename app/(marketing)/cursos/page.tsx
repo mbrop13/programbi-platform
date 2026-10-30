@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { courses } from "@/lib/data/courses";
+import { getCourseGallery } from "@/lib/data/course-gallery";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import CursosPageClient from "./CursosPageClient";
 import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
@@ -128,6 +129,13 @@ export default async function CursosPage({
           durationHours: catalogHours(c),
           levelsCount: publicLevelCount(c),
           techStack: c.techStack,
+          gallery:
+            c.slug === "analisis-de-datos"
+              ? [
+                  { src: c.imageUrl, alt: c.title },
+                  ...getCourseGallery(c.slug).map((shot) => ({ src: shot.src, alt: shot.caption })),
+                ]
+              : undefined,
         }))}
       />
     </>

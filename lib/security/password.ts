@@ -1,22 +1,16 @@
-// Centralized password policy.
-//
-// Background (OWASP ASVS L3 audit, A-01 / V2.5.1, A-02 / V2.5.7):
-// Three different code paths enforced three different minimum lengths
-// (10, 10 and 6 chars). ASVS Level 3 requires >= 12 chars, complexity rules
-// AND a breached-password check (HIBP k-anonymity API). This helper unifies
-// the policy so all auth flows (registro, AuthModal, actualizar-password)
-// validate identically.
+// Shared password rule for registro, AuthModal, referidos and password reset.
+// Length only: at least 8 characters. No character classes.
 
 export interface PasswordValidation {
   ok: boolean;
   error?: string;
 }
 
-const MIN_LENGTH = 12;
+const MIN_LENGTH = 8;
 const MAX_LENGTH = 128;
 
 /**
- * Validate a password against the centralized policy.
+ * Validate a password against the shared rule.
  * Returns { ok: true } when valid, or { ok: false, error } with a user-facing
  * Spanish message. Pure client/server safe (no I/O).
  */
@@ -29,15 +23,6 @@ export function validatePassword(pw: string): PasswordValidation {
   }
   if (pw.length > MAX_LENGTH) {
     return { ok: false, error: "La contraseña es demasiado larga." };
-  }
-  if (!/[A-Z]/.test(pw) || !/[a-z]/.test(pw)) {
-    return { ok: false, error: "La contraseña debe incluir mayúsculas y minúsculas." };
-  }
-  if (!/[0-9]/.test(pw)) {
-    return { ok: false, error: "La contraseña debe incluir al menos un número." };
-  }
-  if (!/[^A-Za-z0-9]/.test(pw)) {
-    return { ok: false, error: "La contraseña debe incluir al menos un carácter especial." };
   }
   return { ok: true };
 }

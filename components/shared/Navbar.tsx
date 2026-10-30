@@ -329,9 +329,6 @@ export default function Navbar() {
                                         <span className="block line-clamp-2 text-sm font-semibold leading-tight text-ink">
                                           {course.title}
                                         </span>
-                                        <span className="block text-[11px] tabular-nums text-faint">
-                                          {course.durationHours} h
-                                        </span>
                                       </span>
                                     </Link>
                                   </li>
@@ -556,12 +553,9 @@ export default function Navbar() {
                                   <Link
                                     href={hrefLocal(`/cursos/${course.slug}`)}
                                     onClick={() => setIsMobileOpen(false)}
-                                    className="flex items-baseline justify-between gap-3 rounded-md px-1 py-2.5 no-underline"
+                                    className="block rounded-md px-1 py-2.5 no-underline"
                                   >
                                     <span className="text-[15px] font-medium text-ink">{course.title}</span>
-                                    <span className="shrink-0 text-xs tabular-nums text-faint">
-                                      {course.durationHours} h
-                                    </span>
                                   </Link>
                                 </li>
                               ))}

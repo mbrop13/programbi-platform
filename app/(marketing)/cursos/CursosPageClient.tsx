@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import CourseImage from "@/components/shared/CourseImage";
 import { CourseCohortFacts } from "@/components/marketing/CourseCohortStrip";
+import FeaturedCourseStrip from "@/components/marketing/FeaturedCourseStrip";
 import { Clock, Search } from "lucide-react";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
 import { type CourseSchedule } from "@/lib/data/course-schedules";
@@ -30,6 +31,14 @@ const CATALOG_ORDER = [
 
 const NUEVOS = new Set(["access", "mercado-financiero"]);
 
+const SEARCH_HINTS = [
+  "¿Quieres aprender Power BI?",
+  "¿Cómo te podría ayudar Claude?",
+  "¿Buscas SQL Server o Python?",
+  "¿Te interesa análisis de datos?",
+  "¿Automatizar con Power Automate?",
+] as const;
+
 function orderCatalog(list: CourseCatalogItem[]): CourseCatalogItem[] {
   const bySlug = new Map(list.map((course) => [course.slug, course]));
   const listed = CATALOG_ORDER.map((slug) => bySlug.get(slug)).filter((course): course is CourseCatalogItem => Boolean(course));
@@ -45,6 +54,7 @@ export type CourseCatalogItem = {
   durationHours: number;
   levelsCount?: number;
   techStack: string[];
+  gallery?: { src: string; alt: string }[];
 };
 
 export default function CursosPageClient({
@@ -58,6 +68,8 @@ export default function CursosPageClient({
   preciosLocales?: Record<string, string>;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchFocused, setSearchFocused] = useState(false);
+  const [hintIndex, setHintIndex] = useState(0);
   const pais = usePaisRuta();
   const hrefLocal = useRutaLocal();
   const timeZone = zonaDe(pais);
@@ -72,70 +84,87 @@ export default function CursosPageClient({
     );
   });
 
+  useEffect(() => {
+    if (searchQuery || searchFocused) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = window.setInterval(() => {
+      setHintIndex((current) => (current + 1) % SEARCH_HINTS.length);
+    }, 3400);
+    return () => window.clearInterval(id);
+  }, [searchQuery, searchFocused]);
+
   const orderedCourses = orderCatalog(filteredCourses);
   const featured = orderedCourses.find((c) => c.slug === "analisis-de-datos");
   const rest = orderedCourses.filter((c) => c.slug !== "analisis-de-datos");
 
   return (
     <>
-      <section className="px-4 pt-16 pb-8 sm:px-6 lg:px-8 lg:pt-20">
-        <div className="mx-auto max-w-[1400px]">
-          <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">Cursos</h1>
-          <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">
-            Programas en vivo por Zoom. Elige una herramienta o el programa de análisis de datos.
-          </p>
-          <div className="relative mt-8 max-w-xl">
+      <section className="px-4 pt-24 pb-2 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl">
+          <h1 className="sr-only">Cursos</h1>
+          <div className="relative">
             <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-faint" />
             <label htmlFor="course-search" className="sr-only">
               Buscar curso
             </label>
+            {searchQuery ? null : (
+              <span
+                key={hintIndex}
+                aria-hidden="true"
+                className="pointer-events-none absolute top-1/2 right-4 left-12 -translate-y-1/2 truncate text-base text-faint motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500"
+              >
+                {SEARCH_HINTS[hintIndex]}
+              </span>
+            )}
             <input
               id="course-search"
               type="search"
-              placeholder="Buscar Power BI, SQL, Python..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-12 w-full rounded-xl border border-line-strong bg-paper pl-11 pr-4 text-base text-ink placeholder:text-faint"
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              className="h-14 w-full rounded-2xl border border-line-strong bg-paper pl-12 pr-4 text-base text-ink outline-none transition-colors focus:border-ink/40"
               autoComplete="off"
             />
           </div>
         </div>
       </section>
 
-      <section className="border-t border-line px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+      <section className="px-4 pt-8 pb-12 sm:px-6 lg:px-8 lg:pt-10 lg:pb-16">
         <div className="mx-auto max-w-[1400px] space-y-5">
           {featured && (
-            <Link
-              href={hrefLocal(`/cursos/${featured.slug}`)}
-              onClick={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
-              className="group grid overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20 lg:grid-cols-12"
-            >
-              <div className="lg:col-span-7">
-                <div className="relative aspect-[16/10] bg-wash lg:aspect-auto lg:min-h-[320px]">
-                  <CourseImage
-                    src={featured.imageUrl}
-                    alt={featured.title}
-                    fill
-                    preload
-                    fetchPriority="high"
-                    decoding="sync"
-                    quality={80}
-                    sizes="(max-width: 640px) 412px, (max-width: 1024px) 100vw, 58vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+            <article className="grid overflow-hidden rounded-[26px] border border-line bg-paper transition-colors hover:border-ink/20 lg:grid-cols-12">
+              <div className="min-w-0 p-3 pb-0 sm:p-4 sm:pb-0 lg:col-span-7 lg:p-5 lg:pb-0">
+                {featured.gallery && featured.gallery.length > 1 ? (
+                  <FeaturedCourseStrip
+                    title="Curso de análisis de datos"
+                    images={featured.gallery}
+                    href={hrefLocal(`/cursos/${featured.slug}`)}
+                    onNavigate={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
                   />
-                </div>
-                <div className="px-4 py-4 lg:px-5">
-                  <CourseCohortFacts
-                    slug={featured.slug}
-                    schedules={schedules}
-                    timeZone={timeZone}
-                    pais={pais}
-                    loaded
-                    compact
-                  />
-                </div>
+                ) : (
+                  <Link
+                    href={hrefLocal(`/cursos/${featured.slug}`)}
+                    onClick={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
+                    className="relative block aspect-[16/10] overflow-hidden rounded-[18px] border border-line bg-wash"
+                  >
+                    <CourseImage
+                      src={featured.imageUrl}
+                      alt={featured.title}
+                      fill
+                      preload
+                      fetchPriority="high"
+                      sizes="(max-width: 1024px) 100vw, 58vw"
+                      className="object-cover"
+                    />
+                  </Link>
+                )}
               </div>
-              <div className="flex flex-col justify-end px-6 py-6 lg:col-span-5 lg:px-8 lg:py-8">
+              <Link
+                href={hrefLocal(`/cursos/${featured.slug}`)}
+                onClick={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
+                className="flex flex-col justify-center px-6 py-6 no-underline lg:col-span-5 lg:px-8 lg:py-6"
+              >
                 <p className="text-xs font-semibold text-mute">
                   60 horas por nivel · básico-intermedio y avanzado
                 </p>
@@ -148,8 +177,18 @@ export default function CursosPageClient({
                   <p className="mt-3 text-sm font-semibold text-ink">{preciosLocales[featured.slug]}</p>
                 ) : null}
                 <span className="mt-6 inline-flex text-sm font-semibold text-ink">Ver temario</span>
+              </Link>
+              <div className="px-4 py-4 lg:col-span-12 lg:px-5 lg:pt-4 lg:pb-5">
+                <CourseCohortFacts
+                  slug={featured.slug}
+                  schedules={schedules}
+                  timeZone={timeZone}
+                  pais={pais}
+                  loaded
+                  compact
+                />
               </div>
-            </Link>
+            </article>
           )}
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">

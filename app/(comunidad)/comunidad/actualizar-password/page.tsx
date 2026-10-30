@@ -26,12 +26,6 @@ export default function ActualizarPasswordPage() {
       return;
     }
 
-    if (password.length < 12) {
-      setError("La contraseña debe tener al menos 12 caracteres.");
-      return;
-    }
-
-    // A-01 / V2.5.1 (OWASP ASVS L3): unified centralized policy.
     const pwCheck = validatePassword(password);
     if (!pwCheck.ok) {
       setError(pwCheck.error!);
@@ -40,7 +34,6 @@ export default function ActualizarPasswordPage() {
 
     setLoading(true);
 
-    // A-02 / V2.5.7 (OWASP ASVS L3): reject passwords found in known breaches.
     if (await isBreachedPassword(password)) {
       setError("Esta contraseña aparece en filtraciones conocidas. Elige otra.");
       setLoading(false);
@@ -123,7 +116,7 @@ export default function ActualizarPasswordPage() {
                       disabled={loading}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      placeholder="Mínimo 10 caracteres (mayúsculas y números)"
+                      placeholder="Mínimo 8 caracteres"
                       className="w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
                     />
                     <button

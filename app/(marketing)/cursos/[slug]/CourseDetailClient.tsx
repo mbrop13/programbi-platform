@@ -767,9 +767,11 @@ export default function CourseDetailClient({
         </div>
       </section>
 
-      {isCroTemplate ? <CourseFaq slug={course.slug} /> : null}
-
-      {detalleLocal ? <CourseLocalSeo detalle={detalleLocal} /> : null}
+      {isCroTemplate ? (
+        <CourseFaq slug={course.slug} extra={detalleLocal?.faqs} />
+      ) : detalleLocal && detalleLocal.faqs.length > 0 ? (
+        <CourseLocalSeo detalle={detalleLocal} />
+      ) : null}
 
       <CourseContactForm course={course} />
 

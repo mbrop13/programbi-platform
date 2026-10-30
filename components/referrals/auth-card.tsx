@@ -281,7 +281,7 @@ export function ReferidosRegistro() {
               {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             </button>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">Mín. 12 caracteres, mayúscula, número y símbolo.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Mínimo 8 caracteres.</p>
         </Field>
         <Field label="Confirmar contraseña" htmlFor="confirm">
           <Input

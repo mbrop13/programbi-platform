@@ -14,7 +14,7 @@ import { honeypotStyle } from "@/lib/antibot";
 import { persistRegistrationSource } from "@/lib/registration-source";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import { courseSlugFromLocation, debugSignUpResult, signUpCreatedUser, trackClickRegistro, trackSubmitRegistro } from "@/lib/analytics/marketing";
-import { LEAD_INTERESTS, interestFromCoursePath } from "@/lib/data/lead-interests";
+import { interestFromCoursePath } from "@/lib/data/lead-interests";
 import { readBrowserReferralCode } from "@/lib/referrals/cookie";
 
 interface AuthModalProps {
@@ -64,7 +64,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
-  const [interest, setInterest] = useState("");
   
   // UI states
   const [showPassword, setShowPassword] = useState(false);
@@ -88,7 +87,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     setPassword("");
     setFullName("");
     setWhatsapp("");
-    setInterest(interestFromCoursePath(redirectUrl) || "");
     setHoneypot("");
     formLoadedAt.current = Date.now();
     setShowPassword(false);
@@ -163,19 +161,12 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
       return;
     }
 
-    // A-01 / V2.5.1 (OWASP ASVS L3): apply the same centralized policy used by
-    // the dedicated registro page. The previous check (< 6 chars) was far too
-    // weak and diverged from the rest of the app.
     if (!fullName.trim() || fullName.trim().length < 2) {
       setError("Escribe tu nombre.");
       return;
     }
     if (!whatsapp.trim() || whatsapp.replace(/\D/g, "").length < 8) {
       setError("Escribe un WhatsApp válido.");
-      return;
-    }
-    if (!interest) {
-      setError("Elige en qué estás interesado.");
       return;
     }
     if (!acceptsPrivacy) {
@@ -191,7 +182,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
 
     setLoading(true);
 
-    // A-02 / V2.5.7 (OWASP ASVS L3): reject passwords found in known breaches.
     if (await isBreachedPassword(password)) {
       setError("Esta contraseña aparece en filtraciones conocidas. Elige otra.");
       setLoading(false);
@@ -203,6 +193,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
       const pricingVariant = readClientPricingVariant();
       const referralCode = readBrowserReferralCode();
       const defaultName = fullName.trim() || email.split("@")[0] || "Usuario";
+      const interest = interestFromCoursePath(redirectUrl || registrationSource);
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -211,7 +202,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           data: {
             full_name: defaultName,
             whatsapp: whatsapp ? `${phonePrefix}${whatsapp}` : null,
-            interest: interest || null,
+            ...(interest ? { interest } : {}),
             registration_source: registrationSource,
             ...(referralCode ? { referral_code: referralCode } : {}),
             ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
@@ -234,11 +225,16 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           method: "form",
           course_slug: courseSlugFromLocation(registrationSource),
         });
-        // Auto-login after successful registration
-        const { error: loginError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+        // signUp ya deja la sesión si el correo no exige confirmación.
+        // Si no viene sesión, se entra con la misma contraseña.
+        let loginError: { message: string } | null = null;
+        if (!data.session) {
+          const login = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          loginError = login.error;
+        }
 
         // Guardar teléfono y origen en el perfil (backup si el trigger no lo copió)
         if (data?.user?.id) {
@@ -605,35 +601,15 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                          </div>
                       </div>
                       <div>
-                        <label htmlFor="auth-interest" className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">
-                          Interés *
-                        </label>
-                        <select
-                          id="auth-interest"
-                          required
-                          disabled={loading}
-                          value={interest}
-                          onChange={(e) => setInterest(e.target.value)}
-                          className="w-full px-3 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
-                        >
-                          <option value="">Elige un programa</option>
-                          {LEAD_INTERESTS.map((item) => (
-                            <option key={item} value={item}>
-                              {item}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                      <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Contraseña</label>
                         <div className="relative">
                           <input
                             type={showPassword ? "text" : "password"}
-                            placeholder="Mínimo 12 caracteres"
+                            placeholder="Mínimo 8 caracteres"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            minLength={12}
+                            minLength={8}
                             disabled={loading}
                             autoComplete="new-password"
                             name="new-password"

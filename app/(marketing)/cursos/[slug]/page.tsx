@@ -15,7 +15,6 @@ import { robotsLocal } from "@/lib/paises/metadata";
 import { detalleCursoLocal, textosPreciosLocales } from "@/lib/paises/detalle-curso";
 import { precioTarjetaPublico } from "@/lib/paises/precio-publico";
 import { horarioDeCohorte } from "@/lib/paises/horarios";
-import { offerLowPrice } from "@/lib/data/course-views";
 
 export const revalidate = 3600;
 
@@ -113,21 +112,11 @@ export default async function CourseDetailPage({
 
   const schedules = (await getActiveSchedules()) as CourseSchedule[];
 
-  // Detalle local del mercado: horario en la hora del país, precio y moneda,
-  // medios de pago y las tres preguntas del FAQ local. Todo en el servidor.
+  // Horario local y preguntas que no incluyen el precio.
   const cohorte = schedules.find((s) => s.course_slug === course.slug);
   const { inicio, fin } = horarioDeCohorte(cohorte?.schedule_time);
-  const precioCatalogo = offerLowPrice(course, "publico") ?? null;
-  const precioPais = pais === ISO_CHILE ? precioCatalogo : precioCurso(pais, course.slug);
   const precioTarjeta = await precioTarjetaPublico(pais, course.slug);
-  const detalle = detalleCursoLocal({
-    iso: pais,
-    precio: precioPais,
-    precioClp: precioPais == null ? precioCatalogo : null,
-    inicio,
-    fin,
-    notaCobro: precioTarjeta?.nota,
-  });
+  const detalle = detalleCursoLocal({ iso: pais, inicio, fin });
 
   const courseJsonLd = getCourseJsonLd(course, "publico", pais);
   const jsonLd = {
@@ -157,7 +146,7 @@ export default async function CourseDetailPage({
                 acceptedAnswer: { "@type": "Answer", text: localizarMercado(faq.a, pais) },
               }))
             : []),
-          // Preguntas del mercado: horario local, pago y certificado.
+          // Preguntas del mercado: horario local y certificado. Sin el precio.
           ...detalle.faqs.map((faq) => ({
             "@type": "Question",
             name: faq.q,

@@ -20,7 +20,7 @@ import {
   writeBrowserReferralCode,
 } from "@/lib/referrals/cookie";
 import { courseSlugFromLocation, debugSignUpResult, signUpCreatedUser, trackSubmitRegistro } from "@/lib/analytics/marketing";
-import { LEAD_INTERESTS, interestFromCoursePath } from "@/lib/data/lead-interests";
+import { interestFromCoursePath } from "@/lib/data/lead-interests";
 
 function getFromQueryParam(): string | null {
   if (typeof window === "undefined") return null;
@@ -56,18 +56,9 @@ export default function RegistroPage() {
     fullName: "",
     email: "",
     phone: "",
-    interest: "",
     password: "",
   });
   const router = useRouter();
-
-  useEffect(() => {
-    const from = getFromQueryParam();
-    const guessed = interestFromCoursePath(from);
-    if (guessed) {
-      setFormData((prev) => (prev.interest ? prev : { ...prev, interest: guessed }));
-    }
-  }, []);
 
   const captureReferralFromUrl = () => {
     const fromUrl = normalizeReferralCode(
@@ -135,20 +126,14 @@ export default function RegistroPage() {
       setError("Escribe un teléfono o WhatsApp válido.");
       return;
     }
-    if (!formData.interest) {
-      setError("Elige en qué estás interesado.");
-      return;
-    }
 
     const password = formData.password;
-    // A-01 / V2.5.1 (OWASP ASVS L3): unified centralized policy (>= 12 chars).
     const pwCheck = validatePassword(password);
     if (!pwCheck.ok) {
       setError(pwCheck.error!);
       return;
     }
 
-    // A-02 / V2.5.7 (OWASP ASVS L3): reject passwords found in known breaches.
     setLoading(true);
     if (await isBreachedPassword(password)) {
       setError("Esta contraseña aparece en filtraciones conocidas. Elige otra.");
@@ -175,6 +160,7 @@ export default function RegistroPage() {
       const pricingVariant = readClientPricingVariant();
       const referralCode = captureReferralFromUrl();
       const phone = formData.phone.trim();
+      const interest = interestFromCoursePath(fromParam || registrationSource);
 
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
@@ -183,7 +169,7 @@ export default function RegistroPage() {
           data: {
             full_name: defaultName,
             whatsapp: phone,
-            interest: formData.interest,
+            ...(interest ? { interest } : {}),
             registration_source: registrationSource,
             ...(referralCode ? { referral_code: referralCode } : {}),
             ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
@@ -209,7 +195,19 @@ export default function RegistroPage() {
         course_slug: courseSlugFromLocation(fromParam || registrationSource),
       });
 
-      // Backup: escribir origen en el perfil si el usuario ya quedó creado
+      // La confirmación de correo está apagada: signUp ya deja la sesión.
+      // Si no viene sesión, se intenta el login con la misma contraseña.
+      if (!data.session) {
+        const { error: loginError } = await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+        if (loginError) {
+          setSuccess(true);
+          return;
+        }
+      }
+
       if (data?.user?.id) {
         await supabase
           .from("profiles")
@@ -223,6 +221,7 @@ export default function RegistroPage() {
 
       fetch("/api/auth/new-member", {
         method: "POST",
+        keepalive: true,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: defaultName,
@@ -231,7 +230,7 @@ export default function RegistroPage() {
         }),
       }).catch(() => {});
 
-      setSuccess(true);
+      window.location.href = getNextPath();
     } catch (err) {
       setError("Ocurrió un error inesperado al registrar su cuenta.");
     } finally {
@@ -258,7 +257,7 @@ export default function RegistroPage() {
             Crea tu cuenta
           </h1>
           <p className="text-text-muted text-center mb-8">
-            Nombre, email, teléfono e interés. Después ves fechas y valor.
+            Nombre, email y teléfono. Después ves fechas y valor.
           </p>
 
           {success ? (
@@ -352,27 +351,6 @@ export default function RegistroPage() {
             </div>
 
             <div>
-              <label htmlFor="registro-interest" className="block text-sm font-bold text-brand-dark mb-1.5">
-                Interés *
-              </label>
-              <select
-                id="registro-interest"
-                required
-                disabled={loading}
-                value={formData.interest}
-                onChange={(e) => setFormData({ ...formData, interest: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50 bg-white"
-              >
-                <option value="">Elige un programa</option>
-                {LEAD_INTERESTS.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
               <label className="block text-sm font-bold text-brand-dark mb-1.5">Contraseña *</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
@@ -382,7 +360,7 @@ export default function RegistroPage() {
                   disabled={loading}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="Mínimo 12 caracteres"
+                  placeholder="Mínimo 8 caracteres"
                   autoComplete="new-password"
                   className="w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
                 />

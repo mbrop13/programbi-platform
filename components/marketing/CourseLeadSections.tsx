@@ -276,16 +276,23 @@ export function CourseSeoInternalLinks({ slug }: { slug: string }) {
   );
 }
 
-export function CourseFaq({ slug }: { slug: string }) {
+export function CourseFaq({
+  slug,
+  extra = [],
+}: {
+  slug: string;
+  extra?: { q: string; a: string }[];
+}) {
   const seo = COURSE_SEO[slug];
-  if (!seo?.faqs?.length) return null;
+  const items = [...(seo?.faqs ?? []), ...extra];
+  if (items.length === 0) return null;
 
   return (
     <section className="border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[860px]">
         <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Preguntas frecuentes</h2>
         <div className="mt-10 divide-y divide-line border-y border-line">
-          {seo.faqs.map((item) => (
+          {items.map((item) => (
             <details key={item.q} className="faq group py-5">
               <summary className="flex cursor-pointer items-center justify-between gap-6 text-left">
                 <span className="text-lg font-semibold tracking-tight text-ink sm:text-xl">{item.q}</span>
