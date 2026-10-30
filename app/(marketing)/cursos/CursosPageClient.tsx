@@ -41,6 +41,15 @@ const SEARCH_PROMPTS = [
   { line: "¿Te sirve Copilot en el trabajo?", word: "Copilot" },
 ] as const;
 
+const TYPE_LINE_MS = 92;
+const TYPE_WORD_MS = 135;
+const HOLD_MS = 2400;
+const DELETE_WORD_MS = 85;
+const DELETE_LINE_MS = 46;
+const GAP_MS = 700;
+
+type PromptPhase = "type-line" | "type-word" | "delete-word" | "delete-line";
+
 function orderCatalog(list: CourseCatalogItem[]): CourseCatalogItem[] {
   const bySlug = new Map(list.map((course) => [course.slug, course]));
   const listed = CATALOG_ORDER.map((slug) => bySlug.get(slug)).filter((course): course is CourseCatalogItem => Boolean(course));
@@ -72,7 +81,9 @@ export default function CursosPageClient({
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [promptIndex, setPromptIndex] = useState(0);
+  const [typedLine, setTypedLine] = useState("");
   const [typedWord, setTypedWord] = useState("");
+  const [promptPhase, setPromptPhase] = useState<PromptPhase>("type-line");
   const pais = usePaisRuta();
   const hrefLocal = useRutaLocal();
   const timeZone = zonaDe(pais);
@@ -89,30 +100,69 @@ export default function CursosPageClient({
 
   useEffect(() => {
     if (searchQuery || searchFocused) return;
-    const word = SEARCH_PROMPTS[promptIndex].word;
+    const prompt = SEARCH_PROMPTS[promptIndex];
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (reduce) {
-      setTypedWord(word);
+      setTypedLine(prompt.line);
+      setTypedWord(prompt.word);
       const id = window.setTimeout(() => {
         setPromptIndex((current) => (current + 1) % SEARCH_PROMPTS.length);
-      }, 3200);
+      }, 5600);
       return () => window.clearTimeout(id);
     }
 
-    if (typedWord.length < word.length) {
+    if (promptPhase === "type-line") {
+      if (typedLine.length < prompt.line.length) {
+        const id = window.setTimeout(() => {
+          setTypedLine(prompt.line.slice(0, typedLine.length + 1));
+        }, TYPE_LINE_MS);
+        return () => window.clearTimeout(id);
+      }
+      const id = window.setTimeout(() => setPromptPhase("type-word"), 0);
+      return () => window.clearTimeout(id);
+    }
+
+    if (promptPhase === "type-word") {
+      if (typedWord.length < prompt.word.length) {
+        const id = window.setTimeout(() => {
+          setTypedWord(prompt.word.slice(0, typedWord.length + 1));
+        }, TYPE_WORD_MS);
+        return () => window.clearTimeout(id);
+      }
+      const id = window.setTimeout(() => setPromptPhase("delete-word"), HOLD_MS);
+      return () => window.clearTimeout(id);
+    }
+
+    if (promptPhase === "delete-word") {
+      if (typedWord.length > 0) {
+        const id = window.setTimeout(() => {
+          setTypedWord((current) => current.slice(0, -1));
+        }, DELETE_WORD_MS);
+        return () => window.clearTimeout(id);
+      }
+      const id = window.setTimeout(() => setPromptPhase("delete-line"), 0);
+      return () => window.clearTimeout(id);
+    }
+
+    if (promptPhase === "delete-line") {
+      if (typedLine.length > 0) {
+        const id = window.setTimeout(() => {
+          setTypedLine((current) => current.slice(0, -1));
+        }, DELETE_LINE_MS);
+        return () => window.clearTimeout(id);
+      }
       const id = window.setTimeout(() => {
-        setTypedWord(word.slice(0, typedWord.length + 1));
-      }, 78);
+        setTypedLine("");
+        setTypedWord("");
+        setPromptIndex((current) => (current + 1) % SEARCH_PROMPTS.length);
+        setPromptPhase("type-line");
+      }, GAP_MS);
       return () => window.clearTimeout(id);
     }
 
-    const id = window.setTimeout(() => {
-      setTypedWord("");
-      setPromptIndex((current) => (current + 1) % SEARCH_PROMPTS.length);
-    }, 1500);
-    return () => window.clearTimeout(id);
-  }, [searchQuery, searchFocused, promptIndex, typedWord]);
+    return;
+  }, [searchQuery, searchFocused, promptIndex, typedLine, typedWord, promptPhase]);
 
   const orderedCourses = orderCatalog(filteredCourses);
   const featured = orderedCourses.find((c) => c.slug === "analisis-de-datos");
@@ -124,11 +174,19 @@ export default function CursosPageClient({
         <div className="mx-auto max-w-2xl">
           <h1 className="sr-only">Cursos</h1>
           <p
-            key={searchQuery ? "searching" : promptIndex}
             aria-hidden="true"
-            className="min-h-[3.25rem] text-center text-xl font-semibold tracking-tight text-ink sm:min-h-[3rem] sm:text-2xl motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500"
+            className="min-h-[3.25rem] text-center text-xl font-semibold tracking-tight text-ink sm:min-h-[3rem] sm:text-2xl"
           >
-            {searchQuery ? "\u00a0" : SEARCH_PROMPTS[promptIndex].line}
+            {searchQuery ? (
+              "\u00a0"
+            ) : (
+              <>
+                {typedLine}
+                {typedLine.length > 0 ? (
+                  <span className="ml-px inline-block h-[0.9em] w-px translate-y-px bg-ink/70 align-middle motion-safe:animate-pulse" />
+                ) : null}
+              </>
+            )}
           </p>
           <div className="relative mt-4">
             <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-faint" />
