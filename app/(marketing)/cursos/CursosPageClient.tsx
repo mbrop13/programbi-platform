@@ -57,6 +57,46 @@ function orderCatalog(list: CourseCatalogItem[]): CourseCatalogItem[] {
   return [...listed, ...rest];
 }
 
+function foldSearch(value: string): string {
+  return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+function searchScore(course: CourseCatalogItem, query: string): number {
+  const words = query.split(/\s+/).filter(Boolean);
+  const title = foldSearch(course.title);
+  const stack = course.techStack.map(foldSearch);
+  const description = foldSearch(course.shortDescription);
+  const blob = foldSearch(`${course.title} ${course.shortDescription} ${course.techStack.join(" ")} ${course.slug.replace(/-/g, " ")}`);
+  if (!words.every((word) => blob.includes(word))) return 0;
+
+  let score = 1;
+  if (title === query) score += 200;
+  else if (title.startsWith(query)) score += 140;
+  else if (title.includes(query)) score += 90;
+
+  const titleWords = title.split(/[^a-z0-9+]+/);
+  for (const word of words) {
+    if (titleWords.includes(word)) score += 40;
+    else if (title.includes(word)) score += 16;
+    if (stack.some((item) => item === word || item.startsWith(`${word} `) || item.startsWith(word))) score += 28;
+    else if (stack.some((item) => item.includes(word))) score += 12;
+    if (description.includes(word)) score += 6;
+  }
+
+  if (title.startsWith(query)) score += Math.max(0, 20 - (title.length - query.length));
+  return score;
+}
+
+function rankCatalog(list: CourseCatalogItem[], rawQuery: string): CourseCatalogItem[] {
+  const query = foldSearch(rawQuery.trim());
+  if (!query) return orderCatalog(list);
+  return list
+    .map((course, index) => ({ course, index, score: searchScore(course, query) }))
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score || a.index - b.index)
+    .map((item) => item.course);
+}
+
 export type CourseCatalogItem = {
   slug: string;
   title: string;
@@ -88,15 +128,7 @@ export default function CursosPageClient({
   const hrefLocal = useRutaLocal();
   const timeZone = zonaDe(pais);
 
-  const filteredCourses = catalog.filter((course) => {
-    const q = searchQuery.toLowerCase();
-    return (
-      !q ||
-      course.title.toLowerCase().includes(q) ||
-      course.techStack.some((t) => t.toLowerCase().includes(q)) ||
-      course.shortDescription.toLowerCase().includes(q)
-    );
-  });
+  const query = searchQuery.trim();
 
   useEffect(() => {
     if (searchQuery || searchFocused) return;
@@ -164,9 +196,9 @@ export default function CursosPageClient({
     return;
   }, [searchQuery, searchFocused, promptIndex, typedLine, typedWord, promptPhase]);
 
-  const orderedCourses = orderCatalog(filteredCourses);
-  const featured = orderedCourses.find((c) => c.slug === "analisis-de-datos");
-  const rest = orderedCourses.filter((c) => c.slug !== "analisis-de-datos");
+  const orderedCourses = rankCatalog(catalog, query);
+  const featured = query ? undefined : orderedCourses.find((c) => c.slug === "analisis-de-datos");
+  const rest = featured ? orderedCourses.filter((c) => c.slug !== featured.slug) : orderedCourses;
 
   return (
     <>
@@ -331,7 +363,7 @@ export default function CursosPageClient({
             ))}
           </div>
 
-          {filteredCourses.length === 0 && (
+          {query && orderedCourses.length === 0 && (
             <div className="py-16 text-center">
               <p className="text-mute">No se encontraron cursos con esa búsqueda.</p>
               <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
