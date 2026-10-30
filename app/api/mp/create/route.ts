@@ -115,7 +115,7 @@ export async function POST(req: NextRequest) {
        const itemTotal = finalPriceClp * (item.quantity || 1);
        grandTotalClp += itemTotal;
 
-        const isBundle = ["analisis-de-datos", "analitica-mineria", "analitica-financiera"].includes(masterCourse.slug);
+        const isBundle = ["analisis-de-datos", "analitica-mineria"].includes(masterCourse.slug);
         const hasPromoDiscount = isBundle || !!promo;
 
         validatedItems.push({

@@ -62,6 +62,26 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/cursos/analitica-financiera",
+        destination: "/cursos/mercado-financiero",
+        permanent: true,
+      },
+      {
+        source: "/cursos/analitica-financiera/:path*",
+        destination: "/cursos/mercado-financiero",
+        permanent: true,
+      },
+      {
+        source: "/:pais/cursos/analitica-financiera",
+        destination: "/:pais/cursos/mercado-financiero",
+        permanent: true,
+      },
+      {
+        source: "/:pais/cursos/analitica-financiera/:path*",
+        destination: "/:pais/cursos/mercado-financiero",
+        permanent: true,
+      },
+      {
         source: "/consultorias",
         destination: "/empresas",
         permanent: true,

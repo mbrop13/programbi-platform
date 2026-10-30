@@ -132,5 +132,5 @@ export const HOME_COURSE_SLUGS = [
   "analitica-mineria",
   "sql-server",
   "python",
-  "analitica-financiera",
+  "mercado-financiero",
 ] as const;

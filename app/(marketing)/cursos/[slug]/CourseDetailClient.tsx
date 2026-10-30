@@ -373,8 +373,7 @@ export default function CourseDetailClient({
   const isSpecialization =
     course.durationHours > 50 ||
     course.slug === "analisis-de-datos" ||
-    course.slug === "analitica-mineria" ||
-    course.slug === "analitica-financiera";
+    course.slug === "analitica-mineria";
   let discPercent = 0;
   if (userPlan === "pro") discPercent = isSpecialization ? 10 : 20;
   else if (userPlan === "max") discPercent = isSpecialization ? 12.5 : 25;

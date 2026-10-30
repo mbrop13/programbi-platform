@@ -5,7 +5,6 @@ import { excelSyllabus } from "./excel";
 import { pythonSyllabus } from "./python";
 import { sqlServerSyllabus } from "./sql-server";
 import { analisisDeDatosSyllabus } from "./analisis-de-datos";
-import { analiticaFinancieraSyllabus } from "./analitica-financiera";
 import { analiticaMineriaSyllabus } from "./analitica-mineria";
 import { powerAutomateSyllabus } from "./power-automate";
 import { iaProductividadSyllabus } from "./ia-productividad";
@@ -19,7 +18,6 @@ const dedicatedSyllabuses: Record<string, CourseSyllabusData> = {
   python: pythonSyllabus,
   "sql-server": sqlServerSyllabus,
   "analisis-de-datos": analisisDeDatosSyllabus,
-  "analitica-financiera": analiticaFinancieraSyllabus,
   "analitica-mineria": analiticaMineriaSyllabus,
   "ia-productividad": iaProductividadSyllabus,
   access: accessSyllabus,

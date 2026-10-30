@@ -32,7 +32,6 @@ const PREREQUISITES: Record<string, string> = {
   "power-bi": "Conocimientos básicos de Microsoft Excel y manejo de archivos.",
   "machine-learning": "Conocimientos intermedios de Python (Pandas/NumPy) y álgebra lineal básica.",
   "analitica-mineria": "Conocimientos básicos de análisis de datos y Excel.",
-  "analitica-financiera": "Nociones básicas de contabilidad y finanzas corporativas.",
   "mercado-financiero":
     "Excel intermedio (tablas dinámicas, fórmulas avanzadas, gráficos y manejo de datos). No se requiere Python, SQL, Power BI ni Inteligencia Artificial.",
 };

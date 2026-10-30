@@ -54,7 +54,6 @@ export const RELATED_BY_SLUG: Record<string, string[]> = {
   access: ["excel", "sql-server", "power-bi"],
   "machine-learning": ["python", "analisis-de-datos", "ia-productividad"],
   "analitica-mineria": ["power-bi", "python", "analisis-de-datos"],
-  "analitica-financiera": ["excel", "power-bi", "python"],
   "mercado-financiero": ["python", "sql-server", "power-bi"],
 };
 
@@ -108,7 +107,7 @@ const ALIAS_RULES: Array<{ test: (s: string) => boolean; slug: string }> = [
   },
   {
     test: (s) => s.includes("finan") || s.includes("analitica-financiera"),
-    slug: "analitica-financiera",
+    slug: "mercado-financiero",
   },
 ];
 
@@ -394,7 +393,6 @@ const SHORT_NAME: Record<string, string> = {
   "ia-productividad": "IA en Productividad",
   "machine-learning": "Machine Learning",
   "analitica-mineria": "Analítica Minera",
-  "analitica-financiera": "Analítica Financiera",
   "mercado-financiero": "Curso para el mercado financiero con Python Power BI y SQL",
 };
 
@@ -580,7 +578,7 @@ export function buildQuoteModel(
   const relatedSeen = new Set<string>();
   for (const slug of relatedOrder) {
     if (quotedSlugs.has(slug) || relatedSeen.has(slug)) continue;
-    if (slug === "analitica-mineria" || slug === "analitica-financiera") continue;
+    if (slug === "analitica-mineria") continue;
     const course = getCourseBySlug(slug);
     if (!course) continue;
     relatedSeen.add(slug);

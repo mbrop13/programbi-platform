@@ -18,7 +18,6 @@ export const SLUGS_CURSO = [
   "sql-server",
   "excel",
   "access",
-  "analitica-financiera",
   "machine-learning",
   "mercado-financiero",
 ] as const;
@@ -93,7 +92,6 @@ export const PRECIOS_ARS: PreciosCurso = {
   "sql-server": 159900,
   excel: 159900,
   access: 159900,
-  "analitica-financiera": 159900,
   "machine-learning": 159900,
   // 159900 × 249/169, al corte de 900. En Chile el catálogo es $349.000.
   "mercado-financiero": 235900,

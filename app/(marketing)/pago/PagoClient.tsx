@@ -60,7 +60,7 @@ function cartShowsLevelName(item: CartItem) {
   return (allCourses.find((c) => c.slug === item.slug)?.levels?.length ?? 0) > 1;
 }
 
-const BUNDLE_SLUGS = ["analisis-de-datos", "analitica-mineria", "analitica-financiera"];
+const BUNDLE_SLUGS = ["analisis-de-datos", "analitica-mineria"];
 
 function discountedPrice(
   slug: string,
@@ -431,7 +431,7 @@ export default function PagoClient({
 
       const course = allCourses.find(c => c.slug === slug);
       const level = course?.levels?.find(l => l.name === levelName);
-      const isBundle = ["analisis-de-datos", "analitica-mineria", "analitica-financiera"].includes(slug);
+      const isBundle = ["analisis-de-datos", "analitica-mineria"].includes(slug);
       let itemOriginalPrice = price;
       let itemHasDiscount = false;
       
@@ -724,13 +724,13 @@ export default function PagoClient({
                const currentLevelData = course.levels?.find(l => l.name === activeLevel);
                
                // Logic to determine bundle pricing visuals
-               const isBundle = ["analisis-de-datos", "analitica-mineria", "analitica-financiera"].includes(course.slug);
+               const isBundle = ["analisis-de-datos", "analitica-mineria"].includes(course.slug);
                
                // Logic to check active schedule
                let courseSchedules: CourseSchedule[] = [];
                
                // Specialty courses can always be purchased
-               const alwaysAvailable = ["analitica-mineria", "analitica-financiera"].includes(course.slug);
+               const alwaysAvailable = course.slug === "analitica-mineria";
                
                if (course.slug === "analisis-de-datos") {
                   courseSchedules = analisisDeDatosSchedules(schedules, activeLevel || "Básico");

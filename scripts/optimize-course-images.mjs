@@ -36,10 +36,6 @@ const IMAGES = [
     "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/Image_202511180217.png?v=1763443093",
   ],
   [
-    "analitica-financiera",
-    "https://mail.programbi.com/uploads/has_que_se_vean_varias_202605311731.jpeg",
-  ],
-  [
     "machine-learning",
     "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/gempages_519842279402243040-f5cacc2d-9ca1-4d23-8361-fb8a615a8943.png?v=1739059469",
   ],

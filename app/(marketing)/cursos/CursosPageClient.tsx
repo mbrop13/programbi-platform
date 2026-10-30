@@ -25,18 +25,20 @@ const CATALOG_ORDER = [
   "power-automate",
   "ia-productividad",
   "analitica-mineria",
-  "analitica-financiera",
   "machine-learning",
 ] as const;
 
 const NUEVOS = new Set(["access", "mercado-financiero"]);
 
-const SEARCH_HINTS = [
-  "¿Quieres aprender Power BI?",
-  "¿Cómo te podría ayudar Claude?",
-  "¿Buscas SQL Server o Python?",
-  "¿Te interesa análisis de datos?",
-  "¿Automatizar con Power Automate?",
+const SEARCH_PROMPTS = [
+  { line: "¿Te interesa aprender Power BI?", word: "Power BI" },
+  { line: "¿Sabes cómo podría ayudarte Claude?", word: "Claude" },
+  { line: "¿Quieres aprender Python?", word: "Python" },
+  { line: "¿Buscas SQL Server?", word: "SQL Server" },
+  { line: "¿Te interesa el análisis de datos?", word: "Análisis de datos" },
+  { line: "¿Automatizas con Power Automate?", word: "Power Automate" },
+  { line: "¿Quieres manejar Excel?", word: "Excel" },
+  { line: "¿Te sirve Copilot en el trabajo?", word: "Copilot" },
 ] as const;
 
 function orderCatalog(list: CourseCatalogItem[]): CourseCatalogItem[] {
@@ -69,7 +71,8 @@ export default function CursosPageClient({
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
-  const [hintIndex, setHintIndex] = useState(0);
+  const [promptIndex, setPromptIndex] = useState(0);
+  const [typedWord, setTypedWord] = useState("");
   const pais = usePaisRuta();
   const hrefLocal = useRutaLocal();
   const timeZone = zonaDe(pais);
@@ -86,12 +89,30 @@ export default function CursosPageClient({
 
   useEffect(() => {
     if (searchQuery || searchFocused) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const id = window.setInterval(() => {
-      setHintIndex((current) => (current + 1) % SEARCH_HINTS.length);
-    }, 3400);
-    return () => window.clearInterval(id);
-  }, [searchQuery, searchFocused]);
+    const word = SEARCH_PROMPTS[promptIndex].word;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduce) {
+      setTypedWord(word);
+      const id = window.setTimeout(() => {
+        setPromptIndex((current) => (current + 1) % SEARCH_PROMPTS.length);
+      }, 3200);
+      return () => window.clearTimeout(id);
+    }
+
+    if (typedWord.length < word.length) {
+      const id = window.setTimeout(() => {
+        setTypedWord(word.slice(0, typedWord.length + 1));
+      }, 78);
+      return () => window.clearTimeout(id);
+    }
+
+    const id = window.setTimeout(() => {
+      setTypedWord("");
+      setPromptIndex((current) => (current + 1) % SEARCH_PROMPTS.length);
+    }, 1500);
+    return () => window.clearTimeout(id);
+  }, [searchQuery, searchFocused, promptIndex, typedWord]);
 
   const orderedCourses = orderCatalog(filteredCourses);
   const featured = orderedCourses.find((c) => c.slug === "analisis-de-datos");
@@ -102,18 +123,25 @@ export default function CursosPageClient({
       <section className="px-4 pt-24 pb-2 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl">
           <h1 className="sr-only">Cursos</h1>
-          <div className="relative">
+          <p
+            key={searchQuery ? "searching" : promptIndex}
+            aria-hidden="true"
+            className="min-h-[3.25rem] text-center text-xl font-semibold tracking-tight text-ink sm:min-h-[3rem] sm:text-2xl motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500"
+          >
+            {searchQuery ? "\u00a0" : SEARCH_PROMPTS[promptIndex].line}
+          </p>
+          <div className="relative mt-4">
             <Search size={18} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-faint" />
             <label htmlFor="course-search" className="sr-only">
               Buscar curso
             </label>
-            {searchQuery ? null : (
+            {searchQuery || searchFocused ? null : (
               <span
-                key={hintIndex}
                 aria-hidden="true"
-                className="pointer-events-none absolute top-1/2 right-4 left-12 -translate-y-1/2 truncate text-base text-faint motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500"
+                className="pointer-events-none absolute top-1/2 right-4 left-12 flex -translate-y-1/2 items-center truncate text-base text-ink"
               >
-                {SEARCH_HINTS[hintIndex]}
+                {typedWord}
+                <span className="ml-px inline-block h-5 w-px shrink-0 bg-ink/70 motion-safe:animate-pulse" />
               </span>
             )}
             <input
@@ -178,16 +206,6 @@ export default function CursosPageClient({
                 ) : null}
                 <span className="mt-6 inline-flex text-sm font-semibold text-ink">Ver temario</span>
               </Link>
-              <div className="px-4 py-4 lg:col-span-12 lg:px-5 lg:pt-4 lg:pb-5">
-                <CourseCohortFacts
-                  slug={featured.slug}
-                  schedules={schedules}
-                  timeZone={timeZone}
-                  pais={pais}
-                  loaded
-                  compact
-                />
-              </div>
             </article>
           )}
 

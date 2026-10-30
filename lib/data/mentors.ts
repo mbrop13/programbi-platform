@@ -64,7 +64,7 @@ export const mentors: Mentor[] = [
     sortOrder: 2,
     studentCount: 800,
     yearsExperience: 10,
-    specialtyCourses: ["analitica-financiera", "python"],
+    specialtyCourses: ["mercado-financiero", "python"],
   },
   {
     name: "Rodrigo Vega",

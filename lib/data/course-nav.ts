@@ -11,7 +11,7 @@ export const COURSE_FILTER_GROUPS = [
   {
     id: "especializacion" as const,
     label: "Especializaciones",
-    slugs: ["analisis-de-datos", "analitica-mineria", "analitica-financiera", "mercado-financiero"],
+    slugs: ["analisis-de-datos", "analitica-mineria", "mercado-financiero"],
   },
   {
     id: "ia" as const,
@@ -46,12 +46,6 @@ export const NAV_COURSE_GROUPS: { id: string; label: string; items: NavCourse[] 
         slug: "analitica-mineria",
         title: "Análisis de Datos para la Minería",
         imageUrl: "/images/courses/analitica-mineria-card.webp",
-        durationHours: 20,
-      },
-      {
-        slug: "analitica-financiera",
-        title: "Analítica Financiera",
-        imageUrl: "/images/courses/analitica-financiera-card.webp",
         durationHours: 20,
       },
       {

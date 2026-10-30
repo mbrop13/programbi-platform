@@ -23,7 +23,6 @@ const courseSlugMap: Record<string, string> = {
   "IA en Productividad": "ia-productividad",
   "Power Automate": "power-automate",
   Minería: "analitica-mineria",
-  Finanzas: "analitica-financiera",
   "Mercado financiero": "mercado-financiero",
   Copilot: "copilot",
 };

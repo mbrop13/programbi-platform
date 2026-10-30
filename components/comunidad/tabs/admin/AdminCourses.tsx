@@ -80,7 +80,7 @@ const PROGRAM_PRESETS = [
   "Copilot",
   "Claude",
   "Machine Learning",
-  "Analítica Financiera",
+  "Mercado financiero",
 ];
 
 const GENERIC_CATEGORIES = new Set([

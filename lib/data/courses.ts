@@ -940,71 +940,6 @@ export const courses: Course[] = [
     ],
   },
   {
-    slug: "analitica-financiera",
-    title: "Analítica Financiera",
-    shortDescription:
-      "Automatización de reportes contables, análisis de riesgo y dashboards de inversión.",
-    description:
-      "Programa especializado para el sector financiero. Automatiza reportes contables, analiza riesgo con Python y crea dashboards de inversión con Power BI.",
-    category: "especializacion",
-    categoryLabel: "Finanzas",
-    badgeLabel: "Especialización",
-    badgeColor: "#10B981",
-    techStack: ["Excel", "SQL", "Power BI", "Python"],
-    durationHours: 48,
-    modality: "online",
-    level: "básico a avanzado",
-    imageUrl: "/images/courses/analitica-financiera-card.webp",
-    icon: "TrendingUp",
-    accentColor: "#1E3A8A",
-    isFeatured: false,
-    sortOrder: 9,
-    whatYouLearn: [
-      "Automatización Contable: Reduce errores en balances usando SQL",
-      "Monitoreo de KPIs: Dashboards interactivos en Power BI para ROI y flujos",
-      "Modelado de Riesgos: Python para correlación de activos y modelos predictivos",
-      "Autonomía Tecnológica: Extrae y cruza información de múltiples fuentes financieras",
-      "Integración de IA: Inteligencia Artificial en cada nivel para generar código",
-    ],
-    syllabus: [
-      {
-        module: "Nivel I: Básico (Fundamentos Contables)",
-        topics: [
-          "Power BI: Conexión de fuentes financieras y limpiezas en Power Query",
-          "SQL Server: Extracción de transacciones y filtros temporales",
-          "Python: Fundamentos de análisis de portafolios y Pandas inicial",
-          "Integración IA: Consultas de balances en lenguaje natural"
-        ],
-        hours: 16,
-      },
-      {
-        module: "Nivel II: Intermedio (Modelado e Inversiones)",
-        topics: [
-          "Power BI: Visualizaciones DAX de rentabilidad y ROI",
-          "SQL Server: Joins avanzados y resúmenes de auditoría contable",
-          "Python: Visualización de tendencias e índices financieros",
-          "Integración IA: Conciliación automática de múltiples fuentes bancarias"
-        ],
-        hours: 16,
-      },
-      {
-        module: "Nivel III: Avanzado (Predictividad de Riesgos)",
-        topics: [
-          "Power BI: Inteligencia de tiempo (YTD/QTD) y RLS seguro por área",
-          "SQL Server: Procedimientos almacenados para automatización de reportes",
-          "Python: Análisis predictivo de portafolios y dashboards Plotly",
-          "Integración IA: Flujos ETL predictivos para proyecciones"
-        ],
-        hours: 16,
-      },
-    ],
-    levels: [
-      { name: "Básico", price: 498000, originalPrice: 420000, durationHours: 16, whatYouLearn: ["Power Query contable y Dashboards iniciales", "Filtros temporales y cruces JOIN en SQL", "Carga de datos y manipulación con Pandas", "IA para consultas de balances"] },
-      { name: "Intermedio", price: 498000, originalPrice: 420000, durationHours: 16, whatYouLearn: ["DAX intermedio para rentabilidad y ROI", "Resúmenes agregados y auditorías con SQL", "Gráficos de rendimientos con Matplotlib/Seaborn", "IA para conciliación bancaria"] },
-      { name: "Avanzado", price: 498000, originalPrice: 420000, durationHours: 16, whatYouLearn: ["Inteligencia de tiempo y seguridad RLS", "Stored Procedures para reporteo diario", "Modelos predictivos y dashboards interactivos", "IA para proyecciones presupuestarias"] },
-    ],
-  },
-  {
     slug: "machine-learning",
     title: "Machine Learning",
     shortDescription:
@@ -1172,7 +1107,7 @@ export const COURSE_NAV_GROUPS = [
   {
     id: "especializacion",
     label: "Especializaciones",
-    slugs: ["analisis-de-datos", "analitica-mineria", "analitica-financiera", "mercado-financiero"],
+    slugs: ["analisis-de-datos", "analitica-mineria", "mercado-financiero"],
   },
   {
     id: "ia",

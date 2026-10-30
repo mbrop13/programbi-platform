@@ -109,7 +109,7 @@ export const PACK_INCLUDES = [
 export const PACK_VERTICALS = [
   { label: "Control de gestión", href: "/empresas" },
   { label: "Minería", href: "/cursos/analitica-mineria" },
-  { label: "Finanzas", href: "/cursos/analitica-financiera" },
+  { label: "Finanzas", href: "/cursos/mercado-financiero" },
   { label: "Retail", href: "/empresas" },
 ] as const;
 

@@ -67,7 +67,6 @@ export const leadCourses = [
   "IA en Productividad",
   "Power Automate",
   "Minería",
-  "Finanzas",
   "Mercado financiero",
   "Copilot",
   "Claude",

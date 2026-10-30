@@ -19,7 +19,6 @@ const ORDER = [
   "claude",
   "access",
   "analitica-mineria",
-  "analitica-financiera",
   "mercado-financiero",
   "ia-productividad",
   "copilot",
