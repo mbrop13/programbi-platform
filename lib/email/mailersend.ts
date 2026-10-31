@@ -38,6 +38,16 @@ const SMTP_PASS = process.env.SES_SMTP_PASS!;
 const FROM_EMAIL = process.env.SES_FROM_EMAIL || "noreply@programbi.com";
 const FROM_NAME = process.env.SES_FROM_NAME || "ProgramBI";
 const ADMIN_EMAIL = process.env.SES_ADMIN_EMAIL || "contacto@programbi.cl";
+const LEAD_NOTIFY_EMAIL = "moliva@programbi.cl";
+const COURSE_FORM_EMAIL = "molivaromero@gmail.com";
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
 
 function getTransporter() {
   if (!SMTP_USER || !SMTP_PASS) {
@@ -274,9 +284,14 @@ export async function sendNewLeadNotificationToAdmin(params: {
   position?: string;
   employeeCount?: string;
   pais?: string | null;
+  /** Ficha donde se envió el formulario. Si viene, el aviso también sale al correo personal. */
+  sourceCourse?: string | null;
 }) {
   const { name, email, phone, courses, message, leadType, company, position, employeeCount } = params;
   const paisNombre = getPais(paisDeCotizacion(params.pais)).nombre;
+  const courseName = (params.sourceCourse || courses[0] || "").trim();
+  const fromCourseForm =
+    (leadType === "personal" || leadType === "empresa") && Boolean(params.sourceCourse?.trim());
 
   const isEnterprise = leadType === "enterprise" || leadType === "empresa";
   const courseList = courses.map(c => `<li style="padding:4px 0;font-size:13.5px;color:#171716;">${c}</li>`).join("");
@@ -286,8 +301,14 @@ export async function sendNewLeadNotificationToAdmin(params: {
     <div style="display:inline-block;background:${isEnterprise ? "#FEF3C7" : "#EBEBE6"};color:${isEnterprise ? "#92400E" : "#171716"};font-size:10.5px;font-weight:800;padding:4px 12px;border-radius:9999px;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;">
       ${isEnterprise ? "🏢 Lead Empresa" : "👤 Lead Individual"}
     </div>
-    <h1 style="margin:0 0 6px;font-size:22px;font-weight:900;color:#171716;letter-spacing:-0.5px;">Nuevo contacto: ${name}</h1>
+    <h1 style="margin:0 0 6px;font-size:22px;font-weight:900;color:#171716;letter-spacing:-0.5px;">Nuevo contacto: ${escapeHtml(name)}</h1>
     <p style="margin:0 0 20px;font-size:12px;color:#8C8B85;">Recibido el ${timestamp}</p>
+    ${fromCourseForm && courseName ? `
+    <div style="background-color:#F7F7F4;border:1px solid #E5E5E0;border-radius:12px;padding:16px 20px;margin-bottom:16px;">
+      <div style="font-size:10px;font-weight:800;color:#8C8B85;text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;">Curso del formulario</div>
+      <p style="margin:0;font-size:18px;font-weight:800;color:#171716;">${escapeHtml(courseName)}</p>
+      <p style="margin:8px 0 0;font-size:14px;line-height:1.5;color:#5F5E59;">${escapeHtml(name)} llenó el formulario en este curso y le interesa.</p>
+    </div>` : ""}
 
     <table style="width:100%;border-collapse:collapse;margin-bottom:20px;">
       <tr><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:13px;color:#5F5E59;width:130px;">Nombre</td><td style="padding:10px 0;border-bottom:1px solid #EAEAE6;font-size:14px;font-weight:700;color:#171716;">${name}</td></tr>
@@ -326,13 +347,17 @@ export async function sendNewLeadNotificationToAdmin(params: {
     </div>
   `);
 
-  const subject = `🚨 Nuevo contacto ${isEnterprise ? "empresarial" : ""}: ${name} — ${courses[0] || "General"}`;
-  const text = `Nuevo contacto: ${name} | ${email}${phone ? ` | ${phone}` : ""} | País: ${paisNombre} | Cursos: ${courses.join(", ")}${message ? ` | Msg: ${message}` : ""}`;
+  const subject = fromCourseForm && courseName
+    ? `Le interesa ${courseName}: ${name}`
+    : `🚨 Nuevo contacto ${isEnterprise ? "empresarial" : ""}: ${name} — ${courses[0] || "General"}`;
+  const text = fromCourseForm && courseName
+    ? `${name} llenó el formulario del curso ${courseName} y le interesa. ${email}${phone ? ` | ${phone}` : ""} | País: ${paisNombre}${message ? ` | Msg: ${message}` : ""}`
+    : `Nuevo contacto: ${name} | ${email}${phone ? ` | ${phone}` : ""} | País: ${paisNombre} | Cursos: ${courses.join(", ")}${message ? ` | Msg: ${message}` : ""}`;
 
   const transporter = getTransporter();
   await transporter.sendMail({
     from: fromAddress(),
-    to: "moliva@programbi.cl",
+    to: fromCourseForm ? [LEAD_NOTIFY_EMAIL, COURSE_FORM_EMAIL] : LEAD_NOTIFY_EMAIL,
     subject,
     html,
     text,

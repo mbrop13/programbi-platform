@@ -199,6 +199,7 @@ export async function POST(req: NextRequest) {
         name, email, phone: whatsapp ?? undefined, courses, message: insertData.message ?? message ?? undefined,
         leadType: leadType ?? undefined, company: company ?? undefined, position: position ?? undefined, employeeCount: employeeCount ?? undefined,
         pais,
+        sourceCourse: sourceCourse || null,
       });
       console.log("✅ Admin notification sent");
     } catch (err: any) {
