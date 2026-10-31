@@ -68,6 +68,17 @@ import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
 import type { PrecioTarjeta } from "@/lib/paises/precio-publico";
 import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
 import { ISO_CHILE } from "@/config/paises";
+import { COUNTRIES } from "@/lib/context/CountryContext";
+
+function phoneCodeFor(iso: string) {
+  return COUNTRIES.find((country) => country.iso === iso)?.phoneCode || "+56";
+}
+
+function withDialCode(raw: string, code: string) {
+  const trimmed = raw.trim();
+  if (trimmed.startsWith("+")) return trimmed.replace(/\s/g, "");
+  return `${code}${trimmed.replace(/\D/g, "")}`;
+}
 
 function courseCheckoutUrl(slug: string, levelName?: string, pais?: string) {
   const params = new URLSearchParams({ curso: slug });
@@ -843,6 +854,7 @@ function CourseCardContactForm({ course, onRegister }: { course: Course; onRegis
   const [done, setDone] = useState(false);
   const formLoadedAt = useRef(Date.now());
   const pais = usePaisRuta();
+  const phoneCode = phoneCodeFor(pais);
 
   const inputClass =
     "h-11 w-full rounded-xl border border-line-strong bg-canvas px-3 text-sm text-ink placeholder:text-faint";
@@ -864,7 +876,7 @@ function CourseCardContactForm({ course, onRegister }: { course: Course; onRegis
         body: JSON.stringify({
           name: name.trim(),
           email: email.trim(),
-          whatsapp: phone.trim(),
+          whatsapp: withDialCode(phone, phoneCode),
           sourceCourse: course.title,
           selectedCourses: [course.title],
           leadType: "personal",
@@ -943,15 +955,20 @@ function CourseCardContactForm({ course, onRegister }: { course: Course; onRegis
         <label htmlFor={`card-phone-${course.slug}`} className="mb-1 block text-xs font-medium text-ink">
           Teléfono
         </label>
-        <input
-          id={`card-phone-${course.slug}`}
-          type="tel"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          autoComplete="tel"
-          placeholder="+56 9 1234 5678"
-          className={inputClass}
-        />
+        <div className="flex">
+          <span className="inline-flex h-11 items-center rounded-l-xl border border-r-0 border-line-strong bg-canvas px-3 text-sm text-ink">
+            {phoneCode}
+          </span>
+          <input
+            id={`card-phone-${course.slug}`}
+            type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            autoComplete="tel"
+            placeholder="1234 5678"
+            className="h-11 min-w-0 flex-1 rounded-r-xl border border-line-strong bg-canvas px-3 text-sm text-ink placeholder:text-faint"
+          />
+        </div>
         {errors.phone ? <p className="mt-1 text-xs text-ink">{errors.phone}</p> : null}
       </div>
       {errors.form ? <p className="text-xs text-ink">{errors.form}</p> : null}
@@ -993,10 +1010,14 @@ function CourseContactForm({ course, onRegister }: { course: Course; onRegister:
   const [contactType, setContactType] = useState<"personal" | "empresa">("personal");
   const [selectedServices, setSelectedServices] = useState<string[]>(["Capacitación In-Company"]);
   const [honeypot, setHoneypot] = useState("");
-  const [phonePrefix, setPhonePrefix] = useState("+56");
   const [showPrefixDropdown, setShowPrefixDropdown] = useState(false);
   const formLoadedAt = useRef(Date.now());
   const pais = usePaisRuta();
+  const [phonePrefix, setPhonePrefix] = useState(() => phoneCodeFor(pais));
+
+  useEffect(() => {
+    setPhonePrefix(phoneCodeFor(pais));
+  }, [pais]);
 
   const COUNTRIES = [
     { code: "+56", iso: "cl", name: "Chile" },
