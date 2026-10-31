@@ -899,8 +899,10 @@ function CourseCardContactForm({ course, onRegister }: { course: Course; onRegis
   if (done) {
     return (
       <div>
-        <p className="text-sm font-semibold text-ink">Recibimos tus datos.</p>
-        <p className="mt-1 text-sm leading-relaxed text-mute">Te escribimos por correo o teléfono.</p>
+        <p className="text-sm font-semibold text-ink">Te enviamos un correo</p>
+        <p className="mt-1 text-sm leading-relaxed text-mute">
+          Revisa {email}. Ahí va la información del curso.
+        </p>
         <div className="mt-4">
           <RegisterForPriceNote onRegister={onRegister} />
         </div>
@@ -1109,17 +1111,15 @@ function CourseContactForm({ course, onRegister }: { course: Course; onRegister:
           {isSuccess ? (
             <div className="rounded-2xl border border-line bg-paper px-5 py-6">
               <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-                {isPersonal ? "Solicitud recibida" : "Cotización enviada"}
+                {isPersonal ? "Correo enviado" : "Cotización enviada"}
               </p>
               <p className="mt-2 text-base font-semibold text-ink">
-                {isPersonal
-                  ? "Recibimos tu solicitud."
-                  : `Revisa tu email${submittedEmail ? `, te enviamos una copia a ${submittedEmail}` : ""}.`}
+                {isPersonal ? "Te enviamos un correo" : "Revisa tu correo"}
               </p>
               <p className="mt-2 text-sm leading-relaxed text-mute">
                 {isPersonal
-                  ? "Te escribimos por email o WhatsApp con fechas y el siguiente paso."
-                  : "Un asesor te contactará por WhatsApp con la propuesta para tu equipo: temas, formato y valor."}
+                  ? `Revisa ${submittedEmail || "tu correo"}. Ahí va la información del curso.`
+                  : `Te enviamos la confirmación${submittedEmail ? ` a ${submittedEmail}` : ""}. Un asesor te escribe con la propuesta para tu equipo.`}
               </p>
               <a
                 href={whatsappHref({
