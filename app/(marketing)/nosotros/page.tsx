@@ -3,13 +3,14 @@ import Link from "next/link";
 import { Award, BookOpen, Users, Building, ShieldCheck, UserCheck } from "lucide-react";
 import MentorsSection from "@/components/marketing/MentorsSection";
 import { ogImageUrl } from "@/lib/og/url";
-import { twitterShare, absoluteUrl } from "@/lib/seo";
+import { twitterShare, absoluteUrl, tituloSeo } from "@/lib/seo";
 import { normalizarPais } from "@/config/paises";
+import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 
 export const metadata: Metadata = {
-  title: "Sobre nosotros — Academia de análisis de datos",
+  title: { absolute: tituloSeo("Sobre nosotros — Academia de análisis de datos") },
   description:
     "Conoce ProgramBI: la institución de capacitación profesional líder en Power BI, SQL, Python y Machine Learning en Chile y Latinoamérica. Fundada por Manuel Oliva.",
   alternates: {
@@ -63,6 +64,7 @@ export default async function NosotrosPage({
   params: Promise<{ pais?: string }>;
 }) {
   const pais = normalizarPais((await params).pais);
+  const contenido = getContenidoPais(pais);
   const aboutJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -152,8 +154,8 @@ export default async function NosotrosPage({
               <p className="text-mute leading-relaxed text-base">
                 Decidimos diferenciarnos radicalmente de los cursos pregrabados tradicionales. Diseñamos una metodología interactiva basada en clases 100% online en vivo, con bases de datos que simulan problemas reales de negocios y soporte permanente fuera de clases. Hoy, contamos con estudiantes activos en más de 5 países de Latinoamérica.
               </p>
-              {pais !== "cl" ? (
-                <p className="text-sm text-mute">[PENDIENTE CONTENIDO {pais.toUpperCase()}]</p>
+              {contenido ? (
+                <p className="text-mute leading-relaxed text-base">{contenido.nosotros.parrafo}</p>
               ) : null}
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
                 <div className="flex items-center gap-3">

@@ -4,6 +4,8 @@ import { courses, getCourseBySlug } from "@/lib/data/courses";
 import { getActiveSchedules, getMarketingDescription } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
+import CountryContext from "@/components/marketing/CountryContext";
+import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { ogImageUrl } from "@/lib/og/url";
 import { SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
 import { getCourseJsonLd } from "@/lib/seo/course-jsonld";
@@ -96,6 +98,7 @@ export default async function CourseDetailPage({
 }) {
   const { slug, pais: rawPais } = await params;
   const pais = normalizarPais(rawPais);
+  const contenido = getContenidoPais(pais);
   const query = await searchParams;
   const para = one(query.para);
   const nivel = one(query.nivel);
@@ -174,6 +177,9 @@ export default async function CourseDetailPage({
         preciosLocales={textosPreciosLocales(pais)}
         detalleLocal={detalle}
       />
+      {contenido ? (
+        <CountryContext contenido={contenido} titulo={`Este curso en ${detalle.pais.nombre}`} />
+      ) : null}
     </>
   );
 }

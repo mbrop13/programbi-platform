@@ -20,7 +20,6 @@ import {
   writeBrowserReferralCode,
 } from "@/lib/referrals/cookie";
 import { courseSlugFromLocation, debugSignUpResult, signUpCreatedUser, trackSubmitRegistro } from "@/lib/analytics/marketing";
-import { interestFromCoursePath } from "@/lib/data/lead-interests";
 
 function getFromQueryParam(): string | null {
   if (typeof window === "undefined") return null;
@@ -160,7 +159,6 @@ export default function RegistroPage() {
       const pricingVariant = readClientPricingVariant();
       const referralCode = captureReferralFromUrl();
       const phone = formData.phone.trim();
-      const interest = interestFromCoursePath(fromParam || registrationSource);
 
       const { data, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
@@ -169,7 +167,6 @@ export default function RegistroPage() {
           data: {
             full_name: defaultName,
             whatsapp: phone,
-            ...(interest ? { interest } : {}),
             registration_source: registrationSource,
             ...(referralCode ? { referral_code: referralCode } : {}),
             ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
@@ -357,6 +354,7 @@ export default function RegistroPage() {
                 <input
                   type={showPassword ? "text" : "password"}
                   required
+                  minLength={8}
                   disabled={loading}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -372,6 +370,9 @@ export default function RegistroPage() {
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              <p className="mt-1 text-xs text-gray-500">
+                Mínimo 8 caracteres. No hace falta incluir mayúsculas, números ni símbolos.
+              </p>
             </div>
 
             {/* Privacy consent */}

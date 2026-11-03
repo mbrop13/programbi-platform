@@ -27,6 +27,13 @@ export function validatePassword(pw: string): PasswordValidation {
   return { ok: true };
 }
 
+function toHex(buffer: ArrayBuffer): string {
+  return Array.from(new Uint8Array(buffer))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("")
+    .toUpperCase();
+}
+
 /**
  * Check a password against the HaveIBeenPwned k-anonymity API.
  *
@@ -34,13 +41,18 @@ export function validatePassword(pw: string): PasswordValidation {
  * full password is never disclosed. Returns true when the password has been
  * found in a known breach (and therefore must be rejected).
  *
- * Safe to call from server-side code. Failures default to "not breached" so
- * the auth flow is not blocked by a transient network error — log it instead.
+ * Uses the Web Crypto API (globalThis.crypto.subtle), available in browsers and
+ * Node/Edge runtimes, so this module stays safe to import from client
+ * components. Failures default to "not breached" so the auth flow is not
+ * blocked by a transient network or crypto error — log it instead.
  */
 export async function isBreachedPassword(pw: string): Promise<boolean> {
   try {
-    const { createHash } = await import("crypto");
-    const sha1 = createHash("sha1").update(pw).digest("hex").toUpperCase();
+    const subtle = globalThis.crypto?.subtle;
+    if (!subtle) return false;
+
+    const digest = await subtle.digest("SHA-1", new TextEncoder().encode(pw));
+    const sha1 = toHex(digest);
     const prefix = sha1.slice(0, 5);
     const suffix = sha1.slice(5);
     const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
@@ -49,11 +61,12 @@ export async function isBreachedPassword(pw: string): Promise<boolean> {
     if (!res.ok) return false;
     const text = await res.text();
     return text.split("\n").some((line) => {
-      const [hashSuffix] = line.trim().split(":");
-      return hashSuffix === suffix;
+      const [hashSuffix, count] = line.trim().split(":");
+      // Add-Padding returns decoys with count 0; only a real hit counts.
+      return hashSuffix === suffix && Number(count) > 0;
     });
   } catch {
-    // Network/parse error — do not block signup, but this should be logged.
+    // Network/parse/crypto error — do not block signup, but this should be logged.
     return false;
   }
 }

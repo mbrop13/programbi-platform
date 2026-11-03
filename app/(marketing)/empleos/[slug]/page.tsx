@@ -29,6 +29,7 @@ import {
   SENIORITY_LABELS,
 } from "@/lib/jobs/types";
 import { ogImageUrl } from "@/lib/og/url";
+import { tituloSeo } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ...job.skills.slice(0, 2).map((s) => getSkillLabel(s)),
   ].filter(Boolean);
   return {
-    title: `${job.title} — ${job.company_name}`,
+    title: { absolute: tituloSeo(`${job.title} — ${job.company_name}`) },
     description,
     alternates: { canonical: `/empleos/${job.slug}` },
     openGraph: {

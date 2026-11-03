@@ -6,7 +6,7 @@
  * horario de verano de cada país (offsets IANA, no números fijos).
  */
 
-import { getPais, normalizarPais } from "@/config/paises";
+import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 
 /** Hora de inicio y fin de la clase en Chile, cuando no hay cohorte en la base. */
 export const HORA_CLASE_CHILE = { inicio: "19:30", fin: "21:30" };
@@ -84,6 +84,66 @@ export function horaEnZona(horaChile: string, timeZone: string, referencia: Date
 /** Zona horaria del país. Chile no tiene carpeta: usa su zona. */
 export function zonaDe(iso: string | null | undefined): string {
   return getPais(normalizarPais(iso)).zonaHoraria;
+}
+
+/**
+ * Etiqueta de la hora local del país con su abreviatura y offset real.
+ * México se identifica como "centro de México (CDMX)" para no confundirlo
+ * con los husos del norte o de la península.
+ */
+export function etiquetaHoraLocal(
+  iso: string | null | undefined,
+  referencia: Date = new Date()
+): string {
+  const pais = getPais(normalizarPais(iso));
+  const offset = etiquetaUtc(referencia, pais.zonaHoraria);
+  switch (pais.iso) {
+    case ISO_CHILE:
+      return `hora de Chile (${offset})`;
+    case "ar":
+      return `hora de Argentina (ART, ${offset})`;
+    case "mx":
+      return `hora del centro de México (CDMX, ${offset})`;
+    case "pe":
+      return `hora de Perú (PET, ${offset})`;
+    case "co":
+      return `hora de Colombia (COT, ${offset})`;
+    case "uy":
+      return `hora de Uruguay (UYT, ${offset})`;
+    default:
+      return `hora de ${pais.nombre} (${offset})`;
+  }
+}
+
+const RANGO_HORA = /(\d{1,2}:\d{2})\s*(?:a|y|–|-|hasta)\s*(\d{1,2}:\d{2})/g;
+
+/**
+ * Reemplaza "hora de Chile" por la hora local del país y, si el texto trae
+ * un rango horario, lo convierte a la zona del mercado.
+ */
+export function localizarHoras(
+  texto: string,
+  iso: string | null | undefined,
+  referencia: Date = new Date()
+): string {
+  if (!texto) return texto;
+  const pais = getPais(normalizarPais(iso));
+  if (pais.iso === ISO_CHILE) return texto;
+
+  const etiqueta = etiquetaHoraLocal(pais.iso, referencia);
+  const conEtiqueta = texto
+    .replace(/hora(?: local)? de Chile/gi, etiqueta)
+    .replace(/horario de Chile/gi, etiqueta)
+    .replace(/horario Chile/gi, etiqueta)
+    .replace(/hora Chile/gi, etiqueta);
+
+  if (conEtiqueta === texto) return texto;
+
+  return conEtiqueta.replace(RANGO_HORA, (_, inicio: string, fin: string) => {
+    const desde = horaEnZona(inicio, pais.zonaHoraria, referencia);
+    const hasta = horaEnZona(fin, pais.zonaHoraria, referencia);
+    return `${desde} a ${hasta}`;
+  });
 }
 
 /**

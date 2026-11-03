@@ -1,17 +1,20 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
 import {
   captureUtmFromUrl,
   initGa4,
+  markGa4Loaded,
   trackEvent,
   trackPageView,
   trackPurchase,
   trackSubmitRegistro,
   trackWhatsAppClick,
 } from "@/lib/analytics/marketing";
+import { ISO_CHILE } from "@/config/paises";
+import { paisDesdeRuta } from "@/lib/paises/rutas";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || "";
@@ -20,13 +23,18 @@ const WA_HREF_RE = /(?:wa\.me|whatsapp\.com|api\.whatsapp\.com)/i;
 /**
  * Loads GA4 + Microsoft Clarity and tracks SPA page views + purchase success.
  * Safe when env IDs are missing (no scripts loaded).
- * gtag.js stays lazyOnload (after hydrate / idle); the stub + config run on mount
- * so lead events queued in dataLayer are not lost.
+ *
+ * gtag.js loads afterInteractive so the bootstrap page_view goes out as soon as
+ * possible. `initGa4()` queues stub → config(send_page_view:false) → page_view;
+ * calling it from every tracking helper means page_view is always the first hit
+ * even when a child component fires an event before this component mounts.
+ *
+ * The SPA effect only calls trackPageView(): the dedupe key lives in
+ * lib/analytics/marketing.ts, so mount + route changes never duplicate page_view.
  */
 export default function MarketingAnalytics() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const lastPathRef = useRef<string>("");
 
   useEffect(() => {
     initGa4();
@@ -38,14 +46,10 @@ export default function MarketingAnalytics() {
 
   useEffect(() => {
     if (!pathname) return;
-    const params = new URLSearchParams(searchParams?.toString() || "");
-    params.delete("reg_ok");
-    const qs = params.toString();
-    const full = qs ? `${pathname}?${qs}` : pathname;
-    if (lastPathRef.current === full) return;
-    lastPathRef.current = full;
-    const t = setTimeout(() => trackPageView(full), 50);
-    return () => clearTimeout(t);
+    // Pass the rendered route explicitly: window.location can lag behind the
+    // router during a transition and would break the path+query dedupe key.
+    const qs = searchParams?.toString() || "";
+    trackPageView(qs ? `${pathname}?${qs}` : pathname);
   }, [pathname, searchParams]);
 
   useEffect(() => {
@@ -62,12 +66,14 @@ export default function MarketingAnalytics() {
 
   useEffect(() => {
     if (searchParams?.get("reg_ok") !== "1") return;
-    // Google OAuth: new user only (callback sets reg_ok after session insert).
-    trackSubmitRegistro({ method: "oauth" });
+    // Remove the one-shot OAuth flag before sending the lead so page_location
+    // is not split by reg_ok. The page_view effect above already strips it too.
     const url = new URL(window.location.href);
     url.searchParams.delete("reg_ok");
     const next = url.pathname + url.search + url.hash;
     window.history.replaceState({}, "", next);
+    // Google OAuth: new user only (callback sets reg_ok after session insert).
+    trackSubmitRegistro({ method: "oauth" });
   }, [searchParams]);
 
   useEffect(() => {
@@ -76,8 +82,18 @@ export default function MarketingAnalytics() {
       if (!(target instanceof Element)) return;
 
       const anchor = target.closest("a[href]");
-      if (anchor instanceof HTMLAnchorElement && WA_HREF_RE.test(anchor.href)) {
-        trackWhatsAppClick();
+      if (
+        anchor instanceof HTMLAnchorElement &&
+        WA_HREF_RE.test(anchor.href) &&
+        !anchor.hasAttribute("data-wa-tracked")
+      ) {
+        const pathname = window.location.pathname;
+        const courseMatch = pathname.match(/\/cursos\/([^/?#]+)/);
+        trackWhatsAppClick({
+          course: courseMatch?.[1],
+          country: paisDesdeRuta(pathname) ?? ISO_CHILE,
+          page: pathname + window.location.search,
+        });
       }
 
       const tracked = target.closest("[data-analytics-event]");
@@ -104,7 +120,8 @@ export default function MarketingAnalytics() {
       {GA_ID ? (
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
-          strategy="lazyOnload"
+          strategy="afterInteractive"
+          onLoad={() => markGa4Loaded()}
         />
       ) : null}
 

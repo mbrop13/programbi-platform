@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import SeoGuide from "@/components/marketing/SeoGuide";
+import CountryContext from "@/components/marketing/CountryContext";
+import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { SITE_URL, absoluteUrl, jsonLdString, pageOg } from "@/lib/seo";
 import { GUIDE_SEO } from "@/lib/seo/money";
-import { normalizarPais } from "@/config/paises";
+import { getPais, normalizarPais } from "@/config/paises";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 
@@ -47,6 +49,7 @@ export default async function Page({
   params: Promise<{ pais?: string }>;
 }) {
   const pais = normalizarPais((await params).pais);
+  const contenido = getContenidoPais(pais);
   const L = (texto: string) => localizarMercado(texto, pais);
   const href = (destino: string) => rutaLocal(pais, destino);
   const jsonLd = {
@@ -88,7 +91,7 @@ export default async function Page({
         lead="El .pbix se ve bien en la demo. A las tres semanas el área volvió a Excel. Eso no es un problema de DAX: es un problema de adopción."
         pagePath={href(copy.path)}
         empresasHref={href("/empresas")}
-        nota={pais === "cl" ? undefined : `[PENDIENTE CONTENIDO ${pais.toUpperCase()}]`}
+        nota={pais === "cl" ? undefined : contenido?.mercado.facturacion}
         crumbs={[
           { href: href("/"), label: "Inicio" },
           { href: href("/empresas"), label: "Empresas" },
@@ -119,6 +122,7 @@ export default async function Page({
         faqs={faqs}
         related={[
           { href: href("/empresas"), label: "Soluciones para empresas" },
+          { href: href("/curso-power-bi"), label: "Curso Power BI con plantilla de ventas gratis" },
           { href: href("/curso-power-bi-vs-pack-adopcion"), label: "Curso Power BI vs Pack Adopción" },
           { href: href("/migrar-excel-a-power-bi"), label: "Migrar Excel a Power BI en control de gestión" },
           { href: href("/cursos/power-bi"), label: "Curso Power BI en vivo (particulares)" },

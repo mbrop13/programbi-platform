@@ -3,6 +3,8 @@ import { courses } from "@/lib/data/courses";
 import { getCourseGallery } from "@/lib/data/course-gallery";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import CursosPageClient from "./CursosPageClient";
+import CountryContext from "@/components/marketing/CountryContext";
+import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import { ogImageUrl } from "@/lib/og/url";
@@ -63,6 +65,7 @@ export default async function CursosPage({
   params: Promise<{ pais?: string }>;
 }) {
   const pais = normalizarPais((await params).pais);
+  const contenido = getContenidoPais(pais);
   const preciosLocales = textosPreciosLocales(pais);
   const schedules = (await getActiveSchedules()) as CourseSchedule[];
   const featuredImage =
@@ -138,6 +141,12 @@ export default async function CursosPage({
               : undefined,
         }))}
       />
+      {contenido ? (
+        <CountryContext
+          contenido={contenido}
+          titulo={`Qué se practica en el catálogo de ${getPais(pais).nombre}`}
+        />
+      ) : null}
     </>
   );
 }

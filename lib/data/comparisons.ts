@@ -26,7 +26,7 @@ export const comparisons: ToolComparison[] = [
   {
     slug: "power-bi-vs-excel",
     title: "Power BI vs. Microsoft Excel: ¿Cuál elegir en 2026?",
-    seoTitle: "Power BI vs. Excel: Comparativa Completa para Finanzas y Datos",
+    seoTitle: "Power BI vs. Excel: comparativa para datos",
     seoDescription: "Descubre las diferencias entre Power BI y Microsoft Excel. Cuándo usar planillas tradicionales y cuándo migrar a dashboards interactivos automáticos.",
     intro: "Tanto Microsoft Excel como Power BI son herramientas fundamentales del ecosistema de Microsoft, pero están diseñadas para propósitos diferentes. Mientras Excel es la navaja suiza de la manipulación de celdas individuales, Power BI es un motor robusto de Business Intelligence diseñado para consolidación masiva y análisis interactivo a escala.",
     toolA: {
@@ -94,7 +94,7 @@ export const comparisons: ToolComparison[] = [
   {
     slug: "sql-server-vs-postgresql",
     title: "SQL Server vs. PostgreSQL: Comparativa de Motores de Bases de Datos",
-    seoTitle: "Microsoft SQL Server vs. PostgreSQL: ¿Cuál es mejor para Analistas?",
+    seoTitle: "SQL Server vs. PostgreSQL: cuál elegir",
     seoDescription: "Comparación profunda entre SQL Server y PostgreSQL. Pros, contras, licenciamiento y rendimiento para proyectos de bases de datos empresariales.",
     intro: "Al estructurar un Data Warehouse o base de datos analítica, elegir el motor relacional correcto define la escalabilidad y las herramientas a utilizar. Microsoft SQL Server y PostgreSQL son dos gigantes de la industria con óptimo desempeño corporativo.",
     toolA: {

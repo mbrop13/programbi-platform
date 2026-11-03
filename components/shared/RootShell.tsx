@@ -43,13 +43,6 @@ const jsonLd = {
         "ProgramBI (Chile) dicta cursos en vivo de Power BI, SQL y Python, y trabaja con empresas en capacitación e implementación de Business Intelligence.",
       slogan: "Aprende análisis de datos con expertos.",
       foundingDate: "2021",
-      areaServed: [
-        { "@type": "Country", name: "Chile" },
-        { "@type": "Country", name: "Colombia" },
-        { "@type": "Country", name: "México" },
-        { "@type": "Country", name: "Perú" },
-        { "@type": "Country", name: "Argentina" },
-      ],
       knowsAbout: [
         "Power BI", "DAX", "SQL Server", "Python", "Pandas",
         "Business Intelligence", "Control de gestión",
@@ -77,7 +70,6 @@ const jsonLd = {
           contactType: "sales",
           telephone: "+56-9-3540-9699",
           availableLanguage: ["Spanish"],
-          areaServed: "CL",
         },
       ],
     },

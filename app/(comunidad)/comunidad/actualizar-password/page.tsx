@@ -113,6 +113,7 @@ export default function ActualizarPasswordPage() {
                     <input
                       type={showPassword ? "text" : "password"}
                       required
+                      minLength={8}
                       disabled={loading}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -127,6 +128,9 @@ export default function ActualizarPasswordPage() {
                       {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                     </button>
                   </div>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Mínimo 8 caracteres. No hace falta incluir mayúsculas, números ni símbolos.
+                  </p>
                 </div>
 
                 <div>
@@ -136,6 +140,7 @@ export default function ActualizarPasswordPage() {
                     <input
                       type={showPassword ? "text" : "password"}
                       required
+                      minLength={8}
                       disabled={loading}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}

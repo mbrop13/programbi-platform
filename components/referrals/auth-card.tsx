@@ -267,6 +267,7 @@ export function ReferidosRegistro() {
               id="password"
               type={show ? "text" : "password"}
               required
+              minLength={8}
               autoComplete="new-password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -281,13 +282,16 @@ export function ReferidosRegistro() {
               {show ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             </button>
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">Mínimo 8 caracteres.</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Mínimo 8 caracteres. No hace falta incluir mayúsculas, números ni símbolos.
+          </p>
         </Field>
         <Field label="Confirmar contraseña" htmlFor="confirm">
           <Input
             id="confirm"
             type={show ? "text" : "password"}
             required
+            minLength={8}
             value={form.confirm}
             onChange={(e) => setForm({ ...form, confirm: e.target.value })}
             className="h-10"

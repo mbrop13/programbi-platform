@@ -3,6 +3,7 @@ import SeoGuide from "@/components/marketing/SeoGuide";
 import { SITE_URL, absoluteUrl, jsonLdString, pageOg } from "@/lib/seo";
 import { GUIDE_SEO } from "@/lib/seo/money";
 import { PACK } from "@/lib/data/pack-adopcion";
+import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { normalizarPais } from "@/config/paises";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
@@ -48,12 +49,14 @@ export default async function Page({
   params: Promise<{ pais?: string }>;
 }) {
   const pais = normalizarPais((await params).pais);
+  const contenido = getContenidoPais(pais);
   const L = (texto: string) => localizarMercado(texto, pais);
   const href = (destino: string) => rutaLocal(pais, destino);
-  const parrafoPack =
+  const parrafoPack = `${PACK.headline} Construimos ${PACK.dashboards} dashboards con los datos del área, capacitamos ${PACK.trainingWeeks} semanas y nos quedamos ${PACK.postGoLiveWeeks} semanas post go-live. ${
     pais === "cl"
-      ? `${PACK.headline} Construimos ${PACK.dashboards} dashboards con los datos del área, capacitamos ${PACK.trainingWeeks} semanas y nos quedamos ${PACK.postGoLiveWeeks} semanas post go-live. Inversión referencial ${PACK.priceLabel} (${PACK.priceFromLabel}). Factura directa, sin SENCE por ahora.`
-      : `${PACK.headline} Construimos ${PACK.dashboards} dashboards con los datos del área, capacitamos ${PACK.trainingWeeks} semanas y nos quedamos ${PACK.postGoLiveWeeks} semanas post go-live. [PENDIENTE CONTENIDO ${pais.toUpperCase()}]`;
+      ? `Inversión referencial ${PACK.priceLabel} (${PACK.priceFromLabel}). Factura directa, sin SENCE por ahora.`
+      : contenido?.mercado.facturacion ?? ""
+  }`;
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -93,7 +96,7 @@ export default async function Page({
         lead={L("Si buscas “curso Power BI Chile”, hay una ficha para eso. Si eres Controller y el área vive en Excel, el producto correcto es el Pack Adopción — tablero en producción, no una clase.")}
         pagePath={href(copy.path)}
         empresasHref={href("/empresas")}
-        nota={pais === "cl" ? undefined : `[PENDIENTE CONTENIDO ${pais.toUpperCase()}]`}
+        nota={pais === "cl" ? undefined : contenido?.mercado.facturacion}
         crumbs={[
           { href: href("/"), label: "Inicio" },
           { href: href("/cursos/power-bi"), label: "Curso Power BI" },
@@ -124,6 +127,7 @@ export default async function Page({
         faqs={faqs}
         related={[
           { href: href("/empresas"), label: "Soluciones para empresas" },
+          { href: href("/curso-power-bi"), label: "Curso Power BI con plantilla de ventas gratis" },
           { href: href("/cursos/power-bi"), label: L("Curso Power BI en vivo Chile") },
           { href: href("/cursos/analisis-de-datos"), label: "Cursos de análisis de datos (SQL + Power BI + Python)" },
           { href: href("/por-que-fallan-proyectos-power-bi"), label: "Por qué fallan los proyectos Power BI" },

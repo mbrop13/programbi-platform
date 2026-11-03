@@ -1,7 +1,11 @@
 import { getPais, ISO_CHILE, normalizarPais, type SlugCurso } from "@/config/paises";
 import { voseoTitular } from "@/config/textos";
+import { localizarHoras } from "@/lib/paises/horarios";
 
 export const MARCA_DEFINIR_PRECIO = "[DEFINIR PRECIO]";
+
+/** Aclaración que acompaña al precio en moneda local. */
+export const NOTA_COBRO_CLP = "Se cobra en CLP";
 
 export function precioCurso(iso: string | null | undefined, slug: string): number | null {
   const pais = getPais(normalizarPais(iso));
@@ -63,7 +67,9 @@ export function localizarMercado(texto: string, iso: string | null | undefined):
   const paisIso = normalizarPais(iso);
   if (paisIso === ISO_CHILE) return texto;
   const nombre = getPais(paisIso).nombre;
-  let salida = texto.replaceAll("en Chile", `en ${nombre}`).replaceAll("Chile", nombre);
+  let salida = localizarHoras(texto, paisIso)
+    .replaceAll("en Chile", `en ${nombre}`)
+    .replaceAll("Chile", nombre);
   if (getPais(paisIso).dispositivo === "computadora") {
     salida = salida.replace(/\bcomputador\b/gi, "computadora");
   }

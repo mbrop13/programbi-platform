@@ -4,8 +4,8 @@
  */
 
 import { getPais, ISO_CHILE, normalizarPais, SLUGS_CURSO, type Pais } from "@/config/paises";
-import { horarioLocal, type HorarioLocal } from "@/lib/paises/horarios";
-import { muestraPrecioLocal, precioCurso } from "@/lib/paises/precios";
+import { etiquetaHoraLocal, horarioLocal, type HorarioLocal } from "@/lib/paises/horarios";
+import { muestraPrecioLocal, NOTA_COBRO_CLP, precioCurso } from "@/lib/paises/precios";
 
 export type DetalleCursoLocal = {
   pais: Pais;
@@ -30,7 +30,7 @@ export function textosPreciosLocales(iso: string | null | undefined): Record<str
   const textos: Record<string, string> = {};
   for (const slug of SLUGS_CURSO) {
     const monto = precioCurso(iso, slug);
-    if (monto != null) textos[slug] = montoConCodigo(iso, monto);
+    if (monto != null) textos[slug] = `${montoConCodigo(iso, monto)} · ${NOTA_COBRO_CLP}`;
   }
   return textos;
 }
@@ -53,12 +53,13 @@ export function detalleCursoLocal(opts: {
   const esChile = pais.iso === ISO_CHILE;
   const lugar = esChile ? "Chile" : pais.nombre;
 
+  const horaLocal = etiquetaHoraLocal(pais.iso, opts.referencia);
   const faqs = [
     {
       q: `¿A qué hora son las clases en ${lugar}?`,
       a: esChile
-        ? `Las clases en vivo por Zoom son de ${horario.inicioChile} a ${horario.finChile}, hora de Chile (${horario.offset}). ${horario.cadena}.`
-        : `Las clases en vivo por Zoom son de ${horario.inicio} a ${horario.fin}, hora de ${lugar} (${horario.offset}). En Chile son de ${horario.inicioChile} a ${horario.finChile}.`,
+        ? `Las clases en vivo por Zoom son de ${horario.inicioChile} a ${horario.finChile}, ${horaLocal}. ${horario.cadena}.`
+        : `Las clases en vivo por Zoom son de ${horario.inicio} a ${horario.fin}, ${horaLocal}. En Chile son de ${horario.inicioChile} a ${horario.finChile}.`,
     },
     {
       q: "¿Qué recibo al terminar el curso?",

@@ -5,7 +5,8 @@ import { Check, MessageCircle } from "lucide-react";
 import type { Course } from "@/lib/data/courses";
 import { getCourseSyllabus, getSyllabusLevel, type SyllabusLevelContent } from "@/lib/data/syllabuses";
 import { COURSE_SEO } from "@/lib/seo/money";
-import { whatsappHref } from "@/lib/whatsapp";
+import { localizarMercado } from "@/lib/paises/precios";
+import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 
 export const COURSE_CRO_SLUGS = [
   "analisis-de-datos",
@@ -183,12 +184,6 @@ export function CourseLeadCtas({
   onRegister: () => void;
   primaryLabel?: string;
 }) {
-  const wa = whatsappHref({
-    page: `/cursos/${course.slug}`,
-    intent: "curso",
-    course: course.title,
-  });
-
   return (
     <section className="border-t border-line bg-paper px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto flex max-w-[1400px] flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
@@ -206,15 +201,16 @@ export function CourseLeadCtas({
           >
             {primaryLabel}
           </button>
-          <a
-            href={wa}
-            target="_blank"
-            rel="noopener noreferrer"
+          <WhatsAppCta
+            page={`/cursos/${course.slug}`}
+            intent="curso"
+            course={course.title}
+            courseSlug={course.slug}
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-line bg-canvas px-7 text-sm font-medium text-ink no-underline hover:bg-wash"
           >
             <MessageCircle size={16} />
             WhatsApp
-          </a>
+          </WhatsAppCta>
         </div>
       </div>
     </section>
@@ -279,12 +275,19 @@ export function CourseSeoInternalLinks({ slug }: { slug: string }) {
 export function CourseFaq({
   slug,
   extra = [],
+  pais,
 }: {
   slug: string;
   extra?: { q: string; a: string }[];
+  /** Mercado de la versión: localiza la hora de las preguntas base. */
+  pais?: string;
 }) {
   const seo = COURSE_SEO[slug];
-  const items = [...(seo?.faqs ?? []), ...extra];
+  const base = (seo?.faqs ?? []).map((item) => ({
+    q: localizarMercado(item.q, pais),
+    a: localizarMercado(item.a, pais),
+  }));
+  const items = [...base, ...extra];
   if (items.length === 0) return null;
 
   return (

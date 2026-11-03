@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import GranPartidoClient from "./GranPartidoClient";
-import { DEFAULT_OG_IMAGE, twitterShare } from "@/lib/seo";
+import { DEFAULT_OG_IMAGE, tituloSeo, twitterShare } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "¿Quién ganará la final? — Predice y gana un curso",
+  title: { absolute: tituloSeo("¿Quién ganará la final? Gana un curso") },
   description:
     "¿Quién ganará la final? España o Argentina. Predice el resultado como miembro de ProgramBI y participa por un curso a tu elección.",
   alternates: { canonical: "/gran-partido" },
