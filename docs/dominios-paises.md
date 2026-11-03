@@ -26,6 +26,7 @@ npm run dev
 
 - http://localhost:3000/ sigue siendo Chile, en CLP
 - http://localhost:3000/mx y http://localhost:3000/mx/cursos/power-bi
+- http://localhost:3000/mx/curso-sql-online y http://localhost:3000/mx/curso-python
 - http://localhost:3000/ar http://localhost:3000/pe http://localhost:3000/co http://localhost:3000/ec http://localhost:3000/uy
 - El resto: `/bo` `/py` `/pa` `/cr` `/gt` `/sv` `/hn` `/ni` `/do` `/ve`
 - http://localhost:3000/cl redirige a `/`

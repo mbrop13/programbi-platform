@@ -14,7 +14,6 @@ import { honeypotStyle } from "@/lib/antibot";
 import { persistRegistrationSource } from "@/lib/registration-source";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import { courseSlugFromLocation, debugSignUpResult, signUpCreatedUser, trackClickRegistro, trackSubmitRegistro } from "@/lib/analytics/marketing";
-import { interestFromCoursePath } from "@/lib/data/lead-interests";
 import { readBrowserReferralCode } from "@/lib/referrals/cookie";
 
 interface AuthModalProps {
@@ -193,7 +192,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
       const pricingVariant = readClientPricingVariant();
       const referralCode = readBrowserReferralCode();
       const defaultName = fullName.trim() || email.split("@")[0] || "Usuario";
-      const interest = interestFromCoursePath(redirectUrl || registrationSource);
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -202,7 +200,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           data: {
             full_name: defaultName,
             whatsapp: whatsapp ? `${phonePrefix}${whatsapp}` : null,
-            ...(interest ? { interest } : {}),
             registration_source: registrationSource,
             ...(referralCode ? { referral_code: referralCode } : {}),
             ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
@@ -625,6 +622,9 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                           </button>
                         </div>
+                        <p className="mt-1 text-[10px] text-slate-400">
+                          Mínimo 8 caracteres. No hace falta incluir mayúsculas, números ni símbolos.
+                        </p>
                       </div>
                       {/* Privacy consent checkbox */}
                       <div className="flex items-start gap-2.5 mt-1">

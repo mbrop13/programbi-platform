@@ -156,7 +156,16 @@ const tc: Record<'es' | 'en', TranslationDict> = {
 
 import { useCommunity } from "../CommunityProvider";
 
-function processMergedCourses(allCourses: any[], enrollmentData: any): CourseWithAccess[] {
+type EnrollmentData =
+  | EnrollmentItem[]
+  | {
+      enrollments?: EnrollmentItem[];
+      programSiblings?: PublicCourse[];
+    }
+  | null
+  | undefined;
+
+function processMergedCourses(allCourses: PublicCourse[], enrollmentData: EnrollmentData): CourseWithAccess[] {
   if (!allCourses || allCourses.length === 0) return [];
   const myEnrollments = (Array.isArray(enrollmentData) ? enrollmentData : enrollmentData?.enrollments || []) as EnrollmentItem[];
   const programSiblings = (Array.isArray(enrollmentData) ? [] : enrollmentData?.programSiblings || []) as PublicCourse[];
@@ -212,7 +221,7 @@ export default function MisCursos({
   onSelectCourse: (slug: string) => void;
   language?: "es" | "en";
   initialCourses?: PublicCourse[];
-  initialEnrollments?: any;
+  initialEnrollments?: EnrollmentData;
   initialFilter?: "all" | "active";
   onFilterChange?: (filter: "all" | "active") => void;
 }) {
@@ -393,8 +402,8 @@ export default function MisCursos({
               paymentStatus === 'pending' ? <Clock className="w-4 h-4" /> : 
               <Lock className="w-4 h-4" />}
              
-             {paymentStatus === 'success' ? '¡Pago exitoso! Tu curso ya está activo.' :
-              paymentStatus === 'pending' ? 'Pago pendiente. Se activará cuando se confirme.' :
+             {paymentStatus === 'success' ? '¡Pago exitoso! Nuestro equipo activará manualmente tu acceso al curso en el campus externo.' :
+              paymentStatus === 'pending' ? 'Pago pendiente. Cuando se confirme, nuestro equipo activará manualmente tu acceso en el campus externo.' :
               paymentStatus === 'rejected' ? 'El pago fue rechazado. Intenta de nuevo.' :
               paymentStatus === 'cancelled' ? 'Pago cancelado.' : 'Error en el pago.'}
              

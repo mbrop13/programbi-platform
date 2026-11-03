@@ -29,11 +29,26 @@ const PURCHASE_FIRED_KEY = "pb_purchase_tracked";
 const EXP_STORAGE_KEY = "pb_exp_pricing_visibility";
 const EXP_IMPRESSION_KEY = "pb_exp_pricing_impression";
 
+/** Params that identify a handoff (OAuth) and must not split page_view / landing_page. */
+const VOLATILE_PAGE_PARAMS = ["reg_ok"] as const;
+const DEBUG_STORAGE_KEY = "pb_ga_debug";
+const DEBUG_FLAGS = ["debug_mode", "pb_debug", "pb_ga_debug"] as const;
+/** Same window GA4 uses to start a new session. */
+const GA_SESSION_TIMEOUT_MS = 30 * 60 * 1000;
+
 declare global {
   interface Window {
     dataLayer?: unknown[];
     gtag?: (...args: unknown[]) => void;
     clarity?: (...args: unknown[]) => void;
+    /** gtag stub + config + first page_view already queued in dataLayer. */
+    __pbGa4Init?: boolean;
+    /** gtag.js finished loading, so the queued page_view has been sent. */
+    __pbGtagLoaded?: boolean;
+    /** Last page_view sent (path + query) to avoid SPA duplicates. */
+    __pbLastPageViewKey?: string;
+    /** Timestamp of the last page_view, used to detect a new GA4 session. */
+    __pbLastPageViewAt?: number;
   }
 }
 
@@ -137,7 +152,7 @@ function withUtm(params?: AnalyticsParams): AnalyticsParams {
     experiment_id: exp.experiment_id,
     variant: exp.variant,
     page_path: isBrowser() ? window.location.pathname : undefined,
-    page_location: isBrowser() ? window.location.href : undefined,
+    page_location: isBrowser() ? buildPageViewTarget().page_location : undefined,
     ...params,
   };
 }
@@ -179,6 +194,7 @@ export const GA_LEAD_EVENTS = {
   GENERATE_LEAD: "generate_lead",
   CLICK_WHATSAPP: "click_whatsapp",
   CLICK_COTIZAR_EMPRESAS: "click_cotizar_empresas",
+  QUIZ_COMPLETE: "quiz_complete",
 } as const;
 
 export type GenerateLeadMethod = "form" | "oauth";
@@ -274,20 +290,47 @@ function inferCourseSlug(explicit?: string | null): string | undefined {
 
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
 
+/**
+ * Debug eligibility for GA4 hits.
+ * Only outside a production build, or when the visitor asks for it with
+ * ?debug_mode / ?pb_debug / ?pb_ga_debug (persisted for the tab so SPA navigation keeps it).
+ * Production traffic without the flag must never receive `_dbg`/`debug_mode`.
+ */
+export function analyticsDebugEnabled(): boolean {
+  if (process.env.NODE_ENV !== "production") return true;
+  if (!isBrowser()) return false;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    for (const key of DEBUG_FLAGS) {
+      const flag = params.get(key);
+      if (flag !== null && flag !== "0" && flag !== "false") {
+        sessionStorage.setItem(DEBUG_STORAGE_KEY, "1");
+        return true;
+      }
+    }
+    return sessionStorage.getItem(DEBUG_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Stable diagnostic field: always present ("1"/"0"), safe to filter in DebugView.
+ * `debug_mode` is gtag's official flag: gtag adds the protocol-level `_dbg=1` and
+ * routes the hit to the debug endpoint. It is omitted in normal production
+ * traffic, so a production hit without the flag is never a debug hit.
+ */
+function debugHitParams(): AnalyticsParams {
+  const on = analyticsDebugEnabled();
+  return { pb_dbg: on ? "1" : "0", ...(on ? { debug_mode: true } : {}) };
+}
+
 /** ?pb_ga_debug=1, localhost, or a Vercel preview. Never logs on www without the flag. */
 export function gaDebugEnabled(): boolean {
   if (!isBrowser()) return false;
   const host = window.location.hostname;
   if (host === "localhost" || host.endsWith(".vercel.app")) return true;
-  try {
-    if (new URLSearchParams(window.location.search).get("pb_ga_debug") === "1") {
-      sessionStorage.setItem("pb_ga_debug", "1");
-      return true;
-    }
-    return sessionStorage.getItem("pb_ga_debug") === "1";
-  } catch {
-    return false;
-  }
+  return analyticsDebugEnabled();
 }
 
 export function gaDebug(label: string, detail?: unknown): void {
@@ -316,7 +359,12 @@ export function debugSignUpResult(
   });
 }
 
-function gaClientId(): string {
+/**
+ * Read the GA4 client id. Never create it: gtag owns that cookie. Writing a
+ * fake `_ga` here (the old behaviour) made gtag adopt a client id before its
+ * first hit and produced sessions without a landing page.
+ */
+function readGaClientId(): string | undefined {
   try {
     const match = document.cookie.match(/(?:^|; )_ga=([^;]+)/);
     if (match) {
@@ -325,15 +373,9 @@ function gaClientId(): string {
       if (/^\d+\.\d+$/.test(cid)) return cid;
     }
   } catch {
-    // fall through
-  }
-  const fresh = `${Math.floor(Math.random() * 1e10)}.${Math.floor(Date.now() / 1000)}`;
-  try {
-    document.cookie = `_ga=GA1.1.${fresh}; path=/; max-age=63072000; samesite=lax`;
-  } catch {
     // ignore
   }
-  return fresh;
+  return undefined;
 }
 
 function gaSessionId(): string | undefined {
@@ -350,9 +392,18 @@ function gaSessionId(): string | undefined {
 }
 
 /**
- * gtag queues generate_lead and the modal's redirect to /comunidad/inicio aborts it.
- * Clicks survive because the page stays. sendBeacon is delivered on unload.
- * _dbg=1 makes the same hit visible in DebugView.
+ * generate_lead is sent with sendBeacon (Measurement Protocol) because the
+ * registro/OAuth redirect can abort a queued gtag hit.
+ *
+ * _dbg=1 is added ONLY when debug is enabled: the old code hardcoded it, so every
+ * production generate_lead was a DebugView-only hit that standard GA4 reports
+ * do not count. pb_dbg ("1"/"0") is always sent as a stable diagnostic field.
+ *
+ * Without a GA client id gtag has not run yet in this session, so a beacon now
+ * would start a session whose first hit is generate_lead (landing_page = (not set)).
+ * Same if gtag.js has not loaded yet: its page_view is still queued in dataLayer
+ * and the beacon would reach GA first. In both cases the caller falls back to the
+ * gtag event, queued after the page_view.
  */
 function sendGenerateLeadBeacon(opts: {
   method: GenerateLeadMethod;
@@ -360,22 +411,32 @@ function sendGenerateLeadBeacon(opts: {
   page_path?: string;
 }): boolean {
   if (!GA_MEASUREMENT_ID || typeof navigator.sendBeacon !== "function") return false;
+  if (!window.__pbGtagLoaded) return false;
+  const cid = readGaClientId();
+  if (!cid) return false;
+  const debug = analyticsDebugEnabled();
   const params = new URLSearchParams({
     v: "2",
     tid: GA_MEASUREMENT_ID,
-    cid: gaClientId(),
-    en: "generate_lead",
-    dl: window.location.href,
+    cid,
+    en: GA_LEAD_EVENTS.GENERATE_LEAD,
+    dl: buildPageViewTarget().page_location,
     dt: document.title,
     "ep.method": opts.method,
     "ep.page_path": opts.page_path || window.location.pathname,
-    _dbg: "1",
+    "ep.pb_dbg": debug ? "1" : "0",
   });
+  if (debug) params.set("_dbg", "1");
   const sid = gaSessionId();
   if (sid) params.set("sid", sid);
   if (opts.course_slug) params.set("ep.course_slug", opts.course_slug);
-  const url = `https://www.google-analytics.com/g/collect?${params.toString()}`;
-  return navigator.sendBeacon(url);
+  // The normal /g/collect endpoint with _dbg=1 feeds DebugView. Do NOT use
+  // /debug/g/collect: that validates the payload but records nothing anywhere.
+  try {
+    return navigator.sendBeacon(`https://www.google-analytics.com/g/collect?${params.toString()}`);
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -387,26 +448,97 @@ export function trackGenerateLead(opts: {
   course_slug?: string | null;
   page_path?: string;
 }): void {
+  if (!isBrowser()) return;
   // Public /registro, /referidos and marketing modals must count. Only auth walls stay quiet.
   if (isQuietLeadPath()) {
     gaDebug("generate_lead skipped", { reason: "quiet", path: window.location.pathname });
     return;
   }
   const course_slug = inferCourseSlug(opts.course_slug);
-  const sent = sendGenerateLeadBeacon({
+  // (b) Never let a lead be the first hit: queue the page_view before it.
+  ensurePageViewBeforeHit();
+  const transport = sendGenerateLeadBeacon({
     method: opts.method,
     course_slug,
     page_path: opts.page_path,
+  })
+    ? "beacon"
+    : GA_MEASUREMENT_ID
+      ? "gtag"
+      : "none";
+  if (transport === "gtag") {
+    // debug_mode (in debugHitParams) makes gtag send _dbg=1 at protocol level;
+    // the explicit param keeps the same name visible in the DebugView payload.
+    // In normal production neither is present, so the hit counts in reports.
+    const debug = analyticsDebugEnabled();
+    trackEvent(GA_LEAD_EVENTS.GENERATE_LEAD, {
+      method: opts.method,
+      course_slug,
+      page_path: opts.page_path,
+      ...(debug ? { _dbg: 1 } : {}),
+    });
+  }
+  gaDebug("generate_lead", {
+    transport,
+    method: opts.method,
+    course_slug: course_slug || null,
+    pb_dbg: analyticsDebugEnabled() ? "1" : "0",
   });
-  gaDebug("generate_lead", { sent, method: opts.method, course_slug: course_slug || null });
+}
+
+type PageViewTarget = { key: string; page_path: string; page_location: string };
+
+/**
+ * Build a full page_location (origin + path + query). `reg_ok` is a one-shot
+ * OAuth flag and must not fragment the landing page.
+ */
+function buildPageViewTarget(rawPath?: string): PageViewTarget {
+  const origin = window.location.origin;
+  let pathname = window.location.pathname || "/";
+  let search = window.location.search || "";
+  if (rawPath) {
+    const q = rawPath.indexOf("?");
+    pathname = q >= 0 ? rawPath.slice(0, q) : rawPath;
+    search = q >= 0 ? rawPath.slice(q) : "";
+  }
+  const params = new URLSearchParams(search.startsWith("?") ? search.slice(1) : search);
+  for (const key of VOLATILE_PAGE_PARAMS) params.delete(key);
+  const qs = params.toString();
+  const page_path = `${pathname}${qs ? `?${qs}` : ""}`;
+  return { key: page_path, page_path, page_location: `${origin}${page_path}` };
+}
+
+/** One page_view via gtag event (not config: config re-runs duplicated hits). */
+function sendPageViewHit(target: PageViewTarget): void {
+  if (typeof window.gtag !== "function") return;
+  window.gtag("event", "page_view", {
+    page_location: target.page_location,
+    page_path: target.page_path,
+    page_title: document.title,
+    ...debugHitParams(),
+  });
+  window.__pbLastPageViewKey = target.key;
+  window.__pbLastPageViewAt = Date.now();
 }
 
 /**
- * Official gtag stub: events pushed here before gtag.js loads are replayed
- * in order (js → config → events). Safe to call on every client mount.
+ * gtag stub + config + the FIRST page_view of the session, in that order.
+ *
+ * (b) Why landing_page was "(not set)" in ~68% of sessions:
+ * config used send_page_view:false and the manual pageview was queued 50 ms
+ * after mount, while mount-time events (view_curso, experiment_impression,
+ * view_empresas) pushed immediately from child effects. Any of those could be
+ * the first hit of a session, and GA4 only takes landing_page from the session's
+ * first page_view. The SPA pageview also repeated `gtag('config', ...)` instead
+ * of sending a page_view event, which can reorder/duplicate hits. Consent is not
+ * the cause: this app has no consent gate in front of gtag.
+ *
+ * ensureGa4() is idempotent and every tracking entry point calls it, so
+ * page_view is always the first command queued in dataLayer (and replayed first
+ * by gtag.js), even if a component effect fires an event before this mount.
  */
-export function initGa4(): void {
-  if (!isBrowser() || !GA_MEASUREMENT_ID) return;
+function ensureGa4(): boolean {
+  if (!isBrowser() || !GA_MEASUREMENT_ID) return false;
   window.dataLayer = window.dataLayer || [];
   if (typeof window.gtag !== "function") {
     window.gtag = function gtag() {
@@ -415,14 +547,45 @@ export function initGa4(): void {
       window.dataLayer!.push(arguments);
     };
   }
-  const flagged = window as Window & { __pbGa4Init?: boolean };
-  if (flagged.__pbGa4Init) return;
-  flagged.__pbGa4Init = true;
+  if (window.__pbGa4Init) return true;
+  window.__pbGa4Init = true;
+  const debug = analyticsDebugEnabled();
   window.gtag("js", new Date());
   window.gtag("config", GA_MEASUREMENT_ID, {
     send_page_view: false,
-    ...(process.env.NODE_ENV === "development" ? { debug_mode: true } : {}),
+    ...(debug ? { debug_mode: true } : {}),
   });
+  sendPageViewHit(buildPageViewTarget());
+  return true;
+}
+
+/**
+ * Guarantee the hit that opens a session (or a new SPA route) is a page_view:
+ * - after 30 min of inactivity GA4 would start a new session with the event;
+ * - on client navigation the child page effects can fire before this component,
+ *   so the event would otherwise be the first hit of the new route.
+ */
+function ensurePageViewBeforeHit(): void {
+  if (!ensureGa4()) return;
+  const target = buildPageViewTarget();
+  const sessionExpired = Date.now() - (window.__pbLastPageViewAt ?? 0) > GA_SESSION_TIMEOUT_MS;
+  if (sessionExpired || window.__pbLastPageViewKey !== target.key) {
+    sendPageViewHit(target);
+  }
+}
+
+/** Safe to call on every client mount. */
+export function initGa4(): void {
+  ensureGa4();
+}
+
+/**
+ * Called from next/script onLoad. gtag.js drains dataLayer in order, so after
+ * this the queued js → config → page_view commands have been sent.
+ */
+export function markGa4Loaded(): void {
+  if (!isBrowser()) return;
+  window.__pbGtagLoaded = true;
 }
 
 /** gtag drops a recommended event such as generate_lead when a param is undefined. */
@@ -438,7 +601,9 @@ function definedParams(params: AnalyticsParams): AnalyticsParams {
 /** Send event to GA4 (gtag) and tag Clarity custom event when available. */
 export function trackEvent(eventName: string, params?: AnalyticsParams): void {
   if (!isBrowser()) return;
-  const payload = definedParams(withUtm(params));
+  // Guarantees the session's first hit (and any post-30-min hit) is a page_view.
+  ensurePageViewBeforeHit();
+  const payload = definedParams({ ...withUtm(params), ...debugHitParams() });
 
   try {
     if (GA_MEASUREMENT_ID && typeof window.gtag === "function") {
@@ -480,27 +645,19 @@ export function trackEvent(eventName: string, params?: AnalyticsParams): void {
   }
 }
 
+/**
+ * SPA page_view. Deduped by path + query so React re-renders, Suspense
+ * remounts or the mount effect never send the same route twice.
+ */
 export function trackPageView(path?: string): void {
   if (!isBrowser()) return;
-  const page_path = path || window.location.pathname + window.location.search;
-
-  try {
-    if (typeof window.gtag === "function" && GA_MEASUREMENT_ID) {
-      window.gtag("config", GA_MEASUREMENT_ID, {
-        page_path,
-        page_location: window.location.href,
-        page_title: document.title,
-        send_page_view: true,
-        ...(process.env.NODE_ENV === "development" ? { debug_mode: true } : {}),
-      });
-    }
-  } catch {
-    // no-op
-  }
+  if (!ensureGa4()) return;
+  const target = buildPageViewTarget(path);
+  if (window.__pbLastPageViewKey === target.key) return;
+  sendPageViewHit(target);
 
   if (process.env.NODE_ENV === "development") {
-    // eslint-disable-next-line no-console
-    console.debug("[analytics]", "page_view", { page_path });
+    console.debug("[analytics]", "page_view", { page_path: target.page_path });
   }
 }
 
@@ -509,6 +666,19 @@ export function trackCtaClick(ctaLabel: string, location: string, extra?: Analyt
     cta_label: ctaLabel,
     location,
     ...extra,
+  });
+}
+
+/** Descarga de la plantilla CSV de las landings de Power BI por país. */
+export function trackPlantillaDownload(opts: {
+  recurso: string;
+  pais?: string;
+  location?: string;
+}): void {
+  trackEvent("download_template", {
+    recurso: opts.recurso,
+    pais: opts.pais,
+    location: opts.location ?? "curso_power_bi",
   });
 }
 
@@ -597,12 +767,41 @@ export function trackPurchase(opts?: {
   });
 }
 
-export function trackWhatsAppClick(location?: string, courseSlug?: string): void {
+/**
+ * `click_whatsapp` with the parameters requested by P6/P21:
+ * course (slug), country (ISO or name) and page (current path).
+ */
+export function trackWhatsAppClick(opts?: {
+  course?: string | null;
+  country?: string | null;
+  page?: string;
+}): void {
+  const page =
+    opts?.page ||
+    (isBrowser() ? window.location.pathname + window.location.search : undefined);
   trackEvent(GA_LEAD_EVENTS.CLICK_WHATSAPP, {
-    page_path: isBrowser()
-      ? window.location.pathname + window.location.search
-      : location,
-    curso_slug: courseSlug,
+    course: opts?.course || undefined,
+    country: opts?.country || undefined,
+    page,
+    // Keep legacy params for existing GA4 reports/explorations.
+    page_path: page,
+    curso_slug: opts?.course || undefined,
+  });
+}
+
+export function trackQuizComplete(opts: {
+  tema: string;
+  nivel: string;
+  pais: string;
+  aciertos?: number;
+  total?: number;
+}): void {
+  trackEvent(GA_LEAD_EVENTS.QUIZ_COMPLETE, {
+    tema: opts.tema,
+    nivel: opts.nivel,
+    pais: opts.pais,
+    aciertos: opts.aciertos,
+    total: opts.total,
   });
 }
 

@@ -51,7 +51,7 @@ import {
   trackLeadSubmit,
 } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
-import { whatsappHref } from "@/lib/whatsapp";
+import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { CourseCohortFacts, CourseCohortStrip } from "@/components/marketing/CourseCohortStrip";
 import {
   CourseAudienceAndResults,
@@ -63,9 +63,10 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { formatMoneda, localizarMercado, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
+import { formatMoneda, localizarMercado, NOTA_COBRO_CLP, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
 import type { PrecioTarjeta } from "@/lib/paises/precio-publico";
+import type { CheckoutPromotion } from "@/lib/pago/catalogo";
 import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
 import { ISO_CHILE } from "@/config/paises";
 import { COUNTRIES } from "@/lib/context/CountryContext";
@@ -189,7 +190,7 @@ export default function CourseDetailClient({
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [isFreeTrial, setIsFreeTrial] = useState(false);
   const [schedules, setSchedules] = useState<CourseSchedule[]>(initialSchedules);
-  const [promotions, setPromotions] = useState<any[]>([]);
+  const [promotions, setPromotions] = useState<CheckoutPromotion[]>([]);
   const [selectedScheduleIndex, setSelectedScheduleIndex] = useState(0);
   const [isScheduleDropdownOpen, setIsScheduleDropdownOpen] = useState(false);
   const pais = usePaisRuta();
@@ -289,8 +290,8 @@ export default function CourseDetailClient({
   useEffect(() => {
     fetch("/api/promotions")
       .then((r) => r.json())
-      .then((promoData) => {
-        if (Array.isArray(promoData)) setPromotions(promoData);
+      .then((promoData: unknown) => {
+        if (Array.isArray(promoData)) setPromotions(promoData as CheckoutPromotion[]);
       })
       .catch(console.error);
   }, []);
@@ -430,12 +431,6 @@ export default function CourseDetailClient({
         ? introParagraphs.slice(1)
         : [];
   const quoteHref = rutaLocal(pais, empresaQuotePath(course.slug, activeLevel?.name));
-  const courseWa = whatsappHref({
-    page: view === "empresas" ? `/cursos/${course.slug}?para=empresas` : `/cursos/${course.slug}`,
-    intent: isEmpresa ? "empresas" : "curso",
-    course: view === "avanzado" ? `${course.title} avanzado` : course.title,
-  });
-
   const includes = [
     "Clases en vivo por Zoom",
     hours ? `${hours} horas de formación` : "Formación en vivo",
@@ -638,7 +633,7 @@ export default function CourseDetailClient({
                       </p>
                     ) : null}
                     <p className="text-3xl font-bold tracking-tight text-ink">{precioTarjeta.actual}</p>
-                    {notaTarjeta ? <p className="mt-2 text-xs leading-snug text-mute">{notaTarjeta}</p> : null}
+                    <p className="mt-2 text-xs leading-snug text-mute">{notaTarjeta || NOTA_COBRO_CLP}</p>
                     {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
                   </div>
                 ) : mostrarLocal && precioLocal != null ? (
@@ -650,6 +645,7 @@ export default function CourseDetailClient({
                       </p>
                     ) : null}
                     <p className="text-3xl font-bold tracking-tight text-ink">{formatMoneda(pais, precioLocal)}</p>
+                    <p className="mt-2 text-xs leading-snug text-mute">{NOTA_COBRO_CLP}</p>
                     {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
                   </div>
                 ) : !pricingReady ? (
@@ -687,30 +683,42 @@ export default function CourseDetailClient({
                     Cotizar para mi empresa
                     <ArrowRight size={16} />
                   </Link>
-                  <a
-                    href={courseWa}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <WhatsAppCta
+                    page={`/cursos/${course.slug}?para=empresas`}
+                    intent="empresas"
+                    course={course.title}
+                    courseSlug={course.slug}
+                    country={pais}
                     className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-medium text-ink no-underline hover:bg-wash"
                   >
                     <MessageCircle size={16} />
                     WhatsApp
-                  </a>
+                  </WhatsAppCta>
                 </>
-              ) : contactInstead ? null : activeSchedulesList.length === 0 ? (
-                <a
-                  href={whatsappHref({
-                    page: `/cursos/${course.slug}`,
-                    intent: "fechas",
-                    course: `${course.title}${catalogLevelCount > 1 && activeLevel?.name ? ` - ${activeLevel.name}` : ""}`,
-                  })}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              ) : contactInstead ? (
+                <WhatsAppCta
+                  page={`/cursos/${course.slug}`}
+                  intent="curso"
+                  course={course.title}
+                  courseSlug={course.slug}
+                  country={pais}
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-medium text-ink no-underline hover:bg-wash"
+                >
+                  <MessageCircle size={16} />
+                  Escribir por WhatsApp
+                </WhatsAppCta>
+              ) : activeSchedulesList.length === 0 ? (
+                <WhatsAppCta
+                  page={`/cursos/${course.slug}`}
+                  intent="fechas"
+                  course={course.title}
+                  courseSlug={course.slug}
+                  country={pais}
                   className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
                 >
                   <MessageCircle size={16} />
                   Consultar fechas
-                </a>
+                </WhatsAppCta>
               ) : (
                 <button
                   type="button"
@@ -740,6 +748,14 @@ export default function CourseDetailClient({
                 <a href={PDF_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 no-underline hover:text-mute">
                   <FileText size={15} /> Folleto
                 </a>
+                {course.slug === "power-bi" ? (
+                  <Link
+                    href={rutaLocal(pais, "/curso-power-bi")}
+                    className="inline-flex items-center gap-1.5 no-underline hover:text-mute"
+                  >
+                    <FileText size={15} /> Plantilla CSV gratis
+                  </Link>
+                ) : null}
               </div>
             </div>
           </aside>
@@ -773,7 +789,7 @@ export default function CourseDetailClient({
       </section>
 
       {isCroTemplate ? (
-        <CourseFaq slug={course.slug} extra={detalleLocal?.faqs} />
+        <CourseFaq slug={course.slug} extra={detalleLocal?.faqs} pais={pais} />
       ) : detalleLocal && detalleLocal.faqs.length > 0 ? (
         <CourseLocalSeo detalle={detalleLocal} />
       ) : null}
@@ -1121,18 +1137,16 @@ function CourseContactForm({ course, onRegister }: { course: Course; onRegister:
                   ? `Revisa ${submittedEmail || "tu correo"}. Ahí va la información del curso.`
                   : `Te enviamos la confirmación${submittedEmail ? ` a ${submittedEmail}` : ""}. Un asesor te escribe con la propuesta para tu equipo.`}
               </p>
-              <a
-                href={whatsappHref({
-                  page: `/cursos/${course.slug}`,
-                  intent: isPersonal ? "curso" : "empresas",
-                  course: course.title,
-                })}
-                target="_blank"
-                rel="noopener noreferrer"
+              <WhatsAppCta
+                page={`/cursos/${course.slug}`}
+                intent={isPersonal ? "curso" : "empresas"}
+                course={course.title}
+                courseSlug={course.slug}
+                country={pais}
                 className="mt-4 inline-flex h-11 items-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
               >
                 Escribir por WhatsApp
-              </a>
+              </WhatsAppCta>
               {isPersonal ? (
                 <div className="mt-4">
                   <RegisterForPriceNote onRegister={onRegister} />

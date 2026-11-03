@@ -4,20 +4,27 @@ import { absoluteUrl } from "@/lib/seo";
 /** Rutas con versión por país. El resto (blog, empleos, comunidad, pago) no lleva carpeta. */
 const RAICES = [
   "/cursos",
+  "/precios",
   "/empresas",
   "/faq",
   "/nosotros",
   "/implementacion-power-bi",
   "/migrar-excel-a-power-bi",
   "/por-que-fallan-proyectos-power-bi",
+  "/curso-power-bi",
   "/curso-power-bi-vs-pack-adopcion",
+  "/curso-sql-online",
+  "/curso-python",
 ];
 
 export function esRutaLocalizable(path: string): boolean {
   if (path === "/") return true;
   if (RAICES.some((raiz) => path === raiz)) return true;
   const partes = path.split("/").filter(Boolean);
-  return partes.length === 2 && partes[0] === "cursos";
+  return (
+    partes.length === 2 &&
+    (partes[0] === "cursos" || partes[0] === "test-nivel")
+  );
 }
 
 export function quitarPais(pathname: string): string {

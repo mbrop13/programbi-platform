@@ -4,7 +4,7 @@ import { getArticleBySlug, getPublishedArticles } from "@/lib/supabase/comunidad
 import BlogArticleClient from "./BlogArticleClient";
 import { isVideoUrl, getOptimizedShareImage } from "@/lib/utils";
 import { ogImageUrl } from "@/lib/og/url";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, tituloSeo } from "@/lib/seo";
 
 export const revalidate = 3600;
 
@@ -21,6 +21,14 @@ export async function generateStaticParams() {
   }));
 }
 
+type ArticlePoster = {
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  content?: string | null;
+  cover_image?: string | null;
+};
+
 function articleDescription(article: { title?: string; excerpt?: string | null }): string {
   const excerpt = (article.excerpt || "").trim();
   if (excerpt.length >= 70) return excerpt.slice(0, 155);
@@ -29,7 +37,7 @@ function articleDescription(article: { title?: string; excerpt?: string | null }
   return `${base.replace(/\.$/, "")}.${suffix}`.slice(0, 155);
 }
 
-function getArticlePoster(article: any): string {
+function getArticlePoster(article: ArticlePoster | null): string {
   if (!article) return "/default-og.png";
   
   // 1. Try to find poster/thumbnail/cover_poster in the content markdown first
@@ -64,7 +72,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const description = articleDescription(article);
 
   return {
-    title: article.title,
+    title: { absolute: tituloSeo(article.title) },
     description,
     alternates: { canonical: absoluteUrl(`/blog/${slug}`) },
     openGraph: {
@@ -92,7 +100,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
 
   // Fetch related articles (limit to 3, excluding current)
   const allArticles = await getPublishedArticles(article.category);
-  const related = allArticles.filter((a: any) => a.slug !== slug).slice(0, 3);
+  const related = allArticles.filter((a) => a.slug !== slug).slice(0, 3);
 
   const rawShareImage = getArticlePoster(article);
   const shareImage = getOptimizedShareImage(rawShareImage);

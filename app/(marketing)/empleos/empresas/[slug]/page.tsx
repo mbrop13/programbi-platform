@@ -8,6 +8,7 @@ import JobCard, { CompanyAvatar } from "@/components/empleos/JobCard";
 import { mapJobRow } from "@/lib/jobs/queries";
 import { COMPANY_SIZE_LABELS } from "@/lib/jobs/types";
 import { ogImageUrl } from "@/lib/og/url";
+import { tituloSeo } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
 
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!company) return { title: "Empresa no encontrada" };
   const description = company.description?.slice(0, 160) ?? `Vacantes abiertas en ${company.name}.`;
   return {
-    title: `${company.name} — Vacantes`,
+    title: { absolute: tituloSeo(`${company.name} — Vacantes`) },
     description,
     alternates: { canonical: `/empleos/empresas/${company.slug}` },
     openGraph: {

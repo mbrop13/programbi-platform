@@ -46,8 +46,9 @@ Nombres **exactos**. Parámetros custom en snake_case.
 | `click_registro` | Click que abre / lleva a registro | — |
 | `submit_registro` | Alta **exitosa** (email o Google nuevo). No se dispara en honeypot/bot ni en error. | — |
 | `generate_lead` | Misma conversión: signUp OK, insert de lead OK, o OAuth nuevo (`?reg_ok=1`). **Marcar generate_lead como evento clave en GA4 Admin.** | `method` (`form` \| `click`), `page_path`, `course_slug` (si hay) |
-| `click_whatsapp` | Click a `wa.me` / WhatsApp | `page_path` |
+| `click_whatsapp` | Click a `wa.me` / WhatsApp | `course` (slug), `country` (ISO), `page`; también `page_path` y `curso_slug` por compatibilidad |
 | `click_cotizar_empresas` | CTA “Pedir una propuesta” en empresas | — |
+| `quiz_complete` | Test de nivel completado (`/test-nivel/sql`, `/test-nivel/excel` y versiones por país) | `tema` (`sql` \| `excel`), `nivel` (`inicial` \| `basico` \| `intermedio` \| `avanzado`), `pais`, `aciertos`, `total` |
 
 ### `cta_id` (home)
 
@@ -77,7 +78,7 @@ Google OAuth de usuario nuevo redirige con `?reg_ok=1` (se limpia del URL al ins
    | Ir a un curso `/cursos/power-bi` (slug real) | `page_view` + `view_curso` (`curso_slug`) |
    | Click **Registrarse** / **Ver precio** en el curso | `click_registro` |
    | Completar registro (éxito) | `submit_registro` + `generate_lead` (`method=form`, `page_path`, `course_slug` si viene de un curso) |
-   | Click del botón verde de WhatsApp | `click_whatsapp` (`page_path`) |
+   | Click del botón verde de WhatsApp | `click_whatsapp` (`course`, `country`, `page`) |
    | Abrir `/empresas` | `view_empresas` |
    | Click **Pedir una propuesta** | `click_cotizar_empresas` |
 
@@ -105,6 +106,8 @@ No se usa `unsafe-eval` extra ni ambos GTM+gtag.
 - `components/shared/Navbar.tsx`, `AuthModal.tsx`, `WhatsAppButton.tsx`
 - `app/(auth)/registro/page.tsx`, `app/(auth)/login/page.tsx`
 - `app/(marketing)/cursos/[slug]/CourseDetailClient.tsx`
+- `app/(marketing)/test-nivel/[tema]/TestNivelClient.tsx` — `quiz_complete`
+- `lib/data/test-nivel/*` — preguntas, niveles y recomendación
 - `components/empresas/empresas-landing.tsx`, `empresas-contact-form.tsx`
 - `app/auth/callback/route.ts` — `reg_ok` en OAuth nuevo
 - `next.config.ts` — CSP

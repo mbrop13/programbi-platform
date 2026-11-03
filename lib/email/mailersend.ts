@@ -499,7 +499,7 @@ export async function sendPaymentConfirmation(params: {
   const { name, email, courses, orderId, totalPaid, paymentMethod } = params;
 
   // Intentar obtener las fechas reales desde Supabase
-  let activeSchedules: any[] = [];
+  let activeSchedules: ScheduleRow[] = [];
   try {
     const supabase = createAdminClient();
     const { data } = await supabase
@@ -508,7 +508,7 @@ export async function sendPaymentConfirmation(params: {
       .eq("is_active", true)
       .neq("course_slug", "comunidad")
       .order("start_date", { ascending: true });
-    if (data) activeSchedules = data;
+    if (data) activeSchedules = data as ScheduleRow[];
   } catch (err) {
     console.warn("No se pudieron cargar los horarios dinámicos para el email de confirmación, usando fallbacks.", err);
   }
@@ -546,7 +546,7 @@ export async function sendPaymentConfirmation(params: {
         </table>
         
         <div style="background-color: #F7F7F4; border-left: 3px solid #171716; border-radius: 8px; padding: 10px 14px; font-size: 11.5px; color: #5F5E59; line-height: 1.5; text-align: left;">
-          <strong style="color: #171716;">💡 Modalidad:</strong> Clases en vivo vía Zoom con acceso permanente a grabaciones en tu campus virtual. Te enviaremos el enlace y credenciales antes de iniciar.
+          <strong style="color: #171716;">💡 Modalidad:</strong> Clases en vivo vía Zoom con acceso permanente a grabaciones en el campus virtual externo. Nuestro equipo activa manualmente tu acceso a ese campus.
         </div>
       </div>
     `;
@@ -646,8 +646,8 @@ export async function sendPaymentConfirmation(params: {
                     <div style="width:22px;height:22px;background-color:#EBEBE6;border-radius:50%;color:#171716;text-align:center;line-height:22px;font-size:11px;font-weight:800;">1</div>
                   </td>
                   <td style="padding-bottom:14px;">
-                    <h4 style="margin:0 0 2px;font-size:13.5px;font-weight:800;color:#171716;">Espera la fecha de inicio</h4>
-                    <p style="margin:0;font-size:12.5px;color:#5F5E59;line-height:1.5;">Te enviaremos los accesos directos de Zoom e instrucciones antes de la primera sesión.</p>
+                    <h4 style="margin:0 0 2px;font-size:13.5px;font-weight:800;color:#171716;">Activación del acceso al campus</h4>
+                    <p style="margin:0;font-size:12.5px;color:#5F5E59;line-height:1.5;">Nuestro equipo activa manualmente tu acceso en el campus externo, distinto de esta plataforma.</p>
                   </td>
                 </tr>
                 <tr>
@@ -707,7 +707,7 @@ export async function sendPaymentConfirmation(params: {
     toName: name,
     subject: "🎉 ¡Inscripción exitosa! Tu lugar en ProgramBI está confirmado",
     html,
-    text: `¡Hola ${name}! Tu pago fue confirmado con éxito. ID Orden: ${orderId}. Cursos inscritos: ${courses.map(c => `${c.title} (${c.levelName})`).join(", ")}. Si tienes dudas escríbenos por WhatsApp al +56935409699`,
+    text: `¡Hola ${name}! Tu pago fue confirmado con éxito. ID Orden: ${orderId}. Cursos inscritos: ${courses.map(c => `${c.title} (${c.levelName})`).join(", ")}. La activación del acceso en el campus externo es manual por nuestro equipo. Si tienes dudas escríbenos por WhatsApp al +56935409699`,
   });
 }
 
@@ -725,7 +725,7 @@ export async function sendNewPurchaseNotificationToAdmin(params: {
   const { name, email, phone, courses, orderId, totalPaid, paymentMethod, adminEmail } = params;
 
   // Intentar obtener las fechas reales desde Supabase
-  let activeSchedules: any[] = [];
+  let activeSchedules: ScheduleRow[] = [];
   try {
     const supabase = createAdminClient();
     const { data } = await supabase
@@ -734,7 +734,7 @@ export async function sendNewPurchaseNotificationToAdmin(params: {
       .eq("is_active", true)
       .neq("course_slug", "comunidad")
       .order("start_date", { ascending: true });
-    if (data) activeSchedules = data;
+    if (data) activeSchedules = data as ScheduleRow[];
   } catch (err) {
     console.warn("Could not load schedules for admin notification:", err);
   }

@@ -6,16 +6,19 @@ import Programs from "@/components/marketing/Programs";
 import Team from "@/components/marketing/Team";
 import Quote from "@/components/marketing/Quote";
 import FaqSection from "@/components/marketing/FaqSection";
+import CountryContent from "@/components/marketing/CountryContent";
 import HomeDeferred from "@/components/marketing/HomeDeferred";
 import { homeFaqs } from "@/lib/data/site";
+import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { courses } from "@/lib/data/courses";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import { SITE_URL, absoluteUrl, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
-import { normalizarPais } from "@/config/paises";
+import { getPais, normalizarPais } from "@/config/paises";
 import { textosPreciosLocales } from "@/lib/paises/detalle-curso";
+import { localizarMercado } from "@/lib/paises/precios";
 import { hreflangDe } from "@/lib/paises/rutas";
 
 export const revalidate = 3600;
@@ -39,15 +42,7 @@ export const metadata: Metadata = {
   },
 };
 
-const faqJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: homeFaqs.map((faq) => ({
-    "@type": "Question",
-    name: faq.q,
-    acceptedAnswer: { "@type": "Answer", text: faq.a },
-  })),
-};
+const faqJsonLdBase = { "@context": "https://schema.org", "@type": "FAQPage" };
 
 export default async function HomePage({
   params,
@@ -56,11 +51,26 @@ export default async function HomePage({
 }) {
   const { pais: raw } = await params;
   const pais = normalizarPais(raw);
+  const contenido = getContenidoPais(pais);
+  const faqs = contenido
+    ? contenido.faqs
+    : homeFaqs.map((faq) => ({
+        q: localizarMercado(faq.q, pais),
+        a: localizarMercado(faq.a, pais),
+      }));
+  const faqJsonLd = {
+    ...faqJsonLdBase,
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: { "@type": "Answer", text: faq.a },
+    })),
+  };
   const schedules = (await getActiveSchedules()) as CourseSchedule[];
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(faqJsonLd) }} />
-      <HeroSection pais={pais} />
+      <HeroSection pais={pais} contenido={contenido} />
       <LogoSlider />
       <Metrics />
       <Programs
@@ -77,9 +87,13 @@ export default async function HomePage({
           levelsCount: publicLevelCount(c),
         }))}
       />
+      {contenido ? <CountryContent contenido={contenido} /> : null}
       <Team />
       <Quote />
-      <FaqSection />
+      <FaqSection
+        faqs={faqs}
+        titulo={contenido ? `Preguntas frecuentes en ${getPais(pais).nombre}` : undefined}
+      />
       <HomeDeferred />
     </>
   );

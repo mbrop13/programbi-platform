@@ -16,7 +16,11 @@ Canonical host: `https://www.programbi.com`. No se tocó capacitaciones.programb
 | `/implementacion-power-bi` | Implementación Power BI Chile \| Pack Adopción BI | implementación Power BI Chile |
 | `/migrar-excel-a-power-bi` | Migrar Excel a Power BI Chile \| Control de gestión | migrar Excel a Power BI, control de gestión |
 | `/por-que-fallan-proyectos-power-bi` | Por qué fallan los proyectos Power BI \| ProgramBI | adopción Power BI (no el dashboard) |
+| `/curso-power-bi` | Curso Power BI Chile \| Plantilla de ventas gratis | curso power bi chile, plantilla power bi |
+| `/{pais}/curso-power-bi` | mismo title localizado por país | curso power bi Argentina / México / Perú / Colombia / Uruguay |
 | `/curso-power-bi-vs-pack-adopcion` | Curso Power BI vs Pack Adopción Chile \| ProgramBI | curso vs in-company |
+| `/curso-sql-online` | Curso SQL online en vivo en Chile \| ProgramBI | curso sql online, curso sql server chile |
+| `/curso-python` | Curso Python para datos online en Chile \| ProgramBI | curso python datos, curso python chile |
 | `/power-bi-mineria-chile` | Power BI para minería en Chile \| ProgramBI | Power BI minería Chile |
 
 ## Técnico (código)
@@ -25,9 +29,17 @@ Canonical host: `https://www.programbi.com`. No se tocó capacitaciones.programb
 - Apex `programbi.com` → www en `proxy.ts`, `next.config.ts` y `vercel.json` (301).
 - Sitemap: money pages 0.85–0.95; minería al mismo nivel que Power BI / análisis; blog 0.25; vanity (`/gran-partido`) 0.1. Posts CMS de blog no van al sitemap.
 - robots.txt: sitemap www; disallow app/admin/referidos privados.
-- JSON-LD: Organization + WebSite (layout); FAQPage + Service en `/empresas`; Course (sin AggregateRating inventado) + FAQ en fichas money; Article en guías.
+- JSON-LD: Organization + WebSite (layout); FAQPage + Service en `/empresas`; Course (sin AggregateRating inventado) + FAQ en fichas money; Course + Offer + FAQPage en las landings Power BI por país; Article en guías.
+- Landings `/curso-sql-online` y `/curso-python`: Course + Offer + FAQPage + BreadcrumbList, con canonical y hreflang propios por país.
 - “Fecha por confirmar”: no se usa. Fallback: “Cupos abiertos — consulta fecha”.
 - Métricas 0+ / ratings 4.9 inventados: no en money pages. Home usa prueba cualitativa (factura directa / Chile / cursos), no contadores.
+
+## Landings Power BI por país (P9)
+
+- Rutas: `/curso-power-bi` (Chile) y `/{ar,mx,pe,co,uy}/curso-power-bi`. H1 propio con el país, precio en la moneda local (catálogo CLP en Chile), horario convertido a la zona del país, casos de uso por industria y FAQ de mercado (más la pregunta de nivel).
+- Canonical y hreflang salen de `metadataLocal`/`hreflangDe`; las rutas indexables están en `app/sitemap.ts`.
+- **Contenido local:** los casos de uso por industria y el FAQ de mercado de Argentina, México, Perú, Colombia y Uruguay salen de `getContenidoPais` (`lib/data/contenido-paises`). Chile mantiene el FAQ armado con su configuración. No se inventan casos de clientes ni cifras de resultados.
+- Plantilla: el CSV pide email, guarda en `leads_magnet` vía `app/api/leads-magnet` y dispara `download_template`. La migración `20261102000000_leads_magnet.sql` está creada pero **no aplicada**. Falta la variante `.pbix`.
 
 ## Blog vanity
 

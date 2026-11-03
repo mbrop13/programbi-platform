@@ -28,7 +28,6 @@ function uniqueEntries(entries: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
     const url = sitemapLoc(entry.url);
     if (!url || seen.has(url)) continue;
     if (url !== SITE_URL && !url.startsWith(`${SITE_URL}/`)) continue;
-    if (isVanityBlogPost(url, url, url)) continue;
     seen.add(url);
     out.push({ ...entry, url });
   }
@@ -98,10 +97,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      url: loc("/curso-power-bi"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.85,
+    },
+    {
       url: loc("/curso-power-bi-vs-pack-adopcion"),
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.8,
+    },
+    {
+      url: loc("/curso-sql-online"),
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.85,
+    },
+    {
+      url: loc("/curso-python"),
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.85,
     },
     {
       url: loc("/power-bi-mineria-chile"),
@@ -114,6 +131,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.85,
+    },
+    {
+      url: loc("/precios"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.85,
+    },
+    {
+      url: loc("/test-nivel/sql"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: loc("/test-nivel/excel"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.7,
     },
     {
       url: loc("/nosotros"),
@@ -233,8 +268,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/implementacion-power-bi", priority: 0.9, changeFrequency: "monthly" },
     { path: "/migrar-excel-a-power-bi", priority: 0.9, changeFrequency: "monthly" },
     { path: "/por-que-fallan-proyectos-power-bi", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/curso-power-bi", priority: 0.85, changeFrequency: "monthly" },
     { path: "/curso-power-bi-vs-pack-adopcion", priority: 0.8, changeFrequency: "monthly" },
+    { path: "/curso-sql-online", priority: 0.85, changeFrequency: "weekly" },
+    { path: "/curso-python", priority: 0.85, changeFrequency: "weekly" },
     { path: "/cursos", priority: 0.85, changeFrequency: "weekly" },
+    { path: "/precios", priority: 0.85, changeFrequency: "monthly" },
+    { path: "/test-nivel/sql", priority: 0.7, changeFrequency: "monthly" },
+    { path: "/test-nivel/excel", priority: 0.7, changeFrequency: "monthly" },
     { path: "/nosotros", priority: 0.5, changeFrequency: "monthly" },
     { path: "/faq", priority: 0.5, changeFrequency: "monthly" },
     ...courses.map((course) => ({
@@ -244,8 +285,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  // Solo las versiones indexables: Chile (raíz), Argentina, México, Perú,
-  // Colombia y Uruguay. El resto de países queda en noindex y fuera del sitemap.
+  // Chile (raíz) ya está en staticPages. Aquí solo se agregan las carpetas
+  // indexables: Argentina, México, Perú, Colombia y Uruguay. uniqueEntries()
+  // descarta cualquier URL repetida.
   const countryPages: MetadataRoute.Sitemap = PAISES_CARPETA.filter((pais) => pais.indexable).flatMap(
     (pais) =>
       localizedPaths.map((item) => ({

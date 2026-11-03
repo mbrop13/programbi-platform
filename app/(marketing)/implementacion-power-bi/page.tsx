@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import SeoGuide from "@/components/marketing/SeoGuide";
+import CountryContext from "@/components/marketing/CountryContext";
+import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { SITE_URL, absoluteUrl, breadcrumbJsonLd, jsonLdString, pageOg } from "@/lib/seo";
-import { normalizarPais } from "@/config/paises";
+import { getPais, normalizarPais } from "@/config/paises";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 
@@ -49,6 +51,7 @@ export default async function Page({
   params: Promise<{ pais?: string }>;
 }) {
   const pais = normalizarPais((await params).pais);
+  const contenido = getContenidoPais(pais);
   const L = (texto: string) => localizarMercado(texto, pais);
   const href = (destino: string) => rutaLocal(pais, destino);
   const jsonLd = {
@@ -86,7 +89,7 @@ export default async function Page({
         lead="No entregamos un archivo y desaparecemos. Armamos dashboards con tus datos y capacitamos al área para mantenerlos."
         pagePath={href(path)}
         empresasHref={href("/empresas")}
-        nota={pais === "cl" ? undefined : `[PENDIENTE CONTENIDO ${pais.toUpperCase()}]`}
+        nota={pais === "cl" ? undefined : contenido?.mercado.facturacion}
         crumbs={[
           { href: href("/"), label: "Inicio" },
           { href: href("/empresas"), label: "Empresas" },
@@ -108,6 +111,12 @@ export default async function Page({
           { href: href("/migrar-excel-a-power-bi"), label: "Migrar Excel a Power BI" },
         ]}
       />
+      {contenido ? (
+        <CountryContext
+          contenido={contenido}
+          titulo={`Implementación y adopción en ${getPais(pais).nombre}`}
+        />
+      ) : null}
     </>
   );
 }

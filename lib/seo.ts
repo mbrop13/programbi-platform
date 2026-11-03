@@ -4,6 +4,32 @@ import { ogImageUrl } from "@/lib/og/url";
 export const CANONICAL_HOST = "www.programbi.com";
 export const SITE_URL = `https://${CANONICAL_HOST}`;
 
+/** Tope de Google para el <title> completo, marca incluida. */
+export const TITLE_MAX = 60;
+export const TITLE_SUFFIX = " | ProgramBI";
+
+/**
+ * Arma un título final de hasta 60 caracteres con la marca al final.
+ * Si el texto ya trae "| ProgramBI", no lo duplica.
+ */
+export function tituloSeo(texto: string, max = TITLE_MAX): string {
+  const limpio = (texto || "").replace(/\s+/g, " ").trim();
+  if (!limpio) return TITLE_SUFFIX.trim();
+  const conMarcaYa = / \| ProgramBI$/i.test(limpio);
+  const base = conMarcaYa ? limpio.replace(/ \| ProgramBI$/i, "") : limpio;
+  const completo = `${base}${TITLE_SUFFIX}`;
+  if (completo.length <= max) return completo;
+
+  const disponible = Math.max(1, max - TITLE_SUFFIX.length);
+  let corte = base.slice(0, disponible).trim();
+  const ultimoEspacio = corte.lastIndexOf(" ");
+  if (ultimoEspacio >= Math.floor(disponible * 0.6)) {
+    corte = corte.slice(0, ultimoEspacio);
+  }
+  corte = corte.replace(/[\s:;,.\-–—|]+$/, "");
+  return `${corte || base.slice(0, disponible)}${TITLE_SUFFIX}`;
+}
+
 /** Path for <link rel="canonical">: no query, no hash. */
 export function canonicalPath(path = "/"): string {
   const stripped = (path.split("#")[0] ?? "/").split("?")[0] ?? "/";

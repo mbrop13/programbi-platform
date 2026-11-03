@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import FaqClient from "./FaqClient";
 import { ogImageUrl } from "@/lib/og/url";
 import { jsonLdString, twitterShare } from "@/lib/seo";
+import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { normalizarPais } from "@/config/paises";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
@@ -103,13 +103,22 @@ const FAQ_DATA = [
 ];
 
 function preguntasDe(pais: string) {
+  const contenido = getContenidoPais(pais);
+  if (contenido) {
+    return contenido.faqs.map((faq) => ({
+      question: faq.q,
+      answer: faq.a,
+      category: faq.categoria,
+    }));
+  }
   if (pais === "cl") return FAQ_DATA;
   return FAQ_DATA.map((item) => {
     if (item.question.startsWith("¿Tienen capacitaciones SENCE")) {
       return {
         ...item,
-        question: `¿Hay un crédito fiscal para capacitación en ${localizarMercado("Chile", pais)}?`,
-        answer: `[PENDIENTE CONTENIDO ${pais.toUpperCase()}]`,
+        question: `¿Cómo se factura una capacitación en ${localizarMercado("Chile", pais)}?`,
+        answer:
+          "La facturación y las condiciones de la capacitación se confirman con el equipo de admisiones antes de la inscripción.",
       };
     }
     if (item.question.startsWith("¿Qué métodos de pago")) {

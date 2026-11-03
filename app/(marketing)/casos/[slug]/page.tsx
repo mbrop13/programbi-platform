@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Globe, Award, CheckCircle, ArrowUpRight, BarChart } from "lucide-react";
 import { casesOfUse } from "@/lib/data/cases";
 import { ogImageUrl } from "@/lib/og/url";
+import { tituloSeo } from "@/lib/seo";
 
 interface PageProps {
   params: Promise<{
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!currentCase) return { title: "Caso no encontrado" };
 
   return {
-    title: currentCase.fullTitle,
+    title: { absolute: tituloSeo(currentCase.title) },
     description: currentCase.description,
     alternates: { canonical: `/casos/${slug}` },
     openGraph: {

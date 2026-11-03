@@ -32,12 +32,17 @@ export default function FaqClient({ faqItems }: { faqItems: FaqItem[] }) {
     });
   }, [faqItems, searchQuery, activeCategory]);
 
+  const categories = useMemo(
+    () => CATEGORIES.filter((cat) => cat.value === "all" || faqItems.some((item) => item.category === cat.value)),
+    [faqItems]
+  );
+
   return (
     <main className="px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
       <div className="mx-auto max-w-[860px]">
         <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">Preguntas frecuentes</h1>
         <p className="mt-4 max-w-[40rem] text-base leading-relaxed text-mute">
-          Dudas sobre clases, certificados, pagos y capacitaciones para empresas.
+          Dudas sobre clases, certificados, pagos y el día a día del curso.
         </p>
 
         <div className="relative mt-8">
@@ -52,7 +57,7 @@ export default function FaqClient({ faqItems }: { faqItems: FaqItem[] }) {
         </div>
 
         <div className="mt-6 flex flex-wrap gap-2">
-          {CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <button
               key={cat.value}
               type="button"

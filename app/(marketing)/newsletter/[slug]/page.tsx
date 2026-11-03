@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getArticleBySlug, getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 import { getOptimizedShareImage } from "@/lib/utils";
 import { ogImageUrl } from "@/lib/og/url";
+import { tituloSeo } from "@/lib/seo";
 import ArticleClient from "./ArticleClient";
 
 export const revalidate = 3600; // Cache on CDN for 1 hour
@@ -13,7 +14,15 @@ interface PageProps {
   params: Params;
 }
 
-function getArticlePoster(article: any): string {
+type ArticlePoster = {
+  title: string;
+  slug: string;
+  excerpt?: string | null;
+  content?: string | null;
+  cover_image?: string | null;
+};
+
+function getArticlePoster(article: ArticlePoster | null): string {
   if (!article) return "/default-og.png";
   
   if (article.content) {
@@ -51,7 +60,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const shareImage = getOptimizedShareImage(rawShareImage);
 
   return {
-    title: `${article.title} — Newsletter ProgramBI`,
+    title: { absolute: tituloSeo(`${article.title} — Newsletter`) },
     description: article.excerpt || article.title,
     alternates: { canonical: `/newsletter/${slug}` },
     openGraph: {
@@ -79,7 +88,7 @@ export default async function ArticlePage({ params }: PageProps) {
 
   // Fetch related articles (limit to 3, excluding current)
   const allArticles = await getPublishedArticles(article.category);
-  const related = allArticles.filter((a: any) => a.slug !== slug).slice(0, 3);
+  const related = allArticles.filter((a) => a.slug !== slug).slice(0, 3);
 
   return <ArticleClient slug={slug} initialArticle={article} initialRelated={related} />;
 }

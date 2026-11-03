@@ -5,9 +5,10 @@ import { createClient } from "@/lib/supabase/server";
 import PagoClient from "./PagoClient";
 import { estadosPublicos } from "@/lib/paises/cobro";
 import { getCheckoutCatalog } from "@/lib/pago/catalogo";
+import { tituloSeo } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: "Inscripción | ProgramBI",
+  title: { absolute: tituloSeo("Inscripción") },
   description: "Selecciona tus cursos, revisa fechas disponibles y completa tu inscripción en ProgramBI.",
   alternates: { canonical: "/pago" },
 };

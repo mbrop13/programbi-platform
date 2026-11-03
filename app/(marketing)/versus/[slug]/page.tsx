@@ -4,6 +4,7 @@ import Link from "next/link";
 import { getComparisonBySlug, comparisons } from "@/lib/data/comparisons";
 import { courses } from "@/lib/data/courses";
 import { ogImageUrl } from "@/lib/og/url";
+import { tituloSeo } from "@/lib/seo";
 import { 
   ArrowLeft, 
   ChevronRight, 
@@ -34,7 +35,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!comp) return { title: "Comparativa no encontrada" };
 
   return {
-    title: comp.seoTitle,
+    title: { absolute: tituloSeo(comp.seoTitle) },
     description: comp.seoDescription,
     alternates: {
       canonical: `/versus/${slug}`,

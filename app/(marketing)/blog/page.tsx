@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import { getPublishedArticles } from "@/lib/supabase/comunidad-ai";
 import BlogClient from "./BlogClient";
 import { ogImageUrl } from "@/lib/og/url";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, tituloSeo } from "@/lib/seo";
 import { blogIcpScore } from "@/lib/seo/money";
 
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Blog — Recursos y artículos de análisis de datos",
+  title: { absolute: tituloSeo("Blog — Recursos de análisis de datos") },
   description:
     "Artículos, tutoriales y guías prácticas sobre Power BI, SQL, Python, Machine Learning y análisis de datos. Contenido técnico y actualizado por expertos de ProgramBI.",
   alternates: { canonical: absoluteUrl("/blog") },
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  const articles = (await getPublishedArticles()).slice().sort((a: any, b: any) => {
+  const articles = (await getPublishedArticles()).slice().sort((a, b) => {
     const byIcp =
       blogIcpScore(b.title, b.excerpt, b.slug, b.category) -
       blogIcpScore(a.title, a.excerpt, a.slug, a.category);
@@ -75,7 +75,7 @@ export default async function BlogPage() {
       url: "https://www.programbi.com",
       "@id": "https://www.programbi.com/#organization",
     },
-    blogPost: articles.map((a: any) => ({
+    blogPost: articles.map((a) => ({
       "@type": "BlogPosting",
       headline: a.title,
       description: a.excerpt,

@@ -6,9 +6,9 @@ import CourseImage from "@/components/shared/CourseImage";
 import { CourseCohortFacts } from "@/components/marketing/CourseCohortStrip";
 import FeaturedCourseStrip from "@/components/marketing/FeaturedCourseStrip";
 import { Clock, Search } from "lucide-react";
+import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
 import { type CourseSchedule } from "@/lib/data/course-schedules";
-import { WA_URL } from "@/lib/data/site";
 import { usePaisRuta, useRutaLocal } from "@/lib/paises/cliente";
 import { zonaDe } from "@/lib/paises/horarios";
 
@@ -136,8 +136,11 @@ export default function CursosPageClient({
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     if (reduce) {
+      // Reduced motion: sync the static prompt once, without the typewriter animation.
+      /* eslint-disable react-hooks/set-state-in-effect */
       setTypedLine(prompt.line);
       setTypedWord(prompt.word);
+      /* eslint-enable react-hooks/set-state-in-effect */
       const id = window.setTimeout(() => {
         setPromptIndex((current) => (current + 1) % SEARCH_PROMPTS.length);
       }, 5600);
@@ -380,15 +383,32 @@ export default function CursosPageClient({
                 >
                   Capacitación para empresas
                 </Link>
-                <a
-                  href={WA_URL}
+                <WhatsAppCta
+                  page="/cursos"
+                  intent="general"
                   className="inline-flex h-11 items-center rounded-full border border-line bg-paper px-6 text-sm font-semibold text-ink no-underline"
                 >
-                  Contactar
-                </a>
+                  Contactar por WhatsApp
+                </WhatsAppCta>
               </div>
             </div>
           )}
+
+          <div className="flex flex-col gap-4 rounded-[26px] border border-line bg-paper px-6 py-6 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-lg font-semibold tracking-tight text-ink">¿No sabes qué curso elegir?</p>
+              <p className="mt-1 text-sm leading-relaxed text-mute">
+                Cuéntanos tu objetivo y te recomendamos el nivel y la fecha que te sirven.
+              </p>
+            </div>
+            <WhatsAppCta
+              page="/cursos"
+              intent="general"
+              className="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline transition-transform active:scale-[0.98]"
+            >
+              Hablar por WhatsApp
+            </WhatsAppCta>
+          </div>
         </div>
       </section>
     </>
