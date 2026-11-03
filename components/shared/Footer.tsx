@@ -17,6 +17,7 @@ const socialLinks = [
 
 const companyLinks = [
   { label: "Ver Cursos", href: "/cursos" },
+  { label: "Precios", href: "/precios" },
   { label: "Empresas", href: "/empresas" },
   { label: "Referidos", href: "/referidos" },
   { label: "Bolsa de Trabajo", href: "/empleos" },

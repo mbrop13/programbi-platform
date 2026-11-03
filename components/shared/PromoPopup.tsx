@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, ArrowRight, Zap, Clock, Shield, Users, Star, TrendingUp } from "lucide-react";
+import { X, ArrowRight, Zap, Shield, Users, Star, TrendingUp } from "lucide-react";
 import { getActivePopups } from "@/lib/supabase/comunidad-ai";
 import { createClient } from "@/lib/supabase/client";
 import { sanitizeHtml } from "@/lib/security/sanitize";
@@ -180,9 +180,9 @@ export default function PromoPopup() {
   const color = visiblePopup.accent_color || "#1890FF";
   const isDiscount = visiblePopup.popup_type === "discount";
 
-  // Parse prices from description if discount (format: "Antes $249.000 — ahora solo $149.400")
-  let oldPrice = "$249.000";
-  let newPrice = "$149.400";
+  // Parse only prices explicitly supplied in the admin popup description.
+  let oldPrice: string | null = null;
+  let newPrice: string | null = null;
   let cleanDescription = visiblePopup.description || "";
   
   if (isDiscount && visiblePopup.description) {
@@ -293,7 +293,7 @@ export default function PromoPopup() {
                 </motion.p>
 
                 {/* Price section for discounts */}
-                {isDiscount && (
+                {isDiscount && oldPrice && newPrice && (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -302,15 +302,9 @@ export default function PromoPopup() {
                     style={{ background: `linear-gradient(135deg, ${color}08, transparent)` }}
                   >
                     <div className="text-[10px] font-bold text-white/30 uppercase tracking-[0.15em] mb-1.5">
-                      Precio promocional
+                      Precio actual
                     </div>
                     <PriceDisplay oldPrice={oldPrice} newPrice={newPrice} color={color} />
-                    <div className="flex items-center gap-2 mt-2 text-white/30">
-                      <Clock className="w-3 h-3 animate-pulse" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider">
-                        Oferta por tiempo limitado
-                      </span>
-                    </div>
                   </motion.div>
                 )}
 

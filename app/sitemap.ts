@@ -28,7 +28,6 @@ function uniqueEntries(entries: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
     const url = sitemapLoc(entry.url);
     if (!url || seen.has(url)) continue;
     if (url !== SITE_URL && !url.startsWith(`${SITE_URL}/`)) continue;
-    if (isVanityBlogPost(url, url, url)) continue;
     seen.add(url);
     out.push({ ...entry, url });
   }
@@ -113,6 +112,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: loc("/cursos"),
       lastModified: now,
       changeFrequency: "weekly",
+      priority: 0.85,
+    },
+    {
+      url: loc("/precios"),
+      lastModified: now,
+      changeFrequency: "monthly",
       priority: 0.85,
     },
     {
@@ -235,6 +240,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/por-que-fallan-proyectos-power-bi", priority: 0.8, changeFrequency: "monthly" },
     { path: "/curso-power-bi-vs-pack-adopcion", priority: 0.8, changeFrequency: "monthly" },
     { path: "/cursos", priority: 0.85, changeFrequency: "weekly" },
+    { path: "/precios", priority: 0.85, changeFrequency: "monthly" },
     { path: "/nosotros", priority: 0.5, changeFrequency: "monthly" },
     { path: "/faq", priority: 0.5, changeFrequency: "monthly" },
     ...courses.map((course) => ({
@@ -244,8 +250,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  // Solo las versiones indexables: Chile (raíz), Argentina, México, Perú,
-  // Colombia y Uruguay. El resto de países queda en noindex y fuera del sitemap.
+  // Chile (raíz) ya está en staticPages. Aquí solo se agregan las carpetas
+  // indexables: Argentina, México, Perú, Colombia y Uruguay. uniqueEntries()
+  // descarta cualquier URL repetida.
   const countryPages: MetadataRoute.Sitemap = PAISES_CARPETA.filter((pais) => pais.indexable).flatMap(
     (pais) =>
       localizedPaths.map((item) => ({

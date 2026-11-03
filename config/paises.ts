@@ -63,7 +63,7 @@ function precios(normal: number, analisis: number): PreciosCurso {
 }
 
 /**
- * Precio tachado. En Chile un curso vale 249.000 y Análisis de datos 747.000 (el triple).
+ * Precio de lista. En Chile el curso estándar lista 249.000 (referencia comercial: 169.000) y Análisis de datos lista 747.000.
  * `normal` es ese original local. Análisis de datos queda en normal × 3.
  */
 function listas(normal: number): PreciosCurso {
@@ -118,7 +118,7 @@ export type Pais = {
   pago: PagoPais;
   /** Lo que se cobra. Chile usa el catálogo y la promo del admin. */
   precios: PreciosCurso | "catalogo";
-  /** Precio tachado. Chile lo arma el catálogo (249.000 y 747.000). */
+  /** Precio de lista. Chile lo arma el catálogo; no es el precio comercial efectivo. */
   listas: PreciosCurso | "catalogo";
   dispositivo: "computador" | "computadora";
   /** Voseo solo en titulares y botones. */
@@ -241,7 +241,7 @@ export const PAISES: Pais[] = [
     locale: "es-CR",
     decimales: 2,
     pago: "usd-chile",
-    // 87% del básico chileno: USD 149. Análisis 299, el doble al corte de 99→199.
+    // Importes fijos para Costa Rica; no se derivan del precio chileno.
     precios: precios(149, 299),
     listas: listas(220),
     dispositivo: "computadora",

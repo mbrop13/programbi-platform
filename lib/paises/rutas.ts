@@ -4,6 +4,7 @@ import { absoluteUrl } from "@/lib/seo";
 /** Rutas con versión por país. El resto (blog, empleos, comunidad, pago) no lleva carpeta. */
 const RAICES = [
   "/cursos",
+  "/precios",
   "/empresas",
   "/faq",
   "/nosotros",

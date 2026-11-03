@@ -142,7 +142,9 @@ export async function POST(req: NextRequest) {
         grandTotalClp += bumpAddTotal;
     }
 
-    const baseClp = grandTotalClp;
+    // Datos del cupón que también necesita el cobro en moneda local.
+    let cuponPct = 0;
+    let cuponStacking = false;
 
     // Apply coupon discount if present
     if (couponCode) {
@@ -152,10 +154,17 @@ export async function POST(req: NextRequest) {
       if (!couponRes.valid) {
         return NextResponse.json({ error: couponRes.message || "Cupón inválido" }, { status: 400 });
       }
+
+      cuponPct = Number(couponRes.discount_percentage) || 0;
+      cuponStacking = !!couponRes.allow_stacking;
+
+      // Sin stacking, un cupón sobre un carrito ya promocionado no descuenta
+      // nada: el cliente pagaría el precio completo creyendo que lo usó.
+      if (!cuponStacking && validatedItems.length > 0 && validatedItems.every((item) => item.hasPromoDiscount === true)) {
+        return NextResponse.json({ error: "Este cupón no se puede aplicar porque los cursos del carrito ya tienen descuento." }, { status: 400 });
+      }
       
-      const allowStacking = !!couponRes.allow_stacking;
-      
-      if (allowStacking) {
+      if (cuponStacking) {
         const discountMultiplier = 1 - (couponRes.discount_percentage / 100);
         grandTotalClp = Math.floor(grandTotalClp * discountMultiplier);
       } else {
@@ -174,10 +183,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Sin token del país, se cobra el total en CLP con la cuenta de Chile.
-    // Con MERCADOPAGO_ACCESS_TOKEN_<PAIS>, el mismo carrito sale en la moneda local.
+    // Con MERCADOPAGO_ACCESS_TOKEN_<PAIS>, se cobra el importe fijo configurado
+    // para ese país, sin derivarlo desde una promoción o descuento chileno.
+    // El cupón sí se traslada: se aplica la misma regla sobre la tabla local.
     const pais = typeof body.pais === "string" ? body.pais : "cl";
     const { resolverCobro } = await import("@/lib/paises/cobro");
-    const { totalLocal } = await import("@/lib/paises/precios");
+    const { totalLocal, totalLocalConCupon } = await import("@/lib/paises/precios");
     const cobro = resolverCobro(pais);
     let chargeAmount = grandTotalClp;
     let chargeCurrency = "CLP";
@@ -189,11 +200,26 @@ export async function POST(req: NextRequest) {
         validatedItems.map((item) => ({ slug: item.slug, quantity: item.quantity }))
       );
       if (local != null) {
-        const ratio = baseClp > 0 ? grandTotalClp / baseClp : 1;
-        chargeAmount = Math.max(1, Math.round(local * ratio));
-        chargeCurrency = cobro.moneda;
-        chargeToken = cobro.token;
-        chargeCuenta = cobro.cuenta;
+        // El importe local es la tabla fija. Si hay cupón, se replica la misma
+        // regla que en CLP (stacking global o solo ítems sin promo), nunca la
+        // promoción ni el plan chilenos.
+        const localConCupon = totalLocalConCupon(
+          pais,
+          validatedItems.map((item) => ({
+            slug: item.slug,
+            quantity: item.quantity,
+            conPromo: item.hasPromoDiscount,
+          })),
+          cuponPct > 0 ? { pct: cuponPct, stacking: cuponStacking } : null
+        );
+        // Si no se puede calcular en moneda local, se mantiene el cobro en CLP
+        // con la cuenta de Chile (chargeAmount ya vale grandTotalClp).
+        if (localConCupon != null) {
+          chargeAmount = localConCupon;
+          chargeCurrency = cobro.moneda;
+          chargeToken = cobro.token;
+          chargeCuenta = cobro.cuenta;
+        }
       }
     }
 

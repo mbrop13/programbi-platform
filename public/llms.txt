@@ -13,6 +13,13 @@
 - [Analítica financiera](https://www.programbi.com/cursos/analitica-financiera)
 - [Curso para el mercado financiero con Python Power BI y SQL](https://www.programbi.com/cursos/mercado-financiero)
 
+## Precios
+
+- [Precios de cursos en Chile](https://www.programbi.com/precios)
+- Power BI en Chile: CLP $169.000 es el precio comercial de referencia; CLP $249.000 es el precio de lista.
+- Precios por país: [Argentina](https://www.programbi.com/ar/precios), [México](https://www.programbi.com/mx/precios), [Perú](https://www.programbi.com/pe/precios), [Colombia](https://www.programbi.com/co/precios) y [Uruguay](https://www.programbi.com/uy/precios).
+- Los importes de Argentina, México, Perú, Colombia y Uruguay salen de tablas locales fijas y no se calculan desde el precio chileno.
+
 ## Empresas
 
 - [Capacitación para empresas](https://www.programbi.com/empresas)

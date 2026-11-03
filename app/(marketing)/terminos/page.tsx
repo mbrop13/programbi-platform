@@ -94,7 +94,7 @@ export default function TerminosPage() {
           <section>
             <h2 className="text-xl font-bold text-[#0F172A] mb-3 font-display">5. Precios y Condiciones de Pago</h2>
             <p>
-              Los precios de los cursos y membresías están expresados en pesos chilenos (CLP) o dólares estadounidenses (USD) según corresponda. Nos reservamos el derecho de modificar las tarifas en cualquier momento, lo cual no afectará a los servicios ya contratados y pagados.
+              Los precios de los cursos se muestran en la moneda indicada en la página de precios del país correspondiente. El monto y la moneda aplicables se confirman en el checkout. Nos reservamos el derecho de modificar las tarifas en cualquier momento, lo cual no afectará a los servicios ya contratados y pagados.
             </p>
             <p>
               Los pagos se procesan de forma segura a través de la pasarela de pagos integrada <strong>Flow.cl</strong> o <strong>Mercado Pago</strong>. ProgramBI no almacena ni tiene acceso a los datos de tus tarjetas de crédito o débito.

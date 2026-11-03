@@ -48,10 +48,10 @@ export function muestraPrecioLocal(iso: string | null | undefined): boolean {
   return getPais(normalizarPais(iso)).pago === "mp";
 }
 
-/** Nota junto al precio local mientras el cobro siga en la cuenta de Chile. */
+/** Nota cuando el checkout usa la cuenta de Chile y cobra en CLP. */
 export function notaCobroClp(montoClp: number): string {
   const numero = new Intl.NumberFormat("es-CL", { maximumFractionDigits: 0 }).format(montoClp);
-  return `Se cobra en pesos chilenos (CLP $${numero}), equivalente aprox.`;
+  return `Si el pago local no está disponible, el checkout cobra CLP $${numero}.`;
 }
 
 /**
@@ -82,4 +82,47 @@ export function totalLocal(
     total += unitario * (item.quantity || 1);
   }
   return total > 0 ? total : null;
+}
+
+export type CuponLocal = { pct: number; stacking: boolean };
+
+/**
+ * Total en moneda local con cupón. La usan el checkout (servidor) y el
+ * resumen de pago (cliente) para que ambos cobren con la misma fórmula.
+ * Devuelve null cuando no se puede cobrar local.
+ */
+export function totalLocalConCupon(
+  iso: string,
+  items: { slug: string; quantity: number; conPromo: boolean }[],
+  cupon: CuponLocal | null
+): number | null {
+  if (items.length === 0) return null;
+
+  const subtotales: { subtotal: number; conPromo: boolean }[] = [];
+  let total = 0;
+  for (const item of items) {
+    if (item.slug === "asesoria") return null;
+    const unitario = precioCurso(iso, item.slug);
+    if (unitario == null) return null;
+    const subtotal = unitario * item.quantity;
+    if (!Number.isFinite(subtotal)) return null;
+    subtotales.push({ subtotal, conPromo: item.conPromo === true });
+    total += subtotal;
+  }
+
+  // Sin cupón: se cobra la suma completa.
+  if (cupon == null || cupon.pct <= 0) return total;
+
+  // Con stacking el cupón se aplica sobre el total ya promocionado.
+  if (cupon.stacking === true) {
+    const conDescuento = Math.floor(total * (1 - cupon.pct / 100));
+    return Number.isFinite(conDescuento) ? Math.max(1, conDescuento) : null;
+  }
+
+  // Sin stacking: los ítems en promo mantienen su subtotal completo.
+  let resultado = 0;
+  for (const { subtotal, conPromo } of subtotales) {
+    resultado += conPromo ? subtotal : Math.floor(subtotal * (1 - cupon.pct / 100));
+  }
+  return Number.isFinite(resultado) ? Math.max(1, resultado) : null;
 }

@@ -22,7 +22,7 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
 
 ### Curso de Análisis de Datos (Programa Completo)
 * **Duración**: dos niveles de 60 horas cada uno (básico-intermedio y avanzado), 20 horas por herramienta. El programa completo son 120 horas.
-* **Inversión**: $299.000 CLP.
+* **Precio vigente**: consulta la [página de precios](https://www.programbi.com/precios).
 * **Dirigido a**: Profesionales de administración, finanzas, marketing, operaciones, ingeniería y cualquier persona que busque dominar el ciclo completo del dato.
 * **Módulos por nivel**:
   * **Módulo 1: Fundamentos de SQL Server**: Consultas básicas, filtros, ordenamiento, funciones de agregación, uniones (JOINs), subconsultas y Common Table Expressions (CTEs).
@@ -31,7 +31,7 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
 
 ### Curso de Power BI (Dashboards e Ingeniería de Datos)
 * **Duración para particulares**: básico-intermedio, 20 horas. El curso avanzado dura 20 horas.
-* **Inversión**: $249.000 CLP.
+* **Inversión**: $169.000 CLP.
 * **Temario**:
   * Conexiones de datos (SQL Server, Excel, Web, APIs).
   * Limpieza avanzada de datos con Power Query (M Language).
@@ -42,7 +42,7 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
 
 ### Curso de SQL Server (Base de Datos para Analistas)
 * **Duración para particulares**: básico-intermedio, 20 horas. El curso avanzado dura 20 horas.
-* **Inversión**: $249.000 CLP.
+* **Inversión**: $169.000 CLP.
 * **Temario**:
   * Arquitectura de bases de datos relacionales y esquemas de tablas.
   * Consultas avanzadas (CTEs, tablas temporales, subconsultas correlacionadas).
@@ -52,7 +52,7 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
 
 ### Curso de Python para Datos (Programación y Automatización)
 * **Duración para particulares**: básico-intermedio, 20 horas. El curso avanzado dura 20 horas.
-* **Inversión**: $249.000 CLP.
+* **Inversión**: $169.000 CLP.
 * **Temario**:
   * Conceptos fundamentales de programación en Python.
   * Análisis exploratorio de datos utilizando Pandas y NumPy.
@@ -62,7 +62,7 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
 
 ### Curso de Machine Learning (Analítica Predictiva y Modelos)
 * **Duración para particulares**: básico-intermedio, 20 horas. El curso avanzado dura 20 horas.
-* **Inversión**: $249.000 CLP.
+* **Inversión**: $169.000 CLP.
 * **Temario**:
   * Introducción al aprendizaje automático y ciclo de vida de un modelo de ML.
   * Modelos Supervisados: Regresiones, Árboles de decisión, Random Forest, Máquinas de Soporte Vectorial (SVM).
@@ -72,7 +72,7 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
 
 ### Curso para el mercado financiero con Python Power BI y SQL
 * **Duración total**: 30 horas.
-* **Precio**: $349.000 CLP.
+* **Precio vigente**: consulta la [página de precios](https://www.programbi.com/precios).
 * **Para quién**: profesionales financieros y contables (contabilidad, tesorería, middle office, riesgos, carteras, banca, corredoras, AGF, seguros e inversión).
 * **Requisito**: Excel intermedio. Python, SQL, Power BI e Inteligencia Artificial se enseñan desde cero.
 * **Objetivo**: analizar, valorizar, monitorear y reportar carteras con Python, SQL, Power BI e IA. El certificado sale del Trabajo Aplicado Integrador.
@@ -86,7 +86,7 @@ Acelerar la adopción de la cultura de datos en las organizaciones y capacitar a
 ### Curso de Microsoft Access para administrativos
 * **Duración total**: 20 horas.
 * **Objetivo**: Diseñar, construir y administrar bases de datos relacionales con Microsoft Access para almacenar, organizar, consultar y analizar información, y generar reportes.
-* **Inversión**: $249.000 CLP.
+* **Inversión**: $169.000 CLP.
 * **Temario**:
   * Módulo 1. Introducción a Microsoft Access: conceptos de bases de datos, diferencias con Excel, interfaz, tipos de datos e importación desde Excel.
   * Módulo 2. Diseño y construcción: modelo relacional, claves, relaciones, integridad referencial, normalización básica y una base de gestión empresarial.
@@ -191,7 +191,7 @@ Sí, ofrecemos opciones de pago en cuotas con tarjeta de crédito o transferenci
 | **IA Integrada** | Sí (Curso e implementación de prompts) | No disponible o complementario | No disponible / Temarios desactualizados |
 | **Especializaciones** | Por industria (Finanzas, Minería, Retail) | Cursos generales y teóricos | Cursos generales e introductorios |
 | **Proyectos Finales** | Capstone Projects reales de empresas | Ejemplos de juguetes o teóricos | Ejemplos básicos repetitivos |
-| **Inversión Promedio** | $249.000 - $299.000 CLP | $1.000.000 - $2.500.000 CLP | $15.000 - $50.000 CLP (Sin soporte) |
+| **Inversión** | Precio vigente de cada curso en https://www.programbi.com/precios | $1.000.000 - $2.500.000 CLP | $15.000 - $50.000 CLP (Sin soporte) |
 
 ---
 

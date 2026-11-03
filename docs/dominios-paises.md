@@ -8,7 +8,7 @@ Brasil no está: el sitio es en español.
 
 ## Precios
 
-`config/paises.ts`. `precios` es lo que se cobra. `listas` es el precio tachado. En Chile el original es 249.000 para un curso y 747.000 para Análisis de datos, y el panel deja el cobro en 169.000 y 338.000. En el resto, el tachado guarda esa misma relación: cerca de 32% off en un curso y 55% off en Análisis de datos. El cobro de Análisis de datos sigue siendo el doble de un curso. Analítica minería y analítica financiera usan el precio de un curso normal.
+`config/paises.ts`. `precios` es lo que se cobra y `listas` es el precio de referencia tachado. En Chile el curso estándar tiene un precio de lista de 249.000 y un precio comercial de referencia de 169.000. Argentina, México, Perú, Colombia y Uruguay usan tablas locales fijas; sus importes se cobran tal como están configurados y no se derivan mediante conversiones o porcentajes desde Chile. La página `/precios` de cada país y el checkout deben mostrar el mismo importe base.
 
 Argentina se actualiza solo en `PRECIOS_ARS`. No hay conversión automática desde el peso chileno. Chile sigue cobrando el catálogo de `lib/data/courses.ts` más los overrides y las promos de Supabase.
 

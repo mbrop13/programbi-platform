@@ -36,7 +36,7 @@ import { trackCheckoutStart, trackLeadSubmit } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import { normalizarPais } from "@/config/paises";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
-import { formatMoneda, muestraPrecioLocal, notaCobroClp, porcentajeDescuento, precioCurso, precioLista, totalLocal } from "@/lib/paises/precios";
+import { formatMoneda, muestraPrecioLocal, notaCobroClp, porcentajeDescuento, precioCurso, precioLista, totalLocal, totalLocalConCupon } from "@/lib/paises/precios";
 import { precioDescontadoClp } from "@/lib/pago/precio-clp";
 import type { CheckoutCatalog, CheckoutPriceOverride, CheckoutPromotion } from "@/lib/pago/catalogo";
 
@@ -202,7 +202,7 @@ export default function PagoClient({
     setValidatingCoupon(true);
     setCouponError(null);
     try {
-      const res = await validateCouponAction(couponCodeInput);
+      const res = await validateCouponAction(couponCodeInput, Object.values(cart).map((item) => item.slug));
       if (res.valid) {
         const items = Object.values(cart);
         if (!res.allow_stacking && items.length > 0 && items.every(item => item.hasDiscount)) {
@@ -265,9 +265,15 @@ export default function PagoClient({
     }
     return convertPrice(clpAmount);
   };
-  const textoTotal = (clpAmount: number, items: { slug: string; quantity: number }[]) => {
+  const textoTotal = (clpAmount: number, items: { slug: string; quantity: number; hasDiscount?: boolean }[]) => {
     if (paisPago === "cl" || (!mercadoLocal && !puedeMonedaLocal)) return convertPrice(clpAmount);
-    const local = totalLocal(paisPago, items);
+    const local = appliedCoupon
+      ? totalLocalConCupon(
+          paisPago,
+          items.map((item) => ({ slug: item.slug, quantity: item.quantity, conPromo: item.hasDiscount === true })),
+          { pct: appliedCoupon.discount_percentage, stacking: appliedCoupon.allow_stacking }
+        )
+      : totalLocal(paisPago, items);
     if (local != null) return textoLocal(local);
     return convertPrice(clpAmount);
   };
@@ -1299,7 +1305,7 @@ export default function PagoClient({
                                         Conversión
                                       </p>
                                       <p className="text-xs leading-snug text-mute">
-                                        Se cobra el equivalente de <span className="font-semibold text-ink">{textoTotal(appliedCoupon ? finalPriceWithCoupon : totalPrice, cartItems)}</span>.
+                                        Se procesa el pago en <span className="font-semibold text-ink">{country.currency.code}</span> usando la referencia publicada.
                                       </p>
                                       <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1 border-t border-line pt-2 text-[11px] font-semibold text-faint">
                                         <span>Ref. USD: $1 USD = $900 CLP</span>
