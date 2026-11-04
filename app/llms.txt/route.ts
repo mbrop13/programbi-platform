@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { PAISES_INDEXABLES, ISO_CHILE } from "@/config/paises";
-import { precioPublico, monedaPublica, PRECIOS_VALID_FROM } from "@/config/pricing";
+import { precioPublico, PRECIOS_VALID_FROM } from "@/config/pricing";
+import { guiasRaiz } from "@/lib/guias";
 import { formatMoneda } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { SITE_URL } from "@/lib/seo";
@@ -59,20 +60,8 @@ const CURSOS: CursoLlms[] = [
   },
 ];
 
-/** Guías publicadas (espejo de content/guias). */
-const GUIAS: { ruta: string; titulo: string }[] = [
-  { ruta: "/guias/como-aprender-power-bi-en-chile", titulo: "Cómo aprender Power BI en Chile" },
-  { ruta: "/ar/guias/como-aprender-power-bi-en-argentina", titulo: "Cómo aprender Power BI en Argentina" },
-  { ruta: "/mx/guias/como-aprender-power-bi-en-mexico", titulo: "Cómo aprender Power BI en México" },
-  { ruta: "/pe/guias/como-aprender-power-bi-en-peru", titulo: "Cómo aprender Power BI en Perú" },
-  { ruta: "/co/guias/como-aprender-power-bi-en-colombia", titulo: "Cómo aprender Power BI en Colombia" },
-  { ruta: "/uy/guias/como-aprender-power-bi-en-uruguay", titulo: "Cómo aprender Power BI en Uruguay" },
-  { ruta: "/py/guias/como-aprender-power-bi-en-paraguay", titulo: "Cómo aprender Power BI en Paraguay" },
-  { ruta: "/guias/funciones-dax-mas-importantes", titulo: "Las funciones DAX más importantes" },
-  { ruta: "/guias/power-bi-vs-excel", titulo: "Power BI vs Excel" },
-  { ruta: "/guias/como-usar-claude-para-analisis-de-datos", titulo: "Cómo usar Claude para análisis de datos" },
-  { ruta: "/mx/guias/como-usar-claude-para-analisis-de-datos", titulo: "Cómo usar Claude para análisis de datos en México" },
-];
+/** Guías publicadas: salen de los mismos MDX que la web (content/guias). */
+const GUIAS = guiasRaiz().map((guia) => ({ ruta: guia.path, titulo: guia.h1 }));
 
 function precioLinea(iso: string, slug: string): string {
   const monto = precioPublico(iso, slug);

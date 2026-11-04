@@ -3,7 +3,9 @@ import { courses } from "@/lib/data/courses";
 import { casesOfUse } from "@/lib/data/cases";
 import { comparisons } from "@/lib/data/comparisons";
 import { SITE_URL, sitemapLoc } from "@/lib/seo";
-import { PAISES_CARPETA } from "@/config/paises";
+import { PAISES_CARPETA, esIndexable } from "@/config/paises";
+import { GUIAS } from "@/lib/guias/generado";
+import { guiasDePais } from "@/lib/guias";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { isVanityBlogPost } from "@/lib/seo/money";
 import { createAdminClient } from "@/lib/supabase/server";
@@ -298,6 +300,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
   );
 
+  // Guías: las de país indexable, las transversales y la chilena. Paraguay
+  // queda fuera porque su versión es noindex hasta que tenga precio publicado.
+  const guidePages: MetadataRoute.Sitemap = GUIAS.filter(
+    (guia) => guia.country === "transversal" || esIndexable(guia.country)
+  ).map((guia) => ({
+    url: loc(guia.path),
+    lastModified: new Date(`${guia.updated}T12:00:00-03:00`),
+    changeFrequency: "monthly" as const,
+    priority: guia.country === "cl" || guia.country === "transversal" ? 0.7 : 0.6,
+  }));
+
+  const guideIndexPages: MetadataRoute.Sitemap = [
+    { url: loc("/guias"), lastModified: now, changeFrequency: "weekly" as const, priority: 0.7 },
+    ...PAISES_CARPETA.filter((pais) => pais.indexable && guiasDePais(pais.iso).length > 0).map(
+      (pais) => ({
+        url: loc(`/${pais.iso}/guias`),
+        lastModified: now,
+        changeFrequency: "weekly" as const,
+        priority: 0.6,
+      })
+    ),
+    {
+      url: loc("/preguntas-frecuentes"),
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    },
+  ];
+
   return uniqueEntries([
     ...staticPages,
     ...coursePages,
@@ -305,5 +336,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...versusPages,
     ...blogPages,
     ...countryPages,
+    ...guidePages,
+    ...guideIndexPages,
   ]);
 }

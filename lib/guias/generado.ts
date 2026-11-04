@@ -275,5 +275,161 @@ export const GUIAS: Guia[] = [
         "a": "No. Con un manejo intermedio (tablas, filtros, tablas dinámicas) alcanza. Power Query reemplaza buena parte del trabajo manual."
       }
     ]
+  },
+  {
+    "source": "content/guias/transversales/claude-cl.md",
+    "slug": "como-usar-claude-para-analisis-de-datos",
+    "path": "/guias/como-usar-claude-para-analisis-de-datos",
+    "country": "cl",
+    "lang": "es-CL",
+    "title": "Cómo usar Claude para análisis de datos: guía práctica",
+    "description": "Prompts para limpiar planillas, resumir ventas y detectar anomalías con Claude, más los límites y cuidados de privacidad. Con ejemplos en pesos chilenos.",
+    "h1": "Cómo usar Claude para analizar datos en tu trabajo (sin programar)",
+    "updated": "2026-11-04",
+    "course": "claude",
+    "body": "Claude, el asistente de IA de Anthropic, puede leer una planilla, explicarte qué hay en ella, proponer fórmulas y detectar cosas raras en minutos. No reemplaza a un analista ni a Power BI, pero sí elimina buena parte del trabajo repetitivo que hay antes de llegar al análisis. Esta guía te muestra cómo usarlo bien: qué pedirle, cómo pedirlo y qué no delegarle nunca.\n\n<!-- CTA-TOP --> — Próxima clase del curso Claude en vivo.\n\n##### Qué puede hacer Claude con tus datos\n\n- **Entender una planilla desconocida**: «¿Qué columnas tiene, qué significan y qué problemas ves?».\n- **Limpiar**: detectar duplicados, fechas en formatos mezclados, montos escritos como texto.\n- **Escribir fórmulas de Excel**: BUSCARX, SUMAR.SI.CONJUNTO o tablas dinámicas explicadas paso a paso.\n- **Resumir y redactar**: convertir una tabla de resultados en un párrafo para gerencia.\n- **Detectar anomalías**: «¿Qué sucursales se comportan distinto este mes?».\n- **Preparar el terreno para Power BI**: proponer un modelo estrella o explicar una medida DAX.\n\n##### Cómo pedirlo: estructura de un buen prompt\n\nUn buen prompt tiene cinco partes: **contexto, tarea, formato, tono y restricciones**.\n\n> *Contexto:* Soy analista de control de gestión en una cadena de farmacias con locales en Santiago, Valparaíso y Concepción. Te adjunto las ventas de octubre en CLP.\n> *Tarea:* Identifica los 3 locales con mayor caída frente a septiembre y propone 2 hipótesis por local.\n> *Formato:* Tabla con local, venta sep., venta oct., variación %, y luego las hipótesis en viñetas.\n> *Tono:* Directo, para gerencia.\n> *Restricciones:* No inventes datos que no estén en el archivo. Si algo no se puede calcular, dilo.\n\n##### Cinco prompts que funcionan\n\n1. **Diagnóstico**: «Revisa este archivo y lista problemas de calidad de datos: vacíos, duplicados, formatos inconsistentes. Para cada uno, dime cuántas filas afecta.»\n2. **Fórmula**: «En la columna D tengo RUT y en la hoja Clientes, RUT y región. Dame la fórmula BUSCARX para traer la región y explícala.»\n3. **Resumen ejecutivo**: «Resume esta tabla de ventas en 5 líneas para el gerente, destacando la mayor alza y la mayor caída.»\n4. **Anomalías**: «Marca los días con ventas fuera de lo normal para cada local y explica el criterio que usaste.»\n5. **Puente a Power BI**: «Propón un modelo estrella para estos datos: qué tabla es de hechos, qué dimensiones y qué relaciones.»\n\n<!-- CTA-MID --> — Descarga la plantilla de prompts para análisis de datos.\n\n##### Un caso completo, paso a paso: el informe mensual de ventas\n\nSupongamos que cada mes recibes un Excel con las ventas de 40 locales en Santiago, Valparaíso y Concepción y tienes que entregar un informe a gerencia. Así se ve el flujo con Claude:\n\n1. **Exploración (5 minutos).** Adjunta el archivo y pide: «Describe la estructura: columnas, tipo de dato de cada una, rango de fechas y totales por región. Señala cualquier cosa rara.» Claude suele detectar fechas en dos formatos, montos como texto («$1.234.567») o locales escritos de dos maneras.\n2. **Limpieza guiada.** «Propón los pasos para limpiar estos problemas en Excel con Power Query, en orden. No modifiques los datos: solo dame los pasos.» Así el proceso queda repetible el próximo mes.\n3. **Cálculo.** «Calcula la venta de octubre y septiembre por local y la variación porcentual. Muestra la tabla y explica cómo calculaste.» Luego verifica dos o tres locales a mano.\n4. **Hallazgos.** «¿Qué 3 locales explican la mayor parte de la caída? Separa lo que se ve en los datos de lo que es hipótesis.»\n5. **Redacción.** «Redacta un correo de 150 palabras para el gerente comercial con los hallazgos, en tono directo, sin adjetivos innecesarios.»\n6. **Presentación.** Con Artifacts o Slides, pide una presentación de 4 láminas a partir del correo.\n\nLo que antes tomaba una tarde puede quedar en una hora, con la verificación incluida. La clave es que **tú defines las preguntas y revisas los números**.\n\n##### Projects: que Claude conozca tu área\n\nSi haces este informe todos los meses, crea un **Project** con los documentos de referencia: el glosario de tu área (qué es «venta neta», cómo se cuenta un local nuevo), el formato del informe y un ejemplo de mes anterior. Así no explicas el contexto cada vez y las respuestas son más consistentes. En el curso, el módulo 3 está dedicado a Projects, Artifacts, Docs y Slides.\n\n##### Errores típicos al usar IA con datos\n\n- **Pedir «analiza esto» sin una pregunta.** Recibes generalidades. Pregunta algo concreto.\n- **No dar contexto de negocio.** Sin saber que diciembre es temporada alta, cualquier comparación con noviembre parece un milagro.\n- **Aceptar un cálculo sin revisar.** Cuadra siempre al menos un total con tu fuente.\n- **Subir más datos de los necesarios.** Si no necesitas el RUT o el nombre del cliente, quítalos antes.\n\n##### Lo que no debes delegar\n\n- **La verificación.** Claude puede equivocarse en cálculos o interpretar mal una columna. Cuadra siempre los totales con tu fuente.\n- **Datos sensibles sin autorización.** Antes de subir datos de clientes o remuneraciones, revisa la política de tu empresa y el plan que usan (los planes empresariales tienen condiciones de privacidad distintas a las cuentas personales).\n- **La decisión.** La IA propone hipótesis; la decisión es tuya y de tu equipo.\n\n##### Claude y Power BI: cómo se complementan\n\nClaude es excelente para la exploración inicial, la limpieza guiada y la redacción. Power BI es el lugar donde el reporte vive, se actualiza y se comparte. Un flujo práctico: explora y limpia con ayuda de Claude, modela y publica en Power BI, y vuelve a Claude para redactar el resumen del mes.\n\n##### El curso Claude en vivo de ProgramBI\n\n- **En vivo por Zoom**, lunes y miércoles de **19:30 a 21:30**, hora de Chile. Próximo inicio: **lunes 23 de noviembre de 2026**.\n- **20 horas, 5 módulos** de 4 horas: primeros pasos y privacidad; prompting práctico; Projects, Artifacts, Docs y Slides; **Claude para Excel y tareas administrativas** (limpieza, fórmulas, tendencias y anomalías, conectores, Claude Cowork); y automatización ligera con proyecto final sobre un proceso real de tu trabajo.\n- **Grabaciones de por vida** y **certificado**. Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).\n\n<!-- CTA-END --> — «Ver el curso Claude» (`/cursos/claude`) · WhatsApp.",
+    "faqs": [
+      {
+        "q": "¿Claude puede leer archivos de Excel?",
+        "a": "Sí, puedes adjuntar planillas y pedirle análisis, resúmenes o fórmulas. Verifica siempre los resultados."
+      },
+      {
+        "q": "¿Necesito saber programar?",
+        "a": "No. El curso está pensado para trabajo administrativo y de análisis sin programar."
+      },
+      {
+        "q": "¿Claude reemplaza a Power BI?",
+        "a": "No. Claude ayuda a explorar y redactar; Power BI publica reportes que se actualizan y se comparten."
+      },
+      {
+        "q": "¿Es seguro subir datos de la empresa?",
+        "a": "Depende del plan y de la política de tu empresa. En el curso vemos planes y privacidad en el primer módulo."
+      },
+      {
+        "q": "¿Qué diferencia a Claude de otras IA?",
+        "a": "En el curso lo comparamos en el módulo 1; para análisis, lo importante es aprender a pedir bien y verificar, sea cual sea la herramienta."
+      },
+      {
+        "q": "¿A qué hora son las clases?",
+        "a": "Lunes y miércoles de 19:30 a 21:30, hora de Chile, con grabaciones."
+      }
+    ]
+  },
+  {
+    "source": "content/guias/transversales/claude-mx.md",
+    "slug": "como-usar-claude-para-analisis-de-datos",
+    "path": "/mx/guias/como-usar-claude-para-analisis-de-datos",
+    "country": "mx",
+    "lang": "es-MX",
+    "title": "Cómo usar Claude para análisis de datos en México",
+    "description": "Prompts listos para conciliar reportes, limpiar bases de clientes y explicar variaciones con Claude. Ejemplos en pesos mexicanos y cuidados de privacidad.",
+    "h1": "Claude para análisis de datos: guía práctica para equipos en México",
+    "updated": "2026-11-04",
+    "course": "claude",
+    "body": "En muchas oficinas de México el cierre de mes significa lo mismo: conciliar reportes de distintas áreas, explicar por qué no cuadra una cifra y preparar la presentación para la dirección. Claude, el asistente de IA de Anthropic, no hace el cierre por ti, pero sí te ahorra horas en las tareas que lo rodean. Esta guía va directo a los usos que más tiempo liberan en equipos de finanzas, administración y comercial.\n\n<!-- CTA-TOP -->\n\n##### Tres usos con impacto inmediato\n\n**1. Conciliar dos reportes.** Sube el reporte de ventas del ERP y el de facturación, y pide: «Compara ambos por número de factura. Lista las facturas que están en uno y no en el otro, y las que tienen importes distintos en MXN. Al final, dame el total de diferencias.» Luego valida una muestra a mano.\n\n**2. Limpiar una base de clientes.** «Esta base tiene clientes repetidos con distintas escrituras de la razón social (por ejemplo, con y sin \"S.A. de C.V.\"). Propón una regla para unificarlos y muéstrame los casos dudosos en una tabla.»\n\n**3. Explicar variaciones.** «Te adjunto ventas por CEDIS (CDMX, Guadalajara, Monterrey) de septiembre y octubre. Explica en 6 líneas para la dirección qué cambió y qué datos adicionales necesitaría para confirmar las causas.»\n\n##### El método: contexto, tarea, formato, tono y restricciones\n\nClaude responde mucho mejor cuando sabe quién eres, qué necesitas y en qué formato. Agrega siempre una restricción clave: **«No inventes datos; si falta información, dímelo.»** Y pide que muestre el criterio que usó, para que puedas revisarlo.\n\n<!-- CTA-MID --> — Descarga la plantilla de prompts para cierres de mes.\n\n##### De Claude a Excel y Power BI\n\n- Pide fórmulas de Excel explicadas («dame la fórmula y explícame cada argumento»).\n- Pide que convierta una explicación en una tabla lista para pegar.\n- Si tu empresa usa Power BI, pídele que te explique una medida DAX existente en lenguaje simple antes de modificarla.\n\n##### Caso completo: el paquete de cierre para la dirección\n\nUn equipo de finanzas en Monterrey debe entregar cada mes el comparativo de gastos por centro de costos contra presupuesto. Así se ve el flujo con Claude:\n\n1. **Ordenar.** Adjunta la balanza o el reporte de gastos y pide: «Agrupa estas cuentas en las categorías de este catálogo (te lo adjunto). Lista las cuentas que no sepas clasificar.» Nunca dejes que adivine una clasificación contable: que te pregunte.\n2. **Comparar.** «Calcula real contra presupuesto por centro de costos en MXN y en %. Marca las desviaciones mayores a 10 %.»\n3. **Explicar.** «Para cada desviación marcada, redacta una línea con la explicación que dan los comentarios del archivo. Si no hay comentario, escribe \"pendiente de explicar\".» Así no se inventan causas.\n4. **Presentar.** «Convierte esto en 3 láminas: resumen, desviaciones principales y acciones.» Con Slides o Artifacts tienes el borrador en minutos.\n5. **Revisar.** Cuadra el total de gastos con la contabilidad antes de enviar.\n\n##### Prompts listos para copiar\n\n- **Formato de fechas y montos**: «Este archivo mezcla fechas mm/dd/aaaa y dd/mm/aaaa y montos con y sin comas. Dime qué filas tienen cada formato y cómo unificarlas en Excel.»\n- **Comparativo de proveedores**: «Compara estas tres cotizaciones en una tabla: precio unitario en MXN, IVA, tiempo de entrega y condiciones de pago. Señala lo que no sea comparable.»\n- **Minuta**: «A partir de estas notas desordenadas de la junta, redacta una minuta con acuerdos, responsables y fechas. No agregues acuerdos que no estén en las notas.»\n- **Fórmula explicada**: «Necesito una fórmula que sume las ventas de la región Norte en el trimestre. Dámela con SUMAR.SI.CONJUNTO y explica cada argumento.»\n- **Revisión de un reporte**: «Revisa este reporte como si fueras el director financiero: ¿qué preguntas me haría y qué cifras se ven inconsistentes?»\n\n##### Projects para equipos\n\nSi varias personas del área hacen tareas parecidas, un **Project** con el catálogo de cuentas, las políticas de gastos y un ejemplo de cierre anterior hace que todos obtengan respuestas consistentes. Es uno de los temas del módulo 3 del curso.\n\n##### Lo que conviene acordar con TI\n\nAntes de usar Claude con datos de la empresa, confirma con tu área de TI o de cumplimiento qué tipo de cuenta usar, qué datos se pueden subir y qué no (datos personales de clientes y empleados, por ejemplo). En el módulo 1 del curso vemos planes y privacidad para empresas, y en el módulo 5, seguridad, verificación y uso responsable.\n\n##### Errores típicos\n\n- **Pedir conclusiones sin datos suficientes.** Exige que diga qué le falta.\n- **Pegar tablas enormes en el chat.** Mejor adjunta el archivo.\n- **No guardar el prompt que funcionó.** Arma tu biblioteca de prompts del área; el curso te deja plantillas reutilizables.\n\n##### Cuidados que no son opcionales\n\n- **Verifica totales** contra el sistema antes de enviar cualquier cosa.\n- **Datos personales**: antes de subir bases con datos de clientes, revisa la política de tu empresa y el tipo de cuenta que usan.\n- **Trazabilidad**: guarda el prompt y la versión del archivo que usaste.\n\n##### El curso Claude en vivo de ProgramBI (versión México)\n\n- **En vivo por Zoom**, lunes y miércoles de **16:30 a 18:30, hora de México**. Próximo inicio: **lunes 23 de noviembre de 2026**.\n- Precio para México: **{{precio}}**\n- **20 horas, 5 módulos**: primeros pasos y privacidad; prompting práctico; Projects, Artifacts, Docs y Slides; Claude para Excel y tareas administrativas; automatización ligera y proyecto final con un proceso real de tu trabajo.\n- **Grabaciones de por vida** y **certificado**. Instructor: **Manuel Oliva**.\n\n<!-- CTA-END --> — «Ver el curso Claude» (`/mx/cursos/claude`) · WhatsApp.",
+    "faqs": [
+      {
+        "q": "¿A qué hora son las clases en México?",
+        "a": "Lunes y miércoles de 16:30 a 18:30, hora del centro de México."
+      },
+      {
+        "q": "¿Cómo pago desde México?",
+        "a": "Con tarjeta internacional; el precio se muestra en MXN y el cargo final lo define tu banco."
+      },
+      {
+        "q": "¿Sirve si no sé nada de IA?",
+        "a": "Sí. El curso parte desde crear la cuenta y la primera conversación."
+      },
+      {
+        "q": "¿Puedo usar Claude con archivos del trabajo?",
+        "a": "Sí, con los cuidados de privacidad que defina tu empresa; lo vemos en el módulo 1."
+      },
+      {
+        "q": "¿Claude hace fórmulas de Excel?",
+        "a": "Sí, y las explica. Revisa siempre el resultado con un caso conocido."
+      },
+      {
+        "q": "¿Queda grabado?",
+        "a": "Sí, todas las clases quedan en el campus de por vida."
+      }
+    ]
+  },
+  {
+    "source": "content/guias/transversales/dax.md",
+    "slug": "funciones-dax-mas-importantes",
+    "path": "/guias/funciones-dax-mas-importantes",
+    "country": "transversal",
+    "lang": "es",
+    "title": "Las 15 funciones DAX más importantes (con ejemplos)",
+    "description": "CALCULATE, FILTER, SUMX, DIVIDE, RANKX y la inteligencia de tiempo explicadas con ejemplos reales. La guía de DAX que necesitas para usar Power BI en serio.",
+    "h1": "Las funciones DAX más importantes de Power BI, explicadas con ejemplos",
+    "updated": "2026-11-04",
+    "course": "power-bi",
+    "body": "DAX es el lenguaje de fórmulas de Power BI. Se parece a Excel, y esa es justamente la trampa: las fórmulas se ven familiares, pero funcionan con otra lógica. En Excel calculas celda por celda; en DAX calculas sobre un **contexto**, es decir, sobre el conjunto de filas que quedan después de aplicar los filtros del informe. Si entiendes eso, el resto son herramientas. Aquí están las 15 funciones que resuelven la gran mayoría de los casos reales, agrupadas por lo que hacen.\n\n<!-- CTA-TOP -->\n\n##### Antes de empezar: medidas, no columnas\n\nUna **columna calculada** se calcula una vez por fila y ocupa memoria. Una **medida** se calcula en el momento, según los filtros que el usuario tenga activos. Para totales, porcentajes y comparaciones, usa medidas. Regla práctica: si el resultado depende de qué filtró el usuario, es una medida.\n\n##### 1. Agregaciones básicas\n\n**SUM, AVERAGE, MIN, MAX.** Suman o promedian una columna.\n`Ventas = SUM(Ventas[Monto])`\n\n**COUNTROWS.** Cuenta filas de una tabla. Más claro que contar una columna.\n`N° de pedidos = COUNTROWS(Ventas)`\n\n**DISTINCTCOUNT.** Cuenta valores únicos.\n`Clientes activos = DISTINCTCOUNT(Ventas[ID_Cliente])`\n\n##### 2. DIVIDE: la división segura\n\n`Margen % = DIVIDE([Ventas] - [Costo], [Ventas])`\nSi el denominador es cero o está vacío, devuelve vacío en lugar de error. Úsala siempre en vez de «/».\n\n##### 3. CALCULATE: la función más importante de DAX\n\nCALCULATE evalúa una expresión **cambiando el contexto de filtro**. Es la que te permite responder «¿y si solo miro…?».\n\n`Ventas online = CALCULATE([Ventas], Canal[Nombre] = \"Online\")`\n\nLo que hace: toma todos los filtros que ya hay en el informe, reemplaza el filtro sobre `Canal[Nombre]` por «Online» y calcula. Si el usuario filtra un mes, la medida respeta ese mes.\n\n##### 4. FILTER: filtros con condiciones complejas\n\nCuando la condición no es una simple igualdad, combinas CALCULATE con FILTER:\n\n`Ventas de pedidos grandes = CALCULATE([Ventas], FILTER(Ventas, Ventas[Monto] > 1000))`\n\nConsejo de rendimiento: filtra columnas, no tablas completas, cuando puedas. `FILTER(ALL(Producto[Categoría]), …)` es más liviano que `FILTER(Ventas, …)` sobre millones de filas.\n\n##### 5. ALL y ALLEXCEPT: quitar filtros\n\nPara porcentajes sobre el total necesitas el total «sin filtrar»:\n\n`% del total = DIVIDE([Ventas], CALCULATE([Ventas], ALL(Producto)))`\n\n`ALLEXCEPT(Producto, Producto[Categoría])` quita todos los filtros de la tabla menos el de categoría: útil para «% dentro de la categoría».\n\n##### 6. Iteradores: SUMX y AVERAGEX\n\nSUM suma una columna que ya existe. **SUMX** recorre una tabla fila por fila, calcula una expresión y suma el resultado.\n\n`Ventas = SUMX(Ventas, Ventas[Cantidad] * Ventas[Precio_unitario])`\n\nEs la clave para convertir moneda por tipo de cambio diario, ponderar promedios o calcular márgenes por línea. `AVERAGEX(VALUES(Cliente[ID]), [Ventas])` da el promedio de ventas **por cliente**, no por fila.\n\n##### 7. RELATED: traer un dato de otra tabla\n\nDentro de un iterador, RELATED trae el valor de la tabla relacionada (lado «uno»):\n\n`Costo total = SUMX(Ventas, Ventas[Cantidad] * RELATED(Producto[Costo_unitario]))`\n\n##### 8. Inteligencia de tiempo\n\nRequiere una **tabla calendario** marcada como tabla de fechas, sin huecos.\n\n- `Ventas YTD = TOTALYTD([Ventas], Calendario[Fecha])` — acumulado del año (acepta fecha de cierre fiscal como tercer argumento).\n- `Ventas AA = CALCULATE([Ventas], SAMEPERIODLASTYEAR(Calendario[Fecha]))` — mismo período del año anterior.\n- `Ventas mes anterior = CALCULATE([Ventas], DATEADD(Calendario[Fecha], -1, MONTH))`\n- `Var. % interanual = DIVIDE([Ventas] - [Ventas AA], [Ventas AA])`\n\n##### 9. RANKX: rankings dinámicos\n\n`Ranking producto = RANKX(ALL(Producto[Nombre]), [Ventas])`\nEl ALL es clave: sin él, cada producto se compara solo consigo mismo y todos quedan en el puesto 1.\n\n##### 10. SWITCH y SELECTEDVALUE: medidas que cambian según lo que elige el usuario\n\nCon una tabla desconectada `Métrica` (Ventas, Margen, Unidades):\n\n`Valor elegido = SWITCH(SELECTEDVALUE(Métrica[Nombre]), \"Ventas\", [Ventas], \"Margen\", [Margen %], \"Unidades\", [Unidades])`\n\nAsí un solo gráfico muestra la métrica que el usuario elige en un segmentador.\n\n##### 11. VAR: fórmulas legibles y más rápidas\n\n`Crecimiento % =\nVAR Actual = [Ventas]\nVAR Anterior = [Ventas AA]\nRETURN DIVIDE(Actual - Anterior, Anterior)`\n\nLas variables se calculan una vez, hacen la fórmula legible y evitan repetir cálculos.\n\n<!-- CTA-MID --> — Descarga la plantilla con estas 15 medidas ya creadas.\n\n##### Los errores de DAX más comunes\n\n- **Usar columnas calculadas para totales.**\n- **Olvidar ALL en RANKX o en porcentajes del total.**\n- **Inteligencia de tiempo sin tabla calendario** o con fechas que tienen hora.\n- **Relaciones bidireccionales «por si acaso»**, que generan resultados ambiguos.\n- **Copiar fórmulas de Excel** esperando que funcionen igual.\n\n##### Por dónde seguir\n\nDomina primero CALCULATE, DIVIDE, SUMX y la inteligencia de tiempo: con eso resuelves el 80 % de los informes de negocio. Después vienen el contexto de transición, las tablas virtuales y la optimización.\n\nSi quieres aprenderlo con ejemplos de tu país, elige tu guía: [Chile](/guias/como-aprender-power-bi-en-chile) · [México](/mx/guias/como-aprender-power-bi-en-mexico) · [Colombia](/co/guias/como-aprender-power-bi-en-colombia) · [Argentina](/ar/guias/como-aprender-power-bi-en-argentina) · [Perú](/pe/guias/como-aprender-power-bi-en-peru) · [Uruguay](/uy/guias/como-aprender-power-bi-en-uruguay) · [Paraguay](/py/guias/como-aprender-power-bi-en-paraguay).\n\n<!-- CTA-END --> — El curso Power BI en vivo de ProgramBI dedica módulos completos a DAX: CALCULATE y FILTER, Time Intelligence, RANKX e iteradores y tabla de métricas con SWITCH. 20 horas en vivo por Zoom, grabaciones de por vida y certificado.",
+    "faqs": [
+      {
+        "q": "¿Qué es DAX?",
+        "a": "Data Analysis Expressions, el lenguaje de fórmulas de Power BI, Power Pivot y Analysis Services."
+      },
+      {
+        "q": "¿Cuál es la función DAX más importante?",
+        "a": "CALCULATE, porque permite modificar el contexto de filtro y está detrás de casi todas las medidas de negocio."
+      },
+      {
+        "q": "¿Cuál es la diferencia entre SUM y SUMX?",
+        "a": "SUM suma una columna; SUMX calcula una expresión fila por fila y luego suma."
+      },
+      {
+        "q": "¿Se puede aprender DAX sin saber programar?",
+        "a": "Sí. Requiere práctica con el concepto de contexto, no experiencia en programación."
+      },
+      {
+        "q": "¿Cuánto tiempo toma aprender DAX?",
+        "a": "Lo esencial, unas 3 a 4 semanas de práctica regular. Dominarlo es un proceso más largo."
+      },
+      {
+        "q": "¿DAX sirve en Excel?",
+        "a": "Sí, en Power Pivot dentro de Excel se usa el mismo lenguaje."
+      }
+    ]
+  },
+  {
+    "source": "content/guias/transversales/power-bi-vs-excel.md",
+    "slug": "power-bi-vs-excel",
+    "path": "/guias/power-bi-vs-excel",
+    "country": "transversal",
+    "lang": "es",
+    "title": "Power BI vs Excel: diferencias y cuándo usar cada uno",
+    "description": "Comparación honesta entre Power BI y Excel: volumen de datos, automatización, colaboración y costo. Con una tabla de decisión y cómo dar el paso sin traumas.",
+    "h1": "Power BI vs Excel: qué los diferencia y cuándo conviene cada uno",
+    "updated": "2026-11-04",
+    "course": "power-bi",
+    "body": "La pregunta «¿Power BI o Excel?» tiene una respuesta corta que casi nadie da: **los dos**. Excel no va a desaparecer de tu trabajo, y Power BI no es «un Excel más bonito». Son herramientas para momentos distintos del mismo proceso. Esta guía te ayuda a decidir cuál usar en cada caso y cómo pasar de uno a otro sin perder lo que ya sabes.\n\n<!-- CTA-TOP -->\n\n##### La diferencia de fondo\n\n**Excel** es una hoja de cálculo: una cuadrícula flexible donde puedes escribir, calcular, simular y anotar en cualquier celda. Es ideal para análisis puntuales, presupuestos, escenarios y trabajo «a mano».\n\n**Power BI** es una herramienta de inteligencia de negocios: conecta fuentes de datos, las transforma con reglas que se repiten solas, las organiza en un modelo y las presenta en informes interactivos que se comparten en la web. Es ideal para reportes recurrentes que muchas personas consultan.\n\nDicho simple: Excel es para **pensar con datos**; Power BI es para **que muchos vean los mismos datos, actualizados, sin que tú los rehagas**.\n\n##### Comparación punto por punto\n\n| Criterio | Excel | Power BI |\n|---|---|---|\n| Volumen de datos | Hasta 1.048.576 filas por hoja; se pone lento mucho antes | Modelos comprimidos con millones de filas |\n| Actualización | Manual o con macros | Programada en el servicio (según licencia) |\n| Limpieza de datos | Power Query (sí, también está en Excel) | Power Query, el mismo motor |\n| Cálculos | Fórmulas por celda | Medidas DAX sobre un modelo |\n| Visualización | Gráficos estáticos | Informes interactivos con filtros cruzados |\n| Compartir | Enviar el archivo (y sus versiones) | Un enlace con permisos por persona o grupo |\n| Seguridad por usuario | Limitada | Seguridad a nivel de fila (RLS) |\n| Escenarios «qué pasa si» | Excelente | Posible, pero menos natural |\n| Curva de aprendizaje | Ya la conoces | Nueva, sobre todo en DAX y modelado |\n| Costo para empezar | Incluido en Microsoft 365 | Power BI Desktop gratis en Windows; compartir requiere licencia |\n\n##### Cuándo usar Excel\n\n- Un análisis puntual que harás una vez.\n- Presupuestos, proyecciones y simulaciones con supuestos que cambias a mano.\n- Cuadros que necesitan anotaciones, comentarios o formato libre.\n- Cuando el destinatario necesita editar los datos.\n\n##### Cuándo usar Power BI\n\n- Un reporte que se repite cada semana o mes.\n- Datos de varias fuentes (ERP, CRM, planillas, bases de datos) que hay que cruzar.\n- Más de unas pocas personas que necesitan ver los mismos números.\n- Cuando el archivo de Excel ya tarda minutos en abrir.\n- Cuando cada persona debería ver solo su parte (por región, sucursal o vendedor).\n\n##### La señal más clara de que necesitas Power BI\n\nSi cada mes haces **exactamente los mismos pasos** para armar un reporte —descargar, pegar, arreglar, actualizar tablas dinámicas, mandar por correo—, ese trabajo se puede automatizar. Lo que haces en horas, Power BI lo hace al actualizar.\n\n<!-- CTA-MID --> — Descarga una plantilla de Power BI y compárala con tu reporte de Excel actual.\n\n##### Cómo pasar de Excel a Power BI sin traumas\n\n1. **Empieza por Power Query en Excel.** Si ya limpias datos con Power Query, en Power BI te sentirás en casa.\n2. **Ordena tus datos como tablas**: una fila por registro, sin celdas combinadas ni subtotales.\n3. **Separa hechos y dimensiones**: ventas por un lado; productos, clientes y fechas por otro.\n4. **Traduce tus fórmulas a medidas**: tus SUMAR.SI.CONJUNTO se convierten en CALCULATE.\n5. **Rehaz un solo reporte**, el más repetitivo. Cuando funcione, sigue con el próximo.\n6. **Mantén Excel para lo que hace mejor**: puedes analizar un modelo de Power BI desde Excel con «Analizar en Excel».\n\n##### Equivalencias útiles\n\n| En Excel | En Power BI (DAX) |\n|---|---|\n| SUMAR.SI / SUMAR.SI.CONJUNTO | `CALCULATE(SUM(...), filtro)` |\n| BUSCARV / BUSCARX | Relaciones del modelo + `RELATED` |\n| Tabla dinámica | Matriz con medidas |\n| % del total en tabla dinámica | `DIVIDE([Ventas], CALCULATE([Ventas], ALL(...)))` |\n| SI.ERROR(a/b; 0) | `DIVIDE(a, b, 0)` |\n\n##### Mitos frecuentes\n\n- **«Power BI reemplaza a Excel.»** No. Lo complementa.\n- **«Power BI es solo para ingenieros.»** Lo usan contadores, analistas comerciales y de RR. HH.\n- **«Si sé Excel, ya sé Power BI.»** Te ayuda mucho, pero el modelado y DAX son otra lógica.\n- **«Necesito una licencia cara para empezar.»** Power BI Desktop es gratuito en Windows.\n\nElige tu guía para aprender Power BI con ejemplos de tu país: [Chile](/guias/como-aprender-power-bi-en-chile) · [México](/mx/guias/como-aprender-power-bi-en-mexico) · [Colombia](/co/guias/como-aprender-power-bi-en-colombia) · [Argentina](/ar/guias/como-aprender-power-bi-en-argentina) · [Perú](/pe/guias/como-aprender-power-bi-en-peru) · [Uruguay](/uy/guias/como-aprender-power-bi-en-uruguay) · [Paraguay](/py/guias/como-aprender-power-bi-en-paraguay).\n\n<!-- CTA-END --> — En el curso Power BI en vivo de ProgramBI partimos de tus reportes de Excel: Power Query, modelo estrella, DAX y un tablero que se actualiza solo. 20 horas en vivo por Zoom, grabaciones de por vida y certificado.",
+    "faqs": [
+      {
+        "q": "¿Es más difícil Power BI que Excel?",
+        "a": "Al principio, sí, por el modelado y DAX. Si dominas tablas dinámicas, la transición es mucho más rápida."
+      },
+      {
+        "q": "¿Puedo usar Power BI sin Excel?",
+        "a": "Sí, pero la mayoría de los datos de negocio vienen de Excel, así que conviven."
+      },
+      {
+        "q": "¿Power BI es gratis?",
+        "a": "Desktop es gratis en Windows. Compartir en la nube con otros normalmente requiere licencia Pro o capacidad de la empresa."
+      },
+      {
+        "q": "¿Qué conviene aprender primero?",
+        "a": "Excel intermedio y Power Query; luego Power BI."
+      },
+      {
+        "q": "¿Power BI sirve para presupuestos?",
+        "a": "Para mostrar presupuesto contra real, sí. Para construir el presupuesto con supuestos, Excel suele ser más cómodo."
+      },
+      {
+        "q": "¿Cuántos datos aguanta Power BI?",
+        "a": "Bastantes millones de filas en un equipo normal, gracias a la compresión; el límite depende de la memoria y de la licencia al publicar."
+      }
+    ]
   }
 ];
