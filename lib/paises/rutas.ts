@@ -7,6 +7,7 @@ const RAICES = [
   "/precios",
   "/empresas",
   "/faq",
+  "/preguntas-frecuentes",
   "/nosotros",
   "/implementacion-power-bi",
   "/migrar-excel-a-power-bi",
