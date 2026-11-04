@@ -10,7 +10,8 @@ import {
   PAISES_CARPETA,
 } from "@/config/paises";
 import { guiasDePais, indiceGuias } from "@/lib/guias";
-import { opcionesCurso } from "@/lib/guias/hub";
+import { opcionesCurso } from "@/lib/guias/opciones";
+import { tarjetasDeGuias } from "@/lib/guias/tarjetas";
 import { robotsLocal } from "@/lib/paises/metadata";
 import { localeOg } from "@/lib/paises/rutas";
 import { absoluteUrl } from "@/lib/seo";
@@ -83,7 +84,7 @@ export default async function GuiasPaisPage({ params }: { params: Promise<Params
 
         <div className="mt-8">
           <GuiasHub
-            guias={guias}
+            guias={tarjetasDeGuias(guias)}
             paises={[]}
             cursos={cursos}
             mostrarPais={false}

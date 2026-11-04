@@ -9,8 +9,8 @@ export function metadataComparativa(
 ): Metadata {
   const canonical = absoluteUrl(contenido.ruta);
   const share = pageOg({
-    title: contenido.seoTitle,
-    description: contenido.seoDescription,
+    title: contenido.metaTitle,
+    description: contenido.metaDescription,
     path: contenido.ruta,
     kicker: "Comparativa",
     tags: ["Power BI", contenido.rival],
@@ -18,15 +18,15 @@ export function metadataComparativa(
   });
 
   return {
-    title: { absolute: tituloLocal(contenido.seoTitle) },
-    description: contenido.seoDescription,
+    title: { absolute: tituloLocal(contenido.metaTitle) },
+    description: contenido.metaDescription,
     alternates: {
       canonical,
       ...(languages ? { languages } : {}),
     },
     openGraph: {
-      title: contenido.seoTitle,
-      description: contenido.seoDescription,
+      title: contenido.metaTitle,
+      description: contenido.metaDescription,
       url: canonical,
       type: "website",
       locale: contenido.idioma.replace("-", "_"),

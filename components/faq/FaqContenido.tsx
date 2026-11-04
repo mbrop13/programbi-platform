@@ -104,7 +104,7 @@ export default function FaqContenido({ contenido }: { contenido: Contenido }) {
                     href={guia.href}
                     className="font-medium text-ink underline underline-offset-4"
                   >
-                    {guia.etiqueta}
+                    {guia.texto}
                   </Link>
                 </li>
               ))}

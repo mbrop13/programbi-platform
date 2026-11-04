@@ -174,7 +174,7 @@ const CODERHOUSE: Record<
   },
 };
 
-function esPaisCoderhouse(iso: string | null | undefined): iso is PaisComparativa {
+export function esPaisCoderhouse(iso: string | null | undefined): iso is PaisComparativa {
   return !!iso && (PAISES_CODERHOUSE as string[]).includes(iso);
 }
 

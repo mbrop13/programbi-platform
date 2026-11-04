@@ -4,7 +4,8 @@ import { ArrowRight } from "lucide-react";
 import GuiasHub from "@/components/guias/GuiasHub";
 import { GUIAS } from "@/lib/guias/generado";
 import { indiceGuias } from "@/lib/guias";
-import { opcionesCurso, opcionesPais, paisesConConteo } from "@/lib/guias/hub";
+import { opcionesCurso, opcionesPais, paisesConConteo } from "@/lib/guias/opciones";
+import { tarjetasDeGuias } from "@/lib/guias/tarjetas";
 import { absoluteUrl } from "@/lib/seo";
 
 const title = "Guías de datos, Power BI y SQL — ProgramBI";
@@ -52,7 +53,7 @@ export default function GuiasIndexPage() {
         </p>
 
         <div className="mt-8">
-          <GuiasHub guias={guias} paises={paises} cursos={cursos} />
+          <GuiasHub guias={tarjetasDeGuias(guias)} paises={paises} cursos={cursos} />
         </div>
 
         <section
