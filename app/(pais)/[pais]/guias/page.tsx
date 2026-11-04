@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { esIsoPais, getPais, ISO_CHILE } from "@/config/paises";
+import GuiasHub from "@/components/guias/GuiasHub";
+import {
+  esIndexable,
+  esIsoPais,
+  getPais,
+  ISO_CHILE,
+  PAISES_CARPETA,
+} from "@/config/paises";
 import { guiasDePais, indiceGuias } from "@/lib/guias";
-import { esIndexable } from "@/config/paises";
+import { opcionesCurso } from "@/lib/guias/hub";
 import { robotsLocal } from "@/lib/paises/metadata";
 import { localeOg } from "@/lib/paises/rutas";
 import { absoluteUrl } from "@/lib/seo";
@@ -13,8 +20,11 @@ export const dynamicParams = false;
 
 type Params = { pais: string };
 
+/** Solo se generan los países que tienen al menos una guía publicada. */
 export function generateStaticParams(): Params[] {
-  return ["ar", "mx", "pe", "co", "uy", "py"].map((pais) => ({ pais }));
+  return PAISES_CARPETA.filter((pais) => guiasDePais(pais.iso).length > 0).map((pais) => ({
+    pais: pais.iso,
+  }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
@@ -22,8 +32,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   if (!esIsoPais(pais) || pais === ISO_CHILE) return {};
   const nombre = getPais(pais).nombre;
   const path = `/${pais}/guias`;
-  const title = `Guías de Power BI en ${nombre} — ProgramBI`;
-  const description = `Guías prácticas de Power BI y análisis de datos para ${nombre}: ruta de estudio, sueldos del mercado, funciones DAX y el curso en vivo de ProgramBI.`;
+  const title = `Guías de datos y Power BI en ${nombre} — ProgramBI`;
+  const description = `Guías prácticas de Power BI, Excel, SQL Server, Python y análisis de datos para ${nombre}: ruta de estudio, sueldos del mercado, precios locales y el curso en vivo de ProgramBI.`;
   const indexable = esIndexable(pais);
   return {
     title: { absolute: title },
@@ -46,10 +56,11 @@ export default async function GuiasPaisPage({ params }: { params: Promise<Params
   const guias = guiasDePais(pais);
   if (guias.length === 0) notFound();
   const nombre = getPais(pais).nombre;
+  const cursos = opcionesCurso(guias);
 
   return (
     <main className="bg-canvas px-4 pb-20 pt-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[900px]">
+      <div className="mx-auto max-w-[1120px]">
         <nav aria-label="Migas de pan" className="text-xs text-mute">
           <ol className="flex items-center gap-1.5">
             <li>
@@ -62,23 +73,25 @@ export default async function GuiasPaisPage({ params }: { params: Promise<Params
           </ol>
         </nav>
         <h1 className="mt-6 text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-          Guías de Power BI en {nombre}
+          Guías de datos y Power BI en {nombre}
         </h1>
-        <p className="mt-4 max-w-[46rem] leading-relaxed text-mute">
-          Guías de estudio y referencia para trabajar con datos en {nombre}: ruta de aprendizaje,
-          funciones con ejemplos, fuentes citadas y el curso en vivo que las cubre.
+        <p className="mt-4 max-w-[62ch] leading-relaxed text-mute">
+          {guias.length} guías de estudio y referencia para trabajar con datos en {nombre}: ruta de
+          aprendizaje, funciones con ejemplos, fuentes citadas, precios locales y el curso en vivo que
+          las cubre.
         </p>
-        <ul className="mt-8 grid gap-4 sm:grid-cols-2">
-          {guias.map((guia) => (
-            <li key={guia.path} className="rounded-2xl border border-line bg-paper p-5">
-              <Link href={guia.path} className="font-semibold text-ink no-underline hover:underline">
-                {guia.h1}
-              </Link>
-              <p className="mt-2 text-sm leading-relaxed text-mute">{guia.description}</p>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-10 text-sm">
+
+        <div className="mt-8">
+          <GuiasHub
+            guias={guias}
+            paises={[]}
+            cursos={cursos}
+            mostrarPais={false}
+            iso={pais}
+          />
+        </div>
+
+        <p className="mt-12 border-t border-line pt-8 text-sm">
           <Link href={indiceGuias("cl")} className="font-medium text-ink underline underline-offset-4">
             Ver todas las guías de ProgramBI
           </Link>
