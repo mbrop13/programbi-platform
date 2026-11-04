@@ -1,14 +1,17 @@
 import Link from "next/link";
 import Bloque30Segundos from "@/components/guias/Bloque30Segundos";
+import ElementoVisual from "@/components/guias/ElementoVisual";
 import FuentesGuia from "@/components/guias/FuentesGuia";
-import GuiaCTA, { GuiaStickyCta } from "@/components/guias/GuiaCTA";
+import GuiaCTA from "@/components/guias/GuiaCTA";
+import GuiaStickyCta from "@/components/guias/GuiaStickyCta";
 import GuiaMarkdown from "@/components/guias/GuiaMarkdown";
 import { IndiceGuiaMobile, IndiceGuiaNav } from "@/components/guias/IndiceGuia";
 import RutaAprendizaje from "@/components/guias/RutaAprendizaje";
 import TablaComparativa from "@/components/guias/TablaComparativa";
+import { filasComparativa } from "@/components/guias/comparativa";
+import { encabezadosVisibles } from "@/components/guias/indice";
 import { ISO_CHILE } from "@/config/paises";
-import { encabezadosDeGuia } from "@/lib/guias/anclas";
-import { esGuiaDeCurso } from "@/lib/guias";
+import { esCursoConPrecio, monedaPublica, PRECIOS_VALID_FROM, precioPublico } from "@/config/pricing";
 import { fichaCurso } from "@/lib/guias/curso";
 import { fechaActualizado, resolverPrecios } from "@/lib/guias/precio";
 import type { Guia } from "@/lib/guias/tipos";
@@ -24,41 +27,18 @@ type Props = {
   relacionadas: Guia[];
 };
 
-/** Tabla honesta para las guías de curso (sin cifras inventadas). */
-function filasComparativa(curso: string) {
-  const ficha = fichaCurso(curso);
-  return [
-    {
-      criterio: "Horas y ritmo",
-      enVivo: `${ficha.horasTexto} con horario fijo`,
-      autodidacta: "A tu ritmo, sin fecha de término",
-      universidad: "Semestres y ramos de carrera",
-    },
-    {
-      criterio: "Feedback de un profe",
-      enVivo: "Sí, en cada clase y por el campus",
-      autodidacta: "No (o foros)",
-      universidad: "Sí, en clases y ayudantías",
-    },
-    {
-      criterio: "Tiempo hasta aplicarlo",
-      enVivo: "Semanas: sales con un tablero propio",
-      autodidacta: "Depende de tu disciplina",
-      universidad: "Años, con título profesional",
-    },
-    {
-      criterio: "Certificado",
-      enVivo: "Certificado de ProgramBI al completar",
-      autodidacta: "No",
-      universidad: "Título profesional",
-    },
-    {
-      criterio: "Costo",
-      enVivo: "Un pago por curso (o por nivel)",
-      autodidacta: "Gratis, pero cuesta el tiempo",
-      universidad: "Matrícula y arancel de la carrera",
-    },
-  ];
+/**
+ * Solo las fichas de ProgramBI pueden declarar `Course` + `Offer`. Si algún día
+ * una guía enlaza la ficha de un competidor, el JSON-LD no debe declarar su
+ * precio como si fuera nuestro.
+ */
+function esUrlProgramBI(url: string): boolean {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, "").toLowerCase();
+    return host === "programbi.com" || host.endsWith(".programbi.com");
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -76,9 +56,42 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
     .replace(/^#\s+.*\n+/, "");
   const canonical = absoluteUrl(guia.path);
   const actualizado = fechaActualizado(guia.updated);
-  const encabezados = encabezadosDeGuia(body);
+  const encabezados = encabezadosVisibles(body);
   const faqs = guia.faqs.map((faq) => ({ q: faq.q, a: resolverPrecios(faq.a, guia) }));
-  const esDeCurso = esGuiaDeCurso(guia);
+  const ficha = fichaCurso(guia.course);
+  const esCursoConocido = ficha.horas != null;
+  const precio = precioPublico(iso, guia.course);
+  const courseId = `${canonical}#course`;
+
+  // Course + Offer solo para las fichas propias de ProgramBI. Nunca para
+  // herramientas o cursos de competidores que aparezcan citados en la guía.
+  const cursoUrl = guia.cursoUrl;
+  const courseNode =
+    cursoUrl && esCursoConPrecio(guia.course) && esUrlProgramBI(cursoUrl)
+      ? {
+          "@type": "Course",
+          "@id": courseId,
+          name: ficha.nombre,
+          description: guia.description,
+          url: cursoUrl,
+          inLanguage: guia.lang,
+          courseMode: "online",
+          educationalCredentialAwarded: "Certificado de ProgramBI",
+          provider: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
+          ...(precio != null
+            ? {
+                offers: {
+                  "@type": "Offer",
+                  price: precio,
+                  priceCurrency: monedaPublica(iso),
+                  availability: "https://schema.org/InStock",
+                  url: cursoUrl,
+                  validFrom: PRECIOS_VALID_FROM,
+                },
+              }
+            : {}),
+        }
+      : null;
 
   // El Markdown trae marcadores <!-- CTA-TOP|MID|END --> para intercalar los CTA.
   const partes = body.split(/<!--\s*CTA-(TOP|MID|END)\s*-->/g);
@@ -99,8 +112,9 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
         author: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
         publisher: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
         ...(guia.sources && guia.sources.length > 0 ? { citation: guia.sources } : {}),
-        ...(guia.cursoUrl ? { about: { "@type": "Course", name: fichaCurso(guia.course).nombre, url: guia.cursoUrl } } : {}),
+        ...(courseNode ? { about: { "@id": courseId } } : {}),
       },
+      ...(courseNode ? [courseNode] : []),
       ...(faqs.length > 0
         ? [
             {
@@ -164,18 +178,11 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
                 Actualizado el {actualizado} · Guía de ProgramBI · {nombreMercado}
               </p>
 
-              <IndiceGuiaMobile items={encabezados} />
-
               <Bloque30Segundos guia={guia} />
 
-              {guia.visual ? (
-                <aside className="mt-6 rounded-2xl border border-line bg-wash/50 px-5 py-4">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-                    Lo que vas a ver en esta guía
-                  </p>
-                  <p className="mt-1.5 text-sm leading-relaxed text-ink">{guia.visual}</p>
-                </aside>
-              ) : null}
+              <IndiceGuiaMobile items={encabezados} />
+
+              <ElementoVisual guia={guia} />
 
               <div className="mt-8">
                 {partes.map((parte, index) => {
@@ -195,9 +202,9 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
                 })}
               </div>
 
-              {esDeCurso ? <RutaAprendizaje iso={iso} cursoActual={guia.course} /> : null}
+              <RutaAprendizaje iso={iso} cursoActual={guia.course} />
 
-              {esDeCurso ? (
+              {esCursoConocido ? (
                 <TablaComparativa
                   filas={filasComparativa(guia.course)}
                   nota="Comparación cualitativa: no incluye precios de terceros. El precio del curso en vivo sale de la lista vigente de ProgramBI."

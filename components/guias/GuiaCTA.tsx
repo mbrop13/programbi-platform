@@ -7,6 +7,7 @@ import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
 import { courses } from "@/lib/data/courses";
 import { formatMoneda, precioVenta } from "@/lib/paises/precios";
 import { horarioLocal } from "@/lib/paises/horarios";
+import { rutaLocal } from "@/lib/paises/rutas";
 
 /** Fecha publicada en las fichas de los cursos (dato real, no calculado). */
 export const PROXIMO_INICIO = "lunes 23 de noviembre de 2026";
@@ -35,11 +36,12 @@ export default function GuiaCTA({
   const pais = getPais(iso);
   const curso = cursoDe(course);
   const ficha = fichaCurso(course);
-  const nombreCurso = curso?.title || "Power BI";
+  const esGeneral = course === "general";
+  const nombreCurso = curso?.title || (esGeneral ? "Cursos de ProgramBI" : "Power BI");
   const precio = precioVenta(iso, course);
   const horario = horarioLocal(iso);
   const lugar = iso === ISO_CHILE ? "Chile" : pais.nombre;
-  const rutaCurso = rutaFichaCurso(iso, course);
+  const rutaCurso = esGeneral ? rutaLocal(iso, "/cursos") : rutaFichaCurso(iso, course);
   const horaLocal = `de ${horario.inicio} a ${horario.fin}, hora de ${lugar}`;
   const inicioTexto = ficha.inicio ? `Próxima clase en vivo: ${ficha.inicio}` : "Cupos abiertos · fecha por confirmar";
 
@@ -117,33 +119,5 @@ export default function GuiaCTA({
         </WhatsAppCta>
       </div>
     </aside>
-  );
-}
-
-/** Barra fija inferior para mobile en las guías. */
-export function GuiaStickyCta({ iso, course }: { iso: string; course: string }) {
-  const curso = cursoDe(course);
-  return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur md:hidden">
-      <div className="flex gap-2">
-        <Link
-          href={rutaFichaCurso(iso, course)}
-          className="inline-flex h-12 flex-1 items-center justify-center rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
-        >
-          Inscribirme
-        </Link>
-        <WhatsAppCta
-          page={rutaFichaCurso(iso, course)}
-          intent="curso"
-          course={curso?.title || "Power BI"}
-          courseSlug={course}
-          country={iso}
-          className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-semibold text-ink no-underline"
-        >
-          <MessageCircle size={16} aria-hidden />
-          WhatsApp
-        </WhatsAppCta>
-      </div>
-    </div>
   );
 }

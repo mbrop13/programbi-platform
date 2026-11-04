@@ -17,21 +17,32 @@ export default function TablaComparativa({
   subtitulo = "Lo que cambia, en la práctica",
   filas,
   nota,
+  embebido = false,
 }: {
   titulo?: string;
   subtitulo?: string;
   filas: FilaComparativa[];
   nota?: string;
+  /** Dentro del bloque «Resumen visual»: sin margen ni encabezado visibles. */
+  embebido?: boolean;
 }) {
   return (
-    <section aria-labelledby="tabla-comparativa" data-testid="tabla-comparativa" className="mt-12">
-      <h2 id="tabla-comparativa" className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-        {subtitulo}
-      </h2>
-      <p className="mt-1 text-xl font-bold tracking-tight text-ink">{titulo}</p>
+    <section aria-labelledby="tabla-comparativa" data-testid="tabla-comparativa" className={embebido ? "" : "mt-12"}>
+      {embebido ? (
+        <h3 id="tabla-comparativa" className="sr-only">
+          {titulo}
+        </h3>
+      ) : (
+        <>
+          <h2 id="tabla-comparativa" className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
+            {subtitulo}
+          </h2>
+          <p className="mt-1 text-xl font-bold tracking-tight text-ink">{titulo}</p>
+        </>
+      )}
 
       {/* Escritorio */}
-      <div className="mt-4 hidden overflow-hidden rounded-2xl border border-line sm:block">
+      <div className={`hidden overflow-hidden rounded-2xl border border-line sm:block ${embebido ? "" : "mt-4"}`}>
         <table className="w-full border-collapse text-left text-sm">
           <caption className="sr-only">{titulo}</caption>
           <thead>
@@ -66,7 +77,7 @@ export default function TablaComparativa({
       </div>
 
       {/* Mobile: una tarjeta por criterio */}
-      <ul className="mt-4 space-y-3 sm:hidden">
+      <ul className={`space-y-3 sm:hidden ${embebido ? "" : "mt-4"}`}>
         {filas.map((fila) => (
           <li key={fila.criterio} className="rounded-2xl border border-line bg-paper p-4">
             <p className="text-sm font-bold text-ink">{fila.criterio}</p>
