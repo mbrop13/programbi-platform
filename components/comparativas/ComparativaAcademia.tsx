@@ -11,8 +11,11 @@ import {
 } from "lucide-react";
 import { PRECIOS_VALID_FROM } from "@/config/pricing";
 import { ISO_CHILE, getPais } from "@/config/paises";
-import type { ComparativaAcademia as ContenidoComparativa, PaisComparativa } from "@/lib/data/comparativas";
-import { ACTUALIZADO, ACTUALIZADO_TEXTO } from "@/lib/data/comparativas";
+import type {
+  ComparativaAcademia as ContenidoComparativa,
+  PaisComparativa,
+} from "@/lib/data/academias";
+import { REVISION_DIAS } from "@/lib/data/academias";
 import { formatMoneda } from "@/lib/paises/precios";
 import { absoluteUrl, jsonLdString, SITE_URL } from "@/lib/seo";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
@@ -43,11 +46,6 @@ function valorCelda(valor: string) {
   return valor;
 }
 
-function precioHoraTexto(iso: string, precio: number | null, horas: number | null): string {
-  if (precio == null || horas == null || horas <= 0) return "—";
-  return formatMoneda(iso, Math.round(precio / horas));
-}
-
 export default function ComparativaAcademia({
   contenido,
   iso,
@@ -60,26 +58,12 @@ export default function ComparativaAcademia({
   const pais = getPais(iso);
   const lugar = iso === ISO_CHILE ? "Chile" : pais.nombre;
   const canonical = absoluteUrl(contenido.ruta);
-  const fechaJsonLd = `${ACTUALIZADO}T12:00:00-03:00`;
+  const fechaJsonLd = `${contenido.fechaRevision}T12:00:00-03:00`;
   const courseUrl = absoluteUrl(contenido.rutaCurso);
+  const inicioRuta = iso === ISO_CHILE ? "/" : `/${iso}`;
 
   const progPrecio = contenido.precioProgrambi;
-  const progLista = contenido.precioListaProgrambi;
-  const progPrecioTexto =
-    progPrecio != null
-      ? `${formatMoneda(iso, progPrecio)}${progLista != null ? ` (lista ${formatMoneda(iso, progLista)})` : ""}`
-      : "Consultar por WhatsApp";
-  const progHora = precioHoraTexto(iso, progPrecio, contenido.horasProgrambi);
-  const rivalHora = precioHoraTexto(iso, contenido.precioRival, contenido.horasRival);
-
-  const rivalPrecioResumen =
-    contenido.precioRival != null
-      ? formatMoneda(iso, contenido.precioRival)
-      : contenido.rival === "Platzi"
-        ? "Suscripción"
-        : contenido.rival === "Desafío Latam"
-          ? "Vía asesor"
-          : "US$197";
+  const progPrecioTexto = contenido.resumen10s.precioProgrambi;
 
   const opcionesCalculadora: OpcionCalculadora[] = [];
   if (progPrecio != null) {
@@ -98,8 +82,6 @@ export default function ComparativaAcademia({
     });
   }
 
-  const inicioRuta = iso === ISO_CHILE ? "/" : `/${iso}`;
-
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -108,7 +90,7 @@ export default function ComparativaAcademia({
         "@id": `${canonical}#webpage`,
         url: canonical,
         name: contenido.h1,
-        description: contenido.seoDescription,
+        description: contenido.metaDescription,
         inLanguage: contenido.idioma,
         dateModified: fechaJsonLd,
         datePublished: fechaJsonLd,
@@ -148,6 +130,8 @@ export default function ComparativaAcademia({
           "Curso de Power BI en vivo por Zoom, con grabaciones, proyecto guiado y certificado de ProgramBI.",
         provider: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
         url: courseUrl,
+        inLanguage: contenido.idioma,
+        courseMode: "Online",
         ...(progPrecio != null
           ? {
               offers: {
@@ -234,7 +218,9 @@ export default function ComparativaAcademia({
               {contenido.subtitulo}
             </p>
             <p className="mt-3 text-xs text-faint">
-              Actualizado: {ACTUALIZADO_TEXTO} · precios revisados en las URLs citadas
+              Actualizado:{" "}
+              <time dateTime={contenido.fechaRevision}>{contenido.fechaRevisionTexto}</time> · precios
+              revisados en las URLs citadas · revisión cada {REVISION_DIAS} días
             </p>
             <p className="mt-2 text-xs leading-relaxed text-faint">
               Esta comparativa la hace ProgramBI. Incluimos a la competencia y decimos dónde gana.
@@ -299,29 +285,39 @@ export default function ComparativaAcademia({
                 {contenido.rival}
               </div>
 
-              <div className="border-t border-line px-4 py-3 text-xs font-semibold text-mute">Horas en vivo</div>
+              <div className="border-t border-line px-4 py-3 text-xs font-semibold text-mute">
+                Horas en vivo
+              </div>
               <div className="border-l border-t border-line bg-wash/70 px-4 py-3 font-bold text-ink">
-                {contenido.horasProgrambi} h
+                {contenido.resumen10s.horasProgrambi}
               </div>
               <div className="border-l border-t border-line px-4 py-3 text-mute">
-                {contenido.horasRival != null ? `≈${contenido.horasRival} h` : "Sin horas fijas"}
+                {contenido.resumen10s.horasRival}
               </div>
 
-              <div className="border-t border-line px-4 py-3 text-xs font-semibold text-mute">Precio</div>
+              <div className="border-t border-line px-4 py-3 text-xs font-semibold text-mute">
+                Precio
+              </div>
               <div className="border-l border-t border-line bg-wash/70 px-4 py-3 font-bold text-ink">
                 {progPrecio != null ? formatMoneda(iso, progPrecio) : "Consultar"}
               </div>
-              <div className="border-l border-t border-line px-4 py-3 text-mute">{rivalPrecioResumen}</div>
+              <div className="border-l border-t border-line px-4 py-3 text-mute">
+                {contenido.resumen10s.precioRival}
+              </div>
 
-              <div className="border-t border-line px-4 py-3 text-xs font-semibold text-mute">Precio/hora</div>
-              <div className="border-l border-t border-line bg-wash/70 px-4 py-3 font-bold text-ink">{progHora}</div>
-              <div className="border-l border-t border-line px-4 py-3 text-mute">{rivalHora}</div>
+              <div className="border-t border-line px-4 py-3 text-xs font-semibold text-mute">
+                Precio/hora
+              </div>
+              <div className="border-l border-t border-line bg-wash/70 px-4 py-3 font-bold text-ink">
+                {contenido.resumen10s.precioHoraProgrambi}
+              </div>
+              <div className="border-l border-t border-line px-4 py-3 text-mute">
+                {contenido.resumen10s.precioHoraRival}
+              </div>
             </div>
 
             <p className="border-t border-line px-5 py-3 text-[11px] leading-relaxed text-faint">
-              {progLista != null ? `ProgramBI: ${progPrecioTexto}. ` : null}
-              {contenido.precioRivalNota ??
-                "Los precios del rival son los publicados en su sitio y pueden cambiar."}
+              {contenido.notaPrecios}
             </p>
           </aside>
         </section>
@@ -496,8 +492,14 @@ export default function ComparativaAcademia({
             Fuentes y fecha de revisión
           </h2>
           <p className="mt-2 text-xs text-mute">
-            Actualizado: {ACTUALIZADO_TEXTO} · precios revisados en las URLs citadas. Los precios
-            promocionales de terceros cambian; revisa la fuente antes de inscribirte.
+            Actualizado:{" "}
+            <time dateTime={contenido.fechaRevision}>{contenido.fechaRevisionTexto}</time> · precios
+            revisados en las URLs citadas. Los precios promocionales de terceros cambian; revisa la
+            fuente antes de inscribirte.
+          </p>
+          <p className="mt-1 text-xs text-faint">
+            Revisamos esta comparativa cada {REVISION_DIAS} días. Próxima revisión prevista:{" "}
+            {contenido.proximaRevisionTexto}.
           </p>
           <ul className="mt-4 space-y-2 pl-0 text-sm">
             {contenido.fuentes.map((fuente) => (

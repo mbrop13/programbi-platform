@@ -9,12 +9,13 @@ import {
 } from "lucide-react";
 import { PRECIOS_VALID_FROM } from "@/config/pricing";
 import {
-  ACTUALIZADO,
   ACTUALIZADO_TEXTO,
+  PROXIMA_REVISION_TEXTO,
+  REVISION_DIAS,
   RUTA_LISTICLE,
   faqsListiclePowerBiChile,
   opcionesListiclePowerBiChile,
-} from "@/lib/data/comparativas";
+} from "@/lib/data/academias";
 import { formatMoneda, precioVenta } from "@/lib/paises/precios";
 import { absoluteUrl, jsonLdString, SITE_URL } from "@/lib/seo";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
@@ -30,7 +31,7 @@ export default function ListiclePowerBiChile() {
     precioProgrambi != null ? formatMoneda("cl", Math.round(precioProgrambi / 20)) : "—";
 
   const canonical = absoluteUrl(RUTA_LISTICLE);
-  const fechaJsonLd = `${ACTUALIZADO}T12:00:00-03:00`;
+  const fechaJsonLd = `${"2026-11-04"}T12:00:00-03:00`;
   const courseUrl = absoluteUrl("/cursos/power-bi");
 
   const jsonLd = {
@@ -41,7 +42,7 @@ export default function ListiclePowerBiChile() {
         "@id": `${canonical}#article`,
         headline: "Los mejores cursos de Power BI en Chile (2026), comparados con datos",
         description:
-          "Revisamos precio, horas en vivo, formato y certificado de 7 cursos de Power BI en Chile. Incluye a la competencia y declara quién hace la guía.",
+          "Revisamos precio, horas en vivo, formato y certificado de 6 cursos de Power BI en Chile. Incluye a la competencia y declara quién hace la guía.",
         inLanguage: "es-CL",
         datePublished: fechaJsonLd,
         dateModified: fechaJsonLd,
@@ -71,6 +72,8 @@ export default function ListiclePowerBiChile() {
           "Curso de Power BI en vivo por Zoom, con grabaciones, proyecto guiado y certificado de ProgramBI.",
         provider: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
         url: courseUrl,
+        inLanguage: "es-CL",
+        courseMode: "Online",
         ...(precioProgrambi != null
           ? {
               offers: {
@@ -143,11 +146,12 @@ export default function ListiclePowerBiChile() {
               Los mejores cursos de Power BI en Chile (2026), comparados con datos.
             </h1>
             <p className="mt-4 max-w-[62ch] text-base leading-relaxed text-mute sm:text-lg">
-              Revisamos precio, horas en vivo, horario y certificado de 7 opciones. Sí, incluimos a
-              la competencia.
+              Revisamos precio, horas en vivo, formato y certificado de {opciones.length} opciones que
+              pudimos verificar. Sí, incluimos a la competencia.
             </p>
             <p className="mt-3 text-xs text-faint">
-              Actualizado: {ACTUALIZADO_TEXTO} · precios revisados en las URLs citadas
+              Actualizado: <time dateTime="2026-11-04">{ACTUALIZADO_TEXTO}</time> · precios revisados
+              en las URLs citadas · revisión cada {REVISION_DIAS} días
             </p>
             <div className="mt-4 rounded-2xl border border-line-strong bg-wash/70 px-4 py-3 text-sm leading-relaxed text-ink">
               <strong>Divulgación:</strong> esta guía la hace ProgramBI. Incluimos a competidores
@@ -201,8 +205,8 @@ export default function ListiclePowerBiChile() {
               </div>
             </dl>
             <p className="border-t border-line px-5 py-3 text-[11px] leading-relaxed text-faint">
-              La tabla completa incluye Coderhouse, Crenn, UC Teleduc, Qualitymas, Platzi e IPS
-              DATAX.
+              La tabla completa incluye Coderhouse, Crenn, Qualitymas, Platzi e IPS DATAX, además de
+              ProgramBI.
             </p>
           </aside>
         </section>
@@ -226,12 +230,16 @@ export default function ListiclePowerBiChile() {
             </li>
             <li className="flex gap-2">
               <Check size={15} className="mt-0.5 shrink-0 text-ink" aria-hidden />
+              Dejamos fuera las opciones sin precio o URL viva verificable.
+            </li>
+            <li className="flex gap-2">
+              <Check size={15} className="mt-0.5 shrink-0 text-ink" aria-hidden />
               Sin logos ajenos ni rankings inventados. Los empates se dicen.
             </li>
           </ul>
           <p className="mt-3 text-xs leading-relaxed text-faint">
-            Revisión: {ACTUALIZADO_TEXTO}. Los precios promocionales cambian; cada fila enlaza a su
-            fuente para que puedas verificarla.
+            Revisión: {ACTUALIZADO_TEXTO}. No incluimos universidades ni programas cuyo precio no
+            pudiéramos verificar. Los precios promocionales cambian; cada fila enlaza a su fuente.
           </p>
         </section>
 
@@ -393,10 +401,10 @@ export default function ListiclePowerBiChile() {
               </p>
             </div>
             <div className="rounded-2xl border border-line bg-paper p-5">
-              <p className="text-sm font-bold text-ink">Si quieres certificación universitaria</p>
+              <p className="text-sm font-bold text-ink">Si quieres amplitud y ritmo propio</p>
               <p className="mt-2 text-sm leading-relaxed text-mute">
-                UC Teleduc tiene 30 h online con certificación de la Pontificia Universidad Católica
-                y código SENCE. Precio con descuento vigente: $109.200.
+                Platzi es una suscripción en dólares con cursos grabados de varias escuelas. Sirve si
+                vas a explorar varios temas, no solo Power BI.
               </p>
             </div>
             <div className="rounded-2xl border border-line-strong bg-wash/60 p-5">
@@ -428,9 +436,13 @@ export default function ListiclePowerBiChile() {
             Fuentes y fecha de revisión
           </h2>
           <p className="mt-2 text-xs text-mute">
-            Actualizado: {ACTUALIZADO_TEXTO}. Cada precio se revisó en la URL citada. Si una
-            institución cambia su precio o su promoción, la fecha de revisión te dice cuándo
-            verificamos.
+            Actualizado: <time dateTime="2026-11-04">{ACTUALIZADO_TEXTO}</time>. Cada precio se revisó
+            en la URL citada. Si una institución cambia su precio o su promoción, la fecha de revisión
+            te dice cuándo verificamos.
+          </p>
+          <p className="mt-1 text-xs text-faint">
+            Revisamos esta guía cada {REVISION_DIAS} días. Próxima revisión prevista:{" "}
+            {PROXIMA_REVISION_TEXTO}.
           </p>
           <ul className="mt-4 grid gap-2 pl-0 text-sm sm:grid-cols-2">
             {opciones.map((opcion) => (
