@@ -2,10 +2,12 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, CalendarDays, Clock, MessageCircle, MonitorPlay } from "lucide-react";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { getPais, ISO_CHILE } from "@/config/paises";
+import { precioListaPublico, precioPublico } from "@/config/pricing";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
 import type { Guia } from "@/lib/guias/tipos";
 import { horarioLocal } from "@/lib/paises/horarios";
-import { formatMoneda, precioListaVenta, precioVenta } from "@/lib/paises/precios";
+import { formatMoneda } from "@/lib/paises/precios";
+import { rutaLocal } from "@/lib/paises/rutas";
 
 /**
  * Bloque «En 30 segundos» que abre cada guía: precio local, duración, horario,
@@ -15,11 +17,13 @@ import { formatMoneda, precioListaVenta, precioVenta } from "@/lib/paises/precio
 export default function Bloque30Segundos({ guia }: { guia: Guia }) {
   const iso = guia.country === "transversal" ? ISO_CHILE : guia.country;
   const curso = fichaCurso(guia.course);
-  const precio = precioVenta(iso, guia.course);
-  const lista = precioListaVenta(iso, guia.course);
+  const precio = precioPublico(iso, guia.course);
+  const lista = precioListaPublico(iso, guia.course);
   const horario = horarioLocal(iso);
   const lugar = iso === ISO_CHILE ? "Chile" : getPais(iso).nombre;
-  const rutaCurso = rutaFichaCurso(iso, guia.course);
+  const esGeneral = guia.course === "general";
+  const nombreCurso = esGeneral ? "Cursos de ProgramBI" : curso.nombre;
+  const rutaCurso = esGeneral ? rutaLocal(iso, "/cursos") : rutaFichaCurso(iso, guia.course);
 
   return (
     <section
@@ -32,12 +36,12 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
           En 30 segundos
         </h2>
         <p className="text-xs text-faint">
-          {curso.nombre} · en vivo por Zoom · {lugar}
+          {nombreCurso} · en vivo por Zoom · {lugar}
         </p>
       </div>
 
-      <dl className="grid grid-cols-1 divide-y divide-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-        <div className="px-5 py-4">
+      <dl className="grid grid-cols-1 gap-px bg-line sm:grid-cols-2 lg:grid-cols-4">
+        <div className="bg-paper px-5 py-4">
           <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-mute">
             <BadgeCheck size={13} aria-hidden /> Precio
           </dt>
@@ -49,7 +53,7 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
                   <span className="ml-2 text-xs text-faint line-through">{formatMoneda(iso, lista)}</span>
                 ) : null}
                 <span className="mt-0.5 block text-xs text-mute">
-                  {curso.porNivel ? "por nivel · incluye grabaciones y certificado" : "incluye grabaciones y certificado"}
+                  {curso.porNivel ? "por nivel · " : ""}3 cuotas sin interés
                 </span>
               </>
             ) : (
@@ -58,7 +62,7 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
           </dd>
         </div>
 
-        <div className="px-5 py-4">
+        <div className="bg-paper px-5 py-4">
           <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-mute">
             <Clock size={13} aria-hidden /> Duración
           </dt>
@@ -68,7 +72,7 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
           </dd>
         </div>
 
-        <div className="px-5 py-4">
+        <div className="bg-paper px-5 py-4">
           <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-mute">
             <CalendarDays size={13} aria-hidden /> Horario
           </dt>
@@ -77,6 +81,16 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
               {horario.inicio}–{horario.fin}
             </span>
             <span className="mt-0.5 block text-xs text-mute">hora de {lugar}</span>
+          </dd>
+        </div>
+
+        <div className="bg-paper px-5 py-4">
+          <dt className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-mute">
+            <MonitorPlay size={13} aria-hidden /> Incluye
+          </dt>
+          <dd className="mt-1.5">
+            <span className="text-sm font-bold leading-snug text-ink">En vivo por Zoom</span>
+            <span className="mt-0.5 block text-xs text-mute">Grabaciones de por vida · certificado al terminar</span>
           </dd>
         </div>
       </dl>
@@ -92,7 +106,7 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
         <WhatsAppCta
           page={rutaCurso}
           intent="curso"
-          course={curso.nombre}
+          course={nombreCurso}
           courseSlug={guia.course}
           country={iso}
           className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-full border border-line-strong bg-canvas px-5 text-sm font-semibold text-ink no-underline hover:bg-wash"
@@ -104,7 +118,7 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
 
       <p className="flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-line px-5 py-3 text-xs text-mute">
         <span className="inline-flex items-center gap-1.5">
-          <MonitorPlay size={13} aria-hidden /> Clases en vivo con profe y compañeros
+          <CalendarDays size={13} aria-hidden /> Lunes y miércoles o martes y jueves
         </span>
         <span>{curso.inicio ? `Próximo inicio: ${curso.inicio}` : "Cupos abiertos · fecha por confirmar"}</span>
       </p>

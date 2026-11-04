@@ -8,7 +8,16 @@ import { RUTA_DATOS, fichaCurso, pasoDeRuta, rutaFichaCurso } from "@/lib/guias/
  * su ficha. Sin JS: la versión mobile es una línea vertical con conectores y
  * la de escritorio una fila de tarjetas.
  */
-export default function RutaAprendizaje({ iso, cursoActual }: { iso: string; cursoActual: string }) {
+export default function RutaAprendizaje({
+  iso,
+  cursoActual,
+  embebido = false,
+}: {
+  iso: string;
+  cursoActual: string;
+  /** Dentro del bloque «Resumen visual»: sin tarjeta ni título visible propios. */
+  embebido?: boolean;
+}) {
   const indice = pasoDeRuta(cursoActual);
   if (indice < 0) return null;
 
@@ -16,16 +25,24 @@ export default function RutaAprendizaje({ iso, cursoActual }: { iso: string; cur
     <nav
       aria-labelledby="ruta-aprendizaje"
       data-testid="ruta-aprendizaje"
-      className="mt-12 rounded-[26px] border border-line bg-wash/60 px-5 py-6"
+      className={
+        embebido ? "rounded-none border-0 bg-transparent p-0" : "mt-12 rounded-[26px] border border-line bg-wash/60 px-5 py-6"
+      }
     >
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <h2 id="ruta-aprendizaje" className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
+      {embebido ? (
+        <h3 id="ruta-aprendizaje" className="sr-only">
           Ruta de aprendizaje
-        </h2>
-        <p className="text-xs text-faint">Cada paso es un curso en vivo, por separado</p>
-      </div>
+        </h3>
+      ) : (
+        <div className="flex flex-wrap items-baseline justify-between gap-2">
+          <h2 id="ruta-aprendizaje" className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
+            Ruta de aprendizaje
+          </h2>
+          <p className="text-xs text-faint">Cada paso es un curso en vivo, por separado</p>
+        </div>
+      )}
 
-      <ol className="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-5">
+      <ol className={embebido ? "grid grid-cols-1 gap-2 sm:grid-cols-5" : "mt-5 grid grid-cols-1 gap-3 sm:grid-cols-5"}>
         {RUTA_DATOS.map((paso, i) => {
           const actual = i === indice;
           const hecho = i < indice;
@@ -35,7 +52,7 @@ export default function RutaAprendizaje({ iso, cursoActual }: { iso: string; cur
               <Link
                 href={rutaFichaCurso(iso, paso.curso)}
                 aria-current={actual ? "step" : undefined}
-                className={`group flex h-full flex-col justify-between gap-2 rounded-2xl border px-4 py-3 no-underline transition-colors ${
+                className={`group flex h-full flex-col justify-between gap-2 rounded-2xl border px-3 py-3 no-underline transition-colors ${
                   actual
                     ? "border-ink bg-ink text-canvas"
                     : "border-line-strong bg-paper text-ink hover:border-ink/30"
