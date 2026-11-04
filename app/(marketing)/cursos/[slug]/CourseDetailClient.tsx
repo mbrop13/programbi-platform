@@ -48,7 +48,6 @@ import {
   trackClickRegistro,
   trackCourseView,
   trackCtaClick,
-  trackLeadSubmit,
 } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";

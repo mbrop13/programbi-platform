@@ -19,7 +19,7 @@ import {
   readBrowserReferralCode,
   writeBrowserReferralCode,
 } from "@/lib/referrals/cookie";
-import { courseSlugFromLocation, debugSignUpResult, signUpCreatedUser, trackSubmitRegistro } from "@/lib/analytics/marketing";
+import { courseSlugFromLocation, signUpCreatedUser, trackSubmitRegistro } from "@/lib/analytics/marketing";
 
 function getFromQueryParam(): string | null {
   if (typeof window === "undefined") return null;
@@ -124,14 +124,12 @@ export default function RegistroPage() {
 
     // Anti-bot check 1: Honeypot field filled by automated scrapers/bots
     if (honeypot.trim() !== "") {
-      console.log("🤖 Bot registration blocked (honeypot)");
       router.push("/login?registered=true");
       return;
     }
 
     // Anti-bot check 2: Instant submission check (less than 2 seconds)
     if (Date.now() - formLoadedAt.current < 2000) {
-      console.log("🤖 Bot registration blocked (too fast)");
       router.push("/login?registered=true");
       return;
     }
@@ -189,8 +187,6 @@ export default function RegistroPage() {
           emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(getNextPath())}&reg_source=${encodeURIComponent(registrationSource)}`,
         },
       });
-
-      debugSignUpResult("registro signUp", data?.user, signUpError);
 
       if (signUpError) {
         setError(signUpError.message);
