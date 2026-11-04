@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { PAISES_INDEXABLES, ISO_CHILE, esIndexable } from "@/config/paises";
 import { precioPublico, PRECIOS_VALID_FROM } from "@/config/pricing";
 import { GUIAS } from "@/lib/guias/generado";
+import { cursosConGuia } from "@/lib/guias";
 import { formatMoneda } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { SITE_URL } from "@/lib/seo";
@@ -61,9 +62,15 @@ const CURSOS: CursoLlms[] = [
 ];
 
 /** Guías publicadas: las de país indexable más las transversales. Mismo filtro que app/sitemap.ts. */
-const GUIA_ENLACES = GUIAS.filter(
-  (guia) => guia.country === "transversal" || esIndexable(guia.country)
-).map((guia) => ({ ruta: guia.path, titulo: guia.h1 }));
+const GUIAS_PUBLICADAS = GUIAS.filter(
+  (guia) => guia.path.startsWith("/guias/") && (guia.country === "transversal" || esIndexable(guia.country))
+);
+
+const NOMBRE_CURSO = new Map(CURSOS.map((curso) => [curso.slug, curso.nombre]));
+const CURSOS_CON_GUIA = [
+  ...CURSOS.map((curso) => curso.slug),
+  ...cursosConGuia().filter((slug) => !NOMBRE_CURSO.has(slug)),
+].filter((slug) => GUIAS_PUBLICADAS.some((guia) => guia.course === slug));
 
 function precioLinea(iso: string, slug: string): string {
   const monto = precioPublico(iso, slug);
@@ -110,10 +117,13 @@ function construir(): string {
   lineas.push("- Niveles básico, intermedio y avanzado; no se exige experiencia previa en programación.");
   lineas.push("");
   lineas.push("## Guías");
-  for (const guia of GUIA_ENLACES) {
-    lineas.push(`- ${guia.titulo} (${url(guia.ruta)})`);
+  for (const curso of CURSOS_CON_GUIA) {
+    lineas.push(`### ${NOMBRE_CURSO.get(curso) ?? curso}`);
+    for (const guia of GUIAS_PUBLICADAS.filter((item) => item.course === curso)) {
+      lineas.push(`- ${guia.h1} (${url(guia.path)}): ${guia.description}`);
+    }
+    lineas.push("");
   }
-  lineas.push("");
   lineas.push("## Otras páginas");
   lineas.push(`- Catálogo de cursos (${url("/cursos")})`);
   lineas.push(`- Precios Chile (${url("/precios")})`);
@@ -122,6 +132,7 @@ function construir(): string {
   lineas.push(`- Migrar Excel a Power BI (${url("/migrar-excel-a-power-bi")})`);
   lineas.push(`- Bolsa de trabajo (${url("/empleos")})`);
   lineas.push(`- Preguntas frecuentes (${url("/preguntas-frecuentes")})`);
+  lineas.push(`- Comparativas (${url("/versus")})`);
   lineas.push(`- Blog (${url("/blog")})`);
   lineas.push("");
   lineas.push("## Contacto");

@@ -1,6 +1,9 @@
 /** Tipos del contenido de guías. La fuente es cada .md de content/guias. */
 export type GuiaFaq = { q: string; a: string };
 
+/** Plantilla de presentación opcional que elige el frontmatter (`layout`). */
+export type GuiaLayout = "comparativa" | "certificacion" | "sueldos" | "curso";
+
 export type Guia = {
   /** Ruta del archivo fuente, para trazabilidad. */
   source: string;
@@ -16,8 +19,10 @@ export type Guia = {
   h1: string;
   /** Fecha ISO (YYYY-MM-DD) visible como «Actualizado». */
   updated: string;
-  /** Curso al que empuja la guía: power-bi o claude. */
+  /** Curso al que empuja la guía (power-bi, claude, excel, access…). */
   course: string;
+  /** Plantilla de presentación opcional (`layout` del frontmatter). */
+  layout?: GuiaLayout;
   /** Markdown del cuerpo, con marcadores <!-- CTA-TOP|MID|END -->. */
   body: string;
   faqs: GuiaFaq[];
