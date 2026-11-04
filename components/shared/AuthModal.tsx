@@ -1,19 +1,18 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, LogIn, UserPlus, Mail, Lock, Sparkles, ArrowRight, CheckCircle, AlertCircle, Loader2, User, Eye, EyeOff, Phone, ChevronDown } from "lucide-react";
+import { X, LogIn, Mail, Lock, Sparkles, ArrowRight, CheckCircle, AlertCircle, Loader2, User, Eye, EyeOff } from "lucide-react";
 import { useState, useEffect, FormEvent, useRef } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { validatePassword, isBreachedPassword } from "@/lib/security/password";
-import { useCountry } from "@/lib/context/CountryContext";
 import { subscribeToNewsletter } from "@/lib/supabase/comunidad-ai";
 import { honeypotStyle } from "@/lib/antibot";
-import { persistRegistrationSource } from "@/lib/registration-source";
+import { persistRegistrationSource, readRegistrationSource } from "@/lib/registration-source";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
-import { courseSlugFromLocation, debugSignUpResult, signUpCreatedUser, trackClickRegistro, trackSubmitRegistro } from "@/lib/analytics/marketing";
+import { courseSlugFromLocation, signUpCreatedUser, trackClickRegistro, trackSubmitRegistro } from "@/lib/analytics/marketing";
 import { readBrowserReferralCode } from "@/lib/referrals/cookie";
 
 interface AuthModalProps {
@@ -22,28 +21,6 @@ interface AuthModalProps {
   defaultTab?: "login" | "register";
   redirectUrl?: string;
 }
-
-const COUNTRIES = [
-  { code: "+56", iso: "cl", name: "Chile" },
-  { code: "+52", iso: "mx", name: "México" },
-  { code: "+54", iso: "ar", name: "Argentina" },
-  { code: "+57", iso: "co", name: "Colombia" },
-  { code: "+51", iso: "pe", name: "Perú" },
-  { code: "+593", iso: "ec", name: "Ecuador" },
-  { code: "+507", iso: "pa", name: "Panamá" },
-  { code: "+58", iso: "ve", name: "Venezuela" },
-  { code: "+598", iso: "uy", name: "Uruguay" },
-  { code: "+595", iso: "py", name: "Paraguay" },
-  { code: "+591", iso: "bo", name: "Bolivia" },
-  { code: "+502", iso: "gt", name: "Guatemala" },
-  { code: "+506", iso: "cr", name: "Costa Rica" },
-  { code: "+503", iso: "sv", name: "El Salvador" },
-  { code: "+504", iso: "hn", name: "Honduras" },
-  { code: "+505", iso: "ni", name: "Nicaragua" },
-  { code: "+1", iso: "do", name: "Rep. Dominicana" },
-  { code: "+34", iso: "es", name: "España" },
-  { code: "+1", iso: "us", name: "EE.UU." },
-];
 
 export default function AuthModal({ isOpen, onClose, defaultTab = "login", redirectUrl }: AuthModalProps) {
   const [mounted, setMounted] = useState(false);
@@ -62,21 +39,16 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
-  const [whatsapp, setWhatsapp] = useState("");
   
   // UI states
   const [showPassword, setShowPassword] = useState(false);
-  const [phonePrefix, setPhonePrefix] = useState("+56");
-  const [showPrefixDropdown, setShowPrefixDropdown] = useState(false);
   const [acceptsPrivacy, setAcceptsPrivacy] = useState(false);
   const [subscribeToBlog, setSubscribeToBlog] = useState(true);
+  const [confirmPending, setConfirmPending] = useState(false);
+  const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
-  // Sync phone prefix with global country
-  const { country: globalCountry } = useCountry();
-  useEffect(() => {
-    const matched = COUNTRIES.find(c => c.iso === globalCountry.iso);
-    if (matched) setPhonePrefix(matched.code);
-  }, [globalCountry.iso]);
+  const nextPath =
+    redirectUrl && redirectUrl.startsWith("/") ? redirectUrl : "/comunidad/inicio";
 
   // Reset state when modal opens/closes or tab changes
   useEffect(() => {
@@ -85,13 +57,13 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     setEmail("");
     setPassword("");
     setFullName("");
-    setWhatsapp("");
     setHoneypot("");
     formLoadedAt.current = Date.now();
     setShowPassword(false);
-    setShowPrefixDropdown(false);
     setAcceptsPrivacy(false);
     setSubscribeToBlog(true);
+    setConfirmPending(false);
+    setResendState("idle");
   }, [isOpen, tab, redirectUrl]);
 
   // Update tab when defaultTab changes
@@ -146,7 +118,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
 
     // Anti-bot check 1: Honeypot field filled by automated scrapers/bots
     if (honeypot.trim() !== "") {
-      console.log("🤖 Bot registration in modal blocked (honeypot)");
       setSuccess("¡Bienvenido a ProgramBI! 🎉");
       setTimeout(() => onClose(), 1200);
       return;
@@ -154,7 +125,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
 
     // Anti-bot check 2: Instant submission check (less than 2 seconds)
     if (Date.now() - formLoadedAt.current < 2000) {
-      console.log("🤖 Bot registration in modal blocked (too fast)");
       setSuccess("¡Bienvenido a ProgramBI! 🎉");
       setTimeout(() => onClose(), 1200);
       return;
@@ -188,6 +158,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
       const pricingVariant = readClientPricingVariant();
       const referralCode = readBrowserReferralCode();
       const defaultName = fullName.trim() || email.split("@")[0] || "Usuario";
+      const emailRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}&reg_source=${encodeURIComponent(registrationSource)}`;
 
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -195,15 +166,13 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
         options: {
           data: {
             full_name: defaultName,
-            whatsapp: whatsapp ? `${phonePrefix}${whatsapp}` : null,
             registration_source: registrationSource,
             ...(referralCode ? { referral_code: referralCode } : {}),
             ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
           },
+          emailRedirectTo,
         },
       });
-
-      debugSignUpResult("auth-modal signUp", data?.user, error);
 
       if (error) {
         if (error.message.includes("already registered")) {
@@ -219,7 +188,8 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           course_slug: courseSlugFromLocation(registrationSource),
         });
         // signUp ya deja la sesión si el correo no exige confirmación.
-        // Si no viene sesión, se entra con la misma contraseña.
+        // Si no viene sesión, se prueba el mismo acceso para distinguir
+        // "falta confirmar el correo" de "cuenta lista".
         let loginError: { message: string } | null = null;
         if (!data.session) {
           const login = await supabase.auth.signInWithPassword({
@@ -229,14 +199,11 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           loginError = login.error;
         }
 
-        // Guardar teléfono y origen en el perfil (backup si el trigger no lo copió)
+        // Guardar origen en el perfil (backup si el trigger no lo copió)
         if (data?.user?.id) {
           const profileUpdates: Record<string, string> = {
             registration_source: registrationSource,
           };
-          if (whatsapp) {
-            profileUpdates.phone = `${phonePrefix}${whatsapp}`;
-          }
           if (pricingVariant) {
             profileUpdates.pricing_variant = pricingVariant;
           }
@@ -244,9 +211,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
         }
 
         if (loginError) {
-          setSuccess("Cuenta creada. Revisa tu correo para confirmar e inicia sesión.");
+          setConfirmPending(true);
+          setSuccess("Cuenta creada. Revisa tu correo para confirmar tu cuenta.");
         } else {
-          setSuccess("Cuenta creada. Ya puedes ver fechas y continuar.");
+          setSuccess("Cuenta creada. Ya puedes continuar.");
 
           if (subscribeToBlog) {
             subscribeToNewsletter({
@@ -259,20 +227,12 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
           fetch("/api/auth/new-member", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              name: defaultName,
-              email,
-              phone: whatsapp ? `${phonePrefix}${whatsapp}` : undefined,
-            }),
+            body: JSON.stringify({ name: defaultName, email }),
           }).catch(() => {}); // silencioso, no bloquea al usuario
 
           setTimeout(() => {
             onClose();
-            if (redirectUrl) {
-              window.location.href = redirectUrl;
-            } else {
-              window.location.href = "/comunidad/inicio";
-            }
+            window.location.href = nextPath;
           }, 1200);
         }
       }
@@ -283,6 +243,23 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     }
   };
 
+  // ═══ RESEND CONFIRMATION ═══
+  const handleResend = async () => {
+    if (resendState === "sending") return;
+    setResendState("sending");
+    try {
+      const emailRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}&reg_source=${encodeURIComponent(readRegistrationSource())}`;
+      const { error: resendError } = await supabase.auth.resend({
+        type: "signup",
+        email,
+        options: { emailRedirectTo },
+      });
+      setResendState(resendError ? "error" : "sent");
+    } catch {
+      setResendState("error");
+    }
+  };
+
   // ═══ GOOGLE LOGIN ═══
   const handleGoogleLogin = async () => {
     setError(null);
@@ -290,7 +267,6 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     try {
       // Persistir origen para el callback OAuth (nuevos registros con Google)
       const registrationSource = persistRegistrationSource();
-      const nextPath = redirectUrl || "/comunidad/inicio";
       const callbackParams = new URLSearchParams({
         next: nextPath,
         reg_source: registrationSource,
@@ -423,6 +399,35 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                           <CheckCircle size={16} className="flex-shrink-0" />
                           {success}
                         </span>
+                        {confirmPending ? (
+                          <div className="mt-1 border-t border-emerald-200/70 pt-3">
+                            <p className="text-xs leading-relaxed text-emerald-800">
+                              Te enviamos el enlace a {email || "tu correo"}. Revisa también la carpeta de spam.
+                            </p>
+                            <button
+                              type="button"
+                              onClick={handleResend}
+                              disabled={resendState === "sending"}
+                              className="mt-2 bg-transparent p-0 text-sm font-semibold text-emerald-800 underline underline-offset-2 disabled:opacity-50"
+                            >
+                              {resendState === "sending" ? "Enviando…" : "Reenviar correo de confirmación"}
+                            </button>
+                            {resendState === "sent" ? (
+                              <p className="mt-2 text-xs text-emerald-800">Listo. Te enviamos otro correo.</p>
+                            ) : null}
+                            {resendState === "error" ? (
+                              <p className="mt-2 text-xs text-red-600">
+                                No pudimos reenviarlo. Espera un minuto e inténtalo de nuevo.
+                              </p>
+                            ) : null}
+                            <Link
+                              href={`/login?registered=true&next=${encodeURIComponent(nextPath)}`}
+                              className="mt-3 inline-flex text-sm font-semibold text-emerald-800 underline underline-offset-2 no-underline hover:underline"
+                            >
+                              Ir a iniciar sesión
+                            </Link>
+                          </div>
+                        ) : null}
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -531,73 +536,11 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                         </div>
                       </div>
                       <div>
-                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">WhatsApp (opcional)</label>
-                         <div className="flex items-stretch">
-                           {/* Custom Flag/Prefix Selector */}
-                           <div className="relative flex items-stretch">
-                              <button
-                                type="button"
-                                disabled={loading}
-                                onClick={() => setShowPrefixDropdown(!showPrefixDropdown)}
-                                className="px-3 py-3 bg-slate-50 border border-slate-200 border-r-0 rounded-l-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 text-sm font-medium text-slate-600 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-                              >
-                                <img src={`https://flagcdn.com/w20/${COUNTRIES.find(c => c.code === phonePrefix)?.iso}.png`} alt="" className="w-4 h-auto rounded-[2px]" />
-                                <span>{phonePrefix}</span>
-                                <ChevronDown className="text-slate-400 ml-0.5" size={14} />
-                              </button>
-                              
-                              {/* Dropdown Menu */}
-                              <AnimatePresence>
-                                {showPrefixDropdown && (
-                                  <>
-                                    {/* Invisible backdrop to dismiss dropdown */}
-                                    <div className="fixed inset-0 z-10" onClick={() => setShowPrefixDropdown(false)} />
-                                    
-                                    <motion.div
-                                      initial={{ opacity: 0, y: -5 }}
-                                      animate={{ opacity: 1, y: 0 }}
-                                      exit={{ opacity: 0, y: -5 }}
-                                      className="absolute top-full left-0 mt-1 w-48 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden z-20"
-                                    >
-                                      <div className="max-h-56 overflow-y-auto py-2 flex flex-col">
-                                        {COUNTRIES.map((country, idx) => (
-                                          <button
-                                            key={idx}
-                                            type="button"
-                                            onClick={() => {
-                                              setPhonePrefix(country.code);
-                                              setShowPrefixDropdown(false);
-                                            }}
-                                            className="w-full px-4 py-2.5 text-left text-sm hover:bg-slate-50 transition-colors flex items-center gap-2 border-none bg-transparent cursor-pointer"
-                                          >
-                                            <span className="flex-shrink-0 mr-1"><img src={`https://flagcdn.com/w20/${country.iso}.png`} alt="" className="w-4 h-auto rounded-[2px]" /></span>
-                                            <span className="font-medium text-slate-700">{country.name}</span>
-                                            <span className="text-slate-400 text-xs ml-auto">{country.code}</span>
-                                          </button>
-                                        ))}
-                                      </div>
-                                    </motion.div>
-                                  </>
-                                )}
-                              </AnimatePresence>
-                           </div>
-                           <input
-                             type="tel"
-                             placeholder="9 1234 5678"
-                             value={whatsapp}
-                             onChange={(e) => setWhatsapp(e.target.value)}
-                             disabled={loading}
-                             name="whatsapp"
-                             className="w-full pl-4 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-r-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-sm font-medium disabled:opacity-50"
-                           />
-                         </div>
-                      </div>
-                      <div>
                         <label className="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Contraseña</label>
                         <div className="relative">
                           <input
                             type={showPassword ? "text" : "password"}
-                            placeholder="Mínimo 8 caracteres"
+                            placeholder="Mínimo 6 caracteres"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
@@ -618,7 +561,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                           </button>
                         </div>
                         <p className="mt-1 text-[10px] text-slate-400">
-                          Mínimo 8 caracteres. No hace falta incluir mayúsculas, números ni símbolos.
+                          Mínimo 6 caracteres. No hace falta incluir mayúsculas, números ni símbolos.
                         </p>
                       </div>
                       {/* Privacy consent checkbox */}
