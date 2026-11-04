@@ -5,7 +5,7 @@ import { getActiveSchedules, getMarketingDescription } from "@/lib/supabase/comu
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
 import CountryContext from "@/components/marketing/CountryContext";
-import EnlacesGuiaCurso from "@/components/cursos/EnlacesGuiaCurso";
+import GuiasDelCurso from "@/components/guias/GuiasDelCurso";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { ogImageUrl } from "@/lib/og/url";
 import { SITE_URL, absoluteUrl, jsonLdString, tituloLocal } from "@/lib/seo";
@@ -178,7 +178,7 @@ export default async function CourseDetailPage({
         preciosLocales={textosPreciosLocales(pais)}
         detalleLocal={detalle}
       />
-      <EnlacesGuiaCurso curso={course.slug} pais={pais} />
+      <GuiasDelCurso curso={course.slug} pais={pais} />
       {contenido ? (
         <CountryContext contenido={contenido} titulo={`Este curso en ${detalle.pais.nombre}`} />
       ) : null}
