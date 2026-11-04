@@ -113,7 +113,7 @@ export default function ActualizarPasswordPage() {
                     <input
                       type={showPassword ? "text" : "password"}
                       required
-                      minLength={8}
+                      minLength={6}
                       disabled={loading}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -140,7 +140,7 @@ export default function ActualizarPasswordPage() {
                     <input
                       type={showPassword ? "text" : "password"}
                       required
-                      minLength={8}
+                      minLength={6}
                       disabled={loading}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useSyncExternalStore } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { trackWhatsAppClick } from "@/lib/analytics/marketing";
@@ -15,14 +15,6 @@ const MENSAJES = [
   "¿Te interesa aprender IA?",
   "¿Quieres ver los cursos en vivo?",
 ];
-
-function emptySubscribe() {
-  return () => {};
-}
-
-function readServerHref() {
-  return "";
-}
 
 export default function WhatsAppButton() {
   const pathname = usePathname();
@@ -76,17 +68,19 @@ export default function WhatsAppButton() {
     course: courseMatch ? getCourseBySlug(courseMatch[1])?.title : undefined,
     country: countryParam,
   });
-  const href = useSyncExternalStore(
-    emptySubscribe,
-    () => withPageUtms(base),
-    readServerHref
-  );
+  // El href base se calcula en el servidor (así el HTML ya trae el ?text= con
+  // país y curso); en el cliente se le suman los UTM de primera visita.
+  const [href, setHref] = useState(base);
+  useEffect(() => {
+    setHref(withPageUtms(base));
+  }, [base]);
 
   const handleWhatsAppClick = () => {
     trackWhatsAppClick({
       course: courseMatch?.[1],
       country: countryParam,
       page: pathname || undefined,
+      cta_position: "floating",
     });
   };
 

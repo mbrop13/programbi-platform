@@ -1,12 +1,12 @@
 // Shared password rule for registro, AuthModal, referidos and password reset.
-// Length only: at least 8 characters. No character classes.
+// Length only: at least 6 characters. No character classes.
 
 export interface PasswordValidation {
   ok: boolean;
   error?: string;
 }
 
-const MIN_LENGTH = 8;
+const MIN_LENGTH = 6;
 const MAX_LENGTH = 128;
 
 /**

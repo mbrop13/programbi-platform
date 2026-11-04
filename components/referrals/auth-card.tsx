@@ -267,7 +267,7 @@ export function ReferidosRegistro() {
               id="password"
               type={show ? "text" : "password"}
               required
-              minLength={8}
+              minLength={6}
               autoComplete="new-password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
@@ -291,7 +291,7 @@ export function ReferidosRegistro() {
             id="confirm"
             type={show ? "text" : "password"}
             required
-            minLength={8}
+            minLength={6}
             value={form.confirm}
             onChange={(e) => setForm({ ...form, confirm: e.target.value })}
             className="h-10"
