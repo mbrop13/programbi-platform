@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Check, MessageCircle } from "lucide-react";
+import { Check } from "lucide-react";
 import type { Course } from "@/lib/data/courses";
 import { getCourseSyllabus, getSyllabusLevel, type SyllabusLevelContent } from "@/lib/data/syllabuses";
 import { COURSE_SEO } from "@/lib/seo/money";
 import { localizarMercado } from "@/lib/paises/precios";
-import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 
 export const COURSE_CRO_SLUGS = [
   "analisis-de-datos",
@@ -169,48 +168,6 @@ export function CourseSyllabusAndFormat({
               </li>
             ))}
           </ul>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-export function CourseLeadCtas({
-  course,
-  onRegister,
-  primaryLabel = "Registrarme",
-}: {
-  course: Course;
-  onRegister: () => void;
-  primaryLabel?: string;
-}) {
-  return (
-    <section className="border-t border-line bg-paper px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-[1400px] flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight text-ink">¿Siguiente paso?</h2>
-          <p className="mt-2 max-w-[36rem] text-sm leading-relaxed text-mute">
-            Crea una cuenta para ver fechas y valor, o escríbenos por WhatsApp.
-          </p>
-        </div>
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            onClick={onRegister}
-            className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-7 text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
-          >
-            {primaryLabel}
-          </button>
-          <WhatsAppCta
-            page={`/cursos/${course.slug}`}
-            intent="curso"
-            course={course.title}
-            courseSlug={course.slug}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-line bg-canvas px-7 text-sm font-medium text-ink no-underline hover:bg-wash"
-          >
-            <MessageCircle size={16} />
-            WhatsApp
-          </WhatsAppCta>
         </div>
       </div>
     </section>

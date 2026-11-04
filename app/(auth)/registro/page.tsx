@@ -265,7 +265,7 @@ export default function RegistroPage() {
             Crea tu cuenta
           </h1>
           <p className="text-text-muted text-center mb-8">
-            Nombre, email y contraseña. Después ves fechas y valor.
+            Crea tu cuenta con nombre, email y contraseña. Toma menos de un minuto.
           </p>
 
           {success ? (

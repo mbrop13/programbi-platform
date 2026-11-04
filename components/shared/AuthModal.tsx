@@ -212,7 +212,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
 
         if (loginError) {
           setConfirmPending(true);
-          setSuccess("Cuenta creada. Revisa tu email para confirmar tu cuenta.");
+          setSuccess("Cuenta creada. Revisa tu correo para confirmar tu cuenta.");
         } else {
           setSuccess("Cuenta creada. Ya puedes continuar.");
 

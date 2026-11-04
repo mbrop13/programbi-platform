@@ -183,13 +183,8 @@ export default function CourseDetailClient({
     router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
   };
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [checkingAuth, setCheckingAuth] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authRedirect, setAuthRedirect] = useState(`/cursos/${course.slug}`);
-  const pricingReady = !checkingAuth;
-  // El precio es público: la ficha no lo esconde detrás de un formulario ni de
-  // una cuenta. Cualquiera puede verlo y compararlo (y Google puede indexarlo).
-  const showPrice = true;
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [isFreeTrial, setIsFreeTrial] = useState(false);
   const [schedules, setSchedules] = useState<CourseSchedule[]>(initialSchedules);
@@ -212,8 +207,7 @@ export default function CourseDetailClient({
     null;
   const precioLocal = pais === ISO_CHILE ? null : precioCurso(pais, course.slug);
   const listaLocal = pais === ISO_CHILE ? null : precioLista(pais, course.slug);
-  const cobraLocal = pais !== ISO_CHILE && mostrarPrecioLocal && precioLocal != null;
-  const mostrarLocal = cobraLocal;
+  const mostrarLocal = pais !== ISO_CHILE && mostrarPrecioLocal && precioLocal != null;
   const descuentoLocal =
     listaLocal != null && precioLocal != null ? porcentajeDescuento(listaLocal, precioLocal) : 0;
   const convertAndFormat = (priceCLP: number | null | undefined) => {
@@ -230,7 +224,7 @@ export default function CourseDetailClient({
     const picked = levels[selectedLevel];
     const levelName = checkoutLevelName(course, picked?.name);
     const dest = courseCheckoutUrl(course.slug, levelName, pais);
-    trackCtaClick(etiquetaBoton(pais, showPrice ? "Inscribirse" : "Registrarme"), "course_detail_sidebar", {
+    trackCtaClick(etiquetaBoton(pais, "Inscribirse"), "course_detail_sidebar", {
       course_slug: course.slug,
     });
 
@@ -278,7 +272,6 @@ export default function CourseDetailClient({
           /* profile optional */
         }
       }
-      setCheckingAuth(false);
     });
     const {
       data: { subscription },
@@ -450,16 +443,9 @@ export default function CourseDetailClient({
   ];
 
   const hasGallery = hasCourseGallery(course.slug);
-  const priceIsPublic = Boolean(precioTarjeta) || (mostrarLocal && precioLocal != null);
   // Paraguay todavía no tiene monto aprobado por Manu: se consulta por WhatsApp.
   const sinPrecioAprobado =
     !isEmpresa && pais !== ISO_CHILE && !precioTarjeta && precioLocal == null && !tienePrecioPublico(pais);
-  const contactInstead = !isEmpresa && !priceIsPublic && !showPrice;
-  const openRegisterForPrice = () => {
-    trackClickRegistro({ cta_position: "course_detail_register_price", course: course.slug });
-    setAuthRedirect(pathname || `/cursos/${course.slug}`);
-    setShowAuthModal(true);
-  };
 
   return (
     <>
@@ -629,6 +615,9 @@ export default function CourseDetailClient({
               </div>
 
               <div className="mb-5 border-t border-line pt-5">
+                {/* Precio público desde el primer render: `precioTarjeta` viene
+                    calculado en el servidor (precioCurso) y el catálogo CLP sale
+                    de PRECIOS_CLP. No depende de la sesión ni de un formulario. */}
                 {isEmpresa ? (
                   <p className="text-sm leading-relaxed text-mute">
                     {tiered
@@ -661,8 +650,6 @@ export default function CourseDetailClient({
                     <p className="mt-2 text-xs leading-snug text-mute">{NOTA_PAGO}</p>
                     {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
                   </div>
-                ) : !pricingReady && grandTotal == null ? (
-                  <div className="h-10 w-40 rounded-lg bg-wash" />
                 ) : sinPrecioAprobado ? (
                   <div>
                     <p className="text-sm leading-relaxed text-mute">
@@ -716,18 +703,6 @@ export default function CourseDetailClient({
                     WhatsApp
                   </WhatsAppCta>
                 </>
-              ) : contactInstead ? (
-                <WhatsAppCta
-                  page={`/cursos/${course.slug}`}
-                  intent="curso"
-                  course={course.title}
-                  courseSlug={course.slug}
-                  country={pais}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-medium text-ink no-underline hover:bg-wash"
-                >
-                  <MessageCircle size={16} />
-                  Escribir por WhatsApp
-                </WhatsAppCta>
               ) : activeSchedulesList.length === 0 ? (
                 <WhatsAppCta
                   page={`/cursos/${course.slug}`}
@@ -746,7 +721,7 @@ export default function CourseDetailClient({
                   onClick={handleCheckoutCTA}
                   className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
                 >
-                  {etiquetaBoton(pais, showPrice ? "Inscribirse" : "Registrarme")}
+                  {etiquetaBoton(pais, "Inscribirse")}
                   <ArrowRight size={16} />
                 </button>
               )}
@@ -815,7 +790,7 @@ export default function CourseDetailClient({
         <CourseLocalSeo detalle={detalleLocal} />
       ) : null}
 
-      <CourseContactForm course={course} onRegister={openRegisterForPrice} />
+      <CourseContactForm course={course} />
 
       {relatedCourses.length > 0 && (
         <section className="border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
@@ -865,22 +840,6 @@ export default function CourseDetailClient({
   );
 }
 
-function RegisterForPriceNote({ onRegister }: { onRegister: () => void }) {
-  const pais = usePaisRuta();
-  return (
-    <p className="text-xs leading-relaxed text-mute">
-      ¿Listo para inscribirte?{" "}
-      <button
-        type="button"
-        onClick={onRegister}
-        className="font-semibold text-ink underline underline-offset-2"
-      >
-        {etiquetaBoton(pais, "Registrarme")}
-      </button>
-    </p>
-  );
-}
-
 function CourseCardDescription({ lead, more }: { lead: string; more: string[] }) {
   if (!lead && more.length === 0) return null;
   return (
@@ -900,7 +859,7 @@ function CourseCardDescription({ lead, more }: { lead: string; more: string[] })
   );
 }
 
-function CourseContactForm({ course, onRegister }: { course: Course; onRegister: () => void }) {
+function CourseContactForm({ course }: { course: Course }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
@@ -993,11 +952,11 @@ function CourseContactForm({ course, onRegister }: { course: Course; onRegister:
       <div className="mx-auto grid max-w-[1400px] grid-cols-1 lg:grid-cols-2">
         <div className="px-4 py-16 sm:px-6 lg:px-16 lg:py-24">
           <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl">
-            {isPersonal ? "Contacto" : "Para empresas"}
+            {isPersonal ? "¿Necesitas ayuda?" : "Para empresas"}
           </h2>
           <p className="mt-4 max-w-[36rem] text-base leading-relaxed text-mute">
             {isPersonal
-              ? "Déjanos tu nombre y correo. Te enviamos la información del curso con fechas y precio."
+              ? "Escríbenos si tienes dudas del curso. El precio y las fechas ya están en esta página; si quieres, te enviamos el detalle por correo."
               : "Programas in-company, dashboards y automatización para tu equipo."}
           </p>
         </div>
@@ -1026,11 +985,6 @@ function CourseContactForm({ course, onRegister }: { course: Course; onRegister:
               >
                 Escribir por WhatsApp
               </WhatsAppCta>
-              {isPersonal ? (
-                <div className="mt-4">
-                  <RegisterForPriceNote onRegister={onRegister} />
-                </div>
-              ) : null}
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="max-w-[36rem] space-y-5" noValidate>
@@ -1189,7 +1143,6 @@ function CourseContactForm({ course, onRegister }: { course: Course; onRegister:
               >
                 {isSubmitting ? "Enviando…" : isPersonal ? "Enviar" : "Solicitar propuesta"}
               </button>
-              {isPersonal ? <RegisterForPriceNote onRegister={onRegister} /> : null}
             </form>
           )}
         </div>
