@@ -7,8 +7,7 @@ import {
   levelsForView,
   openCourseLevel,
 } from "@/lib/data/course-views";
-import { getCheckoutCatalog, type CheckoutCatalog } from "@/lib/pago/catalogo";
-import { resolverPrecioClp } from "@/lib/pago/precio-clp";
+import { precioChile } from "@/config/pricing";
 import { resolverCobro } from "@/lib/paises/cobro";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import { NOTA_PAGO, precioCurso, precioLista } from "@/lib/paises/precios";
@@ -58,31 +57,19 @@ function nivelPublico(course: Course): NivelPublico {
   };
 }
 
-function filaChile(course: Course, catalog: CheckoutCatalog): PrecioCursoPagina {
-  const nivel = nivelPublico(course);
-  const priced = nivel.price
-    ? resolverPrecioClp(
-        course.slug,
-        nivel.price,
-        nivel.storedName,
-        catalog.priceOverrides,
-        catalog.promotions,
-        nivel.originalPrice
-      )
-    : null;
-  const priceValue = priced && priced.finalPrice > 0 ? priced.finalPrice : null;
-  const listValue = priceValue ? priced?.listPrice ?? null : null;
+function filaChile(course: Course): PrecioCursoPagina {
+  const priceValue = precioChile(course.slug);
 
   return {
     slug: course.slug,
     title: course.title,
     description: course.shortDescription,
     hours: catalogHours(course),
-    levelName: nivel.name,
+    levelName: nivelPublico(course).name,
     priceLabel: priceValue ? montoConCodigo(ISO_CHILE, priceValue) : "Consultar",
     priceValue,
-    listLabel: listValue ? montoConCodigo(ISO_CHILE, listValue) : null,
-    discount: priceValue ? priced?.discountPercentage ?? 0 : 0,
+    listLabel: null,
+    discount: 0,
     currency: "CLP",
     chargeLabel: null,
   };
@@ -129,10 +116,9 @@ export async function preciosDePais(
 
   // Solo Chile usa el catálogo. El resto publica su propia tabla (MP o referencia USD).
   if (pais.precios === "catalogo") {
-    const catalog = await getCheckoutCatalog();
     return {
       pais,
-      cursos: courses.map((course) => filaChile(course, catalog)),
+      cursos: courses.map((course) => filaChile(course)),
       moneda: "CLP",
       cobroLocal: true,
     };

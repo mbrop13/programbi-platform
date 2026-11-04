@@ -1,3 +1,5 @@
+import { PRECIOS_CLP } from "@/config/pricing";
+
 export const REFERRAL_COMMISSION_PERCENT = 15;
 export const REFERRAL_CLAWBACK_DAYS = 60;
 export const REFERRAL_INTRO_DAILY_LIMIT = 5;
@@ -5,10 +7,12 @@ export const REFERRAL_COOKIE_NAME = "pb_ref";
 export const REFERRAL_COOKIE_MAX_AGE_SECONDS = 90 * 24 * 60 * 60;
 export const REFERRAL_CODE_PREFIX = "PB";
 
+const PRECIOS_PUBLICADOS_CLP = Object.values(PRECIOS_CLP);
+
 /** Slider de ejemplo: rango de cursos abiertos publicados. */
-export const REFERRAL_TICKET_MIN_CLP = 199_000;
-export const REFERRAL_TICKET_MAX_CLP = 498_000;
-export const REFERRAL_TICKET_DEFAULT_CLP = 249_000;
+export const REFERRAL_TICKET_MIN_CLP = Math.min(...PRECIOS_PUBLICADOS_CLP);
+export const REFERRAL_TICKET_MAX_CLP = Math.max(...PRECIOS_PUBLICADOS_CLP);
+export const REFERRAL_TICKET_DEFAULT_CLP = PRECIOS_CLP["analisis-de-datos"];
 
 export const REFERRER_TYPES = ["alumni", "client", "partner", "other"] as const;
 export const REFERRER_STATUSES = ["pending", "active", "suspended"] as const;

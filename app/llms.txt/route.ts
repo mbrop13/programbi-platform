@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { PAISES_INDEXABLES, ISO_CHILE } from "@/config/paises";
+import { PAISES_INDEXABLES, ISO_CHILE, esIndexable } from "@/config/paises";
 import { precioPublico, PRECIOS_VALID_FROM } from "@/config/pricing";
-import { guiasRaiz } from "@/lib/guias";
+import { GUIAS } from "@/lib/guias/generado";
 import { formatMoneda } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { SITE_URL } from "@/lib/seo";
@@ -60,8 +60,10 @@ const CURSOS: CursoLlms[] = [
   },
 ];
 
-/** Guías publicadas: salen de los mismos MDX que la web (content/guias). */
-const GUIAS = guiasRaiz().map((guia) => ({ ruta: guia.path, titulo: guia.h1 }));
+/** Guías publicadas: las de país indexable más las transversales. Mismo filtro que app/sitemap.ts. */
+const GUIA_ENLACES = GUIAS.filter(
+  (guia) => guia.country === "transversal" || esIndexable(guia.country)
+).map((guia) => ({ ruta: guia.path, titulo: guia.h1 }));
 
 function precioLinea(iso: string, slug: string): string {
   const monto = precioPublico(iso, slug);
@@ -108,7 +110,7 @@ function construir(): string {
   lineas.push("- Niveles básico, intermedio y avanzado; no se exige experiencia previa en programación.");
   lineas.push("");
   lineas.push("## Guías");
-  for (const guia of GUIAS) {
+  for (const guia of GUIA_ENLACES) {
     lineas.push(`- ${guia.titulo} (${url(guia.ruta)})`);
   }
   lineas.push("");

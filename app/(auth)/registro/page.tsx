@@ -269,7 +269,7 @@ export default function RegistroPage() {
             Crea tu cuenta
           </h1>
           <p className="text-text-muted text-center mb-8">
-            Nombre, email y teléfono. Después ves fechas y valor.
+            Nombre, email y contraseña. Después ves fechas y valor.
           </p>
 
           {success ? (
@@ -366,7 +366,7 @@ export default function RegistroPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-brand-dark mb-1.5">Email *</label>
+              <label className="block text-sm font-bold text-brand-dark mb-1.5">Contraseña *</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
                 <input
@@ -376,7 +376,7 @@ export default function RegistroPage() {
                   disabled={loading}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  placeholder="Mínimo 8 caracteres"
+                  placeholder="Mínimo 6 caracteres"
                   autoComplete="new-password"
                   className="w-full pl-12 pr-12 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
                 />
@@ -389,7 +389,7 @@ export default function RegistroPage() {
                 </button>
               </div>
               <p className="mt-1 text-xs text-gray-500">
-                Mínimo 8 caracteres. No hace falta incluir mayúsculas, números ni símbolos.
+                Mínimo 6 caracteres. No hace falta incluir mayúsculas, números ni símbolos.
               </p>
             </div>
 

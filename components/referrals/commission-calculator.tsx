@@ -38,7 +38,7 @@ export function CommissionCalculator() {
         type="range"
         min={REFERRAL_TICKET_MIN_CLP}
         max={REFERRAL_TICKET_MAX_CLP}
-        step={50000}
+        step={1000}
         value={ticket}
         onChange={(e) => setTicket(Number(e.target.value))}
         className="mt-3 h-1.5 w-full cursor-pointer appearance-none rounded-full bg-wash accent-ink"
