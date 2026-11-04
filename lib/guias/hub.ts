@@ -1,8 +1,17 @@
-import { PAISES } from "@/config/paises";
-import { getCourseBySlug } from "@/lib/data/courses";
-import type { Guia } from "@/lib/guias/tipos";
+/**
+ * Helpers puros del hub de guías. Este archivo lo importa un componente de
+ * cliente, así que no debe importar `generado.ts`, `courses.ts` ni precios:
+ * solo tipos borrados en compilación y funciones sin datos.
+ */
 
-export type Opcion = { valor: string; etiqueta: string };
+export type Opcion = {
+  valor: string;
+  etiqueta: string;
+  /** Guías de ese país o curso en el listado que originó la opción. */
+  cantidad?: number;
+  /** Curso que la portada del catálogo marca como destacado. */
+  destacado?: boolean;
+};
 
 export type Filtros = {
   pais: string;
@@ -10,10 +19,33 @@ export type Filtros = {
   q: string;
 };
 
+/**
+ * Datos mínimos de una guía para pintar la tarjeta y filtrarla en cliente.
+ * El cuerpo Markdown, las FAQ y las fuentes se quedan en el servidor: enviar
+ * `GUIAS` completo serializaba más de 1 MB de contenido en el payload RSC.
+ */
+export type TarjetaGuia = {
+  path: string;
+  title: string;
+  h1: string;
+  description: string;
+  course: string;
+  courseName: string;
+  country: string;
+  countryName: string;
+  /** Posición del país en config/paises.ts, resuelta en servidor. */
+  countryOrder: number;
+  updated: string;
+  updatedLabel: string;
+  imageUrl?: string;
+};
+
 export type GrupoCurso = {
   curso: string;
   nombre: string;
-  guias: Guia[];
+  /** El curso es de portada según lib/data/courses.ts. */
+  destacado: boolean;
+  guias: TarjetaGuia[];
 };
 
 export type ConteoPais = {
@@ -21,44 +53,6 @@ export type ConteoPais = {
   nombre: string;
   cantidad: number;
 };
-
-/** Nombres cortos para los filtros y las cabeceras de grupo. */
-const NOMBRES_CURSO: Record<string, string> = {
-  "analisis-de-datos": "Análisis de datos",
-  "power-bi": "Power BI",
-  "sql-server": "SQL Server",
-  python: "Python",
-  excel: "Excel",
-  access: "Access",
-  "mercado-financiero": "Mercado financiero",
-  "analitica-mineria": "Minería",
-  "machine-learning": "Machine Learning",
-  "ia-productividad": "IA productividad",
-  copilot: "Copilot",
-  claude: "Claude",
-  "power-automate": "Power Automate",
-  general: "Guías generales",
-};
-
-/** Orden de los cursos en el hub: primero la ruta de datos, al final lo transversal. */
-const ORDEN_CURSO = [
-  "analisis-de-datos",
-  "power-bi",
-  "sql-server",
-  "python",
-  "excel",
-  "access",
-  "mercado-financiero",
-  "analitica-mineria",
-  "machine-learning",
-  "ia-productividad",
-  "copilot",
-  "claude",
-  "power-automate",
-  "general",
-];
-
-const ORDEN_PAIS = new Map(PAISES.map((pais, indice) => [pais.iso, indice]));
 
 /** Sin acentos, mayúsculas ni signos: «power-bi» y «Power BI» buscan lo mismo. */
 export function normalizar(texto: string): string {
@@ -70,84 +64,54 @@ export function normalizar(texto: string): string {
     .trim();
 }
 
-export function nombreCurso(curso: string): string {
-  return NOMBRES_CURSO[curso] ?? getCourseBySlug(curso)?.title ?? curso;
-}
-
-function indiceCurso(curso: string): number {
-  const indice = ORDEN_CURSO.indexOf(curso);
-  return indice === -1 ? ORDEN_CURSO.length : indice;
-}
-
-function ordenPais(iso: string): number {
-  if (iso === "transversal") return PAISES.length + 1;
-  return ORDEN_PAIS.get(iso) ?? PAISES.length;
-}
-
-/** Opciones del filtro de país, solo con mercados que tienen guías. */
-export function opcionesPais(guias: Guia[]): Opcion[] {
-  const presentes = new Set(guias.map((guia) => guia.country));
-  const opciones = PAISES.filter((pais) => presentes.has(pais.iso)).map((pais) => ({
-    valor: pais.iso,
-    etiqueta: pais.nombre,
-  }));
-  if (presentes.has("transversal")) {
-    opciones.push({ valor: "transversal", etiqueta: "Latinoamérica" });
-  }
-  return opciones;
-}
-
-/** Opciones del filtro de curso, en el orden de la ruta de datos. */
-export function opcionesCurso(guias: Guia[]): Opcion[] {
-  const presentes = new Set(guias.map((guia) => guia.course));
-  return [...presentes]
-    .sort((a, b) => indiceCurso(a) - indiceCurso(b) || nombreCurso(a).localeCompare(nombreCurso(b), "es"))
-    .map((curso) => ({ valor: curso, etiqueta: nombreCurso(curso) }));
-}
-
-/** Busca en h1, title, description y curso. Varias palabras se exigen todas. */
-export function filtrarGuias(guias: Guia[], filtros: Filtros): Guia[] {
+/** Busca en h1, title, descripción, curso y país. Varias palabras se exigen todas. */
+export function filtrarGuias(guias: TarjetaGuia[], filtros: Filtros): TarjetaGuia[] {
   const palabras = normalizar(filtros.q).split(/\s+/).filter(Boolean);
   return guias.filter((guia) => {
     if (filtros.pais !== "todos" && guia.country !== filtros.pais) return false;
     if (filtros.curso !== "todos" && guia.course !== filtros.curso) return false;
     if (palabras.length === 0) return true;
     const texto = normalizar(
-      `${guia.h1} ${guia.title} ${guia.description} ${nombreCurso(guia.course)} ${guia.course}`
+      `${guia.h1} ${guia.title} ${guia.description} ${guia.courseName} ${guia.course} ${guia.countryName}`
     );
     return palabras.every((palabra) => texto.includes(palabra));
   });
 }
 
-/** Agrupa por curso respetando el orden de la ruta de datos. */
-export function agruparPorCurso(guias: Guia[]): GrupoCurso[] {
-  const grupos = new Map<string, Guia[]>();
+/**
+ * Agrupa por curso en el orden de las opciones (primero los cursos destacados
+ * del catálogo) y, dentro de cada grupo, por país. Los cursos que no estén en
+ * `cursos` (por ejemplo, una guía general) van al final.
+ */
+export function agruparPorCurso(guias: TarjetaGuia[], cursos: Opcion[] = []): GrupoCurso[] {
+  const indice = new Map(cursos.map((opcion, posicion) => [opcion.valor, posicion]));
+  const meta = new Map(cursos.map((opcion) => [opcion.valor, opcion]));
+  const grupos = new Map<string, TarjetaGuia[]>();
+
   for (const guia of guias) {
     const lista = grupos.get(guia.course);
     if (lista) lista.push(guia);
     else grupos.set(guia.course, [guia]);
   }
+
   return [...grupos.entries()]
-    .sort(([a], [b]) => indiceCurso(a) - indiceCurso(b))
+    .sort(([a], [b]) => {
+      const posicionA = indice.get(a);
+      const posicionB = indice.get(b);
+      if (posicionA === undefined && posicionB === undefined) return a.localeCompare(b, "es");
+      if (posicionA === undefined) return 1;
+      if (posicionB === undefined) return -1;
+      return posicionA - posicionB;
+    })
     .map(([curso, lista]) => ({
       curso,
-      nombre: nombreCurso(curso),
+      nombre: meta.get(curso)?.etiqueta ?? lista[0]?.courseName ?? curso,
+      destacado: meta.get(curso)?.destacado === true,
       guias: [...lista].sort(
-        (a, b) => ordenPais(a.country) - ordenPais(b.country) || a.h1.localeCompare(b.h1, "es")
+        (a, b) =>
+          a.countryOrder - b.countryOrder ||
+          a.countryName.localeCompare(b.countryName, "es") ||
+          a.h1.localeCompare(b.h1, "es")
       ),
     }));
-}
-
-/** Cantidad de guías por país, en el orden de config/paises.ts. */
-export function paisesConConteo(guias: Guia[]): ConteoPais[] {
-  const conteo = new Map<string, number>();
-  for (const guia of guias) {
-    if (guia.country === "transversal") continue;
-    conteo.set(guia.country, (conteo.get(guia.country) ?? 0) + 1);
-  }
-  return PAISES.filter((pais) => conteo.has(pais.iso)).map((pais) => ({
-    iso: pais.iso,
-    nombre: pais.nombre,
-    cantidad: conteo.get(pais.iso) ?? 0,
-  }));
 }
