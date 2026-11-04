@@ -1,4 +1,5 @@
 // Course data that matches the current ProgramBI website exactly
+import { PRECIOS_CLP } from "@/config/pricing";
 export interface CourseLevel {
   name: string;             // e.g. "Básico", "Intermedio", "Avanzado"
   price?: number;           // price in CLP
@@ -87,7 +88,7 @@ export const courses: Course[] = [
     levels: [
       {
         name: "Básico-Intermedio",
-        price: 747000,
+        price: PRECIOS_CLP["analisis-de-datos"],
         durationHours: 60,
         whatYouLearn: [
           "Consultas SQL desde cero hasta avanzado",
@@ -100,7 +101,7 @@ export const courses: Course[] = [
       },
       {
         name: "Avanzado",
-        price: 498000,
+        price: PRECIOS_CLP["analisis-de-datos"],
         durationHours: 60,
         whatYouLearn: [
           "Automatización de consultas y procedimientos almacenados",
@@ -199,8 +200,7 @@ export const courses: Course[] = [
     levels: [
       {
         name: "Intermedio-Avanzado",
-        price: 199000,
-        originalPrice: 249000,
+        price: PRECIOS_CLP["copilot"],
         durationHours: 20,
         whatYouLearn: [
           "Aplicar Copilot en Excel, Outlook, PowerPoint y Word",
@@ -305,7 +305,7 @@ export const courses: Course[] = [
     levels: [
       {
         name: "Completo",
-        price: 249000,
+        price: PRECIOS_CLP["claude"],
         durationHours: 20,
         whatYouLearn: [
           "Prompts efectivos para tareas administrativas",
@@ -362,7 +362,7 @@ export const courses: Course[] = [
     levels: [
       {
         name: "Básico",
-        price: 249000,
+        price: PRECIOS_CLP["power-automate"],
         durationHours: 20,
         whatYouLearn: [
           "Crear flujos de nube automatizados, instantáneos y programados",
@@ -436,9 +436,9 @@ export const courses: Course[] = [
       },
     ],
     levels: [
-      { name: "Básico", price: 498000, durationHours: 16, whatYouLearn: ["Fundamentos de Power BI, SQL y Python", "Automatización de reportes de turnos", "Consultas a bases de la mina", "IA generativa para scripts básicos"] },
-      { name: "Intermedio", price: 498000, durationHours: 16, whatYouLearn: ["Consolidado MINA - PLANTA - RRHH", "DAX avanzado y relaciones de área", "Joins avanzados y vistas de reporte", "Matplotlib y Seaborn industrial"] },
-      { name: "Avanzado", price: 498000, durationHours: 16, whatYouLearn: ["Mantenimiento predictivo con Python", "Seguridad RLS por jefe de área", "Stored Procedures para Data Warehouse", "Dashboards interactivos con Plotly"] },
+      { name: "Básico", price: PRECIOS_CLP["analitica-mineria"], durationHours: 16, whatYouLearn: ["Fundamentos de Power BI, SQL y Python", "Automatización de reportes de turnos", "Consultas a bases de la mina", "IA generativa para scripts básicos"] },
+      { name: "Intermedio", price: PRECIOS_CLP["analitica-mineria"], durationHours: 16, whatYouLearn: ["Consolidado MINA - PLANTA - RRHH", "DAX avanzado y relaciones de área", "Joins avanzados y vistas de reporte", "Matplotlib y Seaborn industrial"] },
+      { name: "Avanzado", price: PRECIOS_CLP["analitica-mineria"], durationHours: 16, whatYouLearn: ["Mantenimiento predictivo con Python", "Seguridad RLS por jefe de área", "Stored Procedures para Data Warehouse", "Dashboards interactivos con Plotly"] },
     ],
   },
   {
@@ -533,7 +533,7 @@ export const courses: Course[] = [
     levels: [
       {
         name: "Completo",
-        price: 249000,
+        price: PRECIOS_CLP["ia-productividad"],
         durationHours: 20,
         whatYouLearn: [
           "Automatizar informes diarios, resúmenes ejecutivos y reportes recurrentes de oficina",
@@ -606,9 +606,9 @@ export const courses: Course[] = [
       },
     ],
     levels: [
-      { name: "Básico", price: 249000, durationHours: 16, whatYouLearn: ["Conexión a múltiples fuentes de datos", "Transformación de datos con Power Query", "Parámetros y funciones M", "Limpieza automatizada de datos"] },
-      { name: "Intermedio", price: 249000, durationHours: 16, whatYouLearn: ["Modelo estrella y relaciones", "Medidas CALCULATE y FILTER", "Time Intelligence en DAX", "DAX avanzado: RANKX e iteradores"] },
-      { name: "Avanzado", price: 249000, durationHours: 16, whatYouLearn: ["Diseño UX de reportes profesionales", "Visuales nativos y custom visuals", "Gateway y actualización programada", "Seguridad a nivel de fila (RLS)"] },
+      { name: "Básico", price: PRECIOS_CLP["power-bi"], durationHours: 16, whatYouLearn: ["Conexión a múltiples fuentes de datos", "Transformación de datos con Power Query", "Parámetros y funciones M", "Limpieza automatizada de datos"] },
+      { name: "Intermedio", price: PRECIOS_CLP["power-bi"], durationHours: 16, whatYouLearn: ["Modelo estrella y relaciones", "Medidas CALCULATE y FILTER", "Time Intelligence en DAX", "DAX avanzado: RANKX e iteradores"] },
+      { name: "Avanzado", price: PRECIOS_CLP["power-bi"], durationHours: 16, whatYouLearn: ["Diseño UX de reportes profesionales", "Visuales nativos y custom visuals", "Gateway y actualización programada", "Seguridad a nivel de fila (RLS)"] },
     ],
   },
   {
@@ -670,9 +670,9 @@ export const courses: Course[] = [
       },
     ],
     levels: [
-      { name: "Básico", price: 249000, durationHours: 16, whatYouLearn: ["Variables, tipos de datos y operadores", "Control de flujo y funciones", "Listas, diccionarios y tuplas", "Módulos y librerías esenciales"] },
-      { name: "Intermedio", price: 249000, durationHours: 16, whatYouLearn: ["DataFrames y Series con Pandas", "Limpieza y transformación de datos", "GroupBy, agregaciones y Merge", "Conexión a bases de datos y APIs"] },
-      { name: "Avanzado", price: 249000, durationHours: 16, whatYouLearn: ["Gráficos con Matplotlib y Seaborn", "Estadística aplicada con Python", "Reportes automatizados", "Pipelines de datos end-to-end"] },
+      { name: "Básico", price: PRECIOS_CLP["python"], durationHours: 16, whatYouLearn: ["Variables, tipos de datos y operadores", "Control de flujo y funciones", "Listas, diccionarios y tuplas", "Módulos y librerías esenciales"] },
+      { name: "Intermedio", price: PRECIOS_CLP["python"], durationHours: 16, whatYouLearn: ["DataFrames y Series con Pandas", "Limpieza y transformación de datos", "GroupBy, agregaciones y Merge", "Conexión a bases de datos y APIs"] },
+      { name: "Avanzado", price: PRECIOS_CLP["python"], durationHours: 16, whatYouLearn: ["Gráficos con Matplotlib y Seaborn", "Estadística aplicada con Python", "Reportes automatizados", "Pipelines de datos end-to-end"] },
     ],
   },
   {
@@ -734,9 +734,9 @@ export const courses: Course[] = [
       },
     ],
     levels: [
-      { name: "Básico", price: 249000, durationHours: 16, whatYouLearn: ["SELECT, WHERE, ORDER BY", "Funciones y operadores SQL", "GROUP BY y HAVING", "Subqueries y filtrado avanzado"] },
-      { name: "Intermedio", price: 249000, durationHours: 16, whatYouLearn: ["JOINs (INNER, LEFT, RIGHT, FULL)", "CTEs y tablas temporales", "Funciones de ventana", "PIVOT, UNPIVOT y análisis"] },
-      { name: "Avanzado", price: 249000, durationHours: 16, whatYouLearn: ["Stored Procedures y Triggers", "Funciones definidas por usuario", "Índices y optimización de queries", "Diseño de esquemas profesional"] },
+      { name: "Básico", price: PRECIOS_CLP["sql-server"], durationHours: 16, whatYouLearn: ["SELECT, WHERE, ORDER BY", "Funciones y operadores SQL", "GROUP BY y HAVING", "Subqueries y filtrado avanzado"] },
+      { name: "Intermedio", price: PRECIOS_CLP["sql-server"], durationHours: 16, whatYouLearn: ["JOINs (INNER, LEFT, RIGHT, FULL)", "CTEs y tablas temporales", "Funciones de ventana", "PIVOT, UNPIVOT y análisis"] },
+      { name: "Avanzado", price: PRECIOS_CLP["sql-server"], durationHours: 16, whatYouLearn: ["Stored Procedures y Triggers", "Funciones definidas por usuario", "Índices y optimización de queries", "Diseño de esquemas profesional"] },
     ],
   },
   {
@@ -797,9 +797,9 @@ export const courses: Course[] = [
       },
     ],
     levels: [
-      { name: "Básico", price: 249000, durationHours: 16, whatYouLearn: ["Fórmulas anidadas complejas", "BUSCARX, INDEX-MATCH", "Validación y formato condicional", "Tablas dinámicas avanzadas"] },
-      { name: "Intermedio", price: 249000, durationHours: 16, whatYouLearn: ["Importar y transformar datos", "Combinar consultas en Power Query", "Parámetros y funciones M", "Automatización de ETL"] },
-      { name: "Avanzado", price: 249000, durationHours: 16, whatYouLearn: ["Macros grabadas y editadas", "VBA: variables, ciclos y formularios", "UserForms profesionales", "Dashboard final interactivo"] },
+      { name: "Básico", price: PRECIOS_CLP["excel"], durationHours: 16, whatYouLearn: ["Fórmulas anidadas complejas", "BUSCARX, INDEX-MATCH", "Validación y formato condicional", "Tablas dinámicas avanzadas"] },
+      { name: "Intermedio", price: PRECIOS_CLP["excel"], durationHours: 16, whatYouLearn: ["Importar y transformar datos", "Combinar consultas en Power Query", "Parámetros y funciones M", "Automatización de ETL"] },
+      { name: "Avanzado", price: PRECIOS_CLP["excel"], durationHours: 16, whatYouLearn: ["Macros grabadas y editadas", "VBA: variables, ciclos y formularios", "UserForms profesionales", "Dashboard final interactivo"] },
     ],
   },
   {
@@ -926,7 +926,7 @@ export const courses: Course[] = [
     levels: [
       {
         name: "Completo",
-        price: 249000,
+        price: PRECIOS_CLP["access"],
         durationHours: 20,
         whatYouLearn: [
           "Entender bases de datos y cuándo usar Access en lugar de Excel",
@@ -992,9 +992,9 @@ export const courses: Course[] = [
       },
     ],
     levels: [
-      { name: "Básico", price: 249000, durationHours: 16, whatYouLearn: ["Regresión lineal y polinómica", "Clasificación: Logística y SVM", "Árboles de decisión y ensemble", "Validación cruzada y métricas"] },
-      { name: "Intermedio", price: 249000, durationHours: 16, whatYouLearn: ["K-Means clustering", "PCA y t-SNE para visualización", "Detección de anomalías", "Reglas de asociación"] },
-      { name: "Avanzado", price: 249000, durationHours: 16, whatYouLearn: ["Redes neuronales desde cero", "TensorFlow y Keras", "CNNs y RNNs aplicados", "Deploy con Flask/FastAPI"] },
+      { name: "Básico", price: PRECIOS_CLP["machine-learning"], durationHours: 16, whatYouLearn: ["Regresión lineal y polinómica", "Clasificación: Logística y SVM", "Árboles de decisión y ensemble", "Validación cruzada y métricas"] },
+      { name: "Intermedio", price: PRECIOS_CLP["machine-learning"], durationHours: 16, whatYouLearn: ["K-Means clustering", "PCA y t-SNE para visualización", "Detección de anomalías", "Reglas de asociación"] },
+      { name: "Avanzado", price: PRECIOS_CLP["machine-learning"], durationHours: 16, whatYouLearn: ["Redes neuronales desde cero", "TensorFlow y Keras", "CNNs y RNNs aplicados", "Deploy con Flask/FastAPI"] },
     ],
   },
   {
@@ -1086,7 +1086,7 @@ export const courses: Course[] = [
     levels: [
       {
         name: "Completo",
-        price: 349000,
+        price: PRECIOS_CLP["mercado-financiero"],
         durationHours: 30,
         whatYouLearn: [
           "Extraer y actualizar precios y tipos de cambio diarios",

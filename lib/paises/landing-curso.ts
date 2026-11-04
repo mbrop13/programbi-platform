@@ -12,7 +12,6 @@ import type { Course } from "@/lib/data/courses";
 import {
   levelsForView,
   offerHours,
-  offerLowPrice,
   offerSyllabusSections,
 } from "@/lib/data/course-views";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
@@ -24,7 +23,8 @@ import {
 import type { LandingCursoCopy } from "@/lib/data/landing-cursos";
 import { horarioDeCohorte, horarioLocal, type HorarioLocal } from "@/lib/paises/horarios";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
-import { localizarMercado, precioCurso } from "@/lib/paises/precios";
+import { precioPublico } from "@/config/pricing";
+import { localizarMercado } from "@/lib/paises/precios";
 import { metadataLocal } from "@/lib/paises/metadata";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { absoluteUrl } from "@/lib/seo";
@@ -65,9 +65,7 @@ export function contenidoLandingCurso(opts: {
 
   const horas = offerHours(opts.course, "publico");
   const niveles = levelsForView(opts.course, "publico").map((nivel) => nivel.name);
-  const local = precioCurso(iso, opts.course.slug);
-  const precio =
-    iso === ISO_CHILE ? offerLowPrice(opts.course, "publico") ?? null : local;
+  const precio = precioPublico(iso, opts.course.slug);
 
   const precioTexto =
     precio == null ? "Consulta el valor de la próxima cohorte" : montoConCodigo(iso, precio);

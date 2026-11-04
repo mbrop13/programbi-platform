@@ -1,10 +1,8 @@
 import { courses } from "@/lib/data/courses";
-import { checkoutLevelName, levelsForView } from "@/lib/data/course-views";
-import { getCheckoutCatalog } from "@/lib/pago/catalogo";
-import { precioDescontadoClp } from "@/lib/pago/precio-clp";
+import { levelsForView } from "@/lib/data/course-views";
 import { resolverCobro } from "@/lib/paises/cobro";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
-import { muestraPrecioLocal, notaCobroClp, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
+import { NOTA_PAGO, muestraPrecioLocal, notaCobroClp, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
 
 export type PrecioTarjeta = {
   /** Precio local con el código de moneda, por ejemplo "$159.900 ARS". */
@@ -35,19 +33,12 @@ export async function precioTarjetaPublico(
   let nota: string | null = null;
 
   if (course && resolverCobro(iso).modo !== "local") {
-    const catalog = await getCheckoutCatalog();
-    const levels = levelsForView(course, "publico");
-    for (const level of levels) {
-      const name = checkoutLevelName(course, level.name) || level.name;
-      const stored = course.levels?.find((item) => item.name === name);
-      const base = stored?.price || level.price;
-      if (!base) continue;
-      const final = precioDescontadoClp(slug, base, name, catalog.priceOverrides, catalog.promotions).finalPrice;
-      if (final <= 0) continue;
-      notasPorNivel[level.name] = notaCobroClp(final);
+    // Sin cuenta de Mercado Pago del país, el cargo se procesa en CLP: se avisa
+    // sin monto, para no contradecir el precio publicado en moneda local.
+    for (const level of levelsForView(course, "publico")) {
+      notasPorNivel[level.name] = NOTA_PAGO;
     }
-    const primero = levels[0]?.name;
-    nota = (primero && notasPorNivel[primero]) || Object.values(notasPorNivel)[0] || null;
+    nota = notaCobroClp();
   }
 
   return {

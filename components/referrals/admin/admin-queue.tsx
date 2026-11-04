@@ -256,7 +256,7 @@ function ActionDialog({
               <Input
                 className="mt-2 h-10"
                 inputMode="numeric"
-                placeholder="249000"
+                placeholder="169000"
                 value={deal}
                 onChange={(e) => setDeal(e.target.value.replace(/\D/g, ""))}
               />

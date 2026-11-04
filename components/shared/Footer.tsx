@@ -8,6 +8,7 @@ import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { COMUNIDAD_PUBLICA } from "@/lib/comunidad/visibilidad";
+import { whatsappHref } from "@/lib/whatsapp";
 const socialLinks = [
   { name: "Instagram", href: "https://www.instagram.com/programbi_capacitaciones/" },
   { name: "LinkedIn", href: "https://cl.linkedin.com/company/programbi" },
@@ -79,7 +80,7 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
             </a>
           ))}
           <a href="mailto:contacto@programbi.cl">contacto@programbi.cl</a>
-          <a href="https://wa.me/56935409699">WhatsApp</a>
+          <a href={whatsappHref({ page: "/", country: pais, intent: "general" })} target="_blank" rel="noopener noreferrer">WhatsApp</a>
           <Link href="/privacidad" className="no-underline">
             Privacidad
           </Link>

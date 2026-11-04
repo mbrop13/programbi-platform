@@ -3,7 +3,6 @@ import {
   advancedHeading,
   coursePath,
   offerHours,
-  offerLowPrice,
   offerSyllabusSections,
   levelIntro,
   offerTeaches,
@@ -12,8 +11,9 @@ import {
 import { SITE_URL, absoluteUrl } from "@/lib/seo";
 import { COURSE_SEO } from "@/lib/seo/money";
 import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
+import { PRECIOS_VALID_FROM, monedaPublica, precioPublico } from "@/config/pricing";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { localizarMercado, precioCurso } from "@/lib/paises/precios";
+import { localizarMercado } from "@/lib/paises/precios";
 
 const OCCUPATIONAL: Record<string, string> = {
   "analisis-de-datos": "Analista de Datos, Business Intelligence Analyst, Data Analyst",
@@ -46,12 +46,8 @@ export function getCourseJsonLd(
   const baseName = localizarMercado(seo?.h1 || course.title, pais);
   const name = view === "avanzado" ? advancedHeading(baseName) : baseName;
   const hours = offerHours(course, view);
-  const catalogPrice = offerLowPrice(course, view);
-  const localPrice = precioCurso(pais, course.slug);
-  // Chile publica el catálogo en CLP. El resto solo entra si tiene precio local:
-  // no se reetiqueta un monto en CLP con otra moneda.
-  const lowestPrice = pais === ISO_CHILE ? (catalogPrice ?? null) : (localPrice ?? catalogPrice ?? null);
-  const moneda = pais === ISO_CHILE || localPrice == null ? "CLP" : getPais(pais).moneda;
+  const price = precioPublico(pais, course.slug);
+  const moneda = monedaPublica(pais);
   const path = rutaLocal(pais, coursePath(course.slug, view));
 
   return {
@@ -99,14 +95,14 @@ export function getCourseJsonLd(
         sameAs: "https://cl.linkedin.com/company/programbi",
       },
     },
-    ...(lowestPrice && {
+    ...(price && {
       offers: {
         "@type": "Offer",
-        price: lowestPrice,
+        price,
         priceCurrency: moneda,
         availability: "https://schema.org/InStock",
         url: absoluteUrl(path),
-        validFrom: new Date().toISOString(),
+        validFrom: PRECIOS_VALID_FROM,
       },
     }),
     syllabusSections: offerSyllabusSections(course, view).map((section) => ({

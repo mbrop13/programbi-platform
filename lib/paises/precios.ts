@@ -1,12 +1,30 @@
 import { getPais, ISO_CHILE, normalizarPais, type SlugCurso } from "@/config/paises";
+import { precioListaPublico, precioPublico } from "@/config/pricing";
 import { voseoTitular } from "@/config/textos";
 import { localizarHoras } from "@/lib/paises/horarios";
 
-export const MARCA_DEFINIR_PRECIO = "[DEFINIR PRECIO]";
+/**
+ * Nota única bajo el botón de pago. Sin montos y sin «Se cobra en CLP» junto
+ * al precio: el monto que ve el usuario es el de su mercado.
+ */
+export const NOTA_PAGO = "Pagas con tarjeta internacional; el cargo final lo define tu banco.";
+export const NOTA_PROCESA_CLP = "El cobro se procesa en pesos chilenos.";
 
-/** Aclaración que acompaña al precio en moneda local. */
-export const NOTA_COBRO_CLP = "Se cobra en CLP";
+/**
+ * Precio de venta en la moneda del país, incluido Chile.
+ * Es la API que deben usar la UI, el JSON-LD, las guías, `llms.txt` y el
+ * checkout: sale de `config/pricing.ts`, la única fuente de verdad.
+ */
+export function precioVenta(iso: string | null | undefined, slug: string): number | null {
+  return precioPublico(iso, slug);
+}
 
+/** Precio de lista (tachado) de la moneda del país, si existe. */
+export function precioListaVenta(iso: string | null | undefined, slug: string): number | null {
+  return precioListaPublico(iso, slug);
+}
+
+/** Precio local (sin Chile). Se mantiene para los consumidores históricos. */
 export function precioCurso(iso: string | null | undefined, slug: string): number | null {
   const pais = getPais(normalizarPais(iso));
   if (pais.precios === "catalogo") return null;
@@ -49,13 +67,17 @@ export function formatCLP(monto: number): string {
 
 /** Argentina, México, Perú, Colombia y Uruguay: precio propio y Mercado Pago local. */
 export function muestraPrecioLocal(iso: string | null | undefined): boolean {
-  return getPais(normalizarPais(iso)).pago === "mp";
+  return getPais(normalizarPais(iso)).precios !== "catalogo";
 }
 
-/** Nota cuando el checkout usa la cuenta de Chile y cobra en CLP. */
-export function notaCobroClp(montoClp: number): string {
-  const numero = new Intl.NumberFormat("es-CL", { maximumFractionDigits: 0 }).format(montoClp);
-  return `Si el pago local no está disponible, el checkout cobra CLP $${numero}.`;
+/**
+ * Nota de cobro. Ya no repite el monto ni la moneda junto al precio: el
+ * usuario ve el precio de su mercado y esta nota explica el cargo de tarjeta.
+ * Si el checkout cobra con la cuenta de Chile, se avisa sin monto para no
+ * contradecir el precio publicado.
+ */
+export function notaCobroClp(_montoClp?: number): string {
+  return `${NOTA_PAGO} ${NOTA_PROCESA_CLP}`;
 }
 
 /**

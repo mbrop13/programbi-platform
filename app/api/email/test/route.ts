@@ -75,8 +75,8 @@ export async function GET(req: NextRequest) {
           name: "Ana Torres",
           email,
           courses: [
-            { title: "Análisis de Datos", levelName: "Básico", price: 498000 },
-            { title: "Power BI", levelName: "Intermedio", price: 249000 },
+            { title: "Análisis de Datos", levelName: "Básico", price: 338000 },
+            { title: "Power BI", levelName: "Intermedio", price: 169000 },
           ],
           orderId: "PROG-2026-00142",
           totalPaid: 747000,

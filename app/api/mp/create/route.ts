@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { randomUUID } from "crypto";
 import { getPricingVariantForUser } from "@/lib/experiments/user-variant";
+import { getPais } from "@/config/paises";
 
 /**
  * POST /api/mp/create
@@ -48,9 +49,13 @@ export async function POST(req: NextRequest) {
     const priceOverrides = await getPriceOverrides();
 
 
+    // El precio publicado es el techo: el panel puede aplicar un descuento por
+    // override, nunca cobrar más que el monto que muestra la ficha.
     const getOverriddenPrice = (slug: string, levelName: string, codePrice: number) => {
        const override = priceOverrides.find((o: any) => o.item_type === 'course' && o.item_id === slug && o.level_name === levelName);
-       return override ? override.price : codePrice;
+       return override && typeof override.price === 'number' && override.price > 0 && override.price < codePrice
+         ? override.price
+         : codePrice;
     };
 
     let grandTotalClp = 0;
@@ -188,38 +193,39 @@ export async function POST(req: NextRequest) {
     // El cupón sí se traslada: se aplica la misma regla sobre la tabla local.
     const pais = typeof body.pais === "string" ? body.pais : "cl";
     const { resolverCobro } = await import("@/lib/paises/cobro");
-    const { totalLocal, totalLocalConCupon } = await import("@/lib/paises/precios");
+    const { totalLocalConCupon } = await import("@/lib/paises/precios");
     const cobro = resolverCobro(pais);
     let chargeAmount = grandTotalClp;
     let chargeCurrency = "CLP";
     let chargeToken: string | undefined;
     let chargeCuenta = "cl";
-    if (cobro.modo === "local" && cobro.token) {
-      const local = totalLocal(
-        pais,
-        validatedItems.map((item) => ({ slug: item.slug, quantity: item.quantity }))
-      );
-      if (local != null) {
-        // El importe local es la tabla fija. Si hay cupón, se replica la misma
-        // regla que en CLP (stacking global o solo ítems sin promo), nunca la
-        // promoción ni el plan chilenos.
-        const localConCupon = totalLocalConCupon(
-          pais,
-          validatedItems.map((item) => ({
-            slug: item.slug,
-            quantity: item.quantity,
-            conPromo: item.hasPromoDiscount,
-          })),
-          cuponPct > 0 ? { pct: cuponPct, stacking: cuponStacking } : null
-        );
-        // Si no se puede calcular en moneda local, se mantiene el cobro en CLP
-        // con la cuenta de Chile (chargeAmount ya vale grandTotalClp).
-        if (localConCupon != null) {
-          chargeAmount = localConCupon;
-          chargeCurrency = cobro.moneda;
-          chargeToken = cobro.token;
-          chargeCuenta = cobro.cuenta;
-        }
+    // Precio local con cupón: la tabla fija del mercado, no la promoción ni el
+    // plan chilenos. Se usa igual para cobro local y para el equivalente en CLP
+    // de los países que solo pueden pagar con la cuenta de Chile.
+    const localConCupon = totalLocalConCupon(
+      pais,
+      validatedItems.map((item) => ({
+        slug: item.slug,
+        quantity: item.quantity,
+        conPromo: item.hasPromoDiscount,
+      })),
+      cuponPct > 0 ? { pct: cuponPct, stacking: cuponStacking } : null
+    );
+    if (localConCupon != null) {
+      if (cobro.modo === "local" && cobro.token) {
+        chargeAmount = localConCupon;
+        chargeCurrency = cobro.moneda;
+        chargeToken = cobro.token;
+        chargeCuenta = cobro.cuenta;
+      } else if (getPais(pais).pago === "usd-chile") {
+        // Sin cuenta de Mercado Pago en ese país, el cargo va en CLP con la
+        // cuenta de Chile, pero por el equivalente del precio publicado en USD
+        // (no por el precio chileno, que sería otro monto).
+        const { TIPO_CAMBIO_USD } = await import("@/config/paises");
+        chargeAmount = Math.round(localConCupon * TIPO_CAMBIO_USD);
+        chargeCurrency = "CLP";
+        chargeToken = cobro.token;
+        chargeCuenta = "cl";
       }
     }
 

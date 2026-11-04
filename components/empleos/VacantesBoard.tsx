@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { whatsappHref } from "@/lib/whatsapp";
 import { Briefcase, Building2, UserRound } from "lucide-react";
 import JobCard from "@/components/empleos/JobCard";
 import type { JobPublic } from "@/lib/jobs/types";
@@ -75,7 +76,7 @@ export default function VacantesBoard({
                   Ver cursos
                 </Link>
                 <a
-                  href="https://wa.me/56935409699"
+                  href={whatsappHref({ page: "/empleos", country: "cl", intent: "general" })}
                   className="inline-flex h-11 items-center rounded-full border border-line bg-paper px-6 text-sm font-semibold text-ink no-underline transition-colors hover:bg-wash"
                 >
                   Contactar

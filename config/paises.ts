@@ -30,9 +30,9 @@ function preciosVacios(): PreciosCurso {
 }
 
 /**
- * Power BI se cobra a $169.000 y Mercado financiero a $249.000.
- * El precio local de Mercado financiero es el de Power BI más 47,34 %.
- * En Chile el catálogo queda en $349.000. El descuento lo pone el panel.
+ * El curso estándar se cobra a $169.000 y Mercado financiero a $349.000.
+ * El precio local de Mercado financiero es el del curso estándar más 47,34 %.
+ * El precio de venta en Chile vive en `config/pricing.ts`.
  */
 const FACTOR_MERCADO = 249 / 169;
 
@@ -63,8 +63,9 @@ function precios(normal: number, analisis: number): PreciosCurso {
 }
 
 /**
- * Precio de lista. En Chile el curso estándar lista 249.000 (referencia comercial: 169.000) y Análisis de datos lista 747.000.
- * `normal` es ese original local. Análisis de datos queda en normal × 3.
+ * Precio de lista de los mercados locales. Chile no usa esta tabla: su precio
+ * de venta y su lista viven en `config/pricing.ts`.
+ * `normal` es el original local. Análisis de datos queda en normal × 3.
  */
 function listas(normal: number): PreciosCurso {
   const tabla = preciosVacios();
@@ -209,7 +210,7 @@ export const PAISES: Pais[] = [
     listas: listas(117),
     dispositivo: "computadora",
     voseo: false,
-    indexable: false,
+    indexable: true,
     zonaHoraria: "America/La_Paz",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("bo"),
@@ -246,7 +247,7 @@ export const PAISES: Pais[] = [
     listas: listas(220),
     dispositivo: "computadora",
     voseo: false,
-    indexable: false,
+    indexable: true,
     zonaHoraria: "America/Costa_Rica",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("cr"),
@@ -264,7 +265,7 @@ export const PAISES: Pais[] = [
     listas: listas(146),
     dispositivo: "computadora",
     voseo: false,
-    indexable: false,
+    indexable: true,
     zonaHoraria: "America/Guayaquil",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("ec"),
@@ -282,7 +283,7 @@ export const PAISES: Pais[] = [
     listas: listas(131),
     dispositivo: "computadora",
     voseo: false,
-    indexable: false,
+    indexable: true,
     zonaHoraria: "America/El_Salvador",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("sv"),
@@ -300,7 +301,7 @@ export const PAISES: Pais[] = [
     listas: listas(131),
     dispositivo: "computadora",
     voseo: false,
-    indexable: false,
+    indexable: true,
     zonaHoraria: "America/Guatemala",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("gt"),
@@ -387,8 +388,10 @@ export const PAISES: Pais[] = [
     locale: "es-PY",
     decimales: 2,
     pago: "usd-chile",
-    precios: precios(89, 179),
-    listas: listas(131),
+    // Precio en USD pendiente de aprobación de Manu. Sin monto no se muestra
+    // precio, no se declara Offer y la ficha invita a consultar por WhatsApp.
+    precios: preciosVacios(),
+    listas: preciosVacios(),
     dispositivo: "computadora",
     voseo: false,
     indexable: false,
@@ -427,7 +430,7 @@ export const PAISES: Pais[] = [
     listas: listas(161),
     dispositivo: "computadora",
     voseo: false,
-    indexable: false,
+    indexable: true,
     zonaHoraria: "America/Santo_Domingo",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("do"),
@@ -463,7 +466,7 @@ export const PAISES: Pais[] = [
     listas: listas(102),
     dispositivo: "computadora",
     voseo: false,
-    indexable: false,
+    indexable: true,
     zonaHoraria: "America/Caracas",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
     contacto: contactoPendiente("ve"),

@@ -121,10 +121,6 @@ export default function RegistroPage() {
       setError("Escribe tu nombre.");
       return;
     }
-    if (!formData.phone.trim() || formData.phone.replace(/\D/g, "").length < 8) {
-      setError("Escribe un teléfono o WhatsApp válido.");
-      return;
-    }
 
     const password = formData.password;
     const pwCheck = validatePassword(password);
@@ -166,7 +162,7 @@ export default function RegistroPage() {
         options: {
           data: {
             full_name: defaultName,
-            whatsapp: phone,
+            whatsapp: phone || null,
             registration_source: registrationSource,
             ...(referralCode ? { referral_code: referralCode } : {}),
             ...(pricingVariant ? { pricing_variant: pricingVariant } : {}),
@@ -331,12 +327,11 @@ export default function RegistroPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-brand-dark mb-1.5">Teléfono / WhatsApp *</label>
+              <label className="block text-sm font-bold text-brand-dark mb-1.5">Teléfono / WhatsApp (opcional)</label>
               <div className="relative">
                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
                 <input
                   type="tel"
-                  required
                   disabled={loading}
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}

@@ -710,7 +710,7 @@ function ConfirmCobro({
       <input
         id={`deal-${id}`}
         inputMode="numeric"
-        placeholder="Neto cobrado, ej. 249000"
+        placeholder="Neto cobrado, ej. 169000"
         value={deal}
         onChange={(e) => onDeal(e.target.value.replace(/\D/g, ""))}
         className="h-8 w-44 rounded-full border border-neutral-200 bg-white px-3 text-xs text-neutral-800 outline-none focus:border-neutral-400"

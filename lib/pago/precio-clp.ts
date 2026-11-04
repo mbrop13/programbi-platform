@@ -45,7 +45,12 @@ export function resolverPrecioClp(
   const override = levelName
     ? priceOverrides.find((o) => o.item_type === "course" && o.item_id === slug && o.level_name === levelName)
     : undefined;
-  const effectiveBase = override?.price ?? basePrice;
+  // El precio publicado manda: el panel puede bajar el precio con un override,
+  // nunca subirlo por sobre lo que la ficha y el JSON-LD declaran.
+  const effectiveBase =
+    typeof override?.price === "number" && override.price > 0 && override.price < basePrice
+      ? override.price
+      : basePrice;
   const baseSource: OrigenPrecioClp = override ? "override" : "catalog";
   const applicablePromo = promotions.find(
     (p) =>

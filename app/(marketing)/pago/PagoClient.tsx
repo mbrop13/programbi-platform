@@ -38,6 +38,7 @@ import { normalizarPais } from "@/config/paises";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import { formatMoneda, muestraPrecioLocal, notaCobroClp, porcentajeDescuento, precioCurso, precioLista, totalLocal, totalLocalConCupon } from "@/lib/paises/precios";
 import { precioDescontadoClp } from "@/lib/pago/precio-clp";
+import { whatsappHref } from "@/lib/whatsapp";
 import type { CheckoutCatalog, CheckoutPriceOverride, CheckoutPromotion } from "@/lib/pago/catalogo";
 
 type Mode = "individual" | "enterprise";
@@ -1445,7 +1446,7 @@ export default function PagoClient({
                               )}
                             </motion.button>
                             
-                            <a href="https://wa.me/56935409699" target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center gap-2 rounded-md border-2 border-line py-3 text-sm font-semibold text-ink no-underline transition-colors hover:bg-wash">
+                            <a href={whatsappHref({ page: "/pago", country: paisPago, intent: "general" })} target="_blank" rel="noopener noreferrer" className="flex w-full items-center justify-center gap-2 rounded-md border-2 border-line py-3 text-sm font-semibold text-ink no-underline transition-colors hover:bg-wash">
                                WhatsApp
                             </a>
                             {enterpriseToggles.size === 0 && <p className="text-center text-[11px] font-semibold text-mute">Elige al menos un curso</p>}

@@ -3,7 +3,7 @@ import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import type { Course } from "@/lib/data/courses";
 import { LANDING_CURSOS, type LandingCursoCopy } from "@/lib/data/landing-cursos";
 import type { LandingCursoContenido } from "@/lib/paises/landing-curso";
-import { NOTA_COBRO_CLP, localizarMercado } from "@/lib/paises/precios";
+import { NOTA_PAGO, localizarMercado } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
 
 export default function CursoLanding({
@@ -72,7 +72,7 @@ export default function CursoLanding({
               {contenido.precioTexto}
             </p>
             {iso !== "cl" && contenido.precio != null ? (
-              <p className="mt-1 text-[11px] leading-snug text-mute">{NOTA_COBRO_CLP}</p>
+              <p className="mt-1 text-[11px] leading-snug text-mute">{NOTA_PAGO}</p>
             ) : null}
             <p className="mt-2 text-sm leading-relaxed text-mute">{contenido.cohorteTexto}</p>
           </div>

@@ -5,7 +5,7 @@
 
 import { getPais, ISO_CHILE, normalizarPais, SLUGS_CURSO, type Pais } from "@/config/paises";
 import { etiquetaHoraLocal, horarioLocal, type HorarioLocal } from "@/lib/paises/horarios";
-import { muestraPrecioLocal, NOTA_COBRO_CLP, precioCurso } from "@/lib/paises/precios";
+import { muestraPrecioLocal, precioCurso } from "@/lib/paises/precios";
 
 export type DetalleCursoLocal = {
   pais: Pais;
@@ -30,7 +30,7 @@ export function textosPreciosLocales(iso: string | null | undefined): Record<str
   const textos: Record<string, string> = {};
   for (const slug of SLUGS_CURSO) {
     const monto = precioCurso(iso, slug);
-    if (monto != null) textos[slug] = `${montoConCodigo(iso, monto)} · ${NOTA_COBRO_CLP}`;
+    if (monto != null) textos[slug] = montoConCodigo(iso, monto);
   }
   return textos;
 }

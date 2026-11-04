@@ -63,12 +63,13 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { formatMoneda, localizarMercado, NOTA_COBRO_CLP, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
+import { formatMoneda, localizarMercado, NOTA_PAGO, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
 import type { PrecioTarjeta } from "@/lib/paises/precio-publico";
 import type { CheckoutPromotion } from "@/lib/pago/catalogo";
 import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
 import { ISO_CHILE } from "@/config/paises";
+import { tienePrecioPublico } from "@/config/pricing";
 import { COUNTRIES } from "@/lib/context/CountryContext";
 
 function phoneCodeFor(iso: string) {
@@ -186,7 +187,9 @@ export default function CourseDetailClient({
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authRedirect, setAuthRedirect] = useState(`/cursos/${course.slug}`);
   const pricingReady = !checkingAuth;
-  const showPrice = isLoggedIn;
+  // El precio es público: la ficha no lo esconde detrás de un formulario ni de
+  // una cuenta. Cualquiera puede verlo y compararlo (y Google puede indexarlo).
+  const showPrice = true;
   const [userPlan, setUserPlan] = useState<string | null>(null);
   const [isFreeTrial, setIsFreeTrial] = useState(false);
   const [schedules, setSchedules] = useState<CourseSchedule[]>(initialSchedules);
@@ -441,6 +444,9 @@ export default function CourseDetailClient({
 
   const hasGallery = hasCourseGallery(course.slug);
   const priceIsPublic = Boolean(precioTarjeta) || (mostrarLocal && precioLocal != null);
+  // Paraguay todavía no tiene monto aprobado por Manu: se consulta por WhatsApp.
+  const sinPrecioAprobado =
+    !isEmpresa && pais !== ISO_CHILE && !precioTarjeta && precioLocal == null && !tienePrecioPublico(pais);
   const contactInstead = !isEmpresa && !priceIsPublic && !showPrice;
   const openRegisterForPrice = () => {
     trackClickRegistro();
@@ -633,7 +639,7 @@ export default function CourseDetailClient({
                       </p>
                     ) : null}
                     <p className="text-3xl font-bold tracking-tight text-ink">{precioTarjeta.actual}</p>
-                    <p className="mt-2 text-xs leading-snug text-mute">{notaTarjeta || NOTA_COBRO_CLP}</p>
+                    <p className="mt-2 text-xs leading-snug text-mute">{notaTarjeta || NOTA_PAGO}</p>
                     {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
                   </div>
                 ) : mostrarLocal && precioLocal != null ? (
@@ -645,32 +651,40 @@ export default function CourseDetailClient({
                       </p>
                     ) : null}
                     <p className="text-3xl font-bold tracking-tight text-ink">{formatMoneda(pais, precioLocal)}</p>
-                    <p className="mt-2 text-xs leading-snug text-mute">{NOTA_COBRO_CLP}</p>
+                    <p className="mt-2 text-xs leading-snug text-mute">{NOTA_PAGO}</p>
                     {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
                   </div>
                 ) : !pricingReady ? (
                   <div className="h-10 w-40 rounded-lg bg-wash" />
-                ) : showPrice ? (
-                  activeSchedulesList.length === 0 ? (
+                ) : sinPrecioAprobado ? (
+                  <div>
                     <p className="text-sm leading-relaxed text-mute">
-                      {catalogLevelCount > 1 && view !== "avanzado"
-                        ? "Aún no hay una fecha abierta para este nivel. Escríbenos y te avisamos del próximo grupo."
-                        : "Aún no hay una fecha abierta para este curso. Escríbenos y te avisamos del próximo grupo."}
+                      El valor de este curso se confirma por WhatsApp según tu país.
                     </p>
-                  ) : (
-                    <div>
-                      {originalGrandTotal && totalDiscountPercentage > 0 ? (
-                        <p className="text-sm text-faint">
-                          <span className="line-through">{convertAndFormat(originalGrandTotal)}</span>
-                          <span className="ml-2 font-semibold text-ink">{totalDiscountPercentage}% off</span>
-                        </p>
-                      ) : null}
-                      <p className="text-3xl font-bold tracking-tight text-ink">{convertAndFormat(grandTotal)}</p>
-                      {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
-                    </div>
-                  )
+                    <WhatsAppCta
+                      page={`/cursos/${course.slug}`}
+                      intent="curso"
+                      course={course.title}
+                      courseSlug={course.slug}
+                      country={pais}
+                      className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
+                    >
+                      <MessageCircle size={16} />
+                      Consultar el valor
+                    </WhatsAppCta>
+                  </div>
                 ) : (
-                  <CourseCardContactForm course={course} onRegister={openRegisterForPrice} />
+                  <div>
+                    {originalGrandTotal && totalDiscountPercentage > 0 ? (
+                      <p className="text-sm text-faint">
+                        <span className="line-through">{convertAndFormat(originalGrandTotal)}</span>
+                        <span className="ml-2 font-semibold text-ink">{totalDiscountPercentage}% off</span>
+                      </p>
+                    ) : null}
+                    <p className="text-3xl font-bold tracking-tight text-ink">{convertAndFormat(grandTotal)}</p>
+                    <p className="mt-2 text-xs leading-snug text-mute">{NOTA_PAGO}</p>
+                    {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
+                  </div>
                 )}
               </div>
 
@@ -848,7 +862,7 @@ function RegisterForPriceNote({ onRegister }: { onRegister: () => void }) {
   const pais = usePaisRuta();
   return (
     <p className="text-xs leading-relaxed text-mute">
-      Al registrarte puedes ver el precio.{" "}
+      ¿Listo para inscribirte?{" "}
       <button
         type="button"
         onClick={onRegister}
@@ -857,148 +871,6 @@ function RegisterForPriceNote({ onRegister }: { onRegister: () => void }) {
         {etiquetaBoton(pais, "Registrarme")}
       </button>
     </p>
-  );
-}
-
-function CourseCardContactForm({ course, onRegister }: { course: Course; onRegister: () => void }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [honeypot, setHoneypot] = useState("");
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [sending, setSending] = useState(false);
-  const [done, setDone] = useState(false);
-  const formLoadedAt = useRef(Date.now());
-  const pais = usePaisRuta();
-  const phoneCode = phoneCodeFor(pais);
-
-  const inputClass =
-    "h-11 w-full rounded-xl border border-line-strong bg-canvas px-3 text-sm text-ink placeholder:text-faint";
-
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const next: Record<string, string> = {};
-    if (name.trim().length < 2) next.name = "Escribe tu nombre.";
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) next.email = "Escribe un correo válido.";
-    if (phone.replace(/\D/g, "").length < 8) next.phone = "Escribe tu teléfono.";
-    setErrors(next);
-    if (Object.keys(next).length) return;
-
-    setSending(true);
-    try {
-      const res = await fetch("/api/leads/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim(),
-          email: email.trim(),
-          whatsapp: withDialCode(phone, phoneCode),
-          sourceCourse: course.title,
-          selectedCourses: [course.title],
-          leadType: "personal",
-          pricingVariant: readClientPricingVariant(),
-          pais,
-          ...captureAndReadAttribution(),
-          ...getAntiBotFields(formLoadedAt.current, honeypot),
-        }),
-      });
-      if (!res.ok) throw new Error("Error");
-      trackLeadSubmit("personal", "course_detail_card", course.slug);
-      setDone(true);
-    } catch {
-      setErrors({ form: "No se pudo enviar. Inténtalo de nuevo." });
-    } finally {
-      setSending(false);
-    }
-  };
-
-  if (done) {
-    return (
-      <div>
-        <p className="text-sm font-semibold text-ink">Te enviamos un correo</p>
-        <p className="mt-1 text-sm leading-relaxed text-mute">
-          Revisa {email}. Ahí va la información del curso.
-        </p>
-        <div className="mt-4">
-          <RegisterForPriceNote onRegister={onRegister} />
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <form onSubmit={onSubmit} className="space-y-3" noValidate>
-      <div>
-        <p className="text-sm font-semibold text-ink">Te contactamos</p>
-        <p className="mt-1 text-xs leading-relaxed text-mute">Déjanos tu nombre, correo y teléfono.</p>
-      </div>
-      <div style={honeypotStyle} aria-hidden>
-        <input
-          type="text"
-          name="_website"
-          autoComplete="off"
-          tabIndex={-1}
-          value={honeypot}
-          onChange={(e) => setHoneypot(e.target.value)}
-        />
-      </div>
-      <div>
-        <label htmlFor={`card-name-${course.slug}`} className="mb-1 block text-xs font-medium text-ink">
-          Nombre
-        </label>
-        <input
-          id={`card-name-${course.slug}`}
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          autoComplete="name"
-          className={inputClass}
-        />
-        {errors.name ? <p className="mt-1 text-xs text-ink">{errors.name}</p> : null}
-      </div>
-      <div>
-        <label htmlFor={`card-email-${course.slug}`} className="mb-1 block text-xs font-medium text-ink">
-          Correo
-        </label>
-        <input
-          id={`card-email-${course.slug}`}
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="email"
-          className={inputClass}
-        />
-        {errors.email ? <p className="mt-1 text-xs text-ink">{errors.email}</p> : null}
-      </div>
-      <div>
-        <label htmlFor={`card-phone-${course.slug}`} className="mb-1 block text-xs font-medium text-ink">
-          Teléfono
-        </label>
-        <div className="flex">
-          <span className="inline-flex h-11 items-center rounded-l-xl border border-r-0 border-line-strong bg-canvas px-3 text-sm text-ink">
-            {phoneCode}
-          </span>
-          <input
-            id={`card-phone-${course.slug}`}
-            type="tel"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            autoComplete="tel"
-            placeholder="1234 5678"
-            className="h-11 min-w-0 flex-1 rounded-r-xl border border-line-strong bg-canvas px-3 text-sm text-ink placeholder:text-faint"
-          />
-        </div>
-        {errors.phone ? <p className="mt-1 text-xs text-ink">{errors.phone}</p> : null}
-      </div>
-      {errors.form ? <p className="text-xs text-ink">{errors.form}</p> : null}
-      <button
-        type="submit"
-        disabled={sending}
-        className="inline-flex h-11 w-full items-center justify-center rounded-full bg-ink text-sm font-semibold text-canvas transition-transform active:scale-[0.98] disabled:opacity-60"
-      >
-        {sending ? "Enviando…" : "Enviar"}
-      </button>
-      <RegisterForPriceNote onRegister={onRegister} />
-    </form>
   );
 }
 
@@ -1078,7 +950,7 @@ function CourseContactForm({ course, onRegister }: { course: Course; onRegister:
       const payload: Record<string, unknown> = {
         name: formData.get("name"),
         email: formData.get("email"),
-        whatsapp: `${phonePrefix}${formData.get("whatsapp")}`,
+        whatsapp: formData.get("whatsapp") ? `${phonePrefix}${formData.get("whatsapp")}` : null,
         message: formData.get("message"),
         sourceCourse: course.title,
         selectedCourses: contactType === "personal" ? [course.title] : selectedServices,
@@ -1189,7 +1061,7 @@ function CourseContactForm({ course, onRegister }: { course: Course; onRegister:
 
               <div className="flex flex-col gap-2">
                 <label htmlFor="course-whatsapp" className="text-sm font-medium text-ink">
-                  Teléfono
+                  Teléfono o WhatsApp (opcional)
                 </label>
                 <div className="flex">
                   <div className="relative">
@@ -1227,7 +1099,6 @@ function CourseContactForm({ course, onRegister }: { course: Course; onRegister:
                     id="course-whatsapp"
                     name="whatsapp"
                     type="tel"
-                    required
                     autoComplete="tel"
                     className="h-12 min-w-0 flex-1 rounded-r-xl border border-line-strong bg-paper px-3 text-base text-ink"
                   />
