@@ -24,9 +24,12 @@ const companyLinks = [
   { label: "Bolsa de Trabajo", href: "/empleos" },
   ...(COMUNIDAD_PUBLICA ? [{ label: "Comunidad", href: "/comunidad" }] : []),
   { label: "Blog", href: "/blog" },
-  { label: "Preguntas frecuentes", href: "/#faq" },
+  { label: "Preguntas frecuentes", href: "/preguntas-frecuentes" },
   { label: "Registrarse", href: "/?auth=register" },
 ];
+
+/** Países con guía publicada (/guias o /{pais}/guias). */
+const GUIAS_POR_PAIS = new Set(["cl", "mx", "ar", "pe", "co", "uy", "py"]);
 
 export default function Footer({ compact: _compact = false }: { compact?: boolean }) {
   const pais = usePaisRuta();
@@ -63,6 +66,14 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
               {item.label === "Registrarse" ? etiquetaBoton(pais, item.label) : item.label}
             </Link>
           ))}
+          {GUIAS_POR_PAIS.has(pais) ? (
+            <Link
+              href={pais === ISO_CHILE ? "/guias" : `/${pais}/guias`}
+              className="no-underline hover:text-mute"
+            >
+              Guías de Power BI
+            </Link>
+          ) : null}
         </nav>
 
         <nav className="flex flex-col gap-3 text-sm font-medium text-ink" aria-label="Cursos">

@@ -55,6 +55,7 @@ export default function WhatsAppCta({
       course: slug,
       country: resolvedCountry,
       page: currentPath,
+      cta_position: "course_detail_inline",
     });
   };
 

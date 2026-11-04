@@ -63,7 +63,8 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { formatMoneda, localizarMercado, NOTA_PAGO, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
+import { formatMoneda, localizarMercado, NOTA_PAGO, porcentajeDescuento, precioCurso, precioLista, precioVenta } from "@/lib/paises/precios";
+import { monedaPublica } from "@/config/pricing";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
 import type { PrecioTarjeta } from "@/lib/paises/precio-publico";
 import type { CheckoutPromotion } from "@/lib/pago/catalogo";
@@ -235,7 +236,7 @@ export default function CourseDetailClient({
     });
 
     if (!isLoggedIn) {
-      trackClickRegistro();
+      trackClickRegistro({ cta_position: "course_detail_sidebar", course: course.slug });
       setAuthRedirect(dest);
       setShowAuthModal(true);
       return;
@@ -245,7 +246,14 @@ export default function CourseDetailClient({
   };
 
   useEffect(() => {
-    trackCourseView(course.slug, course.title, undefined, pais);
+    const valor = precioVenta(pais, course.slug);
+    trackCourseView(
+      course.slug,
+      course.title,
+      valor ?? undefined,
+      pais,
+      monedaPublica(pais)
+    );
   }, [course.slug, course.title, pais]);
 
   useEffect(() => {
@@ -449,7 +457,7 @@ export default function CourseDetailClient({
     !isEmpresa && pais !== ISO_CHILE && !precioTarjeta && precioLocal == null && !tienePrecioPublico(pais);
   const contactInstead = !isEmpresa && !priceIsPublic && !showPrice;
   const openRegisterForPrice = () => {
-    trackClickRegistro();
+    trackClickRegistro({ cta_position: "course_detail_register_price", course: course.slug });
     setAuthRedirect(pathname || `/cursos/${course.slug}`);
     setShowAuthModal(true);
   };

@@ -11,6 +11,7 @@ import {
   VARIANT_COOKIE,
   isPricingVisibilityVariant,
 } from "@/lib/experiments/config";
+import { analyticsContext } from "@/lib/analytics/context";
 
 export type AnalyticsParams = Record<string, string | number | boolean | null | undefined>;
 
@@ -511,10 +512,13 @@ function buildPageViewTarget(rawPath?: string): PageViewTarget {
 /** One page_view via gtag event (not config: config re-runs duplicated hits). */
 function sendPageViewHit(target: PageViewTarget): void {
   if (typeof window.gtag !== "function") return;
+  const { country, page_type } = analyticsContext(target.page_path);
   window.gtag("event", "page_view", {
     page_location: target.page_location,
     page_path: target.page_path,
     page_title: document.title,
+    country,
+    page_type,
     ...debugHitParams(),
   });
   window.__pbLastPageViewKey = target.key;
@@ -603,7 +607,10 @@ export function trackEvent(eventName: string, params?: AnalyticsParams): void {
   if (!isBrowser()) return;
   // Guarantees the session's first hit (and any post-30-min hit) is a page_view.
   ensurePageViewBeforeHit();
-  const payload = definedParams({ ...withUtm(params), ...debugHitParams() });
+  // Country / page_type / course / guide_slug viajan en todos los eventos.
+  // Lo explícito del llamador pisa el contexto (p. ej. una landing que empuja
+  // a otro curso distinto del de la URL).
+  const payload = definedParams({ ...analyticsContext(), ...withUtm(params), ...debugHitParams() });
 
   try {
     if (GA_MEASUREMENT_ID && typeof window.gtag === "function") {
@@ -708,14 +715,30 @@ export function trackCourseView(
   courseSlug: string,
   courseTitle?: string,
   value?: number,
-  pais?: string
+  pais?: string,
+  currency?: string
 ): void {
-  trackEventOnce(`view_curso:${pais || "cl"}:${courseSlug}`, GA_LEAD_EVENTS.VIEW_CURSO, {
+  const country = pais || "cl";
+  trackEventOnce(`view_curso:${country}:${courseSlug}`, GA_LEAD_EVENTS.VIEW_CURSO, {
     curso_slug: courseSlug,
     course_title: courseTitle,
     value: value ?? undefined,
-    currency: value != null ? "CLP" : undefined,
-    pais: pais || "cl",
+    currency: value != null ? (currency || "CLP") : undefined,
+    pais: country,
+  });
+  // GA4 recommended event, con los mismos datos para los informes de monetización.
+  trackEventOnce(`view_item:${country}:${courseSlug}`, "view_item", {
+    currency: currency || "CLP",
+    value: value ?? undefined,
+    items: JSON.stringify([
+      {
+        item_id: courseSlug,
+        item_name: courseTitle || courseSlug,
+        price: value ?? undefined,
+        quantity: 1,
+      },
+    ]),
+    course: courseSlug,
   });
 }
 
@@ -775,6 +798,7 @@ export function trackWhatsAppClick(opts?: {
   course?: string | null;
   country?: string | null;
   page?: string;
+  cta_position?: string;
 }): void {
   const page =
     opts?.page ||
@@ -782,6 +806,7 @@ export function trackWhatsAppClick(opts?: {
   trackEvent(GA_LEAD_EVENTS.CLICK_WHATSAPP, {
     course: opts?.course || undefined,
     country: opts?.country || undefined,
+    cta_position: opts?.cta_position || undefined,
     page,
     // Keep legacy params for existing GA4 reports/explorations.
     page_path: page,
@@ -813,8 +838,11 @@ export function trackClickCtaPrimary(ctaId: string): void {
   trackEvent(GA_LEAD_EVENTS.CLICK_CTA_PRIMARY, { cta_id: ctaId });
 }
 
-export function trackClickRegistro(): void {
-  trackEvent(GA_LEAD_EVENTS.CLICK_REGISTRO);
+export function trackClickRegistro(opts?: { cta_position?: string; course?: string | null }): void {
+  trackEvent(GA_LEAD_EVENTS.CLICK_REGISTRO, {
+    cta_position: opts?.cta_position || undefined,
+    course: opts?.course || undefined,
+  });
 }
 
 let lastSubmitRegistroAt = 0;
