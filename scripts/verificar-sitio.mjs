@@ -8,14 +8,51 @@
  * y reciprocidad de hreflang. Además revisa los precios (visible vs Offer) de
  * las fichas y que no quede «Se cobra en CLP» ni `_dbg` en el HTML.
  *
+ * A la lista del sitemap se suman las rutas opcionales de guías, el índice de
+ * preguntas frecuentes y las comparativas. Una ruta opcional que no exista se
+ * omite sin contar como fallo. También se comprueban los enlaces internos
+ * guía → curso y curso → guía.
+ *
  * Uso: node scripts/verificar-sitio.mjs [baseUrl]
  */
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 const BASE = (process.argv[2] || "http://127.0.0.1:3000").replace(/\/$/, "");
 const CONCURRENCIA = 6;
 const TITLE_MAX = 60;
+const SITE = "https://www.programbi.com";
 
 const resultados = [];
 const titulos = new Map();
+
+function leerGuias() {
+  try {
+    const raw = readFileSync(join(process.cwd(), "lib/guias/generado.ts"), "utf8");
+    const match = raw.match(/export const GUIAS: Guia\[\]\s*=\s*(\[[\s\S]*\]);/);
+    return match ? JSON.parse(match[1]) : [];
+  } catch {
+    return [];
+  }
+}
+
+function leerCursos() {
+  try {
+    const raw = readFileSync(join(process.cwd(), "lib/data/courses.ts"), "utf8");
+    return new Set([...raw.matchAll(/^\s*slug:\s*"([^"]+)"/gm)].map((m) => m[1]));
+  } catch {
+    return new Set();
+  }
+}
+
+function leerPaises() {
+  try {
+    const raw = readFileSync(join(process.cwd(), "config/paises.ts"), "utf8");
+    return [...new Set([...raw.matchAll(/^\s*iso:\s*"([a-z]{2})"/gm)].map((m) => m[1]))];
+  } catch {
+    return [];
+  }
+}
 
 function texto(html) {
   return html
@@ -96,6 +133,22 @@ function fallo(url, tipo, detalle) {
   resultados.push({ url, tipo, detalle });
 }
 
+function escaparRe(valor) {
+  return valor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+const guias = leerGuias();
+const cursos = leerCursos();
+const PAISES_CON_RUTA_DE_GUIA = new Set(["cl", "transversal", "ar", "mx", "pe", "co", "uy", "py"]);
+const guiaPorPath = new Map(guias.map((guia) => [guia.path, guia]));
+const guiasPorCurso = new Map();
+for (const guia of guias) {
+  if (!cursos.has(guia.course) || !PAISES_CON_RUTA_DE_GUIA.has(guia.country)) continue;
+  const lista = guiasPorCurso.get(guia.course) || [];
+  lista.push(guia.path);
+  guiasPorCurso.set(guia.course, lista);
+}
+
 const sitemap = await traer(`${BASE}/sitemap.xml`);
 if (sitemap.status !== 200) {
   console.error(`No pude leer el sitemap (${sitemap.status}). ¿Está corriendo next start?`);
@@ -104,19 +157,37 @@ if (sitemap.status !== 200) {
 const urls = [...sitemap.body.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
 console.log(`Sitemap: ${urls.length} URLs\n`);
 
+const enSitemap = new Set(urls);
+const opcionales = new Set();
+function agregarOpcional(path) {
+  if (!path.startsWith("/")) return;
+  const url = `${SITE}${path}`;
+  if (!enSitemap.has(url)) opcionales.add(url);
+}
+
+for (const path of ["/guias", "/preguntas-frecuentes", "/versus"]) agregarOpcional(path);
+for (const iso of leerPaises()) {
+  if (iso !== "cl") agregarOpcional(`/${iso}/guias`);
+}
+for (const guia of guias) agregarOpcional(guia.path);
+
+const todasLasUrls = [...urls, ...opcionales];
+if (opcionales.size > 0) console.log(`Rutas opcionales: ${opcionales.size}\n`);
+
 const htmlPorUrl = new Map();
 
-await mapa(urls, async (url) => {
-  const local = url.replace("https://www.programbi.com", BASE);
+await mapa(todasLasUrls, async (url) => {
+  const local = url.replace(SITE, BASE);
+  const esOpcional = opcionales.has(url);
   let res;
   try {
     res = await traer(local);
   } catch (error) {
-    fallo(url, "fetch", String(error));
+    if (!esOpcional) fallo(url, "fetch", String(error));
     return;
   }
   if (res.status !== 200) {
-    fallo(url, "status", `HTTP ${res.status}`);
+    if (!esOpcional) fallo(url, "status", `HTTP ${res.status}`);
     return;
   }
   const html = res.body;
@@ -156,6 +227,26 @@ await mapa(urls, async (url) => {
   if (/Se cobra en (CLP|pesos chilenos)/i.test(html)) fallo(url, "precio-texto", "aparece «Se cobra en CLP»");
   if (/_dbg/.test(html)) fallo(url, "debug", "aparece _dbg en el HTML");
   if (/\[PENDIENTE/i.test(html)) fallo(url, "contenido", "queda un marcador [PENDIENTE]");
+
+  const pathname = new URL(url).pathname.replace(/\/$/, "") || "/";
+
+  const guia = guiaPorPath.get(pathname);
+  if (guia && cursos.has(guia.course)) {
+    const re = new RegExp(`href=["'][^"']*/cursos/${escaparRe(guia.course)}(?:["'?#/])`);
+    if (!re.test(html)) fallo(url, "enlace-guia-curso", `sin enlace a /cursos/${guia.course}`);
+  }
+
+  const cursoMatch = pathname.match(/^(?:\/[a-z]{2})?\/cursos\/([^/]+)$/);
+  if (cursoMatch) {
+    const curso = cursoMatch[1];
+    const paths = guiasPorCurso.get(curso);
+    if (paths && paths.length > 0) {
+      const hay = paths.some(
+        (path) => html.includes(`href="${path}"`) || html.includes(`href='${path}'`)
+      );
+      if (!hay) fallo(url, "enlace-curso-guia", `sin enlace a guías de ${curso}`);
+    }
+  }
 });
 
 // Reciprocidad de hreflang: cada alternate debe volver a esta URL.
@@ -164,7 +255,7 @@ for (const [url, html] of htmlPorUrl) {
   const alternatesPagina = alternates(html);
   for (const [lang, href] of Object.entries(alternatesPagina)) {
     if (lang === "x-default") continue;
-    const objetivo = href.replace("https://www.programbi.com", BASE);
+    const objetivo = href.replace(SITE, BASE);
     let res = htmlPorUrl.get(href);
     if (!res) {
       try {
@@ -238,7 +329,7 @@ const porTipo = resultados.reduce((acc, item) => {
   return acc;
 }, {});
 
-console.log(`URLs revisadas: ${htmlPorUrl.size}/${urls.length}`);
+console.log(`URLs revisadas: ${htmlPorUrl.size}/${todasLasUrls.length}`);
 console.log(`Alternates comprobados: ${revisados}`);
 console.log(`Fichas con Offer: ${fichasConOffer}`);
 console.log(`Títulos únicos: ${titulos.size}`);
