@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import GuiasHub from "@/components/guias/GuiasHub";
-import { PAISES_CARPETA, getPais } from "@/config/paises";
 import { GUIAS } from "@/lib/guias/generado";
-import { guiasDePais } from "@/lib/guias";
+import { indiceGuias } from "@/lib/guias";
+import { opcionesCurso, opcionesPais, paisesConConteo } from "@/lib/guias/hub";
 import { absoluteUrl } from "@/lib/seo";
 
 const title = "Guías de datos, Power BI y SQL — ProgramBI";
 const description =
-  "Guías prácticas por curso y país: Power BI, Excel, SQL Server, Python, análisis de datos y mercado financiero. Precio local, ruta de aprendizaje, sueldos y curso en vivo.";
+  "Guías prácticas por curso y país: Power BI, Excel, SQL Server, Python, Access, Copilot, Claude, IA, Machine Learning, análisis de datos y mercado financiero. Precio local, ruta de aprendizaje, sueldos y curso en vivo.";
 
 export const metadata: Metadata = {
   title: { absolute: title },
@@ -19,26 +19,12 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600;
 
-const CURSOS = [
-  { valor: "analisis-de-datos", etiqueta: "Análisis de datos" },
-  { valor: "power-bi", etiqueta: "Power BI" },
-  { valor: "sql-server", etiqueta: "SQL Server" },
-  { valor: "python", etiqueta: "Python" },
-  { valor: "excel", etiqueta: "Excel" },
-  { valor: "mercado-financiero", etiqueta: "Mercado financiero" },
-];
-
 export default function GuiasIndexPage() {
   // El hub general lista todas las guías publicadas; los filtros separan país y curso.
   const guias = GUIAS;
-  const paises = [
-    { valor: "cl", etiqueta: "Chile" },
-    ...PAISES_CARPETA.filter((pais) => guiasDePais(pais.iso).length > 0).map((pais) => ({
-      valor: pais.iso,
-      etiqueta: getPais(pais.iso).nombre,
-    })),
-  ];
-  const paisesConCarpeta = paises.filter((pais) => pais.valor !== "cl");
+  const paises = opcionesPais(guias);
+  const cursos = opcionesCurso(guias);
+  const paisesConCarpeta = paisesConConteo(guias).filter((pais) => pais.iso !== "cl");
 
   return (
     <main className="bg-canvas px-4 pb-20 pt-12 sm:px-6 lg:px-8">
@@ -65,7 +51,7 @@ export default function GuiasIndexPage() {
         </p>
 
         <div className="mt-8">
-          <GuiasHub guias={guias} paises={paises} cursos={CURSOS} />
+          <GuiasHub guias={guias} paises={paises} cursos={cursos} />
         </div>
 
         <section aria-labelledby="guias-por-pais" className="mt-14 border-t border-line pt-8">
@@ -74,12 +60,15 @@ export default function GuiasIndexPage() {
           </h2>
           <ul className="mt-4 flex flex-wrap gap-2">
             {paisesConCarpeta.map((pais) => (
-              <li key={pais.valor}>
+              <li key={pais.iso}>
                 <Link
-                  href={`/${pais.valor}/guias`}
-                  className="inline-flex h-10 items-center rounded-full border border-line-strong bg-paper px-4 text-sm font-medium text-ink no-underline hover:border-ink/30"
+                  href={indiceGuias(pais.iso)}
+                  className="inline-flex h-10 items-center gap-2 rounded-full border border-line-strong bg-paper px-4 text-sm font-medium text-ink no-underline hover:border-ink/30"
                 >
-                  {pais.etiqueta}
+                  {pais.nombre}
+                  <span className="rounded-full bg-wash px-2 py-0.5 text-[11px] font-semibold text-mute">
+                    {pais.cantidad}
+                  </span>
                 </Link>
               </li>
             ))}

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import GuiaPage from "@/components/guias/GuiaPage";
-import { esIsoPais, esIndexable, getPais, ISO_CHILE } from "@/config/paises";
+import { esIsoPais, esIndexable, getPais, ISO_CHILE, PAISES_CARPETA } from "@/config/paises";
 import {
   alternatesClaude,
   alternatesCurso,
@@ -24,9 +24,8 @@ type Params = { pais: string; slug: string };
  * segmentos: solo existen los pares país × guía que tienen contenido.
  */
 export function generateStaticParams(): Params[] {
-  const paises = ["ar", "mx", "pe", "co", "uy", "py"];
-  return paises.flatMap((pais) =>
-    guiasDePais(pais).map((guia) => ({ pais, slug: guia.slug }))
+  return PAISES_CARPETA.flatMap((pais) =>
+    guiasDePais(pais.iso).map((guia) => ({ pais: pais.iso, slug: guia.slug }))
   );
 }
 
