@@ -144,6 +144,8 @@ Las clases son de 19:30 a 21:30 en Montevideo. Uruguay mantiene UTC-3 todo el a�
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · 19:30 a 21:30 · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

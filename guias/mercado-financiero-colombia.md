@@ -128,6 +128,8 @@ Si quieres reforzar una pieza antes de este programa, tienes el [curso de Python
 
 La [ficha para Colombia](https://www.programbi.com/co/cursos/mercado-financiero) (consultada el 4 de noviembre de 2026) indica clases en vivo por Zoom de 17:30 a 19:30, hora de Colombia, con cupos abiertos y fecha de inicio por confirmar. Son 30 horas; el valor es {precio_local}. Cada clase queda grabada y tienes acceso de por vida. Al aprobar el proyecto final recibes certificado. Enseña Manuel Oliva, Magíster en Data Science de la UAI.
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · 17:30 a 19:30, hora de Colombia · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

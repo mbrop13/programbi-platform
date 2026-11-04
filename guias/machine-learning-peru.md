@@ -144,6 +144,8 @@ Las clases son de 17:30 a 19:30 en Lima. Perú se mantiene en UTC-5 todo el año
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}.
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · 17:30 a 19:30 · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

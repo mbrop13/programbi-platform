@@ -140,6 +140,8 @@ Datos de la [ficha del curso](https://www.programbi.com/cursos/sql-server), revi
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 - Para equipos: cotización en `/cursos/sql-server/empresas`.
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · martes y jueves 19:30–21:30 hora de Chile · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

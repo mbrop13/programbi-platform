@@ -126,6 +126,8 @@ La ficha indica clases de 17:30 a 19:30 en Bogotá. Como Colombia se mantiene en
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Valor: {precio_local}, en pesos colombianos.
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · 17:30 a 19:30 · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

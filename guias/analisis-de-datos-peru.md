@@ -129,6 +129,8 @@ Según la [ficha del curso para Perú](https://www.programbi.com/pe/cursos/anali
 - Inicio: **lunes 23 de noviembre de 2026**. Precio: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · lunes y miércoles 17:30–19:30 hora de Perú · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

@@ -165,6 +165,8 @@ Según la [ficha del curso para Colombia](https://www.programbi.com/co/cursos/sq
 - Inicio: **martes 24 de noviembre de 2026**. Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · martes y jueves 17:30–19:30 hora de Colombia · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

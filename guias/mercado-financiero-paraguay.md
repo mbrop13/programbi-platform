@@ -124,6 +124,8 @@ Si querés reforzar una pieza antes de este programa, tenés el [curso de Python
 - Incluye: grabaciones permanentes, material descargable y certificado al aprobar el trabajo integrador.
 - Profesor: Manuel Oliva, Magíster en Data Science (UAI).
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · 19:30 a 21:30, hora de Paraguay · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

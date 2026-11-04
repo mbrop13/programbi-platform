@@ -125,6 +125,8 @@ Según la [ficha](https://www.programbi.com/cursos/power-automate), consultada e
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 - Valor: **$169.000 CLP**.
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — $169.000 CLP · 19:30 a 21:30 · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

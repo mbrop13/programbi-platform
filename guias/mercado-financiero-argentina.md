@@ -120,6 +120,8 @@ Si querés reforzar una pieza antes de este programa, tenés el [curso de Python
 
 La [ficha para Argentina](https://www.programbi.com/ar/cursos/mercado-financiero) (consultada el 4 de noviembre de 2026) indica clases en vivo por Zoom de 19:30 a 21:30, hora de Argentina, con cupos abiertos y fecha de inicio por confirmar. Son 30 horas; el valor es {precio_local}. Cada clase queda grabada y tenés acceso de por vida. Al aprobar el proyecto final recibís certificado. Enseña Manuel Oliva, Magíster en Data Science de la UAI.
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · 19:30 a 21:30, hora de Argentina · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

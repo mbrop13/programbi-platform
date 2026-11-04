@@ -152,11 +152,20 @@ for (const file of archivos) {
     continue;
   }
   const { data } = parsed;
+  if (data.publicar === false || String(data.publicar).toLowerCase() === "false") {
+    avisos.push(`${relative(ROOT, file)}: publicar: false, se omite`);
+    continue;
+  }
   const slug = data.slug;
-  const pais = String(data.pais || data.country || "").toLowerCase();
+  const paisCrudo = String(data.pais || data.country || "").toLowerCase();
+  // `latam` es el país que usa el bot de contenido para las guías sin variante
+  // por mercado; el resto del sitio las llama `transversal`.
+  const pais = paisCrudo === "latam" || paisCrudo === "" ? "transversal" : paisCrudo;
   const curso = data.curso || data.course || "power-bi";
   const path =
-    data.ruta_sugerida || data.path || (pais === "cl" ? `/guias/${slug}` : `/${pais}/guias/${slug}`);
+    data.ruta_sugerida ||
+    data.path ||
+    (pais === "cl" || pais === "transversal" ? `/guias/${slug}` : `/${pais}/guias/${slug}`);
   const lang = data.hreflang || data.lang || LANG_POR_PAIS[pais] || "es-CL";
   const faq = extraerFaq(parsed.body);
   const body = normalizarCuerpo(faq.body);

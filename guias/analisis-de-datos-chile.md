@@ -109,7 +109,7 @@ Datos tomados de la [ficha del curso](https://www.programbi.com/cursos/analisis-
 - **Para quién:** perfiles administrativos, financieros, comerciales, ingenieros y analistas, sobre todo de finanzas, control de gestión y operaciones que hoy viven en Excel.
 - **Incluye:** grabaciones de por vida en el campus y certificado digital al completar.
 - **Próximo inicio:** lunes 23 de noviembre de 2026.
-- **Valor:** $338.000 CLP.
+- **Valor:** $338.000 CLP. Puedes pagar en 3 cuotas sin interés.
 - **Instructor:** Manuel Oliva, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM y más de 5.000 profesionales formados en SQL, Power BI, Python e IA.
 - **Empresas:** hay cotización para equipos en `/cursos/analisis-de-datos/empresas`.
 

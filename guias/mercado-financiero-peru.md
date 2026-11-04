@@ -127,6 +127,8 @@ Según la [ficha del curso para Perú](https://www.programbi.com/pe/cursos/merca
 - **Grabaciones de por vida** y **certificado**.
 - Valor: **{precio_local}**. Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · 17:30 a 19:30, hora de Perú · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

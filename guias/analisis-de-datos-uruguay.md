@@ -130,6 +130,8 @@ Datos de la [ficha del curso para Uruguay](https://www.programbi.com/uy/cursos/a
 - Inicio: **lunes 23 de noviembre de 2026**. Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · lunes y miércoles 19:30–21:30 hora de Uruguay · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes
@@ -154,3 +156,9 @@ Sí, un certificado digital de ProgramBI al terminar.
 
 **¿Me sirve para preparar un llamado público?**
 Sí. SQL, Power BI y Python suelen aparecer en las bases de llamados de analista de datos; revisá siempre el temario específico de cada llamado.
+
+**¿Recibo un certificado al terminar?**
+Sí. Al terminar el curso recibes un certificado de ProgramBI. Puedes sumarlo a tu CV junto con el proyecto final del curso.
+
+**¿Puedo pagar en cuotas?**
+Sí. El curso se puede pagar en 3 cuotas sin interés. Escribe por WhatsApp para confirmar el valor vigente, las fechas de inicio y los medios de pago disponibles en tu país.

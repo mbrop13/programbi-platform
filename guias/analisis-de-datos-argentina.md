@@ -132,6 +132,8 @@ Datos de la [ficha del curso para Argentina](https://www.programbi.com/ar/cursos
 - Inicio: **lunes 23 de noviembre de 2026**. Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · lunes y miércoles 19:30–21:30 hora de Argentina · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes
@@ -156,3 +158,9 @@ Sí, certificado digital de ProgramBI al completar el curso.
 
 **¿Me sirve para trabajar remoto para afuera?**
 Las herramientas son las mismas que piden esas búsquedas. Además vas a necesitar inglés y un portafolio que puedas presentar solo.
+
+**¿Recibo un certificado al terminar?**
+Sí. Al terminar el curso recibes un certificado de ProgramBI. Puedes sumarlo a tu CV junto con el proyecto final del curso.
+
+**¿Puedo pagar en cuotas?**
+Sí. El curso se puede pagar en 3 cuotas sin interés. Escribe por WhatsApp para confirmar el valor vigente, las fechas de inicio y los medios de pago disponibles en tu país.

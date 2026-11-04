@@ -120,6 +120,8 @@ Datos de la [ficha del curso para Paraguay](https://www.programbi.com/py/cursos/
 - Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · 19:30 a 21:30, hora de Paraguay · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

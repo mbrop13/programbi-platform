@@ -123,6 +123,8 @@ La ficha indica clases de 16:30 a 18:30 en Ciudad de México. Como México dejó
 - Instructor: Manuel Oliva, Magíster en Data Science (UAI).
 - Precio: {precio_local}, en pesos mexicanos.
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · 16:30 a 18:30 CDMX · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

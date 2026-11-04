@@ -142,6 +142,8 @@ Datos de la [ficha del curso para México](https://www.programbi.com/mx/cursos/s
 - Inicio: **martes 24 de noviembre de 2026**. Inversión: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI).
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · martes y jueves 16:30–18:30 CDMX · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes

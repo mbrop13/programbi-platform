@@ -119,6 +119,8 @@ Datos de la [ficha del curso para Colombia](https://www.programbi.com/co/cursos/
 - Valor: **{precio_local}**.
 - Instructor: **Manuel Oliva**, Magíster en Data Science (UAI), con capacitaciones en Anglo American, CAP, Deloitte y SQM.
 
+**Formas de pago:** los cursos de ProgramBI se pueden pagar en 3 cuotas sin interés, en todos los países.
+
 **[CTA-END]** — {precio_local} · 17:30 a 19:30, hora de Colombia · «Inscribirme» · «Hablar por WhatsApp».
 
 ## Preguntas frecuentes
