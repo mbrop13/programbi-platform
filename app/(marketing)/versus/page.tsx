@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { comparisons } from "@/lib/data/comparisons";
-import { ChevronRight, ArrowRight, Activity, GitCompare } from "lucide-react";
+import { comparativasAcademiaHub } from "@/lib/data/comparativas";
+import { ArrowRight, GitCompare, GraduationCap } from "lucide-react";
 import { ogImageUrl } from "@/lib/og/url";
 import { twitterShare } from "@/lib/seo";
 
@@ -129,6 +130,56 @@ export default function VersusPage() {
               </Link>
             ))}
           </div>
+
+          {/* Academias */}
+          <section aria-labelledby="versus-academias" className="mt-16">
+            <div className="mb-6">
+              <span className="text-xs font-black uppercase tracking-widest text-[#1890FF] bg-blue-50 px-3 py-1.5 rounded-full inline-block mb-3">
+                Academias
+              </span>
+              <h2
+                id="versus-academias"
+                className="font-display font-black text-2xl sm:text-3xl text-slate-900 tracking-tight leading-tight"
+              >
+                ¿Curso en vivo, bootcamp o suscripción?
+              </h2>
+              <p className="text-slate-500 text-sm sm:text-base leading-relaxed max-w-2xl mt-2">
+                Comparamos academias con datos citados: horas en vivo, precio, precio por hora y
+                dónde conviene cada opción. Sin logos ajenos y con la fecha de revisión a la vista.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {comparativasAcademiaHub().map((comp) => (
+                <Link key={comp.href} href={comp.href} className="block no-underline group">
+                  <article className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-all h-full flex flex-col justify-between">
+                    <div className="space-y-4">
+                      <div className="w-10 h-10 rounded-2xl bg-blue-50 text-[#1890FF] flex items-center justify-center">
+                        <GraduationCap className="w-5 h-5" />
+                      </div>
+
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 my-0">
+                        {comp.etiqueta} · {comp.rival}
+                      </p>
+
+                      <h3 className="font-display font-bold text-lg sm:text-xl text-slate-900 group-hover:text-[#1890FF] transition-colors leading-snug my-0">
+                        {comp.title}
+                      </h3>
+
+                      <p className="text-slate-500 text-sm leading-relaxed line-clamp-3 my-0">
+                        {comp.description}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-[#1890FF] pt-6 group-hover:gap-2.5 transition-all mt-auto">
+                      <span>Ver comparativa</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </div>
+                  </article>
+                </Link>
+              ))}
+            </div>
+          </section>
 
           {/* Advisory banner */}
           <section className="bg-slate-900 rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden mt-16 shadow-xl">
