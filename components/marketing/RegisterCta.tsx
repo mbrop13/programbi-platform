@@ -22,7 +22,7 @@ export default function RegisterCta({
       onClick={(e) => {
         e.preventDefault();
         if (ctaId) trackHomePrimaryRegistro(ctaId);
-        else trackClickRegistro();
+        else trackClickRegistro({ cta_position: "inline" });
         window.dispatchEvent(new CustomEvent("open-auth-modal", { detail: { tab: "register" } }));
       }}
     >

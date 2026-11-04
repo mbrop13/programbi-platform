@@ -87,6 +87,7 @@ export default function WhatsAppButton() {
       course: courseMatch?.[1],
       country: countryParam,
       page: pathname || undefined,
+      cta_position: "floating",
     });
   };
 

@@ -140,6 +140,17 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
 
   const template = article.template || "default"; // default, tutorial, comparison
   const categoryLabel = categoryLabels[article.category] || article.category;
+  /**
+   * Curso relacionado con el post, por categoría editorial. Se usa en el CTA
+   * final para mandar al lector a la ficha del curso y no solo al catálogo.
+   */
+  const courseByCategory: Record<string, { slug: string; label: string }> = {
+    "power-bi": { slug: "power-bi", label: "Power BI" },
+    sql: { slug: "sql-server", label: "SQL Server" },
+    python: { slug: "python", label: "Python para Datos" },
+    ia: { slug: "ia-productividad", label: "IA para productividad" },
+  };
+  const relatedCourse = courseByCategory[article.category] || courseByCategory["power-bi"];
 
   // Author details (E-E-A-T booster)
   const isManuel = !article.author_name || article.author_name.toLowerCase().includes("manuel oliva");
@@ -537,12 +548,12 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link 
-              href="/cursos" 
+              href={`/cursos/${relatedCourse.slug}`}
               className={`px-7 py-3 font-bold text-xs tracking-widest uppercase no-underline transition-all ${
                 prefs.theme === "dark" ? "bg-white text-slate-950 hover:bg-slate-100" : "bg-slate-950 text-white hover:bg-slate-800"
               }`}
             >
-              EXPLORAR CURSOS
+              VER CURSO DE {relatedCourse.label.toUpperCase()}
             </Link>
             <Link
               href="/empresas"
