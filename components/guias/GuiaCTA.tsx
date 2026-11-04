@@ -3,10 +3,10 @@ import { ArrowRight, CalendarDays, Download, MessageCircle } from "lucide-react"
 import PlantillaDescarga from "@/components/marketing/PlantillaDescarga";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { getPais, ISO_CHILE } from "@/config/paises";
+import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
 import { courses } from "@/lib/data/courses";
 import { formatMoneda, precioVenta } from "@/lib/paises/precios";
 import { horarioLocal } from "@/lib/paises/horarios";
-import { rutaLocal } from "@/lib/paises/rutas";
 
 /** Fecha publicada en las fichas de los cursos (dato real, no calculado). */
 export const PROXIMO_INICIO = "lunes 23 de noviembre de 2026";
@@ -34,13 +34,14 @@ export default function GuiaCTA({
 }) {
   const pais = getPais(iso);
   const curso = cursoDe(course);
+  const ficha = fichaCurso(course);
   const nombreCurso = curso?.title || "Power BI";
   const precio = precioVenta(iso, course);
   const horario = horarioLocal(iso);
   const lugar = iso === ISO_CHILE ? "Chile" : pais.nombre;
-  const rutaCurso = rutaLocal(iso, `/cursos/${course}`);
-  const rutaLanding = rutaLocal(iso, "/curso-power-bi");
+  const rutaCurso = rutaFichaCurso(iso, course);
   const horaLocal = `de ${horario.inicio} a ${horario.fin}, hora de ${lugar}`;
+  const inicioTexto = ficha.inicio ? `Próxima clase en vivo: ${ficha.inicio}` : "Cupos abiertos · fecha por confirmar";
 
   if (variant === "top") {
     return (
@@ -48,12 +49,11 @@ export default function GuiaCTA({
         <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-mute">
           <CalendarDays size={16} className="text-ink" aria-hidden />
           <span>
-            Próxima clase en vivo: <strong className="font-semibold text-ink">{PROXIMO_INICIO}</strong> ·{" "}
-            {horaLocal}
+            {inicioTexto} · {horaLocal}
           </span>
         </p>
         <Link
-          href={rutaLanding}
+          href={rutaCurso}
           className="mt-3 inline-flex h-10 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-canvas no-underline"
         >
           Ver el curso
@@ -71,8 +71,8 @@ export default function GuiaCTA({
           Plantilla gratis para practicar
         </p>
         <p className="mt-1 text-sm leading-relaxed text-mute">
-          Descarga la plantilla de dashboard de ventas y sigue los ejemplos de la guía en Power BI.
-          Solo necesitas tu email.
+          Descarga una plantilla de práctica para seguir los ejemplos de esta guía en {nombreCurso}. Solo necesitas tu
+          email.
         </p>
         <div className="mt-4">
           <PlantillaDescarga pais={iso} location={`guia:${guiaSlug}`} label="Descargar la plantilla CSV" />
@@ -86,7 +86,7 @@ export default function GuiaCTA({
       <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">Curso en vivo</p>
       <p className="mt-2 text-xl font-bold tracking-tight text-ink">{nombreCurso} en vivo</p>
       <p className="mt-1 text-sm text-mute">
-        {PROXIMO_INICIO} · {horaLocal} · 20 horas por Zoom · grabaciones de por vida y certificado.
+        {inicioTexto} · {horaLocal} · {ficha.horasTexto} · grabaciones de por vida y certificado.
       </p>
       {precio != null ? (
         <p className="mt-3 text-2xl font-bold tracking-tight text-ink">
@@ -127,13 +127,13 @@ export function GuiaStickyCta({ iso, course }: { iso: string; course: string }) 
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-paper/95 px-3 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur md:hidden">
       <div className="flex gap-2">
         <Link
-          href={rutaLocal(iso, `/cursos/${course}`)}
+          href={rutaFichaCurso(iso, course)}
           className="inline-flex h-12 flex-1 items-center justify-center rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
         >
           Inscribirme
         </Link>
         <WhatsAppCta
-          page={rutaLocal(iso, `/cursos/${course}`)}
+          page={rutaFichaCurso(iso, course)}
           intent="curso"
           course={curso?.title || "Power BI"}
           courseSlug={course}

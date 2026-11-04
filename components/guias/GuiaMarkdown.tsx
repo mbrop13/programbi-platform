@@ -2,6 +2,7 @@
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { slugAncla, textoDeNodos } from "@/lib/guias/anclas";
 
 /**
  * Render del cuerpo Markdown de una guía con los tokens del sitio
@@ -18,7 +19,12 @@ export default function GuiaMarkdown({ content }: { content: string }) {
           <h2 className="mt-10 text-2xl font-bold tracking-tight text-ink first:mt-0">{children}</h2>
         ),
         h2: ({ children }) => (
-          <h2 className="mt-10 text-2xl font-bold tracking-tight text-ink first:mt-0">{children}</h2>
+          <h2
+            id={slugAncla(textoDeNodos(children))}
+            className="mt-10 scroll-mt-24 text-2xl font-bold tracking-tight text-ink first:mt-0"
+          >
+            {children}
+          </h2>
         ),
         h3: ({ children }) => (
           <h3 className="mt-8 text-xl font-bold tracking-tight text-ink first:mt-0">{children}</h3>

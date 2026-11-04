@@ -1,6 +1,15 @@
 import Link from "next/link";
+import Bloque30Segundos from "@/components/guias/Bloque30Segundos";
+import FuentesGuia from "@/components/guias/FuentesGuia";
 import GuiaCTA, { GuiaStickyCta } from "@/components/guias/GuiaCTA";
 import GuiaMarkdown from "@/components/guias/GuiaMarkdown";
+import { IndiceGuiaMobile, IndiceGuiaNav } from "@/components/guias/IndiceGuia";
+import RutaAprendizaje from "@/components/guias/RutaAprendizaje";
+import TablaComparativa from "@/components/guias/TablaComparativa";
+import { ISO_CHILE } from "@/config/paises";
+import { encabezadosDeGuia } from "@/lib/guias/anclas";
+import { esGuiaDeCurso } from "@/lib/guias";
+import { fichaCurso } from "@/lib/guias/curso";
 import { fechaActualizado, resolverPrecios } from "@/lib/guias/precio";
 import type { Guia } from "@/lib/guias/tipos";
 import { absoluteUrl, jsonLdString, SITE_URL } from "@/lib/seo";
@@ -15,17 +24,61 @@ type Props = {
   relacionadas: Guia[];
 };
 
+/** Tabla honesta para las guías de curso (sin cifras inventadas). */
+function filasComparativa(curso: string) {
+  const ficha = fichaCurso(curso);
+  return [
+    {
+      criterio: "Horas y ritmo",
+      enVivo: `${ficha.horasTexto} con horario fijo`,
+      autodidacta: "A tu ritmo, sin fecha de término",
+      universidad: "Semestres y ramos de carrera",
+    },
+    {
+      criterio: "Feedback de un profe",
+      enVivo: "Sí, en cada clase y por el campus",
+      autodidacta: "No (o foros)",
+      universidad: "Sí, en clases y ayudantías",
+    },
+    {
+      criterio: "Tiempo hasta aplicarlo",
+      enVivo: "Semanas: sales con un tablero propio",
+      autodidacta: "Depende de tu disciplina",
+      universidad: "Años, con título profesional",
+    },
+    {
+      criterio: "Certificado",
+      enVivo: "Certificado de ProgramBI al completar",
+      autodidacta: "No",
+      universidad: "Título profesional",
+    },
+    {
+      criterio: "Costo",
+      enVivo: "Un pago por curso (o por nivel)",
+      autodidacta: "Gratis, pero cuesta el tiempo",
+      universidad: "Matrícula y arancel de la carrera",
+    },
+  ];
+}
+
 /**
- * Render de una guía: breadcrumb visible, H1, cuerpo Markdown con los CTA en
- * sus marcadores, FAQ visible (la misma del JSON-LD) y enlazado interno.
+ * Render de una guía: breadcrumb, H1, bloque «En 30 segundos» renderizado en
+ * servidor, cuerpo Markdown con los CTA en sus marcadores, ruta de
+ * aprendizaje, FAQ visible (la misma del JSON-LD), fuentes y enlazado interno.
  *
- * El precio del placeholder `{{precio}}` sale de config/pricing.ts, así que el
- * texto publicado y el JSON-LD no pueden contradecir a la ficha.
+ * El precio sale de config/pricing.ts, así que el texto publicado y el JSON-LD
+ * no pueden contradecir a la ficha.
  */
 export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas }: Props) {
-  const body = resolverPrecios(guia.body, guia);
+  const iso = guia.country === "transversal" ? ISO_CHILE : guia.country;
+  const body = resolverPrecios(guia.body, guia)
+    // El cuerpo repite el H1 del frontmatter: se quita para no duplicar el H1.
+    .replace(/^#\s+.*\n+/, "");
   const canonical = absoluteUrl(guia.path);
   const actualizado = fechaActualizado(guia.updated);
+  const encabezados = encabezadosDeGuia(body);
+  const faqs = guia.faqs.map((faq) => ({ q: faq.q, a: resolverPrecios(faq.a, guia) }));
+  const esDeCurso = esGuiaDeCurso(guia);
 
   // El Markdown trae marcadores <!-- CTA-TOP|MID|END --> para intercalar los CTA.
   const partes = body.split(/<!--\s*CTA-(TOP|MID|END)\s*-->/g);
@@ -41,16 +94,19 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
         inLanguage: guia.lang,
         datePublished: guia.updated,
         dateModified: guia.updated,
+        articleSection: nombreMercado,
         mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
         author: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
         publisher: { "@type": "Organization", name: "ProgramBI", url: SITE_URL },
+        ...(guia.sources && guia.sources.length > 0 ? { citation: guia.sources } : {}),
+        ...(guia.cursoUrl ? { about: { "@type": "Course", name: fichaCurso(guia.course).nombre, url: guia.cursoUrl } } : {}),
       },
-      ...(guia.faqs.length > 0
+      ...(faqs.length > 0
         ? [
             {
               "@type": "FAQPage",
               "@id": `${canonical}#faq`,
-              mainEntity: guia.faqs.map((faq) => ({
+              mainEntity: faqs.map((faq) => ({
                 "@type": "Question",
                 name: faq.q,
                 acceptedAnswer: { "@type": "Answer", text: faq.a },
@@ -62,7 +118,12 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
         "@type": "BreadcrumbList",
         "@id": `${canonical}#breadcrumb`,
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Inicio", item: absoluteUrl(guia.country === "cl" || guia.country === "transversal" ? "/" : `/${guia.country}`) },
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Inicio",
+            item: absoluteUrl(guia.country === "cl" || guia.country === "transversal" ? "/" : `/${guia.country}`),
+          },
           { "@type": "ListItem", position: 2, name: `Guías de ${nombreMercado}`, item: absoluteUrl(rutaIndice) },
           { "@type": "ListItem", position: 3, name: guia.h1, item: canonical },
         ],
@@ -72,16 +133,16 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
-      />
-      <article className="bg-canvas px-4 pb-28 pt-10 sm:px-6 lg:px-8 lg:pb-16">
-        <div className="mx-auto max-w-[820px]">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
+      <article className="bg-canvas px-4 pb-28 pt-10 sm:px-6 lg:px-8 lg:pb-20">
+        <div className="mx-auto max-w-[1120px]">
           <nav aria-label="Migas de pan" className="text-xs text-mute">
             <ol className="flex flex-wrap items-center gap-1.5">
               <li>
-                <Link href={guia.country === "cl" || guia.country === "transversal" ? "/" : `/${guia.country}`} className="no-underline hover:text-ink">
+                <Link
+                  href={guia.country === "cl" || guia.country === "transversal" ? "/" : `/${guia.country}`}
+                  className="no-underline hover:text-ink"
+                >
                   Inicio
                 </Link>
               </li>
@@ -96,66 +157,99 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
             </ol>
           </nav>
 
-          <h1 className="mt-6 text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">
-            {guia.h1}
-          </h1>
-          <p className="mt-3 text-sm text-faint">
-            Actualizado el {actualizado} · Guía de ProgramBI
-          </p>
+          <div className="mt-6 lg:grid lg:grid-cols-[210px_minmax(0,1fr)] lg:gap-12">
+            <div className="min-w-0 max-w-[760px]">
+              <h1 className="text-3xl font-bold leading-tight tracking-tight text-ink sm:text-4xl">{guia.h1}</h1>
+              <p className="mt-3 text-sm text-faint">
+                Actualizado el {actualizado} · Guía de ProgramBI · {nombreMercado}
+              </p>
 
-          <div className="mt-8">
-            {partes.map((parte, index) => {
-              if (parte === "TOP" || parte === "MID" || parte === "END") {
-                return (
-                  <GuiaCTA
-                    key={`cta-${parte}-${index}`}
-                    variant={parte === "TOP" ? "top" : parte === "MID" ? "mid" : "end"}
-                    iso={guia.country}
-                    course={guia.course}
-                    guiaSlug={guia.slug}
-                  />
-                );
-              }
-              if (!parte.trim()) return null;
-              return <GuiaMarkdown key={`md-${index}`} content={parte} />;
-            })}
+              <IndiceGuiaMobile items={encabezados} />
+
+              <Bloque30Segundos guia={guia} />
+
+              {guia.visual ? (
+                <aside className="mt-6 rounded-2xl border border-line bg-wash/50 px-5 py-4">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
+                    Lo que vas a ver en esta guía
+                  </p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-ink">{guia.visual}</p>
+                </aside>
+              ) : null}
+
+              <div className="mt-8">
+                {partes.map((parte, index) => {
+                  if (parte === "TOP" || parte === "MID" || parte === "END") {
+                    return (
+                      <GuiaCTA
+                        key={`cta-${parte}-${index}`}
+                        variant={parte === "TOP" ? "top" : parte === "MID" ? "mid" : "end"}
+                        iso={iso}
+                        course={guia.course}
+                        guiaSlug={guia.slug}
+                      />
+                    );
+                  }
+                  if (!parte.trim()) return null;
+                  return <GuiaMarkdown key={`md-${index}`} content={parte} />;
+                })}
+              </div>
+
+              {esDeCurso ? <RutaAprendizaje iso={iso} cursoActual={guia.course} /> : null}
+
+              {esDeCurso ? (
+                <TablaComparativa
+                  filas={filasComparativa(guia.course)}
+                  nota="Comparación cualitativa: no incluye precios de terceros. El precio del curso en vivo sale de la lista vigente de ProgramBI."
+                />
+              ) : null}
+
+              {faqs.length > 0 ? (
+                <section aria-labelledby="faq-guia" className="mt-12 border-t border-line pt-8">
+                  <h2 id="faq-guia" className="text-2xl font-bold tracking-tight text-ink">
+                    Preguntas frecuentes
+                  </h2>
+                  <dl className="mt-6 space-y-5">
+                    {faqs.map((faq) => (
+                      <div key={faq.q} className="rounded-2xl border border-line bg-paper px-4 py-3">
+                        <dt className="text-sm font-semibold text-ink">{faq.q}</dt>
+                        <dd className="mt-1.5 text-sm leading-relaxed text-mute">{faq.a}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
+              ) : null}
+
+              <FuentesGuia sources={guia.sources} updated={guia.updated} />
+
+              {relacionadas.length > 0 ? (
+                <nav aria-labelledby="otras-guias" className="mt-12 border-t border-line pt-8">
+                  <h2 id="otras-guias" className="text-lg font-bold tracking-tight text-ink">
+                    Sigue con estas guías de {nombreMercado}
+                  </h2>
+                  <ul className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {relacionadas.slice(0, 6).map((otra) => (
+                      <li key={otra.path}>
+                        <Link
+                          href={otra.path}
+                          className="block rounded-xl border border-line bg-paper px-4 py-3 text-sm font-medium text-ink no-underline transition-colors hover:border-ink/25"
+                        >
+                          {otra.h1}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              ) : null}
+            </div>
+
+            <div className="hidden lg:order-first lg:block">
+              <IndiceGuiaNav items={encabezados} />
+            </div>
           </div>
-
-          {guia.faqs.length > 0 ? (
-            <section aria-labelledby="faq-guia" className="mt-12 border-t border-line pt-8">
-              <h2 id="faq-guia" className="text-2xl font-bold tracking-tight text-ink">
-                Preguntas frecuentes
-              </h2>
-              <dl className="mt-6 space-y-6">
-                {guia.faqs.map((faq) => (
-                  <div key={faq.q}>
-                    <dt className="font-semibold text-ink">{faq.q}</dt>
-                    <dd className="mt-2 leading-relaxed text-mute">{faq.a}</dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
-          ) : null}
-
-          {relacionadas.length > 0 ? (
-            <nav aria-labelledby="otras-guias" className="mt-12 border-t border-line pt-8">
-              <h2 id="otras-guias" className="text-lg font-bold tracking-tight text-ink">
-                Otras guías de {nombreMercado}
-              </h2>
-              <ul className="mt-4 space-y-2 text-sm">
-                {relacionadas.map((otra) => (
-                  <li key={otra.path}>
-                    <Link href={otra.path} className="font-medium text-ink underline underline-offset-4">
-                      {otra.h1}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ) : null}
         </div>
       </article>
-      <GuiaStickyCta iso={guia.country === "transversal" ? "cl" : guia.country} course={guia.course} />
+      <GuiaStickyCta iso={iso} course={guia.course} />
     </>
   );
 }
