@@ -2,6 +2,12 @@ import type { MetadataRoute } from "next";
 import { courses } from "@/lib/data/courses";
 import { casesOfUse } from "@/lib/data/cases";
 import { comparisons } from "@/lib/data/comparisons";
+import {
+  ACTUALIZADO as COMPARATIVAS_ACTUALIZADO,
+  RUTA_LISTICLE,
+  RUTAS_CODERHOUSE_PAIS,
+  RUTAS_COMPARATIVAS_ACADEMIA,
+} from "@/lib/data/comparativas";
 import { SITE_URL, sitemapLoc } from "@/lib/seo";
 import { PAISES_CARPETA, esIndexable } from "@/config/paises";
 import { GUIAS } from "@/lib/guias/generado";
@@ -255,12 +261,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.45,
   }));
 
-  const versusPages: MetadataRoute.Sitemap = comparisons.map((comp) => ({
-    url: loc(`/versus/${comp.slug}`),
-    lastModified: now,
-    changeFrequency: "monthly" as const,
-    priority: 0.4,
-  }));
+  const comparativasLastModified = new Date(`${COMPARATIVAS_ACTUALIZADO}T12:00:00-03:00`);
+
+  const versusPages: MetadataRoute.Sitemap = [
+    ...comparisons.map((comp) => ({
+      url: loc(`/versus/${comp.slug}`),
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.4,
+    })),
+    ...RUTAS_COMPARATIVAS_ACADEMIA.map((path) => ({
+      url: loc(path),
+      lastModified: comparativasLastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
+  ];
 
   const blogPages = await publishedBlogUrls(now);
 
@@ -300,6 +316,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }))
   );
 
+  // Comparativa de Coderhouse en los países donde opera y tiene versión propia.
+  const comparativaPaisPages: MetadataRoute.Sitemap = RUTAS_CODERHOUSE_PAIS.map((path) => ({
+    url: loc(path),
+    lastModified: comparativasLastModified,
+    changeFrequency: "monthly" as const,
+    priority: 0.5,
+  }));
+
+  // Listicle de Power BI en Chile: página propia, hermana de la ruta [slug].
+  const listiclePages: MetadataRoute.Sitemap = [
+    {
+      url: loc(RUTA_LISTICLE),
+      lastModified: comparativasLastModified,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    },
+  ];
+
   // Guías: las de país indexable, las transversales y la chilena. Paraguay
   // queda fuera porque su versión es noindex hasta que tenga precio publicado.
   const guidePages: MetadataRoute.Sitemap = GUIAS.filter(
@@ -336,6 +370,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...versusPages,
     ...blogPages,
     ...countryPages,
+    ...comparativaPaisPages,
+    ...listiclePages,
     ...guidePages,
     ...guideIndexPages,
   ]);

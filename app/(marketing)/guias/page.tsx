@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import GuiasHub from "@/components/guias/GuiasHub";
 import { GUIAS } from "@/lib/guias/generado";
 import { indiceGuias } from "@/lib/guias";
@@ -53,6 +54,29 @@ export default function GuiasIndexPage() {
         <div className="mt-8">
           <GuiasHub guias={guias} paises={paises} cursos={cursos} />
         </div>
+
+        <section
+          aria-labelledby="guia-destacada"
+          className="mt-12 rounded-[26px] border border-line-strong bg-wash/60 px-5 py-5"
+        >
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
+            Comparativa destacada
+          </p>
+          <h2 id="guia-destacada" className="mt-1 text-xl font-bold tracking-tight text-ink">
+            Mejores cursos de Power BI en Chile (2026)
+          </h2>
+          <p className="mt-1 max-w-[70ch] text-sm leading-relaxed text-mute">
+            Precio, horas en vivo, formato y certificado de 7 opciones. Incluye a la competencia y
+            declara quién hace la guía.
+          </p>
+          <Link
+            href="/guias/mejores-cursos-power-bi-chile-2026"
+            className="mt-3 inline-flex h-10 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-canvas no-underline"
+          >
+            Ver la comparativa
+            <ArrowRight size={15} aria-hidden />
+          </Link>
+        </section>
 
         <section aria-labelledby="guias-por-pais" className="mt-14 border-t border-line pt-8">
           <h2 id="guias-por-pais" className="text-lg font-bold tracking-tight text-ink">
