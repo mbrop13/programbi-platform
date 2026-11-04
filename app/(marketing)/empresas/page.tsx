@@ -3,7 +3,7 @@ import EmpresasClient from "./EmpresasClient";
 import { ogImageUrl } from "@/lib/og/url";
 import { SITE_URL, absoluteUrl, jsonLdString, twitterShare } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
-import { normalizarPais } from "@/config/paises";
+import { getPais, normalizarPais } from "@/config/paises";
 import { hreflangDe } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 
@@ -93,7 +93,7 @@ export default async function EmpresasPage({
       <EmpresasClient curso={curso} nivel={nivel} />
       {pais !== "cl" ? (
         <p className="mx-auto max-w-[1400px] px-4 pb-10 text-sm text-mute sm:px-6">
-          {`[PENDIENTE CONTENIDO ${pais.toUpperCase()}]`}
+          {`Capacitación in-company en vivo para equipos de ${getPais(pais).nombre}, con los datos de tu empresa y factura corporativa.`}
         </p>
       ) : null}
     </>

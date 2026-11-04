@@ -1,8 +1,7 @@
 import { courses } from "@/lib/data/courses";
 import { levelsForView } from "@/lib/data/course-views";
-import { resolverCobro } from "@/lib/paises/cobro";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
-import { NOTA_PAGO, muestraPrecioLocal, notaCobroClp, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
+import { NOTA_PAGO, muestraPrecioLocal, porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
 
 export type PrecioTarjeta = {
   /** Precio local con el código de moneda, por ejemplo "$159.900 ARS". */
@@ -16,9 +15,10 @@ export type PrecioTarjeta = {
 };
 
 /**
- * Precio de la ficha para Argentina, México, Perú, Colombia y Uruguay.
- * Sale del servidor: el HTML ya trae la moneda local y, si no hay cuenta
- * de Mercado Pago de ese país, la nota con el monto real en CLP.
+ * Precio de la ficha para los países con tabla propia (Argentina, México,
+ * Perú, Colombia, Uruguay y los secundarios). Sale del servidor: el HTML ya
+ * trae la moneda local y la nota de pago, sin avisos de CLP junto al precio
+ * (ese aviso vive solo en el checkout, donde se cobra de verdad).
  */
 export async function precioTarjetaPublico(
   iso: string | null | undefined,
@@ -30,22 +30,17 @@ export async function precioTarjetaPublico(
   const lista = precioLista(iso, slug);
   const course = courses.find((item) => item.slug === slug);
   const notasPorNivel: Record<string, string> = {};
-  let nota: string | null = null;
-
-  if (course && resolverCobro(iso).modo !== "local") {
-    // Sin cuenta de Mercado Pago del país, el cargo se procesa en CLP: se avisa
-    // sin monto, para no contradecir el precio publicado en moneda local.
+  if (course) {
     for (const level of levelsForView(course, "publico")) {
       notasPorNivel[level.name] = NOTA_PAGO;
     }
-    nota = notaCobroClp();
   }
 
   return {
     actual: montoConCodigo(iso, monto),
     lista: lista != null ? montoConCodigo(iso, lista) : null,
     descuento: lista != null ? porcentajeDescuento(lista, monto) : 0,
-    nota,
+    nota: NOTA_PAGO,
     notasPorNivel,
   };
 }

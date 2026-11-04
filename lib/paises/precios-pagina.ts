@@ -11,7 +11,7 @@ import { getCheckoutCatalog, type CheckoutCatalog } from "@/lib/pago/catalogo";
 import { resolverPrecioClp } from "@/lib/pago/precio-clp";
 import { resolverCobro } from "@/lib/paises/cobro";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
-import { notaCobroClp, precioCurso, precioLista } from "@/lib/paises/precios";
+import { NOTA_PAGO, precioCurso, precioLista } from "@/lib/paises/precios";
 
 export type PrecioCursoPagina = {
   slug: string;
@@ -88,15 +88,10 @@ function filaChile(course: Course, catalog: CheckoutCatalog): PrecioCursoPagina 
   };
 }
 
-function filaLocal(
-  course: Course,
-  iso: string,
-  catalog: CheckoutCatalog | null
-): PrecioCursoPagina {
+function filaLocal(course: Course, iso: string): PrecioCursoPagina {
   const local = precioCurso(iso, course.slug);
   const lista = precioLista(iso, course.slug);
   const pais = getPais(iso);
-  const clp = catalog ? filaChile(course, catalog) : null;
 
   return {
     slug: course.slug,
@@ -112,15 +107,15 @@ function filaLocal(
         ? Math.round(((lista - local) / lista) * 100)
         : 0,
     currency: pais.moneda,
-    chargeLabel: clp?.priceValue ? notaCobroClp(clp.priceValue) : null,
+    // La nota junta al precio es la de pago, sin aviso de CLP: el aviso de
+    // moneda de cobro aparece recién en el checkout.
+    chargeLabel: NOTA_PAGO,
   };
 }
 
 /**
  * Precios publicados por país. Chile usa el catálogo, los overrides y las
- * promociones del checkout. Los países con cobro local usan su tabla; si el
- * checkout termina cobrando con la cuenta de Chile, la página muestra además
- * el monto real en CLP.
+ * promociones del checkout. Los países con cobro local usan su tabla.
  */
 export async function preciosDePais(
   iso: string | null | undefined
@@ -144,11 +139,10 @@ export async function preciosDePais(
   }
 
   const cobroLocal = resolverCobro(pais.iso).modo === "local";
-  const catalog = cobroLocal ? null : await getCheckoutCatalog();
 
   return {
     pais,
-    cursos: courses.map((course) => filaLocal(course, pais.iso, catalog)),
+    cursos: courses.map((course) => filaLocal(course, pais.iso)),
     moneda: pais.moneda,
     cobroLocal,
   };

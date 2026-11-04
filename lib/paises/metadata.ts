@@ -1,8 +1,44 @@
 import type { Metadata } from "next";
 import { esIndexable, getPais, normalizarPais } from "@/config/paises";
-import { absoluteUrl, pageOg } from "@/lib/seo";
+import { absoluteUrl, pageOg, tituloLocal } from "@/lib/seo";
 import { hreflangDe, localeOg, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
+
+/**
+ * Nombre que cabe en un <title>. Los países con nombre largo usan su forma
+ * corta habitual; el resto, el nombre oficial de la config.
+ */
+const NOMBRE_TITULO: Record<string, string> = {
+  do: "Rep. Dominicana",
+};
+
+function nombreParaTitulo(iso: string): string {
+  return NOMBRE_TITULO[iso] || getPais(iso).nombre;
+}
+
+/** Agrega el país al título cuando no lo trae, antes de recortar a 60. */
+function conPais(texto: string, iso: string, max: number = 60): string {
+  if (iso === "cl") return texto;
+  const nombre = getPais(iso).nombre;
+  const corto = nombreParaTitulo(iso);
+  if (texto.includes(nombre) || texto.includes(corto)) return texto;
+  const base = texto.replace(/ \| ProgramBI$/i, "");
+  const sufijo = ` en ${corto}`;
+  const completo = `${base}${sufijo}`;
+  if (completo.length <= max) return completo;
+
+  // Si no cabe, se acorta la parte larga (no el país) y se quitan conectores
+  // que quedarían colgando («… Soporte y en Bolivia»).
+  const disponible = Math.max(1, max - sufijo.length);
+  let corte = base.slice(0, disponible).trim();
+  const ultimoEspacio = corte.lastIndexOf(" ");
+  if (ultimoEspacio > 0) corte = corte.slice(0, ultimoEspacio);
+  corte = corte
+    .replace(/[\s:;,.|\-–—]+$/, "")
+    .replace(/\s+(y|e|o|u|de|del|en|para|con|la|el|los|las)$/i, "")
+    .trim();
+  return `${corte}${sufijo}`;
+}
 
 /**
  * Meta robots de la versión por país.
@@ -25,7 +61,7 @@ export function metadataLocal(opts: {
 }): Metadata {
   const iso = normalizarPais(opts.pais);
   const indexable = esIndexable(iso);
-  const title = localizarMercado(opts.title, iso);
+  const title = tituloLocal(conPais(localizarMercado(opts.title, iso), iso));
   const description = localizarMercado(opts.description, iso);
   const canonical = absoluteUrl(rutaLocal(iso, opts.path));
   // Tarjeta de compartir propia de cada mercado: la del Chile no sirve para México.

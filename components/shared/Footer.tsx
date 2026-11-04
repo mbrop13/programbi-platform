@@ -55,7 +55,7 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
               ? "Centro de capacitaciones en análisis de datos. Santiago, Chile."
               : "Centro de capacitaciones en análisis de datos."}
           </p>
-          {pais !== ISO_CHILE && !getPais(pais).contacto.ciudad.startsWith("[PENDIENTE") ? (
+          {pais !== ISO_CHILE && getPais(pais).contacto.ciudad ? (
             <p className="mt-2 text-sm text-mute">{getPais(pais).contacto.ciudad}</p>
           ) : null}
         </div>

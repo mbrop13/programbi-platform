@@ -662,7 +662,7 @@ export default function CourseDetailClient({
                     <p className="mt-2 text-xs leading-snug text-mute">{NOTA_PAGO}</p>
                     {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
                   </div>
-                ) : !pricingReady ? (
+                ) : !pricingReady && grandTotal == null ? (
                   <div className="h-10 w-40 rounded-lg bg-wash" />
                 ) : sinPrecioAprobado ? (
                   <div>

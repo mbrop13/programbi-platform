@@ -30,6 +30,30 @@ export function tituloSeo(texto: string, max = TITLE_MAX): string {
   return `${corte || base.slice(0, disponible)}${TITLE_SUFFIX}`;
 }
 
+/**
+ * Título de una página de país, sin pasar de 60 caracteres y sin perder el
+ * país. Primero intenta con la marca; si no cabe, deja el texto solo (que es
+ * lo que mantiene «República Dominicana» dentro del límite); si aun así se
+ * pasa, corta en palabra completa.
+ */
+export function tituloLocal(texto: string, max = TITLE_MAX): string {
+  // «República Dominicana» no cabe con la marca: se usa su forma corta.
+  const limpio = (texto || "")
+    .replace(/República Dominicana/g, "Rep. Dominicana")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!limpio) return TITLE_SUFFIX.trim();
+  const base = limpio.replace(/ \| ProgramBI$/i, "");
+  const completo = `${base}${TITLE_SUFFIX}`;
+  if (completo.length <= max) return completo;
+  if (base.length <= max) return base;
+  let corte = base.slice(0, max).trim();
+  const ultimoEspacio = corte.lastIndexOf(" ");
+  if (ultimoEspacio >= Math.floor(max * 0.6)) corte = corte.slice(0, ultimoEspacio);
+  corte = corte.replace(/[\s:;,.|\-–—]+$/, "");
+  return corte || base.slice(0, max);
+}
+
 /** Path for <link rel="canonical">: no query, no hash. */
 export function canonicalPath(path = "/"): string {
   const stripped = (path.split("#")[0] ?? "/").split("?")[0] ?? "/";

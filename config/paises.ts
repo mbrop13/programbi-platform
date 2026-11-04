@@ -152,11 +152,13 @@ export const TIPO_CAMBIO_USD = 900;
 const EMAIL = "contacto@programbi.cl";
 const WHATSAPP_CL = "https://wa.me/56935409699";
 
-function contactoPendiente(iso: string): Pais["contacto"] {
+function contactoPendiente(): Pais["contacto"] {
+  // Sin ciudad confirmada no se publica nada: un «[PENDIENTE …]» en el HTML
+  // es peor que no mostrar la línea. El país ya se lee en el resto de la página.
   return {
     email: EMAIL,
     whatsapp: null,
-    ciudad: `[PENDIENTE CONTENIDO ${iso.toUpperCase()}]`,
+    ciudad: "",
   };
 }
 
@@ -195,7 +197,7 @@ export const PAISES: Pais[] = [
     indexable: true,
     zonaHoraria: "America/Argentina/Buenos_Aires",
     mediosPago: ["Mercado Pago Argentina (tarjeta de crédito o débito)", "Mercado Pago Wallet", "Transferencia bancaria en pesos"],
-    contacto: contactoPendiente("ar"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "bo",
@@ -213,7 +215,7 @@ export const PAISES: Pais[] = [
     indexable: true,
     zonaHoraria: "America/La_Paz",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
-    contacto: contactoPendiente("bo"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "co",
@@ -231,7 +233,7 @@ export const PAISES: Pais[] = [
     indexable: true,
     zonaHoraria: "America/Bogota",
     mediosPago: ["Mercado Pago Colombia (tarjeta de crédito o débito)", "PSE", "Nequi", "Transferencia bancaria en pesos"],
-    contacto: contactoPendiente("co"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "cr",
@@ -250,7 +252,7 @@ export const PAISES: Pais[] = [
     indexable: true,
     zonaHoraria: "America/Costa_Rica",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
-    contacto: contactoPendiente("cr"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "ec",
@@ -268,7 +270,7 @@ export const PAISES: Pais[] = [
     indexable: true,
     zonaHoraria: "America/Guayaquil",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
-    contacto: contactoPendiente("ec"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "sv",
@@ -286,7 +288,7 @@ export const PAISES: Pais[] = [
     indexable: true,
     zonaHoraria: "America/El_Salvador",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
-    contacto: contactoPendiente("sv"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "gt",
@@ -304,7 +306,7 @@ export const PAISES: Pais[] = [
     indexable: true,
     zonaHoraria: "America/Guatemala",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
-    contacto: contactoPendiente("gt"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "hn",
@@ -322,7 +324,7 @@ export const PAISES: Pais[] = [
     indexable: false,
     zonaHoraria: "America/Tegucigalpa",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
-    contacto: contactoPendiente("hn"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "mx",
@@ -340,7 +342,7 @@ export const PAISES: Pais[] = [
     indexable: true,
     zonaHoraria: "America/Mexico_City",
     mediosPago: ["Mercado Pago México (tarjeta de crédito o débito)", "SPEI", "OXXO", "Mercado Pago Wallet"],
-    contacto: contactoPendiente("mx"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "ni",
@@ -358,7 +360,7 @@ export const PAISES: Pais[] = [
     indexable: false,
     zonaHoraria: "America/Managua",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
-    contacto: contactoPendiente("ni"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "pa",
@@ -377,7 +379,7 @@ export const PAISES: Pais[] = [
     indexable: false,
     zonaHoraria: "America/Panama",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
-    contacto: contactoPendiente("pa"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "py",
@@ -397,7 +399,7 @@ export const PAISES: Pais[] = [
     indexable: false,
     zonaHoraria: "America/Asuncion",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
-    contacto: contactoPendiente("py"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "pe",
@@ -415,7 +417,7 @@ export const PAISES: Pais[] = [
     indexable: true,
     zonaHoraria: "America/Lima",
     mediosPago: ["Mercado Pago Perú (tarjeta de crédito o débito)", "Yape o Plin", "Transferencia bancaria en soles"],
-    contacto: contactoPendiente("pe"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "do",
@@ -433,7 +435,7 @@ export const PAISES: Pais[] = [
     indexable: true,
     zonaHoraria: "America/Santo_Domingo",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
-    contacto: contactoPendiente("do"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "uy",
@@ -451,7 +453,7 @@ export const PAISES: Pais[] = [
     indexable: true,
     zonaHoraria: "America/Montevideo",
     mediosPago: ["Mercado Pago Uruguay (tarjeta de crédito o débito)", "Mercado Pago Wallet", "Transferencia bancaria en pesos uruguayos"],
-    contacto: contactoPendiente("uy"),
+    contacto: contactoPendiente(),
   },
   {
     iso: "ve",
@@ -469,7 +471,7 @@ export const PAISES: Pais[] = [
     indexable: true,
     zonaHoraria: "America/Caracas",
     mediosPago: ["Mercado Pago (tarjeta de crédito o débito)", "Webpay de Flow", "Transferencia bancaria en dólares"],
-    contacto: contactoPendiente("ve"),
+    contacto: contactoPendiente(),
   },
 ];
 

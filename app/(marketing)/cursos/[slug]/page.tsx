@@ -7,7 +7,7 @@ import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClie
 import CountryContext from "@/components/marketing/CountryContext";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { ogImageUrl } from "@/lib/og/url";
-import { SITE_URL, absoluteUrl, jsonLdString } from "@/lib/seo";
+import { SITE_URL, absoluteUrl, jsonLdString, tituloLocal } from "@/lib/seo";
 import { getCourseJsonLd } from "@/lib/seo/course-jsonld";
 import { COURSE_SEO } from "@/lib/seo/money";
 import { normalizarPais, esIndexable, ISO_CHILE } from "@/config/paises";
@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
   const seo = COURSE_SEO[slug];
   const titleBase = seo?.title ?? `${course.title} — Curso en vivo Chile`;
-  const title = localizarMercado(titleBase, pais);
+  const title = tituloLocal(localizarMercado(titleBase, pais));
   const dbDescription = await getMarketingDescription(slug);
   const description = localizarMercado(seo?.description || dbDescription || course.description, pais);
   const canon = absoluteUrl(rutaLocal(pais, `/cursos/${slug}`));
