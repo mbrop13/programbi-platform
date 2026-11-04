@@ -13,9 +13,9 @@ export function precioTextoGuia(guia: Pick<Guia, "country" | "course">): string 
   return formatMoneda(guia.country, precio);
 }
 
-/** Reemplaza el placeholder `{{precio}}` del Markdown por el monto del mercado. */
+/** Reemplaza `{{precio}}` o `{precio_local}` del Markdown por el monto del mercado. */
 export function resolverPrecios(body: string, guia: Pick<Guia, "country" | "course">): string {
-  return body.replace(/\{\{\s*precio\s*\}\}/gi, precioTextoGuia(guia));
+  return body.replace(/\{\{\s*precio\s*\}\}|\{precio_local\}/gi, precioTextoGuia(guia));
 }
 
 /** Fecha legible y estable para el «Actualizado» visible. */

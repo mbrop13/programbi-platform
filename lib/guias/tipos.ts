@@ -21,4 +21,10 @@ export type Guia = {
   /** Markdown del cuerpo, con marcadores <!-- CTA-TOP|MID|END -->. */
   body: string;
   faqs: GuiaFaq[];
+  /** Fuentes citadas en el frontmatter (`sources`), para la nota de metodología. */
+  sources?: string[];
+  /** Elemento visual sugerido por el bot de contenido (`nota_hermes`). */
+  visual?: string;
+  /** URL de la ficha del curso, tal como viene en el frontmatter (`url_curso`). */
+  cursoUrl?: string;
 };

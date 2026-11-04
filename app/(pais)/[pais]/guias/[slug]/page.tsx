@@ -4,6 +4,7 @@ import GuiaPage from "@/components/guias/GuiaPage";
 import { esIsoPais, esIndexable, getPais, ISO_CHILE } from "@/config/paises";
 import {
   alternatesClaude,
+  alternatesCurso,
   alternatesGuiaPais,
   guiaDePais,
   guiasDePais,
@@ -34,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   if (!esIsoPais(pais) || pais === ISO_CHILE) return {};
   const guia = guiaDePais(pais, slug);
   if (!guia) return {};
-  const alternates = alternatesGuiaPais(guia) ?? alternatesClaude(guia);
+  const alternates = alternatesGuiaPais(guia) ?? alternatesClaude(guia) ?? alternatesCurso(guia);
   const indexable = esIndexable(pais);
   return {
     title: { absolute: guia.title },
