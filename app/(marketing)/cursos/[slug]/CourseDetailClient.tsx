@@ -998,7 +998,7 @@ function CourseContactForm({ course, onRegister }: { course: Course; onRegister:
           </h2>
           <p className="mt-4 max-w-[36rem] text-base leading-relaxed text-mute">
             {isPersonal
-              ? "Déjanos tu nombre, correo y teléfono. Te escribimos con las fechas y el siguiente paso."
+              ? "Déjanos tu nombre y correo. Te enviamos la información del curso con fechas y precio."
               : "Programas in-company, dashboards y automatización para tu equipo."}
           </p>
         </div>
@@ -1067,10 +1067,11 @@ function CourseContactForm({ course, onRegister }: { course: Course; onRegister:
                 </div>
               </div>
 
-              <div className="flex flex-col gap-2">
-                <label htmlFor="course-whatsapp" className="text-sm font-medium text-ink">
-                  Teléfono o WhatsApp (opcional)
-                </label>
+              {!isPersonal && (
+                <div className="flex flex-col gap-2">
+                  <label htmlFor="course-whatsapp" className="text-sm font-medium text-ink">
+                    Teléfono o WhatsApp (opcional)
+                  </label>
                 <div className="flex">
                   <div className="relative">
                     <button
@@ -1112,6 +1113,7 @@ function CourseContactForm({ course, onRegister }: { course: Course; onRegister:
                   />
                 </div>
               </div>
+              )}
 
               {!isPersonal && (
                 <>

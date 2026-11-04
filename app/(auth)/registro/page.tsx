@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Mail, Lock, User, Phone, Eye, EyeOff, UserPlus, Loader2, CheckCircle } from "lucide-react";
+import { Mail, Lock, User, Eye, EyeOff, UserPlus, Loader2, CheckCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { validatePassword, isBreachedPassword } from "@/lib/security/password";
 import { honeypotStyle } from "@/lib/antibot";
@@ -57,7 +57,26 @@ export default function RegistroPage() {
     phone: "",
     password: "",
   });
+  const [resendState, setResendState] = useState<"idle" | "sending" | "sent" | "error">("idle");
   const router = useRouter();
+
+  /** Reenvía el correo de confirmación de Supabase sin crear otra cuenta. */
+  const handleResend = async () => {
+    if (resendState === "sending") return;
+    setResendState("sending");
+    try {
+      const supabase = createClient();
+      const emailRedirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(getNextPath())}&reg_source=${encodeURIComponent(readRegistrationSource() || "/registro")}`;
+      const { error: resendError } = await supabase.auth.resend({
+        type: "signup",
+        email: formData.email,
+        options: { emailRedirectTo },
+      });
+      setResendState(resendError ? "error" : "sent");
+    } catch {
+      setResendState("error");
+    }
+  };
 
   const captureReferralFromUrl = () => {
     const fromUrl = normalizeReferralCode(
@@ -258,7 +277,7 @@ export default function RegistroPage() {
               <CheckCircle className="mx-auto mb-3 h-8 w-8 text-emerald-600" />
               <p className="text-base font-semibold text-brand-dark">Cuenta creada</p>
               <p className="mt-2 text-sm leading-relaxed text-text-muted">
-                Revisa tu correo para confirmar la cuenta. Después puedes iniciar sesión.
+                Revisa tu correo para confirmar tu cuenta. Después puedes iniciar sesión.
               </p>
               <Link
                 href={
@@ -270,6 +289,26 @@ export default function RegistroPage() {
               >
                 Ir a iniciar sesión
               </Link>
+              <div className="mt-4 border-t border-emerald-100 pt-4">
+                <button
+                  type="button"
+                  onClick={handleResend}
+                  disabled={resendState === "sending"}
+                  className="text-sm font-semibold text-brand-blue underline underline-offset-2 disabled:opacity-50"
+                >
+                  {resendState === "sending" ? "Enviando…" : "Reenviar correo de confirmación"}
+                </button>
+                {resendState === "sent" ? (
+                  <p className="mt-2 text-xs text-text-muted">
+                    Te enviamos otro correo a {formData.email}. Revisa también la carpeta de spam.
+                  </p>
+                ) : null}
+                {resendState === "error" ? (
+                  <p className="mt-2 text-xs text-red-600">
+                    No pudimos reenviarlo. Espera un minuto e inténtalo de nuevo.
+                  </p>
+                ) : null}
+              </div>
             </div>
           ) : (
             <>
@@ -327,29 +366,13 @@ export default function RegistroPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-brand-dark mb-1.5">Teléfono / WhatsApp (opcional)</label>
-              <div className="relative">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
-                <input
-                  type="tel"
-                  disabled={loading}
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="+56 9 1234 5678"
-                  autoComplete="tel"
-                  className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all text-sm disabled:opacity-50"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-bold text-brand-dark mb-1.5">Contraseña *</label>
+              <label className="block text-sm font-bold text-brand-dark mb-1.5">Email *</label>
               <div className="relative">
                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-faint" />
                 <input
                   type={showPassword ? "text" : "password"}
                   required
-                  minLength={8}
+                  minLength={6}
                   disabled={loading}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}

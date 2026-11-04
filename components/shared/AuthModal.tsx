@@ -601,7 +601,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            minLength={8}
+                            minLength={6}
                             disabled={loading}
                             autoComplete="new-password"
                             name="new-password"
