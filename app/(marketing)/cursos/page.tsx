@@ -5,13 +5,14 @@ import { getCourseGallery } from "@/lib/data/course-gallery";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import CursosPageClient from "./CursosPageClient";
 import CountryContext from "@/components/marketing/CountryContext";
+import { ObjetivosCursos, RecursosDatos } from "@/components/marketing/EnlacesPrioritarios";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import { ogImageUrl } from "@/lib/og/url";
 import { PAGE_SEO } from "@/lib/seo/money";
 import { absoluteUrl, breadcrumbJsonLd, jsonLdString, twitterShare } from "@/lib/seo";
-import { getPais, normalizarPais, PAISES_INDEXABLES } from "@/config/paises";
+import { getPais, ISO_CHILE, normalizarPais, PAISES_INDEXABLES } from "@/config/paises";
 import { textosPreciosLocales } from "@/lib/paises/detalle-curso";
 import { muestraPrecioLocal, precioCurso } from "@/lib/paises/precios";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
@@ -148,6 +149,10 @@ export default async function CursosPage({
           titulo={`Qué se practica en el catálogo de ${getPais(pais).nombre}`}
         />
       ) : null}
+      {/* Solo Chile: las landings de nicho y las páginas de comparativas viven
+          en la raíz y hablan del mercado chileno. */}
+      {pais === ISO_CHILE ? <ObjetivosCursos contexto="cursos" /> : null}
+      {pais === ISO_CHILE ? <RecursosDatos contexto="cursos" /> : null}
       <section className="bg-paper px-4 py-12 sm:px-6 lg:px-8" aria-labelledby="cursos-por-pais">
         <div className="mx-auto max-w-[1400px]">
           <h2 id="cursos-por-pais" className="text-xl font-semibold text-ink">
