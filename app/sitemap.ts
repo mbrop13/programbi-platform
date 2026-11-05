@@ -361,6 +361,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly" as const,
       priority: 0.6,
     },
+    // Preguntas frecuentes por país (mismo contenido, precio y hora local).
+    ...PAISES_CARPETA.filter((pais) => pais.indexable).map((pais) => ({
+      url: loc(`/${pais.iso}/preguntas-frecuentes`),
+      lastModified: now,
+      changeFrequency: "monthly" as const,
+      priority: 0.55,
+    })),
   ];
 
   return uniqueEntries([

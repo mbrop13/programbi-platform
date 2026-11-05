@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { esIsoPais, getPais, ISO_CHILE } from "@/config/paises";
+import { PAISES_CARPETA, esIsoPais, getPais, ISO_CHILE } from "@/config/paises";
 import { metadataLocal } from "@/lib/paises/metadata";
 
 /**
@@ -8,6 +8,14 @@ import { metadataLocal } from "@/lib/paises/metadata";
  * el canonical. Los países no indexables heredan noindex, follow.
  */
 export const revalidate = 3600;
+export const dynamicParams = false;
+
+type Params = { pais: string };
+
+/** Solo las carpetas de país: Chile vive en /preguntas-frecuentes. */
+export function generateStaticParams(): Params[] {
+  return PAISES_CARPETA.map((pais) => ({ pais: pais.iso }));
+}
 
 const title = "Preguntas frecuentes: cursos, clases y pagos";
 
