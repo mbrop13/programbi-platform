@@ -128,4 +128,4 @@ Reglas del worktree: no se ejecutó `npm`, `npx`, `node`, `tsc`, `eslint` ni
 - `59fd4c8` — `docs(f4-certificado): estado del WS6, comportamiento 404 y pendientes`
 - `64200b2` — `fix(f4-certificado): compacta el diploma para que quepa en impresión horizontal`
 - `923bfd6` — `feat(f4-certificado): 404 propio para códigos inexistentes`
-- Commit final de docs: cierre de este archivo.
+- Cierre de docs: `bcaba70`, `b091482`, `942d3fc` y el commit final de este archivo.
