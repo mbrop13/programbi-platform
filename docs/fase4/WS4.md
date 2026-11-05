@@ -86,4 +86,5 @@ Pendiente para el orquestador (en la integradora):
 ## Commits
 
 - `95b6875` `feat(f4-landings): contenido local, precio y FAQ por país en SQL y Python`
-- Commit de documentación: ver el historial de `docs/fase4/WS4.md`.
+- `f5e1999` `docs(f4-landings): reporte WS4 y estado de integración con contenido por país`
+- `docs/fase4/WS4.md`: este reporte (el hash de este ajuste queda en el historial).
