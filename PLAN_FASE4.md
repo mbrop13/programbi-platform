@@ -55,10 +55,10 @@ Cada subagente trabaja en su worktree y su rama, commitea seguido y deja su esta
 | WS | Estado | Último hash | Nota |
 |---|---|---|---|
 | Base | hecho | d188e53 | fase 3 integrada y pusheada |
-| 1 | en curso | — | — |
-| 2 | en curso | — | — |
-| 3 | en curso | — | — |
-| 4 | en curso | — | — |
-| 5 | en curso | — | — |
-| 6 | en curso | — | — |
-| 7 | en curso | — | — |
+| 1 | hecho | 7a28c5d | cuotas desde `config/cuotas.ts`; 11 textos de FAQ, ficha y checkout |
+| 2 | hecho | e4b486e | `/clase-gratis` con flag APAGADO y `noindex` |
+| 3 | hecho | 11930a6 | país en title/H1, hub `/test-nivel`, email opcional a `leads_magnet` |
+| 4 | hecho | 2457401 | landings SQL/Python por país (subagente WS4) |
+| 5 | hecho | 34ac901 | canonical y título propios por país en `/precios` |
+| 6 | hecho | a4ccb25 | `/certificado/[codigo]` + `/verificar-certificado` (subagente WS6) |
+| 7 | hecho | 36c7be8 | `webinar_signup` + `scripts/verificar-fase4.mjs` |
