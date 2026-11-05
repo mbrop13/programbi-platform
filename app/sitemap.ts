@@ -119,9 +119,9 @@ function prioridadPais(base: number, iso: string): number {
 }
 
 /**
- * Sitemap completo del sitio. Las landings nuevas de la fase 5 no se declaran
- * aquí hasta que exista su ruta (un 404 en el sitemap es peor que una URL
- * ausente); las suma el frente que las publica.
+ * Sitemap completo del sitio. Las landings de la fase 5 y las páginas de
+ * /casos y /profesores se incluyen aquí; las dos últimas solo con su flag de
+ * publicación encendido, para no anunciar rutas noindex.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
