@@ -25,6 +25,11 @@ const companyLinks = [
   ...(COMUNIDAD_PUBLICA ? [{ label: "Comunidad", href: "/comunidad" }] : []),
   { label: "Blog", href: "/blog" },
   { label: "Preguntas frecuentes", href: "/preguntas-frecuentes" },
+  // Páginas de apoyo: FAQ corta, glosario y comparativas. No repiten las URLs
+  // que ya están arriba; el texto del enlace dice qué hay en cada una.
+  { label: "FAQ de cursos y pagos", href: "/faq" },
+  { label: "Glosario de datos", href: "/glosario" },
+  { label: "Comparativas de herramientas", href: "/versus" },
   { label: "Registrarse", href: "/?auth=register" },
 ];
 

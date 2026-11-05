@@ -4,11 +4,10 @@ import { courses, getCourseBySlug } from "@/lib/data/courses";
 import { getActiveSchedules, getMarketingDescription } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
-import CountryContext from "@/components/marketing/CountryContext";
+import BloquePaisFicha from "@/components/paises/BloquePaisFicha";
 import GuiasDelCurso from "@/components/guias/GuiasDelCurso";
-import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { ogImageUrl } from "@/lib/og/url";
-import { SITE_URL, absoluteUrl, jsonLdString, tituloLocal } from "@/lib/seo";
+import { absoluteUrl, jsonLdString, tituloLocal } from "@/lib/seo";
 import { getCourseJsonLd } from "@/lib/seo/course-jsonld";
 import { COURSE_SEO } from "@/lib/seo/money";
 import { normalizarPais, esIndexable, ISO_CHILE } from "@/config/paises";
@@ -99,7 +98,6 @@ export default async function CourseDetailPage({
 }) {
   const { slug, pais: rawPais } = await params;
   const pais = normalizarPais(rawPais);
-  const contenido = getContenidoPais(pais);
   const query = await searchParams;
   const para = one(query.para);
   const nivel = one(query.nivel);
@@ -178,10 +176,10 @@ export default async function CourseDetailPage({
         preciosLocales={textosPreciosLocales(pais)}
         detalleLocal={detalle}
       />
+      {/* Bloque propio del mercado: texto, precio, horario, FAQ y enlaces
+          internos. Reemplaza a CountryContext, que repetía los mismos datos. */}
+      <BloquePaisFicha curso={course} pais={pais} inicio={inicio} fin={fin} />
       <GuiasDelCurso curso={course.slug} pais={pais} />
-      {contenido ? (
-        <CountryContext contenido={contenido} titulo={`Este curso en ${detalle.pais.nombre}`} />
-      ) : null}
     </>
   );
 }

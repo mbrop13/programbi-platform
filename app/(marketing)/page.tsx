@@ -8,6 +8,8 @@ import Quote from "@/components/marketing/Quote";
 import FaqSection from "@/components/marketing/FaqSection";
 import CountryContent from "@/components/marketing/CountryContent";
 import HomeDeferred from "@/components/marketing/HomeDeferred";
+import { ObjetivosCursos, RecursosDatos } from "@/components/marketing/EnlacesPrioritarios";
+import IndicePais from "@/components/paises/IndicePais";
 import { homeFaqs } from "@/lib/data/site";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { courses } from "@/lib/data/courses";
@@ -16,7 +18,7 @@ import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import { SITE_URL, absoluteUrl, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
-import { getPais, normalizarPais } from "@/config/paises";
+import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 import { textosPreciosLocales } from "@/lib/paises/detalle-curso";
 import { localizarMercado } from "@/lib/paises/precios";
 import { hreflangDe } from "@/lib/paises/rutas";
@@ -87,6 +89,7 @@ export default async function HomePage({
           levelsCount: publicLevelCount(c),
         }))}
       />
+      {pais === ISO_CHILE ? <ObjetivosCursos /> : null}
       {contenido ? <CountryContent contenido={contenido} /> : null}
       <Team />
       <Quote />
@@ -94,6 +97,11 @@ export default async function HomePage({
         faqs={faqs}
         titulo={contenido ? `Preguntas frecuentes en ${getPais(pais).nombre}` : undefined}
       />
+      {/* Cierre de navegación: recursos para decidir (solo Chile) y el índice
+          completo de fichas y guías del mercado, que no cabe en las seis
+          tarjetas visibles de «Cursos». */}
+      {pais === ISO_CHILE ? <RecursosDatos /> : null}
+      <IndicePais pais={pais} />
       <HomeDeferred />
     </>
   );
