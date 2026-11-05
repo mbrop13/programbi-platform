@@ -56,6 +56,7 @@ Sin migración nueva: `public.certificates` ya tiene `student_name`, `course_tit
 ## Archivos tocados
 
 - `app/(marketing)/certificado/[codigo]/page.tsx`
+- `app/(marketing)/certificado/[codigo]/not-found.tsx`
 - `app/(marketing)/verificar-certificado/page.tsx`
 - `components/certificado/CertificadoPublico.tsx`
 - `components/certificado/BotonImprimir.tsx`
@@ -73,9 +74,9 @@ No se tocaron `app/sitemap.ts`, `lib/paises/rutas.ts`, `lib/analytics/**`,
 
 | Entrada | Resultado |
 |---|---|
-| `/certificado/foo` (formato inválido: <4) | 404 inmediato, sin consulta a Supabase |
+| `/certificado/foo` (formato inválido: <4) | 404 inmediato, sin consulta a Supabase; muestra el 404 propio "Certificado no encontrado" |
 | `/certificado/PBI--X` (guion doble) | 404 inmediato, sin consulta |
-| `/certificado/PBI-DATA-00000` (formato válido, no existe) | consulta exacta + fallback case-insensitive, luego 404 |
+| `/certificado/PBI-DATA-00000` (formato válido, no existe) | consulta exacta + fallback case-insensitive, luego 404 propio |
 | `/certificado/pbi-data-93k29` (existe en mayúsculas) | encuentra por fallback y muestra la ficha |
 | Código válido existente | 200 con la ficha; `<meta name="robots" content="noindex, follow">` |
 | Supabase caído o error de consulta | excepción → 500; **no** se disfraza de 404 |
@@ -125,4 +126,5 @@ Reglas del worktree: no se ejecutó `npm`, `npx`, `node`, `tsc`, `eslint` ni
 - `3171be6` — `fix(f4-certificado): evita main anidado dentro del layout de marketing`
 - `59fd4c8` — `docs(f4-certificado): estado del WS6, comportamiento 404 y pendientes`
 - `64200b2` — `fix(f4-certificado): compacta el diploma para que quepa en impresión horizontal`
+- `923bfd6` — `feat(f4-certificado): 404 propio para códigos inexistentes`
 - Commit final de docs: cierre de este archivo.
