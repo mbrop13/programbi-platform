@@ -24,6 +24,7 @@ import { comparativasAcademiaHub } from "@/lib/data/academias";
 import { comparisons } from "@/lib/data/comparisons";
 import { courses, getGroupedCourses, type Course } from "@/lib/data/courses";
 import { catalogHours, levelsForView } from "@/lib/data/course-views";
+import { EQUIPO_PUBLICADO } from "@/lib/data/equipo";
 import { faqDePais } from "@/lib/faq/contenido";
 import { GUIAS } from "@/lib/guias/generado";
 import { HORA_CLASE_CHILE } from "@/lib/paises/horarios";
@@ -71,9 +72,9 @@ const GUIAS_PUBLICADAS = GUIAS.filter(
 /**
  * Páginas de nicho de la fase 5.
  *
- * TODO_MANU: las cuatro rutas las construye `feat/f5-landings`; en esta rama
- * todavía no existe el `page.tsx`. Si alguna no se publica, hay que quitarla
- * de acá antes de desplegar para no anunciar un 404.
+ * Las cuatro rutas viven en `app/(marketing)/<ruta>/page.tsx` y entran al
+ * sitemap de Chile. Si alguna se retira, hay que quitarla también de acá para
+ * no anunciar un 404 a los asistentes.
  */
 const LANDINGS_NICHO = [
   {
@@ -371,15 +372,14 @@ function bloqueFaq(): string[] {
 /**
  * Institucional.
  *
- * TODO_MANU: al integrar `feat/f5-equipo`, importar `EQUIPO_PUBLICADO` desde
- * `@/lib/data/equipo` y descomentar la línea de `/profesores`; el directorio
- * solo debe anunciarse cuando el flag esté en `true`.
+ * `/profesores` solo se anuncia cuando `EQUIPO_PUBLICADO` está encendido: con
+ * el flag apagado la ruta responde 200 pero noindex y no está en el sitemap.
  */
 function bloqueInstitucional(): string[] {
   return [
     "## Institucional",
     `- Nosotros (${url("/nosotros")}): origen de la academia, metodología de clases en vivo y quién dicta los cursos.`,
-    // ...(EQUIPO_PUBLICADO ? [`- Profesores (${url("/profesores")}): equipo docente y perfiles.`] : []),
+    ...(EQUIPO_PUBLICADO ? [`- Profesores (${url("/profesores")}): equipo docente y perfiles.`] : []),
     `- Política de privacidad (${url("/privacidad")}).`,
     `- Términos y condiciones (${url("/terminos")}).`,
     "",
