@@ -8,7 +8,7 @@ solo lo renderiza. Después de editar hay que regenerar
 ## 1. Crear el archivo
 
 1. Copia la plantilla que corresponda:
-   - `guias/_PLANTILLA.md` — curso × país.
+   - `guias/_PLANTILLA-guia-curso-pais.md` — curso × país.
    - `guias/_PLANTILLA_CERTIFICACION.md` — certificaciones (PL-300).
    - `guias/_PLANTILLA_COMPARATIVA.md` — comparativas (A vs B).
 2. Renombra el archivo sin el guion bajo inicial. Los archivos que empiezan con

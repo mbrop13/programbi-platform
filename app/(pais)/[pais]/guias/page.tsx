@@ -33,7 +33,11 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   if (!esIsoPais(pais) || pais === ISO_CHILE) return {};
   const nombre = getPais(pais).nombre;
   const path = `/${pais}/guias`;
-  const title = `Guías de datos y Power BI en ${nombre} — ProgramBI`;
+  const titleLargo = `Guías de datos y Power BI en ${nombre} — ProgramBI`;
+  // «República Dominicana» empuja el título sobre 60 caracteres: en ese caso
+  // se conserva la palabra clave corta y se suelta «Power BI».
+  const title =
+    titleLargo.length <= 60 ? titleLargo : `Guías de datos en ${nombre} — ProgramBI`;
   const description = `Guías prácticas de Power BI, Excel, SQL Server, Python y análisis de datos para ${nombre}: ruta de estudio, sueldos del mercado, precios locales y el curso en vivo de ProgramBI.`;
   const indexable = esIndexable(pais);
   return {

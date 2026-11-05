@@ -124,6 +124,23 @@ function construir(): string {
     }
     lineas.push("");
   }
+  lineas.push("## Comparativas de academias");
+  lineas.push(
+    `- ProgramBI vs Coderhouse en Power BI (${url("/versus/programbi-vs-coderhouse-power-bi")}): horas en vivo, precio y precio por hora, con fuentes y fecha de revisión.`
+  );
+  lineas.push(
+    `- Alternativa a Platzi, pero en vivo (${url("/versus/alternativa-a-platzi-en-vivo")}): suscripción grabada vs cohorte con profe.`
+  );
+  lineas.push(
+    `- IPS DATAX vs ProgramBI (${url("/versus/ips-datax-vs-programbi")}): grabado de por vida vs clases en vivo.`
+  );
+  lineas.push(
+    `- Desafío Latam vs ProgramBI (${url("/versus/desafio-latam-vs-programbi")}): bootcamp largo vs curso corto.`
+  );
+  lineas.push(
+    `- Mejores cursos de Power BI en Chile 2026 (${url("/guias/mejores-cursos-power-bi-chile-2026")}): lista comparada con precio, horas y certificado.`
+  );
+  lineas.push("");
   lineas.push("## Otras páginas");
   lineas.push(`- Catálogo de cursos (${url("/cursos")})`);
   lineas.push(`- Precios Chile (${url("/precios")})`);
