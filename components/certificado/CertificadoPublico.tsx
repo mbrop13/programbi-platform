@@ -44,7 +44,7 @@ export default function CertificadoPublico({
           aria-labelledby="titulo-certificado"
           className="print-diploma relative overflow-hidden rounded-[26px] border border-line-strong bg-paper p-2 shadow-[0_30px_80px_-48px_rgba(23,23,22,0.45)]"
         >
-          <div className="relative rounded-[20px] border border-line px-5 py-10 sm:px-12 sm:py-14">
+          <div className="relative rounded-[20px] border border-line px-5 py-8 sm:px-12 print:px-10 print:py-6">
             <div className="pointer-events-none absolute left-4 top-4 h-8 w-8 rounded-tl-xl border-l border-t border-amber-500/30" />
             <div className="pointer-events-none absolute right-4 top-4 h-8 w-8 rounded-tr-xl border-r border-t border-amber-500/30" />
             <div className="pointer-events-none absolute bottom-4 left-4 h-8 w-8 rounded-bl-xl border-b border-l border-amber-500/30" />
@@ -57,31 +57,31 @@ export default function CertificadoPublico({
                 width={299}
                 height={77}
                 priority
-                className="h-8 w-auto"
+                className="h-8 w-auto print:h-7"
               />
-              <p className="mt-8 text-[11px] font-semibold uppercase tracking-[0.24em] text-amber-600">
+              <p className="mt-7 text-[11px] font-semibold uppercase tracking-[0.24em] text-amber-600 print:mt-4 print:text-[10px]">
                 Certificado de finalización
               </p>
               <h1
                 id="titulo-certificado"
-                className="mt-3 font-display text-2xl font-semibold tracking-tight sm:text-3xl"
+                className="mt-2 font-display text-2xl font-semibold tracking-tight print:text-xl"
               >
                 Certificado verificado
               </h1>
-              <p className="mt-8 text-sm text-mute">ProgramBI certifica que</p>
-              <p className="mt-2 max-w-3xl break-words font-dancing text-4xl leading-tight text-ink sm:text-6xl">
+              <p className="mt-7 text-sm text-mute print:mt-4">ProgramBI certifica que</p>
+              <p className="mt-1 max-w-3xl break-words font-dancing text-4xl leading-tight text-ink sm:text-5xl print:text-3xl">
                 {certificado.student_name}
               </p>
-              <div className="my-7 h-px w-44 bg-gradient-to-r from-transparent via-amber-500/60 to-transparent" />
-              <p className="text-sm text-mute">completó satisfactoriamente el curso</p>
-              <p className="mt-2 max-w-2xl text-xl font-semibold leading-snug text-ink sm:text-2xl">
+              <div className="my-5 h-px w-44 bg-gradient-to-r from-transparent via-amber-500/60 to-transparent print:my-3" />
+              <p className="text-sm text-mute print:text-xs">completó satisfactoriamente el curso</p>
+              <p className="mt-1 max-w-2xl text-xl font-semibold leading-snug text-ink sm:text-2xl print:text-lg">
                 {certificado.course_title}
               </p>
             </header>
 
-            <dl className="mt-10 grid gap-6 border-t border-line pt-8 text-center sm:grid-cols-3 sm:text-left">
+            <dl className="mt-8 grid gap-5 border-t border-line pt-6 text-center sm:grid-cols-3 sm:text-left print:mt-5 print:gap-4 print:pt-4">
               <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint">
+                <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint print:text-[9px]">
                   Fecha de emisión
                 </dt>
                 <dd className="mt-1.5 text-sm font-medium text-ink">
@@ -89,7 +89,7 @@ export default function CertificadoPublico({
                 </dd>
               </div>
               <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint">
+                <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint print:text-[9px]">
                   Código de validación
                 </dt>
                 <dd className="mt-1.5">
@@ -99,14 +99,14 @@ export default function CertificadoPublico({
                 </dd>
               </div>
               <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint">
+                <dt className="text-[11px] font-semibold uppercase tracking-[0.16em] text-faint print:text-[9px]">
                   Emisor
                 </dt>
                 <dd className="mt-1.5 text-sm font-medium text-ink">ProgramBI · Chile</dd>
               </div>
             </dl>
 
-            <footer className="mt-10 flex flex-col items-center gap-2 border-t border-line pt-8 text-center">
+            <footer className="mt-8 flex flex-col items-center gap-2 border-t border-line pt-6 text-center print:mt-5 print:pt-4">
               <span className="inline-flex items-center gap-2 rounded-full border border-line bg-canvas px-4 py-2 text-xs font-medium text-ink">
                 <BadgeCheck className="h-4 w-4 text-emerald-600" aria-hidden="true" />
                 Código registrado en la base de certificados de ProgramBI
