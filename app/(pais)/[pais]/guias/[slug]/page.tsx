@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import GuiaPage from "@/components/guias/GuiaPage";
+import TestimoniosDeCurso from "@/components/marketing/TestimoniosDeCurso";
 import { esIsoPais, esIndexable, getPais, ISO_CHILE, PAISES_CARPETA } from "@/config/paises";
 import {
   alternatesClaude,
@@ -61,11 +62,15 @@ export default async function GuiaPaisPage({ params }: { params: Promise<Params>
   if (!guia) notFound();
   const relacionadas = guiasDePais(pais).filter((otra) => otra.path !== guia.path);
   return (
-    <GuiaPage
-      guia={guia}
-      rutaIndice={indiceGuias(pais)}
-      nombreMercado={getPais(pais).nombre}
-      relacionadas={relacionadas}
-    />
+    <>
+      <GuiaPage
+        guia={guia}
+        rutaIndice={indiceGuias(pais)}
+        nombreMercado={getPais(pais).nombre}
+        relacionadas={relacionadas}
+      />
+      {/* Mismo bloque que la guía raíz; se oculta si el curso no tiene citas. */}
+      <TestimoniosDeCurso cursoSlug={guia.course} variante="compacta" />
+    </>
   );
 }

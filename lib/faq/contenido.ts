@@ -400,7 +400,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           pregunta: "¿Cuánto cuestan los cursos?",
           respuesta: sinPrecio
             ? `En Paraguay el precio de los cursos se consulta por WhatsApp, porque todavía no hay un monto público publicado. Se puede pagar en ${CUOTAS} y el próximo inicio es el ${PROXIMO_INICIO}.`
-            : `En ${nombre}, el curso de Power BI cuesta ${pb} y el de Análisis de datos ${ad}, en ${CUOTAS}. El resto del catálogo vale ${pb}, salvo Mercado financiero, que cuesta ${mf}.`,
+            : `En ${nombre}, el curso de Power BI cuesta ${pb} y el de Análisis de datos ${ad}, en ${CUOTAS}. El resto del catálogo vale ${pb}, salvo la versión de minería de Análisis de datos, que cuesta ${ad}, y Mercado financiero, que cuesta ${mf}.`,
         },
         {
           id: "moneda-local",

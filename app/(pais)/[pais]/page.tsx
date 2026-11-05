@@ -6,6 +6,11 @@ import { PAGE_SEO } from "@/lib/seo/money";
 
 export const revalidate = 3600;
 
+/**
+ * La home del país reexporta la de marketing. El índice completo de fichas y
+ * guías del mercado lo aporta `IndicePais` dentro de esa página, con el `pais`
+ * que llega por params; aquí solo se cambian los metadatos.
+ */
 export { default } from "../../(marketing)/page";
 
 export async function generateMetadata({

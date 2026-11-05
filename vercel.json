@@ -1,6 +1,81 @@
 {
   "redirects": [
     {
+      "source": "/pages/cursos-1",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/pages/cursos",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/pages/bootcamp",
+      "destination": "/cursos/analisis-de-datos",
+      "statusCode": 301
+    },
+    {
+      "source": "/pages/contact",
+      "destination": "/empresas",
+      "statusCode": 301
+    },
+    {
+      "source": "/pages/webinar",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/pages",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/campus",
+      "destination": "/login",
+      "statusCode": 301
+    },
+    {
+      "source": "/cart",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/recommendations/products",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/recommendations/products/:path*",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/apps/:path*",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/excel",
+      "destination": "/cursos/excel",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/curso-analisis-de-datos-para-la-mineria",
+      "destination": "/cursos/analitica-mineria",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/curso-de-analisis-de-datos-para-el-sector-financiero",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/sql-server-program-bi",
+      "destination": "/cursos/sql-server",
+      "statusCode": 301
+    },
+    {
       "source": "/products/power-bi",
       "destination": "https://www.programbi.com/cursos/power-bi",
       "statusCode": 301
