@@ -20,7 +20,8 @@ Sin migración nueva: `public.certificates` ya tiene `student_name`, `course_tit
   - Consulta con `createAdminClient()` (service_role, solo servidor) y selecciona
     únicamente `student_name, course_title, certificate_code, issued_at`. El email
     nunca se pide ni se renderiza.
-  - Si el código no existe, `notFound()` → 404 del grupo `(marketing)`.
+  - Si el código no existe, `notFound()` → 404 con el boundary propio
+    `[codigo]/not-found.tsx` ("Certificado no encontrado").
   - Render dinámico (`dynamic = "force-dynamic"`): un certificado recién emitido se
     verifica al instante y los códigos basura no generan páginas cacheadas.
   - `robots: { index: false, follow: true }` en la ficha. **Justificación:** la
