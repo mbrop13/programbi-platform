@@ -55,7 +55,93 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
+    // `/clase-gratis` responde 404 con el flag apagado, así que el destino de
+    // /pages/webinar depende de NEXT_PUBLIC_CLASE_GRATIS. En vercel.json esa
+    // regla apunta a /cursos (el JSON no evalúa variables de entorno) y es la
+    // que manda en producción; al encender el flag hay que cambiarla a mano.
+    // Ver docs/fase5/WS4.md.
+    const claseGratis =
+      (process.env.NEXT_PUBLIC_CLASE_GRATIS || "").trim().toLowerCase() === "1";
+
     return [
+      // URLs antiguas de Shopify/WordPress que Search Console reporta como 404.
+      // Las específicas van antes que los comodines y todas son 301 (Vercel) o
+      // 308 `permanent: true` (Next), que Google trata igual.
+      {
+        source: "/pages/cursos-1",
+        destination: "/cursos",
+        permanent: true,
+      },
+      {
+        source: "/pages/cursos",
+        destination: "/cursos",
+        permanent: true,
+      },
+      {
+        source: "/pages/bootcamp",
+        destination: "/cursos/analisis-de-datos",
+        permanent: true,
+      },
+      {
+        source: "/pages/contact",
+        destination: "/empresas",
+        permanent: true,
+      },
+      {
+        source: "/pages/webinar",
+        destination: claseGratis ? "/clase-gratis" : "/cursos",
+        permanent: true,
+      },
+      {
+        source: "/pages",
+        destination: "/cursos",
+        permanent: true,
+      },
+      {
+        source: "/campus",
+        destination: "/login",
+        permanent: true,
+      },
+      {
+        source: "/cart",
+        destination: "/cursos",
+        permanent: true,
+      },
+      {
+        source: "/recommendations/products",
+        destination: "/cursos",
+        permanent: true,
+      },
+      {
+        source: "/recommendations/products/:path*",
+        destination: "/cursos",
+        permanent: true,
+      },
+      {
+        source: "/apps/:path*",
+        destination: "/cursos",
+        permanent: true,
+      },
+      {
+        source: "/products/excel",
+        destination: "/cursos/excel",
+        permanent: true,
+      },
+      {
+        source: "/products/curso-analisis-de-datos-para-la-mineria",
+        destination: "/cursos/analitica-mineria",
+        permanent: true,
+      },
+      {
+        source: "/products/curso-de-analisis-de-datos-para-el-sector-financiero",
+        destination: "/cursos/mercado-financiero",
+        permanent: true,
+      },
+      {
+        source: "/products/sql-server-program-bi",
+        destination: "/cursos/sql-server",
+        permanent: true,
+      },
       {
         source: "/cursos/copilot-studio",
         destination: "/cursos/copilot",

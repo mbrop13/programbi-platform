@@ -3,6 +3,15 @@ import { SITE_URL, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 
 /**
+ * Verificación de buscadores. Next no tiene un campo `verification.bing`:
+ * Bing Webmaster Tools pide la meta `msvalidate.01`, que va por `other`.
+ * Los códigos viven en NEXT_PUBLIC_* para poder fijarlos en Vercel sin tocar
+ * código; si no están definidos no se emite ninguna etiqueta.
+ */
+const BING_VERIFICATION = process.env.NEXT_PUBLIC_BING_VERIFICATION?.trim();
+const GOOGLE_VERIFICATION = process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION?.trim();
+
+/**
  * Metadatos comunes de todos los root layouts.
  * Cada grupo de rutas (marketing, versiones por país, auth, admin, comunidad)
  * parte de esta base y ajusta lo que necesite.
@@ -60,8 +69,9 @@ export const METADATA_BASE: Metadata = {
     },
   },
   verification: {
-    // Add your Google Search Console verification code here when you have it
-    // google: "your-verification-code",
+    // Search Console y Bing Webmaster Tools. Vacío = no se emite la meta.
+    ...(GOOGLE_VERIFICATION ? { google: GOOGLE_VERIFICATION } : {}),
+    ...(BING_VERIFICATION ? { other: { "msvalidate.01": BING_VERIFICATION } } : {}),
   },
 };
 
