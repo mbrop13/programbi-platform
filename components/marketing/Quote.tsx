@@ -1,4 +1,4 @@
-import { testimonials } from "@/lib/data/testimonials";
+import { TESTIMONIOS_PUBLICADOS, testimonials } from "@/lib/data/testimonials";
 
 function initials(name: string) {
   return name
@@ -11,6 +11,10 @@ function initials(name: string) {
 }
 
 export default function Quote() {
+  // Kill-switch compartido: si los testimonios están apagados, la home no
+  // muestra el carrusel. Los datos quedan en lib/data/testimonials.ts.
+  if (!TESTIMONIOS_PUBLICADOS) return null;
+
   const featured = testimonials.find((t) => t.name === "Jorge Kaisarieh") ?? testimonials[0];
   const loop = [...testimonials, ...testimonials];
 

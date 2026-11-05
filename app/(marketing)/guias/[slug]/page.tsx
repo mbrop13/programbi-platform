@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import GuiaPage from "@/components/guias/GuiaPage";
+import TestimoniosDeCurso from "@/components/marketing/TestimoniosDeCurso";
 import { alternatesClaude, alternatesCurso, alternatesGuiaPais, guiaPorPath, guiasRaiz } from "@/lib/guias";
 import { absoluteUrl } from "@/lib/seo";
 
@@ -48,11 +49,15 @@ export default async function GuiaRootPage({ params }: { params: Promise<Params>
     (otra) => otra.path !== guia.path && otra.country === guia.country
   );
   return (
-    <GuiaPage
-      guia={guia}
-      rutaIndice="/guias"
-      nombreMercado={guia.country === "cl" ? "Chile" : "Latinoamérica"}
-      relacionadas={relacionadas}
-    />
+    <>
+      <GuiaPage
+        guia={guia}
+        rutaIndice="/guias"
+        nombreMercado={guia.country === "cl" ? "Chile" : "Latinoamérica"}
+        relacionadas={relacionadas}
+      />
+      {/* El bloque se oculta solo si el curso de la guía no tiene citas reales. */}
+      <TestimoniosDeCurso cursoSlug={guia.course} variante="compacta" />
+    </>
   );
 }
