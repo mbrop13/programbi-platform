@@ -132,11 +132,13 @@ export default function CursoLanding({
           <h2 className="text-2xl font-bold tracking-tight text-ink">
             Qué puedes hacer con el temario en {contenido.paisNombre}
           </h2>
-          <p className="mt-3 text-sm leading-relaxed text-mute">
-            Escenarios de trabajo por sector en {contenido.paisNombre}. No son casos de clientes
-            ni cifras de resultados: son ejercicios para practicar con la lógica de cada
-            industria.
-          </p>
+          {contenido.usos.some((uso) => uso.sector) ? (
+            <p className="mt-3 text-sm leading-relaxed text-mute">
+              Escenarios de trabajo por sector en {contenido.paisNombre}. No son casos de clientes
+              ni cifras de resultados: son ejercicios para practicar con la lógica de cada
+              industria.
+            </p>
+          ) : null}
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
             {contenido.usos.map((uso) => (
               <article key={uso.title} className="rounded-2xl border border-line bg-paper p-5">
