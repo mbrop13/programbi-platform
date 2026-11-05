@@ -147,6 +147,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.85,
     },
     {
+      url: loc("/verificar-certificado"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
+    {
+      url: loc("/test-nivel"),
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.75,
+    },
+    {
       url: loc("/test-nivel/sql"),
       lastModified: now,
       changeFrequency: "monthly",
@@ -292,6 +304,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: "/curso-python", priority: 0.85, changeFrequency: "weekly" },
     { path: "/cursos", priority: 0.85, changeFrequency: "weekly" },
     { path: "/precios", priority: 0.85, changeFrequency: "monthly" },
+    { path: "/test-nivel", priority: 0.75, changeFrequency: "monthly" },
     { path: "/test-nivel/sql", priority: 0.7, changeFrequency: "monthly" },
     { path: "/test-nivel/excel", priority: 0.7, changeFrequency: "monthly" },
     { path: "/nosotros", priority: 0.5, changeFrequency: "monthly" },

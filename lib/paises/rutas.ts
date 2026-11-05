@@ -16,6 +16,8 @@ const RAICES = [
   "/curso-power-bi-vs-pack-adopcion",
   "/curso-sql-online",
   "/curso-python",
+  "/test-nivel",
+  "/clase-gratis",
 ];
 
 export function esRutaLocalizable(path: string): boolean {
