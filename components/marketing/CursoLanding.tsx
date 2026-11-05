@@ -1,7 +1,11 @@
 import Link from "next/link";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import type { Course } from "@/lib/data/courses";
-import { LANDING_CURSOS, seoLandingCurso, type LandingCursoCopy } from "@/lib/data/landing-cursos";
+import {
+  LANDING_CURSOS,
+  seoLandingCurso,
+  type LandingCursoCopy,
+} from "@/lib/data/landing-cursos";
 import type { LandingCursoContenido } from "@/lib/paises/landing-curso";
 import { NOTA_PAGO, localizarMercado } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
@@ -141,7 +145,7 @@ export default function CursoLanding({
                     {uso.sector}
                   </p>
                 ) : null}
-                <h3 className={uso.sector ? "mt-3 text-base font-semibold text-ink" : "text-base font-semibold text-ink"}>
+                <h3 className={`text-base font-semibold text-ink${uso.sector ? " mt-3" : ""}`}>
                   {L(uso.title)}
                 </h3>
                 <p className="mt-2 text-sm leading-relaxed text-mute">{L(uso.body)}</p>
