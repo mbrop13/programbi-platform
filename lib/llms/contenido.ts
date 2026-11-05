@@ -50,6 +50,8 @@ const md = (texto: string, href: string) => `[${texto}](${href})`;
 const CONTACTO = getPais(ISO_CHILE).contacto;
 const CORREO = CONTACTO.email;
 const WHATSAPP = CONTACTO.whatsapp ?? url("/preguntas-frecuentes");
+/** El mismo enlace, sin esquema, para usarlo como texto visible del bullet. */
+const WHATSAPP_TEXTO = WHATSAPP.replace(/^https?:\/\//, "");
 
 /** Fecha de vigencia de la lista de precios, en ISO corto. */
 const VIGENTE_DESDE = PRECIOS_VALID_FROM.slice(0, 10);
@@ -259,7 +261,9 @@ function bloquePreciosDetalle(): string[] {
   lineas.push("");
   for (const pais of PAISES_PUBLICADOS) {
     lineas.push(`### ${pais.nombre} — ${pais.moneda}`);
-    lineas.push(url(rutaLocal(pais.iso, "/precios")));
+    lineas.push(
+      md(`Precios de ${pais.nombre}`, url(rutaLocal(pais.iso, "/precios"))),
+    );
     if (!tienePrecioPublico(pais.iso)) {
       lineas.push("Sin precio público aprobado: el valor de cada curso se consulta por WhatsApp.");
       lineas.push("");
@@ -362,7 +366,7 @@ function bloqueFaq(): string[] {
   const contenido = faqDePais(ISO_CHILE);
   const lineas = ["## Preguntas frecuentes"];
   lineas.push(
-    `Selección de las preguntas principales. El listado completo, con tablas de precio y horario por país, está en ${url("/preguntas-frecuentes")}.`
+    `Selección de las preguntas principales. El listado completo, con tablas de precio y horario por país, está en ${md("preguntas frecuentes", url("/preguntas-frecuentes"))}.`
   );
   lineas.push("");
   for (const seccion of contenido.secciones) {
@@ -413,7 +417,7 @@ function bloqueOtrasPaginas(): string[] {
 function bloqueContacto(): string[] {
   return [
     "## Contacto",
-    `- WhatsApp: ${WHATSAPP}`,
+    `- WhatsApp: ${md(WHATSAPP_TEXTO, WHATSAPP)}`,
     `- Correo: ${CORREO}`,
     `- ${md("Sitio", SITE_URL)}`,
     "",
@@ -470,8 +474,8 @@ export function construirLlmsTxt(): string {
 export function construirLlmsFullTxt(): string {
   const lineas = [
     ...encabezado("ProgramBI — información completa", [
-      `Versión completa de ${url("/llms.txt")}.`,
-      `Precios vigentes desde ${VIGENTE_DESDE}. Contacto: ${CORREO} · WhatsApp ${WHATSAPP}.`,
+      `Versión completa de ${md("llms.txt", url("/llms.txt"))}.`,
+      `Precios vigentes desde ${VIGENTE_DESDE}. Contacto: ${CORREO} · WhatsApp ${md(WHATSAPP_TEXTO, WHATSAPP)}.`,
       "",
       "## Índice",
       `- Cursos (${CURSOS.length}), con URL, nivel, horas y precio en Chile`,
@@ -496,7 +500,7 @@ export function construirLlmsFullTxt(): string {
     ...bloqueOtrasPaginas(),
     ...bloqueContacto(),
     ...bloqueNota(
-      `El resumen corto, pensado para una primera lectura, está en ${url("/llms.txt")}.`
+      `El resumen corto, pensado para una primera lectura, está en ${md("llms.txt", url("/llms.txt"))}.`
     ),
   ];
   return `${lineas.join("\n").trimEnd()}\n`;
