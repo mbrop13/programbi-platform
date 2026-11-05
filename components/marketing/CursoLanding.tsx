@@ -1,7 +1,11 @@
 import Link from "next/link";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import type { Course } from "@/lib/data/courses";
-import { LANDING_CURSOS, type LandingCursoCopy } from "@/lib/data/landing-cursos";
+import {
+  LANDING_CURSOS,
+  seoLandingCurso,
+  type LandingCursoCopy,
+} from "@/lib/data/landing-cursos";
 import type { LandingCursoContenido } from "@/lib/paises/landing-curso";
 import { NOTA_PAGO, localizarMercado } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
@@ -22,6 +26,7 @@ export default function CursoLanding({
     copy.path === "/curso-sql-online"
       ? LANDING_CURSOS["curso-python"]
       : LANDING_CURSOS["curso-sql-online"];
+  const otroSeo = seoLandingCurso(otro, iso);
 
   return (
     <article className="bg-canvas px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
@@ -35,32 +40,53 @@ export default function CursoLanding({
             Cursos
           </Link>
           <span className="mx-2 text-faint">/</span>
-          <span className="text-ink">{L(copy.h1)}</span>
+          <span className="text-ink">{contenido.h1}</span>
         </nav>
 
         <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-          {L(copy.kicker)}
+          {contenido.kicker}
         </p>
         <h1 className="mt-3 text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-[2.75rem] lg:leading-[1.15]">
-          {L(copy.h1)}
+          {contenido.h1}
         </h1>
         <p className="mt-5 text-lg leading-relaxed text-mute">{L(copy.lead)}</p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          <Link
-            href={href(`/cursos/${course.slug}`)}
-            className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
-          >
-            Ver ficha y fechas
-          </Link>
-          <WhatsAppCta
-            page={href(copy.path)}
-            intent="curso"
-            course={course.title}
-            className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-paper px-6 text-sm font-medium text-ink no-underline hover:bg-wash"
-          >
-            WhatsApp
-          </WhatsAppCta>
+          {contenido.consultarPrecio ? (
+            <>
+              <WhatsAppCta
+                page={href(copy.path)}
+                intent="curso"
+                course={course.title}
+                className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
+              >
+                Consulta el valor por WhatsApp
+              </WhatsAppCta>
+              <Link
+                href={href(`/cursos/${course.slug}`)}
+                className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-paper px-6 text-sm font-medium text-ink no-underline hover:bg-wash"
+              >
+                Ver ficha y fechas
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link
+                href={href(`/cursos/${course.slug}`)}
+                className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
+              >
+                Ver ficha y fechas
+              </Link>
+              <WhatsAppCta
+                page={href(copy.path)}
+                intent="curso"
+                course={course.title}
+                className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-paper px-6 text-sm font-medium text-ink no-underline hover:bg-wash"
+              >
+                WhatsApp
+              </WhatsAppCta>
+            </>
+          )}
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
@@ -106,12 +132,32 @@ export default function CursoLanding({
           <h2 className="text-2xl font-bold tracking-tight text-ink">
             Qué puedes hacer con el temario en {contenido.paisNombre}
           </h2>
+          {contenido.usos.some((uso) => uso.sector) ? (
+            <p className="mt-3 text-sm leading-relaxed text-mute">
+              Escenarios de trabajo por sector en {contenido.paisNombre}. No son casos de clientes
+              ni cifras de resultados: son ejercicios para practicar con la lógica de cada
+              industria.
+            </p>
+          ) : null}
           <div className="mt-6 grid gap-4 sm:grid-cols-3">
-            {copy.usos.map((uso) => (
-              <div key={uso.title} className="rounded-2xl border border-line bg-paper p-5">
-                <h3 className="text-base font-semibold text-ink">{L(uso.title)}</h3>
+            {contenido.usos.map((uso) => (
+              <article key={uso.title} className="rounded-2xl border border-line bg-paper p-5">
+                {uso.sector ? (
+                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
+                    {uso.sector}
+                  </p>
+                ) : null}
+                <h3 className={`text-base font-semibold text-ink${uso.sector ? " mt-3" : ""}`}>
+                  {L(uso.title)}
+                </h3>
                 <p className="mt-2 text-sm leading-relaxed text-mute">{L(uso.body)}</p>
-              </div>
+                {uso.fuente ? (
+                  <p className="mt-4 border-t border-line pt-3 text-xs leading-relaxed text-faint">
+                    <span className="font-semibold text-mute">Datos de partida:</span>{" "}
+                    {uso.fuente}
+                  </p>
+                ) : null}
+              </article>
             ))}
           </div>
         </section>
@@ -155,7 +201,7 @@ export default function CursoLanding({
               href={href(otro.path)}
               className="inline-flex text-sm font-semibold text-ink no-underline"
             >
-              {L(otro.h1)}
+              {otroSeo.h1}
             </Link>
             <Link
               href={href(`/cursos/${course.slug}`)}

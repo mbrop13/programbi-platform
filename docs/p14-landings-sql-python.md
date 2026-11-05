@@ -31,7 +31,7 @@ Las versiones de países no indexables (`bo`, `cr`, `ec`, etc.) existen por la c
 - Precios: `config/paises.ts` y `lib/paises/precios.ts`. Chile muestra el precio de catálogo; los países con `pago: "mp"` muestran su precio local. No se convierte CLP a otra moneda ni se inventa un precio.
 - Horario: `lib/paises/horarios.ts`. Se usa el `schedule_time` de la cohorte cuando existe y, si no, el horario base del sitio (`HORA_CLASE_CHILE`). Se muestra en hora del país y, fuera de Chile, también en hora de Chile.
 - Fechas: `nextCohortForCourse` solo muestra cohortes futuras. Si no hay, se usa `OPEN_COHORT_LABEL` (“Cupos abiertos — consulta fecha”).
-- Copy: `lib/data/landing-cursos.ts`. Los “usos” describen aplicaciones del temario real, no casos de clientes ni métricas inventadas.
+- Copy: `lib/data/landing-cursos.ts`. Los “usos” describen aplicaciones del temario real y, en los mercados con contenido propio, toman el sector y la fuente de `lib/data/contenido-paises`. No son casos de clientes ni métricas inventadas.
 
 ## SEO
 
@@ -41,18 +41,20 @@ Las versiones de países no indexables (`bo`, `cr`, `ec`, etc.) existen por la c
 - JSON-LD: `Course` + `Offer` (reutiliza `getCourseJsonLd`), `FAQPage` y `BreadcrumbList`. La URL del curso y de la oferta apunta a la landing; la imagen se publica como URL absoluta. No se agregan `AggregateRating` ni reseñas inventadas.
 - Las FAQ visibles y las del JSON-LD son las mismas.
 
-## Integración pendiente (P8/P9)
+## Integración con el contenido por país
 
-La plantilla P9 (`/[pais]/curso-power-bi`, `PlantillaDescarga`) y el contenido por país de P8 (`getContenidoPais`) viven en otras ramas y **no** se importan aquí para no depender de archivos inexistentes.
+Las dos landings consumen `getContenidoPais(pais)` para el H1 y el SEO escritos
+por mercado, tres casos de uso por curso y dos FAQ propias. Los sectores y las
+fuentes de datos de esos casos salen de `lib/data/contenido-paises`; no se
+inventan industrias ni cifras.
 
-Cuando se mergeen:
+La plantilla P9 (`PlantillaDescarga`) sigue fuera de estas dos landings para no
+duplicar la lógica de leads. Si se quiere reutilizar, debe hacerse en un
+workstream posterior y revisando que el JSON-LD no duplique `FAQPage` en la
+misma URL.
 
-1. Reemplazar el copy de `lib/data/landing-cursos.ts` por `getContenidoPais(pais)` donde aplique, manteniendo el fallback actual.
-2. Reutilizar el componente/plantilla de P9 para estas dos landings y para `/curso-power-bi` en `co` y `uy`.
-3. Si P9 agrega la descarga de plantilla o el evento `download_template`, enlazarlo desde estas páginas sin duplicar la lógica de leads.
-4. Revisar que el JSON-LD de P9 y el de estas landings no dupliquen `areaServed` ni `FAQPage` en la misma URL.
-
-Mientras eso no ocurra, estas landings son autónomas y no tocan `components/empresas/*` ni `app/(marketing)/empresas/*` (SENCE/empresas sigue aplazado).
+Estas landings no tocan `components/empresas/*` ni `app/(marketing)/empresas/*`
+(SENCE/empresas sigue aplazado).
 
 ## Verificación pendiente
 

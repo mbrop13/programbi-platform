@@ -20,11 +20,16 @@ import {
   getNearestSchedule,
   nextCohortForCourse,
 } from "@/lib/data/course-schedules";
-import type { LandingCursoCopy } from "@/lib/data/landing-cursos";
+import {
+  faqsLandingCurso,
+  seoLandingCurso,
+  usosLandingCurso,
+  type LandingCursoCopy,
+  type UsoLanding,
+} from "@/lib/data/landing-cursos";
 import { horarioDeCohorte, horarioLocal, type HorarioLocal } from "@/lib/paises/horarios";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import { precioPublico } from "@/config/pricing";
-import { localizarMercado } from "@/lib/paises/precios";
 import { metadataLocal } from "@/lib/paises/metadata";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { absoluteUrl } from "@/lib/seo";
@@ -34,13 +39,19 @@ export type LandingCursoContenido = {
   iso: string;
   paisNombre: string;
   path: string;
+  h1: string;
+  kicker: string;
+  seoDescription: string;
   horario: HorarioLocal;
   horas: number;
   niveles: string[];
   precio: number | null;
   precioTexto: string;
   precioEtiqueta: string;
+  /** true cuando no hay precio público (hoy Paraguay): CTA por WhatsApp. */
+  consultarPrecio: boolean;
   cohorteTexto: string;
+  usos: UsoLanding[];
   syllabus: { name: string; description: string }[];
   faqs: { q: string; a: string }[];
 };
@@ -53,6 +64,9 @@ export function contenidoLandingCurso(opts: {
 }): LandingCursoContenido {
   const iso = normalizarPais(opts.pais);
   const pais = getPais(iso);
+  const seo = seoLandingCurso(opts.copy, iso);
+  const usos = usosLandingCurso(opts.copy, iso);
+  const propias = faqsLandingCurso(opts.copy, iso);
   const schedules = opts.schedules ?? [];
 
   const cohorte = getNearestSchedule(
@@ -68,8 +82,9 @@ export function contenidoLandingCurso(opts: {
   const precio = precioPublico(iso, opts.course.slug);
 
   const precioTexto =
-    precio == null ? "Consulta el valor de la próxima cohorte" : montoConCodigo(iso, precio);
-  const precioEtiqueta = iso === ISO_CHILE ? "Precio de catálogo" : "Precio local";
+    precio == null ? "Consulta el valor por WhatsApp" : montoConCodigo(iso, precio);
+  const precioEtiqueta =
+    precio == null ? "Precio" : iso === ISO_CHILE ? "Precio de catálogo" : "Precio local";
 
   const proxima = nextCohortForCourse(opts.course.slug, schedules, pais.zonaHoraria);
   const cohorteTexto = proxima
@@ -82,47 +97,41 @@ export function contenidoLandingCurso(opts: {
       ? `Las clases en vivo por Zoom son de ${horario.inicio} a ${horario.fin}, hora de Chile (${horario.offset}).`
       : `Las clases en vivo por Zoom son de ${horario.inicio} a ${horario.fin}, hora de ${pais.nombre} (${horario.offset}). En Chile son de ${horario.inicioChile} a ${horario.finChile}.`;
 
-  const nivelesTexto =
-    niveles.length > 1
-      ? `Se dicta en ${niveles.length} niveles: ${niveles.join(" y ")}.`
-      : "";
   const precioRespuesta =
     precio == null
-      ? "El valor depende de la cohorte. Consulta la ficha del curso o por WhatsApp."
+      ? `El valor de la cohorte se consulta por WhatsApp; la página no publica un precio para ${lugar}.`
       : `${precioEtiqueta}: ${precioTexto}. En la ficha del curso ves fechas, cupos y el valor de la próxima cohorte.`;
   const pagoRespuesta = `Los medios de pago publicados para ${lugar} son: ${pais.mediosPago.join("; ")}. El checkout muestra las opciones disponibles para la cohorte.`;
 
   const faqs = [
     {
-      q: "¿Cuánto dura el curso?",
-      a: `El curso abierto es de ${horas} horas. ${nivelesTexto}`.trim(),
-    },
-    {
       q: `¿A qué hora son las clases en ${lugar}?`,
       a: horarioRespuesta,
     },
     {
-      q: "¿Cuánto cuesta?",
-      a: precioRespuesta,
+      q: `¿Cuánto cuesta y cómo se paga en ${lugar}?`,
+      a: `${precioRespuesta} ${pagoRespuesta}`,
     },
-    {
-      q: "¿Cómo se paga?",
-      a: pagoRespuesta,
-    },
-    ...opts.copy.faqs,
+    ...propias,
+    ...opts.copy.faqs.slice(0, propias.length ? 2 : 4),
   ];
 
   return {
     iso,
     paisNombre: pais.nombre,
     path: opts.copy.path,
+    h1: seo.h1,
+    kicker: seo.kicker,
+    seoDescription: seo.seoDescription,
     horario,
     horas,
     niveles,
     precio,
     precioTexto,
     precioEtiqueta,
+    consultarPrecio: precio == null,
     cohorteTexto,
+    usos,
     syllabus: offerSyllabusSections(opts.course, "publico"),
     faqs,
   };
@@ -132,11 +141,13 @@ export function metadataLandingCurso(
   copy: LandingCursoCopy,
   pais: string | null | undefined
 ): Metadata {
+  const iso = normalizarPais(pais);
+  const seo = seoLandingCurso(copy, iso);
   return metadataLocal({
-    pais,
+    pais: iso,
     path: copy.path,
-    title: copy.seoTitle,
-    description: copy.seoDescription,
+    title: seo.seoTitle,
+    description: seo.seoDescription,
   });
 }
 
@@ -149,19 +160,24 @@ export function jsonLdLandingCurso(opts: {
   const iso = normalizarPais(opts.pais);
   const landingUrl = absoluteUrl(rutaLocal(iso, opts.copy.path));
   const base = getCourseJsonLd(opts.course, "publico", iso) as Record<string, unknown>;
-  const nombre = localizarMercado(opts.copy.h1, iso);
+  const nombre = opts.contenido.h1;
 
   const courseLd: Record<string, unknown> = {
     ...base,
     name: nombre,
-    description: localizarMercado(opts.copy.seoDescription, iso),
+    description: opts.contenido.seoDescription,
     url: landingUrl,
     image: absoluteUrl(opts.course.imageUrl),
   };
 
-  const offers = courseLd.offers;
-  if (offers && typeof offers === "object") {
-    courseLd.offers = { ...(offers as Record<string, unknown>), url: landingUrl };
+  // Paraguay no tiene precio público: la página nunca declara Offer.
+  if (opts.contenido.precio == null) {
+    delete courseLd.offers;
+  } else {
+    const offers = courseLd.offers;
+    if (offers && typeof offers === "object") {
+      courseLd.offers = { ...(offers as Record<string, unknown>), url: landingUrl };
+    }
   }
 
   return {
