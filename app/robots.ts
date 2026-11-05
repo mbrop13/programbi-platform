@@ -21,7 +21,18 @@ export default function robots(): MetadataRoute.Robots {
         allow: "/",
         // /login y /comunidad NO se bloquean: llevan meta robots noindex, follow y
         // para que Google los lea tiene que poder rastrearlos.
-        disallow: ["/api/", "/auth/", "/admin/", "/pago", "/referidos/app", "/referidos/admin"],
+        // /*?wc-ajax= y /*?id= son restos de WordPress que solo generan URLs
+        // duplicadas; no aportan nada al rastreo.
+        disallow: [
+          "/api/",
+          "/auth/",
+          "/admin/",
+          "/pago",
+          "/referidos/app",
+          "/referidos/admin",
+          "/*?wc-ajax=",
+          "/*?id=",
+        ],
       },
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
