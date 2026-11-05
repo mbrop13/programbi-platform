@@ -38,6 +38,14 @@ const RESUMEN =
 
 const url = (ruta: string) => `${SITE_URL}${ruta}`;
 
+/**
+ * Enlace en sintaxis Markdown, como pide llmstxt.org. Lighthouse (auditoría de
+ * agentes IA) solo cuenta `[texto](url)`; los bullets con la URL entre
+ * paréntesis se leen como texto plano. Todo bullet que apunte a una página del
+ * sitio debe pasar por acá.
+ */
+const md = (texto: string, href: string) => `[${texto}](${href})`;
+
 /** Datos de contacto reales, desde `config/paises.ts`. */
 const CONTACTO = getPais(ISO_CHILE).contacto;
 const CORREO = CONTACTO.email;
@@ -171,7 +179,7 @@ function bloqueCursos(): string[] {
   const lineas = [`## Cursos (${CURSOS.length})`];
   for (const curso of CURSOS) {
     lineas.push(
-      `- ${curso.title} (${url(`/cursos/${curso.slug}`)}): ${catalogHours(curso)} horas · ${curso.shortDescription}`
+      `- ${md(curso.title, url(`/cursos/${curso.slug}`))}: ${catalogHours(curso)} horas · ${curso.shortDescription}`
     );
   }
   lineas.push("");
@@ -187,7 +195,7 @@ function bloqueCursosDetalle(): string[] {
   lineas.push("");
   for (const curso of CURSOS) {
     lineas.push(`### ${curso.title}`);
-    lineas.push(`- URL: ${url(`/cursos/${curso.slug}`)}`);
+    lineas.push(`- URL: ${md(curso.title, url(`/cursos/${curso.slug}`))}`);
     lineas.push(`- Resumen: ${curso.shortDescription}`);
     lineas.push(`- Nivel: ${nivelTexto(curso)}`);
     lineas.push(`- Duración: ${duracionTexto(curso)}`);
@@ -200,7 +208,7 @@ function bloqueCursosDetalle(): string[] {
 function bloqueLandings(): string[] {
   const lineas = ["## Landings de nicho"];
   for (const landing of LANDINGS_NICHO) {
-    lineas.push(`- ${landing.nombre} (${url(landing.path)}): ${landing.resumen}`);
+    lineas.push(`- ${md(landing.nombre, url(landing.path))}: ${landing.resumen}`);
   }
   lineas.push("");
   return lineas;
@@ -231,12 +239,12 @@ function bloquePrecios(): string[] {
     const grupos = gruposDePrecio(pais.iso);
     if (grupos.length === 0) {
       lineas.push(
-        `- ${pais.nombre} (${href}): precio pendiente de publicación; se consulta por WhatsApp.`
+        `- ${md(pais.nombre, href)}: precio pendiente de publicación; se consulta por WhatsApp.`
       );
       continue;
     }
     const detalle = grupos.map((grupo) => `${grupo.precio}: ${grupo.slugs.join(", ")}`).join(" · ");
-    lineas.push(`- ${pais.nombre} (${href}): ${detalle}`);
+    lineas.push(`- ${md(pais.nombre, href)}: ${detalle}`);
   }
   lineas.push("");
   return lineas;
@@ -275,7 +283,7 @@ function bloquePoliticas(): string[] {
     `- Cuotas: ${NOTA_CUOTAS} Aplica en todos los países, con ${MEDIOS_CUOTAS.join(" o ")}; la disponibilidad final la confirma la pasarela en el checkout.`,
     `- Horario: clases en vivo por Zoom de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} hora de Chile, dos veces por semana; cada país ve el equivalente en su hora local.`,
     "- Grabaciones: cada sesión queda grabada y disponible de por vida en el campus del curso.",
-    `- Certificado: al completar el curso se entrega un certificado de ProgramBI, incluido en el valor, con un código público con formato PBI-XXX-XXXXXX que se verifica en ${url("/verificar-certificado")}. La ficha pública de cada certificado se abre desde su código en \`/certificado/<codigo>\`.`,
+    `- Certificado: al completar el curso se entrega un certificado de ProgramBI, incluido en el valor, con un código público con formato PBI-XXX-XXXXXX que se verifica en ${md("verificar-certificado", url("/verificar-certificado"))}. La ficha pública de cada certificado se abre desde su código en \`/certificado/<codigo>\`.`,
     "- Certificación PL-300: es un examen de Microsoft, distinto del certificado de ProgramBI; se rinde y se paga aparte.",
     "- Mac: Power BI Desktop funciona solo en Windows. En macOS se trabaja con Power BI web desde el navegador.",
     "",
@@ -297,7 +305,7 @@ function bloqueDatosClave(): string[] {
     `- Cuotas: ${textoCuotas()}.`,
     "- Grabaciones: cada clase queda grabada y disponible de por vida en el campus.",
     `- Precio en Chile por curso: ${preciosChile}.`,
-    `- Precios por país: la tabla completa, curso por curso, está en ${url("/llms-full.txt")} y en la página de precios de cada país (${url("/precios")}).`,
+    `- Precios por país: la tabla completa, curso por curso, está en ${md("llms-full.txt", url("/llms-full.txt"))} y en la página de precios de cada país (${md("precios", url("/precios"))}).`,
     "",
   ];
 }
@@ -314,7 +322,7 @@ function bloqueGuiasDetalle(): string[] {
   if (transversal.length > 0) {
     lineas.push("### Transversales");
     for (const guia of transversal) {
-      lineas.push(`- ${guia.h1} (${url(guia.path)}) — ${guia.description} · actualizada ${guia.updated}`);
+      lineas.push(`- ${md(guia.h1, url(guia.path))} — ${guia.description} · actualizada ${guia.updated}`);
     }
     lineas.push("");
   }
@@ -324,7 +332,7 @@ function bloqueGuiasDetalle(): string[] {
     if (guias.length === 0) continue;
     lineas.push(`### ${pais.nombre}`);
     for (const guia of guias) {
-      lineas.push(`- ${guia.h1} (${url(guia.path)}) — ${guia.description} · actualizada ${guia.updated}`);
+      lineas.push(`- ${md(guia.h1, url(guia.path))} — ${guia.description} · actualizada ${guia.updated}`);
     }
     lineas.push("");
   }
@@ -335,15 +343,15 @@ function bloqueGuiasDetalle(): string[] {
 function bloqueComparativas(): string[] {
   const lineas = ["## Comparativas"];
   lineas.push(
-    `- Índice de comparativas (${url("/versus")}): todas las comparativas, su veredicto y la fecha de revisión.`
+    `- ${md("Índice de comparativas", url("/versus"))}: todas las comparativas, su veredicto y la fecha de revisión.`
   );
   for (const comp of comparisons) {
-    lineas.push(`- ${comp.title} (${url(`/versus/${comp.slug}`)}): ${comp.seoDescription}`);
+    lineas.push(`- ${md(comp.title, url(`/versus/${comp.slug}`))}: ${comp.seoDescription}`);
   }
   // El listicle de academias vive en /guias, no en /versus: se filtra para no duplicarlo.
   for (const tarjeta of comparativasAcademiaHub()) {
     if (!tarjeta.href.startsWith("/versus/")) continue;
-    lineas.push(`- ${tarjeta.title} (${url(tarjeta.href)}): ${tarjeta.description}`);
+    lineas.push(`- ${md(tarjeta.title, url(tarjeta.href))}: ${tarjeta.description}`);
   }
   lineas.push("");
   return lineas;
@@ -378,10 +386,10 @@ function bloqueFaq(): string[] {
 function bloqueInstitucional(): string[] {
   return [
     "## Institucional",
-    `- Nosotros (${url("/nosotros")}): origen de la academia, metodología de clases en vivo y quién dicta los cursos.`,
-    ...(EQUIPO_PUBLICADO ? [`- Profesores (${url("/profesores")}): equipo docente y perfiles.`] : []),
-    `- Política de privacidad (${url("/privacidad")}).`,
-    `- Términos y condiciones (${url("/terminos")}).`,
+    `- ${md("Nosotros", url("/nosotros"))}: origen de la academia, metodología de clases en vivo y quién dicta los cursos.`,
+    ...(EQUIPO_PUBLICADO ? [`- ${md("Profesores", url("/profesores"))}: equipo docente y perfiles.`] : []),
+    `- ${md("Política de privacidad", url("/privacidad"))}.`,
+    `- ${md("Términos y condiciones", url("/terminos"))}.`,
     "",
   ];
 }
@@ -389,15 +397,15 @@ function bloqueInstitucional(): string[] {
 function bloqueOtrasPaginas(): string[] {
   return [
     "## Otras páginas",
-    `- Catálogo de cursos (${url("/cursos")})`,
-    `- Precios Chile (${url("/precios")})`,
-    `- Capacitación para empresas (${url("/empresas")})`,
-    `- Implementación de Power BI (${url("/implementacion-power-bi")})`,
-    `- Migrar Excel a Power BI (${url("/migrar-excel-a-power-bi")})`,
-    `- Bolsa de trabajo (${url("/empleos")})`,
-    `- Preguntas frecuentes (${url("/preguntas-frecuentes")})`,
-    `- Blog (${url("/blog")})`,
-    `- Glosario (${url("/glosario")})`,
+    `- ${md("Catálogo de cursos", url("/cursos"))}`,
+    `- ${md("Precios Chile", url("/precios"))}`,
+    `- ${md("Capacitación para empresas", url("/empresas"))}`,
+    `- ${md("Implementación de Power BI", url("/implementacion-power-bi"))}`,
+    `- ${md("Migrar Excel a Power BI", url("/migrar-excel-a-power-bi"))}`,
+    `- ${md("Bolsa de trabajo", url("/empleos"))}`,
+    `- ${md("Preguntas frecuentes", url("/preguntas-frecuentes"))}`,
+    `- ${md("Blog", url("/blog"))}`,
+    `- ${md("Glosario", url("/glosario"))}`,
     "",
   ];
 }
@@ -407,7 +415,7 @@ function bloqueContacto(): string[] {
     "## Contacto",
     `- WhatsApp: ${WHATSAPP}`,
     `- Correo: ${CORREO}`,
-    `- Sitio: ${SITE_URL}`,
+    `- ${md("Sitio", SITE_URL)}`,
     "",
   ];
 }
@@ -416,12 +424,12 @@ function bloqueContacto(): string[] {
 function bloqueIndice(): string[] {
   return [
     "## Índice",
-    `- Catálogo de cursos: ${url("/cursos")}`,
-    `- Precios por país: ${url("/precios")} (tabla completa por curso en ${url("/llms-full.txt")})`,
-    `- Guías: ${url("/guias")} (${GUIAS_PUBLICADAS.length} publicadas; listado completo en ${url("/llms-full.txt")})`,
-    `- Comparativas: ${url("/versus")}`,
-    `- Preguntas frecuentes: ${url("/preguntas-frecuentes")}`,
-    `- Nosotros: ${url("/nosotros")}`,
+    `- ${md("Catálogo de cursos", url("/cursos"))}`,
+    `- ${md("Precios por país", url("/precios"))} (tabla completa por curso en ${md("llms-full.txt", url("/llms-full.txt"))})`,
+    `- ${md("Guías", url("/guias"))} (${GUIAS_PUBLICADAS.length} publicadas; listado completo en ${md("llms-full.txt", url("/llms-full.txt"))})`,
+    `- ${md("Comparativas", url("/versus"))}`,
+    `- ${md("Preguntas frecuentes", url("/preguntas-frecuentes"))}`,
+    `- ${md("Nosotros", url("/nosotros"))}`,
     "- Contacto: WhatsApp y correo al final de este archivo.",
     "",
   ];
@@ -439,7 +447,7 @@ function bloqueNota(detalle: string): string[] {
 export function construirLlmsTxt(): string {
   const lineas = [
     ...encabezado("ProgramBI", [
-      `Versión extendida: ${url("/llms-full.txt")}`,
+      `Versión extendida: ${md("llms-full.txt", url("/llms-full.txt"))}`,
       `Precios vigentes desde ${VIGENTE_DESDE}.`,
     ]),
     ...bloqueIndice(),
@@ -452,7 +460,7 @@ export function construirLlmsTxt(): string {
     ...bloqueOtrasPaginas(),
     ...bloqueContacto(),
     ...bloqueNota(
-      `La versión extendida, con todos los cursos, la tabla por curso y todas las guías, está en ${url("/llms-full.txt")}.`
+      `La versión extendida, con todos los cursos, la tabla por curso y todas las guías, está en ${md("llms-full.txt", url("/llms-full.txt"))}.`
     ),
   ];
   return `${lineas.join("\n").trimEnd()}\n`;
