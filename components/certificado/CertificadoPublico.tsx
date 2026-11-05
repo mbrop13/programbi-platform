@@ -18,11 +18,13 @@ export default function CertificadoPublico({
   certificado: CertificadoVerificado;
 }) {
   const fecha = formatearFechaEmision(certificado.issued_at);
-  const linkedIn = urlCertificadoLinkedIn({
-    curso: certificado.course_title,
-    codigo: certificado.certificate_code,
-    emitidoEn: certificado.issued_at,
-  });
+  const linkedIn = certificado.course_title
+    ? urlCertificadoLinkedIn({
+        curso: certificado.course_title,
+        codigo: certificado.certificate_code,
+        emitidoEn: certificado.issued_at,
+      })
+    : null;
 
   return (
     <div className="min-h-dvh bg-canvas px-4 py-10 text-ink sm:px-6 sm:py-16">
@@ -70,12 +72,12 @@ export default function CertificadoPublico({
               </h1>
               <p className="mt-7 text-sm text-mute print:mt-4">ProgramBI certifica que</p>
               <p className="mt-1 max-w-3xl break-words font-dancing text-4xl leading-tight text-ink sm:text-5xl print:text-3xl">
-                {certificado.student_name}
+                {certificado.student_name ?? "Nombre no disponible"}
               </p>
               <div className="my-5 h-px w-44 bg-gradient-to-r from-transparent via-amber-500/60 to-transparent print:my-3" />
               <p className="text-sm text-mute print:text-xs">completó satisfactoriamente el curso</p>
               <p className="mt-1 max-w-2xl text-xl font-semibold leading-snug text-ink sm:text-2xl print:text-lg">
-                {certificado.course_title}
+                {certificado.course_title ?? "Curso no disponible"}
               </p>
             </header>
 
@@ -120,15 +122,17 @@ export default function CertificadoPublico({
         </article>
 
         <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row print:hidden">
-          <a
-            href={linkedIn}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#0A66C2] px-6 text-sm font-semibold text-white no-underline transition-colors hover:bg-[#004182] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A66C2]/40 sm:w-auto"
-          >
-            <Linkedin className="h-4 w-4" aria-hidden="true" />
-            Agregar a LinkedIn
-          </a>
+          {linkedIn ? (
+            <a
+              href={linkedIn}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#0A66C2] px-6 text-sm font-semibold text-white no-underline transition-colors hover:bg-[#004182] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0A66C2]/40 sm:w-auto"
+            >
+              <Linkedin className="h-4 w-4" aria-hidden="true" />
+              Agregar a LinkedIn
+            </a>
+          ) : null}
           <BotonImprimir />
           <Link
             href="/verificar-certificado"

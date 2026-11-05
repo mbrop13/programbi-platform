@@ -147,7 +147,7 @@ tareas.push(async () => {
     }
     const t = titulo(html);
     if (nombre && !t.includes(nombre)) fallo(url, "title", `no menciona ${nombre}: "${t}"`);
-    if (!nombre && /m[ée]xico|argentina|colombia|per[uú]/i.test(t)) {
+    if (!iso && /m[ée]xico|argentina|colombia|per[uú]/i.test(t)) {
       fallo(url, "title", `Chile pero el título menciona otro país: "${t}"`);
     }
     revisarHtmlBase(url, html);
@@ -191,7 +191,7 @@ tareas.push(async () => {
     }
     revisarHtmlBase(url, html, { h1Debe: [pais] });
     if (!tipos(html).has("Course")) fallo(url, "jsonld", "falta Course");
-    if (!tipos(html).has("Offer")) fallo(url, "jsonld", "falta Offer");
+    if (!hayOffer(html)) fallo(url, "jsonld", "falta Offer");
     if (!tipos(html).has("FAQPage")) fallo(url, "jsonld", "falta FAQPage");
   }
 });
