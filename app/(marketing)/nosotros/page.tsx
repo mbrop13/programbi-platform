@@ -1,9 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Award, BookOpen, Users, Building, ShieldCheck, UserCheck } from "lucide-react";
+import {
+  Award,
+  BookOpen,
+  Users,
+  Building,
+  ShieldCheck,
+  UserCheck,
+  ArrowRight,
+} from "lucide-react";
 import MentorsSection from "@/components/marketing/MentorsSection";
+import { EQUIPO, fundadorEquipo, rutaPerfil } from "@/lib/data/equipo";
+import { getOrganizacionEquipoJsonLd, getPersonaJsonLd } from "@/lib/seo/course-jsonld";
 import { ogImageUrl } from "@/lib/og/url";
-import { twitterShare, absoluteUrl, tituloSeo } from "@/lib/seo";
+import { twitterShare, absoluteUrl, jsonLdString, tituloSeo } from "@/lib/seo";
 import { normalizarPais } from "@/config/paises";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
@@ -65,6 +75,11 @@ export default async function NosotrosPage({
 }) {
   const pais = normalizarPais((await params).pais);
   const contenido = getContenidoPais(pais);
+  const fundador = fundadorEquipo();
+  const descripcionOrg = localizarMercado(
+    "Institución líder de formación profesional y consultoría de Business Intelligence en Chile y Latinoamérica.",
+    pais
+  );
   const aboutJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -77,20 +92,10 @@ export default async function NosotrosPage({
         isPartOf: { "@id": "https://www.programbi.com/#website" },
         mainEntity: { "@id": "https://www.programbi.com/#organization" },
       },
-      {
-        "@type": "EducationalOrganization",
-        "@id": "https://www.programbi.com/#organization",
-        name: "ProgramBI SPA",
-        url: "https://www.programbi.com",
-        logo: {
-          "@type": "ImageObject",
-          url: "https://cdn.shopify.com/s/files/1/0564/3812/8712/files/logo-03_b7b98699-bd18-46ee-8b1b-31885a2c4c62.png?v=1766816974"
-        },
-        description: localizarMercado(
-          "Institución líder de formación profesional y consultoría de Business Intelligence en Chile y Latinoamérica.",
-          pais
-        )
-      }
+      // La organización enlaza al fundador en `founder` y a todo el equipo en
+      // `employee`; los nodos Person van en el mismo @graph.
+      getOrganizacionEquipoJsonLd(descripcionOrg),
+      ...EQUIPO.map(getPersonaJsonLd),
     ]
   };
 
@@ -98,7 +103,7 @@ export default async function NosotrosPage({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(aboutJsonLd) }}
       />
       
       <main className="bg-canvas min-h-dvh pt-12 pb-20 sm:pt-16 text-ink relative">
@@ -149,7 +154,14 @@ export default async function NosotrosPage({
                 Nuestra Historia & Enfoque Metodológico
               </h2>
               <p className="text-mute leading-relaxed text-base">
-                Fundada por <strong>Manuel Oliva</strong> en Santiago de Chile, ProgramBI nació al constatar que la mayoría de los profesionales en las áreas de finanzas, administración y logística invertían horas haciendo tareas repetitivas en Excel que podían resolverse en minutos con SQL, Python o automatizaciones en Power BI.
+                Fundada por{" "}
+                <Link
+                  href={rutaPerfil(fundador.slug)}
+                  className="font-semibold text-ink underline decoration-line underline-offset-4 hover:decoration-ink"
+                >
+                  {fundador.nombre}
+                </Link>{" "}
+                en Santiago de Chile, ProgramBI nació al constatar que la mayoría de los profesionales en las áreas de finanzas, administración y logística invertían horas haciendo tareas repetitivas en Excel que podían resolverse en minutos con SQL, Python o automatizaciones en Power BI.
               </p>
               <p className="text-mute leading-relaxed text-base">
                 Decidimos diferenciarnos radicalmente de los cursos pregrabados tradicionales. Diseñamos una metodología interactiva basada en clases 100% online en vivo, con bases de datos que simulan problemas reales de negocios y soporte permanente fuera de clases. Hoy, contamos con estudiantes activos en más de 5 países de Latinoamérica.
@@ -197,6 +209,53 @@ export default async function NosotrosPage({
         <div className="relative z-10 pt-2">
           <MentorsSection />
         </div>
+
+        {/* Enlace visible al directorio de fichas: /profesores no está en el
+            menú, así que /nosotros es la entrada principal. */}
+        <section
+          className="relative z-10 mx-auto mt-4 max-w-6xl px-5"
+          aria-labelledby="equipo-docente"
+        >
+          <div className="rounded-[26px] border border-line bg-paper p-8 sm:p-10">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-faint">
+                  Equipo docente
+                </p>
+                <h2
+                  id="equipo-docente"
+                  className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl"
+                >
+                  Las personas que dictan las clases
+                </h2>
+                <p className="mt-3 max-w-[60ch] text-sm leading-relaxed text-mute">
+                  Cada perfil reúne su formación, su experiencia y los cursos de los que está a
+                  cargo.
+                </p>
+              </div>
+              <Link
+                href="/profesores"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-ink px-4 py-2.5 text-sm font-semibold text-canvas no-underline transition-opacity hover:opacity-90"
+              >
+                Ver todos los perfiles
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
+            <ul className="mt-6 flex flex-wrap gap-2">
+              {EQUIPO.map((miembro) => (
+                <li key={miembro.slug}>
+                  <Link
+                    href={rutaPerfil(miembro.slug)}
+                    className="inline-flex items-center gap-1 rounded-full border border-line bg-canvas px-3 py-1.5 text-sm font-medium text-ink no-underline transition-colors hover:border-ink/30"
+                  >
+                    {miembro.nombre}
+                    <span className="text-faint">· {miembro.rol}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
       </main>
     </>
   );

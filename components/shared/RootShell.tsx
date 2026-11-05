@@ -50,8 +50,12 @@ const jsonLd = {
       ],
       founder: {
         "@type": "Person",
+        // @id estable del fundador: debe coincidir con idPersona("manuel-oliva")
+        // de lib/seo/course-jsonld.ts y con el nodo Person de /profesores.
+        "@id": `${SITE_URL}/#person-manuel-oliva`,
         name: "Manuel Oliva",
-        jobTitle: "CEO & Fundador",
+        jobTitle: "Fundador y Director",
+        url: `${SITE_URL}/profesores/manuel-oliva`,
         alumniOf: [
           { "@type": "EducationalOrganization", name: "Universidad Adolfo Ibáñez" },
           { "@type": "EducationalOrganization", name: "Universidad de Concepción" },

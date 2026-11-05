@@ -8,8 +8,15 @@ import {
   offerTeaches,
   type CourseOfferView,
 } from "@/lib/data/course-views";
-import { SITE_URL, absoluteUrl } from "@/lib/seo";
+import { SITE_URL, WEBSITE_ID, ORG_ID, absoluteUrl } from "@/lib/seo";
 import { COURSE_SEO } from "@/lib/seo/money";
+import {
+  EQUIPO,
+  fundadorEquipo,
+  miembroPorCurso,
+  rutaPerfil,
+  type MiembroEquipo,
+} from "@/lib/data/equipo";
 import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 import { PRECIOS_VALID_FROM, monedaPublica, precioPublico } from "@/config/pricing";
 import { rutaLocal } from "@/lib/paises/rutas";
@@ -49,6 +56,9 @@ export function getCourseJsonLd(
   const price = precioPublico(pais, course.slug);
   const moneda = monedaPublica(pais);
   const path = rutaLocal(pais, coursePath(course.slug, view));
+  // Cada curso declara a su profesor en `equipo.ts`; sin match, lo dicta el
+  // fundador. El `sameAs` a la página de empresa era un dato incorrecto.
+  const instructor = miembroPorCurso(course.slug);
 
   return {
     "@type": "Course",
@@ -88,11 +98,17 @@ export function getCourseJsonLd(
     hasCourseInstance: {
       "@type": "CourseInstance",
       courseMode: "Online",
+      // `Course` no define `instructor` en schema.org; el lugar válido es la
+      // instancia del curso. El @id es el mismo que usa /profesores/<slug>.
       instructor: {
         "@type": "Person",
-        name: "Manuel Oliva",
-        jobTitle: "CEO & Fundador ProgramBI",
-        sameAs: "https://cl.linkedin.com/company/programbi",
+        "@id": idPersona(instructor.slug),
+        name: instructor.nombre,
+        jobTitle: instructor.cargo,
+        url: absoluteUrl(rutaPerfil(instructor.slug)),
+        worksFor: { "@id": ORG_ID },
+        ...(instructor.imageUrl ? { image: instructor.imageUrl } : {}),
+        ...(instructor.linkedinUrl ? { sameAs: [instructor.linkedinUrl] } : {}),
       },
     },
     ...(price && {
@@ -110,5 +126,71 @@ export function getCourseJsonLd(
       name: section.name,
       description: section.description,
     })),
+  };
+}
+
+/**
+ * Logo oficial que usan los nodos de organización del sitio. Es el mismo
+ * archivo local que declara `RootShell`, para que el nodo fusionado por @id no
+ * tenga dos logos distintos.
+ */
+export const LOGO_ORGANIZACION = `${SITE_URL}/images/logo.png`;
+
+/**
+ * @id estable del nodo Person de cada profesor. Vive en la raíz del sitio (no
+ * en la URL del perfil) para que siga siendo el mismo aunque la ficha cambie de
+ * ruta, y coincide con el `founder` que declara `RootShell`.
+ */
+export function idPersona(slug: string): string {
+  return `${SITE_URL}/#person-${slug}`;
+}
+
+/**
+ * Nodo Person de un profesor. `description`, `image` y `sameAs` solo aparecen
+ * cuando el dato existe: no se rellenan con texto ni URLs genéricas.
+ */
+export function getPersonaJsonLd(miembro: MiembroEquipo) {
+  return {
+    "@type": "Person",
+    "@id": idPersona(miembro.slug),
+    name: miembro.nombre,
+    jobTitle: miembro.cargo,
+    url: absoluteUrl(rutaPerfil(miembro.slug)),
+    worksFor: { "@id": ORG_ID },
+    ...(miembro.bio ? { description: miembro.bio } : {}),
+    ...(miembro.imageUrl ? { image: miembro.imageUrl } : {}),
+    ...(miembro.linkedinUrl ? { sameAs: [miembro.linkedinUrl] } : {}),
+  };
+}
+
+/**
+ * EducationalOrganization con el equipo enlazado por `@id`: el fundador en
+ * `founder` y todas las personas en `employee`. Los nodos Person se incluyen
+ * aparte, en el mismo @graph de la página.
+ */
+export function getOrganizacionEquipoJsonLd(descripcion: string) {
+  return {
+    "@type": "EducationalOrganization",
+    "@id": ORG_ID,
+    name: "ProgramBI",
+    legalName: "ProgramBI SPA",
+    url: SITE_URL,
+    logo: { "@type": "ImageObject", url: LOGO_ORGANIZACION, width: 600, height: 160 },
+    description: descripcion,
+    founder: { "@id": idPersona(fundadorEquipo().slug) },
+    employee: EQUIPO.map((miembro) => ({ "@id": idPersona(miembro.slug) })),
+  };
+}
+
+/** ProfilePage de /profesores/<slug>, con la ficha Person como mainEntity. */
+export function getProfilePageJsonLd(miembro: MiembroEquipo) {
+  const url = absoluteUrl(rutaPerfil(miembro.slug));
+  return {
+    "@type": "ProfilePage",
+    "@id": `${url}#profilepage`,
+    url,
+    name: `${miembro.nombre} — Profesor ProgramBI`,
+    isPartOf: { "@id": WEBSITE_ID },
+    mainEntity: { "@id": idPersona(miembro.slug) },
   };
 }
