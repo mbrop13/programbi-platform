@@ -6,8 +6,10 @@ import {
   breadcrumbJsonLd,
   jsonLdString,
   pageOg,
+  tituloSeo,
 } from "@/lib/seo";
-import { PAISES_INDEXABLES, normalizarPais, type Pais } from "@/config/paises";
+import { PAISES_INDEXABLES, getPais, normalizarPais, type Pais } from "@/config/paises";
+import { cuotasSinInteres } from "@/config/cuotas";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 import { preciosDePais, type PrecioCursoPagina } from "@/lib/paises/precios-pagina";
@@ -15,30 +17,41 @@ import { preciosDePais, type PrecioCursoPagina } from "@/lib/paises/precios-pagi
 export const revalidate = 3600;
 
 const PATH = "/precios";
-const TITLE = "Precios de cursos en vivo en Chile | ProgramBI";
-const DESCRIPTION =
-  "Precios publicados por curso en Chile: duración, qué incluye, medios de pago y preguntas frecuentes.";
-const share = pageOg({
-  title: TITLE,
-  description: DESCRIPTION,
-  path: PATH,
-  kicker: "Precios · Chile",
-  tags: ["Precios", "Power BI", "Análisis de datos"],
-});
 
-export const metadata: Metadata = {
-  title: { absolute: TITLE },
-  description: DESCRIPTION,
-  alternates: { canonical: absoluteUrl(PATH), languages: hreflangDe(PATH) },
-  openGraph: {
-    title: TITLE,
-    description: DESCRIPTION,
-    url: absoluteUrl(PATH),
-    type: "website",
-    images: share.images,
-  },
-  twitter: share.twitter,
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ pais?: string }>;
+}): Promise<Metadata> {
+  const iso = normalizarPais((await params).pais);
+  const pais = getPais(iso);
+  const title = tituloSeo(`Precios de cursos en vivo en ${pais.nombre}`);
+  const description = `Precios publicados en ${pais.moneda} para ${pais.nombre}: duración, qué incluye, medios de pago y cuotas sin interés.`;
+  const share = pageOg({
+    title,
+    description,
+    path: rutaLocal(iso, PATH),
+    kicker: `Precios · ${pais.nombre}`,
+    tags: ["Precios", "Power BI", "Análisis de datos"],
+  });
+
+  return {
+    title: { absolute: title },
+    description,
+    alternates: {
+      canonical: absoluteUrl(rutaLocal(iso, PATH)),
+      languages: hreflangDe(PATH),
+    },
+    openGraph: {
+      title,
+      description,
+      url: absoluteUrl(rutaLocal(iso, PATH)),
+      type: "website",
+      images: share.images,
+    },
+    twitter: share.twitter,
+  };
+}
 
 function faqsDe(pais: Pais, cursos: PrecioCursoPagina[], moneda: string) {
   const powerBi = cursos.find((curso) => curso.slug === "power-bi");
@@ -75,6 +88,10 @@ function faqsDe(pais: Pais, cursos: PrecioCursoPagina[], moneda: string) {
     {
       q: `¿Cómo puedo pagar desde ${pais.nombre}?`,
       a: `Los medios de pago publicados para ${pais.nombre} son: ${pais.mediosPago.join("; ")}. El checkout confirma los medios disponibles y el monto final.`,
+    },
+    {
+      q: "¿Hay cuotas sin interés?",
+      a: `Sí: todos los cursos se pueden pagar en ${cuotasSinInteres(pais.iso)} cuotas sin interés, sin recargo por financiamiento.`,
     },
   ];
 }
