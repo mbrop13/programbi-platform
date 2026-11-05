@@ -196,6 +196,7 @@ export const GA_LEAD_EVENTS = {
   CLICK_WHATSAPP: "click_whatsapp",
   CLICK_COTIZAR_EMPRESAS: "click_cotizar_empresas",
   QUIZ_COMPLETE: "quiz_complete",
+  WEBINAR_SIGNUP: "webinar_signup",
 } as const;
 
 export type GenerateLeadMethod = "form" | "oauth";
@@ -832,6 +833,22 @@ export function trackQuizComplete(opts: {
 
 export function trackViewEmpresas(): void {
   trackEvent(GA_LEAD_EVENTS.VIEW_EMPRESAS);
+}
+
+/**
+ * Inscripción exitosa al webinar o a la clase gratis.
+ * `source` separa el webinar histórico de la clase gratis del flag nuevo.
+ */
+export function trackWebinarSignup(opts?: {
+  pais?: string | null;
+  source?: string;
+  course?: string | null;
+}): void {
+  trackEvent(GA_LEAD_EVENTS.WEBINAR_SIGNUP, {
+    country: opts?.pais || undefined,
+    source: opts?.source || "webinar",
+    course: opts?.course || undefined,
+  });
 }
 
 export function trackClickCtaPrimary(ctaId: string): void {

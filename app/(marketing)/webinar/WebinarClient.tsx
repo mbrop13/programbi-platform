@@ -23,6 +23,7 @@ import {
 import { companyLogos } from "@/lib/data/images";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { useCountry } from "@/lib/context/CountryContext";
+import { trackWebinarSignup } from "@/lib/analytics/marketing";
 import { FadeIn } from "@/components/shared/AnimatedComponents";
 
 const TOPICS = [
@@ -177,6 +178,7 @@ export default function WebinarClient() {
       });
       if (!res.ok) throw new Error();
       setSuccess(true);
+      trackWebinarSignup({ pais: country.iso, source: "webinar" });
     } catch { 
       setError("Hubo un error. Intenta nuevamente."); 
     } finally { 
