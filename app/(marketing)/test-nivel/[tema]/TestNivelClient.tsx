@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -40,6 +40,8 @@ export default function TestNivelClient({
   );
   const [terminado, setTerminado] = useState(false);
   const eventoEnviado = useRef(false);
+  const [email, setEmail] = useState("");
+  const [estadoEmail, setEstadoEmail] = useState<"idle" | "enviando" | "ok" | "error">("idle");
 
   const pregunta = test.preguntas[indice];
   const respuesta = respuestas[indice];
@@ -88,6 +90,33 @@ export default function TestNivelClient({
     setIndice(0);
     setRespuestas(test.preguntas.map(() => null));
     setTerminado(false);
+    setEstadoEmail("idle");
+    setEmail("");
+  }
+
+  async function enviarResultado(evento: FormEvent<HTMLFormElement>) {
+    evento.preventDefault();
+    const limpio = email.trim().toLowerCase();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(limpio)) {
+      setEstadoEmail("error");
+      return;
+    }
+    setEstadoEmail("enviando");
+    try {
+      const respuesta = await fetch("/api/leads-magnet", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: limpio,
+          pais,
+          recurso: `test-${test.tema}`,
+          _t: Date.now(),
+        }),
+      });
+      setEstadoEmail(respuesta.ok ? "ok" : "error");
+    } catch {
+      setEstadoEmail("error");
+    }
   }
 
   if (terminado) {
@@ -150,6 +179,48 @@ export default function TestNivelClient({
                 </button>
               </div>
             </div>
+          </section>
+
+          <section className="bg-white border border-slate-100 rounded-3xl shadow-sm p-6 sm:p-8 mt-6">
+            <h2 className="font-display font-black text-lg text-slate-900 tracking-tight my-0">
+              ¿Guardamos tu resultado?
+            </h2>
+            <p className="text-slate-500 text-sm mt-1 mb-4">
+              Déjanos tu email y guardamos tu nivel y el curso recomendado para poder orientarte.
+              Es opcional: el test ya te sirvió sin dejarlo.
+            </p>
+            {estadoEmail === "ok" ? (
+              <p className="text-emerald-700 text-sm font-semibold my-0">
+                Listo: guardamos tu resultado.
+              </p>
+            ) : (
+              <form onSubmit={enviarResultado} className="flex flex-col gap-3 sm:flex-row">
+                <label htmlFor="email-resultado" className="sr-only">
+                  Email
+                </label>
+                <input
+                  id="email-resultado"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(evento) => setEmail(evento.target.value)}
+                  placeholder="tu@correo.com"
+                  className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#1890FF]"
+                />
+                <button
+                  type="submit"
+                  disabled={estadoEmail === "enviando"}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border-0 bg-slate-900 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-slate-800 disabled:opacity-60 cursor-pointer"
+                >
+                  {estadoEmail === "enviando" ? "Guardando…" : "Guardar resultado"}
+                </button>
+              </form>
+            )}
+            {estadoEmail === "error" && (
+              <p className="mt-2 mb-0 text-xs font-semibold text-rose-600">
+                Revisa el email e inténtalo de nuevo.
+              </p>
+            )}
           </section>
 
           {otrosTests.length > 0 && (

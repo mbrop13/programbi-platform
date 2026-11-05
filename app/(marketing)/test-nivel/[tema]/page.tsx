@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { normalizarPais } from "@/config/paises";
+import { normalizarPais, getPais } from "@/config/paises";
 import { getTestNivel, TESTS_NIVEL } from "@/lib/data/test-nivel";
 import { metadataLocal } from "@/lib/paises/metadata";
 import { localizarMercado } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { breadcrumbJsonLd, jsonLdString } from "@/lib/seo";
+import { breadcrumbJsonLd, jsonLdString, tituloSeo } from "@/lib/seo";
 import TestNivelClient from "./TestNivelClient";
 
 type Params = Promise<{ tema: string; pais?: string }>;
@@ -20,8 +20,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   if (!test) return { title: "Test no encontrado" };
 
   const pais = normalizarPais(rawPais);
-  const title = `Test de nivel ${test.nombre} en Chile | ProgramBI`;
-  const description = `Test de nivel ${test.nombre} gratis: 10 preguntas para medir tu conocimiento y recibir una recomendación de curso. Sin registro.`;
+  const paisInfo = getPais(pais);
+  const title = tituloSeo(`Test de nivel ${test.nombre} en ${paisInfo.nombre}`);
+  const description = `Test de nivel ${test.nombre} gratis en ${paisInfo.nombre}: ${test.preguntas.length} preguntas para medir tu conocimiento y recibir una recomendación de curso. Sin registro.`;
 
   return metadataLocal({
     pais,
