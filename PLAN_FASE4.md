@@ -62,3 +62,12 @@ Cada subagente trabaja en su worktree y su rama, commitea seguido y deja su esta
 | 5 | hecho | 34ac901 | canonical y título propios por país en `/precios` |
 | 6 | hecho | a4ccb25 | `/certificado/[codigo]` + `/verificar-certificado` (subagente WS6) |
 | 7 | hecho | 36c7be8 | `webinar_signup` + `scripts/verificar-fase4.mjs` |
+
+## Cierre 04-11-2026
+
+- Build `npx next build --webpack`: **EXIT 0**, 828 páginas estáticas.
+- `npx tsc --noEmit`: **EXIT 0**. ESLint en los 35 archivos tocados: **0 errores**, 15 warnings preexistentes.
+- `verificar-sitio.mjs`: 536 URLs de sitemap, 550/553 revisadas, 5.824 alternates, 169 fichas con `Offer`, 550 títulos únicos, **0 hallazgos**.
+- `verificar-fase4.mjs`: **0 hallazgos** (precios por país, test-nivel, landings, clase-gratis noindex, certificado 404, Paraguay sin `Offer`).
+- Sitemap: 536 URLs; `/clase-gratis` no aparece (flag apagado).
+- Detalle completo en `HERMES_REPORTE_FASE4.md`.
