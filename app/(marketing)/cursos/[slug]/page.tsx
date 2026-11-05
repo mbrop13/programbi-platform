@@ -6,6 +6,7 @@ import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
 import BloquePaisFicha from "@/components/paises/BloquePaisFicha";
 import GuiasDelCurso from "@/components/guias/GuiasDelCurso";
+import TestimoniosDeCurso from "@/components/marketing/TestimoniosDeCurso";
 import { ogImageUrl } from "@/lib/og/url";
 import { absoluteUrl, jsonLdString, tituloLocal } from "@/lib/seo";
 import { getCourseJsonLd } from "@/lib/seo/course-jsonld";
@@ -180,6 +181,9 @@ export default async function CourseDetailPage({
           internos. Reemplaza a CountryContext, que repetía los mismos datos. */}
       <BloquePaisFicha curso={course} pais={pais} inicio={inicio} fin={fin} />
       <GuiasDelCurso curso={course.slug} pais={pais} />
+      {/* Citas reales de alumnos de este curso (LinkedIn). Se oculta sola si no
+          hay testimonios o si el kill-switch NEXT_PUBLIC_TESTIMONIOS=0. */}
+      <TestimoniosDeCurso cursoSlug={course.slug} />
     </>
   );
 }

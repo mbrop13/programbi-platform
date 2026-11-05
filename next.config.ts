@@ -65,137 +65,137 @@ const nextConfig: NextConfig = {
 
     return [
       // URLs antiguas de Shopify/WordPress que Search Console reporta como 404.
-      // Las específicas van antes que los comodines y todas son 301 (Vercel) o
-      // 308 `permanent: true` (Next), que Google trata igual.
+      // Las específicas van antes que los comodines. Todas son 301 explícitos
+      // (`statusCode: 301`), igual que en vercel.json.
       {
         source: "/pages/cursos-1",
         destination: "/cursos",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/pages/cursos",
         destination: "/cursos",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/pages/bootcamp",
         destination: "/cursos/analisis-de-datos",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/pages/contact",
         destination: "/empresas",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/pages/webinar",
         destination: claseGratis ? "/clase-gratis" : "/cursos",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/pages",
         destination: "/cursos",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/campus",
         destination: "/login",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/cart",
         destination: "/cursos",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/recommendations/products",
         destination: "/cursos",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/recommendations/products/:path*",
         destination: "/cursos",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/apps/:path*",
         destination: "/cursos",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/products/excel",
         destination: "/cursos/excel",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/products/curso-analisis-de-datos-para-la-mineria",
         destination: "/cursos/analitica-mineria",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/products/curso-de-analisis-de-datos-para-el-sector-financiero",
         destination: "/cursos/mercado-financiero",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/products/sql-server-program-bi",
         destination: "/cursos/sql-server",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/cursos/copilot-studio",
         destination: "/cursos/copilot",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/cursos/analitica-financiera",
         destination: "/cursos/mercado-financiero",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/cursos/analitica-financiera/:path*",
         destination: "/cursos/mercado-financiero",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/:pais/cursos/analitica-financiera",
         destination: "/:pais/cursos/mercado-financiero",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/:pais/cursos/analitica-financiera/:path*",
         destination: "/:pais/cursos/mercado-financiero",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/consultorias",
         destination: "/empresas",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/consultoria",
         destination: "/empresas",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/asesorias",
         destination: "/empresas",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/comunidad/configuracion",
         destination: "/comunidad/ajustes",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/comunidad/ai",
         destination: "/ai",
-        permanent: true,
+        statusCode: 301,
       },
       {
         source: "/comunidad/ai/:path*",
         destination: "/ai/:path*",
-        permanent: true,
+        statusCode: 301,
       },
     ];
   },

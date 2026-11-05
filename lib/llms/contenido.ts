@@ -272,7 +272,7 @@ function bloquePoliticas(): string[] {
   return [
     "## Políticas y condiciones",
     `- Cuotas: ${NOTA_CUOTAS} Aplica en todos los países, con ${MEDIOS_CUOTAS.join(" o ")}; la disponibilidad final la confirma la pasarela en el checkout.`,
-    `- Horario: clases en vivo por Zoom de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} en la hora local de cada país, dos veces por semana.`,
+    `- Horario: clases en vivo por Zoom de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} hora de Chile, dos veces por semana; cada país ve el equivalente en su hora local.`,
     "- Grabaciones: cada sesión queda grabada y disponible de por vida en el campus del curso.",
     `- Certificado: al completar el curso se entrega un certificado de ProgramBI, incluido en el valor, con un código público con formato PBI-XXX-XXXXXX que se verifica en ${url("/verificar-certificado")}. La ficha pública de cada certificado se abre desde su código en \`/certificado/<codigo>\`.`,
     "- Certificación PL-300: es un examen de Microsoft, distinto del certificado de ProgramBI; se rinde y se paga aparte.",
@@ -291,7 +291,7 @@ function bloqueDatosClave(): string[] {
     "## Datos clave",
     `- Cursos: ${CURSOS.length} en el catálogo, cada uno con ficha, nivel y horas propias.`,
     `- Duración: de ${Math.min(...horas)} a ${Math.max(...horas)} horas por curso, según el programa; cada ficha declara las horas de su nivel.`,
-    `- Modalidad: clases en vivo por Zoom, dos veces por semana, de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} en la hora local de cada país.`,
+    `- Modalidad: clases en vivo por Zoom, dos veces por semana, de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} hora de Chile; la ficha de cada país muestra su hora local.`,
     "- Certificado: incluido al completar el curso, con código público que se verifica en línea.",
     `- Cuotas: ${textoCuotas()}.`,
     "- Grabaciones: cada clase queda grabada y disponible de por vida en el campus.",

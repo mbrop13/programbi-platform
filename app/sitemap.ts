@@ -9,6 +9,8 @@ import {
   RUTAS_COMPARATIVAS_ACADEMIA,
 } from "@/lib/data/comparativas";
 import { SITE_URL, sitemapLoc } from "@/lib/seo";
+import { EQUIPO, EQUIPO_PUBLICADO, rutaPerfil } from "@/lib/data/equipo";
+import { TESTIMONIOS_PUBLICADOS } from "@/lib/data/testimonials";
 import { SITE_ACTUALIZADO, lastmodDe } from "@/lib/seo/lastmod";
 import { PAISES_CARPETA, esIndexable } from "@/config/paises";
 import { GUIAS } from "@/lib/guias/generado";
@@ -140,6 +142,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entrada("/test-nivel/sql", 0.7, "monthly"),
     entrada("/test-nivel/excel", 0.7, "monthly"),
     entrada("/nosotros", 0.5, "monthly"),
+    // Fase 5: landings de nicho (SSR, contenido propio).
+    entrada("/power-bi-para-finanzas", 0.8, "monthly"),
+    entrada("/power-bi-sql-server-python", 0.8, "monthly"),
+    entrada("/analisis-de-datos-mineria", 0.8, "monthly"),
+    entrada("/capacitacion-empresas", 0.8, "monthly"),
+    // /casos y /profesores solo cuando su contenido es publicable: la primera
+    // necesita testimonios visibles y la segunda, los perfiles completos.
+    ...(TESTIMONIOS_PUBLICADOS ? [entrada("/casos", 0.5, "monthly")] : []),
+    ...(EQUIPO_PUBLICADO
+      ? [
+          entrada("/profesores", 0.6, "monthly"),
+          ...EQUIPO.map((miembro) => entrada(rutaPerfil(miembro.slug), 0.5, "monthly")),
+        ]
+      : []),
     entrada("/referidos", 0.7, "weekly"),
     entrada("/referidos/terminos", 0.2, "yearly"),
     entrada("/faq", 0.5, "monthly"),

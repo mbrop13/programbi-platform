@@ -46,6 +46,13 @@ const LASTMOD: Record<string, string> = {
   "/test-nivel/sql": "2026-11-04",
   "/test-nivel/excel": "2026-11-04",
   "/nosotros": "2026-11-03",
+  // Fase 5
+  "/casos": "2026-11-05",
+  "/profesores": "2026-11-05",
+  "/power-bi-para-finanzas": "2026-11-05",
+  "/power-bi-sql-server-python": "2026-11-05",
+  "/analisis-de-datos-mineria": "2026-11-05",
+  "/capacitacion-empresas": "2026-11-05",
   "/referidos": "2026-09-27",
   "/referidos/terminos": "2026-09-27",
   "/faq": "2026-11-03",
@@ -96,6 +103,8 @@ function fechaDeRuta(ruta: string): string | undefined {
   if (propia) return propia;
   // Cualquier ficha de curso: /cursos/<slug>.
   if (ruta.startsWith("/cursos/")) return LASTMOD_CURSOS;
+  // Perfiles del equipo: la fecha la marca el archivo de datos del equipo.
+  if (ruta.startsWith("/profesores/")) return LASTMOD["/profesores"];
   // Fichas de caso de uso: /casos/<slug>.
   if (ruta.startsWith("/casos/")) return LASTMOD_CASOS;
   return undefined;
