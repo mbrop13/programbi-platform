@@ -8,9 +8,11 @@ Rama: `feat/f4-certificado` · Worktree: `C:/dev/pbi-f4-6` · Base: `mejora/fase
 - [x] Hecho (código y docs; falta la verificación pesada del orquestador)
 - [ ] Bloqueado
 
-Sin migración nueva: `public.certificates` ya tiene `student_name`, `course_title`,
-`certificate_code` (UNIQUE) e `issued_at` según
-`supabase/migrations/20260708000000_update_certificates.sql`.
+Sin migración nueva. **Ojo:** el archivo
+`supabase/migrations/20260708000000_update_certificates.sql` define `student_name` y
+`course_title`, pero esa migración **no está aplicada** en la base viva: la tabla
+`public.certificates` hoy solo tiene `id, certificate_code, course_id, user_id,
+issued_at, pdf_url`. El orquestador agregó un fallback (ver abajo).
 
 ## Qué se hizo
 
@@ -98,6 +100,22 @@ Reglas del worktree: no se ejecutó `npm`, `npx`, `node`, `tsc`, `eslint` ni
 - [x] Ejemplos reales de códigos (`PBI-PBB-883K1`, `PBI-SQL-321L9`,
       `PBI-DATA-93K29`) pasan el regex; `%`, `_`, espacios y `/` se rechazan.
 - [ ] `npx tsc --noEmit` / `next build` — los corre el orquestador.
+
+## Corrección del orquestador (esquema real de Supabase)
+
+La verificación HTTP dio **500** en `/certificado/<código>` porque Postgres respondía
+`42703` (columna inexistente): `student_name` y `course_title` no existen en la base
+viva. Se corrigió `lib/certificados/consulta.ts` para:
+
+1. intentar el select completo (`student_name, course_title, certificate_code,
+   issued_at`) — funcionará cuando Manu aplique la migración;
+2. si el error es `42703`/`PGRST204`, consultar el esquema real
+   (`certificate_code, issued_at, user_id, course_id`) y resolver el curso en
+   `courses.title` y el alumno en `profiles.full_name`;
+3. si no hay fila, `notFound()` → 404 (ya no 500).
+
+`CertificadoPublico` acepta `student_name`/`course_title` nulos y oculta el botón de
+LinkedIn cuando no hay curso. El email sigue sin consultarse nunca.
 
 ## Pendientes / TODO_MANU
 
