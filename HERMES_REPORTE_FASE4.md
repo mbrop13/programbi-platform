@@ -11,7 +11,7 @@ Nunca se tocó `main`, no hubo deploy, no se aplicaron migraciones.
 |---|---|
 | Base verificada | `mejora/fase3` = `origin/mejora/fase3` (`d188e53`), sin commits pendientes |
 | Rama integradora | `mejora/fase4` (worktree `C:/dev/pbi-f4`) |
-| Diff total | 45 archivos, +2.798 / −110 líneas |
+| Diff total | 46 archivos, +3.009 / −110 líneas · 29 commits |
 | Build | `npx next build --webpack` → **EXIT 0**, 828 páginas estáticas |
 | TypeScript | `npx tsc --noEmit` → **EXIT 0** |
 | Lint (35 archivos tocados) | **0 errores**, 15 warnings de estilo preexistentes |
