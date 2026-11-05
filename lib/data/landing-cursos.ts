@@ -206,42 +206,42 @@ const SEO_PAIS: Record<string, Record<string, LandingCursoSeo>> = {
       h1: "Curso Python para datos online en vivo en Argentina",
       seoTitle: "Curso Python para datos online en Argentina | ProgramBI",
       seoDescription:
-        "Curso Python para datos en vivo para Argentina: fundamentos, Pandas, groupby, merge y visualización con Matplotlib, Seaborn y Plotly.",
+        "Curso Python para datos en vivo en Argentina: fundamentos, Pandas, groupby, merge y visualización con Matplotlib, Seaborn y Plotly.",
       kicker: "Curso Python para datos · Argentina",
     },
     mx: {
       h1: "Curso Python para datos online en vivo en México",
       seoTitle: "Curso Python para datos online en México | ProgramBI",
       seoDescription:
-        "Curso Python para datos en vivo para México: fundamentos, Pandas, groupby, merge y gráficos con Matplotlib, Seaborn y Plotly.",
+        "Curso Python para datos en vivo en México: fundamentos, Pandas, groupby, merge y gráficos con Matplotlib, Seaborn y Plotly.",
       kicker: "Curso Python para datos · México",
     },
     pe: {
       h1: "Curso Python para datos online en vivo en Perú",
       seoTitle: "Curso Python para datos online en Perú | ProgramBI",
       seoDescription:
-        "Curso Python para datos en vivo para Perú: fundamentos, Pandas, groupby, merge y visualización con Matplotlib, Seaborn y Plotly.",
+        "Curso Python para datos en vivo en Perú: fundamentos, Pandas, groupby, merge y visualización con Matplotlib, Seaborn y Plotly.",
       kicker: "Curso Python para datos · Perú",
     },
     co: {
       h1: "Curso Python para datos online en vivo en Colombia",
       seoTitle: "Curso Python para datos online en Colombia | ProgramBI",
       seoDescription:
-        "Curso Python para datos en vivo para Colombia: fundamentos, Pandas, groupby, merge y visualización con Matplotlib, Seaborn y Plotly.",
+        "Curso Python para datos en vivo en Colombia: fundamentos, Pandas, groupby, merge y visualización con Matplotlib, Seaborn y Plotly.",
       kicker: "Curso Python para datos · Colombia",
     },
     uy: {
       h1: "Curso Python para datos online en vivo en Uruguay",
       seoTitle: "Curso Python para datos online en Uruguay | ProgramBI",
       seoDescription:
-        "Curso Python para datos en vivo para Uruguay: fundamentos, Pandas, groupby, merge y visualización con Matplotlib, Seaborn y Plotly.",
+        "Curso Python para datos en vivo en Uruguay: fundamentos, Pandas, groupby, merge y visualización con Matplotlib, Seaborn y Plotly.",
       kicker: "Curso Python para datos · Uruguay",
     },
     py: {
       h1: "Curso Python para datos online en vivo en Paraguay",
       seoTitle: "Curso Python para datos online en Paraguay | ProgramBI",
       seoDescription:
-        "Curso Python para datos en vivo para Paraguay: fundamentos, Pandas, groupby, merge y visualización. Fechas y valor por WhatsApp.",
+        "Curso Python para datos en vivo en Paraguay: fundamentos, Pandas, groupby, merge y visualización. Fechas y valor por WhatsApp.",
       kicker: "Curso Python para datos · Paraguay",
     },
   },
