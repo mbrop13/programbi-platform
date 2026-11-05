@@ -50,13 +50,19 @@ function listaMercado(normal: number): number {
 }
 
 /**
+ * «Análisis de datos para la Minería» es el mismo curso que Análisis de datos:
+ * en todos los mercados comparte su monto de venta y su precio de lista.
+ */
+const SLUGS_ANALISIS = new Set<SlugCurso>(["analisis-de-datos", "analitica-mineria"]);
+
+/**
  * Monto que se cobra, ya con el descuento habitual.
- * `normal` es un curso. Análisis de datos es el doble.
+ * `normal` es un curso. Análisis de datos (y su versión minera) es el doble.
  */
 function precios(normal: number, analisis: number): PreciosCurso {
   const tabla = preciosVacios();
   for (const slug of SLUGS_CURSO) {
-    tabla[slug] = slug === "analisis-de-datos" ? analisis : normal;
+    tabla[slug] = SLUGS_ANALISIS.has(slug) ? analisis : normal;
   }
   tabla["mercado-financiero"] = cobroMercado(normal);
   return tabla;
@@ -65,12 +71,13 @@ function precios(normal: number, analisis: number): PreciosCurso {
 /**
  * Precio de lista de los mercados locales. Chile no usa esta tabla: su precio
  * de venta y su lista viven en `config/pricing.ts`.
- * `normal` es el original local. Análisis de datos queda en normal × 3.
+ * `normal` es el original local. Análisis de datos (y su versión minera)
+ * queda en normal × 3.
  */
 function listas(normal: number): PreciosCurso {
   const tabla = preciosVacios();
   for (const slug of SLUGS_CURSO) {
-    tabla[slug] = slug === "analisis-de-datos" ? normal * 3 : normal;
+    tabla[slug] = SLUGS_ANALISIS.has(slug) ? normal * 3 : normal;
   }
   tabla["mercado-financiero"] = listaMercado(normal);
   return tabla;
@@ -81,12 +88,17 @@ function listas(normal: number): PreciosCurso {
  * Actualiza los dos cuando haya inflación.
  */
 export const PRECIOS_LISTA_ARS: PreciosCurso = listas(236000);
+
+/** Análisis de datos y su versión minera, al mismo monto en pesos. */
+const ANALISIS_DE_DATOS_ARS = 319900;
+
 export const PRECIOS_ARS: PreciosCurso = {
-  "analisis-de-datos": 319900,
+  "analisis-de-datos": ANALISIS_DE_DATOS_ARS,
   copilot: 159900,
   claude: 159900,
   "power-automate": 159900,
-  "analitica-mineria": 159900,
+  // Mismo curso y mismo valor que Análisis de datos.
+  "analitica-mineria": ANALISIS_DE_DATOS_ARS,
   "ia-productividad": 159900,
   "power-bi": 159900,
   python: 159900,

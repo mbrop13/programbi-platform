@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { PAISES_INDEXABLES, ISO_CHILE, esIndexable } from "@/config/paises";
 import { precioPublico, PRECIOS_VALID_FROM } from "@/config/pricing";
+import { comparativasAcademiaHub } from "@/lib/data/academias";
+import { comparisons } from "@/lib/data/comparisons";
 import { GUIAS } from "@/lib/guias/generado";
 import { cursosConGuia } from "@/lib/guias";
 import { formatMoneda } from "@/lib/paises/precios";
@@ -124,19 +126,20 @@ function construir(): string {
     }
     lineas.push("");
   }
-  lineas.push("## Comparativas de academias");
+  // Todas las comparativas /versus de Chile: el hub, las tres de herramientas y
+  // las cuatro de academias. Se leen de los mismos datos que el sitemap, así
+  // que una comparativa nueva aparece aquí sin tocar este archivo.
+  lineas.push("## Comparativas");
   lineas.push(
-    `- ProgramBI vs Coderhouse en Power BI (${url("/versus/programbi-vs-coderhouse-power-bi")}): horas en vivo, precio y precio por hora, con fuentes y fecha de revisión.`
+    `- Comparativas de herramientas y academias (${url("/versus")}): índice con todas las comparativas, su veredicto y la fecha de revisión.`
   );
-  lineas.push(
-    `- Alternativa a Platzi, pero en vivo (${url("/versus/alternativa-a-platzi-en-vivo")}): suscripción grabada vs cohorte con profe.`
-  );
-  lineas.push(
-    `- IPS DATAX vs ProgramBI (${url("/versus/ips-datax-vs-programbi")}): grabado de por vida vs clases en vivo.`
-  );
-  lineas.push(
-    `- Desafío Latam vs ProgramBI (${url("/versus/desafio-latam-vs-programbi")}): bootcamp largo vs curso corto.`
-  );
+  for (const comp of comparisons) {
+    lineas.push(`- ${comp.title} (${url(`/versus/${comp.slug}`)}): ${comp.seoDescription}`);
+  }
+  for (const tarjeta of comparativasAcademiaHub()) {
+    if (!tarjeta.href.startsWith("/versus/")) continue;
+    lineas.push(`- ${tarjeta.title} (${url(tarjeta.href)}): ${tarjeta.description}`);
+  }
   lineas.push(
     `- Mejores cursos de Power BI en Chile 2026 (${url("/guias/mejores-cursos-power-bi-chile-2026")}): lista comparada con precio, horas y certificado.`
   );
@@ -149,7 +152,6 @@ function construir(): string {
   lineas.push(`- Migrar Excel a Power BI (${url("/migrar-excel-a-power-bi")})`);
   lineas.push(`- Bolsa de trabajo (${url("/empleos")})`);
   lineas.push(`- Preguntas frecuentes (${url("/preguntas-frecuentes")})`);
-  lineas.push(`- Comparativas (${url("/versus")})`);
   lineas.push(`- Blog (${url("/blog")})`);
   lineas.push("");
   lineas.push("## Contacto");

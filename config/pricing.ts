@@ -20,15 +20,19 @@ export const PRECIOS_VALID_FROM = "2026-11-01T00:00:00-03:00";
 /**
  * Precio de venta en Chile, en pesos, por curso.
  * Un curso estándar vale 169.000; Análisis de datos 338.000 y Mercado
- * financiero 349.000. Es el monto que ve el usuario, el que declara el
- * JSON-LD y la base del checkout.
+ * financiero 349.000. «Análisis de datos para la Minería» es el mismo curso
+ * que Análisis de datos, así que comparte su monto. Es el monto que ve el
+ * usuario, el que declara el JSON-LD y la base del checkout.
  */
+const ANALISIS_DE_DATOS_CLP = 338000;
+
 export const PRECIOS_CLP: Record<SlugCurso, number> = {
-  "analisis-de-datos": 338000,
+  "analisis-de-datos": ANALISIS_DE_DATOS_CLP,
   copilot: 169000,
   claude: 169000,
   "power-automate": 169000,
-  "analitica-mineria": 169000,
+  // Mismo curso y mismo valor que Análisis de datos.
+  "analitica-mineria": ANALISIS_DE_DATOS_CLP,
   "ia-productividad": 169000,
   "power-bi": 169000,
   python: 169000,

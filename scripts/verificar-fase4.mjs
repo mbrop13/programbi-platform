@@ -9,7 +9,7 @@
  *   - /precios y sus versiones por país (canonical y título propios)
  *   - /test-nivel (hub) y los tests por país
  *   - landings SQL y Python con país en el H1
- *   - /clase-gratis con flag apagado: 200 pero noindex
+ *   - /clase-gratis con flag apagado: 404
  *   - /certificado/<código inválido> → 404
  *   - /verificar-certificado indexable
  *   - /py sin Offer
@@ -210,19 +210,13 @@ tareas.push(async () => {
   }
 });
 
-// 5. Clase gratis: existe pero no se indexa mientras el flag esté apagado.
+// 5. Clase gratis: 404 mientras el flag esté apagado.
 tareas.push(async () => {
   for (const path of ["/clase-gratis", "/mx/clase-gratis"]) {
     const url = `${BASE}${path}`;
-    const { status, html } = await traer(url);
-    if (status !== 200) {
-      fallo(url, "http", `status ${status}`);
-      continue;
-    }
-    if (!/noindex/i.test(html)) fallo(url, "robots", "debe ser noindex con el flag apagado");
-    revisarHtmlBase(url, html);
-    if (/reservar mi cupo/i.test(texto(html))) {
-      fallo(url, "contenido", "muestra formulario de cupo sin fecha confirmada");
+    const { status } = await traer(url);
+    if (status !== 404) {
+      fallo(url, "http", `se esperaba 404 con el flag apagado y dio ${status}`);
     }
   }
 });

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowRight, CalendarDays, Clock, MessageCircle, Users, Video } from "lucide-react";
 import { getPais, normalizarPais } from "@/config/paises";
 import { CLASE_GRATIS, CLASE_GRATIS_HABILITADA, claseGratisPublicada } from "@/config/flags";
@@ -34,6 +35,8 @@ function fechaLarga(iso: string): string {
 }
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  // Con el flag apagado la ruta responde 404: no hay metadata que publicar.
+  if (!CLASE_GRATIS_HABILITADA) notFound();
   const pais = normalizarPais((await params).pais);
   const base = metadataLocal({
     pais,
@@ -59,6 +62,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 }
 
 export default async function ClaseGratisPage({ params }: { params: Params }) {
+  // Mientras el flag esté apagado la página no existe para el público: 404
+  // real, no un 200 con noindex. Se reevalúa en cada revalidación.
+  if (!CLASE_GRATIS_HABILITADA) notFound();
   const iso = normalizarPais((await params).pais);
   const pais = getPais(iso);
   const href = (destino: string) => rutaLocal(iso, destino);
@@ -193,13 +199,6 @@ export default async function ClaseGratisPage({ params }: { params: Params }) {
             </li>
           </ul>
         </section>
-
-        {!CLASE_GRATIS_HABILITADA ? (
-          <p className="mt-6 text-xs leading-relaxed text-faint">
-            Esta página está en preparación y no se muestra en buscadores hasta que haya fecha
-            confirmada.
-          </p>
-        ) : null}
       </div>
     </main>
   );
