@@ -37,6 +37,7 @@ import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import { normalizarPais } from "@/config/paises";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import { formatMoneda, muestraPrecioLocal, notaCobroClp, porcentajeDescuento, precioCurso, precioLista, totalLocal, totalLocalConCupon } from "@/lib/paises/precios";
+import { NOTA_CUOTAS_MEDIOS } from "@/config/cuotas";
 import { precioDescontadoClp } from "@/lib/pago/precio-clp";
 import { whatsappHref } from "@/lib/whatsapp";
 import type { CheckoutCatalog, CheckoutPriceOverride, CheckoutPromotion } from "@/lib/pago/catalogo";
@@ -1296,6 +1297,8 @@ export default function PagoClient({
                                    {notaClp(appliedCoupon ? finalPriceWithCoupon : totalPrice)}
                                  </div>
                               </div>
+
+                              <p className="mb-6 text-xs leading-snug text-mute">{NOTA_CUOTAS_MEDIOS}</p>
 
                               {!mercadoLocal && country.currency.code !== "CLP" && (
                                 <div className="mb-6 rounded-md border border-line bg-wash p-4 text-left">

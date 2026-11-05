@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { jsonLdString } from "@/lib/seo";
 import { faqJsonLd } from "@/lib/faq/jsonld";
+import { CUOTAS_SIN_INTERES } from "@/config/cuotas";
 import type { FaqContenido as Contenido, FaqSeccion } from "@/lib/faq/contenido";
 
 /**
@@ -143,8 +144,8 @@ export default function FaqContenido({ contenido }: { contenido: Contenido }) {
           </div>
 
           <p className="mt-8 rounded-[26px] border border-line bg-paper p-5 text-sm leading-relaxed text-mute">
-            Formas de pago: los cursos de ProgramBI se pueden pagar en 3 cuotas sin
-            interés, en todos los países.
+            Formas de pago: los cursos de ProgramBI se pueden pagar en{" "}
+            {CUOTAS_SIN_INTERES} cuotas sin interés, en todos los países.
           </p>
         </div>
       </div>

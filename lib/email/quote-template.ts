@@ -338,7 +338,7 @@ export function buildQuoteEmailHtml(
                 ${metaRow("Clases en vivo por Zoom", "Aprende en tiempo real con el docente, resuelve dudas al instante y participa activamente.")}
                 ${metaRow("Grabaciones de por vida", "Acceso permanente a las grabaciones en tu campus virtual para repasar cuando quieras.")}
                 ${metaRow("100% Casos Reales", "Aprende con problemas reales del mercado laboral, sin teoría innecesaria.")}
-                ${metaRow("Flexibilidad de Pago", "Paga en hasta 12 cuotas sin interés con tarjeta de crédito, débito o transferencia.", true)}
+                ${metaRow("Flexibilidad de Pago", "Paga en 3 cuotas sin interés con tarjeta de crédito, débito o transferencia.", true)}
               </table>
             </td>
           </tr>

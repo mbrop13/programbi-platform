@@ -70,6 +70,7 @@ import type { CheckoutPromotion } from "@/lib/pago/catalogo";
 import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
 import { ISO_CHILE } from "@/config/paises";
 import { tienePrecioPublico } from "@/config/pricing";
+import { NOTA_CUOTAS } from "@/config/cuotas";
 import { COUNTRIES } from "@/lib/context/CountryContext";
 
 function phoneCodeFor(iso: string) {
@@ -681,6 +682,10 @@ export default function CourseDetailClient({
                   </div>
                 )}
               </div>
+
+              {!isEmpresa ? (
+                <p className="mb-5 text-xs leading-snug text-mute">{NOTA_CUOTAS}</p>
+              ) : null}
 
               {isEmpresa ? (
                 <>

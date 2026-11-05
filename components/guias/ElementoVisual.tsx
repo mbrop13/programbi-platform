@@ -4,6 +4,7 @@ import { encabezadosVisibles } from "@/components/guias/indice";
 import RutaAprendizaje from "@/components/guias/RutaAprendizaje";
 import TablaComparativa from "@/components/guias/TablaComparativa";
 import { ISO_CHILE } from "@/config/paises";
+import { CUOTAS_SIN_INTERES } from "@/config/cuotas";
 import { pasoDeRuta } from "@/lib/guias/curso";
 import type { Guia } from "@/lib/guias/tipos";
 
@@ -101,7 +102,7 @@ const INCLUYE = [
   "Clases en vivo por Zoom, dos veces por semana.",
   "Grabaciones de por vida en el campus.",
   "Certificado digital al completar.",
-  "3 cuotas sin interés.",
+  `${CUOTAS_SIN_INTERES} cuotas sin interés.`,
 ];
 
 const TITULOS: Record<VarianteVisual, string> = {

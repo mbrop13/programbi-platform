@@ -10,6 +10,10 @@ import {
 } from "@/lib/paises/horarios";
 import { formatMoneda } from "@/lib/paises/precios";
 import { whatsappHref } from "@/lib/whatsapp";
+import { CUOTAS_SIN_INTERES } from "@/config/cuotas";
+
+/** Texto único de cuotas, derivado de config/cuotas.ts. */
+const CUOTAS = `${CUOTAS_SIN_INTERES} cuotas sin interés`;
 
 /**
  * Contenido de las preguntas frecuentes, en una sola fuente para Chile y para
@@ -197,7 +201,7 @@ function tablaPagos(): FaqContenido["pagos"] {
           : listaNatural(pais.mediosPago),
     })),
     nota:
-      "En todos los países el curso se puede pagar en 3 cuotas sin interés. Si pagas con tarjeta emitida en el exterior, el cargo final lo define tu banco.",
+      `En todos los países el curso se puede pagar en ${CUOTAS}. Si pagas con tarjeta emitida en el exterior, el cargo final lo define tu banco.`,
   };
 }
 
@@ -252,8 +256,8 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
   const sinPrecio = pb == null || ad == null;
 
   const introPrecio = sinPrecio
-    ? `En ${nombre} el precio de cada curso se consulta por WhatsApp, porque todavía no hay un monto público publicado, y se puede pagar en 3 cuotas sin interés.`
-    : `En ${nombre}, el curso de Power BI cuesta ${pb} y el de Análisis de datos ${ad}, en 3 cuotas sin interés.`;
+    ? `En ${nombre} el precio de cada curso se consulta por WhatsApp, porque todavía no hay un monto público publicado, y se puede pagar en ${CUOTAS}.`
+    : `En ${nombre}, el curso de Power BI cuesta ${pb} y el de Análisis de datos ${ad}, en ${CUOTAS}.`;
 
   const introHorario = esChile
     ? `El próximo inicio es el ${PROXIMO_INICIO}, con clases de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} (hora de Chile) los lunes y miércoles o los martes y jueves.`
@@ -388,15 +392,15 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
       id: "precios",
       titulo: "Precios por país y qué incluye",
       resumen:
-        "El precio se publica en la moneda de cada país y se paga en 3 cuotas sin interés. La tabla muestra el monto local de Power BI y de Análisis de datos; en Paraguay se consulta por WhatsApp.",
+        `El precio se publica en la moneda de cada país y se paga en ${CUOTAS}. La tabla muestra el monto local de Power BI y de Análisis de datos; en Paraguay se consulta por WhatsApp.`,
       tabla: "precios",
       items: [
         {
           id: "cuanto-cuestan",
           pregunta: "¿Cuánto cuestan los cursos?",
           respuesta: sinPrecio
-            ? `En Paraguay el precio de los cursos se consulta por WhatsApp, porque todavía no hay un monto público publicado. Se puede pagar en 3 cuotas sin interés y el próximo inicio es el ${PROXIMO_INICIO}.`
-            : `En ${nombre}, el curso de Power BI cuesta ${pb} y el de Análisis de datos ${ad}, en 3 cuotas sin interés. El resto del catálogo vale ${pb}, salvo Mercado financiero, que cuesta ${mf}.`,
+            ? `En Paraguay el precio de los cursos se consulta por WhatsApp, porque todavía no hay un monto público publicado. Se puede pagar en ${CUOTAS} y el próximo inicio es el ${PROXIMO_INICIO}.`
+            : `En ${nombre}, el curso de Power BI cuesta ${pb} y el de Análisis de datos ${ad}, en ${CUOTAS}. El resto del catálogo vale ${pb}, salvo Mercado financiero, que cuesta ${mf}.`,
         },
         {
           id: "moneda-local",
@@ -428,21 +432,21 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
       id: "pagos",
       titulo: "Formas de pago y cuotas",
       resumen:
-        "Todos los cursos se pueden pagar en 3 cuotas sin interés y los medios de pago disponibles dependen del país.",
+        `Todos los cursos se pueden pagar en ${CUOTAS} y los medios de pago disponibles dependen del país.`,
       tabla: "pagos",
       items: [
         {
           id: "cuotas-sin-interes",
           pregunta: "¿Hay cuotas sin interés?",
           respuesta:
-            "Sí: los cursos se pueden pagar en 3 cuotas sin interés en todos los países, sin recargo por financiamiento.",
+            `Sí: los cursos se pueden pagar en ${CUOTAS} en todos los países, sin recargo por financiamiento.`,
         },
         {
           id: "formas-de-pago",
           pregunta: "¿Qué medios de pago puedo usar?",
           respuesta:
             iso === "py"
-              ? "En Paraguay los medios de pago se confirman por WhatsApp, porque el precio todavía no está publicado. El curso se puede pagar en 3 cuotas sin interés."
+              ? `En Paraguay los medios de pago se confirman por WhatsApp, porque el precio todavía no está publicado. El curso se puede pagar en ${CUOTAS}.`
               : `En ${nombre} puedes pagar con ${listaNatural(pais.mediosPago)}.`,
         },
         {
@@ -463,7 +467,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
         "Crea tu cuenta en el sitio con tu nombre, correo y contraseña.",
         "Confirma tu correo con el enlace que llega a tu bandeja; si no aparece, revisa spam o pide reenviarlo.",
         "Entra a Inscripción, elige el curso y revisa las fechas disponibles.",
-        "Paga en 3 cuotas sin interés con los medios de pago de tu país.",
+        `Paga en ${CUOTAS} con los medios de pago de tu país.`,
         "Quedas dentro con acceso a las clases en vivo por Zoom y a las grabaciones.",
       ],
       items: [
@@ -471,7 +475,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           id: "como-me-inscribo",
           pregunta: "¿Cómo me inscribo en un curso?",
           respuesta:
-            "Te inscribes en línea: creas tu cuenta con tu correo, confirmas el enlace de confirmación, eliges el curso y el nivel en la página de Inscripción, y pagas en 3 cuotas sin interés. Si prefieres, puedes escribir por WhatsApp y el equipo te guía en el mismo proceso.",
+            `Te inscribes en línea: creas tu cuenta con tu correo, confirmas el enlace de confirmación, eliges el curso y el nivel en la página de Inscripción, y pagas en ${CUOTAS}. Si prefieres, puedes escribir por WhatsApp y el equipo te guía en el mismo proceso.`,
           enlace: { href: href("/pago"), texto: "Ir a Inscripción" },
         },
         {

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, CalendarDays, Clock, MessageCircle, MonitorPlay } from "lucide-react";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { getPais, ISO_CHILE } from "@/config/paises";
+import { textoCuotas } from "@/config/cuotas";
 import { precioListaPublico, precioPublico } from "@/config/pricing";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
 import type { Guia } from "@/lib/guias/tipos";
@@ -53,7 +54,7 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
                   <span className="ml-2 text-xs text-faint line-through">{formatMoneda(iso, lista)}</span>
                 ) : null}
                 <span className="mt-0.5 block text-xs text-mute">
-                  {curso.porNivel ? "por nivel · " : ""}3 cuotas sin interés
+                  {curso.porNivel ? "por nivel · " : ""}{textoCuotas(iso)}
                 </span>
               </>
             ) : (
