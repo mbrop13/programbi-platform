@@ -25,7 +25,7 @@ export default function CertificadoPublico({
   });
 
   return (
-    <main className="min-h-dvh bg-canvas px-4 py-10 text-ink sm:px-6 sm:py-16">
+    <div className="min-h-dvh bg-canvas px-4 py-10 text-ink sm:px-6 sm:py-16">
       <div className="mx-auto max-w-5xl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 text-sm print:hidden">
           <Link
@@ -149,6 +149,6 @@ export default function CertificadoPublico({
           .
         </p>
       </div>
-    </main>
+    </div>
   );
 }

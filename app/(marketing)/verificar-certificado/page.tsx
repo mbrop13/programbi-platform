@@ -47,7 +47,7 @@ const AYUDAS = [
 
 export default function VerificarCertificadoPage() {
   return (
-    <main className="bg-canvas text-ink">
+    <div className="bg-canvas text-ink">
       <section className="mx-auto max-w-3xl px-5 py-16 sm:py-24">
         <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-amber-600">
           Certificados ProgramBI
@@ -86,6 +86,6 @@ export default function VerificarCertificadoPage() {
           </p>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
