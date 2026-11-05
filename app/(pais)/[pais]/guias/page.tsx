@@ -14,7 +14,7 @@ import { opcionesCurso } from "@/lib/guias/opciones";
 import { tarjetasDeGuias } from "@/lib/guias/tarjetas";
 import { robotsLocal } from "@/lib/paises/metadata";
 import { localeOg } from "@/lib/paises/rutas";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, jsonLdString } from "@/lib/seo";
 
 export const revalidate = 3600;
 export const dynamicParams = false;
@@ -58,9 +58,36 @@ export default async function GuiasPaisPage({ params }: { params: Promise<Params
   if (guias.length === 0) notFound();
   const nombre = getPais(pais).nombre;
   const cursos = opcionesCurso(guias);
+  const tarjetas = tarjetasDeGuias(guias);
+  const canonical = absoluteUrl(`/${pais}/guias`);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${canonical}#collection`,
+        name: `Guías de datos y Power BI en ${nombre}`,
+        description: `Guías prácticas para ${nombre}: ruta de estudio, sueldos del mercado, precios locales y el curso en vivo de ProgramBI.`,
+        inLanguage: getPais(pais).idioma,
+        url: canonical,
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${canonical}#list`,
+        numberOfItems: tarjetas.length,
+        itemListElement: tarjetas.slice(0, 100).map((guia, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: guia.h1,
+          url: absoluteUrl(guia.path),
+        })),
+      },
+    ],
+  };
 
   return (
     <main className="bg-canvas px-4 pb-20 pt-12 sm:px-6 lg:px-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <div className="mx-auto max-w-[1120px]">
         <nav aria-label="Migas de pan" className="text-xs text-mute">
           <ol className="flex items-center gap-1.5">

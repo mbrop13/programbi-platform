@@ -6,7 +6,7 @@ import { GUIAS } from "@/lib/guias/generado";
 import { indiceGuias } from "@/lib/guias";
 import { opcionesCurso, opcionesPais, paisesConConteo } from "@/lib/guias/opciones";
 import { tarjetasDeGuias } from "@/lib/guias/tarjetas";
-import { absoluteUrl } from "@/lib/seo";
+import { absoluteUrl, jsonLdString } from "@/lib/seo";
 
 const title = "Guías de datos, Power BI y SQL — ProgramBI";
 const description =
@@ -27,9 +27,39 @@ export default function GuiasIndexPage() {
   const paises = opcionesPais(guias);
   const cursos = opcionesCurso(guias);
   const paisesConCarpeta = paisesConConteo(guias).filter((pais) => pais.iso !== "cl");
+  const tarjetas = tarjetasDeGuias(guias);
+  const canonical = absoluteUrl("/guias");
+
+  // CollectionPage + ItemList: el hub es un índice, no un artículo. Ayuda a
+  // que buscadores y asistentes entiendan que estas son las guías publicadas.
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${canonical}#collection`,
+        name: title,
+        description,
+        inLanguage: "es-CL",
+        url: canonical,
+      },
+      {
+        "@type": "ItemList",
+        "@id": `${canonical}#list`,
+        numberOfItems: tarjetas.length,
+        itemListElement: tarjetas.slice(0, 100).map((guia, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: guia.h1,
+          url: absoluteUrl(guia.path),
+        })),
+      },
+    ],
+  };
 
   return (
     <main className="bg-canvas px-4 pb-20 pt-12 sm:px-6 lg:px-8">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }} />
       <div className="mx-auto max-w-[1120px]">
         <nav aria-label="Migas de pan" className="text-xs text-mute">
           <ol className="flex items-center gap-1.5">
