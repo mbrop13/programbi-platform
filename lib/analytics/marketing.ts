@@ -197,6 +197,8 @@ export const GA_LEAD_EVENTS = {
   CLICK_COTIZAR_EMPRESAS: "click_cotizar_empresas",
   QUIZ_COMPLETE: "quiz_complete",
   WEBINAR_SIGNUP: "webinar_signup",
+  /** Entrada desde un asistente IA. No es un lead; vive aquí por ser la lista canónica. */
+  AI_REFERRAL: "ai_referral",
 } as const;
 
 export type GenerateLeadMethod = "form" | "oauth";
@@ -651,6 +653,174 @@ export function trackEvent(eventName: string, params?: AnalyticsParams): void {
     // eslint-disable-next-line no-console
     console.debug("[analytics]", eventName, payload);
   }
+}
+
+/**
+ * Tráfico desde asistentes IA.
+ *
+ * GA4 no tiene un canal estándar para ChatGPT o Perplexity: el referrer llega
+ * como `chatgpt.com` y cae en Referral, y muchas apps abren el enlace sin
+ * referrer y solo dejan `utm_source`. Aquí se normaliza a seis valores
+ * canónicos para poder cortar por `ai_source` y por el grupo de canales
+ * "Asistentes IA" (ver ANALYTICS.md).
+ */
+export type AiSource = "chatgpt" | "perplexity" | "gemini" | "copilot" | "claude" | "grok";
+
+/** Host del referrer (ya sin `www.`) → fuente canónica. */
+const AI_REFERRER_HOSTS: Record<string, AiSource> = {
+  "chatgpt.com": "chatgpt",
+  "chat.openai.com": "chatgpt",
+  "perplexity.ai": "perplexity",
+  "gemini.google.com": "gemini",
+  "copilot.microsoft.com": "copilot",
+  "claude.ai": "claude",
+  "grok.com": "grok",
+};
+
+/** Valores de `utm_source` / `utm_medium` → fuente canónica (en minúsculas). */
+const AI_UTM_VALUES: Record<string, AiSource> = {
+  "chatgpt.com": "chatgpt",
+  chatgpt: "chatgpt",
+  openai: "chatgpt",
+  perplexity: "perplexity",
+  gemini: "gemini",
+  copilot: "copilot",
+  claude: "claude",
+  grok: "grok",
+};
+
+const AI_REFERRAL_STORAGE_KEY = "pb_ai_referral";
+
+/** `HTTPS://WWW.ChatGPT.com/c/123` → `chatgpt.com`; `ChatGPT` → `chatgpt`. */
+function normalizeAiToken(raw?: string | null): string {
+  return (raw || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^[a-z][a-z0-9+.-]*:\/\//, "")
+    .replace(/^www\./, "")
+    .replace(/[/?#].*$/, "")
+    .replace(/:\d+$/, "")
+    .replace(/\.$/, "");
+}
+
+function hostFromReferrer(raw?: string | null): string {
+  const value = (raw || "").trim();
+  if (!value) return "";
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return "";
+    return normalizeAiToken(url.hostname);
+  } catch {
+    // Un referrer siempre es una URL absoluta; si llega suelto, se normaliza igual.
+    return normalizeAiToken(value);
+  }
+}
+
+function aiSourceFromUtm(source?: string | null, medium?: string | null): AiSource | undefined {
+  for (const raw of [source, medium]) {
+    const token = normalizeAiToken(raw);
+    if (!token) continue;
+    const match = AI_UTM_VALUES[token];
+    if (match) return match;
+  }
+  return undefined;
+}
+
+export type AiReferral = {
+  ai_source: AiSource;
+  referrer_host: string;
+  landing_path: string;
+};
+
+/**
+ * Señal de entrada IA en la ruta actual. No envía nada: solo detecta.
+ * Prioriza el referrer real y cae a `utm_source`/`utm_medium` (URL actual y,
+ * como respaldo, los UTM first-touch de la sesión), para cubrir tanto enlaces
+ * de ChatGPT con referrer como landings internas con UTM.
+ */
+export function detectAiReferral(opts?: {
+  referrer?: string | null;
+  path?: string | null;
+}): AiReferral | undefined {
+  if (!isBrowser()) return undefined;
+  const referrer = opts?.referrer === undefined ? document.referrer : opts.referrer;
+  const referrerHost = hostFromReferrer(referrer);
+  let aiSource = referrerHost ? AI_REFERRER_HOSTS[referrerHost] : undefined;
+
+  if (!aiSource) {
+    const params = new URLSearchParams(window.location.search);
+    const stored = getStoredUtm();
+    aiSource =
+      aiSourceFromUtm(params.get("utm_source"), params.get("utm_medium")) ??
+      aiSourceFromUtm(stored.utm_source, stored.utm_medium);
+  }
+  if (!aiSource) return undefined;
+
+  const rawPath = (opts?.path || window.location.pathname || "/").split(/[?#]/)[0] || "/";
+  return {
+    ai_source: aiSource,
+    referrer_host: referrerHost || "(direct)",
+    landing_path: rawPath.startsWith("/") ? rawPath : `/${rawPath}`,
+  };
+}
+
+/** Flag en memoria: si sessionStorage falla, la pestaña sigue sin duplicar. */
+let aiReferralSentInMemory = false;
+
+function aiReferralAlreadySent(): boolean {
+  if (aiReferralSentInMemory) return true;
+  try {
+    return sessionStorage.getItem(AI_REFERRAL_STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markAiReferralSent(): void {
+  // Antes de enviar: un remount o un cambio de ruta no puede repetirlo.
+  aiReferralSentInMemory = true;
+  try {
+    sessionStorage.setItem(AI_REFERRAL_STORAGE_KEY, "1");
+  } catch {
+    // sessionStorage bloqueado: queda el flag en memoria de esta pestaña
+  }
+}
+
+/**
+ * Envía `ai_referral` una vez por sesión de pestaña y deja la user property
+ * `ai_source`. Seguro de llamar en cada cambio de ruta: no envía pageviews
+ * propios (`trackEvent` reutiliza el de la ruta) y no bloquea la hidratación.
+ * Devuelve true solo cuando manda el evento.
+ */
+export function trackAiReferral(opts?: {
+  referrer?: string | null;
+  path?: string | null;
+}): boolean {
+  if (!isBrowser()) return false;
+  const referral = detectAiReferral(opts);
+  if (!referral) return false;
+  if (aiReferralAlreadySent()) return false;
+
+  // Stub + config + page_view: el evento nunca abre la sesión ni se adelanta.
+  ensureGa4();
+  markAiReferralSent();
+
+  try {
+    if (typeof window.gtag === "function") {
+      window.gtag("set", "user_properties", { ai_source: referral.ai_source });
+    }
+  } catch {
+    // no-op
+  }
+
+  trackEvent(GA_LEAD_EVENTS.AI_REFERRAL, {
+    ai_source: referral.ai_source,
+    referrer_host: referral.referrer_host,
+    landing_path: referral.landing_path,
+  });
+
+  gaDebug("ai_referral", referral);
+  return true;
 }
 
 /**

@@ -7,6 +7,7 @@ import {
   captureUtmFromUrl,
   initGa4,
   markGa4Loaded,
+  trackAiReferral,
   trackEvent,
   trackPageView,
   trackPurchase,
@@ -50,6 +51,14 @@ export default function MarketingAnalytics() {
     // router during a transition and would break the path+query dedupe key.
     const qs = searchParams?.toString() || "";
     trackPageView(qs ? `${pathname}?${qs}` : pathname);
+  }, [pathname, searchParams]);
+
+  useEffect(() => {
+    if (!pathname) return;
+    // Entradas desde asistentes IA (ChatGPT, Perplexity, Gemini…). Va después
+    // del page_view: reutiliza ese hit y deduplica por sesión dentro del helper.
+    // También cubre landings internas que llegan con ?utm_source=chatgpt.
+    trackAiReferral({ path: pathname });
   }, [pathname, searchParams]);
 
   useEffect(() => {
