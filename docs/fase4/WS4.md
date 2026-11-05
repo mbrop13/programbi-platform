@@ -39,8 +39,9 @@ Rama: `feat/f4-landings` · Worktree: `C:/dev/pbi-f4-4` · Base: `mejora/fase4`.
 | Uruguay | `/uy/curso-sql-online` | `/uy/curso-python` | index, follow |
 | Paraguay | `/py/curso-sql-online` | `/py/curso-python` | noindex, follow; sin Offer |
 
-Canonical: cada URL es su propio canonical. Los mercados indexables publican
-`hreflang` recíproco + `x-default`; Paraguay no entra en el juego de hreflang.
+Canonical: cada URL es su propio canonical. `metadataLocal` publica el
+`hreflang` recíproco de los países que `config/paises.ts` marca como indexables
+y el `x-default`; Paraguay queda fuera de ese juego y con `noindex, follow`.
 
 ## Archivos tocados
 
@@ -68,8 +69,8 @@ restricción del worktree. Verificación estática realizada:
 Pendiente para el orquestador (en la integradora):
 
 1. `npx tsc --noEmit` y `npx next build --webpack`.
-2. `curl` de las 14 URLs: 200, H1 con el país, canonical propio, `hreflang` en
-   AR/MX/PE/CO/UY y `noindex` en PY.
+2. `curl` de las 14 URLs: 200, H1 con el país, canonical propio, `hreflang`
+   recíproco donde corresponda y `noindex` en PY.
 3. Rich Results Test: `Course`, `Offer` en AR/MX/PE/CO/UY, ausencia de `Offer`
    en PY y coincidencia literal entre FAQ visible y `FAQPage`.
 4. Confirmar precio y horario contra la cohorte vigente de `course_schedules`.
