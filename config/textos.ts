@@ -12,6 +12,7 @@ export function etiquetaBoton(iso: string, neutro: string): string {
   if (neutro === "Registrarme" || neutro === "Registrarse") return "Registrate";
   if (neutro === "Inscribirse") return "Inscribite";
   if (neutro === "Inscríbete") return "Inscribite";
+  if (neutro === "Comprar ahora") return "Comprá ahora";
   return neutro;
 }
 

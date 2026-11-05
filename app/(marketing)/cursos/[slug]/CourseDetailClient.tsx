@@ -48,6 +48,7 @@ import {
   trackClickRegistro,
   trackCourseView,
   trackCtaClick,
+  trackLeadSubmit,
 } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
@@ -81,6 +82,69 @@ function withDialCode(raw: string, code: string) {
   const trimmed = raw.trim();
   if (trimmed.startsWith("+")) return trimmed.replace(/\s/g, "");
   return `${code}${trimmed.replace(/\D/g, "")}`;
+}
+
+type CourseLeadType = "personal" | "empresa";
+
+/**
+ * POST compartido por el formulario completo (#cotizar) y por el mini form de la
+ * tarjeta lateral: mismo endpoint (`/api/leads/create`), mismo payload y mismo
+ * evento de medición. No inventar campos nuevos.
+ */
+async function submitCourseLead({
+  course,
+  pais,
+  leadType,
+  name,
+  email,
+  whatsapp = null,
+  message = null,
+  company = null,
+  position = null,
+  selectedCourses,
+  formLoadedAt,
+  honeypot = "",
+  source,
+}: {
+  course: Course;
+  pais: string;
+  leadType: CourseLeadType;
+  name: string;
+  email: string;
+  whatsapp?: string | null;
+  message?: string | null;
+  company?: string | null;
+  position?: string | null;
+  selectedCourses?: string[];
+  formLoadedAt: number;
+  honeypot?: string;
+  source: string;
+}) {
+  const payload: Record<string, unknown> = {
+    name,
+    email,
+    whatsapp: whatsapp || null,
+    message: message || null,
+    sourceCourse: course.title,
+    selectedCourses:
+      selectedCourses && selectedCourses.length > 0 ? selectedCourses : [course.title],
+    leadType,
+    pricingVariant: readClientPricingVariant(),
+    pais,
+    ...captureAndReadAttribution(),
+    ...getAntiBotFields(formLoadedAt, honeypot),
+  };
+  if (leadType === "empresa") {
+    payload.company = company || null;
+    payload.position = position || null;
+  }
+  const res = await fetch("/api/leads/create", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error("Error submitting form");
+  trackLeadSubmit(leadType, source, course.slug);
 }
 
 function courseCheckoutUrl(slug: string, levelName?: string, pais?: string) {
@@ -221,11 +285,18 @@ export default function CourseDetailClient({
     }).format(priceCLP);
   };
 
+  // Particular: la compra siempre está disponible (haya o no fecha publicada).
+  // Logueado se nombra "Comprar ahora"; sin sesión, "Inscribirse" abre el registro
+  // y luego cae en /pago.
+  const checkoutLabel = isLoggedIn
+    ? etiquetaBoton(pais, "Comprar ahora")
+    : etiquetaBoton(pais, "Inscribirse");
+
   const handleCheckoutCTA = () => {
     const picked = levels[selectedLevel];
     const levelName = checkoutLevelName(course, picked?.name);
     const dest = courseCheckoutUrl(course.slug, levelName, pais);
-    trackCtaClick(etiquetaBoton(pais, "Inscribirse"), "course_detail_sidebar", {
+    trackCtaClick(checkoutLabel, "course_detail_sidebar", {
       course_slug: course.slug,
     });
 
@@ -708,28 +779,40 @@ export default function CourseDetailClient({
                     WhatsApp
                   </WhatsAppCta>
                 </>
-              ) : activeSchedulesList.length === 0 ? (
-                <WhatsAppCta
-                  page={`/cursos/${course.slug}`}
-                  intent="fechas"
-                  course={course.title}
-                  courseSlug={course.slug}
-                  country={pais}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
-                >
-                  <MessageCircle size={16} />
-                  Consultar fechas
-                </WhatsAppCta>
-              ) : (
-                <button
-                  type="button"
-                  onClick={handleCheckoutCTA}
-                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
-                >
-                  {etiquetaBoton(pais, "Inscribirse")}
-                  <ArrowRight size={16} />
-                </button>
+              ) : sinPrecioAprobado ? null : (
+                <>
+                  <button
+                    type="button"
+                    onClick={handleCheckoutCTA}
+                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
+                  >
+                    {checkoutLabel}
+                    <ArrowRight size={16} />
+                  </button>
+                  {activeSchedulesList.length === 0 ? (
+                    <>
+                      <p className="mt-2 text-center text-xs leading-snug text-mute">
+                        Sin fecha publicada: compra ahora y coordinamos la cohorte contigo.
+                      </p>
+                      <WhatsAppCta
+                        page={`/cursos/${course.slug}`}
+                        intent="fechas"
+                        course={course.title}
+                        courseSlug={course.slug}
+                        country={pais}
+                        className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-medium text-ink no-underline hover:bg-wash"
+                      >
+                        <MessageCircle size={16} />
+                        Consultar fechas
+                      </WhatsAppCta>
+                    </>
+                  ) : null}
+                </>
               )}
+
+              {!isEmpresa && !sinPrecioAprobado ? (
+                <CourseCardQuoteForm course={course} pais={pais} />
+              ) : null}
 
               <CourseCardDescription lead={offerLead} more={offerMore} />
 
@@ -845,6 +928,119 @@ export default function CourseDetailClient({
   );
 }
 
+/**
+ * Mini formulario de cotización dentro de la tarjeta lateral.
+ * Usa el mismo submit que el formulario #cotizar (mismo endpoint y payload),
+ * en versión compacta: nombre + email. El precio sigue visible arriba.
+ */
+function CourseCardQuoteForm({ course, pais }: { course: Course; pais: string }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [honeypot, setHoneypot] = useState("");
+  const formLoadedAt = useRef(Date.now());
+
+  const fieldClass =
+    "h-11 w-full rounded-xl border border-line-strong bg-canvas px-3 text-sm text-ink placeholder:text-faint";
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    try {
+      await submitCourseLead({
+        course,
+        pais,
+        leadType: "personal",
+        name: name.trim(),
+        email: email.trim(),
+        selectedCourses: [course.title],
+        formLoadedAt: formLoadedAt.current,
+        honeypot,
+        source: "course_detail_card",
+      });
+      setIsSuccess(true);
+    } catch {
+      alert("Hubo un problema al enviar tu solicitud. Inténtalo de nuevo.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="mt-5 rounded-2xl border border-line bg-wash p-4">
+      {isSuccess ? (
+        <div>
+          <p className="text-sm font-semibold text-ink">Listo, quedó enviado</p>
+          <p className="mt-1 text-xs leading-snug text-mute">
+            Te escribimos a {email || "tu correo"} con el detalle del curso.
+          </p>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} noValidate>
+          <p className="text-sm font-semibold text-ink">Cotiza o pide el detalle</p>
+          <p className="mt-1 text-xs leading-snug text-mute">
+            Te enviamos el precio y el temario por correo.
+          </p>
+          <div className="mt-3 space-y-2">
+            <label htmlFor="card-quote-name" className="sr-only">
+              Nombre
+            </label>
+            <input
+              id="card-quote-name"
+              name="name"
+              required
+              autoComplete="name"
+              placeholder="Nombre"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className={fieldClass}
+            />
+            <label htmlFor="card-quote-email" className="sr-only">
+              Email
+            </label>
+            <input
+              id="card-quote-email"
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={fieldClass}
+            />
+          </div>
+          <div style={honeypotStyle} aria-hidden>
+            <input
+              type="text"
+              name="_website"
+              autoComplete="off"
+              tabIndex={-1}
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-line-strong bg-paper text-sm font-semibold text-ink transition-colors hover:bg-canvas disabled:opacity-60"
+          >
+            {isSubmitting ? "Enviando…" : "Enviar cotización"}
+          </button>
+          <a
+            href="#cotizar"
+            className="mt-2 block text-center text-xs font-medium text-mute no-underline hover:text-ink"
+          >
+            Ver formulario completo
+          </a>
+        </form>
+      )}
+    </div>
+  );
+}
+
 function CourseCardDescription({ lead, more }: { lead: string; more: string[] }) {
   if (!lead && more.length === 0) return null;
   return (
@@ -918,29 +1114,22 @@ function CourseContactForm({ course }: { course: Course }) {
     setIsSubmitting(true);
     try {
       const formData = new FormData(e.target as HTMLFormElement);
-      const payload: Record<string, unknown> = {
-        name: formData.get("name"),
-        email: formData.get("email"),
-        whatsapp: formData.get("whatsapp") ? `${phonePrefix}${formData.get("whatsapp")}` : null,
-        message: formData.get("message"),
-        sourceCourse: course.title,
-        selectedCourses: contactType === "personal" ? [course.title] : selectedServices,
-        leadType: contactType,
-        pricingVariant: readClientPricingVariant(),
+      const rawWhatsapp = String(formData.get("whatsapp") || "").trim();
+      await submitCourseLead({
+        course,
         pais,
-        ...captureAndReadAttribution(),
-        ...getAntiBotFields(formLoadedAt.current, honeypot),
-      };
-      if (contactType === "empresa") {
-        payload.company = formData.get("company");
-        payload.position = formData.get("position");
-      }
-      const res = await fetch("/api/leads/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        leadType: contactType,
+        name: String(formData.get("name") || ""),
+        email: String(formData.get("email") || ""),
+        whatsapp: rawWhatsapp ? withDialCode(rawWhatsapp, phonePrefix) : null,
+        message: formData.get("message") ? String(formData.get("message")) : null,
+        company: formData.get("company") ? String(formData.get("company")) : null,
+        position: formData.get("position") ? String(formData.get("position")) : null,
+        selectedCourses: contactType === "personal" ? [course.title] : selectedServices,
+        formLoadedAt: formLoadedAt.current,
+        honeypot,
+        source: "course_detail_cotizar",
       });
-      if (!res.ok) throw new Error("Error submitting form");
       setSubmittedEmail(String(formData.get("email") || ""));
       setIsSuccess(true);
     } catch {

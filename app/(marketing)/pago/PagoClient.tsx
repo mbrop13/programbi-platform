@@ -753,8 +753,11 @@ export default function PagoClient({
                }
 
                const hasScheduleActive = courseSchedules.length > 0 || alwaysAvailable;
-               // Overwrite hasScheduleActive if fetching schedules is done but it evaluates to false, we assume you cannot purchase and must notify.
-               const canBuy = mode === 'individual' && hasScheduleActive && currentLevelData?.price;
+               // Sin fecha publicada el curso igual se puede comprar: la cohorte se
+               // confirma después ("Próxima fecha por confirmar"). El único bloqueo
+               // real para particular es que el nivel no tenga precio.
+               const canBuy = mode === 'individual' && !!currentLevelData?.price;
+               const sinFechaPublicada = mode === "individual" && !hasScheduleActive;
                const particularHours = mode === "individual" && isTieredCourse(course) ? PARTICULAR_COURSE_HOURS : null;
 
                const cartKey = `${course.slug}-${activeLevel}`;
@@ -1024,7 +1027,8 @@ export default function PagoClient({
                            )}
 
                            {mode === "individual" ? (
-                              canBuy ? (
+                              <>
+                              {canBuy ? (
                                 <div className="mt-1 flex h-10 items-center overflow-hidden rounded-md border border-line bg-wash">
                                    <button
                                      type="button"
@@ -1059,16 +1063,22 @@ export default function PagoClient({
                                        <Plus className="h-4 w-4" />
                                     </button>
                                 </div>
-                              ) : (
+                              ) : null}
+                              {!canBuy || sinFechaPublicada ? (
                                 <button
                                   type="button"
                                   onClick={() => handleNotifyMe(course.slug, activeLevel)}
                                   disabled={notifySuccess.has(cartKey) || notifyLoading === cartKey}
-                                  className={`mt-1 flex h-10 w-full items-center justify-center gap-2 rounded-md px-4 text-xs font-semibold transition-colors sm:w-auto ${notifySuccess.has(cartKey) ? "bg-wash text-ink" : "border border-line bg-wash text-ink hover:bg-paper"}`}
+                                  className={
+                                    canBuy
+                                      ? "mt-1 flex h-8 w-full items-center justify-center gap-1.5 rounded-md px-2 text-[11px] font-semibold text-mute transition-colors hover:text-ink sm:w-auto"
+                                      : `mt-1 flex h-10 w-full items-center justify-center gap-2 rounded-md px-4 text-xs font-semibold transition-colors sm:w-auto ${notifySuccess.has(cartKey) ? "bg-wash text-ink" : "border border-line bg-wash text-ink hover:bg-paper"}`
+                                  }
                                 >
-                                  {notifyLoading === cartKey ? <Loader2 className="h-4 w-4 animate-spin" /> : notifySuccess.has(cartKey) ? <><CheckCircle2 className="h-4 w-4" /> Registrado</> : <><Bell className="h-4 w-4" /> Avísame</>}
+                                  {notifyLoading === cartKey ? <Loader2 className="h-4 w-4 animate-spin" /> : notifySuccess.has(cartKey) ? <><CheckCircle2 className="h-4 w-4" /> Registrado</> : <><Bell className="h-4 w-4" /> Avísame cuando haya fecha</>}
                                 </button>
-                              )
+                              ) : null}
+                              </>
                            ) : (
                               <button
                                 type="button"
