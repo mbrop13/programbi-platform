@@ -123,4 +123,6 @@ Reglas del worktree: no se ejecutó `npm`, `npx`, `node`, `tsc`, `eslint` ni
 - `a4ccb25` — `feat(f4-certificado): ficha pública de certificado con verificación por código`
 - `919df21` — `fix(f4-certificado): declara index,follow explícito en la página de verificación`
 - `3171be6` — `fix(f4-certificado): evita main anidado dentro del layout de marketing`
-- (este commit) — `docs(f4-certificado): estado del WS6`
+- `59fd4c8` — `docs(f4-certificado): estado del WS6, comportamiento 404 y pendientes`
+- `64200b2` — `fix(f4-certificado): compacta el diploma para que quepa en impresión horizontal`
+- Commit final de docs: cierre de este archivo.
