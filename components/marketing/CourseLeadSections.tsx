@@ -7,6 +7,7 @@ import { getCourseSyllabus, getSyllabusLevel, type SyllabusLevelContent } from "
 import { COURSE_SEO } from "@/lib/seo/money";
 import { localizarMercado } from "@/lib/paises/precios";
 import { enlacesDeCurso } from "@/lib/seo/enlaces";
+import { ISO_CHILE, normalizarPais } from "@/config/paises";
 
 export const COURSE_CRO_SLUGS = [
   "analisis-de-datos",
@@ -251,10 +252,14 @@ export function CourseFaq({
   pais?: string;
 }) {
   const seo = COURSE_SEO[slug];
-  const base = (seo?.faqs ?? []).map((item) => ({
-    q: localizarMercado(item.q, pais),
-    a: localizarMercado(item.a, pais),
-  }));
+  // Las preguntas con monto en CLP no salen en fichas de otros mercados.
+  const esChile = normalizarPais(pais) === ISO_CHILE;
+  const base = (seo?.faqs ?? [])
+    .filter((item) => !item.soloChile || esChile)
+    .map((item) => ({
+      q: localizarMercado(item.q, pais),
+      a: localizarMercado(item.a, pais),
+    }));
   const items = [...base, ...extra];
   if (items.length === 0) return null;
 

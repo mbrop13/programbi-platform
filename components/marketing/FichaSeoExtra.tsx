@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { bloquesDeFicha } from "@/lib/data/seo-ficha";
+import { ISO_CHILE, normalizarPais } from "@/config/paises";
 
 /**
  * Bloques editoriales extra de la ficha de curso (servidor).
@@ -8,8 +9,13 @@ import { bloquesDeFicha } from "@/lib/data/seo-ficha";
  * Suma materia que el temario y las preguntas frecuentes no muestran: detalle
  * por clase, proyecto final, ruta laboral. El contenido vive en
  * `lib/data/seo-ficha/<slug>.ts` y solo usa datos del repo.
+ *
+ * Es contenido del mercado chileno (precio en CLP y hora de Chile), así que
+ * se renderiza solo en la ficha raíz. Las fichas /<pais>/cursos/<slug> ya
+ * tienen su propio bloque local con precio, horario y medios de pago.
  */
-export default function FichaSeoExtra({ slug }: { slug: string }) {
+export default function FichaSeoExtra({ slug, pais }: { slug: string; pais: string }) {
+  if (normalizarPais(pais) !== ISO_CHILE) return null;
   const bloques = bloquesDeFicha(slug);
   if (bloques.length === 0) return null;
 

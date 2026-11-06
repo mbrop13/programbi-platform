@@ -6,7 +6,16 @@ import { textoCuotas } from "@/config/cuotas";
 import { PRECIOS_CLP } from "@/config/pricing";
 import { formatCLP } from "@/lib/paises/precios";
 
-export type MoneyFaq = { q: string; a: string };
+export type MoneyFaq = {
+  q: string;
+  a: string;
+  /**
+   * La respuesta nombra un monto en pesos chilenos. Las fichas de otros
+   * mercados muestran su precio en moneda local, así que esta pregunta se
+   * filtra fuera de esas versiones (ver CourseFaq y el JSON-LD de la ficha).
+   */
+  soloChile?: boolean;
+};
 
 /** Precio y cuotas de Power BI, derivados de config/pricing.ts y config/cuotas.ts. */
 const PRECIO_POWER_BI = formatCLP(PRECIOS_CLP["power-bi"]);
@@ -36,6 +45,12 @@ export const COURSE_SEO: Record<
   {
     title: string;
     description: string;
+    /**
+     * Meta description para la ficha chilena, con precio en CLP. El resto de
+     * los mercados usa `description`, sin monto, porque su precio va en otra
+     * moneda. Ver generateMetadata en app/(marketing)/cursos/[slug]/page.tsx.
+     */
+    descriptionCl?: string;
     h1: string;
     audience: string;
     intro?: string;
@@ -44,7 +59,9 @@ export const COURSE_SEO: Record<
 > = {
   "power-bi": {
     title: "Curso Power BI Chile en vivo con certificado | ProgramBI",
-    description: `Curso Power BI en Chile en vivo: ${PRECIO_POWER_BI}, ${CUOTAS_POWER_BI}, grabaciones y certificado. Power Query, modelo y DAX. Básico a avanzado.`,
+    description:
+      "Curso Power BI en Chile, en vivo por Zoom: Power Query, DAX y dashboards para analistas. Básico-intermedio y avanzado, 20 horas cada uno. Inscríbete.",
+    descriptionCl: `Curso Power BI en Chile en vivo: ${PRECIO_POWER_BI}, ${CUOTAS_POWER_BI}, grabaciones y certificado. Power Query, modelo y DAX. Básico a avanzado.`,
     h1: "Curso Power BI en vivo en Chile",
     audience:
       "Para analistas, control de gestión y finanzas que hoy reportan en Excel y quieren armar dashboards propios en Power BI.",
@@ -73,6 +90,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Cuánto cuesta el curso Power BI en Chile y se puede pagar en cuotas?",
+        soloChile: true,
         a: `El curso cuesta ${PRECIO_POWER_BI} y se puede pagar en ${CUOTAS_POWER_BI}. El valor de la próxima cohorte y los cupos se confirman en el checkout.`,
       },
       {
@@ -88,6 +106,8 @@ export const COURSE_SEO: Record<
   "analisis-de-datos": {
     title: "Curso de análisis de datos en vivo Chile | ProgramBI",
     description:
+      "Curso de análisis de datos en Chile, en vivo por Zoom: SQL, Power BI y Python. Dos niveles de 60 horas: básico-intermedio y avanzado.",
+    descriptionCl:
       "Curso de análisis de datos en Chile, en vivo: SQL, Power BI y Python. 60 h por nivel (120 el programa), 338.000 CLP por nivel. Inscríbete.",
     h1: "Curso de análisis de datos en vivo en Chile",
     audience:
@@ -117,6 +137,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Cuánto cuesta el curso de análisis de datos y cómo se paga?",
+        soloChile: true,
         a: "Cada nivel de 60 horas cuesta 338.000 CLP. Se puede pagar en 3 cuotas sin interés con Mercado Pago o Webpay. Incluye clases en vivo por Zoom, grabaciones de por vida en el campus y certificado digital al completar. El programa completo son dos niveles de 60 horas y se paga por nivel.",
       },
       {
@@ -125,6 +146,7 @@ export const COURSE_SEO: Record<
       },
       {
         q: "¿Es lo mismo que el curso de análisis de datos para minería?",
+        soloChile: true,
         a: "Es el mismo programa y el mismo valor de 338.000 CLP por nivel, con los ejemplos puestos en faena: turnos, flota, OEE y mantención. Puedes ver ese enfoque en /analisis-de-datos-mineria. El certificado es el mismo certificado digital de ProgramBI al completar.",
       },
     ],
