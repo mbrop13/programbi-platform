@@ -142,6 +142,14 @@ const nextConfig: NextConfig = {
         destination: "/cursos/sql-server",
         statusCode: 301,
       },
+      // Fallback de la familia /products (handles viejos de Shopify). Va después
+      // de las reglas específicas para no comérselas; en vercel.json el
+      // equivalente `/products/:path*` también está al final del bloque.
+      {
+        source: "/products/:path*",
+        destination: "/cursos",
+        statusCode: 301,
+      },
       {
         source: "/cursos/copilot-studio",
         destination: "/cursos/copilot",
@@ -180,6 +188,18 @@ const nextConfig: NextConfig = {
       {
         source: "/asesorias",
         destination: "/empresas",
+        statusCode: 301,
+      },
+      // Near-brand: /programa-bi aparece en Search Console y hoy da 404.
+      // No existe ninguna ruta bajo esa carpeta, así que el comodín es seguro.
+      {
+        source: "/programa-bi",
+        destination: "/cursos",
+        statusCode: 301,
+      },
+      {
+        source: "/programa-bi/:path*",
+        destination: "/cursos",
         statusCode: 301,
       },
       {

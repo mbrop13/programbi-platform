@@ -56,6 +56,56 @@
       "statusCode": 301
     },
     {
+      "source": "/cursos/copilot-studio",
+      "destination": "/cursos/copilot",
+      "statusCode": 301
+    },
+    {
+      "source": "/cursos/analitica-financiera",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/cursos/analitica-financiera/:rest*",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/:pais/cursos/analitica-financiera",
+      "destination": "/:pais/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/:pais/cursos/analitica-financiera/:rest*",
+      "destination": "/:pais/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/consultorias",
+      "destination": "/empresas",
+      "statusCode": 301
+    },
+    {
+      "source": "/consultoria",
+      "destination": "/empresas",
+      "statusCode": 301
+    },
+    {
+      "source": "/asesorias",
+      "destination": "/empresas",
+      "statusCode": 301
+    },
+    {
+      "source": "/programa-bi",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/programa-bi/:rest*",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
       "source": "/products/excel",
       "destination": "/cursos/excel",
       "statusCode": 301
