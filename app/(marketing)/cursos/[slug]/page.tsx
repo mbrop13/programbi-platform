@@ -5,6 +5,7 @@ import { getActiveSchedules, getMarketingDescription } from "@/lib/supabase/comu
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
 import BloquePaisFicha from "@/components/paises/BloquePaisFicha";
+import FichaSeoExtra from "@/components/marketing/FichaSeoExtra";
 import GuiasDelCurso from "@/components/guias/GuiasDelCurso";
 import TestimoniosDeCurso from "@/components/marketing/TestimoniosDeCurso";
 import { ogImageUrl } from "@/lib/og/url";
@@ -180,6 +181,7 @@ export default async function CourseDetailPage({
       {/* Bloque propio del mercado: texto, precio, horario, FAQ y enlaces
           internos. Reemplaza a CountryContext, que repetía los mismos datos. */}
       <BloquePaisFicha curso={course} pais={pais} inicio={inicio} fin={fin} />
+      <FichaSeoExtra slug={course.slug} />
       <GuiasDelCurso curso={course.slug} pais={pais} />
       {/* Citas reales de alumnos de este curso (LinkedIn). Se oculta sola si no
           hay testimonios o si el kill-switch NEXT_PUBLIC_TESTIMONIOS=0. */}
