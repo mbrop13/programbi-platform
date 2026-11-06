@@ -2,7 +2,15 @@
  * Titles / H1 / meta orientados a queries GSC reales (Chile, no-marca).
  * Title ≤60, description ≤155. Absolute titles incluyen marca.
  */
+import { textoCuotas } from "@/config/cuotas";
+import { PRECIOS_CLP } from "@/config/pricing";
+import { formatCLP } from "@/lib/paises/precios";
+
 export type MoneyFaq = { q: string; a: string };
+
+/** Precio y cuotas de Power BI, derivados de config/pricing.ts y config/cuotas.ts. */
+const PRECIO_POWER_BI = formatCLP(PRECIOS_CLP["power-bi"]);
+const CUOTAS_POWER_BI = textoCuotas("cl");
 
 export const PAGE_SEO = {
   home: {
@@ -35,9 +43,8 @@ export const COURSE_SEO: Record<
   }
 > = {
   "power-bi": {
-    title: "Curso Power BI Chile en vivo: DAX y Query | ProgramBI",
-    description:
-      "Curso Power BI en Chile, en vivo por Zoom: Power Query, DAX y dashboards para analistas. Básico-intermedio y avanzado, 20 horas cada uno. Inscríbete.",
+    title: "Curso Power BI Chile en vivo con certificado | ProgramBI",
+    description: `Curso Power BI en Chile en vivo: ${PRECIO_POWER_BI}, ${CUOTAS_POWER_BI}, grabaciones y certificado. Power Query, modelo y DAX. Básico a avanzado.`,
     h1: "Curso Power BI en vivo en Chile",
     audience:
       "Para analistas, control de gestión y finanzas que hoy reportan en Excel y quieren armar dashboards propios en Power BI.",
@@ -63,6 +70,18 @@ export const COURSE_SEO: Record<
       {
         q: "¿Cómo me inscribo al curso Power BI Chile?",
         a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor de la próxima cohorte.",
+      },
+      {
+        q: "¿Cuánto cuesta el curso Power BI en Chile y se puede pagar en cuotas?",
+        a: `El curso cuesta ${PRECIO_POWER_BI} y se puede pagar en ${CUOTAS_POWER_BI}. El valor de la próxima cohorte y los cupos se confirman en el checkout.`,
+      },
+      {
+        q: "¿El curso incluye la certificación PL-300?",
+        a: "El curso entrega un certificado digital de ProgramBI al completar. La PL-300 es un examen de Microsoft que se rinde y se paga aparte; el curso cubre fundamentos que evalúa, como preparar datos, modelar y visualizar.",
+      },
+      {
+        q: "¿Sirve para trabajar con datos de una empresa?",
+        a: "Sí. Los ejercicios usan archivos de ejemplo con la lógica de una empresa —presupuesto contra real, margen por línea, cuentas por cobrar— para que puedas repetir el flujo con tus propios extractos. El tablero del proyecto se puede mostrar en una entrevista o usar en tu trabajo.",
       },
     ],
   },
