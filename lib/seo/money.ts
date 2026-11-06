@@ -88,7 +88,7 @@ export const COURSE_SEO: Record<
   "analisis-de-datos": {
     title: "Curso de análisis de datos en vivo Chile | ProgramBI",
     description:
-      "Curso de análisis de datos en Chile, en vivo por Zoom: SQL, Power BI y Python. Dos niveles de 60 horas: básico-intermedio y avanzado.",
+      "Curso de análisis de datos en Chile, en vivo: SQL, Power BI y Python. 60 h por nivel (120 el programa), 338.000 CLP por nivel. Inscríbete.",
     h1: "Curso de análisis de datos en vivo en Chile",
     audience:
       "Para profesionales de finanzas, control de gestión y operaciones que hoy reportan en Excel y quieren el oficio de analista de datos: SQL, Power BI y Python.",
@@ -114,6 +114,18 @@ export const COURSE_SEO: Record<
       {
         q: "¿Cómo me inscribo al curso de análisis de datos?",
         a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor. Para cotizar para una empresa, entra a /cursos/analisis-de-datos/empresas. Un proyecto in-company sigue en /empresas.",
+      },
+      {
+        q: "¿Cuánto cuesta el curso de análisis de datos y cómo se paga?",
+        a: "Cada nivel de 60 horas cuesta 338.000 CLP. Se puede pagar en 3 cuotas sin interés con Mercado Pago o Webpay. Incluye clases en vivo por Zoom, grabaciones de por vida en el campus y certificado digital al completar. El programa completo son dos niveles de 60 horas y se paga por nivel.",
+      },
+      {
+        q: "¿Son 60 horas por nivel o 120 horas en total?",
+        a: "Las dos cosas: cada nivel —básico-intermedio y avanzado— dura 60 horas, con 20 horas de SQL Server, 20 de Power BI y 20 de Python. Si haces los dos niveles, el programa completo suma 120 horas.",
+      },
+      {
+        q: "¿Es lo mismo que el curso de análisis de datos para minería?",
+        a: "Es el mismo programa y el mismo valor de 338.000 CLP por nivel, con los ejemplos puestos en faena: turnos, flota, OEE y mantención. Puedes ver ese enfoque en /analisis-de-datos-mineria. El certificado es el mismo certificado digital de ProgramBI al completar.",
       },
     ],
   },
