@@ -142,6 +142,18 @@ const nextConfig: NextConfig = {
         destination: "/cursos/sql-server",
         statusCode: 301,
       },
+      // Slugs de Shopify para Machine Learning: van explícitos porque el
+      // comodín de Next no soporta el filtro por regex que sí tiene Vercel.
+      {
+        source: "/products/machine-learning-program-bi",
+        destination: "/cursos/machine-learning",
+        statusCode: 301,
+      },
+      {
+        source: "/products/machine-learning",
+        destination: "/cursos/machine-learning",
+        statusCode: 301,
+      },
       // Fallback de la familia /products (handles viejos de Shopify). Va después
       // de las reglas específicas para no comérselas; en vercel.json el
       // equivalente `/products/:path*` también está al final del bloque.
