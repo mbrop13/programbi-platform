@@ -3,6 +3,7 @@ import EmpresasClient from "./EmpresasClient";
 import { ogImageUrl } from "@/lib/og/url";
 import { SITE_URL, absoluteUrl, jsonLdString, twitterShare } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
+import { EMPRESAS_FAQS } from "@/lib/data/empresas-faqs";
 import { getPais, normalizarPais } from "@/config/paises";
 import { hreflangDe } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
@@ -59,7 +60,6 @@ export default async function EmpresasPage({
   const pais = normalizarPais((await params).pais);
   const { curso, nivel } = await searchParams;
   const serviceJsonLd = {
-    "@context": "https://schema.org",
     "@type": "Service",
     name: "Adopción de Power BI y capacitación in-company",
     provider: {
@@ -84,13 +84,28 @@ export default async function EmpresasPage({
     ),
   };
 
+  // Mismo texto que el bloque visible de /empresas (components/empresas/empresas-faq.tsx).
+  const faqJsonLd = {
+    "@type": "FAQPage",
+    mainEntity: EMPRESAS_FAQS.map((faq) => ({
+      "@type": "Question",
+      name: faq.q,
+      acceptedAnswer: { "@type": "Answer", text: faq.a },
+    })),
+  };
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [serviceJsonLd, faqJsonLd],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLdString(serviceJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
-      <EmpresasClient curso={curso} nivel={nivel} />
+      <EmpresasClient curso={curso} nivel={nivel} paisNombre={getPais(pais).nombre} />
       {pais !== "cl" ? (
         <p className="mx-auto max-w-[1400px] px-4 pb-10 text-sm text-mute sm:px-6">
           {`Capacitación in-company en vivo para equipos de ${getPais(pais).nombre}, con los datos de tu empresa y factura corporativa.`}

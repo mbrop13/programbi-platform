@@ -12,9 +12,9 @@ export const PAGE_SEO = {
       "Academia de datos en Chile: cursos en vivo de análisis de datos, Power BI y Power Automate. Clases por Zoom para profesionales. Inscríbete en ProgramBI.",
   },
   empresas: {
-    title: "De Excel a Power BI para empresas Chile | ProgramBI",
+    title: "Capacitación Power BI para empresas en Chile | ProgramBI",
     description:
-      "Adopción de Power BI en empresas de Chile: capacitación in-company, de Excel a tableros, en vivo y con factura. Pide una propuesta.",
+      "Capacitación Power BI in-company para empresas en Chile: en vivo, con los datos de tu equipo y factura corporativa. Pide una propuesta.",
   },
   cursos: {
     title: "Cursos Power BI y análisis de datos Chile | ProgramBI",
