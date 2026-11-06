@@ -2,7 +2,24 @@
  * Titles / H1 / meta orientados a queries GSC reales (Chile, no-marca).
  * Title ≤60, description ≤155. Absolute titles incluyen marca.
  */
-export type MoneyFaq = { q: string; a: string };
+import { textoCuotas } from "@/config/cuotas";
+import { PRECIOS_CLP } from "@/config/pricing";
+import { formatCLP } from "@/lib/paises/precios";
+
+export type MoneyFaq = {
+  q: string;
+  a: string;
+  /**
+   * La respuesta nombra un monto en pesos chilenos. Las fichas de otros
+   * mercados muestran su precio en moneda local, así que esta pregunta se
+   * filtra fuera de esas versiones (ver CourseFaq y el JSON-LD de la ficha).
+   */
+  soloChile?: boolean;
+};
+
+/** Precio y cuotas de Power BI, derivados de config/pricing.ts y config/cuotas.ts. */
+const PRECIO_POWER_BI = formatCLP(PRECIOS_CLP["power-bi"]);
+const CUOTAS_POWER_BI = textoCuotas("cl");
 
 export const PAGE_SEO = {
   home: {
@@ -12,9 +29,9 @@ export const PAGE_SEO = {
       "Academia de datos en Chile: cursos en vivo de análisis de datos, Power BI y Power Automate. Clases por Zoom para profesionales. Inscríbete en ProgramBI.",
   },
   empresas: {
-    title: "De Excel a Power BI para empresas Chile | ProgramBI",
+    title: "Capacitación Power BI para empresas en Chile | ProgramBI",
     description:
-      "Adopción de Power BI en empresas de Chile: capacitación in-company, de Excel a tableros, en vivo y con factura. Pide una propuesta.",
+      "Capacitación Power BI in-company para empresas en Chile: en vivo, con los datos de tu equipo y factura corporativa. Pide una propuesta.",
   },
   cursos: {
     title: "Cursos Power BI y análisis de datos Chile | ProgramBI",
@@ -28,6 +45,12 @@ export const COURSE_SEO: Record<
   {
     title: string;
     description: string;
+    /**
+     * Meta description para la ficha chilena, con precio en CLP. El resto de
+     * los mercados usa `description`, sin monto, porque su precio va en otra
+     * moneda. Ver generateMetadata en app/(marketing)/cursos/[slug]/page.tsx.
+     */
+    descriptionCl?: string;
     h1: string;
     audience: string;
     intro?: string;
@@ -35,9 +58,10 @@ export const COURSE_SEO: Record<
   }
 > = {
   "power-bi": {
-    title: "Curso Power BI Chile en vivo: DAX y Query | ProgramBI",
+    title: "Curso Power BI Chile en vivo con certificado | ProgramBI",
     description:
       "Curso Power BI en Chile, en vivo por Zoom: Power Query, DAX y dashboards para analistas. Básico-intermedio y avanzado, 20 horas cada uno. Inscríbete.",
+    descriptionCl: `Curso Power BI en Chile en vivo: ${PRECIO_POWER_BI}, ${CUOTAS_POWER_BI}, grabaciones y certificado. Power Query, modelo y DAX. Básico a avanzado.`,
     h1: "Curso Power BI en vivo en Chile",
     audience:
       "Para analistas, control de gestión y finanzas que hoy reportan en Excel y quieren armar dashboards propios en Power BI.",
@@ -64,12 +88,27 @@ export const COURSE_SEO: Record<
         q: "¿Cómo me inscribo al curso Power BI Chile?",
         a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor de la próxima cohorte.",
       },
+      {
+        q: "¿Cuánto cuesta el curso Power BI en Chile y se puede pagar en cuotas?",
+        soloChile: true,
+        a: `El curso cuesta ${PRECIO_POWER_BI} y se puede pagar en ${CUOTAS_POWER_BI}. El valor de la próxima cohorte y los cupos se confirman en el checkout.`,
+      },
+      {
+        q: "¿El curso incluye la certificación PL-300?",
+        a: "El curso entrega un certificado digital de ProgramBI al completar. La PL-300 es un examen de Microsoft que se rinde y se paga aparte; el curso cubre fundamentos que evalúa, como preparar datos, modelar y visualizar.",
+      },
+      {
+        q: "¿Sirve para trabajar con datos de una empresa?",
+        a: "Sí. Los ejercicios usan archivos de ejemplo con la lógica de una empresa —presupuesto contra real, margen por línea, cuentas por cobrar— para que puedas repetir el flujo con tus propios extractos. El tablero del proyecto se puede mostrar en una entrevista o usar en tu trabajo.",
+      },
     ],
   },
   "analisis-de-datos": {
     title: "Curso de análisis de datos en vivo Chile | ProgramBI",
     description:
       "Curso de análisis de datos en Chile, en vivo por Zoom: SQL, Power BI y Python. Dos niveles de 60 horas: básico-intermedio y avanzado.",
+    descriptionCl:
+      "Curso de análisis de datos en Chile, en vivo: SQL, Power BI y Python. 60 h por nivel (120 el programa), 338.000 CLP por nivel. Inscríbete.",
     h1: "Curso de análisis de datos en vivo en Chile",
     audience:
       "Para profesionales de finanzas, control de gestión y operaciones que hoy reportan en Excel y quieren el oficio de analista de datos: SQL, Power BI y Python.",
@@ -95,6 +134,20 @@ export const COURSE_SEO: Record<
       {
         q: "¿Cómo me inscribo al curso de análisis de datos?",
         a: "Usa Registrarme en esta página: es el mismo registro del sitio. Con la cuenta ves fechas y valor. Para cotizar para una empresa, entra a /cursos/analisis-de-datos/empresas. Un proyecto in-company sigue en /empresas.",
+      },
+      {
+        q: "¿Cuánto cuesta el curso de análisis de datos y cómo se paga?",
+        soloChile: true,
+        a: "Cada nivel de 60 horas cuesta 338.000 CLP. Se puede pagar en 3 cuotas sin interés con Mercado Pago o Webpay. Incluye clases en vivo por Zoom, grabaciones de por vida en el campus y certificado digital al completar. El programa completo son dos niveles de 60 horas y se paga por nivel.",
+      },
+      {
+        q: "¿Son 60 horas por nivel o 120 horas en total?",
+        a: "Las dos cosas: cada nivel —básico-intermedio y avanzado— dura 60 horas, con 20 horas de SQL Server, 20 de Power BI y 20 de Python. Si haces los dos niveles, el programa completo suma 120 horas.",
+      },
+      {
+        q: "¿Es lo mismo que el curso de análisis de datos para minería?",
+        soloChile: true,
+        a: "Es el mismo programa y el mismo valor de 338.000 CLP por nivel, con los ejemplos puestos en faena: turnos, flota, OEE y mantención. Puedes ver ese enfoque en /analisis-de-datos-mineria. El certificado es el mismo certificado digital de ProgramBI al completar.",
       },
     ],
   },

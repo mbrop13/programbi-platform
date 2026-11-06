@@ -6,6 +6,8 @@ import type { Course } from "@/lib/data/courses";
 import { getCourseSyllabus, getSyllabusLevel, type SyllabusLevelContent } from "@/lib/data/syllabuses";
 import { COURSE_SEO } from "@/lib/seo/money";
 import { localizarMercado } from "@/lib/paises/precios";
+import { enlacesDeCurso } from "@/lib/seo/enlaces";
+import { ISO_CHILE, normalizarPais } from "@/config/paises";
 
 export const COURSE_CRO_SLUGS = [
   "analisis-de-datos",
@@ -212,19 +214,29 @@ const COURSE_CASE_LINKS: Record<string, { href: string; label: string }> = {
 
 export function CourseSeoInternalLinks({ slug }: { slug: string }) {
   const caseLink = COURSE_CASE_LINKS[slug];
-  if (!caseLink) return null;
+  const extra = enlacesDeCurso(slug);
+  if (!caseLink && extra.length === 0) return null;
+
+  // Landings propias del curso primero; el caso y el catálogo cierran la lista.
+  const vistos = new Set<string>();
+  const enlaces = [
+    ...extra,
+    ...(caseLink ? [caseLink] : []),
+    { href: "/cursos", label: "Todos los cursos" },
+    { href: "/", label: "Inicio" },
+  ].filter((enlace) => (vistos.has(enlace.href) ? false : (vistos.add(enlace.href), true)));
 
   return (
     <nav aria-label="Enlaces relacionados" className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm">
-      <Link href="/cursos" className="font-semibold text-ink no-underline underline-offset-4 hover:underline">
-        Todos los cursos
-      </Link>
-      <Link href={caseLink.href} className="font-semibold text-ink no-underline underline-offset-4 hover:underline">
-        {caseLink.label}
-      </Link>
-      <Link href="/" className="font-semibold text-ink no-underline underline-offset-4 hover:underline">
-        Inicio
-      </Link>
+      {enlaces.map((enlace) => (
+        <Link
+          key={enlace.href}
+          href={enlace.href}
+          className="font-semibold text-ink no-underline underline-offset-4 hover:underline"
+        >
+          {enlace.label}
+        </Link>
+      ))}
     </nav>
   );
 }
@@ -240,10 +252,14 @@ export function CourseFaq({
   pais?: string;
 }) {
   const seo = COURSE_SEO[slug];
-  const base = (seo?.faqs ?? []).map((item) => ({
-    q: localizarMercado(item.q, pais),
-    a: localizarMercado(item.a, pais),
-  }));
+  // Las preguntas con monto en CLP no salen en fichas de otros mercados.
+  const esChile = normalizarPais(pais) === ISO_CHILE;
+  const base = (seo?.faqs ?? [])
+    .filter((item) => !item.soloChile || esChile)
+    .map((item) => ({
+      q: localizarMercado(item.q, pais),
+      a: localizarMercado(item.a, pais),
+    }));
   const items = [...base, ...extra];
   if (items.length === 0) return null;
 

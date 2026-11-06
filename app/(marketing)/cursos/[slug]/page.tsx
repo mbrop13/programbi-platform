@@ -5,6 +5,7 @@ import { getActiveSchedules, getMarketingDescription } from "@/lib/supabase/comu
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
 import BloquePaisFicha from "@/components/paises/BloquePaisFicha";
+import FichaSeoExtra from "@/components/marketing/FichaSeoExtra";
 import GuiasDelCurso from "@/components/guias/GuiasDelCurso";
 import TestimoniosDeCurso from "@/components/marketing/TestimoniosDeCurso";
 import { ogImageUrl } from "@/lib/og/url";
@@ -42,7 +43,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const titleBase = seo?.title ?? `${course.title} — Curso en vivo Chile`;
   const title = tituloLocal(localizarMercado(titleBase, pais));
   const dbDescription = await getMarketingDescription(slug);
-  const description = localizarMercado(seo?.description || dbDescription || course.description, pais);
+  // Chile puede declarar el precio en la meta; los demás mercados usan la
+  // versión sin monto porque su precio va en otra moneda.
+  const descripcionBase =
+    pais === ISO_CHILE && seo?.descriptionCl
+      ? seo.descriptionCl
+      : seo?.description || dbDescription || course.description;
+  const description = localizarMercado(descripcionBase, pais);
   const canon = absoluteUrl(rutaLocal(pais, `/cursos/${slug}`));
 
   // Tarjeta OG de marca (tipográfica, papel-monócromo) — reemplaza las
@@ -143,11 +150,13 @@ export default async function CourseDetailPage({
         "@type": "FAQPage",
         mainEntity: [
           ...(seo
-            ? seo.faqs.map((faq) => ({
-                "@type": "Question",
-                name: localizarMercado(faq.q, pais),
-                acceptedAnswer: { "@type": "Answer", text: localizarMercado(faq.a, pais) },
-              }))
+            ? seo.faqs
+                .filter((faq) => !faq.soloChile || pais === ISO_CHILE)
+                .map((faq) => ({
+                  "@type": "Question",
+                  name: localizarMercado(faq.q, pais),
+                  acceptedAnswer: { "@type": "Answer", text: localizarMercado(faq.a, pais) },
+                }))
             : []),
           // Preguntas del mercado: horario local y certificado. Sin el precio.
           ...detalle.faqs.map((faq) => ({
@@ -180,6 +189,7 @@ export default async function CourseDetailPage({
       {/* Bloque propio del mercado: texto, precio, horario, FAQ y enlaces
           internos. Reemplaza a CountryContext, que repetía los mismos datos. */}
       <BloquePaisFicha curso={course} pais={pais} inicio={inicio} fin={fin} />
+      <FichaSeoExtra slug={course.slug} pais={pais} />
       <GuiasDelCurso curso={course.slug} pais={pais} />
       {/* Citas reales de alumnos de este curso (LinkedIn). Se oculta sola si no
           hay testimonios o si el kill-switch NEXT_PUBLIC_TESTIMONIOS=0. */}

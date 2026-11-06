@@ -54,6 +54,16 @@ const REDIRECCIONES = [
     hacia: ["/cursos/mercado-financiero"],
   },
   { desde: "/products/sql-server-program-bi", hacia: ["/cursos/sql-server"] },
+  // Familia /products sin regla específica: cae en el comodín final (/cursos
+  // en next.config.ts, ficha de machine learning en vercel.json).
+  {
+    desde: "/products/machine-learning-program-bi",
+    hacia: ["/cursos/machine-learning", "/cursos"],
+  },
+  { desde: "/apps/ecomposer-visual-page-builder", hacia: ["/cursos"] },
+  { desde: "/consultorias", hacia: ["/empresas"] },
+  { desde: "/programa-bi", hacia: ["/cursos"] },
+  { desde: "/programa-bi/power-bi", hacia: ["/cursos"] },
 ];
 
 function pathDe(location, actual) {
