@@ -11,6 +11,7 @@ import { trackCourseCardClick } from "@/lib/analytics/marketing";
 import { type CourseSchedule } from "@/lib/data/course-schedules";
 import { usePaisRuta, useRutaLocal } from "@/lib/paises/cliente";
 import { zonaDe } from "@/lib/paises/horarios";
+import { getPais } from "@/config/paises";
 
 const CATALOG_ORDER = [
   "analisis-de-datos",
@@ -125,6 +126,7 @@ export default function CursosPageClient({
   const [typedWord, setTypedWord] = useState("");
   const [promptPhase, setPromptPhase] = useState<PromptPhase>("type-line");
   const pais = usePaisRuta();
+  const paisNombre = getPais(pais).nombre;
   const hrefLocal = useRutaLocal();
   const timeZone = zonaDe(pais);
 
@@ -207,10 +209,12 @@ export default function CursosPageClient({
     <>
       <section className="px-4 pt-2 pb-2 sm:px-6 sm:pt-8 lg:px-8 lg:pt-10">
         <div className="mx-auto max-w-3xl">
-          <h1 className="sr-only">Cursos</h1>
+          <h1 className="text-center text-[1.7rem] font-bold leading-[1.15] tracking-tight text-ink sm:text-4xl lg:text-[2.65rem]">
+            Cursos de Power BI, SQL y análisis de datos en {paisNombre}
+          </h1>
           <p
             aria-hidden="true"
-            className="min-h-[5.4rem] text-center text-[1.85rem] font-semibold leading-tight tracking-tight text-ink sm:min-h-[3.25rem] sm:text-4xl lg:min-h-[3.5rem] lg:text-[2.65rem]"
+            className="mt-3 min-h-[3rem] text-center text-base font-medium leading-snug tracking-tight text-mute sm:min-h-[1.75rem] sm:text-lg"
           >
             {searchQuery ? (
               "\u00a0"

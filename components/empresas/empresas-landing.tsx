@@ -12,6 +12,8 @@ import { EmpresasFaq } from "./empresas-faq";
 type EmpresasLandingProps = {
   curso?: string;
   nivel?: string;
+  /** Nombre del país de la ruta (/empresas es Chile; /pe/empresas, Perú). */
+  paisNombre?: string;
 };
 
 const WA = whatsappHref({
@@ -58,11 +60,11 @@ const STEPS = [
 
 const EMPRESA_COURSES = [...courses].sort((a, b) => a.sortOrder - b.sortOrder);
 
-export function EmpresasLanding({ curso, nivel }: EmpresasLandingProps) {
+export function EmpresasLanding({ curso, nivel, paisNombre = "Chile" }: EmpresasLandingProps) {
   return (
     <div className="bg-canvas text-ink">
       <AnalyticsPageEvent event="view_empresas" />
-      <Hero />
+      <Hero paisNombre={paisNombre} />
       <LogoSlider className="border-0 bg-transparent" />
       <Includes />
       <How />
@@ -73,7 +75,7 @@ export function EmpresasLanding({ curso, nivel }: EmpresasLandingProps) {
   );
 }
 
-function Hero() {
+function Hero({ paisNombre }: { paisNombre: string }) {
   return (
     <section className="relative overflow-hidden border-b border-line lg:min-h-[calc(100dvh-72px)]">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_40%,rgba(23,23,22,0.04),transparent_55%)]" />
@@ -81,10 +83,10 @@ function Hero() {
       <div className="relative mx-auto grid h-full min-h-0 max-w-[1400px] lg:min-h-[calc(100dvh-72px)] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:items-stretch">
         <div className="flex flex-col justify-center px-4 py-12 sm:px-6 sm:py-16 lg:px-8 lg:py-20 xl:px-10">
           <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
-            Cursos para empresas · Chile
+            Cursos para empresas · {paisNombre}
           </p>
-          <h1 className="mt-5 max-w-[16ch] text-4xl font-bold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.35rem] lg:leading-[1.08]">
-            Capacita a tu equipo en datos e IA.
+          <h1 className="mt-5 max-w-[20ch] text-4xl font-bold leading-[1.08] tracking-tight text-ink sm:text-5xl lg:text-[3.35rem] lg:leading-[1.08]">
+            Capacitación Power BI para empresas en {paisNombre}
           </h1>
           <p className="mt-5 max-w-md text-base leading-relaxed text-mute sm:text-lg">
             Cursos cerrados para tu empresa: Power BI, Excel, SQL, Python,
@@ -250,7 +252,9 @@ function Faq() {
         <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
           Preguntas
         </p>
-        <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">FAQ</h2>
+        <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+          Preguntas sobre la capacitación in-company
+        </h2>
         <EmpresasFaq />
       </div>
     </section>

@@ -157,6 +157,16 @@ function courseCheckoutUrl(slug: string, levelName?: string, pais?: string) {
 const PDF_URL =
   "https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link";
 
+/**
+ * H1 de la vista `?para=empresas`. Nombra la capacitación in-company y el
+ * curso; el país se localiza después con `localizarMercado`.
+ */
+function empresaHeading(course: Course): string {
+  return course.slug === "power-bi"
+    ? "Capacitación Power BI para empresas en Chile"
+    : `Capacitación en ${course.title} para empresas en Chile`;
+}
+
 function formatSchedule(
   sch: CourseSchedule,
   timeZone: string,
@@ -482,7 +492,11 @@ export default function CourseDetailClient({
   const isCroTemplate = isCourseCroSlug(course.slug) && view === "publico";
   const seo = COURSE_SEO[course.slug];
   const heading = localizarMercado(
-    view === "avanzado" ? advancedHeading(seo?.h1 || course.title) : seo?.h1 || course.title,
+    view === "empresas"
+      ? empresaHeading(course)
+      : view === "avanzado"
+        ? advancedHeading(seo?.h1 || course.title)
+        : seo?.h1 || course.title,
     pais
   );
   const introParagraphs =
