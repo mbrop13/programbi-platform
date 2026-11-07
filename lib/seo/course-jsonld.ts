@@ -18,7 +18,6 @@ import {
   type MiembroEquipo,
 } from "@/lib/data/equipo";
 import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
-import { PRECIOS_VALID_FROM, monedaPublica, precioPublico } from "@/config/pricing";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 
@@ -53,8 +52,6 @@ export function getCourseJsonLd(
   const baseName = localizarMercado(seo?.h1 || course.title, pais);
   const name = view === "avanzado" ? advancedHeading(baseName) : baseName;
   const hours = offerHours(course, view);
-  const price = precioPublico(pais, course.slug);
-  const moneda = monedaPublica(pais);
   const path = rutaLocal(pais, coursePath(course.slug, view));
   // Cada curso declara a su profesor en `equipo.ts`; sin match, lo dicta el
   // fundador. El `sameAs` a la página de empresa era un dato incorrecto.
@@ -111,16 +108,8 @@ export function getCourseJsonLd(
         ...(instructor.linkedinUrl ? { sameAs: [instructor.linkedinUrl] } : {}),
       },
     },
-    ...(price && {
-      offers: {
-        "@type": "Offer",
-        price,
-        priceCurrency: moneda,
-        availability: "https://schema.org/InStock",
-        url: absoluteUrl(path),
-        validFrom: PRECIOS_VALID_FROM,
-      },
-    }),
+    // Sin bloque de precio: el arancel no viaja en el HTML público. Se
+    // descarga en el brochure PDF de la ficha, única superficie con precios.
     syllabusSections: offerSyllabusSections(course, view).map((section) => ({
       "@type": "Syllabus",
       name: section.name,

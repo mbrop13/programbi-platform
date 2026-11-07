@@ -1,5 +1,5 @@
 import { getPais, ISO_CHILE, type Pais } from "@/config/paises";
-import { PRECIOS_VALID_FROM, precioPublico } from "@/config/pricing";
+import { precioPublico, tienePrecioPublico } from "@/config/pricing";
 import { dispositivo } from "@/config/textos";
 import {
   etiquetaHoraLocal,
@@ -22,7 +22,9 @@ const CUOTAS = `${CUOTAS_SIN_INTERES} cuotas sin interés`;
  * Reglas de redacción:
  * - Cada respuesta abre con una frase autocontenida y citable: qué, cuánto,
  *   cuándo o cómo, sin rodeos ni marketing.
- * - Los montos salen de `config/pricing.ts`; aquí no se escribe ninguno.
+ * - Ningún monto se escribe ni se calcula acá: el arancel vigente por país,
+ *   los descuentos y las 3 cuotas sin interés se descargan en el brochure PDF
+ *   de cada curso.
  * - Las horas salen de `lib/paises/horarios.ts` (conversión IANA real desde
  *   el horario base de Chile), no de números fijos por país.
  * - Paraguay no tiene precio público: se muestra «consulta por WhatsApp».
@@ -102,13 +104,10 @@ export type FaqContenido = {
   actualizadoIso: string;
 };
 
-/** Monto en la moneda del país, con el código ISO para que no haya duda al citarlo. */
-function montoConMoneda(iso: string, slug: string): string | null {
-  const valor = precioPublico(iso, slug);
-  if (valor == null) return null;
-  return `${formatMoneda(iso, valor)} ${getPais(iso).moneda}`;
-}
-
+/**
+ * Helper de formato para superficies con precio (brochure, checkout, emails).
+ * El HTML público de la FAQ no lo usa: acá el arancel va en el brochure PDF.
+ */
 export function precioTexto(iso: string, slug: string): string {
   const valor = precioPublico(iso, slug);
   if (valor == null) return "Consulta por WhatsApp";
@@ -120,15 +119,6 @@ function listaNatural(items: string[]): string {
   if (items.length === 0) return "";
   if (items.length === 1) return items[0];
   return `${items.slice(0, -1).join(", ")} y ${items[items.length - 1]}`;
-}
-
-function fechaPrecios(): string {
-  return new Intl.DateTimeFormat("es-CL", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "America/Santiago",
-  }).format(new Date(PRECIOS_VALID_FROM));
 }
 
 function fechaActualizado(): string {
@@ -148,17 +138,18 @@ function rutaDe(iso: string, path: string): string {
   return iso === ISO_CHILE ? path : `/${iso}${path}`;
 }
 
-/** Tabla de precios: mismos montos que el checkout, sin escribirlos a mano. */
+/** Tabla de precios: indica dónde se descarga el arancel, sin publicar montos. */
 function tablaPrecios(iso: string): FaqContenido["precios"] {
   return {
     columnas: CURSOS_TABLA.map((curso) => curso.nombre),
     filas: PAISES_TABLA.map((pais) => ({
       iso: pais.iso,
       pais: pais.nombre,
-      celdas: CURSOS_TABLA.map((curso) => precioTexto(pais.iso, curso.slug)),
+      celdas: CURSOS_TABLA.map(() => "En el brochure PDF"),
       actual: pais.iso === iso,
     })),
-    nota: `Precios de venta publicados desde el ${fechaPrecios()}, en la moneda de cada país. En Paraguay el monto se consulta por WhatsApp porque todavía no hay un precio público aprobado.`,
+    nota:
+      "El arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en el brochure PDF de la ficha del curso. En Paraguay el brochure se pide por WhatsApp porque todavía no hay un precio público aprobado.",
   };
 }
 
@@ -250,14 +241,11 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
   const href = (path: string) => rutaDe(iso, path);
   const comp = dispositivo(iso);
 
-  const pb = montoConMoneda(iso, "power-bi");
-  const ad = montoConMoneda(iso, "analisis-de-datos");
-  const mf = montoConMoneda(iso, "mercado-financiero");
-  const sinPrecio = pb == null || ad == null;
+  const sinPrecio = !tienePrecioPublico(iso);
 
   const introPrecio = sinPrecio
-    ? `En ${nombre} el precio de cada curso se consulta por WhatsApp, porque todavía no hay un monto público publicado, y se puede pagar en ${CUOTAS}.`
-    : `En ${nombre}, el curso de Power BI cuesta ${pb} y el de Análisis de datos ${ad}, en ${CUOTAS}.`;
+    ? `En ${nombre} el arancel vigente se consulta por WhatsApp, porque todavía no hay un monto público publicado, y se puede pagar en ${CUOTAS}.`
+    : `En ${nombre}, el arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en el brochure PDF de la ficha del curso.`;
 
   const introHorario = esChile
     ? `El próximo inicio es el ${PROXIMO_INICIO}, con clases de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} (hora de Chile) los lunes y miércoles o los martes y jueves.`
@@ -392,15 +380,15 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
       id: "precios",
       titulo: "Precios por país y qué incluye",
       resumen:
-        `El precio se publica en la moneda de cada país y se paga en ${CUOTAS}. La tabla muestra el monto local de Power BI y de Análisis de datos; en Paraguay se consulta por WhatsApp.`,
+        `El arancel se publica en la moneda de cada país y se paga en ${CUOTAS}. El monto vigente, los descuentos y las 3 cuotas sin interés se descargan en el brochure PDF de cada curso; en Paraguay se consulta por WhatsApp.`,
       tabla: "precios",
       items: [
         {
           id: "cuanto-cuestan",
           pregunta: "¿Cuánto cuestan los cursos?",
           respuesta: sinPrecio
-            ? `En Paraguay el precio de los cursos se consulta por WhatsApp, porque todavía no hay un monto público publicado. Se puede pagar en ${CUOTAS} y el próximo inicio es el ${PROXIMO_INICIO}.`
-            : `En ${nombre}, el curso de Power BI cuesta ${pb} y el de Análisis de datos ${ad}, en ${CUOTAS}. El resto del catálogo vale ${pb}, salvo la versión de minería de Análisis de datos, que cuesta ${ad}, y Mercado financiero, que cuesta ${mf}.`,
+            ? `En Paraguay el arancel vigente se consulta por WhatsApp, porque todavía no hay un monto público publicado. El brochure PDF de cada curso se pide al mismo canal y el próximo inicio es el ${PROXIMO_INICIO}.`
+            : `El arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en su brochure PDF. El brochure se pide con tu nombre, email y WhatsApp, y el precio de venta de tu país lo confirma el checkout. El próximo inicio es el ${PROXIMO_INICIO}.`,
         },
         {
           id: "moneda-local",
@@ -412,7 +400,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           id: "precio-que-veo",
           pregunta: "¿El precio que veo es el que voy a pagar?",
           respuesta:
-            "El precio de la tabla es el precio de venta publicado para tu país y es el que toma el checkout al momento de pagar. Si pagas con tarjeta internacional, tu banco puede agregar impuestos o comisiones, y ese cargo final no lo define ProgramBI.",
+            "El arancel del brochure PDF es el precio de venta publicado para tu país y es el que toma el checkout al momento de pagar. Si pagas con tarjeta internacional, tu banco puede agregar impuestos o comisiones, y ese cargo final no lo define ProgramBI.",
         },
         {
           id: "licencia-power-bi",
@@ -657,7 +645,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
       { dato: "Próximo inicio", detalle: PROXIMO_INICIO.charAt(0).toUpperCase() + PROXIMO_INICIO.slice(1) },
       { dato: "Días", detalle: esChile ? "Lunes y miércoles, o martes y jueves" : "Lunes y miércoles" },
       { dato: "Horario", detalle: fichaHorario },
-      { dato: "Precio", detalle: sinPrecio ? "Se consulta por WhatsApp" : `Power BI ${precioTexto(iso, "power-bi")} · Análisis de datos ${precioTexto(iso, "analisis-de-datos")}` },
+      { dato: "Precio", detalle: sinPrecio ? "Se consulta por WhatsApp" : "Arancel vigente, descuentos y 3 cuotas sin interés en el brochure PDF de cada curso" },
       { dato: "Certificado", detalle: "ProgramBI al completar; la PL-300 se rinde aparte con Microsoft" },
     ],
     secciones,
