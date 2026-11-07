@@ -2,7 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
+  LEAD_INFO_STORAGE_KEY,
   PRICE_UNLOCK_EVENT,
+  PRICE_UNLOCK_STORAGE_KEY,
   getSavedLeadInfo,
   isPriceUnlockedClient,
   unlockPricesClient,
@@ -45,11 +47,23 @@ export function usePriceUnlock(): UsePriceUnlock {
       setUnlocked(isPriceUnlockedClient());
       setSavedLead(getSavedLeadInfo());
     };
+    // Solo reacciona a las claves del gate: otras escrituras del sitio no
+    // deben provocar renders en todas las tarjetas con precio.
+    const onStorage = (event: StorageEvent) => {
+      if (
+        event.key &&
+        event.key !== PRICE_UNLOCK_STORAGE_KEY &&
+        event.key !== LEAD_INFO_STORAGE_KEY
+      ) {
+        return;
+      }
+      sync();
+    };
     window.addEventListener(PRICE_UNLOCK_EVENT, sync);
-    window.addEventListener("storage", sync);
+    window.addEventListener("storage", onStorage);
     return () => {
       window.removeEventListener(PRICE_UNLOCK_EVENT, sync);
-      window.removeEventListener("storage", sync);
+      window.removeEventListener("storage", onStorage);
     };
   }, []);
 

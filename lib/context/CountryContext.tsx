@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo } from "react";
 import { usePathname } from "next/navigation";
 import { esRutaComercial, paisDesdeRuta } from "@/lib/paises/rutas";
+import { detectarPaisCliente, PAIS_STORAGE_KEY } from "@/lib/paises/cliente";
 
 /* ═══════════════════════════════════════════════════════════════ */
 /* TYPES                                                           */
@@ -111,7 +112,7 @@ export const COUNTRIES: CountryData[] = [
     flagUrl: "https://flagcdn.com/w40/us.png" },
 ];
 
-const STORAGE_KEY = "programbi_country_iso";
+const STORAGE_KEY = PAIS_STORAGE_KEY;
 const DEFAULT_ISO = "cl";
 
 /* ═══════════════════════════════════════════════════════════════ */
@@ -139,17 +140,23 @@ export function CountryProvider({ children }: { children: React.ReactNode }) {
   const rutaIso = paisDesdeRuta(pathname);
   const iso = rutaIso ?? (esRutaComercial(pathname) ? DEFAULT_ISO : savedIso);
 
-  // localStorage only — ipapi.co is blocked by CSP and raced the LCP path.
-  // En las rutas comerciales el país lo marca la URL, no esta preferencia.
+  // Detección en cliente, al montar: cookie geo del proxy → preferencia guardada
+  // → zona horaria → Chile. Así el primer render (servidor y cliente) coincide
+  // en Chile y no hay hydration mismatch. En las rutas comerciales el país lo
+  // marca la URL, no esta preferencia.
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved && COUNTRIES.some((c) => c.iso === saved)) setSavedIso(saved);
+    const detectado = detectarPaisCliente();
+    if (COUNTRIES.some((c) => c.iso === detectado)) setSavedIso(detectado);
   }, []);
 
   const setCountryByIso = useCallback((newIso: string) => {
     if (COUNTRIES.some((c) => c.iso === newIso)) {
       setSavedIso(newIso);
-      localStorage.setItem(STORAGE_KEY, newIso);
+      try {
+        localStorage.setItem(STORAGE_KEY, newIso);
+      } catch {
+        // Safari en modo privado puede lanzar: la selección sigue en memoria.
+      }
     }
   }, []);
 
