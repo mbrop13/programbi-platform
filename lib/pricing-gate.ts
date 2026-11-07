@@ -12,6 +12,8 @@
  * romper el render de servidor.
  */
 
+import { esIsoPais, ISO_CHILE } from "@/config/paises";
+
 export const PRICE_UNLOCK_STORAGE_KEY = "pb_price_unlocked";
 export const PRICE_UNLOCK_COOKIE = "pb_price_unlocked";
 export const LEAD_INFO_STORAGE_KEY = "pb_lead_info";
@@ -127,17 +129,19 @@ export function lockPricesClient(): void {
 
 /**
  * Ruta del brochure del curso. Chile vive en la raíz; el resto de los países
- * usan su prefijo (/pe/cursos/..., /mx/cursos/...).
+ * usan su prefijo (/pe/cursos/..., /mx/cursos/...). Un país desconocido cae a
+ * la versión chilena para no generar enlaces a un 404.
  */
 export function courseBrochurePath(slug: string, pais?: string | null): string {
-  const limpio = (slug || "").trim();
+  const limpio = (slug || "").trim().replace(/^\/+|\/+$/g, "");
   const iso = (pais || "").trim().toLowerCase();
-  if (!iso || iso === "cl") return `/cursos/${limpio}/brochure`;
+  if (!esIsoPais(iso) || iso === ISO_CHILE) return `/cursos/${limpio}/brochure`;
   return `/${iso}/cursos/${limpio}/brochure`;
 }
 
 /** Ruta del brochure con el país como query (`?pais=pe`), lista para abrir. */
 export function courseBrochureUrl(slug: string, pais?: string | null): string {
-  const iso = (pais || "cl").trim().toLowerCase() || "cl";
-  return `${courseBrochurePath(slug, iso)}?pais=${encodeURIComponent(iso)}`;
+  const iso = (pais || "").trim().toLowerCase();
+  const efectivo = esIsoPais(iso) ? iso : ISO_CHILE;
+  return `${courseBrochurePath(slug, efectivo)}?pais=${encodeURIComponent(efectivo)}`;
 }
