@@ -12,8 +12,9 @@ import { filasComparativa } from "@/components/guias/comparativa";
 import { encabezadosVisibles } from "@/components/guias/indice";
 import { ISO_CHILE } from "@/config/paises";
 import { fichaCurso } from "@/lib/guias/curso";
-import { fechaActualizado, resolverPrecios } from "@/lib/guias/precio";
+import { fechaActualizado, resolverPrecios, sinMontosDeCurso } from "@/lib/guias/precio";
 import type { Guia } from "@/lib/guias/tipos";
+import { courseBrochurePath } from "@/lib/pricing-gate";
 import { absoluteUrl, jsonLdString, SITE_URL } from "@/lib/seo";
 
 type Props = {
@@ -36,6 +37,7 @@ type Props = {
  */
 export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas }: Props) {
   const iso = guia.country === "transversal" ? ISO_CHILE : guia.country;
+  const brochureHref = guia.course === "general" ? undefined : courseBrochurePath(guia.course, iso);
   const body = resolverPrecios(guia.body, guia)
     // El cuerpo repite el H1 del frontmatter: se quita para no duplicar el H1.
     .replace(/^#\s+.*\n+/, "");
@@ -59,7 +61,7 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
         "@type": "Article",
         "@id": `${canonical}#article`,
         headline: guia.h1,
-        description: guia.description,
+        description: sinMontosDeCurso(guia.description),
         inLanguage: guia.lang,
         datePublished: guia.updated,
         dateModified: guia.updated,
@@ -161,6 +163,7 @@ export default function GuiaPage({ guia, rutaIndice, nombreMercado, relacionadas
               {esCursoConocido ? (
                 <TablaComparativa
                   filas={filasComparativa(guia.course)}
+                  brochureHref={brochureHref}
                   nota="Comparación cualitativa: no incluye precios de terceros. El precio del curso en vivo sale de la lista vigente de ProgramBI."
                 />
               ) : null}

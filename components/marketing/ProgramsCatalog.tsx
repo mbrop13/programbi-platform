@@ -8,6 +8,10 @@ import { courses, COURSE_NAV_GROUPS, getCoursesBySlugs } from "@/lib/data/course
 import { getCourseDateLabel } from "@/lib/data/course-schedules";
 import { HOME_COURSE_SLUGS } from "@/lib/seo";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
+import { usePaisRuta } from "@/lib/paises/cliente";
+import { usePriceUnlock } from "@/hooks/usePriceUnlock";
+import { courseBrochurePath } from "@/lib/pricing-gate";
+import { formatMoneda, precioVenta } from "@/lib/paises/precios";
 
 const FILTERS = [
   { id: "todos", label: "Todos" },
@@ -16,6 +20,8 @@ const FILTERS = [
 
 export default function ProgramsCatalog() {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("todos");
+  const pais = usePaisRuta();
+  const { unlocked } = usePriceUnlock();
 
   const visible = useMemo(() => {
     if (filter === "todos") return getCoursesBySlugs(HOME_COURSE_SLUGS);
@@ -61,33 +67,68 @@ export default function ProgramsCatalog() {
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {visible.slice(0, 6).map((course) => (
-            <Link
-              key={course.slug}
-              href={`/cursos/${course.slug}`}
-              onClick={() => trackCourseCardClick(course.slug, "home_programs")}
-              className="group overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20"
-            >
-              <div className="relative aspect-[16/10] bg-wash">
-                <CourseImage
-                  src={course.imageUrl}
-                  alt={course.title}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                />
-              </div>
-              <div className="px-6 py-5">
-                <h3 className="text-xl font-bold tracking-tight text-ink">{course.title}</h3>
-                <p className="mt-1 line-clamp-2 text-sm text-mute">{course.shortDescription}</p>
-                <p className="mt-3 inline-flex items-center gap-1 text-xs text-faint">
-                  <Clock size={12} /> {course.durationHours} h · En vivo
-                </p>
-                <p className="mt-2 text-xs font-semibold text-ink">{getCourseDateLabel(course.slug)}</p>
-                <span className="mt-4 inline-flex text-sm font-semibold text-ink">Ver temario</span>
-              </div>
-            </Link>
-          ))}
+          {visible.slice(0, 6).map((course) => {
+            const precio = unlocked ? precioVenta(pais, course.slug) : null;
+            return (
+              <article
+                key={course.slug}
+                className="group overflow-hidden rounded-[26px] border border-line bg-paper transition-colors hover:border-ink/20"
+              >
+                <Link
+                  href={`/cursos/${course.slug}`}
+                  onClick={() => trackCourseCardClick(course.slug, "home_programs")}
+                  className="block no-underline"
+                >
+                  <div className="relative aspect-[16/10] bg-wash">
+                    <CourseImage
+                      src={course.imageUrl}
+                      alt={course.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                    />
+                  </div>
+                </Link>
+                <div className="px-6 py-5">
+                  <h3 className="text-xl font-bold tracking-tight text-ink">
+                    <Link
+                      href={`/cursos/${course.slug}`}
+                      onClick={() => trackCourseCardClick(course.slug, "home_programs")}
+                      className="text-ink no-underline hover:text-mute"
+                    >
+                      {course.title}
+                    </Link>
+                  </h3>
+                  <p className="mt-1 line-clamp-2 text-sm text-mute">{course.shortDescription}</p>
+                  <p className="mt-3 inline-flex items-center gap-1 text-xs text-faint">
+                    <Clock size={12} /> {course.durationHours} h · En vivo
+                  </p>
+                  <p className="mt-2 text-xs font-semibold text-ink">{getCourseDateLabel(course.slug)}</p>
+                  {precio != null ? (
+                    <p className="mt-2 text-sm font-semibold text-ink">{formatMoneda(pais, precio)}</p>
+                  ) : null}
+                  {unlocked ? (
+                    <Link
+                      href={`/cursos/${course.slug}`}
+                      onClick={() => trackCourseCardClick(course.slug, "home_programs")}
+                      className="mt-4 inline-flex text-sm font-semibold text-ink no-underline hover:text-mute"
+                    >
+                      Ver temario
+                    </Link>
+                  ) : (
+                    <Link
+                      href={courseBrochurePath(course.slug, pais)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex text-sm font-semibold text-ink no-underline hover:text-mute"
+                    >
+                      Ver temario y brochure PDF →
+                    </Link>
+                  )}
+                </div>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>

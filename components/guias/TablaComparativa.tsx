@@ -3,8 +3,12 @@
  *
  * En escritorio es una tabla con la columna «curso en vivo» destacada; en
  * mobile se convierte en tarjetas apiladas por criterio, sin scroll horizontal.
- * Todo CSS: no hay JS ni estado.
+ * Todo CSS: no hay JS ni estado. Ningún criterio lleva montos; el arancel se
+ * consulta en el brochure PDF que enlaza `brochureHref`.
  */
+import Link from "next/link";
+import { FileText } from "lucide-react";
+
 export type FilaComparativa = {
   criterio: string;
   enVivo: string;
@@ -17,12 +21,15 @@ export default function TablaComparativa({
   subtitulo = "Lo que cambia, en la práctica",
   filas,
   nota,
+  brochureHref,
   embebido = false,
 }: {
   titulo?: string;
   subtitulo?: string;
   filas: FilaComparativa[];
   nota?: string;
+  /** Ruta del brochure PDF del curso, para consultar el arancel. */
+  brochureHref?: string;
   /** Dentro del bloque «Resumen visual»: sin margen ni encabezado visibles. */
   embebido?: boolean;
 }) {
@@ -104,6 +111,16 @@ export default function TablaComparativa({
       </ul>
 
       {nota ? <p className="mt-3 text-xs leading-relaxed text-faint">{nota}</p> : null}
+      {brochureHref ? (
+        <Link
+          href={brochureHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline hover:text-mute"
+        >
+          <FileText size={14} aria-hidden /> Ver precios y temario en el brochure PDF →
+        </Link>
+      ) : null}
     </section>
   );
 }

@@ -12,6 +12,9 @@ import { type CourseSchedule } from "@/lib/data/course-schedules";
 import { usePaisRuta, useRutaLocal } from "@/lib/paises/cliente";
 import { zonaDe } from "@/lib/paises/horarios";
 import { getPais } from "@/config/paises";
+import { usePriceUnlock } from "@/hooks/usePriceUnlock";
+import { courseBrochurePath } from "@/lib/pricing-gate";
+import { formatMoneda, precioVenta } from "@/lib/paises/precios";
 
 const CATALOG_ORDER = [
   "analisis-de-datos",
@@ -112,11 +115,14 @@ export type CourseCatalogItem = {
 export default function CursosPageClient({
   catalog,
   schedules,
-  preciosLocales = {},
 }: {
   catalog: CourseCatalogItem[];
   schedules: CourseSchedule[];
-  /** Precio ya formateado por curso, por ejemplo "$159.900 ARS". Vacío en Chile. */
+  /**
+   * Ya no se usa: los montos se calculan en el cliente con `precioVenta` y
+   * `formatMoneda` recién cuando el visitante desbloqueó los precios. Se
+   * mantiene en la firma para no romper a quien lo pase.
+   */
   preciosLocales?: Record<string, string>;
 }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -129,6 +135,7 @@ export default function CursosPageClient({
   const paisNombre = getPais(pais).nombre;
   const hrefLocal = useRutaLocal();
   const timeZone = zonaDe(pais);
+  const { unlocked } = usePriceUnlock();
 
   const query = searchQuery.trim();
 
@@ -204,6 +211,7 @@ export default function CursosPageClient({
   const orderedCourses = rankCatalog(catalog, query);
   const featured = query ? undefined : orderedCourses.find((c) => c.slug === "analisis-de-datos");
   const rest = featured ? orderedCourses.filter((c) => c.slug !== featured.slug) : orderedCourses;
+  const precioFeatured = featured ? precioVenta(pais, featured.slug) : null;
 
   return (
     <>
@@ -285,23 +293,55 @@ export default function CursosPageClient({
                   </Link>
                 )}
               </div>
-              <Link
-                href={hrefLocal(`/cursos/${featured.slug}`)}
-                onClick={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
-                className="flex flex-col justify-center px-6 py-6 no-underline lg:col-span-5 lg:px-8 lg:py-6"
-              >
+              <div className="flex flex-col justify-center px-6 py-6 lg:col-span-5 lg:px-8 lg:py-6">
                 <p className="text-xs font-semibold text-mute">
                   60 horas por nivel · básico-intermedio y avanzado
                 </p>
                 <h2 className="mt-2 text-2xl font-bold tracking-tight text-ink sm:text-3xl">
-                  Curso de análisis de datos
+                  <Link
+                    href={hrefLocal(`/cursos/${featured.slug}`)}
+                    onClick={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
+                    className="text-ink no-underline hover:text-mute"
+                  >
+                    Curso de análisis de datos
+                  </Link>
                 </h2>
                 <p className="mt-3 text-sm leading-relaxed text-mute">{featured.shortDescription}</p>
                 <p className="mt-4 text-sm font-semibold text-ink">SQL · Power BI · Python</p>
-                {preciosLocales[featured.slug] ? (
-                  <p className="mt-3 text-sm font-semibold text-ink">{preciosLocales[featured.slug]}</p>
+                {unlocked && precioFeatured != null ? (
+                  <p className="mt-3 text-sm font-semibold text-ink">
+                    {formatMoneda(pais, precioFeatured)}
+                  </p>
                 ) : null}
-                <span className="mt-5 inline-flex text-sm font-semibold text-ink">Ver temario</span>
+                <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+                  {unlocked ? (
+                    <Link
+                      href={hrefLocal(`/cursos/${featured.slug}`)}
+                      onClick={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
+                      className="inline-flex text-sm font-semibold text-ink no-underline hover:text-mute"
+                    >
+                      Ver ficha y fechas
+                    </Link>
+                  ) : (
+                    <>
+                      <Link
+                        href={courseBrochurePath(featured.slug, pais)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex text-sm font-semibold text-ink no-underline hover:text-mute"
+                      >
+                        Ver temario y brochure PDF →
+                      </Link>
+                      <Link
+                        href={hrefLocal(`/cursos/${featured.slug}`)}
+                        onClick={() => trackCourseCardClick(featured.slug, "cursos_catalog")}
+                        className="inline-flex text-sm font-medium text-mute no-underline hover:text-ink"
+                      >
+                        Ver ficha y fechas
+                      </Link>
+                    </>
+                  )}
+                </div>
                 <div className="mt-5">
                   <CourseCohortFacts
                     slug={featured.slug}
@@ -312,62 +352,85 @@ export default function CursosPageClient({
                     medium
                   />
                 </div>
-              </Link>
+              </div>
             </article>
           )}
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {rest.map((course) => (
-              <Link
-                key={course.slug}
-                href={hrefLocal(`/cursos/${course.slug}`)}
-                onClick={() => trackCourseCardClick(course.slug, "cursos_catalog")}
-                className="group overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20"
-              >
-                <div className="relative aspect-[16/10] bg-wash">
-                  <CourseImage
-                    src={course.imageUrl}
-                    alt={course.title}
-                    fill
-                    loading="lazy"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                  />
-                  {NUEVOS.has(course.slug) ? (
-                    <span className="absolute right-4 top-4 rounded-full bg-ink px-2.5 py-1 text-xs font-semibold text-canvas shadow-sm">
-                      Nuevo
-                    </span>
-                  ) : null}
-                </div>
-                <div className="px-4 pt-4">
-                  <CourseCohortFacts
-                    slug={course.slug}
-                    schedules={schedules}
-                    timeZone={timeZone}
-                    pais={pais}
-                    loaded
-                    compact
-                  />
-                </div>
-                <div className="px-6 py-5">
-                  <h2 className="text-xl font-bold tracking-tight text-ink">
-                    {course.slug === "power-bi"
-                      ? "Curso Power BI"
-                      : course.slug === "power-automate"
-                        ? "Curso Power Automate"
-                        : course.title}
-                  </h2>
-                  <p className="mt-1 text-sm text-mute">{course.shortDescription}</p>
-                  <p className="mt-3 inline-flex items-center gap-1 text-xs text-faint">
-                    <Clock size={12} /> {course.durationHours} h · En vivo
-                    {course.levelsCount && course.levelsCount > 1 ? ` · ${course.levelsCount} niveles` : ""}
-                  </p>
-                  {preciosLocales[course.slug] ? (
-                    <p className="mt-2 text-sm font-semibold text-ink">{preciosLocales[course.slug]}</p>
-                  ) : null}
-                </div>
-              </Link>
-            ))}
+            {rest.map((course) => {
+              const precio = unlocked ? precioVenta(pais, course.slug) : null;
+              return (
+                <article
+                  key={course.slug}
+                  className="group overflow-hidden rounded-[26px] border border-line bg-paper transition-colors hover:border-ink/20"
+                >
+                  <Link
+                    href={hrefLocal(`/cursos/${course.slug}`)}
+                    onClick={() => trackCourseCardClick(course.slug, "cursos_catalog")}
+                    className="block no-underline"
+                  >
+                    <div className="relative aspect-[16/10] bg-wash">
+                      <CourseImage
+                        src={course.imageUrl}
+                        alt={course.title}
+                        fill
+                        loading="lazy"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                      />
+                      {NUEVOS.has(course.slug) ? (
+                        <span className="absolute right-4 top-4 rounded-full bg-ink px-2.5 py-1 text-xs font-semibold text-canvas shadow-sm">
+                          Nuevo
+                        </span>
+                      ) : null}
+                    </div>
+                  </Link>
+                  <div className="px-4 pt-4">
+                    <CourseCohortFacts
+                      slug={course.slug}
+                      schedules={schedules}
+                      timeZone={timeZone}
+                      pais={pais}
+                      loaded
+                      compact
+                    />
+                  </div>
+                  <div className="px-6 py-5">
+                    <h2 className="text-xl font-bold tracking-tight text-ink">
+                      <Link
+                        href={hrefLocal(`/cursos/${course.slug}`)}
+                        onClick={() => trackCourseCardClick(course.slug, "cursos_catalog")}
+                        className="text-ink no-underline hover:text-mute"
+                      >
+                        {course.slug === "power-bi"
+                          ? "Curso Power BI"
+                          : course.slug === "power-automate"
+                            ? "Curso Power Automate"
+                            : course.title}
+                      </Link>
+                    </h2>
+                    <p className="mt-1 text-sm text-mute">{course.shortDescription}</p>
+                    <p className="mt-3 inline-flex items-center gap-1 text-xs text-faint">
+                      <Clock size={12} /> {course.durationHours} h · En vivo
+                      {course.levelsCount && course.levelsCount > 1 ? ` · ${course.levelsCount} niveles` : ""}
+                    </p>
+                    {precio != null ? (
+                      <p className="mt-2 text-sm font-semibold text-ink">{formatMoneda(pais, precio)}</p>
+                    ) : null}
+                    {unlocked ? null : (
+                      <Link
+                        href={courseBrochurePath(course.slug, pais)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-3 inline-flex text-sm font-semibold text-ink no-underline hover:text-mute"
+                      >
+                        Ver temario y brochure PDF →
+                      </Link>
+                    )}
+                  </div>
+                </article>
+              );
+            })}
           </div>
 
           {query && orderedCourses.length === 0 && (

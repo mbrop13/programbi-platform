@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FileText } from "lucide-react";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import type { Course } from "@/lib/data/courses";
 import {
@@ -7,7 +8,10 @@ import {
   type LandingCursoCopy,
 } from "@/lib/data/landing-cursos";
 import type { LandingCursoContenido } from "@/lib/paises/landing-curso";
-import { NOTA_PAGO, localizarMercado } from "@/lib/paises/precios";
+import { getPais } from "@/config/paises";
+import { textoCuotas } from "@/config/cuotas";
+import { localizarMercado } from "@/lib/paises/precios";
+import { courseBrochurePath } from "@/lib/pricing-gate";
 import { rutaLocal } from "@/lib/paises/rutas";
 
 export default function CursoLanding({
@@ -27,6 +31,18 @@ export default function CursoLanding({
       ? LANDING_CURSOS["curso-python"]
       : LANDING_CURSOS["curso-sql-online"];
   const otroSeo = seoLandingCurso(otro, iso);
+  // La FAQ de precio del mercado se arma en lib/paises/landing-curso con el
+  // monto dentro del texto: se reescribe sin cifras y el arancel vive solo en
+  // el brochure PDF.
+  const mediosPago = getPais(iso).mediosPago;
+  const faqs = contenido.faqs.map((faq) =>
+    /cu[aá]nto cuesta/i.test(faq.q)
+      ? {
+          ...faq,
+          a: `El arancel vigente se descarga en el brochure PDF del curso, junto con el detalle de las cuotas sin interés. Los medios de pago publicados para ${contenido.paisNombre} son: ${mediosPago.join("; ")}. El checkout confirma las opciones disponibles para la cohorte.`,
+        }
+      : faq
+  );
 
   return (
     <article className="bg-canvas px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
@@ -52,54 +68,47 @@ export default function CursoLanding({
         <p className="mt-5 text-lg leading-relaxed text-mute">{L(copy.lead)}</p>
 
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-          {contenido.consultarPrecio ? (
-            <>
-              <WhatsAppCta
-                page={href(copy.path)}
-                intent="curso"
-                course={course.title}
-                className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
-              >
-                Consulta el valor por WhatsApp
-              </WhatsAppCta>
-              <Link
-                href={href(`/cursos/${course.slug}`)}
-                className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-paper px-6 text-sm font-medium text-ink no-underline hover:bg-wash"
-              >
-                Ver ficha y fechas
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link
-                href={href(`/cursos/${course.slug}`)}
-                className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
-              >
-                Ver ficha y fechas
-              </Link>
-              <WhatsAppCta
-                page={href(copy.path)}
-                intent="curso"
-                course={course.title}
-                className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-paper px-6 text-sm font-medium text-ink no-underline hover:bg-wash"
-              >
-                WhatsApp
-              </WhatsAppCta>
-            </>
-          )}
+          <Link
+            href={courseBrochurePath(course.slug, iso)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
+          >
+            <FileText size={16} aria-hidden /> Descargar brochure PDF con precios →
+          </Link>
+          <Link
+            href={href(`/cursos/${course.slug}`)}
+            className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-paper px-6 text-sm font-medium text-ink no-underline hover:bg-wash"
+          >
+            Ver ficha y fechas
+          </Link>
+          <WhatsAppCta
+            page={href(copy.path)}
+            intent="curso"
+            course={course.title}
+            className="inline-flex h-12 items-center justify-center rounded-full border border-line bg-paper px-6 text-sm font-medium text-ink no-underline hover:bg-wash"
+          >
+            WhatsApp
+          </WhatsAppCta>
         </div>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <div className="rounded-2xl border border-line bg-paper p-5">
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
-              {contenido.precioEtiqueta}
+              Arancel y cuotas
             </p>
-            <p className="mt-2 text-2xl font-bold tracking-tight text-ink">
-              {contenido.precioTexto}
+            <Link
+              href={courseBrochurePath(course.slug, iso)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex items-center gap-2 text-lg font-bold leading-snug tracking-tight text-ink no-underline hover:text-mute"
+            >
+              <FileText size={18} aria-hidden /> Ver precios y temario en el brochure PDF →
+            </Link>
+            <p className="mt-2 text-sm leading-relaxed text-mute">
+              El brochure trae el arancel vigente en {contenido.paisNombre}, el descuento publicado y{" "}
+              {textoCuotas(iso)}.
             </p>
-            {iso !== "cl" && contenido.precio != null ? (
-              <p className="mt-1 text-[11px] leading-snug text-mute">{NOTA_PAGO}</p>
-            ) : null}
             <p className="mt-2 text-sm leading-relaxed text-mute">{contenido.cohorteTexto}</p>
           </div>
           <div className="rounded-2xl border border-line bg-paper p-5">
@@ -180,7 +189,7 @@ export default function CursoLanding({
         <section className="mt-14">
           <h2 className="text-2xl font-bold tracking-tight text-ink">Preguntas frecuentes</h2>
           <div className="mt-6 divide-y divide-line border-y border-line">
-            {contenido.faqs.map((faq) => (
+            {faqs.map((faq) => (
               <details key={faq.q} className="group py-4">
                 <summary className="cursor-pointer list-none text-base font-semibold text-ink">
                   {faq.q}
