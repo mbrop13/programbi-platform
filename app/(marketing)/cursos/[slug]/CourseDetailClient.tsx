@@ -63,16 +63,16 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { formatMoneda, localizarMercado, NOTA_PAGO, porcentajeDescuento, precioCurso, precioLista, precioVenta } from "@/lib/paises/precios";
+import { formatMoneda, localizarMercado, NOTA_PAGO, porcentajeDescuento, precioListaVenta, precioVenta } from "@/lib/paises/precios";
 import { monedaPublica } from "@/config/pricing";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
-import type { PrecioTarjeta } from "@/lib/paises/precio-publico";
-import type { CheckoutPromotion } from "@/lib/pago/catalogo";
 import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
 import { ISO_CHILE } from "@/config/paises";
-import { tienePrecioPublico } from "@/config/pricing";
 import { NOTA_CUOTAS } from "@/config/cuotas";
 import { COUNTRIES } from "@/lib/context/CountryContext";
+import { usePriceUnlock } from "@/hooks/usePriceUnlock";
+import { courseBrochureUrl } from "@/lib/pricing-gate";
+import { BrochureGateForm } from "@/components/marketing/BrochureGateForm";
 
 function phoneCodeFor(iso: string) {
   return COUNTRIES.find((country) => country.iso === iso)?.phoneCode || "+56";
@@ -154,9 +154,6 @@ function courseCheckoutUrl(slug: string, levelName?: string, pais?: string) {
   return `/pago?${params.toString()}`;
 }
 
-const PDF_URL =
-  "https://drive.google.com/file/d/1EMO5s2Sre6EUMyaxW7JIjy24tEC5mCNz/view?usp=drive_link";
-
 /**
  * H1 de la vista `?para=empresas`. Nombra la capacitación in-company y el
  * curso; el país se localiza después con `localizarMercado`.
@@ -222,20 +219,12 @@ export default function CourseDetailClient({
   initialSchedules,
   initialView = "publico",
   initialLevelName,
-  mostrarPrecioLocal = false,
-  precioTarjeta = null,
-  preciosLocales = {},
   detalleLocal,
 }: {
   course: Course;
   initialSchedules: CourseSchedule[];
   initialView?: CourseOfferView;
   initialLevelName?: string;
-  /** Muestra el precio del mercado local (por país) en vez del catálogo en CLP. */
-  mostrarPrecioLocal?: boolean;
-  /** Precio del mercado (ARS, MXN, PEN, COP, UYU) ya armado en el servidor. */
-  precioTarjeta?: PrecioTarjeta | null;
-  preciosLocales?: Record<string, string>;
   detalleLocal?: DetalleCursoLocal;
 }) {
   const router = useRouter();
@@ -260,10 +249,8 @@ export default function CourseDetailClient({
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authRedirect, setAuthRedirect] = useState(`/cursos/${course.slug}`);
-  const [userPlan, setUserPlan] = useState<string | null>(null);
   const [isFreeTrial, setIsFreeTrial] = useState(false);
   const [schedules, setSchedules] = useState<CourseSchedule[]>(initialSchedules);
-  const [promotions, setPromotions] = useState<CheckoutPromotion[]>([]);
   const [selectedScheduleIndex, setSelectedScheduleIndex] = useState(0);
   const [isScheduleDropdownOpen, setIsScheduleDropdownOpen] = useState(false);
   const pais = usePaisRuta();
@@ -274,26 +261,18 @@ export default function CourseDetailClient({
   const levels = levelsForView(course, view);
   const catalogLevelCount = course.levels?.length ?? 0;
 
-  const notaTarjeta =
-    (precioTarjeta && levels[selectedLevel]?.name
-      ? precioTarjeta.notasPorNivel[levels[selectedLevel].name]
-      : null) ||
-    precioTarjeta?.nota ||
-    null;
-  const precioLocal = pais === ISO_CHILE ? null : precioCurso(pais, course.slug);
-  const listaLocal = pais === ISO_CHILE ? null : precioLista(pais, course.slug);
-  const mostrarLocal = pais !== ISO_CHILE && mostrarPrecioLocal && precioLocal != null;
-  const descuentoLocal =
-    listaLocal != null && precioLocal != null ? porcentajeDescuento(listaLocal, precioLocal) : 0;
-  const convertAndFormat = (priceCLP: number | null | undefined) => {
-    if (mostrarLocal && precioLocal != null) return formatMoneda(pais, precioLocal);
-    if (!priceCLP) return "";
-    return new Intl.NumberFormat("es-CL", {
-      style: "currency",
-      currency: "CLP",
-      maximumFractionDigits: 0,
-    }).format(priceCLP);
-  };
+  // Gate de precios: el monto se calcula solo en cliente y solo se pinta con
+  // sesión iniciada o con el brochure ya desbloqueado. Nada de esto viaja en el
+  // HTML inicial ni en el flight data de RSC.
+  const { unlocked: priceUnlocked, unlock } = usePriceUnlock();
+  const canSeePrice = isLoggedIn || priceUnlocked;
+  const precioLocalCliente = precioVenta(pais, course.slug);
+  const listaLocalCliente = precioListaVenta(pais, course.slug);
+  const descuentoLocalCliente =
+    listaLocalCliente != null && precioLocalCliente != null
+      ? porcentajeDescuento(listaLocalCliente, precioLocalCliente)
+      : 0;
+  const brochureUrl = courseBrochureUrl(course.slug, pais);
 
   // Particular: la compra siempre está disponible (haya o no fecha publicada).
   // Logueado se nombra "Comprar ahora"; sin sesión, "Inscribirse" abre el registro
@@ -343,7 +322,6 @@ export default function CourseDetailClient({
             .eq("id", data.user.id)
             .single();
           if (profile) {
-            setUserPlan(profile.subscription_plan);
             if (profile.subscription_start_at) {
               const daysSinceStart =
                 (Date.now() - new Date(profile.subscription_start_at).getTime()) / (1000 * 60 * 60 * 24);
@@ -371,15 +349,6 @@ export default function CourseDetailClient({
   useEffect(() => {
     setSchedules(initialSchedules);
   }, [initialSchedules]);
-
-  useEffect(() => {
-    fetch("/api/promotions")
-      .then((r) => r.json())
-      .then((promoData: unknown) => {
-        if (Array.isArray(promoData)) setPromotions(promoData as CheckoutPromotion[]);
-      })
-      .catch(console.error);
-  }, []);
 
   const nextCheckoutUrl = courseCheckoutUrl(
     course.slug,
@@ -443,49 +412,6 @@ export default function CourseDetailClient({
     setSelectedScheduleIndex(0);
   }, [selectedLevel, activeSchedulesList.length]);
 
-  const rawPrice = activeLevel?.price || null;
-  const baseOriginalPrice = activeLevel?.originalPrice || course.originalPrice || rawPrice;
-  const applicablePromo = promotions.find(
-    (p) =>
-      p.target_type === "all" ||
-      p.target_type === "courses" ||
-      (p.target_type === "specific_course" && p.target_id === course.slug)
-  );
-
-  let promoDiscountedPrice = rawPrice;
-  let promoOriginalPrice = rawPrice;
-  let hasPromoDiscount = false;
-
-  if (applicablePromo && rawPrice) {
-    promoOriginalPrice = rawPrice;
-    if (applicablePromo.promo_price) {
-      promoDiscountedPrice = applicablePromo.promo_price;
-      hasPromoDiscount = true;
-    } else if (applicablePromo.discount_percentage) {
-      promoDiscountedPrice = Math.round((rawPrice * (100 - applicablePromo.discount_percentage)) / 100);
-      hasPromoDiscount = true;
-    }
-  }
-
-  const isSpecialization =
-    course.durationHours > 50 ||
-    course.slug === "analisis-de-datos" ||
-    course.slug === "analitica-mineria";
-  let discPercent = 0;
-  if (userPlan === "pro") discPercent = isSpecialization ? 10 : 20;
-  else if (userPlan === "max") discPercent = isSpecialization ? 12.5 : 25;
-  else if (userPlan === "ultra") discPercent = isSpecialization ? 20 : 40;
-
-  const priceAfterPromo = hasPromoDiscount ? promoDiscountedPrice : rawPrice;
-  const currentPrice = priceAfterPromo ? Math.floor(priceAfterPromo * (1 - discPercent / 100)) : null;
-  const grandTotal = currentPrice;
-  const effectiveOriginal = hasPromoDiscount ? promoOriginalPrice : baseOriginalPrice || rawPrice;
-  const originalGrandTotal = effectiveOriginal;
-  const totalDiscountPercentage =
-    originalGrandTotal && grandTotal && originalGrandTotal > grandTotal
-      ? Math.round(((originalGrandTotal - grandTotal) / originalGrandTotal) * 100)
-      : 0;
-
   const hours = activeLevel?.durationHours || course.durationHours;
   const outcomes = activeLevel?.whatYouLearn?.length ? activeLevel.whatYouLearn : course.whatYouLearn;
   const nextStart = levelSchedule ? formatSchedule(levelSchedule, scheduleZone, pais) : null;
@@ -529,9 +455,6 @@ export default function CourseDetailClient({
   ];
 
   const hasGallery = hasCourseGallery(course.slug);
-  // Paraguay todavía no tiene monto aprobado por Manu: se consulta por WhatsApp.
-  const sinPrecioAprobado =
-    !isEmpresa && pais !== ISO_CHILE && !precioTarjeta && precioLocal == null && !tienePrecioPublico(pais);
 
   return (
     <>
@@ -701,9 +624,9 @@ export default function CourseDetailClient({
               </div>
 
               <div className="mb-5 border-t border-line pt-5">
-                {/* Precio público desde el primer render: `precioTarjeta` viene
-                    calculado en el servidor (precioCurso) y el catálogo CLP sale
-                    de PRECIOS_CLP. No depende de la sesión ni de un formulario. */}
+                {/* El monto se calcula en cliente y solo se pinta con sesión
+                    iniciada o con el brochure ya desbloqueado: el HTML inicial
+                    nunca lo trae, ni en el flight data de RSC. */}
                 {isEmpresa ? (
                   <p className="text-sm leading-relaxed text-mute">
                     {tiered
@@ -712,31 +635,8 @@ export default function CourseDetailClient({
                         ? "La cotización incluye los dos niveles de 60 horas. Eliges el nivel y el tamaño del equipo."
                         : "Armamos la cotización según el equipo y el calendario de tu empresa."}
                   </p>
-                ) : precioTarjeta ? (
-                  <div>
-                    {precioTarjeta.lista && precioTarjeta.descuento > 0 ? (
-                      <p className="text-sm text-faint">
-                        <span className="line-through">{precioTarjeta.lista}</span>
-                        <span className="ml-2 font-semibold text-ink">{precioTarjeta.descuento}% off</span>
-                      </p>
-                    ) : null}
-                    <p className="text-3xl font-bold tracking-tight text-ink">{precioTarjeta.actual}</p>
-                    <p className="mt-2 text-xs leading-snug text-mute">{notaTarjeta || NOTA_PAGO}</p>
-                    {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
-                  </div>
-                ) : mostrarLocal && precioLocal != null ? (
-                  <div>
-                    {listaLocal != null && descuentoLocal > 0 ? (
-                      <p className="text-sm text-faint">
-                        <span className="line-through">{formatMoneda(pais, listaLocal)}</span>
-                        <span className="ml-2 font-semibold text-ink">{descuentoLocal}% off</span>
-                      </p>
-                    ) : null}
-                    <p className="text-3xl font-bold tracking-tight text-ink">{formatMoneda(pais, precioLocal)}</p>
-                    <p className="mt-2 text-xs leading-snug text-mute">{NOTA_PAGO}</p>
-                    {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
-                  </div>
-                ) : sinPrecioAprobado ? (
+                ) : precioLocalCliente == null ? (
+                  // Paraguay todavía no tiene monto aprobado: se consulta por WhatsApp.
                   <div>
                     <p className="text-sm leading-relaxed text-mute">
                       El valor de este curso se confirma por WhatsApp según tu país.
@@ -753,22 +653,37 @@ export default function CourseDetailClient({
                       Consultar el valor
                     </WhatsAppCta>
                   </div>
+                ) : !canSeePrice ? (
+                  <BrochureGateForm
+                    slug={course.slug}
+                    courseTitle={course.title}
+                    pais={pais}
+                    source="course_detail_gate"
+                    buttonLabel="Ver PDF con precios y temario"
+                    heading="Arancel, fechas y temario en PDF"
+                    subheading="Completa tus datos para abrir y descargar al instante el brochure oficial con los precios de tu país, descuentos y 3 cuotas sin interés."
+                    idPrefix="brochure-gate"
+                    compact
+                    onUnlocked={() => unlock()}
+                  />
                 ) : (
                   <div>
-                    {originalGrandTotal && totalDiscountPercentage > 0 ? (
+                    {listaLocalCliente != null && descuentoLocalCliente > 0 ? (
                       <p className="text-sm text-faint">
-                        <span className="line-through">{convertAndFormat(originalGrandTotal)}</span>
-                        <span className="ml-2 font-semibold text-ink">{totalDiscountPercentage}% off</span>
+                        <span className="line-through">{formatMoneda(pais, listaLocalCliente)}</span>
+                        <span className="ml-2 font-semibold text-ink">{descuentoLocalCliente}% off</span>
                       </p>
                     ) : null}
-                    <p className="text-3xl font-bold tracking-tight text-ink">{convertAndFormat(grandTotal)}</p>
+                    <p className="text-3xl font-bold tracking-tight text-ink">
+                      {formatMoneda(pais, precioLocalCliente)}
+                    </p>
                     <p className="mt-2 text-xs leading-snug text-mute">{NOTA_PAGO}</p>
                     {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
                   </div>
                 )}
               </div>
 
-              {!isEmpresa ? (
+              {!isEmpresa && canSeePrice && precioLocalCliente != null ? (
                 <p className="mb-5 text-xs leading-snug text-mute">{NOTA_CUOTAS}</p>
               ) : null}
 
@@ -793,7 +708,7 @@ export default function CourseDetailClient({
                     WhatsApp
                   </WhatsAppCta>
                 </>
-              ) : sinPrecioAprobado ? null : (
+              ) : canSeePrice && precioLocalCliente != null ? (
                 <>
                   <button
                     type="button"
@@ -803,6 +718,14 @@ export default function CourseDetailClient({
                     {checkoutLabel}
                     <ArrowRight size={16} />
                   </button>
+                  <a
+                    href={brochureUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-medium text-ink no-underline hover:bg-wash"
+                  >
+                    <FileText size={16} /> Abrir / Descargar Brochure PDF
+                  </a>
                   {activeSchedulesList.length === 0 ? (
                     <>
                       <p className="mt-2 text-center text-xs leading-snug text-mute">
@@ -822,10 +745,6 @@ export default function CourseDetailClient({
                     </>
                   ) : null}
                 </>
-              )}
-
-              {!isEmpresa && !sinPrecioAprobado ? (
-                <CourseCardQuoteForm course={course} pais={pais} />
               ) : null}
 
               <CourseCardDescription lead={offerLead} more={offerMore} />
@@ -843,9 +762,28 @@ export default function CourseDetailClient({
                 <a href="#temario" className="inline-flex items-center gap-1.5 no-underline hover:text-mute">
                   <BookOpen size={15} /> Temario
                 </a>
-                <a href={PDF_URL} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 no-underline hover:text-mute">
-                  <FileText size={15} /> Folleto
-                </a>
+                {canSeePrice ? (
+                  <a
+                    href={brochureUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 no-underline hover:text-mute"
+                  >
+                    <FileText size={15} /> Folleto
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const input = document.getElementById("brochure-gate-name");
+                      (input as HTMLInputElement | null)?.focus();
+                      input?.scrollIntoView({ behavior: "smooth", block: "center" });
+                    }}
+                    className="inline-flex items-center gap-1.5 no-underline hover:text-mute"
+                  >
+                    <FileText size={15} /> Folleto
+                  </button>
+                )}
                 {course.slug === "power-bi" ? (
                   <Link
                     href={rutaLocal(pais, "/curso-power-bi")}
@@ -899,34 +837,39 @@ export default function CourseDetailClient({
           <div className="mx-auto max-w-[1400px]">
             <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Otros cursos</h2>
             <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {relatedCourses.map((rc) => (
-                <Link
-                  key={rc.slug}
-                  href={rutaLocal(pais, `/cursos/${rc.slug}`)}
-                  className="group overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20"
-                >
-                  <div className="relative aspect-[16/10] bg-wash">
-                    <CourseImage src={rc.imageUrl} alt={rc.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
-                  </div>
-                  <div className="px-4 pt-4">
-                    <CourseCohortFacts
-                      slug={rc.slug}
-                      schedules={schedules}
-                      timeZone={scheduleZone}
-                      pais={pais}
-                      loaded
-                      compact
-                    />
-                  </div>
-                  <div className="px-6 py-5">
-                    <p className="text-lg font-bold tracking-tight text-ink">{rc.title}</p>
-                    <p className="mt-1 text-sm text-mute">{rc.shortDescription}</p>
-                    {preciosLocales[rc.slug] ? (
-                      <p className="mt-2 text-sm font-semibold text-ink">{preciosLocales[rc.slug]}</p>
-                    ) : null}
-                  </div>
-                </Link>
-              ))}
+              {relatedCourses.map((rc) => {
+                const montoRelacionado = canSeePrice ? precioVenta(pais, rc.slug) : null;
+                return (
+                  <Link
+                    key={rc.slug}
+                    href={rutaLocal(pais, `/cursos/${rc.slug}`)}
+                    className="group overflow-hidden rounded-[26px] border border-line bg-paper no-underline transition-colors hover:border-ink/20"
+                  >
+                    <div className="relative aspect-[16/10] bg-wash">
+                      <CourseImage src={rc.imageUrl} alt={rc.title} fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.03]" />
+                    </div>
+                    <div className="px-4 pt-4">
+                      <CourseCohortFacts
+                        slug={rc.slug}
+                        schedules={schedules}
+                        timeZone={scheduleZone}
+                        pais={pais}
+                        loaded
+                        compact
+                      />
+                    </div>
+                    <div className="px-6 py-5">
+                      <p className="text-lg font-bold tracking-tight text-ink">{rc.title}</p>
+                      <p className="mt-1 text-sm text-mute">{rc.shortDescription}</p>
+                      {montoRelacionado != null ? (
+                        <p className="mt-2 text-sm font-semibold text-ink">{formatMoneda(pais, montoRelacionado)}</p>
+                      ) : (
+                        <span className="mt-2 block text-sm font-semibold text-ink">Ver brochure y precios →</span>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -939,119 +882,6 @@ export default function CourseDetailClient({
         redirectUrl={authRedirect}
       />
     </>
-  );
-}
-
-/**
- * Mini formulario de cotización dentro de la tarjeta lateral.
- * Usa el mismo submit que el formulario #cotizar (mismo endpoint y payload),
- * en versión compacta: nombre + email. El precio sigue visible arriba.
- */
-function CourseCardQuoteForm({ course, pais }: { course: Course; pais: string }) {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
-  const [honeypot, setHoneypot] = useState("");
-  const formLoadedAt = useRef(Date.now());
-
-  const fieldClass =
-    "h-11 w-full rounded-xl border border-line-strong bg-canvas px-3 text-sm text-ink placeholder:text-faint";
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    try {
-      await submitCourseLead({
-        course,
-        pais,
-        leadType: "personal",
-        name: name.trim(),
-        email: email.trim(),
-        selectedCourses: [course.title],
-        formLoadedAt: formLoadedAt.current,
-        honeypot,
-        source: "course_detail_card",
-      });
-      setIsSuccess(true);
-    } catch {
-      alert("Hubo un problema al enviar tu solicitud. Inténtalo de nuevo.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="mt-5 rounded-2xl border border-line bg-wash p-4">
-      {isSuccess ? (
-        <div>
-          <p className="text-sm font-semibold text-ink">Listo, quedó enviado</p>
-          <p className="mt-1 text-xs leading-snug text-mute">
-            Te escribimos a {email || "tu correo"} con el detalle del curso.
-          </p>
-        </div>
-      ) : (
-        <form onSubmit={handleSubmit} noValidate>
-          <p className="text-sm font-semibold text-ink">Cotiza o pide el detalle</p>
-          <p className="mt-1 text-xs leading-snug text-mute">
-            Te enviamos el precio y el temario por correo.
-          </p>
-          <div className="mt-3 space-y-2">
-            <label htmlFor="card-quote-name" className="sr-only">
-              Nombre
-            </label>
-            <input
-              id="card-quote-name"
-              name="name"
-              required
-              autoComplete="name"
-              placeholder="Nombre"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className={fieldClass}
-            />
-            <label htmlFor="card-quote-email" className="sr-only">
-              Email
-            </label>
-            <input
-              id="card-quote-email"
-              name="email"
-              type="email"
-              required
-              autoComplete="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={fieldClass}
-            />
-          </div>
-          <div style={honeypotStyle} aria-hidden>
-            <input
-              type="text"
-              name="_website"
-              autoComplete="off"
-              tabIndex={-1}
-              value={honeypot}
-              onChange={(e) => setHoneypot(e.target.value)}
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-line-strong bg-paper text-sm font-semibold text-ink transition-colors hover:bg-canvas disabled:opacity-60"
-          >
-            {isSubmitting ? "Enviando…" : "Enviar cotización"}
-          </button>
-          <a
-            href="#cotizar"
-            className="mt-2 block text-center text-xs font-medium text-mute no-underline hover:text-ink"
-          >
-            Ver formulario completo
-          </a>
-        </form>
-      )}
-    </div>
   );
 }
 
@@ -1084,6 +914,7 @@ function CourseContactForm({ course }: { course: Course }) {
   const [showPrefixDropdown, setShowPrefixDropdown] = useState(false);
   const formLoadedAt = useRef(Date.now());
   const pais = usePaisRuta();
+  const { unlock } = usePriceUnlock();
   const [phonePrefix, setPhonePrefix] = useState(() => phoneCodeFor(pais));
 
   useEffect(() => {
@@ -1129,14 +960,30 @@ function CourseContactForm({ course }: { course: Course }) {
     try {
       const formData = new FormData(e.target as HTMLFormElement);
       const rawWhatsapp = String(formData.get("whatsapp") || "").trim();
+      const whatsapp = rawWhatsapp ? withDialCode(rawWhatsapp, phonePrefix) : "";
+      const nombre = String(formData.get("name") || "");
+      const email = String(formData.get("email") || "");
+
+      // Particular: abrir el brochure y desbloquear precios de inmediato, de
+      // forma sincrónica dentro del handler para que el navegador no lo trate
+      // como popup.
+      if (contactType === "personal") {
+        window.open(courseBrochureUrl(course.slug, pais), "_blank", "noopener,noreferrer");
+        unlock({ name: nombre, email, whatsapp });
+      }
+
       await submitCourseLead({
         course,
         pais,
         leadType: contactType,
-        name: String(formData.get("name") || ""),
-        email: String(formData.get("email") || ""),
-        whatsapp: rawWhatsapp ? withDialCode(rawWhatsapp, phonePrefix) : null,
-        message: formData.get("message") ? String(formData.get("message")) : null,
+        name: nombre,
+        email,
+        whatsapp: whatsapp || null,
+        message: formData.get("message")
+          ? String(formData.get("message"))
+          : contactType === "personal"
+            ? "Descargó Brochure PDF con precios"
+            : null,
         company: formData.get("company") ? String(formData.get("company")) : null,
         position: formData.get("position") ? String(formData.get("position")) : null,
         selectedCourses: contactType === "personal" ? [course.title] : selectedServices,
@@ -1144,7 +991,7 @@ function CourseContactForm({ course }: { course: Course }) {
         honeypot,
         source: "course_detail_cotizar",
       });
-      setSubmittedEmail(String(formData.get("email") || ""));
+      setSubmittedEmail(email);
       setIsSuccess(true);
     } catch {
       alert("Hubo un problema al enviar tu solicitud. Inténtalo de nuevo.");
@@ -1164,7 +1011,7 @@ function CourseContactForm({ course }: { course: Course }) {
           </h2>
           <p className="mt-4 max-w-[36rem] text-base leading-relaxed text-mute">
             {isPersonal
-              ? "Escríbenos si tienes dudas del curso. El precio y las fechas ya están en esta página; si quieres, te enviamos el detalle por correo."
+              ? "Escríbenos si tienes dudas del curso. Al enviar el formulario abrimos el brochure con precios, fechas y temario, y te llega el detalle por correo."
               : "Programas in-company, dashboards y automatización para tu equipo."}
           </p>
         </div>
@@ -1183,6 +1030,24 @@ function CourseContactForm({ course }: { course: Course }) {
                   ? `Revisa ${submittedEmail || "tu correo"}. Ahí va la información del curso.`
                   : `Te enviamos la confirmación${submittedEmail ? ` a ${submittedEmail}` : ""}. Un asesor te escribe con la propuesta para tu equipo.`}
               </p>
+              {isPersonal ? (
+                <>
+                  <a
+                    href={courseBrochureUrl(course.slug, pais)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
+                  >
+                    <FileText size={16} /> 📄 Abrir Brochure PDF con precios
+                  </a>
+                  <Link
+                    href={courseCheckoutUrl(course.slug, undefined, pais)}
+                    className="mt-2 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-medium text-ink no-underline hover:bg-wash"
+                  >
+                    Ir a Inscripción / Pago <ArrowRight size={16} />
+                  </Link>
+                </>
+              ) : null}
               <WhatsAppCta
                 page={`/cursos/${course.slug}`}
                 intent={isPersonal ? "curso" : "empresas"}
@@ -1228,11 +1093,10 @@ function CourseContactForm({ course }: { course: Course }) {
                 </div>
               </div>
 
-              {!isPersonal && (
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="course-whatsapp" className="text-sm font-medium text-ink">
-                    Teléfono o WhatsApp (opcional)
-                  </label>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="course-whatsapp" className="text-sm font-medium text-ink">
+                  Teléfono o WhatsApp
+                </label>
                 <div className="flex">
                   <div className="relative">
                     <button
@@ -1274,7 +1138,6 @@ function CourseContactForm({ course }: { course: Course }) {
                   />
                 </div>
               </div>
-              )}
 
               {!isPersonal && (
                 <>
