@@ -19,10 +19,33 @@ const PAGE_SIZE = 50;
 
 const LEAD_TYPES = [
   { value: "all", label: "Todos los tipos" },
-  { value: "contact", label: "Contacto" },
+  { value: "contact", label: "Contacto / Brochure PDF" },
   { value: "enterprise", label: "Empresa" },
   { value: "notify", label: "Notificar" },
 ];
+
+// Formularios de la web que se guardan unificados como formularios de contacto.
+const UNIFIED_CONTACT_TYPES = ["contact", "personal", "brochure_pdf"];
+
+/** true para los leads que /admin/formularios muestra como "Contacto / Brochure PDF". */
+function isUnifiedContactLead(lead: any): boolean {
+  const type = String(lead?.lead_type || "contact").toLowerCase();
+  return UNIFIED_CONTACT_TYPES.includes(type);
+}
+
+/** Los leads del brochure llevan "Brochure PDF" en el mensaje guardado. */
+function isBrochureLead(lead: any): boolean {
+  return /brochure\s*pdf/i.test(String(lead?.message || ""));
+}
+
+/** Mismo criterio de búsqueda que adminGetLeadsPage, para el filtro unificado. */
+function matchesSearch(lead: any, query: string): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  return [lead?.name, lead?.email, lead?.whatsapp, lead?.message, lead?.source_course].some((value) =>
+    String(value || "").toLowerCase().includes(q)
+  );
+}
 
 function useDebounced<T>(value: T, delay = 280) {
   const [debounced, setDebounced] = useState(value);
@@ -51,6 +74,19 @@ export default function AdminLeadsPage() {
   const load = useCallback(async () => {
     setLoading(true);
     try {
+      // El filtro "Contacto / Brochure PDF" agrupa contact, personal y brochure_pdf.
+      // Como el listado del servidor filtra por un solo lead_type, se pagina en cliente
+      // para no perder los leads antiguos guardados con los valores heredados.
+      if (leadType === "contact") {
+        const all = (await adminGetLeads()).filter((l: any) => l.lead_type !== "abandoned_cart");
+        const unified = all.filter(
+          (l: any) => isUnifiedContactLead(l) && matchesSearch(l, debouncedSearch)
+        );
+        const from = (page - 1) * PAGE_SIZE;
+        setLeads(unified.slice(from, from + PAGE_SIZE));
+        setTotal(unified.length);
+        return;
+      }
       const data = await adminGetLeadsPage({
         page,
         pageSize: PAGE_SIZE,
@@ -321,6 +357,8 @@ export default function AdminLeadsPage() {
                           ? "Empresa"
                           : lead.lead_type === "notify"
                           ? "Notificar"
+                          : isUnifiedContactLead(lead)
+                          ? "Contacto / Brochure PDF"
                           : "Contacto"}
                       </span>
                     </td>
@@ -334,7 +372,22 @@ export default function AdminLeadsPage() {
                             {c}
                           </span>
                         ))}
+                        {isBrochureLead(lead) ? (
+                          <span className="text-[11px] border border-border rounded bg-muted px-1.5 py-0.5 font-medium">
+                            📄 Brochure PDF
+                          </span>
+                        ) : null}
                       </div>
+                      {isBrochureLead(lead) && lead.whatsapp ? (
+                        <a
+                          href={`https://wa.me/${String(lead.whatsapp).replace(/\D/g, "")}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-1 inline-block text-[11px] text-muted-foreground hover:underline"
+                        >
+                          WhatsApp directo
+                        </a>
+                      ) : null}
                       {lead.source_course ? (
                         <div className="text-[11px] text-muted-foreground mt-1">{lead.source_course}</div>
                       ) : null}

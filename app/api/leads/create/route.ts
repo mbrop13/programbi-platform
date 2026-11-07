@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/server";
 import { z } from "zod";
+import { courses as courseCatalog, type Course } from "@/lib/data/courses";
 import { isRateLimited } from "@/lib/security/rate-limiter";
 import { normalizeReferralCode } from "@/lib/referrals/cookie";
 import { REFERRAL_COOKIE_NAME } from "@/lib/referrals/constants";
@@ -35,11 +36,83 @@ const leadSchema = z.object({
   utm_content: z.string().max(120).optional().nullable(),
   utm_term: z.string().max(120).optional().nullable(),
   referral_code: z.string().max(16).optional().nullable(),
+  // Variante de precio del gate (gate/direct). La columna puede no existir aún
+  // en algunos entornos: el insert reintenta sin ella si Supabase la rechaza.
+  pricingVariant: z.string().max(40).optional().nullable(),
   _website: z.string().optional().nullable(),
   _company_url: z.string().optional().nullable(),
   _fax: z.string().optional().nullable(),
   _t: z.any().optional(),
 });
+
+// ─── Tipos de lead ───
+// Tipos aceptados por la web. contact, personal y brochure_pdf se guardan
+// unificados como "contact" para que /admin/formularios los muestre juntos.
+const LEAD_TYPES = [
+  "contact",
+  "personal",
+  "brochure_pdf",
+  "enterprise",
+  "empresa",
+  "asesoria_b2b",
+  "webinar",
+] as const;
+
+const UNIFIED_CONTACT_TYPES: readonly string[] = ["contact", "personal", "brochure_pdf"];
+
+/** Normaliza el tipo recibido; los tipos heredados (abandoned_cart, clase-gratis...) se conservan. */
+function normalizeLeadType(value?: string | null): string {
+  const raw = (value || "").trim();
+  const lower = raw.toLowerCase();
+  if ((LEAD_TYPES as readonly string[]).includes(lower)) return lower;
+  return raw || "contact";
+}
+
+/** lead_type que se persiste en `course_leads`. */
+function storedLeadType(value?: string | null): string {
+  const normalized = normalizeLeadType(value);
+  return UNIFIED_CONTACT_TYPES.includes(normalized) ? "contact" : normalized;
+}
+
+// ─── Resolución del curso cotizado ───
+function normalizeCourseKey(value: string): string {
+  return (value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+/** Slug del curso a partir de un slug exacto o de su título normalizado. */
+function resolveCourseSlug(valor: string): string | null {
+  const raw = (valor || "").trim();
+  if (!raw) return null;
+
+  const bySlug = courseCatalog.find((course) => course.slug === raw);
+  if (bySlug) return bySlug.slug;
+
+  const key = normalizeCourseKey(raw);
+  if (!key) return null;
+
+  const byTitle = courseCatalog.find((course) => {
+    const shortTitle = (course as Course & { shortTitle?: string }).shortTitle;
+    return [course.title, shortTitle].some((title) => !!title && normalizeCourseKey(title) === key);
+  });
+  return byTitle?.slug ?? null;
+}
+
+/** Detecta el error de PostgREST cuando la columna `pricing_variant` no existe. */
+function isMissingPricingVariantError(error: { code?: string; message?: string } | null): boolean {
+  if (!error) return false;
+  const message = (error.message || "").toLowerCase();
+  return (
+    error.code === "42703" ||
+    error.code === "PGRST204" ||
+    message.includes("pricing_variant") ||
+    message.includes("schema cache")
+  );
+}
 
 // ─── Anti-Bot Helpers ───
 
@@ -89,10 +162,19 @@ export async function POST(req: NextRequest) {
 
     const data = validation.data;
 
+    // Curso cotizado y país: se resuelven antes de los chequeos anti-bot para
+    // devolver siempre el brochure del curso en la respuesta de éxito.
+    const pais = paisDeCotizacion(data.pais, data.landing_path);
+    const brochureSlug =
+      resolveCourseSlug(data.sourceCourse || data.selectedCourses?.[0] || "") || "power-bi";
+    const successBody = {
+      success: true,
+      brochureUrl: `/cursos/${brochureSlug}/brochure?pais=${pais}`,
+    };
+
     // ─── Anti-Bot Checks (silent reject → 200 to avoid bot retries) ───
     if (isHoneypotFilled(data)) {
-      console.log("🤖 Bot blocked (honeypot):", data.email);
-      return NextResponse.json({ success: true }); // fake success
+      return NextResponse.json(successBody); // fake success
     }
 
     // Timing: el _t llega como timestamp de carga del form (o elapsed en ms).
@@ -101,24 +183,22 @@ export async function POST(req: NextRequest) {
     if (typeof t === "number" && Number.isFinite(t)) {
       const elapsed = t > 1e11 ? Date.now() - t : t;
       if (elapsed >= 0 && elapsed < 1500) {
-        console.log("🤖 Bot blocked (timing):", data.email, `${elapsed}ms`);
-        return NextResponse.json({ success: true });
+        return NextResponse.json(successBody);
       }
     }
 
     const whatsappClean = data.whatsapp || data.phone;
     const {
-      name, email, message, selectedCourses, sourceCourse, leadType, company, position,
+      name, email, message, selectedCourses, sourceCourse, leadType: leadTypeRaw, company, position,
       employeeCount, area, landing_path, utm_source, utm_medium, utm_campaign, utm_content, utm_term,
-      referral_code, pais: paisRaw,
+      referral_code, pricingVariant,
     } = data;
-    const pais = paisDeCotizacion(paisRaw, landing_path);
+    const leadType = normalizeLeadType(leadTypeRaw);
     const paisNombre = getPais(pais).nombre;
     const whatsapp = whatsappClean;
 
     if (looksLikeSpam(name, email, message || undefined)) {
-      console.log("🤖 Bot blocked (spam heuristic):", name, email);
-      return NextResponse.json({ success: true });
+      return NextResponse.json(successBody);
     }
 
     const adminDb = createAdminClient();
@@ -130,7 +210,7 @@ export async function POST(req: NextRequest) {
       message: message || null,
       selected_courses: selectedCourses || [],
       source_course: sourceCourse || null,
-      lead_type: leadType || "contact",
+      lead_type: storedLeadType(leadType),
     };
 
     const isEnterprise =
@@ -159,7 +239,17 @@ export async function POST(req: NextRequest) {
       insertData.message = extraInfo + (message ? ` — ${message}` : "");
     }
 
-    const { error } = await adminDb.from("course_leads").insert(insertData);
+    // `pricing_variant` solo viaja si el formulario lo envía. Si la columna aún
+    // no existe en este entorno, Supabase rechaza el insert y se reintenta sin ella.
+    const insertPayload: Record<string, any> = { ...insertData };
+    if (pricingVariant) insertPayload.pricing_variant = pricingVariant;
+
+    let { error } = await adminDb.from("course_leads").insert(insertPayload);
+
+    if (error && pricingVariant && isMissingPricingVariantError(error)) {
+      console.warn("[leads] pricing_variant no disponible en course_leads; se guarda sin la columna.");
+      ({ error } = await adminDb.from("course_leads").insert(insertData));
+    }
 
     if (error) {
       console.error("Error inserting lead:", error);
@@ -201,7 +291,6 @@ export async function POST(req: NextRequest) {
         pais,
         sourceCourse: sourceCourse || null,
       });
-      console.log("✅ Admin notification sent");
     } catch (err: any) {
       console.error("❌ Admin email error:", err?.message, err?.stack);
     }
@@ -214,13 +303,12 @@ export async function POST(req: NextRequest) {
         } else {
           await sendQuoteConfirmationToLead({ name, email, courses, message: message ?? undefined, pais });
         }
-        console.log("✅ Quote email sent to:", email);
       } catch (err: any) {
         console.error("❌ Quote email error:", err?.message, err?.stack);
       }
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json(successBody);
 
   } catch (err: any) {
     console.error("API Error in leads/create:", err);
