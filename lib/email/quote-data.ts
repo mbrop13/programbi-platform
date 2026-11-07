@@ -5,8 +5,15 @@
 
 import { courses, getCourseBySlug, type Course } from "@/lib/data/courses";
 import { convertSchedule, staticSchedules, OPEN_COHORT_LABEL } from "@/lib/data/course-schedules";
-import { isTieredCourse, OPEN_LEVEL_NAME, PARTICULAR_COURSE_HOURS } from "@/lib/data/course-views";
-import { esIsoPais, ISO_CHILE, normalizarPais } from "@/config/paises";
+import {
+  isTieredCourse,
+  offerTeaches,
+  OPEN_LEVEL_NAME,
+  PARTICULAR_COURSE_HOURS,
+} from "@/lib/data/course-views";
+import { getCourseSyllabus } from "@/lib/data/syllabuses";
+import { mentors } from "@/lib/data/mentors";
+import { esIsoPais, getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 import { precioDescontadoClp } from "@/lib/pago/precio-clp";
 import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import { conHoraPais, zonaDe } from "@/lib/paises/horarios";
@@ -14,7 +21,7 @@ import { notaCobroClp, porcentajeDescuento, precioCurso, precioLista } from "@/l
 import { resolverCobro } from "@/lib/paises/cobro";
 import { paisDesdeRuta, rutaLocal } from "@/lib/paises/rutas";
 import { SITE_URL } from "@/lib/seo";
-import type { EmailCourseItem, EmailPackInfo } from "./quote-template";
+import type { EmailCourseItem, EmailInstructor, EmailPackInfo } from "./quote-template";
 
 export type PriceOverrideRow = {
   item_type?: string;
@@ -309,12 +316,29 @@ function pickSchedules(
     .sort((a, b) => (scheduleDateKey(a.start_date) || "").localeCompare(scheduleDateKey(b.start_date) || ""));
 }
 
+/**
+ * Hora del país con su etiqueta explícita ("19:30 a 21:30 · Hora de Perú").
+ * Pasa por `conHoraPais` y normaliza la etiqueta: deja una sola, siempre con
+ * mayúscula y sin duplicar cuando el helper ya la agregó.
+ */
+function horaConPais(pais: string, horario: string): string {
+  if (!horario) return "";
+  const sinEtiqueta = horario.replace(/\s*·\s*hora\s+de[^·]*$/i, "").trim();
+  if (!sinEtiqueta) return horario;
+  const conEtiqueta = conHoraPais(pais, sinEtiqueta)
+    .replace(/\s*·\s*hora\s+de[^·]*$/i, "")
+    .trim();
+  if (!conEtiqueta) return horario;
+  const nombre = getPais(normalizarPais(pais)).nombre;
+  return `${conEtiqueta} · Hora de ${nombre}`;
+}
+
 function formatScheduleLine(sched: ScheduleRow, withTime: boolean, withLevel: boolean, pais: string): string {
   const conv = convertSchedule(sched.start_date, sched.schedule_time, sched.schedule_days, zonaDe(pais));
   const dateFormatted = formatEmailDate(conv.date || sched.start_date);
   const daysFormatted = formatEmailDays(conv.days || sched.schedule_days);
   const level = withLevel ? sched.level_name : "";
-  const timeFormatted = withTime ? conHoraPais(pais, conv.time) : "";
+  const timeFormatted = withTime ? horaConPais(pais, conv.time) : "";
   return [dateFormatted, level, daysFormatted, timeFormatted].filter(Boolean).join(" · ");
 }
 
@@ -482,6 +506,56 @@ function checkoutPublicUrl(pais: string, slug: string): string {
   return `${SITE_URL}/pago?${params.toString()}`;
 }
 
+/**
+ * Brochure público del curso: la ruta lleva el prefijo del país y el `?pais=`
+ * para que el PDF salga en la moneda y la hora local correctas.
+ * `rutaLocal` todavía no reconoce la subruta de brochure, así que si no
+ * localizó el path se antepone el país a mano.
+ */
+function brochurePublicUrl(pais: string, slug: string): string {
+  const iso = normalizarPais(pais);
+  const path = `/cursos/${slug}/brochure`;
+  const local = rutaLocal(iso, path);
+  const finalPath = local === path && iso !== ISO_CHILE ? `/${iso}${path}` : local;
+  return `${SITE_URL}${finalPath}?pais=${iso}`;
+}
+
+/** Los tres docentes del equipo, en el orden en que se presentan en el sitio. */
+const EMAIL_INSTRUCTORS: EmailInstructor[] = [...mentors]
+  .sort((a, b) => a.sortOrder - b.sortOrder)
+  .slice(0, 3)
+  .map((mentor) => ({
+    name: mentor.name,
+    role: mentor.role,
+    title: mentor.title,
+    imageUrl: mentor.imageUrl || "",
+    credentials: mentor.credentials.slice(0, 2),
+  }));
+
+/**
+ * Puntos clave del temario para la tarjeta del correo: lo que enseña el curso
+ * y, si no alcanza para cuatro, los títulos de los módulos del temario.
+ */
+function courseHighlights(course: Course): string[] {
+  const aprendidos = offerTeaches(course, "publico")
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .filter((item, index, all) => all.indexOf(item) === index);
+
+  const puntos = aprendidos.slice(0, 5);
+  if (puntos.length >= 4) return puntos;
+
+  const modulos = getCourseSyllabus(course).levels
+    .flatMap((level) => level.modules.map((modulo) => modulo.title.trim()))
+    .filter(Boolean);
+
+  for (const modulo of modulos) {
+    if (puntos.length >= 4) break;
+    if (!puntos.includes(modulo)) puntos.push(modulo);
+  }
+  return puntos.slice(0, 5);
+}
+
 function toEmailItem(
   course: Course,
   levelName: string,
@@ -522,6 +596,9 @@ function toEmailItem(
     color: course.accentColor || "#171716",
     checkoutUrl: checkoutPublicUrl(pais, course.slug),
     courseUrl: coursePublicUrl(pais, course.slug),
+    brochureUrl: brochurePublicUrl(pais, course.slug),
+    highlights: courseHighlights(course),
+    instructors: EMAIL_INSTRUCTORS,
     includes: course.slug === "analisis-de-datos" ? packIncludes() : undefined,
   };
 }
