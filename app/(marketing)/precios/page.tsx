@@ -13,6 +13,8 @@ import { cuotasSinInteres } from "@/config/cuotas";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 import { preciosDePais, type PrecioCursoPagina } from "@/lib/paises/precios-pagina";
+import { courseBrochurePath } from "@/lib/pricing-gate";
+import PreciosGateClient, { type CursoPrecioGate } from "@/components/marketing/PreciosGateClient";
 
 export const revalidate = 3600;
 
@@ -55,15 +57,12 @@ export async function generateMetadata({
 
 function faqsDe(pais: Pais, cursos: PrecioCursoPagina[], moneda: string) {
   const powerBi = cursos.find((curso) => curso.slug === "power-bi");
-  const powerBiAnswer =
-    powerBi && powerBi.priceValue != null
-      ? `El curso de Power BI tiene un precio publicado de ${powerBi.priceLabel} para ${powerBi.hours} horas.${powerBi.listLabel ? ` El precio de lista es ${powerBi.listLabel}.` : ""} El monto final se confirma en el checkout.`
-      : "El precio del curso de Power BI está en la tabla de esta página.";
+  const horasPowerBi = powerBi ? `${powerBi.hours} horas` : "20 horas";
 
   return [
     {
       q: `¿Cuánto cuestan los cursos en ${pais.nombre}?`,
-      a: `Los precios de la tabla están en ${moneda} y corresponden a la modalidad abierta para particulares. El monto final y la moneda de cobro se confirman en el checkout.`,
+      a: `El arancel vigente de cada curso se publica en su brochure PDF, que se descarga gratis desde la tabla de esta página. Los montos están en ${moneda} y el valor final se confirma en el checkout.`,
     },
     {
       q: "¿Qué incluye el precio?",
@@ -79,11 +78,11 @@ function faqsDe(pais: Pais, cursos: PrecioCursoPagina[], moneda: string) {
     },
     {
       q: `¿Cuánto cuesta el curso de Power BI en ${pais.nombre}?`,
-      a: powerBiAnswer,
+      a: `El arancel vigente de Power BI, por ${horasPowerBi}, se descarga en el brochure PDF del curso junto con el temario, las fechas en hora de ${pais.nombre} y el detalle de las ${cuotasSinInteres(pais.iso)} cuotas sin interés. Está publicado en ${moneda}.`,
     },
     {
       q: "¿Cuál es el mejor curso de Power BI en vivo en LatAm?",
-      a: `No hay un ranking único. Para comparar, revisa si las clases son en vivo, la duración, las grabaciones y el certificado. En ProgramBI, Power BI se dicta en vivo por Zoom${powerBi ? `, con ${powerBi.hours} horas` : ""}, grabaciones y certificado; el precio en ${pais.nombre} está en esta página.`,
+      a: `No hay un ranking único. Para comparar, revisa si las clases son en vivo, la duración, las grabaciones y el certificado. En ProgramBI, Power BI se dicta en vivo por Zoom${powerBi ? `, con ${powerBi.hours} horas` : ""}, grabaciones y certificado; el arancel de ${pais.nombre} está en el brochure PDF de cada curso.`,
     },
     {
       q: `¿Cómo puedo pagar desde ${pais.nombre}?`,
@@ -91,7 +90,7 @@ function faqsDe(pais: Pais, cursos: PrecioCursoPagina[], moneda: string) {
     },
     {
       q: "¿Hay cuotas sin interés?",
-      a: `Sí: todos los cursos se pueden pagar en ${cuotasSinInteres(pais.iso)} cuotas sin interés, sin recargo por financiamiento.`,
+      a: `Sí: todos los cursos se pueden pagar en ${cuotasSinInteres(pais.iso)} cuotas sin interés, sin recargo por financiamiento. El detalle está en el brochure PDF de cada curso.`,
     },
   ];
 }
@@ -108,6 +107,16 @@ export default async function PreciosPage({
   const L = (texto: string) => localizarMercado(texto, iso);
   const href = (destino: string) => rutaLocal(iso, destino);
   const courseUrl = (slug: string) => absoluteUrl(href(`/cursos/${slug}`));
+
+  // La tabla de precios es cliente: recibe solo títulos, nivel y horas. Los
+  // montos se calculan con `precioVenta` recién al desbloquear, así el HTML
+  // inicial nunca contiene un precio (ni como texto ni en el flight data).
+  const cursosGate: CursoPrecioGate[] = cursos.map((curso) => ({
+    slug: curso.slug,
+    title: curso.title,
+    levelName: curso.levelName,
+    hours: curso.hours,
+  }));
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -140,17 +149,6 @@ export default async function PreciosPage({
               courseMode: "Online",
               courseWorkload: `PT${curso.hours}H`,
             },
-            ...(curso.priceValue != null
-              ? {
-                  offers: {
-                    "@type": "Offer",
-                    price: curso.priceValue,
-                    priceCurrency: curso.currency,
-                    availability: "https://schema.org/InStock",
-                    url: courseUrl(curso.slug),
-                  },
-                }
-              : {}),
           },
         })),
       },
@@ -193,8 +191,9 @@ export default async function PreciosPage({
             {L("Precios de cursos en vivo en Chile")}
           </h1>
           <p className="mt-5 text-lg leading-relaxed text-mute">
-            Precios publicados en {moneda} para {pais.nombre}. Clases en vivo
-            por Zoom, grabaciones en el campus y certificado digital al completar.
+            Aranceles publicados en {moneda} para {pais.nombre}. El detalle de cada
+            curso se descarga en su brochure PDF, con el temario, las fechas y las
+            cuotas sin interés.
           </p>
 
           {powerBi ? (
@@ -203,7 +202,16 @@ export default async function PreciosPage({
                 <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
                   Curso Power BI
                 </dt>
-                <dd className="mt-1 font-semibold text-ink">{powerBi.priceLabel}</dd>
+                <dd className="mt-1 font-semibold text-ink">
+                  <Link
+                    href={courseBrochurePath(powerBi.slug, pais.iso)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="no-underline hover:text-mute"
+                  >
+                    Precio y temario en el brochure PDF
+                  </Link>
+                </dd>
               </div>
               <div>
                 <dt className="text-xs font-bold uppercase tracking-[0.18em] text-mute">
@@ -220,84 +228,12 @@ export default async function PreciosPage({
             </dl>
           ) : null}
 
-          <section className="mt-12" aria-labelledby="precios-por-curso">
-            <h2
-              id="precios-por-curso"
-              className="text-2xl font-bold tracking-tight text-ink"
-            >
-              Precios por curso
-            </h2>
-            <div className="mt-6 overflow-x-auto rounded-2xl border border-line">
-              <table className="w-full border-collapse text-left text-sm">
-                <caption className="sr-only">
-                  Precios y duración de los cursos en {pais.nombre}
-                </caption>
-                <thead className="bg-wash text-xs uppercase tracking-wide text-mute">
-                  <tr>
-                    <th scope="col" className="px-4 py-3 font-semibold">
-                      Curso
-                    </th>
-                    <th scope="col" className="px-4 py-3 font-semibold">
-                      Duración
-                    </th>
-                    <th scope="col" className="px-4 py-3 font-semibold">
-                      Precio
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-line bg-paper">
-                  {cursos.map((curso) => (
-                    <tr key={curso.slug}>
-                      <th scope="row" className="px-4 py-4 font-semibold text-ink">
-                        <Link
-                          href={href(`/cursos/${curso.slug}`)}
-                          className="no-underline hover:text-mute"
-                        >
-                          {curso.title}
-                        </Link>
-                        <span className="mt-1 block text-xs font-normal text-faint">
-                          {curso.levelName}
-                        </span>
-                      </th>
-                      <td className="whitespace-nowrap px-4 py-4 text-mute">
-                        {curso.hours} h
-                      </td>
-                      <td className="px-4 py-4">
-                        {curso.listLabel ? (
-                          <span className="mr-2 text-xs text-faint line-through">
-                            {curso.listLabel}
-                          </span>
-                        ) : null}
-                        <span className="font-semibold text-ink">
-                          {curso.priceLabel}
-                        </span>
-                        {curso.discount > 0 ? (
-                          <span className="ml-2 text-xs font-semibold text-emerald-700">
-                            {curso.discount}% off
-                          </span>
-                        ) : null}
-                        {curso.chargeLabel ? (
-                          <span className="mt-1 block text-[11px] leading-snug text-faint">
-                            {curso.chargeLabel}
-                          </span>
-                        ) : null}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p className="mt-3 text-sm text-mute">
-              Precios publicados y sujetos a cambios. El monto final y la moneda
-              de cobro se confirman en el checkout.
-            </p>
-            {cobroLocal ? null : (
-              <p className="mt-1 text-sm text-mute">
-                Cuando no hay cobro local disponible, el checkout procesa el pago
-                en pesos chilenos (CLP).
-              </p>
-            )}
-          </section>
+          <PreciosGateClient
+            cursos={cursosGate}
+            pais={pais.iso}
+            moneda={moneda}
+            cobroLocal={cobroLocal}
+          />
 
           <section className="mt-14" aria-labelledby="que-incluye">
             <h2 id="que-incluye" className="text-2xl font-bold tracking-tight text-ink">

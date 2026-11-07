@@ -3,28 +3,27 @@ import { ArrowRight, BadgeCheck, CalendarDays, Clock, MessageCircle, MonitorPlay
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import { getPais, ISO_CHILE } from "@/config/paises";
 import { textoCuotas } from "@/config/cuotas";
-import { precioListaPublico, precioPublico } from "@/config/pricing";
 import { fichaCurso, rutaFichaCurso } from "@/lib/guias/curso";
 import type { Guia } from "@/lib/guias/tipos";
 import { horarioLocal } from "@/lib/paises/horarios";
-import { formatMoneda } from "@/lib/paises/precios";
+import { courseBrochurePath } from "@/lib/pricing-gate";
 import { rutaLocal } from "@/lib/paises/rutas";
 
 /**
- * Bloque «En 30 segundos» que abre cada guía: precio local, duración, horario,
- * modalidad y los dos CTA. Se renderiza en el servidor (importante para GEO:
- * los asistentes de IA tienen que poder leer el precio sin ejecutar JS).
+ * Bloque «En 30 segundos» que abre cada guía: brochure con precios, duración,
+ * horario, modalidad y los dos CTA. Se renderiza en el servidor (importante
+ * para GEO: los asistentes de IA leen duración y horario sin ejecutar JS).
+ * El arancel no se escribe acá: vive solo en el brochure PDF.
  */
 export default function Bloque30Segundos({ guia }: { guia: Guia }) {
   const iso = guia.country === "transversal" ? ISO_CHILE : guia.country;
   const curso = fichaCurso(guia.course);
-  const precio = precioPublico(iso, guia.course);
-  const lista = precioListaPublico(iso, guia.course);
   const horario = horarioLocal(iso);
   const lugar = iso === ISO_CHILE ? "Chile" : getPais(iso).nombre;
   const esGeneral = guia.course === "general";
   const nombreCurso = esGeneral ? "Cursos de ProgramBI" : curso.nombre;
   const rutaCurso = esGeneral ? rutaLocal(iso, "/cursos") : rutaFichaCurso(iso, guia.course);
+  const rutaBrochure = esGeneral ? rutaCurso : courseBrochurePath(guia.course, iso);
 
   return (
     <section
@@ -47,19 +46,17 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
             <BadgeCheck size={13} aria-hidden /> Precio
           </dt>
           <dd className="mt-1.5">
-            {precio != null ? (
-              <>
-                <span className="text-2xl font-bold tracking-tight text-ink">{formatMoneda(iso, precio)}</span>
-                {lista != null ? (
-                  <span className="ml-2 text-xs text-faint line-through">{formatMoneda(iso, lista)}</span>
-                ) : null}
-                <span className="mt-0.5 block text-xs text-mute">
-                  {curso.porNivel ? "por nivel · " : ""}{textoCuotas(iso)}
-                </span>
-              </>
-            ) : (
-              <span className="text-sm font-semibold leading-snug text-ink">Consulta el valor por WhatsApp</span>
-            )}
+            <Link
+              href={rutaBrochure}
+              target={esGeneral ? undefined : "_blank"}
+              rel={esGeneral ? undefined : "noopener noreferrer"}
+              className="text-sm font-bold leading-snug text-ink no-underline hover:text-mute"
+            >
+              Ver precio en el brochure PDF →
+            </Link>
+            <span className="mt-0.5 block text-xs text-mute">
+              {curso.porNivel ? "por nivel · " : ""}{textoCuotas(iso)}
+            </span>
           </dd>
         </div>
 
