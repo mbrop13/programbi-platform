@@ -21,6 +21,21 @@ export function isCourseCroSlug(slug: string): boolean {
   return (COURSE_CRO_SLUGS as readonly string[]).includes(slug);
 }
 
+/**
+ * Montos explícitos en las respuestas de FAQ que llegan del servidor.
+ * Se detecta `$169.000`, `S/ 119`, `US$ 79` o un número con separador de miles.
+ * Sin la bandera `g` a propósito: `.test()` con `g` arrastra `lastIndex` entre
+ * llamadas y dejaría de detectar montos en la segunda respuesta.
+ */
+const SIN_PRECIO = /(\$|S\/|US\$|MX\$)\s?\d[\d.,]{2,}|\b\d{3}\.\d{3}\b/;
+
+/** Reemplaza una respuesta con monto por la invitación al brochure PDF. */
+function sinPrecio(texto: string): string {
+  return SIN_PRECIO.test(texto)
+    ? "El arancel vigente de tu país, los descuentos y las 3 cuotas sin interés están en el brochure PDF de la ficha del curso."
+    : texto;
+}
+
 function syllabusBullets(course: Course, max = 7): string[] {
   const out: string[] = [];
   let i = 0;
@@ -276,7 +291,7 @@ export function CourseFaq({
                 <span className="hidden text-2xl leading-none text-faint group-open:block">–</span>
               </summary>
               <p className="mt-3 max-w-[62ch] text-sm leading-relaxed text-mute sm:text-base">
-                {faqAnswer(item.a)}
+                {faqAnswer(sinPrecio(item.a))}
               </p>
             </details>
           ))}
