@@ -19,7 +19,6 @@ import type { CourseSchedule } from "@/lib/data/course-schedules";
 import { SITE_URL, absoluteUrl, jsonLdString, DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
-import { textosPreciosLocales } from "@/lib/paises/detalle-curso";
 import { localizarMercado } from "@/lib/paises/precios";
 import { hreflangDe } from "@/lib/paises/rutas";
 
@@ -77,7 +76,6 @@ export default async function HomePage({
       <Metrics />
       <Programs
         schedules={schedules}
-        preciosLocales={textosPreciosLocales(pais)}
         catalog={courses.map((c) => ({
           slug: c.slug,
           title: c.title,

@@ -6,7 +6,8 @@ import { formatMoneda } from "@/lib/paises/precios";
 
 export type OpcionCalculadora = {
   nombre: string;
-  precio: number;
+  /** null cuando el curso no publica arancel (gate de precios). */
+  precio: number | null;
   horas: number;
   destacada?: boolean;
 };
@@ -32,7 +33,8 @@ export default function CalculadoraPrecioHora({
   if (!opcion) return null;
 
   const horasActivas = horas[activa] ?? opcion.horas;
-  const precioHora = horasActivas > 0 ? Math.round(opcion.precio / horasActivas) : null;
+  const precioHora =
+    opcion.precio != null && horasActivas > 0 ? Math.round(opcion.precio / horasActivas) : null;
   const max = Math.max(40, opcion.horas + 20);
 
   const cambiarHoras = (valor: number) => {
@@ -100,10 +102,16 @@ export default function CalculadoraPrecioHora({
             </span>
           </div>
           <p className="mt-2 text-xs text-faint">
-            {formatMoneda(iso, opcion.precio)} ÷ {horasActivas} h ={" "}
-            <strong className="text-ink">
-              {precioHora != null ? `${formatMoneda(iso, precioHora)} por hora` : "—"}
-            </strong>
+            {opcion.precio != null ? (
+              <>
+                {formatMoneda(iso, opcion.precio)} ÷ {horasActivas} h ={" "}
+                <strong className="text-ink">
+                  {precioHora != null ? `${formatMoneda(iso, precioHora)} por hora` : "—"}
+                </strong>
+              </>
+            ) : (
+              "El arancel de este curso está en su brochure PDF."
+            )}
           </p>
         </div>
 

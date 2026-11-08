@@ -23,6 +23,7 @@ import PlantillaDescarga from "@/components/marketing/PlantillaDescarga";
 import CalculadoraPrecioHora, { type OpcionCalculadora } from "./CalculadoraPrecioHora";
 import ComparativaCta from "./ComparativaCta";
 import { sinMontosProgrambi } from "@/lib/comparativas/precios";
+import { sinMontosDeCurso } from "@/lib/guias/precio";
 import ComparativaTracker from "./ComparativaTracker";
 
 type Variante = { iso: PaisComparativa; nombre: string; ruta: string };
@@ -70,7 +71,8 @@ export default function ComparativaAcademia({
   if (progPrecio != null) {
     opcionesCalculadora.push({
       nombre: "ProgramBI",
-      precio: progPrecio,
+      // El arancel de ProgramBI no se publica: vive en el brochure PDF.
+      precio: null,
       horas: contenido.horasProgrambi,
       destacada: true,
     });
@@ -133,19 +135,7 @@ export default function ComparativaAcademia({
         url: courseUrl,
         inLanguage: contenido.idioma,
         courseMode: "Online",
-        ...(progPrecio != null
-          ? {
-              offers: {
-                "@type": "Offer",
-                price: progPrecio,
-                priceCurrency: contenido.moneda,
-                url: courseUrl,
-                availability: "https://schema.org/InStock",
-                validFrom: PRECIOS_VALID_FROM,
-                category: "Paid",
-              },
-            }
-          : {}),
+        // Sin Offer: el arancel vive en el brochure PDF del curso.
       },
       {
         "@type": "FAQPage",
@@ -153,7 +143,7 @@ export default function ComparativaAcademia({
         mainEntity: contenido.faqs.map((faq) => ({
           "@type": "Question",
           name: faq.q,
-          acceptedAnswer: { "@type": "Answer", text: faq.a },
+          acceptedAnswer: { "@type": "Answer", text: sinMontosDeCurso(faq.a) },
         })),
       },
       {
@@ -300,7 +290,7 @@ export default function ComparativaAcademia({
                 Precio
               </div>
               <div className="border-l border-t border-line bg-wash/70 px-4 py-3 font-bold text-ink">
-                {progPrecio != null ? formatMoneda(iso, progPrecio) : "Consultar"}
+                en el brochure PDF
               </div>
               <div className="border-l border-t border-line px-4 py-3 text-mute">
                 {contenido.resumen10s.precioRival}
@@ -482,7 +472,7 @@ export default function ComparativaAcademia({
             {contenido.faqs.map((faq) => (
               <div key={faq.q} className="rounded-2xl border border-line bg-paper px-4 py-3">
                 <dt className="text-sm font-semibold text-ink">{faq.q}</dt>
-                <dd className="mt-1.5 text-sm leading-relaxed text-mute">{faq.a}</dd>
+                <dd className="mt-1.5 text-sm leading-relaxed text-mute">{sinMontosDeCurso(faq.a)}</dd>
               </div>
             ))}
           </dl>
@@ -572,7 +562,7 @@ export default function ComparativaAcademia({
           </h2>
           <p className="mt-2 max-w-[62ch] text-sm leading-relaxed text-canvas/80">
             {contenido.horasProgrambi} horas en vivo, grabaciones, certificado y un tablero propio al
-            terminar. {progPrecio != null ? `Precio: ${progPrecioTexto}.` : "Consulta el valor por WhatsApp."}
+            terminar. El precio de tu país está en el brochure PDF del curso.
           </p>
 
           <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">

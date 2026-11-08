@@ -28,7 +28,6 @@ import {
   type UsoLanding,
 } from "@/lib/data/landing-cursos";
 import { horarioDeCohorte, horarioLocal, type HorarioLocal } from "@/lib/paises/horarios";
-import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import { precioPublico } from "@/config/pricing";
 import { metadataLocal } from "@/lib/paises/metadata";
 import { rutaLocal } from "@/lib/paises/rutas";
@@ -81,10 +80,9 @@ export function contenidoLandingCurso(opts: {
   const niveles = levelsForView(opts.course, "publico").map((nivel) => nivel.name);
   const precio = precioPublico(iso, opts.course.slug);
 
-  const precioTexto =
-    precio == null ? "Consulta el valor por WhatsApp" : montoConCodigo(iso, precio);
-  const precioEtiqueta =
-    precio == null ? "Precio" : iso === ISO_CHILE ? "Precio de catálogo" : "Precio local";
+  // El arancel vive solo en el brochure PDF: la landing no publica montos.
+  const precioTexto = "en el brochure PDF del curso";
+  const precioEtiqueta = "Arancel";
 
   const proxima = nextCohortForCourse(opts.course.slug, schedules, pais.zonaHoraria);
   const cohorteTexto = proxima
@@ -97,10 +95,7 @@ export function contenidoLandingCurso(opts: {
       ? `Las clases en vivo por Zoom son de ${horario.inicio} a ${horario.fin}, hora de Chile (${horario.offset}).`
       : `Las clases en vivo por Zoom son de ${horario.inicio} a ${horario.fin}, hora de ${pais.nombre} (${horario.offset}). En Chile son de ${horario.inicioChile} a ${horario.finChile}.`;
 
-  const precioRespuesta =
-    precio == null
-      ? `El valor de la cohorte se consulta por WhatsApp; la página no publica un precio para ${lugar}.`
-      : `${precioEtiqueta}: ${precioTexto}. En la ficha del curso ves fechas, cupos y el valor de la próxima cohorte.`;
+  const precioRespuesta = `El arancel vigente de ${lugar}, los descuentos y las 3 cuotas sin interés están en el brochure PDF del curso. En la ficha ves fechas y cupos de la próxima cohorte.`;
   const pagoRespuesta = `Los medios de pago publicados para ${lugar} son: ${pais.mediosPago.join("; ")}. El checkout muestra las opciones disponibles para la cohorte.`;
 
   const faqs = [
@@ -170,15 +165,8 @@ export function jsonLdLandingCurso(opts: {
     image: absoluteUrl(opts.course.imageUrl),
   };
 
-  // Paraguay no tiene precio público: la página nunca declara Offer.
-  if (opts.contenido.precio == null) {
-    delete courseLd.offers;
-  } else {
-    const offers = courseLd.offers;
-    if (offers && typeof offers === "object") {
-      courseLd.offers = { ...(offers as Record<string, unknown>), url: landingUrl };
-    }
-  }
+  // El gate manda: ninguna landing declara Offer con precio.
+  delete courseLd.offers;
 
   return {
     "@context": "https://schema.org",
