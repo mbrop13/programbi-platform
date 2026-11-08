@@ -4,14 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { REFERRAL_FAQS } from "@/lib/referrals/copy";
-import { formatClp } from "@/lib/referrals/format";
-import { REFERRAL_TICKET_DEFAULT_CLP } from "@/lib/referrals/constants";
-import { calculateCommissionClp } from "@/lib/referrals/commission";
 import { createClient } from "@/lib/supabase/client";
 import { CommissionCalculator } from "./commission-calculator";
 import { HeroGlyphField } from "./hero-glyph-field";
 
-const defaultPay = formatClp(calculateCommissionClp(REFERRAL_TICKET_DEFAULT_CLP));
 
 export function ReferidosLanding() {
   return (
@@ -95,7 +91,8 @@ function Hero() {
           </div>
 
           <p className="mt-8 text-[13px] text-faint">
-            Ejemplo con un curso de {formatClp(REFERRAL_TICKET_DEFAULT_CLP)}: tu 15% son {defaultPay}.
+            La comisión es el 15% del neto cobrado de cada curso o capacitación, sin techo por
+            persona.
           </p>
         </div>
 

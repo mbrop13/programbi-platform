@@ -13,7 +13,6 @@ import { ogImageUrl } from "@/lib/og/url";
 import { PAGE_SEO } from "@/lib/seo/money";
 import { absoluteUrl, breadcrumbJsonLd, jsonLdString, twitterShare } from "@/lib/seo";
 import { getPais, ISO_CHILE, normalizarPais, PAISES_INDEXABLES } from "@/config/paises";
-import { textosPreciosLocales } from "@/lib/paises/detalle-curso";
 import { muestraPrecioLocal, precioCurso } from "@/lib/paises/precios";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 
@@ -68,7 +67,6 @@ export default async function CursosPage({
 }) {
   const pais = normalizarPais((await params).pais);
   const contenido = getContenidoPais(pais);
-  const preciosLocales = textosPreciosLocales(pais);
   const schedules = (await getActiveSchedules()) as CourseSchedule[];
   const featuredImage =
     courses.find((c) => c.slug === "analisis-de-datos")?.imageUrl ??
@@ -125,7 +123,6 @@ export default async function CursosPage({
       />
       <CursosPageClient
         schedules={schedules}
-        preciosLocales={preciosLocales}
         catalog={courses.map((c) => ({
           slug: c.slug,
           title: c.title,

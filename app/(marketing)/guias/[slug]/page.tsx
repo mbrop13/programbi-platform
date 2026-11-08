@@ -4,6 +4,7 @@ import GuiaPage from "@/components/guias/GuiaPage";
 import TestimoniosDeCurso from "@/components/marketing/TestimoniosDeCurso";
 import { alternatesClaude, alternatesCurso, alternatesGuiaPais, guiaPorPath, guiasRaiz } from "@/lib/guias";
 import { absoluteUrl } from "@/lib/seo";
+import { sinMontosDeCurso } from "@/lib/guias/precio";
 
 export const revalidate = 3600;
 export const dynamicParams = false;
@@ -26,14 +27,14 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const alternates = alternatesGuiaPais(guia) ?? alternatesClaude(guia) ?? alternatesCurso(guia);
   return {
     title: { absolute: guia.title },
-    description: guia.description,
+    description: sinMontosDeCurso(guia.description),
     alternates: {
       canonical: absoluteUrl(guia.path),
       ...(alternates ? { languages: alternates } : {}),
     },
     openGraph: {
       title: guia.title,
-      description: guia.description,
+      description: sinMontosDeCurso(guia.description),
       url: absoluteUrl(guia.path),
       type: "article",
       locale: "es_CL",

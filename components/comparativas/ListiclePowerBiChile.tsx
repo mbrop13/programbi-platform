@@ -21,11 +21,16 @@ import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import PlantillaDescarga from "@/components/marketing/PlantillaDescarga";
 import ComparativaCta from "./ComparativaCta";
 import { sinMontosProgrambi } from "@/lib/comparativas/precios";
+import { sinMontosDeCurso } from "@/lib/guias/precio";
 
 export default function ListiclePowerBiChile() {
   const opciones = opcionesListiclePowerBiChile();
   const faqs = faqsListiclePowerBiChile();
   const programbi = opciones.find((opcion) => opcion.destacada);
+
+  /** ProgramBI no publica arancel: se muestra la referencia al brochure. */
+  const precioOpcion = (opcion: { precio: string; destacada?: boolean }) =>
+    opcion.destacada ? sinMontosProgrambi(opcion.precio) : opcion.precio;
 
   const canonical = absoluteUrl(RUTA_LISTICLE);
   const fechaJsonLd = `${"2026-11-04"}T12:00:00-03:00`;
@@ -78,7 +83,7 @@ export default function ListiclePowerBiChile() {
         mainEntity: faqs.map((faq) => ({
           "@type": "Question",
           name: faq.q,
-          acceptedAnswer: { "@type": "Answer", text: faq.a },
+          acceptedAnswer: { "@type": "Answer", text: sinMontosDeCurso(faq.a) },
         })),
       },
       {
@@ -299,7 +304,7 @@ export default function ListiclePowerBiChile() {
                         opcion.destacada ? "bg-wash/70 font-semibold" : ""
                       }`}
                     >
-                      {opcion.precio}
+                      {precioOpcion(opcion)}
                       {opcion.precioNota ? (
                         <span className="mt-0.5 block text-[11px] font-normal text-faint">
                           {opcion.precioNota}
@@ -341,7 +346,7 @@ export default function ListiclePowerBiChile() {
               >
                 <div className="flex items-baseline justify-between gap-3">
                   <h3 className="text-sm font-bold text-ink">{opcion.nombre}</h3>
-                  <p className="text-sm font-bold text-ink">{opcion.precio}</p>
+                  <p className="text-sm font-bold text-ink">{precioOpcion(opcion)}</p>
                 </div>
                 {opcion.precioNota ? (
                   <p className="mt-0.5 text-[11px] text-faint">{opcion.precioNota}</p>
@@ -395,7 +400,7 @@ export default function ListiclePowerBiChile() {
               <p className="text-sm font-bold text-ink">Si quieres un curso en vivo con proyecto</p>
               <p className="mt-2 text-sm leading-relaxed text-mute">
                 ProgramBI tiene 20 h en vivo, grabaciones, certificado y un tablero propio al
-                terminar. Precio publicado: {programbi?.precio ?? "consultar"}.
+                terminar. Precio publicado: {sinMontosProgrambi(programbi?.precio ?? "consultar")}.
               </p>
             </div>
           </div>
@@ -409,7 +414,7 @@ export default function ListiclePowerBiChile() {
             {faqs.map((faq) => (
               <div key={faq.q} className="rounded-2xl border border-line bg-paper px-4 py-3">
                 <dt className="text-sm font-semibold text-ink">{faq.q}</dt>
-                <dd className="mt-1.5 text-sm leading-relaxed text-mute">{faq.a}</dd>
+                <dd className="mt-1.5 text-sm leading-relaxed text-mute">{sinMontosDeCurso(faq.a)}</dd>
               </div>
             ))}
           </dl>
@@ -498,7 +503,7 @@ export default function ListiclePowerBiChile() {
           </h2>
           <p className="mt-2 max-w-[62ch] text-sm leading-relaxed text-canvas/80">
             20 horas en vivo, dos clases por semana, grabaciones y certificado. Precio:{" "}
-            {programbi?.precio ?? "consulta por WhatsApp"}.
+            {sinMontosProgrambi(programbi?.precio ?? "consulta por WhatsApp")}.
           </p>
 
           <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">

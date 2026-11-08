@@ -14,6 +14,7 @@ import {
 import { robotsLocal } from "@/lib/paises/metadata";
 import { localeOg } from "@/lib/paises/rutas";
 import { absoluteUrl } from "@/lib/seo";
+import { sinMontosDeCurso } from "@/lib/guias/precio";
 
 export const revalidate = 3600;
 export const dynamicParams = false;
@@ -39,7 +40,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const indexable = esIndexable(pais);
   return {
     title: { absolute: guia.title },
-    description: guia.description,
+    description: sinMontosDeCurso(guia.description),
     alternates: {
       canonical: absoluteUrl(guia.path),
       ...(indexable && alternates ? { languages: alternates } : {}),
@@ -47,7 +48,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     ...(indexable ? {} : { robots: robotsLocal(pais) }),
     openGraph: {
       title: guia.title,
-      description: guia.description,
+      description: sinMontosDeCurso(guia.description),
       url: absoluteUrl(guia.path),
       locale: localeOg(pais),
       type: "article",

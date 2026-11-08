@@ -9,6 +9,9 @@ import { type CourseSchedule } from "@/lib/data/course-schedules";
 import { trackCourseCardClick } from "@/lib/analytics/marketing";
 import { usePaisRuta, useRutaLocal } from "@/lib/paises/cliente";
 import { zonaDe } from "@/lib/paises/horarios";
+import { usePriceUnlock } from "@/hooks/usePriceUnlock";
+import { courseBrochurePath } from "@/lib/pricing-gate";
+import { formatMoneda, precioVenta } from "@/lib/paises/precios";
 
 const ORDER = [
   "analisis-de-datos",
@@ -59,13 +62,11 @@ function courseTitle(course: ProgramCard) {
 export default function Programs({
   catalog,
   schedules,
-  preciosLocales = {},
 }: {
   catalog: ProgramCard[];
   schedules: CourseSchedule[];
-  /** Precio ya formateado por curso, por ejemplo "$159.900 ARS". Vacío en Chile. */
-  preciosLocales?: Record<string, string>;
 }) {
+  const { unlocked } = usePriceUnlock();
   const ALL = orderCatalog(catalog);
   const [expanded, setExpanded] = useState(false);
   const pais = usePaisRuta();
@@ -131,9 +132,15 @@ export default function Programs({
                   <Clock size={12} /> {course.durationHours} h · En vivo
                   {course.levelsCount > 1 ? ` · ${course.levelsCount} niveles` : ""}
                 </p>
-                {preciosLocales[course.slug] ? (
-                  <p className="mt-2 text-sm font-semibold text-ink">{preciosLocales[course.slug]}</p>
-                ) : null}
+                {unlocked && precioVenta(pais, course.slug) != null ? (
+                  <p className="mt-2 text-sm font-semibold text-ink">
+                    {formatMoneda(pais, precioVenta(pais, course.slug) as number)}
+                  </p>
+                ) : (
+                  <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-ink">
+                    Ver brochure y precios →
+                  </span>
+                )}
               </div>
             </Link>
           ))}
