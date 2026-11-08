@@ -2,16 +2,19 @@
 
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { courses } from "@/lib/data/courses";
 import { leadCourses } from "@/lib/data/site";
 import { contactGallery } from "@/lib/data/images";
 import { getAntiBotFields } from "@/lib/antibot";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
 import CourseImage from "@/components/shared/CourseImage";
 import { usePaisRuta } from "@/lib/paises/cliente";
+import { courseBrochureUrl, unlockPricesClient } from "@/lib/pricing-gate";
 import { captureAndReadAttribution } from "@/lib/utm";
 
 type Status = "idle" | "error" | "success";
 
+/** Los títulos del formulario no siempre coinciden con los del catálogo. */
 const courseSlugMap: Record<string, string> = {
   "Análisis de Datos": "analisis-de-datos",
   "Power BI": "power-bi",
@@ -27,6 +30,12 @@ const courseSlugMap: Record<string, string> = {
   Copilot: "copilot",
 };
 
+/** Slug del curso para el brochure y el checkout; Power BI si no hay match. */
+function slugDelPrograma(titulo: string | undefined): string {
+  if (!titulo) return "power-bi";
+  return courseSlugMap[titulo] || courses.find((curso) => curso.title === titulo)?.slug || "power-bi";
+}
+
 export default function LeadForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -40,6 +49,7 @@ export default function LeadForm() {
   const [sending, setSending] = useState(false);
   const formLoadedAt = useRef(Date.now());
   const pais = usePaisRuta();
+  const destSlug = slugDelPrograma(selected[0]);
 
   const toggleCourse = (c: string) => {
     setSelected((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
@@ -75,6 +85,12 @@ export default function LeadForm() {
     setSending(true);
     setStatus("idle");
 
+    // El brochure se abre de forma síncrona dentro del submit: si se abre
+    // después de un `await`, Safari y los navegadores móviles bloquean la
+    // pestaña nueva. El desbloqueo de precios se persiste en el mismo gesto.
+    window.open(courseBrochureUrl(destSlug, pais), "_blank", "noopener,noreferrer");
+    unlockPricesClient({ name: name.trim(), email: email.trim(), whatsapp: whatsapp.trim() });
+
     try {
       const res = await fetch("/api/leads/create", {
         method: "POST",
@@ -86,6 +102,7 @@ export default function LeadForm() {
           message: message.trim() || null,
           selectedCourses: selected,
           leadType: "contact",
+          pricingVariant: "gate",
           pais,
           ...captureAndReadAttribution(),
           ...getAntiBotFields(formLoadedAt.current, ""),
@@ -100,13 +117,8 @@ export default function LeadForm() {
       }
       if (!res.ok) throw new Error(data.error || "Error al enviar");
 
-      const destSlug = courseSlugMap[selected[0]] || "";
-      trackLeadSubmit("contact", "home_contact_section", destSlug || undefined);
+      trackLeadSubmit("contact", "home_contact_section", destSlug);
       setStatus("success");
-
-      setTimeout(() => {
-        window.location.href = destSlug ? `/pago?curso=${destSlug}` : "/pago";
-      }, 2500);
     } catch (err) {
       setStatus("error");
       setErrors({ form: err instanceof Error ? err.message : "Ocurrió un error. Intenta de nuevo." });
@@ -121,13 +133,46 @@ export default function LeadForm() {
         <div className="px-4 py-16 sm:px-6 lg:px-16 lg:py-24">
           <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">Cotiza Ahora</h2>
           <p className="mt-4 max-w-[36rem] text-base leading-relaxed text-mute">
-            Te respondemos con fechas, cupos y el plan de estudios.
+            Completa tus datos y abrimos el brochure PDF con el temario, las fechas, los cupos y los precios.
           </p>
 
           {status === "success" ? (
-            <p className="mt-10 max-w-[36rem] rounded-2xl border border-line bg-paper px-5 py-6 text-base text-ink">
-              Recibimos tu cotización. En un momento te llevamos al pago, o escríbenos al +56 9 3540 9699.
-            </p>
+            <div className="mt-10 max-w-[36rem] rounded-2xl border border-line bg-paper px-5 py-6">
+              <p className="text-base font-semibold text-ink">¡Listo! Abrimos tu brochure PDF en una pestaña nueva.</p>
+              <p className="mt-2 text-sm leading-relaxed text-mute">
+                Ahí ves el temario completo, las fechas y el arancel vigente con los descuentos y las 3 cuotas sin
+                interés. Los precios de la web ya quedaron desbloqueados en este navegador.
+              </p>
+              <div className="mt-5 flex flex-col gap-3 sm:flex-row">
+                <a
+                  href={courseBrochureUrl(destSlug, pais)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
+                >
+                  📄 Abrir Brochure PDF con Precios
+                </a>
+                <Link
+                  href={`/pago?curso=${destSlug}`}
+                  className="inline-flex h-12 items-center justify-center rounded-full border border-line-strong bg-paper px-6 text-sm font-semibold text-ink transition-colors hover:border-ink/40"
+                >
+                  Ir a Inscripción / Pago →
+                </Link>
+              </div>
+              <div className="mt-4 flex flex-wrap items-center gap-4 text-sm">
+                <button
+                  type="button"
+                  onClick={() => setStatus("idle")}
+                  className="font-medium text-ink underline underline-offset-4"
+                >
+                  Cotizar otro programa
+                </button>
+                <Link href="/cursos" className="font-medium text-mute underline underline-offset-4">
+                  Seguir explorando el catálogo →
+                </Link>
+              </div>
+              <p className="mt-4 text-xs text-mute">¿No se abrió la pestaña? Usa el botón «Abrir Brochure PDF con Precios».</p>
+            </div>
           ) : (
             <form onSubmit={onSubmit} className="relative mt-10 max-w-[36rem] space-y-5" noValidate>
               <div aria-hidden="true" className="pointer-events-none absolute -left-[9999px] h-0 w-0 overflow-hidden opacity-0">
@@ -230,7 +275,7 @@ export default function LeadForm() {
                 disabled={sending}
                 className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-8 text-base font-semibold text-canvas transition-transform active:scale-[0.98] disabled:opacity-60"
               >
-                {sending ? "Enviando…" : "Cotiza Ahora"}
+                {sending ? "Abriendo brochure…" : "Ver Brochure PDF con Precios →"}
               </button>
             </form>
           )}

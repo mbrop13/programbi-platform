@@ -22,6 +22,7 @@ import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import PlantillaDescarga from "@/components/marketing/PlantillaDescarga";
 import CalculadoraPrecioHora, { type OpcionCalculadora } from "./CalculadoraPrecioHora";
 import ComparativaCta from "./ComparativaCta";
+import { sinMontosProgrambi } from "@/lib/comparativas/precios";
 import ComparativaTracker from "./ComparativaTracker";
 
 type Variante = { iso: PaisComparativa; nombre: string; ruta: string };
@@ -377,7 +378,7 @@ export default function ComparativaAcademia({
                       {fila.criterio}
                     </th>
                     <td className="border-b border-line bg-wash/60 px-4 py-3 font-medium text-ink">
-                      {valorCelda(fila.programbi)}
+                      {valorCelda(sinMontosProgrambi(fila.programbi))}
                     </td>
                     <td className="border-b border-line px-4 py-3 text-mute">{valorCelda(fila.rival)}</td>
                     <td className="border-b border-line px-4 py-3 text-xs leading-relaxed text-faint">
@@ -409,7 +410,7 @@ export default function ComparativaAcademia({
                     <dt className="w-24 shrink-0 text-[11px] font-bold uppercase tracking-wide text-ink">
                       ProgramBI
                     </dt>
-                    <dd className="font-medium text-ink">{valorCelda(fila.programbi)}</dd>
+                    <dd className="font-medium text-ink">{valorCelda(sinMontosProgrambi(fila.programbi))}</dd>
                   </div>
                   <div className="flex gap-3 px-3 py-1">
                     <dt className="w-24 shrink-0 text-[11px] font-semibold uppercase tracking-wide text-faint">

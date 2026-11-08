@@ -1,17 +1,15 @@
 import Link from "next/link";
-import { Check } from "lucide-react";
+import { Check, FileText } from "lucide-react";
 import { ISO_CHILE } from "@/config/paises";
 import { NOTA_CUOTAS, textoCuotas } from "@/config/cuotas";
-import { monedaPublica, precioPublico } from "@/config/pricing";
 import { getCourseBySlug } from "@/lib/data/courses";
 import { levelsForView } from "@/lib/data/course-views";
-import { formatMoneda } from "@/lib/paises/precios";
+import { courseBrochurePath } from "@/lib/pricing-gate";
 import type { NicheLanding } from "@/lib/data/landings-nicho";
 import { LandingCta } from "./LandingCta";
 
 export function LandingPricing({ landing }: { landing: NicheLanding }) {
   const pricing = landing.pricing;
-  const moneda = monedaPublica(ISO_CHILE);
 
   const rows =
     pricing.mode === "catalog"
@@ -20,7 +18,6 @@ export function LandingPricing({ landing }: { landing: NicheLanding }) {
           return {
             slug,
             title: course?.title ?? slug,
-            price: precioPublico(ISO_CHILE, slug),
             porNivel: course ? levelsForView(course, "publico").length > 1 : false,
           };
         })
@@ -50,16 +47,21 @@ export function LandingPricing({ landing }: { landing: NicheLanding }) {
                 <div>
                   <p className="text-sm font-semibold text-ink">{row.title}</p>
                   <p className="mt-0.5 text-xs text-faint">
-                    {row.porNivel ? "Por nivel" : "Valor del curso"} · Moneda {moneda}
+                    {row.porNivel ? "Por nivel" : "Valor del curso"}
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-bold tracking-tight text-ink tabular-nums">
-                    {row.price != null ? formatMoneda(ISO_CHILE, row.price) : "Consulta el valor"}
-                  </p>
+                  <Link
+                    href={courseBrochurePath(row.slug, ISO_CHILE)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline hover:text-mute"
+                  >
+                    <FileText size={14} aria-hidden /> Ver precios y temario en el brochure PDF →
+                  </Link>
                   <Link
                     href={`/cursos/${row.slug}`}
-                    className="text-xs font-semibold text-mute no-underline hover:text-ink"
+                    className="mt-1 block text-xs font-semibold text-mute no-underline hover:text-ink"
                   >
                     Ver ficha
                   </Link>
@@ -92,7 +94,8 @@ export function LandingPricing({ landing }: { landing: NicheLanding }) {
       <p className="mt-4 text-xs leading-relaxed text-faint">
         {pricing.mode === "catalog" ? (
           <>
-            Precio publicado en {moneda}. Revisa el detalle en{" "}
+            El arancel vigente de cada curso, con sus descuentos y cuotas, está en el brochure PDF.
+            Revisa el detalle en{" "}
             <Link href="/precios" className="font-semibold text-mute underline-offset-2 hover:underline">
               /precios
             </Link>{" "}

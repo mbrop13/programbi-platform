@@ -5,6 +5,15 @@
  */
 
 import { escapeHtml } from "@/lib/security/escape";
+import { NOTA_CUOTAS } from "@/config/cuotas";
+
+export interface EmailInstructor {
+  name: string;
+  role: string;
+  title: string;
+  imageUrl: string;
+  credentials: string[];
+}
 
 export interface EmailCourseItem {
   slug: string;
@@ -27,6 +36,12 @@ export interface EmailCourseItem {
   color: string;
   checkoutUrl: string;
   courseUrl: string;
+  /** Brochure PDF del curso, con el país para precios y horarios locales. */
+  brochureUrl: string;
+  /** Puntos clave del temario que se listan en la tarjeta. */
+  highlights: string[];
+  /** Equipo docente con foto real. */
+  instructors: EmailInstructor[];
   includes?: string[];
 }
 
@@ -38,6 +53,31 @@ export interface EmailPackInfo {
   url: string;
   checkoutUrl: string;
 }
+
+// Respaldo sin foto: el correo nunca queda sin sección de docentes.
+const INSTRUCTORES_RESPALDO: EmailInstructor[] = [
+  {
+    name: "Manuel Oliva",
+    role: "CEO ProgramBI",
+    title: "Fundador y Director",
+    imageUrl: "",
+    credentials: ["Magíster en Data Science, UAI.", "Experto en Riesgo Financiero."],
+  },
+  {
+    name: "Emanuel Berrocal",
+    role: "Portfolio Manager",
+    title: "Ingeniero Civil Matemático",
+    imageUrl: "",
+    credentials: ["Ing. Civil Matemático, U. Chile.", "Portfolio Manager en Banco Itaú."],
+  },
+  {
+    name: "Rodrigo Vega",
+    role: "Analista BI",
+    title: "Ingeniero Comercial",
+    imageUrl: "",
+    credentials: ["Ingeniero Comercial, U. Chile.", "Experto en Visualización."],
+  },
+];
 
 // Helpers para colores según el curso en el nuevo diseño
 function getCourseTheme(slug: string, fallbackColor: string) {
@@ -90,6 +130,16 @@ export function buildQuoteEmailHtml(
   // Renderizar las tarjetas de cursos seleccionados por el usuario
   const courseCardsHtml = selectedCourses.map((c) => {
     const theme = getCourseTheme(c.slug, c.color);
+    const highlightsHtml = c.highlights
+      .slice(0, 5)
+      .map(
+        (punto) => `
+                  <tr>
+                    <td width="18" valign="top" style="padding: 0 8px 6px 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; line-height: 18px; color: #166534; font-weight: 800;">✓</td>
+                    <td valign="top" style="padding: 0 0 6px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12.5px; line-height: 18px; color: #5F5E59;">${escapeHtml(punto)}</td>
+                  </tr>`
+      )
+      .join("");
     return `
       <!-- Curso Card: ${c.title} -->
       <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 16px; border-collapse: separate;">
@@ -126,9 +176,39 @@ export function buildQuoteEmailHtml(
                   <span style="display: inline-block; background-color: #DCFCE7; color: #166534; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 8px; border-radius: 9999px;">
                     Matrícula Gratis
                   </span>
-                  <div style="margin-top: 8px;">
-                    <a href="${c.checkoutUrl}" target="_blank" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 700; color: #171716; text-decoration: underline;">Inscribirme →</a>
-                  </div>
+                </td>
+              </tr>
+              ${
+                highlightsHtml
+                  ? `<tr>
+                <td colspan="2" valign="top" style="padding-top: 14px; border-top: 1px solid #EAEAE6;">
+                  <p style="margin: 0 0 8px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 10.5px; font-weight: 800; color: #8C8B85; text-transform: uppercase; letter-spacing: 1.1px;">
+                    Lo que aprenderás en este programa
+                  </p>
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0">${highlightsHtml}</table>
+                </td>
+              </tr>`
+                  : ""
+              }
+              <tr>
+                <td colspan="2" valign="top" style="padding-top: 10px;">
+                  <p style="margin: 0 0 14px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; line-height: 1.5; color: #166534; font-weight: 700;">
+                    💳 ${escapeHtml(NOTA_CUOTAS)}
+                  </p>
+                  <table cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="padding: 0 8px 6px 0;">
+                        <a href="${c.brochureUrl}" target="_blank" style="display: inline-block; background-color: #FFFFFF; border: 1px solid #171716; color: #171716; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 700; text-decoration: none; padding: 10px 18px; border-radius: 9999px;">
+                          📄 Descargar Brochure PDF
+                        </a>
+                      </td>
+                      <td style="padding: 0 0 6px;">
+                        <a href="${c.checkoutUrl}" target="_blank" style="display: inline-block; background-color: #171716; color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 700; text-decoration: none; padding: 11px 20px; border-radius: 9999px;">
+                          Inscribirme Ahora →
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
                 </td>
               </tr>
             </table>
@@ -137,6 +217,42 @@ export function buildQuoteEmailHtml(
       </table>
     `;
   }).join("");
+
+  // Banner del brochure PDF: se omite si no hay cursos cotizados.
+  const brochureUrl = selectedCourses[0]?.brochureUrl;
+  const brochureBannerHtml = brochureUrl
+    ? `
+      <!-- BANNER BROCHURE PDF -->
+      <tr>
+        <td style="padding: 0 40px 26px;" class="mp">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #171716; border-radius: 16px;">
+            <tr>
+              <td style="padding: 24px 26px; text-align: center;">
+                <div style="display: inline-block; background-color: #F59E0B; color: #78350F; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.1px; padding: 4px 12px; border-radius: 9999px; margin-bottom: 12px;">
+                  📄 Brochure PDF listo
+                </div>
+                <p style="margin: 0 0 6px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15.5px; font-weight: 800; color: #FFFFFF; line-height: 1.45;">
+                  Tu Brochure PDF con el temario completo, fechas y aranceles ya está listo
+                </p>
+                <p style="margin: 0 0 18px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #A1A1AA; line-height: 1.5;">
+                  Descárgalo, guárdalo y compártelo con quien decida contigo.
+                </p>
+                <table align="center" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td style="background-color: #FFFFFF; border-radius: 9999px;">
+                      <a href="${brochureUrl}" target="_blank" style="display: inline-block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 800; color: #171716; text-decoration: none; padding: 13px 26px;">
+                        📄 Ver y Descargar Brochure PDF →
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    `
+    : "";
 
   // Renderizar la sección inteligente del Pack Recomendado
   let packRecommendationHtml = "";
@@ -250,6 +366,12 @@ export function buildQuoteEmailHtml(
     `;
   }
 
+  // Equipo docente con las fotos reales que vienen en la cotización.
+  const equipoDocente = uniqueInstructors(selectedCourses, recommendedCourses);
+  const equipoDocenteHtml = (equipoDocente.length > 0 ? equipoDocente : INSTRUCTORES_RESPALDO)
+    .map((profesor) => profCard(profesor))
+    .join("");
+
   return `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="es">
 <head>
@@ -307,6 +429,8 @@ export function buildQuoteEmailHtml(
             </td>
           </tr>
 
+          ${brochureBannerHtml}
+
           <!-- CURSOS COTIZADOS -->
           <tr>
             <td style="padding: 0 40px 20px;" class="mp">
@@ -352,11 +476,12 @@ export function buildQuoteEmailHtml(
           <tr>
             <td style="padding: 32px 40px;" class="mp">
               <h2 style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 800; color: #171716; margin-bottom: 20px; letter-spacing: -0.2px;">
-                Equipo de Docentes
+                Equipo Docente
               </h2>
-              ${profCard("MO", "Manuel Oliva", "Director Académico", "Magíster Data Science UAI · Consultor en Minería, Finanzas e IA")}
-              ${profCard("EB", "Emanuel Berrocal", "Docente Power BI & SQL", "Ing. Civil Matemático U. de Chile · Portfolio Manager Banco Itaú")}
-              ${profCard("RV", "Rodrigo Vega", "Docente Python & BI", "Ing. Comercial U. de Chile · Analista BI en Infracommerce")}
+              ${equipoDocenteHtml}
+              <p style="margin: 6px 0 0; padding-top: 16px; border-top: 1px solid #EAEAE6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; color: #8C8B85; line-height: 1.7;">
+                <strong style="color: #171716;">Confían en nuestro equipo:</strong> AngloAmerican · Deloitte · Banco de Chile · SQM · Cencosud · BCI · Tottus
+              </p>
             </td>
           </tr>
 
@@ -475,21 +600,55 @@ function metaRow(title: string, desc: string, last = false) {
   `;
 }
 
-function profCard(initials: string, name: string, role: string, desc: string) {
+function initialsOf(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("");
+}
+
+/** Docentes únicos de todos los cursos del correo, sin repetir nombres. */
+function uniqueInstructors(...lists: EmailCourseItem[][]): EmailInstructor[] {
+  const vistos = new Set<string>();
+  const equipo: EmailInstructor[] = [];
+  for (const lista of lists) {
+    for (const curso of lista) {
+      for (const profesor of curso.instructors ?? []) {
+        if (!profesor?.name || vistos.has(profesor.name)) continue;
+        vistos.add(profesor.name);
+        equipo.push(profesor);
+      }
+    }
+  }
+  return equipo;
+}
+
+function profCard(p: EmailInstructor) {
+  const iniciales = initialsOf(p.name);
+  const credenciales = p.credentials
+    .slice(0, 2)
+    .map((credencial) => escapeHtml(credencial))
+    .join(" ");
+  const foto = p.imageUrl
+    ? `<img src="${escapeHtml(p.imageUrl)}" width="72" height="72" alt="${escapeHtml(p.name)}" referrerpolicy="no-referrer" style="display: block; width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2px solid #EAEAE6; background-color: #EBEBE6;"/>`
+    : `<div style="width: 72px; height: 72px; border-radius: 50%; background-color: #EBEBE6; text-align: center; line-height: 72px; color: #171716; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: 800; font-size: 20px;">${iniciales}</div>`;
   return `
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 14px; border-collapse: collapse;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 16px; border-collapse: collapse;">
       <tr>
-        <td width="40" valign="top" style="padding-right: 12px;">
-          <div style="width: 36px; height: 36px; border-radius: 10px; background-color: #EBEBE6; text-align: center; line-height: 36px; color: #171716; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-weight: 800; font-size: 13px;">
-            ${initials}
-          </div>
+        <td width="72" valign="top" style="padding-right: 16px;">
+          ${foto}
         </td>
         <td valign="top">
-          <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13.5px; font-weight: 800; color: #171716;">
-            ${name} <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; color: #8C8B85; margin-left: 6px;">· ${role}</span>
+          <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 800; color: #171716;">
+            ${escapeHtml(p.name)} <span style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 600; color: #8C8B85; margin-left: 6px;">· ${escapeHtml(p.role)}</span>
           </p>
-          <p style="margin: 2px 0 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #5F5E59; line-height: 1.4; font-weight: 500;">
-            ${desc}
+          <p style="margin: 2px 0 4px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12.5px; color: #5F5E59; font-weight: 600;">
+            ${escapeHtml(p.title)}
+          </p>
+          <p style="margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 11.5px; color: #8C8B85; line-height: 1.5;">
+            ${credenciales}
           </p>
         </td>
       </tr>

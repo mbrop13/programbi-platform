@@ -87,6 +87,53 @@ export function zonaDe(iso: string | null | undefined): string {
 }
 
 /**
+ * Zonas IANA de LATAM y su país. Se comparan por zona exacta o por prefijo
+ * de carpeta (`America/Argentina/*`), nunca por un substring suelto: así
+ * `America/Lima` no confunde a `America/Limaville`.
+ */
+const ZONAS_LATAM: ReadonlyArray<readonly [string, string]> = [
+  ["America/Santiago", "cl"],
+  ["America/Lima", "pe"],
+  ["America/Mexico_City", "mx"],
+  ["America/Monterrey", "mx"],
+  ["America/Tijuana", "mx"],
+  ["America/Cancun", "mx"],
+  ["America/Merida", "mx"],
+  ["America/Chihuahua", "mx"],
+  ["America/Hermosillo", "mx"],
+  ["America/Bogota", "co"],
+  ["America/Argentina", "ar"],
+  ["America/Buenos_Aires", "ar"],
+  ["America/Montevideo", "uy"],
+  ["America/Asuncion", "py"],
+  ["America/La_Paz", "bo"],
+  ["America/Guayaquil", "ec"],
+  ["America/Costa_Rica", "cr"],
+  ["America/Guatemala", "gt"],
+  ["America/El_Salvador", "sv"],
+  ["America/Santo_Domingo", "do"],
+  ["America/Caracas", "ve"],
+  ["America/Panama", "pa"],
+];
+
+function zonaCoincide(zona: string, base: string): boolean {
+  return zona === base || zona.startsWith(`${base}/`);
+}
+
+/**
+ * País (ISO de dos letras) que corresponde a una zona horaria IANA.
+ * Devuelve `null` si la zona viene vacía o no es de un mercado de LATAM.
+ */
+export function paisDesdeZonaHoraria(tz?: string | null): string | null {
+  const zona = (tz || "").trim();
+  if (!zona) return null;
+  for (const [base, iso] of ZONAS_LATAM) {
+    if (zonaCoincide(zona, base)) return iso;
+  }
+  return null;
+}
+
+/**
  * Etiqueta de la hora local del país con su abreviatura y offset real.
  * México se identifica como "centro de México (CDMX)" para no confundirlo
  * con los husos del norte o de la península.
@@ -147,13 +194,16 @@ export function localizarHoras(
 }
 
 /**
- * Agrega "hora de Perú" cuando el país tiene un precio propio.
- * Chile usa el catálogo y se queda con la hora sola.
+ * Agrega la etiqueta de la hora local del país a un rango horario:
+ * `"19:30 a 21:30 · Hora de Chile"`, `"... · Hora de Perú"`, etc.
+ * Si el texto ya trae una etiqueta («hora de …» en cualquier capitalización)
+ * se devuelve tal cual para no duplicarla.
  */
 export function conHoraPais(iso: string | null | undefined, horario: string): string {
+  if (!horario) return horario;
+  if (/hora de/i.test(horario)) return horario;
   const pais = getPais(normalizarPais(iso));
-  if (!horario || pais.precios === "catalogo") return horario;
-  return `${horario} · hora de ${pais.nombre}`;
+  return `${horario} · Hora de ${pais.nombre}`;
 }
 
 /** Extrae "19:30 a 21:30" del horario guardado en la base de datos. */

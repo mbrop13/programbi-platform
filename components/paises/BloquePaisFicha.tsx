@@ -6,8 +6,7 @@ import type { Course } from "@/lib/data/courses";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { getFichaPais } from "@/lib/data/contenido-paises/fichas";
 import { etiquetaHoraLocal, horarioLocal } from "@/lib/paises/horarios";
-import { montoConCodigo } from "@/lib/paises/detalle-curso";
-import { precioVenta } from "@/lib/paises/precios";
+import { courseBrochurePath } from "@/lib/pricing-gate";
 import { rutaLocal } from "@/lib/paises/rutas";
 import { vecinosDe } from "@/lib/paises/vecinos";
 import { faqDePais } from "@/lib/faq/contenido";
@@ -85,7 +84,6 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
 
   const horario = horarioLocal(iso, { inicio, fin });
   const horaLocal = etiquetaHoraLocal(iso);
-  const precio = precioVenta(iso, curso.slug);
   const guia = guiaLocalDeCurso(iso, curso.slug);
   const hrefGuia = guia ? guia.path : hubGuiasDe(iso);
   const caso = contenido?.casos[0];
@@ -119,8 +117,8 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
           Cómo se usa {nombreCurso} en {info.nombre}
         </h2>
         <p className="mt-4 max-w-[70ch] text-base leading-relaxed text-mute">
-          Cómo se dicta {nombreCurso} en {info.nombre}: precio en {info.moneda}, medios de pago y
-          horario local, con las preguntas y las guías de ese mercado.
+          Cómo se dicta {nombreCurso} en {info.nombre}: medios de pago, horario local y el
+          brochure con los precios de ese mercado, con las preguntas y las guías del país.
         </p>
 
         <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,0.6fr)] lg:gap-12">
@@ -198,16 +196,20 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
                 </dd>
               </div>
 
-              {precio != null ? (
-                <div>
-                  <dt className="text-xs font-semibold text-mute">
-                    Precio de {nombreCurso} en {info.moneda}
-                  </dt>
-                  <dd className="mt-2 text-xl font-bold tracking-tight text-ink tabular-nums">
-                    {montoConCodigo(iso, precio)}
-                  </dd>
-                </div>
-              ) : null}
+              <div>
+                <dt className="text-xs font-semibold text-mute">
+                  Precio de {nombreCurso} en {info.moneda}
+                </dt>
+                <dd className="mt-2">
+                  <Link
+                    href={courseBrochurePath(iso, curso.slug)}
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline underline-offset-4 hover:underline"
+                  >
+                    Ver brochure PDF con precios
+                    <ArrowRight size={14} aria-hidden />
+                  </Link>
+                </dd>
+              </div>
 
               <div>
                 <dt className="flex items-center gap-2 text-xs font-semibold text-mute">
@@ -277,13 +279,12 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
               El mismo curso en otros mercados
             </h3>
             <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-mute">
-              La ficha cambia de moneda, horario y medios de pago según el país. Estas son las
-              versiones con precio y hora local de los mercados vecinos.
+              La ficha cambia de moneda en el brochure, horario y medios de pago según el país.
+              Estas son las versiones con brochure y hora local de los mercados vecinos.
             </p>
             <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {vecinos.map((vecino) => {
                 const horarioVecino = horarioLocal(vecino.iso, { inicio, fin });
-                const precioVecino = precioVenta(vecino.iso, curso.slug);
                 const guiaVecina = guiaLocalDeCurso(vecino.iso, curso.slug);
                 return (
                   <li key={vecino.iso} className="rounded-2xl border border-line bg-paper p-5">
@@ -298,11 +299,15 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
                       <ArrowRight size={13} className="mt-0.5 shrink-0" aria-hidden />
                     </Link>
                     <p className="mt-2 text-xs leading-relaxed text-faint tabular-nums">
-                      {precioVecino != null
-                        ? `${montoConCodigo(vecino.iso, precioVecino)} · `
-                        : ""}
                       {horarioVecino.inicio} a {horarioVecino.fin} ({etiquetaHoraLocal(vecino.iso)})
                     </p>
+                    <Link
+                      href={courseBrochurePath(vecino.iso, curso.slug)}
+                      className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-ink no-underline underline-offset-4 hover:underline"
+                    >
+                      Ver brochure en {vecino.nombre}
+                      <ArrowRight size={12} aria-hidden />
+                    </Link>
                     {guiaVecina ? (
                       <Link
                         href={guiaVecina.path}

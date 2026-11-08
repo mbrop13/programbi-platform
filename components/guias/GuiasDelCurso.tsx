@@ -17,6 +17,23 @@ type Props = {
 /** Enlaces visibles en el bloque. */
 const MAXIMO = 6;
 
+/**
+ * Quita los montos que traen las descripciones de las guías.
+ *
+ * El arancel vive en el brochure PDF del curso, no en un listado de enlaces.
+ * Solo se eliminan cifras con símbolo de moneda o con código ISO detrás, para
+ * no tocar otros números del texto (horas, años, cantidad de profesionales).
+ */
+function sinMontos(texto: string): string {
+  return texto
+    .replace(/\$\s?\d[\d.,]*/g, "el arancel vigente")
+    .replace(
+      /\b\d{1,3}(?:\.\d{3})+\s?(?:CLP|ARS|MXN|PEN|COP|UYU|USD)\b/g,
+      "el arancel vigente"
+    )
+    .replace(/\s{2,}/g, " ");
+}
+
 function mercadoDe(guia: Guia): string {
   if (guia.country === "transversal") return "Latinoamérica";
   return getPais(guia.country).nombre;
@@ -117,9 +134,9 @@ export default function GuiasDelCurso({ curso, pais }: Props) {
                 <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-faint">
                   {mercadoDe(guia)}
                 </span>
-                <span className="mt-1.5 text-sm font-semibold leading-snug text-ink">{guia.h1}</span>
+                <span className="mt-1.5 text-sm font-semibold leading-snug text-ink">{sinMontos(guia.h1)}</span>
                 <span className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-mute">
-                  {guia.description}
+                  {sinMontos(guia.description)}
                 </span>
               </Link>
             </li>

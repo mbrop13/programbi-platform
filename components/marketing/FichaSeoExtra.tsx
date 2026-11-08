@@ -1,18 +1,32 @@
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, FileText } from "lucide-react";
 import { bloquesDeFicha } from "@/lib/data/seo-ficha";
 import { ISO_CHILE, normalizarPais } from "@/config/paises";
+import { courseBrochurePath } from "@/lib/pricing-gate";
+
+/**
+ * Quita los montos que traen los textos editoriales de la ficha. El arancel
+ * solo se publica en el brochure PDF, así que cualquier cifra en pesos que
+ * venga del contenido se reemplaza por la referencia al brochure.
+ */
+function sinMontos(texto: string): string {
+  return texto.replace(
+    /(?:\$\s?)?\b(?:169|338|349|159|319|235|236)[.,]?(?:000|900)\b(?:\s*(?:CLP|ARS|MXN|PEN|COP|UYU))?/g,
+    "el arancel vigente (en el brochure PDF del curso)"
+  );
+}
 
 /**
  * Bloques editoriales extra de la ficha de curso (servidor).
  *
  * Suma materia que el temario y las preguntas frecuentes no muestran: detalle
  * por clase, proyecto final, ruta laboral. El contenido vive en
- * `lib/data/seo-ficha/<slug>.ts` y solo usa datos del repo.
+ * `lib/data/seo-ficha/<slug>.ts` y solo usa datos del repo. Ningún bloque
+ * publica montos: el arancel se descarga en el brochure PDF.
  *
- * Es contenido del mercado chileno (precio en CLP y hora de Chile), así que
- * se renderiza solo en la ficha raíz. Las fichas /<pais>/cursos/<slug> ya
- * tienen su propio bloque local con precio, horario y medios de pago.
+ * Es contenido del mercado chileno (hora de Chile), así que se renderiza solo
+ * en la ficha raíz. Las fichas /<pais>/cursos/<slug> ya tienen su propio
+ * bloque local con horario y medios de pago.
  */
 export default function FichaSeoExtra({ slug, pais }: { slug: string; pais: string }) {
   if (normalizarPais(pais) !== ISO_CHILE) return null;
@@ -48,7 +62,7 @@ export default function FichaSeoExtra({ slug, pais }: { slug: string; pais: stri
 
               {(bloque.parrafos ?? []).map((parrafo) => (
                 <p key={parrafo} className="mt-3 text-sm leading-relaxed text-mute">
-                  {parrafo}
+                  {sinMontos(parrafo)}
                 </p>
               ))}
 
@@ -60,7 +74,7 @@ export default function FichaSeoExtra({ slug, pais }: { slug: string; pais: stri
                       className="flex items-start gap-2.5 text-sm leading-relaxed text-ink"
                     >
                       <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-ink" />
-                      {item}
+                      {sinMontos(item)}
                     </li>
                   ))}
                 </ul>
@@ -84,6 +98,15 @@ export default function FichaSeoExtra({ slug, pais }: { slug: string; pais: stri
             </article>
           ))}
         </div>
+
+        <Link
+          href={courseBrochurePath(slug, pais)}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-canvas no-underline"
+        >
+          <FileText size={15} aria-hidden /> Ver precios y temario en el brochure PDF →
+        </Link>
       </div>
     </section>
   );

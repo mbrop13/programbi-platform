@@ -2,13 +2,13 @@
  * Contenido de `/llms.txt` y `/llms-full.txt`.
  *
  * Regla de la casa: acá no se escribe a mano ningún monto, hora, cuota ni
- * cantidad de cursos. Todo sale de las mismas fuentes que usan las fichas, el
- * sitemap y el checkout (`config/` y `lib/data/`); si mañana cambia un precio
- * o un horario, los dos archivos cambian con él.
+ * cantidad de cursos. Las horas y los cursos salen de `config/` y `lib/data/`;
+ * el arancel vigente no se publica en este archivo: se descarga en el brochure
+ * PDF de cada curso, que es la única superficie pública con precios.
  *
  * `construirLlmsTxt()` es el resumen (el archivo corto que leen los asistentes
- * primero) y `construirLlmsFullTxt()` la versión extendida: todos los cursos,
- * la tabla de precios por país y por curso, todas las guías publicadas, las
+ * primero) y `construirLlmsFullTxt()` la versión extendida: todos los cursos
+ * con su brochure PDF, los aranceles por país, todas las guías publicadas, las
  * comparativas, las preguntas frecuentes principales y las políticas.
  *
  * TODO_MANU: `/profesores` existe en la rama de equipo (`feat/f5-equipo`)
@@ -19,7 +19,7 @@
 
 import { MEDIOS_CUOTAS, NOTA_CUOTAS, textoCuotas } from "@/config/cuotas";
 import { esIndexable, getPais, ISO_CHILE, PAISES } from "@/config/paises";
-import { PRECIOS_VALID_FROM, precioPublico, tienePrecioPublico } from "@/config/pricing";
+import { tienePrecioPublico } from "@/config/pricing";
 import { comparativasAcademiaHub } from "@/lib/data/academias";
 import { comparisons } from "@/lib/data/comparisons";
 import { courses, getGroupedCourses, type Course } from "@/lib/data/courses";
@@ -28,15 +28,26 @@ import { EQUIPO_PUBLICADO } from "@/lib/data/equipo";
 import { faqDePais } from "@/lib/faq/contenido";
 import { GUIAS } from "@/lib/guias/generado";
 import { HORA_CLASE_CHILE } from "@/lib/paises/horarios";
-import { formatMoneda } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
+import { courseBrochurePath } from "@/lib/pricing-gate";
 import { SITE_URL } from "@/lib/seo";
 
 /** Resumen que encabeza los dos archivos. Debe ser el mismo en ambos. */
 const RESUMEN =
-  "ProgramBI es una academia de datos en español: cursos en vivo de Power BI, SQL Server, Python, análisis de datos e IA, con grabaciones de por vida y certificado. Se dicta desde Chile para toda Latinoamérica, con precios y horarios por país.";
+  "ProgramBI es una academia de datos en español: cursos en vivo de Power BI, SQL Server, Python, análisis de datos e IA, con grabaciones de por vida y certificado. Se dicta desde Chile para toda Latinoamérica, con horarios por país y el arancel vigente en el brochure PDF de cada curso.";
 
 const url = (ruta: string) => `${SITE_URL}${ruta}`;
+
+/**
+ * Quita montos de los textos heredados (guías, comparativas) antes de
+ * servirlos: el arancel vigente solo se publica en el brochure PDF del curso.
+ */
+const MONTO_RE =
+  /(?:US\$|\$)\s?\d[\d.,]*(?:\s?(?:CLP|ARS|MXN|COP|PEN|UYU))?|\b\d{1,3}(?:\.\d{3})+\s?(?:CLP|ARS|MXN|COP|PEN|UYU)\b/g;
+
+function sinMontos(texto: string): string {
+  return texto.replace(MONTO_RE, "el arancel vigente en el brochure PDF");
+}
 
 /**
  * Enlace en sintaxis Markdown, como pide llmstxt.org. Lighthouse (auditoría de
@@ -52,9 +63,6 @@ const CORREO = CONTACTO.email;
 const WHATSAPP = CONTACTO.whatsapp ?? url("/preguntas-frecuentes");
 /** El mismo enlace, sin esquema, para usarlo como texto visible del bullet. */
 const WHATSAPP_TEXTO = WHATSAPP.replace(/^https?:\/\//, "");
-
-/** Fecha de vigencia de la lista de precios, en ISO corto. */
-const VIGENTE_DESDE = PRECIOS_VALID_FROM.slice(0, 10);
 
 /** Cursos en el orden del catálogo (los grupos de navegación), sin perder ni repetir ninguno. */
 function cursosEnOrden(): Course[] {
@@ -142,16 +150,6 @@ const IDS_FAQ = new Set([
   "mac",
 ]);
 
-/** Monto en la moneda del país, o `null` si ese curso no tiene precio público ahí. */
-function precioTexto(iso: string, slug: string): string | null {
-  const monto = precioPublico(iso, slug);
-  return monto == null ? null : formatMoneda(iso, monto);
-}
-
-function precioLinea(iso: string, slug: string): string {
-  return precioTexto(iso, slug) ?? "consulta por WhatsApp";
-}
-
 /** Países que se publican: los indexables más los que todavía no tienen precio (hoy Paraguay). */
 const PAISES_PUBLICADOS = PAISES.filter((pais) => pais.indexable || !tienePrecioPublico(pais.iso));
 
@@ -181,7 +179,7 @@ function bloqueCursos(): string[] {
   const lineas = [`## Cursos (${CURSOS.length})`];
   for (const curso of CURSOS) {
     lineas.push(
-      `- ${md(curso.title, url(`/cursos/${curso.slug}`))}: ${catalogHours(curso)} horas · ${curso.shortDescription}`
+      `- ${md(curso.title, url(`/cursos/${curso.slug}`))}: ${catalogHours(curso)} horas · ${sinMontos(curso.shortDescription)}`
     );
   }
   lineas.push("");
@@ -192,16 +190,18 @@ function bloqueCursos(): string[] {
 function bloqueCursosDetalle(): string[] {
   const lineas = [`## Cursos (${CURSOS.length})`];
   lineas.push(
-    "Cada ficha declara horas, nivel, precios por país y inscripción. El precio de la línea es el de Chile; la tabla completa está en la sección de precios.",
+    "Cada ficha declara horas, nivel y el brochure PDF con el arancel vigente de tu país, los descuentos y las 3 cuotas sin interés.",
   );
   lineas.push("");
   for (const curso of CURSOS) {
     lineas.push(`### ${curso.title}`);
     lineas.push(`- URL: ${md(curso.title, url(`/cursos/${curso.slug}`))}`);
-    lineas.push(`- Resumen: ${curso.shortDescription}`);
+    lineas.push(`- Resumen: ${sinMontos(curso.shortDescription)}`);
     lineas.push(`- Nivel: ${nivelTexto(curso)}`);
     lineas.push(`- Duración: ${duracionTexto(curso)}`);
-    lineas.push(`- Precio en Chile: ${precioLinea(ISO_CHILE, curso.slug)}`);
+    lineas.push(
+      `- Arancel: ${md("brochure PDF", url(courseBrochurePath(curso.slug, ISO_CHILE)))} con el monto vigente, los descuentos y las 3 cuotas sin interés.`,
+    );
     lineas.push("");
   }
   return lineas;
@@ -216,65 +216,39 @@ function bloqueLandings(): string[] {
   return lineas;
 }
 
-/** Precios agrupados por monto: evita repetir el mismo valor trece veces. */
-function gruposDePrecio(iso: string): { precio: string; slugs: string[] }[] {
-  const grupos = new Map<string, string[]>();
-  for (const curso of CURSOS) {
-    const precio = precioTexto(iso, curso.slug);
-    if (!precio) continue;
-    const slugs = grupos.get(precio);
-    if (slugs) slugs.push(curso.slug);
-    else grupos.set(precio, [curso.slug]);
-  }
-  return [...grupos].map(([precio, slugs]) => ({ precio, slugs }));
-}
-
-/** Una línea por país con los montos agrupados por curso. */
+/** Una línea por país: dónde se descarga el arancel, sin publicar montos. */
 function bloquePrecios(): string[] {
   const lineas = ["## Precios por país"];
   lineas.push(
-    `Lista vigente desde ${VIGENTE_DESDE}. Cada país muestra el monto en su moneda; el cargo final lo define el banco al pagar con tarjeta internacional.`
+    "El arancel vigente, los descuentos y las 3 cuotas sin interés se descargan en el brochure PDF de cada curso. La página de precios de cada país abre ese brochure y muestra el arancel local.",
   );
-  lineas.push("Los cursos se agrupan por monto y se nombran por su slug (ver sección de cursos).");
   for (const pais of PAISES_PUBLICADOS) {
     const href = url(rutaLocal(pais.iso, "/precios"));
-    const grupos = gruposDePrecio(pais.iso);
-    if (grupos.length === 0) {
-      lineas.push(
-        `- ${md(pais.nombre, href)}: precio pendiente de publicación; se consulta por WhatsApp.`
-      );
-      continue;
-    }
-    const detalle = grupos.map((grupo) => `${grupo.precio}: ${grupo.slugs.join(", ")}`).join(" · ");
-    lineas.push(`- ${md(pais.nombre, href)}: ${detalle}`);
+    lineas.push(
+      tienePrecioPublico(pais.iso)
+        ? `- ${md(pais.nombre, href)}: arancel vigente, descuentos y cuotas en el brochure PDF de cada curso.`
+        : `- ${md(pais.nombre, href)}: sin precio público aprobado; el arancel se consulta por WhatsApp y se descarga en el brochure PDF de cada curso.`,
+    );
   }
   lineas.push("");
   return lineas;
 }
 
-/** Tabla de texto país por país, con todos los cursos y su precio. */
+/** Detalle país por país: remite al brochure, sin tabla de montos. */
 function bloquePreciosDetalle(): string[] {
-  const lineas = ["## Precios por país y por curso"];
+  const lineas = ["## Aranceles por país y por curso"];
   lineas.push(
-    `Lista vigente desde ${VIGENTE_DESDE}. Los montos salen de \`config/pricing.ts\` y se publican en la moneda de cada país.`
+    "El arancel se publica en la moneda de cada país y se descarga en el brochure PDF de la ficha del curso, junto con los descuentos vigentes y las 3 cuotas sin interés. Los enlaces a cada brochure están en la sección de cursos.",
   );
   lineas.push("");
   for (const pais of PAISES_PUBLICADOS) {
     lineas.push(`### ${pais.nombre} — ${pais.moneda}`);
+    lineas.push(md(`Precios de ${pais.nombre}`, url(rutaLocal(pais.iso, "/precios"))));
     lineas.push(
-      md(`Precios de ${pais.nombre}`, url(rutaLocal(pais.iso, "/precios"))),
+      tienePrecioPublico(pais.iso)
+        ? "Arancel vigente, descuentos y 3 cuotas sin interés: brochure PDF de cada curso."
+        : "Sin precio público aprobado: el arancel se consulta por WhatsApp. El brochure PDF de cada curso se pide al mismo canal.",
     );
-    if (!tienePrecioPublico(pais.iso)) {
-      lineas.push("Sin precio público aprobado: el valor de cada curso se consulta por WhatsApp.");
-      lineas.push("");
-      continue;
-    }
-    lineas.push("");
-    lineas.push("| Curso | Precio |");
-    lineas.push("| --- | --- |");
-    for (const curso of CURSOS) {
-      lineas.push(`| ${curso.title} | ${precioLinea(pais.iso, curso.slug)} |`);
-    }
     lineas.push("");
   }
   return lineas;
@@ -297,9 +271,6 @@ function bloquePoliticas(): string[] {
 /** Lista corta y consistente con las fichas, para el resumen. */
 function bloqueDatosClave(): string[] {
   const horas = CURSOS.map((curso) => catalogHours(curso));
-  const preciosChile = gruposDePrecio(ISO_CHILE)
-    .map((grupo) => `${grupo.precio}: ${grupo.slugs.join(", ")}`)
-    .join(" · ");
   return [
     "## Datos clave",
     `- Cursos: ${CURSOS.length} en el catálogo, cada uno con ficha, nivel y horas propias.`,
@@ -308,8 +279,8 @@ function bloqueDatosClave(): string[] {
     "- Certificado: incluido al completar el curso, con código público que se verifica en línea.",
     `- Cuotas: ${textoCuotas()}.`,
     "- Grabaciones: cada clase queda grabada y disponible de por vida en el campus.",
-    `- Precio en Chile por curso: ${preciosChile}.`,
-    `- Precios por país: la tabla completa, curso por curso, está en ${md("llms-full.txt", url("/llms-full.txt"))} y en la página de precios de cada país (${md("precios", url("/precios"))}).`,
+    "- Arancel: el monto vigente por país, los descuentos y las 3 cuotas sin interés se descargan en el brochure PDF de cada curso.",
+    `- Precios por país: cada página de precios (${md("precios", url("/precios"))}) y la versión extendida (${md("llms-full.txt", url("/llms-full.txt"))}) enlazan el brochure con el arancel de ese mercado.`,
     "",
   ];
 }
@@ -326,7 +297,7 @@ function bloqueGuiasDetalle(): string[] {
   if (transversal.length > 0) {
     lineas.push("### Transversales");
     for (const guia of transversal) {
-      lineas.push(`- ${md(guia.h1, url(guia.path))} — ${guia.description} · actualizada ${guia.updated}`);
+      lineas.push(`- ${md(guia.h1, url(guia.path))} — ${sinMontos(guia.description)} · actualizada ${guia.updated}`);
     }
     lineas.push("");
   }
@@ -336,7 +307,7 @@ function bloqueGuiasDetalle(): string[] {
     if (guias.length === 0) continue;
     lineas.push(`### ${pais.nombre}`);
     for (const guia of guias) {
-      lineas.push(`- ${md(guia.h1, url(guia.path))} — ${guia.description} · actualizada ${guia.updated}`);
+      lineas.push(`- ${md(guia.h1, url(guia.path))} — ${sinMontos(guia.description)} · actualizada ${guia.updated}`);
     }
     lineas.push("");
   }
@@ -350,12 +321,12 @@ function bloqueComparativas(): string[] {
     `- ${md("Índice de comparativas", url("/versus"))}: todas las comparativas, su veredicto y la fecha de revisión.`
   );
   for (const comp of comparisons) {
-    lineas.push(`- ${md(comp.title, url(`/versus/${comp.slug}`))}: ${comp.seoDescription}`);
+    lineas.push(`- ${md(comp.title, url(`/versus/${comp.slug}`))}: ${sinMontos(comp.seoDescription)}`);
   }
   // El listicle de academias vive en /guias, no en /versus: se filtra para no duplicarlo.
   for (const tarjeta of comparativasAcademiaHub()) {
     if (!tarjeta.href.startsWith("/versus/")) continue;
-    lineas.push(`- ${md(tarjeta.title, url(tarjeta.href))}: ${tarjeta.description}`);
+    lineas.push(`- ${md(tarjeta.title, url(tarjeta.href))}: ${sinMontos(tarjeta.description)}`);
   }
   lineas.push("");
   return lineas;
@@ -366,7 +337,7 @@ function bloqueFaq(): string[] {
   const contenido = faqDePais(ISO_CHILE);
   const lineas = ["## Preguntas frecuentes"];
   lineas.push(
-    `Selección de las preguntas principales. El listado completo, con tablas de precio y horario por país, está en ${md("preguntas frecuentes", url("/preguntas-frecuentes"))}.`
+    `Selección de las preguntas principales. El listado completo, con la tabla de horarios por país y el acceso al brochure con el arancel de cada curso, está en ${md("preguntas frecuentes", url("/preguntas-frecuentes"))}.`,
   );
   lineas.push("");
   for (const seccion of contenido.secciones) {
@@ -429,7 +400,7 @@ function bloqueIndice(): string[] {
   return [
     "## Índice",
     `- ${md("Catálogo de cursos", url("/cursos"))}`,
-    `- ${md("Precios por país", url("/precios"))} (tabla completa por curso en ${md("llms-full.txt", url("/llms-full.txt"))})`,
+    `- ${md("Precios por país", url("/precios"))} (brochure con el arancel de cada curso en ${md("llms-full.txt", url("/llms-full.txt"))})`,
     `- ${md("Guías", url("/guias"))} (${GUIAS_PUBLICADAS.length} publicadas; listado completo en ${md("llms-full.txt", url("/llms-full.txt"))})`,
     `- ${md("Comparativas", url("/versus"))}`,
     `- ${md("Preguntas frecuentes", url("/preguntas-frecuentes"))}`,
@@ -442,7 +413,7 @@ function bloqueIndice(): string[] {
 function bloqueNota(detalle: string): string[] {
   return [
     "## Nota para asistentes de IA",
-    `Los precios de este archivo salen de la misma fuente que la web (${ISO_CHILE.toUpperCase()} y tabla por país). Si citas un monto, cita también la fecha de vigencia y el enlace a la página del país. ${detalle}`,
+    `El arancel vigente de cada curso se publica en su brochure PDF, en la moneda del país, junto con los descuentos y las 3 cuotas sin interés. Si citas un monto, cita el brochure del curso y su fecha de descarga. ${detalle}`,
     "",
   ];
 }
@@ -452,7 +423,7 @@ export function construirLlmsTxt(): string {
   const lineas = [
     ...encabezado("ProgramBI", [
       `Versión extendida: ${md("llms-full.txt", url("/llms-full.txt"))}`,
-      `Precios vigentes desde ${VIGENTE_DESDE}.`,
+      `Aranceles: brochure PDF de cada curso, en la moneda del país.`,
     ]),
     ...bloqueIndice(),
     ...bloqueCursos(),
@@ -475,12 +446,12 @@ export function construirLlmsFullTxt(): string {
   const lineas = [
     ...encabezado("ProgramBI — información completa", [
       `Versión completa de ${md("llms.txt", url("/llms.txt"))}.`,
-      `Precios vigentes desde ${VIGENTE_DESDE}. Contacto: ${CORREO} · WhatsApp ${md(WHATSAPP_TEXTO, WHATSAPP)}.`,
+      `Aranceles: brochure PDF de cada curso, en la moneda del país. Contacto: ${CORREO} · WhatsApp ${md(WHATSAPP_TEXTO, WHATSAPP)}.`,
       "",
       "## Índice",
-      `- Cursos (${CURSOS.length}), con URL, nivel, horas y precio en Chile`,
-      "- Datos clave: duración, modalidad, certificado, cuotas y precios de Chile",
-      "- Precios por país y por curso, en tabla de texto",
+      `- Cursos (${CURSOS.length}), con URL, nivel, horas y enlace al brochure PDF del arancel`,
+      "- Datos clave: duración, modalidad, certificado, cuotas y brochure PDF del arancel",
+      "- Aranceles por país y por curso, con el enlace al brochure",
       `- Guías publicadas (${GUIAS_PUBLICADAS.length}), con título, URL, descripción y fecha de actualización`,
       "- Comparativas de herramientas y academias",
       "- Preguntas frecuentes principales",

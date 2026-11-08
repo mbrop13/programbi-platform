@@ -6,7 +6,8 @@ import {
   OPEN_COHORT_LABEL,
   nextCohortForCourse,
 } from "@/lib/data/course-schedules";
-import { conHoraPais } from "@/lib/paises/horarios";
+import { conHoraPais, zonaDe } from "@/lib/paises/horarios";
+import { usePaisRuta } from "@/lib/paises/cliente";
 
 export function CourseCohortStrip({
   pending,
@@ -34,7 +35,7 @@ export function CourseCohortStrip({
   const tight = compact || medium;
 
   return (
-    <div className={tight ? "" : "mt-4"} aria-live="polite" data-cohort-strip="">
+    <div className={tight ? "" : "mt-4"} aria-live="polite" data-cohort-strip="" data-cohort-time={time ?? ""}>
       <p className={medium ? "mb-2.5 text-sm text-ink" : compact ? "mb-2 text-xs text-ink" : "mb-2 text-sm text-ink"}>
         <span className="font-semibold">Inicio de clases</span>
         {pending ? (
@@ -90,8 +91,9 @@ export function CourseCohortFacts({
 }: {
   slug: string;
   schedules: CourseSchedule[];
-  timeZone: string;
-  /** Si el país tiene precio propio, el horario dice "hora de Perú". */
+  /** Zona horaria de destino. Si falta, se usa la del país efectivo. */
+  timeZone?: string;
+  /** País del horario. Si falta, se toma del país de la ruta. */
   pais?: string;
   loaded: boolean;
   compact?: boolean;
@@ -99,9 +101,12 @@ export function CourseCohortFacts({
   /** Texto cuando no hay cohorte futura. null = solo "Inicio de clases". */
   openLabel?: string | null;
 }) {
+  const paisRuta = usePaisRuta();
+  const paisEfectivo = pais ?? paisRuta;
+  const zona = timeZone ?? zonaDe(paisEfectivo);
   const next = useMemo(
-    () => (schedules.length ? nextCohortForCourse(slug, schedules, timeZone) : null),
-    [slug, schedules, timeZone]
+    () => (schedules.length ? nextCohortForCourse(slug, schedules, zona) : null),
+    [slug, schedules, zona]
   );
 
   return (
@@ -111,7 +116,7 @@ export function CourseCohortFacts({
       pending={!loaded && !next}
       startLabel={next?.date ?? openLabel}
       days={next?.days ?? null}
-      time={next?.time ? conHoraPais(pais, next.time) : null}
+      time={next?.time ? conHoraPais(paisEfectivo, next.time) : null}
     />
   );
 }

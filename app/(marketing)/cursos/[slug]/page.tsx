@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { courses, getCourseBySlug } from "@/lib/data/courses";
+import { courses, getCourseBySlug, type Course } from "@/lib/data/courses";
 import { getActiveSchedules, getMarketingDescription } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
@@ -14,10 +14,9 @@ import { getCourseJsonLd } from "@/lib/seo/course-jsonld";
 import { COURSE_SEO } from "@/lib/seo/money";
 import { normalizarPais, esIndexable, ISO_CHILE } from "@/config/paises";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
-import { localizarMercado, precioCurso } from "@/lib/paises/precios";
+import { localizarMercado } from "@/lib/paises/precios";
 import { robotsLocal } from "@/lib/paises/metadata";
-import { detalleCursoLocal, textosPreciosLocales } from "@/lib/paises/detalle-curso";
-import { precioTarjetaPublico } from "@/lib/paises/precio-publico";
+import { detalleCursoLocal } from "@/lib/paises/detalle-curso";
 import { horarioDeCohorte } from "@/lib/paises/horarios";
 
 export const revalidate = 3600;
@@ -27,6 +26,24 @@ type SearchParams = Promise<{ para?: string | string[]; nivel?: string | string[
 
 function one(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
+}
+
+/**
+ * Copia del curso sin montos para el componente cliente.
+ *
+ * Los props de un Server Component viajan en el flight data de RSC dentro del
+ * HTML: si `originalPrice` o `levels[].price` van en el prop, el precio queda
+ * expuesto aunque la tarjeta no lo pinte. El monto se calcula en cliente con
+ * `precioVenta`, así que el cliente no necesita ninguno de estos campos.
+ */
+function cursoSinPrecios(course: Course): Course {
+  const limpio: Course = { ...course, levels: course.levels?.map((level) => ({ ...level })) };
+  delete limpio.originalPrice;
+  limpio.levels?.forEach((level) => {
+    delete level.price;
+    delete level.originalPrice;
+  });
+  return limpio;
 }
 
 export async function generateStaticParams() {
@@ -125,7 +142,6 @@ export default async function CourseDetailPage({
   // Horario local y preguntas que no incluyen el precio.
   const cohorte = schedules.find((s) => s.course_slug === course.slug);
   const { inicio, fin } = horarioDeCohorte(cohorte?.schedule_time);
-  const precioTarjeta = await precioTarjetaPublico(pais, course.slug);
   const detalle = detalleCursoLocal({ iso: pais, inicio, fin });
 
   const courseJsonLd = getCourseJsonLd(course, "publico", pais);
@@ -177,17 +193,14 @@ export default async function CourseDetailPage({
       />
       <CourseDetailClient
         key={course.slug}
-        course={course}
+        course={cursoSinPrecios(course)}
         initialSchedules={schedules}
         initialView={para === "empresas" ? "empresas" : "publico"}
         initialLevelName={nivel}
-        mostrarPrecioLocal={pais !== ISO_CHILE && precioCurso(pais, course.slug) != null}
-        precioTarjeta={precioTarjeta}
-        preciosLocales={textosPreciosLocales(pais)}
         detalleLocal={detalle}
       />
-      {/* Bloque propio del mercado: texto, precio, horario, FAQ y enlaces
-          internos. Reemplaza a CountryContext, que repetía los mismos datos. */}
+      {/* Bloque propio del mercado: texto, horario, FAQ y enlaces internos.
+          Reemplaza a CountryContext, que repetía los mismos datos. */}
       <BloquePaisFicha curso={course} pais={pais} inicio={inicio} fin={fin} />
       <FichaSeoExtra slug={course.slug} pais={pais} />
       <GuiasDelCurso curso={course.slug} pais={pais} />
