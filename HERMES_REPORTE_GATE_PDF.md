@@ -4,7 +4,7 @@
 **Rama:** `mejora/gate-pdf-precios-horarios`
 **Worktree integrador:** `C:\dev\pbi-gate-pdf`
 **Repo:** `github.com/mbrop13/programbi-platform`
-**Commit final:** `29e7eaf` (último commit de código: `b4af6cc`)
+**Commit de código:** `b4af6cc` (la rama suma además los commits de documentación de este reporte)
 **Push:** ✅ `origin/mejora/gate-pdf-precios-horarios` (18 commits, 61 archivos, +4.541 / −1.053)
 **PR / preview:** https://github.com/mbrop13/programbi-platform/pull/new/mejora/gate-pdf-precios-horarios
 **Rama publicada:** https://github.com/mbrop13/programbi-platform/tree/mejora/gate-pdf-precios-horarios
