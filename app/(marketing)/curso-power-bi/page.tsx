@@ -1,18 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import PlantillaDescarga from "@/components/marketing/PlantillaDescarga";
-import { ISO_CHILE, getPais, normalizarPais } from "@/config/paises";
+import { getPais, normalizarPais } from "@/config/paises";
 import { getContenidoPais } from "@/lib/data/contenido-paises";
 import { getCourseBySlug } from "@/lib/data/courses";
-import { offerLowPrice } from "@/lib/data/course-views";
 import { horarioLocal } from "@/lib/paises/horarios";
-import {
-  formatMoneda,
-  localizarMercado,
-  porcentajeDescuento,
-  precioCurso,
-  precioLista,
-} from "@/lib/paises/precios";
+import { localizarMercado } from "@/lib/paises/precios";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { SITE_URL, absoluteUrl, breadcrumbJsonLd, jsonLdString, pageOg } from "@/lib/seo";
 import { GUIDE_SEO } from "@/lib/seo/money";
@@ -112,20 +106,6 @@ export default async function Page({
   const href = (destino: string) => rutaLocal(pais, destino);
 
   const curso = getCourseBySlug("power-bi");
-  const esChile = pais === ISO_CHILE;
-  const precioLocal = precioCurso(pais, "power-bi");
-  const precioCatalogo = curso ? offerLowPrice(curso, "publico") : undefined;
-  const precio = esChile ? (precioCatalogo ?? null) : (precioLocal ?? precioCatalogo ?? null);
-  const usaMonedaLocal = !esChile && precioLocal != null;
-  const moneda = usaMonedaLocal ? mercado.moneda : "CLP";
-  const precioTexto =
-    precio != null ? formatMoneda(usaMonedaLocal ? pais : ISO_CHILE, precio) : null;
-  const listaLocal = usaMonedaLocal ? precioLista(pais, "power-bi") : null;
-  const listaTexto = listaLocal != null ? formatMoneda(pais, listaLocal) : null;
-  const descuento =
-    listaLocal != null && precioLocal != null
-      ? porcentajeDescuento(listaLocal, precioLocal)
-      : 0;
   const horario = horarioLocal(pais);
 
   const faqNivel = {
@@ -148,7 +128,7 @@ export default async function Page({
           },
           {
             q: `¿A qué hora son las clases en ${mercado.nombre}?`,
-            a: esChile
+            a: pais === "cl"
               ? `Las clases en vivo por Zoom son de ${horario.inicio} a ${horario.fin}, hora de Chile (${horario.offset}).`
               : `Las clases en vivo por Zoom son de ${horario.inicio} a ${horario.fin}, hora de ${mercado.nombre} (${horario.offset}). En Chile son de ${horario.inicioChile} a ${horario.finChile}.`,
           },
@@ -174,17 +154,6 @@ export default async function Page({
         },
         courseMode: "online",
         timeRequired: "PT20H",
-        ...(precio != null
-          ? {
-              offers: {
-                "@type": "Offer",
-                price: precio,
-                priceCurrency: moneda,
-                availability: "https://schema.org/InStock",
-                url: absoluteUrl(href(path)),
-              },
-            }
-          : {}),
         hasCourseInstance: {
           "@type": "CourseInstance",
           courseMode: "online",
@@ -264,30 +233,17 @@ export default async function Page({
                     <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
                       Precio del curso
                     </p>
-                    {precioTexto ? (
-                      <>
-                        <p className="mt-1 text-2xl font-bold tracking-tight text-ink tabular-nums">
-                          {precioTexto}
-                        </p>
-                        {listaTexto ? (
-                          <p className="mt-1 text-xs text-mute">
-                            <span className="line-through">{listaTexto}</span>
-                            {descuento > 0 ? (
-                              <span className="ml-2 font-semibold text-ink">
-                                {descuento}% menos
-                              </span>
-                            ) : null}
-                          </p>
-                        ) : null}
-                        <p className="mt-2 text-xs leading-relaxed text-faint">
-                          Moneda: {moneda}. El monto se confirma en el checkout.
-                        </p>
-                      </>
-                    ) : (
-                      <p className="mt-1 text-sm text-mute">
-                        El precio se muestra en la ficha del curso.
-                      </p>
-                    )}
+                    <p className="mt-1 text-sm leading-relaxed text-mute">
+                      El arancel vigente de tu país, el descuento y las 3 cuotas sin interés están
+                      en el brochure PDF.
+                    </p>
+                    <Link
+                      href={rutaLocal(pais, "/cursos/power-bi/brochure")}
+                      className="mt-3 inline-flex items-center gap-2 rounded-full bg-ink px-4 py-2 text-sm font-semibold text-canvas no-underline"
+                    >
+                      Ver precios en el brochure
+                      <ArrowRight size={15} />
+                    </Link>
                   </div>
 
                   <div className="rounded-2xl border border-line bg-paper p-4">

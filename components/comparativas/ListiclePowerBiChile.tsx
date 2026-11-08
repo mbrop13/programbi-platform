@@ -16,19 +16,16 @@ import {
   faqsListiclePowerBiChile,
   opcionesListiclePowerBiChile,
 } from "@/lib/data/academias";
-import { formatMoneda, precioVenta } from "@/lib/paises/precios";
 import { absoluteUrl, jsonLdString, SITE_URL } from "@/lib/seo";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import PlantillaDescarga from "@/components/marketing/PlantillaDescarga";
 import ComparativaCta from "./ComparativaCta";
+import { sinMontosProgrambi } from "@/lib/comparativas/precios";
 
 export default function ListiclePowerBiChile() {
   const opciones = opcionesListiclePowerBiChile();
   const faqs = faqsListiclePowerBiChile();
   const programbi = opciones.find((opcion) => opcion.destacada);
-  const precioProgrambi = precioVenta("cl", "power-bi");
-  const precioHora =
-    precioProgrambi != null ? formatMoneda("cl", Math.round(precioProgrambi / 20)) : "—";
 
   const canonical = absoluteUrl(RUTA_LISTICLE);
   const fechaJsonLd = `${"2026-11-04"}T12:00:00-03:00`;
@@ -74,19 +71,6 @@ export default function ListiclePowerBiChile() {
         url: courseUrl,
         inLanguage: "es-CL",
         courseMode: "Online",
-        ...(precioProgrambi != null
-          ? {
-              offers: {
-                "@type": "Offer",
-                price: precioProgrambi,
-                priceCurrency: "CLP",
-                url: courseUrl,
-                availability: "https://schema.org/InStock",
-                validFrom: PRECIOS_VALID_FROM,
-                category: "Paid",
-              },
-            }
-          : {}),
       },
       {
         "@type": "FAQPage",
@@ -192,7 +176,7 @@ export default function ListiclePowerBiChile() {
               <div className="flex items-baseline justify-between gap-4 px-5 py-4">
                 <dt className="text-xs font-semibold text-mute">Curso de ProgramBI</dt>
                 <dd className="text-lg font-bold tracking-tight text-ink">
-                  {programbi?.precio ?? "Consultar"}
+                  {sinMontosProgrambi(programbi?.precio ?? "Consultar")}
                 </dd>
               </div>
               <div className="flex items-baseline justify-between gap-4 px-5 py-4">
@@ -201,7 +185,7 @@ export default function ListiclePowerBiChile() {
               </div>
               <div className="flex items-baseline justify-between gap-4 px-5 py-4">
                 <dt className="text-xs font-semibold text-mute">Precio por hora</dt>
-                <dd className="text-lg font-bold tracking-tight text-ink">{precioHora}</dd>
+                <dd className="text-lg font-bold tracking-tight text-ink">en el brochure PDF</dd>
               </div>
             </dl>
             <p className="border-t border-line px-5 py-3 text-[11px] leading-relaxed text-faint">

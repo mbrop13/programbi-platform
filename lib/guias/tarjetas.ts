@@ -1,6 +1,6 @@
 import { getPais } from "@/config/paises";
 import { getCourseBySlug } from "@/lib/data/courses";
-import { fechaActualizado } from "@/lib/guias/precio";
+import { fechaActualizado, sinMontosDeCurso } from "@/lib/guias/precio";
 import { nombreCurso, ordenPais } from "@/lib/guias/opciones";
 import type { TarjetaGuia } from "@/lib/guias/hub";
 import type { Guia } from "@/lib/guias/tipos";
@@ -23,9 +23,10 @@ export function tarjetaDeGuia(guia: Guia): TarjetaGuia {
     guia.country === "transversal" ? "Latinoamérica" : getPais(guia.country).nombre;
   return {
     path: guia.path,
-    title: guia.title,
-    h1: guia.h1,
-    description: guia.description,
+    // El hub no publica montos: el arancel vive en el brochure PDF del curso.
+    title: sinMontosDeCurso(guia.title),
+    h1: sinMontosDeCurso(guia.h1),
+    description: sinMontosDeCurso(guia.description),
     course: guia.course,
     courseName: nombreCurso(guia.course),
     country: guia.country,

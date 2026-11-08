@@ -1,10 +1,7 @@
 import type { BloqueSeoFicha } from "./tipos";
 import { textoCuotas } from "@/config/cuotas";
-import { PRECIOS_CLP } from "@/config/pricing";
-import { formatCLP } from "@/lib/paises/precios";
 import { HORA_CLASE_CHILE } from "@/lib/paises/horarios";
 
-const PRECIO = formatCLP(PRECIOS_CLP["power-bi"]);
 const CUOTAS = textoCuotas("cl");
 const HORARIO = `${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin}`;
 
@@ -44,7 +41,7 @@ export const BLOQUES_POWER_BI: BloqueSeoFicha[] = [
       "Proyecto final: un tablero construido con datos de ejemplo o con tus propios extractos anonimizados, usando Power Query, modelo y DAX.",
       `Horario: dos veces por semana, de ${HORARIO}, hora de Chile; los días exactos dependen de la cohorte.`,
       "Grabaciones: cada clase queda en el campus y puedes verla cuando quieras; no expiran.",
-      `Pago: ${PRECIO} CLP, con ${CUOTAS}.`,
+      "Pago: el arancel vigente de tu país y las 3 cuotas sin interés están en el brochure PDF del curso.",
       "Certificado: certificado digital de ProgramBI al completar el curso.",
       "Mac: Power BI Desktop es solo para Windows; si usas Mac, sigues el curso con Power BI web desde el navegador.",
     ],

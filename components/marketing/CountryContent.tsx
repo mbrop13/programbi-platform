@@ -2,9 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Database } from "lucide-react";
 import { getPais } from "@/config/paises";
 import type { ContenidoPais } from "@/lib/data/contenido-paises/tipos";
-import { montoConCodigo } from "@/lib/paises/detalle-curso";
 import { horarioLocal } from "@/lib/paises/horarios";
-import { porcentajeDescuento, precioCurso, precioLista } from "@/lib/paises/precios";
 import { rutaLocal } from "@/lib/paises/rutas";
 
 /**
@@ -13,9 +11,6 @@ import { rutaLocal } from "@/lib/paises/rutas";
  */
 export default function CountryContent({ contenido }: { contenido: ContenidoPais }) {
   const pais = getPais(contenido.iso);
-  const precio = precioCurso(pais.iso, "power-bi");
-  const lista = precioLista(pais.iso, "power-bi");
-  const descuento = precio != null && lista != null ? porcentajeDescuento(lista, precio) : 0;
   const hrefCursos = rutaLocal(pais.iso, "/cursos");
   const hrefFaq = rutaLocal(pais.iso, "/faq");
   const horario = horarioLocal(pais.iso);
@@ -131,28 +126,22 @@ export default function CountryContent({ contenido }: { contenido: ContenidoPais
               </p>
             </div>
 
-            {precio != null ? (
-              <div className="mt-6 max-w-[34rem] rounded-2xl border border-line bg-paper p-5">
-                <div className="flex flex-wrap items-end justify-between gap-3">
-                  <div>
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-mute">
-                      Curso Power BI
-                    </p>
-                    <p className="mt-2 text-2xl font-bold tracking-tight text-ink tabular-nums">
-                      {montoConCodigo(pais.iso, precio)}
-                    </p>
-                  </div>
-                  {lista != null ? (
-                    <p className="text-sm text-mute">
-                      <span className="line-through">{montoConCodigo(pais.iso, lista)}</span>
-                      {descuento > 0 ? (
-                        <span className="ml-2 font-semibold text-ink">{descuento}% menos</span>
-                      ) : null}
-                    </p>
-                  ) : null}
-                </div>
-              </div>
-            ) : null}
+            <div className="mt-6 max-w-[34rem] rounded-2xl border border-line bg-paper p-5">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-mute">
+                Curso Power BI
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-mute">
+                El arancel vigente de tu país, los descuentos y las 3 cuotas sin interés están en
+                el brochure PDF del curso.
+              </p>
+              <Link
+                href={rutaLocal(pais.iso, "/cursos/power-bi/brochure")}
+                className="mt-3 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-canvas no-underline"
+              >
+                Ver precios en el brochure PDF
+                <ArrowRight size={15} />
+              </Link>
+            </div>
 
             <div className="mt-6">
               <p className="text-[11px] font-bold uppercase tracking-widest text-mute">
