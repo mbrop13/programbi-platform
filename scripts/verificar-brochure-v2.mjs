@@ -173,8 +173,15 @@ function contarModulos(html) {
 
 /** Extrae todos los montos con símbolo de moneda del HTML, en orden. */
 function extraerMontos(html) {
+  // Sin scripts ni estilos: los nombres de chunk (`...s/7289.js`) parecen
+  // montos en soles y arruinaban la comparación Chile vs Perú.
+  const visible = html
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ");
   const salida = [];
-  for (const coincidencia of html.matchAll(MONTO)) {
+  for (const coincidencia of visible.matchAll(MONTO)) {
     const bruto = coincidencia[0];
     const simbolo = coincidencia[1].toUpperCase();
     const digitos = bruto.replace(/[^\d]/g, "");

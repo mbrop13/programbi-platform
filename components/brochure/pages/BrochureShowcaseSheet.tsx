@@ -148,6 +148,7 @@ export function BrochureShowcaseSheet({
         style={{
           display: "flex",
           flexDirection: "column",
+          justifyContent: "space-between",
           height: "100%",
           minHeight: 0,
           fontFamily: BODY,
@@ -221,8 +222,8 @@ export function BrochureShowcaseSheet({
               </span>
               <span
                 style={{
-                  fontSize: 7.9,
-                  lineHeight: 1.35,
+                  fontSize: 8.6,
+                  lineHeight: 1.4,
                   color: TINTA,
                 }}
               >
@@ -303,7 +304,7 @@ export function BrochureShowcaseSheet({
                     crossOrigin="anonymous"
                     style={{
                       width: "100%",
-                      height: 118,
+                      height: 160,
                       objectFit: "cover",
                       display: "block",
                     }}
@@ -356,7 +357,7 @@ export function BrochureShowcaseSheet({
             style={{
               position: "relative",
               marginTop: 8,
-              height: 238,
+              height: 292,
               boxSizing: "border-box",
               padding: "14px 22px",
               borderRadius: 4,
@@ -410,7 +411,7 @@ export function BrochureShowcaseSheet({
                 color: GRIS,
               }}
             >
-              Se otorga a
+              Se certifica la finalización del programa
             </div>
 
             <div

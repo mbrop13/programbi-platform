@@ -103,6 +103,7 @@ export function BrochureFacultySheet({
         style={{
           display: "flex",
           flexDirection: "column",
+          justifyContent: "space-between",
           height: "100%",
           minHeight: 0,
           fontFamily: BODY,
@@ -184,7 +185,7 @@ export function BrochureFacultySheet({
                     crossOrigin="anonymous"
                     style={{
                       width: "100%",
-                      height: 168,
+                      height: 208,
                       objectFit: "cover",
                       objectPosition: "center 20%",
                       display: "block",
@@ -487,7 +488,7 @@ export function BrochureFacultySheet({
                 key={logo.name}
                 title={logo.name}
                 style={{
-                  height: 42,
+                  height: 52,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -504,7 +505,7 @@ export function BrochureFacultySheet({
                   crossOrigin="anonymous"
                   style={{
                     maxWidth: 86,
-                    maxHeight: 24,
+                    maxHeight: 30,
                     width: "auto",
                     height: "auto",
                     objectFit: "contain",

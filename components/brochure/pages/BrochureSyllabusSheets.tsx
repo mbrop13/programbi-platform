@@ -88,7 +88,7 @@ function SyllabusHeader({
 
   const titulo: CSSProperties = {
     fontFamily: "Georgia, 'Times New Roman', serif",
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 400,
     lineHeight: 1.1,
     color: TINTA,
@@ -96,7 +96,7 @@ function SyllabusHeader({
   };
 
   const meta: CSSProperties = {
-    fontSize: 7.4,
+    fontSize: 8,
     lineHeight: 1.3,
     color: TENUE,
     whiteSpace: "nowrap",
@@ -138,10 +138,13 @@ function ModuleCard({
   const tarjeta: CSSProperties = {
     backgroundColor: "#FFFFFF",
     border: `1px solid ${BORDE}`,
-    borderRadius: 8,
-    padding: "8px 10px",
+    borderRadius: 9,
+    padding: "12px 13px",
     breakInside: "avoid",
     pageBreakInside: "avoid",
+    display: "flex",
+    flexDirection: "column",
+    boxSizing: "border-box",
   };
 
   const cabecera: CSSProperties = {
@@ -152,7 +155,7 @@ function ModuleCard({
   };
 
   const numero: CSSProperties = {
-    fontSize: 6.2,
+    fontSize: 6.8,
     letterSpacing: 1.4,
     fontWeight: 700,
     color: accent,
@@ -160,37 +163,37 @@ function ModuleCard({
   };
 
   const pill: CSSProperties = {
-    fontSize: 6.2,
+    fontSize: 6.8,
     lineHeight: 1.2,
     fontWeight: 700,
     color: accent,
     backgroundColor: conAlfa(accent, 0.1),
     borderRadius: 999,
-    padding: "2px 6px",
+    padding: "2px 7px",
     whiteSpace: "nowrap",
     flexShrink: 0,
   };
 
   const titulo: CSSProperties = {
-    fontSize: 9.2,
+    fontSize: 11,
     fontWeight: 700,
-    lineHeight: 1.25,
+    lineHeight: 1.3,
     color: TINTA,
-    margin: "3px 0 0",
+    margin: "5px 0 0",
     overflowWrap: "break-word",
   };
 
   const lista: CSSProperties = {
     listStyle: "none",
-    margin: "4px 0 0",
+    margin: "6px 0 0",
     padding: 0,
   };
 
   const topico: CSSProperties = {
     display: "flex",
-    gap: 4,
-    fontSize: 7.1,
-    lineHeight: 1.35,
+    gap: 5,
+    fontSize: 8.8,
+    lineHeight: 1.45,
     color: GRIS,
   };
 
@@ -248,12 +251,12 @@ function SyllabusGroup({
     backgroundColor: TINTA,
     color: "#FFFFFF",
     borderRadius: 6,
-    padding: "5px 10px",
-    minHeight: 24,
+    padding: "6px 11px",
+    minHeight: 27,
   };
 
   const nivel: CSSProperties = {
-    fontSize: 8.4,
+    fontSize: 9,
     fontWeight: 700,
     letterSpacing: 0.6,
     lineHeight: 1.2,
@@ -271,14 +274,19 @@ function SyllabusGroup({
   const grilla: CSSProperties = {
     display: "grid",
     gridTemplateColumns: "1fr 1fr",
-    columnGap: 10,
-    rowGap: 8,
+    columnGap: 12,
+    rowGap: 10,
     alignItems: "start",
-    marginTop: 7,
+    marginTop: 10,
   };
 
   return (
-    <section style={{ marginTop: primero ? 0 : 9 }}>
+    <section
+      style={{
+        marginTop: primero ? 0 : 12,
+        flexShrink: 0,
+      }}
+    >
       <div style={banda}>
         <span style={nivel}>{group.levelLabel}</span>
         {group.levelShortLabel ? (
@@ -446,7 +454,14 @@ function SyllabusSheetBody({
     minHeight: "100%",
   };
 
-  const grupos: CSSProperties = { marginTop: 10 };
+  const grupos: CSSProperties = {
+    marginTop: 12,
+    flex: 1,
+    minHeight: 0,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-evenly",
+  };
 
   return (
     <div style={cuerpo}>

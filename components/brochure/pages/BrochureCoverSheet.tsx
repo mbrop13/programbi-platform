@@ -66,6 +66,7 @@ export function BrochureCoverSheet({
     minHeight: 0,
     display: "flex",
     flexDirection: "column",
+    justifyContent: "space-between",
     fontFamily: SANS,
     color: TINTA,
   };

@@ -38,11 +38,11 @@ export type BrochureSyllabusPage = {
 };
 
 /** Peso máximo por hoja: deja aire para títulos, bandas y pie. */
-const MAX_WEIGHT = 10;
-/** Máximo de tarjetas de módulo por hoja (grilla de 2 columnas × 3 filas). */
-const MAX_MODULES = 6;
+const MAX_WEIGHT = 20;
+/** Máximo de tarjetas de módulo por hoja (grilla de 2 columnas × 4 filas). */
+const MAX_MODULES = 8;
 /** Peso máximo de la última hoja para que quepa el panel de inscripción. */
-const LAST_PAGE_WEIGHT = 7;
+const LAST_PAGE_WEIGHT = 16;
 
 function weightOf(modulo: BrochureModulo): number {
   const topics = Array.isArray(modulo.topics) ? modulo.topics.length : 0;
@@ -110,7 +110,7 @@ export function planBrochureSyllabus(data: CourseBrochureData): BrochureSyllabus
   const last = pages[pages.length - 1];
   if (last.weight > LAST_PAGE_WEIGHT && last.moduleCount > 1) {
     const moved: PlannedBrochureModule[] = [];
-    while (last.weight > 6 && last.moduleCount > 1) {
+    while (last.weight > 12 && last.moduleCount > 1) {
       const group = last.groups[last.groups.length - 1];
       const modulo = group.modules.pop();
       if (!modulo) break;

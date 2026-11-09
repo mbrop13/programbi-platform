@@ -82,6 +82,7 @@ export function BrochurePricingScheduleSheet({
     minHeight: 0,
     display: "flex",
     flexDirection: "column",
+    justifyContent: "space-between",
     fontFamily: SANS,
     color: TINTA,
   };
@@ -118,6 +119,8 @@ export function BrochurePricingScheduleSheet({
     gap: 12,
     alignItems: "stretch",
     marginTop: 14,
+    flex: 1.7,
+    minHeight: 0,
   };
 
   const tarjetaPrecio: CSSProperties = {
@@ -252,6 +255,37 @@ export function BrochurePricingScheduleSheet({
     color: TENUE,
   };
 
+  const filaStats: CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+    gap: 6,
+    marginTop: 12,
+    paddingTop: 10,
+    borderTop: `1px solid ${LINEA}`,
+  };
+
+  const stat: CSSProperties = {
+    display: "flex",
+    flexDirection: "column",
+    gap: 1,
+    minWidth: 0,
+  };
+
+  const statValor: CSSProperties = {
+    fontFamily: DISPLAY,
+    fontSize: 15,
+    lineHeight: 1.1,
+    color: TINTA,
+  };
+
+  const statEtiqueta: CSSProperties = {
+    fontSize: 6.2,
+    lineHeight: 1.25,
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+    color: TENUE,
+  };
+
   const tarjetaOscura: CSSProperties = {
     display: "flex",
     flexDirection: "column",
@@ -347,6 +381,10 @@ export function BrochurePricingScheduleSheet({
 
   const bloqueFechas: CSSProperties = {
     marginTop: 14,
+    flex: 0.85,
+    minHeight: 0,
+    display: "flex",
+    flexDirection: "column",
   };
 
   const rotulo: CSSProperties = {
@@ -372,15 +410,22 @@ export function BrochurePricingScheduleSheet({
     gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
     gap: 8,
     marginTop: 8,
+    flex: 1,
+    alignItems: "stretch",
+    gridAutoRows: "1fr",
   };
 
   const tarjetaFecha: CSSProperties = {
     backgroundColor: BLANCO,
     border: `1px solid ${LINEA}`,
     borderRadius: 10,
-    padding: "10px 12px",
+    padding: "12px 14px",
     boxSizing: "border-box",
     minWidth: 0,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    height: "100%",
   };
 
   const nivelFecha: CSSProperties = {
@@ -427,6 +472,10 @@ export function BrochurePricingScheduleSheet({
 
   const bloqueEquivalencias: CSSProperties = {
     marginTop: 18,
+    flex: 1.15,
+    minHeight: 0,
+    display: "flex",
+    flexDirection: "column",
   };
 
   const subtituloTabla: CSSProperties = {
@@ -467,7 +516,7 @@ export function BrochurePricingScheduleSheet({
   };
 
   const td: CSSProperties = {
-    padding: "4px 8px",
+    padding: "6px 9px",
     lineHeight: 1.3,
     color: TINTA,
     borderTop: `1px solid ${LINEA}`,
@@ -544,6 +593,27 @@ export function BrochurePricingScheduleSheet({
             </div>
 
             {data.notaPago ? <div style={notaPago}>{data.notaPago}</div> : null}
+
+            <div style={filaStats}>
+              <div style={stat}>
+                <span style={statValor}>{`${data.hours} h`}</span>
+                <span style={statEtiqueta}>en vivo</span>
+              </div>
+              <div style={stat}>
+                <span style={statValor}>{data.modulesCount}</span>
+                <span style={statEtiqueta}>módulos</span>
+              </div>
+              <div style={stat}>
+                <span style={statValor}>{data.levelsCount}</span>
+                <span style={statEtiqueta}>
+                  {data.levelsCount === 1 ? "nivel" : "niveles"}
+                </span>
+              </div>
+              <div style={stat}>
+                <span style={statValor}>100%</span>
+                <span style={statEtiqueta}>por Zoom</span>
+              </div>
+            </div>
           </div>
 
           <aside style={tarjetaOscura}>
@@ -585,7 +655,7 @@ export function BrochurePricingScheduleSheet({
         {/* B. Próximas fechas de inicio */}
         <section style={bloqueFechas}>
           <div style={rotulo}>
-            {`PRÓXIMAS FECHAS DE INICIO · HORA DE ${data.paisNombre.toUpperCase()}`}
+            {`PRÓXIMAS FECHAS DE INICIO · Hora de ${data.paisNombre}`}
           </div>
 
           <div style={grillaFechas}>
@@ -595,7 +665,8 @@ export function BrochurePricingScheduleSheet({
                   Cupos abiertos — consulta la próxima fecha
                 </div>
                 <div style={diasFecha}>
-                  Escríbenos y te confirmamos la cohorte más cercana.
+                  Escríbenos y te confirmamos la cohorte más cercana, con el
+                  horario ya convertido a la hora de {data.paisNombre}.
                 </div>
               </div>
             ) : (
@@ -609,7 +680,9 @@ export function BrochurePricingScheduleSheet({
                     }`}
                   </div>
                   <div style={horarioFecha}>{cohorte.horario}</div>
-                  <div style={horaChile}>{cohorte.horaChile}</div>
+                  {cohorte.horaChile && cohorte.horaChile !== cohorte.horario ? (
+                    <div style={horaChile}>{cohorte.horaChile}</div>
+                  ) : null}
                 </div>
               ))
             )}
