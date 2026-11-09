@@ -45,6 +45,8 @@ import {
   type BrochureGalleryImage,
 } from "./brochure-assets";
 
+export type { BrochureCompanyLogo, BrochureGalleryImage } from "./brochure-assets";
+
 export type BrochureModulo = {
   title: string;
   hours: number | null;
