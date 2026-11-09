@@ -4,9 +4,14 @@
  * Hoja 1 — Portada ejecutiva del brochure.
  *
  * Jerarquía editorial: cabecera de marca en variante «cover», kicker de
- * modalidad, título display, descripción breve, foto hero con pills y stack,
- * fila de cuatro KPIs, metodología en vivo y cintillo de empresas. Todo va
- * inline para que la captura a PDF mida exactamente lo mismo que la vista.
+ * modalidad, título display, descripción breve, insignia de modalidad, foto
+ * hero con pills y stack, fila de cuatro KPIs, metodología en vivo y cintillo
+ * de empresas. Todo va inline para que la captura a PDF mida exactamente lo
+ * mismo que la vista.
+ *
+ * Presupuesto vertical (A4 = 1123px, cuerpo útil ≈ 1023px): ningún texto baja
+ * de 10.5px y el bloque completo queda por debajo del alto disponible incluso
+ * con título y descripción a tres líneas.
  */
 
 import type { CSSProperties, JSX } from "react";
@@ -30,6 +35,7 @@ const TENUE = "#77786F";
 const LINEA = "#E7E4DA";
 const LAVADO = "#F1EFE8";
 const BLANCO = "#FFFFFF";
+const PAPEL = "#FAF9F5";
 
 /** Recorte multílínea con prefijo webkit (Chromium y Safari). */
 function clamp(lineas: number): CSSProperties {
@@ -41,24 +47,53 @@ function clamp(lineas: number): CSSProperties {
   };
 }
 
+/** Luminancia relativa WCAG de un color hex de seis dígitos. */
+function luminancia(hex: string): number {
+  const limpio = hex.replace("#", "").trim();
+  if (!/^[0-9a-fA-F]{6}$/.test(limpio)) return 0;
+  const canales = [0, 2, 4].map((inicio) => {
+    const valor = parseInt(limpio.slice(inicio, inicio + 2), 16) / 255;
+    return valor <= 0.03928
+      ? valor / 12.92
+      : Math.pow((valor + 0.055) / 1.055, 2.4);
+  });
+  return (
+    0.2126 * (canales[0] ?? 0) +
+    0.7152 * (canales[1] ?? 0) +
+    0.0722 * (canales[2] ?? 0)
+  );
+}
+
+/**
+ * Acento para texto sobre papel: si el color del curso no alcanza 3:1 (el
+ * amarillo de Power BI), se usa tinta y el acento se reserva a barras y puntos.
+ */
+function acentoLegible(acento: string): string {
+  const frente = luminancia(acento);
+  const fondo = luminancia(PAPEL);
+  const contraste = (Math.max(frente, fondo) + 0.05) / (Math.min(frente, fondo) + 0.05);
+  return contraste >= 3 ? acento : TINTA;
+}
+
 export function BrochureCoverSheet({
   data,
   pageNumber,
   totalPages,
 }: BrochureCoverSheetProps): JSX.Element {
   const accent = data.accentColor;
-  const techStack = data.techStack.slice(0, 5);
-  const companyLogos = data.companyLogos.slice(0, 8);
+  const accentTexto = acentoLegible(accent);
+  const techStack = data.techStack.slice(0, 6);
+  const companyLogos = data.companyLogos.slice(0, 6);
   const pilares = data.methodologyPillars.slice(0, 4);
 
   const kpis: { valor: string; etiqueta: string }[] = [
-    { valor: `${data.hours} Horas`, etiqueta: "Clases prácticas en vivo" },
-    { valor: `${data.modulesCount} Módulos`, etiqueta: "Programa paso a paso" },
+    { valor: `${data.hours} Horas`, etiqueta: "Clases en vivo" },
+    { valor: `${data.modulesCount} Módulos`, etiqueta: "Programa completo" },
     {
       valor: `${data.levelsCount} ${data.levelsCount === 1 ? "Nivel" : "Niveles"}`,
-      etiqueta: "Progresión estructurada",
+      etiqueta: "Ruta de avance",
     },
-    { valor: "Certificado", etiqueta: "Digital con código verificable" },
+    { valor: "Certificado", etiqueta: "Verificable" },
   ];
 
   const contenido: CSSProperties = {
@@ -72,20 +107,20 @@ export function BrochureCoverSheet({
   };
 
   const kicker: CSSProperties = {
-    marginTop: 14,
-    fontSize: 8,
+    marginTop: 12,
+    fontSize: 11.5,
     lineHeight: 1.2,
-    letterSpacing: 2,
+    letterSpacing: "0.14em",
     fontWeight: 700,
     textTransform: "uppercase",
-    color: accent,
+    color: accentTexto,
   };
 
   const kickerSecundario: CSSProperties = {
     marginTop: 4,
-    fontSize: 7.2,
+    fontSize: 11,
     lineHeight: 1.3,
-    letterSpacing: 0.3,
+    letterSpacing: "0.02em",
     color: TENUE,
   };
 
@@ -93,25 +128,34 @@ export function BrochureCoverSheet({
     ...clamp(3),
     marginTop: 12,
     fontFamily: DISPLAY,
-    fontSize: 46,
-    lineHeight: 1.03,
-    letterSpacing: -1.2,
-    fontWeight: 400,
+    fontSize: 44,
+    lineHeight: 1.05,
+    letterSpacing: "-0.8px",
+    fontWeight: 700,
     color: TINTA,
   };
 
   const descripcion: CSSProperties = {
     ...clamp(3),
     marginTop: 10,
-    fontSize: 12.5,
-    lineHeight: 1.6,
+    fontSize: 14.5,
+    lineHeight: 1.55,
+    color: GRIS,
+  };
+
+  const insignia: CSSProperties = {
+    marginTop: 8,
+    paddingLeft: 10,
+    borderLeft: `2px solid ${accent}`,
+    fontSize: 11,
+    lineHeight: 1.45,
     color: GRIS,
   };
 
   const hero: CSSProperties = {
     position: "relative",
     marginTop: 14,
-    height: 292,
+    height: 242,
     borderRadius: 16,
     overflow: "hidden",
     border: `1px solid ${LINEA}`,
@@ -141,14 +185,14 @@ export function BrochureCoverSheet({
     top: 12,
     display: "inline-flex",
     alignItems: "center",
-    gap: 5,
+    gap: 6,
     padding: "5px 10px",
     borderRadius: 999,
     backgroundColor: "rgba(20,21,25,0.82)",
     color: BLANCO,
-    fontSize: 7,
+    fontSize: 11,
     lineHeight: 1.2,
-    letterSpacing: 1.6,
+    letterSpacing: "0.06em",
     textTransform: "uppercase",
     fontWeight: 600,
     whiteSpace: "nowrap",
@@ -156,8 +200,8 @@ export function BrochureCoverSheet({
 
   const puntoPill: CSSProperties = {
     display: "block",
-    width: 4,
-    height: 4,
+    width: 5,
+    height: 5,
     borderRadius: 999,
     backgroundColor: accent,
     flexShrink: 0,
@@ -176,22 +220,22 @@ export function BrochureCoverSheet({
   const chip: CSSProperties = {
     display: "inline-flex",
     alignItems: "center",
-    padding: "4px 9px",
+    padding: "4px 10px",
     borderRadius: 999,
     backgroundColor: "rgba(255,255,255,0.14)",
     border: "1px solid rgba(255,255,255,0.28)",
     color: BLANCO,
-    fontSize: 7.6,
+    fontSize: 11.5,
     lineHeight: 1.2,
     fontWeight: 600,
-    letterSpacing: 0.2,
+    letterSpacing: "0.01em",
     backdropFilter: "blur(6px)",
   };
 
   const filaKpis: CSSProperties = {
     display: "grid",
     gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-    gap: 8,
+    gap: 10,
     marginTop: 14,
   };
 
@@ -207,35 +251,37 @@ export function BrochureCoverSheet({
 
   const valorKpi: CSSProperties = {
     fontFamily: DISPLAY,
-    fontSize: 21,
+    fontSize: 24,
     lineHeight: 1.1,
-    letterSpacing: -0.3,
+    letterSpacing: "-0.3px",
     fontWeight: 700,
     color: TINTA,
+    whiteSpace: "nowrap",
   };
 
   const etiquetaKpi: CSSProperties = {
-    marginTop: 4,
-    fontSize: 7.4,
-    lineHeight: 1.25,
-    letterSpacing: 0.8,
+    marginTop: 5,
+    fontSize: 11,
+    lineHeight: 1.3,
+    letterSpacing: "0.08em",
     textTransform: "uppercase",
     color: TENUE,
+    whiteSpace: "nowrap",
   };
 
   const metodologia: CSSProperties = {
-    marginTop: 16,
+    marginTop: 18,
   };
 
   const tituloSeccion: CSSProperties = {
     display: "flex",
     alignItems: "center",
     gap: 10,
-    fontSize: 7,
+    fontSize: 11,
     lineHeight: 1.2,
-    letterSpacing: 1.8,
+    letterSpacing: "0.12em",
     textTransform: "uppercase",
-    fontWeight: 600,
+    fontWeight: 700,
     color: TENUE,
     whiteSpace: "nowrap",
   };
@@ -249,26 +295,30 @@ export function BrochureCoverSheet({
   const grillaMetodologia: CSSProperties = {
     display: "grid",
     gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: 8,
-    marginTop: 8,
+    gap: "10px 14px",
+    marginTop: 10,
   };
 
   const pilar: CSSProperties = {
     display: "flex",
-    gap: 9,
-    padding: "2px 0 2px 10px",
-    borderLeft: `1px solid ${LINEA}`,
+    gap: 10,
+    padding: "2px 0",
     minWidth: 0,
   };
 
   const paso: CSSProperties = {
     flexShrink: 0,
-    width: 22,
-    fontFamily: DISPLAY,
-    fontSize: 18,
-    lineHeight: 1,
-    color: accent,
-    opacity: 0.9,
+    alignSelf: "flex-start",
+    padding: "3px 7px",
+    borderRadius: 6,
+    border: `1px solid ${LINEA}`,
+    backgroundColor: LAVADO,
+    fontFamily: SANS,
+    fontSize: 11,
+    lineHeight: 1.2,
+    fontWeight: 700,
+    letterSpacing: "0.06em",
+    color: accentTexto,
   };
 
   const pilarTexto: CSSProperties = {
@@ -276,7 +326,7 @@ export function BrochureCoverSheet({
   };
 
   const pilarTitulo: CSSProperties = {
-    fontSize: 10.5,
+    fontSize: 14,
     lineHeight: 1.2,
     fontWeight: 700,
     color: TINTA,
@@ -284,9 +334,9 @@ export function BrochureCoverSheet({
 
   const pilarDescripcion: CSSProperties = {
     ...clamp(3),
-    marginTop: 2,
-    fontSize: 7.6,
-    lineHeight: 1.4,
+    marginTop: 3,
+    fontSize: 12,
+    lineHeight: 1.45,
     color: GRIS,
   };
 
@@ -301,10 +351,11 @@ export function BrochureCoverSheet({
   };
 
   const cintilloTitulo: CSSProperties = {
-    fontSize: 6.8,
+    fontSize: 11,
     lineHeight: 1.2,
-    letterSpacing: 1.4,
+    letterSpacing: "0.12em",
     textTransform: "uppercase",
+    fontWeight: 700,
     color: TENUE,
     marginBottom: 8,
   };
@@ -322,7 +373,7 @@ export function BrochureCoverSheet({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: "4px 6px",
+    padding: "3px 6px",
     boxSizing: "border-box",
     backgroundColor: BLANCO,
     border: `1px solid ${LINEA}`,
@@ -332,7 +383,7 @@ export function BrochureCoverSheet({
   const logo: CSSProperties = {
     display: "block",
     maxHeight: 22,
-    maxWidth: 80,
+    maxWidth: 84,
     width: "auto",
     height: "auto",
     objectFit: "contain",
@@ -363,6 +414,7 @@ export function BrochureCoverSheet({
 
         <h1 style={titulo}>{data.title}</h1>
         <p style={descripcion}>{data.shortDescription}</p>
+        <div style={insignia}>{data.insignia}</div>
 
         <div style={hero}>
           <img

@@ -1,11 +1,15 @@
 "use client";
 
 /**
- * Hoja 4 del brochure: equipo docente y empresas que confían en ProgramBI.
+ * Hoja 5 del brochure: equipo docente, cita del fundador y empresas clientes.
  *
  * Los retratos viven en `public/images/mentors/` para que la captura del PDF
- * los pueda rasterizar sin CORS. Si un profesor llegara sin foto local, se
- * muestra un placeholder con sus iniciales.
+ * los pueda rasterizar sin CORS: la ruta local se resuelve por nombre y solo
+ * se cae al `imageUrl` del dato si el profesor no pertenece al equipo fijo.
+ *
+ * Toda la hoja usa tipografía grande (nunca por debajo de 10.5px) y un ritmo
+ * vertical de bloques separados por `gap`, sin posicionamiento absoluto: la
+ * cabecera y el pie de la hoja A4 los pone `BrochureA4Sheet` por flujo flex.
  */
 
 import type { CSSProperties } from "react";
@@ -20,14 +24,15 @@ const GRIS = "#5C5D63";
 const TENUE = "#77786F";
 const LINEA = "#E7E4DA";
 const LAVADO = "#F1EFE8";
+const BLANCO = "#FFFFFF";
 
 const BODY =
   '-apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
 const DISPLAY = 'Georgia, "Times New Roman", serif';
 
 /**
- * Retratos locales del equipo fijo. La ruta se resuelve por nombre para que la
- * hoja muestre siempre las tres fotos same-origin, incluso si el dato aún
+ * Retratos locales HD del equipo fijo. La ruta se resuelve por nombre para que
+ * la hoja muestre siempre las tres fotos same-origin, incluso si el dato aún
  * apunta al CDN heredado.
  */
 const RETRATOS_LOCALES: Record<string, string> = {
@@ -42,11 +47,23 @@ type BrochureFacultySheetProps = {
   totalPages: number;
 };
 
+/** Slug ASCII del nombre, para la ruta local de respaldo. */
+function slugDe(nombre: string): string {
+  return nombre
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/** Foto del profesor: local HD primero, dato original después. */
 function retratoDe(profesor: BrochureProfesor): string | null {
   const local = RETRATOS_LOCALES[profesor.name];
   if (local) return local;
-  const url = profesor.imageUrl;
-  return url && url.startsWith("/") ? url : null;
+  if (profesor.imageUrl) return profesor.imageUrl;
+  const slug = slugDe(profesor.name);
+  return slug ? `/images/mentors/${slug}.jpg` : null;
 }
 
 function iniciales(nombre: string): string {
@@ -58,23 +75,24 @@ function iniciales(nombre: string): string {
     .join("");
 }
 
-function linkedinCorto(url: string): string {
-  const coincidencia = url.match(/\/in\/([^/?#]+)/i);
-  if (coincidencia?.[1]) return `linkedin.com/in/${coincidencia[1]}`;
-  return url.replace(/^https?:\/\/(www\.)?/i, "").replace(/\/+$/, "");
-}
-
 const PILDORA: CSSProperties = {
   display: "inline-block",
-  padding: "2px 6px",
+  padding: "2px 8px",
   borderRadius: 999,
   backgroundColor: LAVADO,
-  fontSize: 6.6,
+  fontSize: 10.5,
   lineHeight: 1.3,
   fontWeight: 600,
   color: GRIS,
-  letterSpacing: 0.1,
   whiteSpace: "nowrap",
+};
+
+/** Recorta el cargo del profesor sin cortar una línea por la mitad. */
+const DOS_LINEAS: CSSProperties = {
+  display: "-webkit-box",
+  WebkitLineClamp: 2,
+  WebkitBoxOrient: "vertical",
+  overflow: "hidden",
 };
 
 /** Recorta la nota del fundador sin cortar una línea por la mitad. */
@@ -93,9 +111,9 @@ export function BrochureFacultySheet({
   const accent = data.accentColor;
   const profesores = data.profesores.slice(0, 3);
   const logos = data.companyLogos.slice(0, 12);
-  const fundador = data.profesores.find((profesor) =>
-    Boolean(profesor.founderBio)
-  );
+  const empresas = data.empresas.slice(0, 12);
+  const fundador = profesores[0];
+  const cita = fundador?.founderBio ?? null;
 
   return (
     <BrochureA4Sheet data={data} pageNumber={pageNumber} totalPages={totalPages}>
@@ -103,67 +121,67 @@ export function BrochureFacultySheet({
         style={{
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
+          gap: 14,
           height: "100%",
           minHeight: 0,
+          justifyContent: "space-between",
           fontFamily: BODY,
           color: TINTA,
         }}
       >
-        {/* 1. Encabezado */}
+        {/* 1. Cabecera editorial */}
         <header>
           <div
             style={{
-              fontSize: 8,
+              fontSize: 11,
               lineHeight: 1.2,
-              letterSpacing: 2,
+              letterSpacing: "0.14em",
               textTransform: "uppercase",
               fontWeight: 700,
               color: accent,
             }}
           >
-            EQUIPO DOCENTE
+            Equipo docente
           </div>
           <h2
             style={{
-              margin: "6px 0 0",
+              margin: "8px 0 0",
               fontFamily: DISPLAY,
-              fontSize: 26,
+              fontSize: 31,
               lineHeight: 1.1,
-              letterSpacing: -0.4,
-              fontWeight: 400,
+              letterSpacing: -0.3,
+              fontWeight: 700,
               color: TINTA,
             }}
           >
-            Quién dicta tus clases en vivo
+            Aprende con quienes lideran proyectos de datos
           </h2>
           <p
             style={{
-              margin: "5px 0 0",
-              fontSize: 8.6,
-              lineHeight: 1.45,
+              margin: "8px 0 0",
+              fontSize: 14,
+              lineHeight: 1.5,
               color: GRIS,
             }}
           >
-            Profesionales en ejercicio que dictan las clases en vivo y
-            comparten casos reales de negocio.
+            Profesores en ejercicio, con experiencia directa en banca, minería,
+            retail y consultoría.
           </p>
         </header>
 
-        {/* 2. Tres profesores */}
+        {/* 2. Tres tarjetas de profesores */}
         <div
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 10,
-            marginTop: 16,
+            gap: 12,
             alignItems: "stretch",
           }}
         >
           {profesores.map((profesor) => {
             const foto = retratoDe(profesor);
-            const trayectoria = profesor.founderCareer.slice(0, 3).join(" · ");
             const credenciales = profesor.credentials.slice(0, 3);
+            const trayectoria = profesor.founderCareer.slice(0, 2);
 
             return (
               <article
@@ -171,11 +189,11 @@ export function BrochureFacultySheet({
                 style={{
                   display: "flex",
                   flexDirection: "column",
-                  backgroundColor: "#FFFFFF",
+                  minWidth: 0,
+                  backgroundColor: BLANCO,
                   border: `1px solid ${LINEA}`,
-                  borderRadius: 10,
+                  borderRadius: 12,
                   overflow: "hidden",
-                  boxShadow: "0 8px 20px rgba(20, 21, 25, 0.05)",
                 }}
               >
                 {foto ? (
@@ -185,9 +203,9 @@ export function BrochureFacultySheet({
                     crossOrigin="anonymous"
                     style={{
                       width: "100%",
-                      height: 208,
+                      height: 195,
                       objectFit: "cover",
-                      objectPosition: "center 20%",
+                      objectPosition: "center top",
                       display: "block",
                     }}
                   />
@@ -195,7 +213,7 @@ export function BrochureFacultySheet({
                   <div
                     aria-hidden="true"
                     style={{
-                      height: 168,
+                      height: 195,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -204,16 +222,16 @@ export function BrochureFacultySheet({
                   >
                     <span
                       style={{
-                        width: 54,
-                        height: 54,
+                        width: 62,
+                        height: 62,
                         borderRadius: "50%",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        backgroundColor: "#FFFFFF",
+                        backgroundColor: BLANCO,
                         border: `1px solid ${LINEA}`,
                         fontFamily: DISPLAY,
-                        fontSize: 20,
+                        fontSize: 22,
                         color: GRIS,
                       }}
                     >
@@ -224,30 +242,31 @@ export function BrochureFacultySheet({
 
                 <div
                   style={{
-                    padding: 10,
+                    flex: 1,
+                    minWidth: 0,
                     display: "flex",
                     flexDirection: "column",
-                    flex: 1,
+                    gap: 3,
+                    padding: "12px 12px 14px",
                   }}
                 >
                   <h3
                     style={{
                       margin: 0,
-                      fontSize: 12.5,
-                      lineHeight: 1.15,
-                      letterSpacing: -0.1,
+                      fontSize: 16.5,
+                      lineHeight: 1.2,
                       fontWeight: 700,
                       color: TINTA,
                     }}
                   >
                     {profesor.name}
                   </h3>
+
                   <div
                     style={{
-                      marginTop: 3,
-                      fontSize: 7.6,
-                      lineHeight: 1.3,
-                      letterSpacing: 1,
+                      fontSize: 11.5,
+                      lineHeight: 1.25,
+                      letterSpacing: "0.08em",
                       textTransform: "uppercase",
                       fontWeight: 700,
                       color: accent,
@@ -255,11 +274,12 @@ export function BrochureFacultySheet({
                   >
                     {profesor.role}
                   </div>
+
                   <div
                     style={{
-                      marginTop: 2,
-                      fontSize: 7.6,
-                      lineHeight: 1.3,
+                      ...DOS_LINEAS,
+                      fontSize: 12,
+                      lineHeight: 1.35,
                       color: GRIS,
                     }}
                   >
@@ -270,8 +290,8 @@ export function BrochureFacultySheet({
                     style={{
                       display: "flex",
                       flexWrap: "wrap",
-                      gap: 4,
-                      marginTop: 7,
+                      gap: 6,
+                      marginTop: 6,
                     }}
                   >
                     <span style={PILDORA}>
@@ -286,90 +306,75 @@ export function BrochureFacultySheet({
                     <ul
                       style={{
                         listStyle: "none",
-                        margin: "7px 0 0",
+                        margin: "8px 0 0",
                         padding: 0,
                         display: "flex",
                         flexDirection: "column",
-                        gap: 2.5,
+                        gap: 4,
                       }}
                     >
                       {credenciales.map((credencial, indice) => (
                         <li
-                          key={`credito-${indice}`}
+                          key={`credencial-${indice}`}
                           style={{
                             display: "flex",
                             alignItems: "flex-start",
-                            gap: 5,
-                            fontSize: 7,
-                            lineHeight: 1.3,
+                            gap: 6,
+                            fontSize: 12,
+                            lineHeight: 1.4,
                             color: GRIS,
                           }}
                         >
-                          <span
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 12 12"
                             aria-hidden="true"
-                            style={{
-                              flex: "0 0 auto",
-                              width: 3,
-                              height: 3,
-                              marginTop: 3.5,
-                              borderRadius: "50%",
-                              backgroundColor: accent,
-                            }}
-                          />
+                            style={{ flex: "0 0 auto", marginTop: 2.5 }}
+                          >
+                            <path
+                              d="M1.9 6.5 4.5 9.1 10.1 2.7"
+                              fill="none"
+                              stroke={accent}
+                              strokeWidth="1.7"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
                           <span>{credencial}</span>
                         </li>
                       ))}
                     </ul>
                   ) : null}
 
-                  {trayectoria ? (
-                    <div
-                      style={{
-                        marginTop: 6,
-                        fontSize: 6.6,
-                        lineHeight: 1.35,
-                        color: TENUE,
-                      }}
-                    >
-                      <span
+                  {trayectoria.length > 0 ? (
+                    <div style={{ marginTop: "auto", paddingTop: 10 }}>
+                      <div
                         style={{
-                          display: "block",
-                          marginBottom: 1.5,
-                          fontSize: 5.6,
-                          letterSpacing: 0.9,
+                          marginBottom: 3,
+                          fontSize: 10.5,
+                          lineHeight: 1.2,
+                          letterSpacing: "0.08em",
                           textTransform: "uppercase",
-                          color: "#9A9B93",
+                          fontWeight: 700,
+                          color: TENUE,
                         }}
                       >
                         Trayectoria
-                      </span>
-                      {trayectoria}
+                      </div>
+                      {trayectoria.map((hito, indice) => (
+                        <div
+                          key={`hito-${indice}`}
+                          style={{
+                            fontSize: 11,
+                            lineHeight: 1.35,
+                            color: TENUE,
+                          }}
+                        >
+                          {hito}
+                        </div>
+                      ))}
                     </div>
-                  ) : null}
-
-                  {profesor.linkedinUrl ? (
-                    <a
-                      href={profesor.linkedinUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={profesor.linkedinUrl}
-                      style={{
-                        marginTop: "auto",
-                        paddingTop: 7,
-                        borderTop: `1px solid ${LINEA}`,
-                        display: "block",
-                        fontSize: 6.2,
-                        lineHeight: 1.3,
-                        letterSpacing: 0.1,
-                        color: TENUE,
-                        textDecoration: "none",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {linkedinCorto(profesor.linkedinUrl)}
-                    </a>
                   ) : null}
                 </div>
               </article>
@@ -377,92 +382,59 @@ export function BrochureFacultySheet({
           })}
         </div>
 
-        {/* Nota del fundador: cierre editorial del equipo docente */}
-        {fundador?.founderBio ? (
+        {/* 3. Cita del fundador */}
+        {cita && fundador ? (
           <figure
             style={{
-              margin: "22px 0 0",
-              padding: "13px 18px 14px",
-              display: "flex",
-              alignItems: "flex-start",
-              gap: 10,
+              margin: 0,
+              padding: "10px 14px",
               backgroundColor: LAVADO,
               borderLeft: `3px solid ${accent}`,
-              borderRadius: "0 8px 8px 0",
+              borderRadius: 8,
             }}
           >
-            <span
-              aria-hidden="true"
+            <blockquote
               style={{
-                flex: "0 0 auto",
-                marginTop: -3,
-                fontFamily: DISPLAY,
-                fontSize: 30,
-                lineHeight: 1,
-                color: accent,
-                opacity: 0.55,
+                ...CUATRO_LINEAS,
+                margin: 0,
+                fontSize: 12.5,
+                fontStyle: "italic",
+                lineHeight: 1.5,
+                color: TINTA,
               }}
             >
-              “
-            </span>
-            <div style={{ minWidth: 0 }}>
-              <div
-                style={{
-                  fontSize: 5.8,
-                  lineHeight: 1.3,
-                  letterSpacing: 1.4,
-                  textTransform: "uppercase",
-                  fontWeight: 700,
-                  color: TENUE,
-                }}
-              >
-                Una palabra del fundador
-              </div>
-              <blockquote
-                style={{
-                  ...CUATRO_LINEAS,
-                  margin: "4px 0 0",
-                  fontFamily: DISPLAY,
-                  fontSize: 8.8,
-                  fontStyle: "italic",
-                  lineHeight: 1.5,
-                  color: "#3E3F44",
-                }}
-              >
-                {fundador.founderBio}
-              </blockquote>
-              <figcaption
-                style={{
-                  marginTop: 5,
-                  fontSize: 6.2,
-                  lineHeight: 1.3,
-                  letterSpacing: 0.8,
-                  textTransform: "uppercase",
-                  color: TENUE,
-                }}
-              >
-                {fundador.name} · {fundador.title}
-              </figcaption>
-            </div>
+              {cita}
+            </blockquote>
+            <figcaption
+              style={{
+                marginTop: 6,
+                fontSize: 11,
+                lineHeight: 1.3,
+                fontWeight: 700,
+                color: TINTA,
+              }}
+            >
+              {`${fundador.name} · Fundador y Director Académico de ProgramBI`}
+            </figcaption>
           </figure>
         ) : null}
 
-        {/* 3. Mosaico de empresas */}
-        <section style={{ marginTop: 22, paddingTop: 0 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        {/* 4. Mosaico de empresas clientes */}
+        <section>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <h3
               style={{
                 margin: 0,
-                fontSize: 7,
-                lineHeight: 1.3,
-                letterSpacing: 1.5,
+                fontSize: 11,
+                lineHeight: 1.2,
+                letterSpacing: "0.12em",
                 textTransform: "uppercase",
                 fontWeight: 700,
                 color: TENUE,
                 whiteSpace: "nowrap",
               }}
             >
-              EMPRESAS QUE CONFÍAN EN PROGRAMBI
+              Empresas que confían en ProgramBI
             </h3>
             <span
               aria-hidden="true"
@@ -479,41 +451,65 @@ export function BrochureFacultySheet({
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(6, 1fr)",
-              gap: 6,
+              gap: 8,
               marginTop: 8,
             }}
           >
-            {logos.map((logo) => (
-              <div
-                key={logo.name}
-                title={logo.name}
-                style={{
-                  height: 52,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "0 6px",
-                  backgroundColor: "#FFFFFF",
-                  border: `1px solid ${LINEA}`,
-                  borderRadius: 7,
-                  boxSizing: "border-box",
-                }}
-              >
-                <img
-                  src={logo.logoUrl}
-                  alt={logo.name}
-                  crossOrigin="anonymous"
-                  style={{
-                    maxWidth: 86,
-                    maxHeight: 30,
-                    width: "auto",
-                    height: "auto",
-                    objectFit: "contain",
-                    display: "block",
-                  }}
-                />
-              </div>
-            ))}
+            {logos.length > 0
+              ? logos.map((logo) => (
+                  <div
+                    key={logo.name}
+                    title={logo.name}
+                    style={{
+                      height: 54,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "6px 8px",
+                      backgroundColor: BLANCO,
+                      border: `1px solid ${LINEA}`,
+                      borderRadius: 8,
+                      boxSizing: "border-box",
+                    }}
+                  >
+                    <img
+                      src={logo.logoUrl}
+                      alt={logo.name}
+                      crossOrigin="anonymous"
+                      style={{
+                        maxWidth: 92,
+                        maxHeight: 34,
+                        width: "auto",
+                        height: "auto",
+                        objectFit: "contain",
+                        display: "block",
+                      }}
+                    />
+                  </div>
+                ))
+              : empresas.map((empresa) => (
+                  <div
+                    key={empresa}
+                    style={{
+                      height: 54,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: "6px 8px",
+                      backgroundColor: BLANCO,
+                      border: `1px solid ${LINEA}`,
+                      borderRadius: 8,
+                      boxSizing: "border-box",
+                      textAlign: "center",
+                      fontSize: 10.5,
+                      lineHeight: 1.15,
+                      fontWeight: 600,
+                      color: GRIS,
+                    }}
+                  >
+                    {empresa}
+                  </div>
+                ))}
           </div>
         </section>
       </div>

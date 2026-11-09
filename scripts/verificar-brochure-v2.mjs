@@ -9,10 +9,11 @@
  *      marca, los 12 logos de empresas, galerías de capturas y los 13 heroes
  *      del catálogo.
  *   B. Los mismos activos por HTTP: status 200 y `content-type` de imagen.
- *   C. Las 4 rutas de brochure del contrato: visor v2, 5 hojas A4, logo,
- *      fotos, cero `mail.programbi.com`, logos de empresas, capturas,
- *      certificado, precio local, cuotas, horario local, temario completo y
- *      llamadas a la acción.
+ *   C. Las 4 rutas de brochure del contrato: visor v2, 6 hojas fijas A4,
+ *      tipografía legible (>= 10.5px en cada hoja), logo, fotos, cero
+ *      `mail.programbi.com`, logos de empresas, capturas, certificado, precio
+ *      local, cuotas, horario local, calendario, temario completo y llamadas
+ *      a la acción.
  *   D. Consistencia de país: Chile y Perú no pueden mostrar el mismo monto.
  *
  * Uso: node scripts/verificar-brochure-v2.mjs [baseUrl]
@@ -166,6 +167,34 @@ function textoPlano(html) {
     .trim();
 }
 
+/** Pasa a minúsculas y quita tildes para comparar textos de forma robusta. */
+function normalizar(texto) {
+  return texto
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+/**
+ * Extrae cada hoja A4 (desde data-brochure-sheet="N" hasta su </footer>)
+ * y devuelve el fontSize mínimo encontrado en estilos inline.
+ */
+function tamanosPorHoja(html) {
+  const hojas = [];
+  const re = /data-brochure-sheet="(\d+)"[\s\S]*?<\/footer>/g;
+  let m;
+  while ((m = re.exec(html)) !== null) {
+    const bloque = m[0];
+    const valores = [...bloque.matchAll(/font-size:\s*([\d.]+)px/g)].map((x) =>
+      parseFloat(x[1])
+    );
+    if (valores.length > 0) {
+      hojas.push({ numero: Number(m[1]), minimo: Math.min(...valores) });
+    }
+  }
+  return hojas;
+}
+
 /** Cuenta las apariciones de «módulo» sin importar mayúsculas ni acentos. */
 function contarModulos(html) {
   return (html.match(/m[óo]dulo/gi) || []).length;
@@ -307,12 +336,26 @@ function revisarBrochure(ruta, html) {
     }
   });
 
-  check(`Brochure ${ruta} tiene las 5 hojas A4`, () => {
-    const faltan = [1, 2, 3, 4, 5].filter(
+  check(`Brochure ${ruta} tiene las 6 hojas fijas A4`, () => {
+    const faltan = [1, 2, 3, 4, 5, 6].filter(
       (numero) => !html.includes(`data-brochure-sheet="${numero}"`)
     );
     if (faltan.length > 0) {
       throw new Error(`faltan las hojas ${faltan.join(", ")}`);
+    }
+  });
+
+  check(`Brochure ${ruta} usa tipografía >= 10.5px en todas las hojas`, () => {
+    const hojas = tamanosPorHoja(html);
+    if (hojas.length === 0) {
+      throw new Error("no se pudieron medir las hojas");
+    }
+    const pequenas = hojas.filter((hoja) => hoja.minimo < 10.5);
+    if (pequenas.length > 0) {
+      const detalle = pequenas
+        .map((hoja) => `hoja ${hoja.numero}: ${hoja.minimo}px`)
+        .join(", ");
+      throw new Error(`hay tipografía menor a 10.5px (${detalle})`);
     }
   });
 
@@ -405,6 +448,28 @@ function revisarBrochure(ruta, html) {
 
   check(`Brochure ${ruta} muestra la hora local del país`, () => {
     if (!html.includes("Hora de")) throw new Error('falta "Hora de"');
+  });
+
+  check(`Brochure ${ruta} incluye la hoja de calendario`, () => {
+    const texto = normalizar(textoPlano(html));
+    const frases = [
+      "Próximas fechas de inicio",
+      "La misma clase en vivo en cada país",
+    ];
+    const faltan = frases.filter((frase) => !texto.includes(normalizar(frase)));
+    if (faltan.length > 0) {
+      throw new Error(`falta ${faltan.map((frase) => `"${frase}"`).join(", ")}`);
+    }
+  });
+
+  check(`Brochure ${ruta} incluye el temario detallado`, () => {
+    if (
+      !normalizar(textoPlano(html)).includes(
+        normalizar("Programa Académico Detallado")
+      )
+    ) {
+      throw new Error('falta el texto "Programa Académico Detallado"');
+    }
   });
 
   check(`Brochure ${ruta} trae el temario completo`, () => {

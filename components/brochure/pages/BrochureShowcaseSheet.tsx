@@ -1,97 +1,93 @@
 "use client";
 
 /**
- * Hoja 3 del brochure: competencias, capturas reales de clases y vista previa
- * del certificado. Todo el contenido sale de `CourseBrochureData`; las imágenes
- * son same-origin para que la captura del PDF pueda leerlas sin CORS.
+ * Hoja 4 del brochure — Proyectos reales, competencias y certificado.
+ *
+ * Tres bloques editoriales con tipografía grande (nada bajo 10.5px):
+ *   1. Competencias que dominarás (máx. 6, grilla de 2 columnas).
+ *   2. Galería de capturas reales de clase (máx. 3, grilla adaptativa).
+ *   3. Vista previa del certificado oficial con sello y código verificable.
+ *
+ * Todo el contenido sale de `CourseBrochureData`; las imágenes son locales
+ * (same-origin) para que la captura del PDF pueda rasterizarlas sin CORS.
  */
 
-import type { CSSProperties } from "react";
+import type { CSSProperties, JSX } from "react";
 import { BrochureA4Sheet } from "@/components/brochure/BrochureA4Sheet";
-import type {
-  BrochureGalleryImage,
-  CourseBrochureData,
-} from "@/lib/brochure/brochure-data";
+import type { CourseBrochureData } from "@/lib/brochure/brochure-data";
 
-const TINTA = "#141519";
-const GRIS = "#5C5D63";
-const TENUE = "#77786F";
-const LINEA = "#E7E4DA";
-const ORO = "#C5A059";
-const ORO_OSCURO = "#8A6A22";
-
-const BODY =
-  '-apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
-const DISPLAY = 'Georgia, "Times New Roman", serif';
-
-/** Limita un texto a dos líneas con puntos suspensivos. */
-const DOS_LINEAS: CSSProperties = {
-  display: "-webkit-box",
-  WebkitLineClamp: 2,
-  WebkitBoxOrient: "vertical",
-  overflow: "hidden",
-};
-
-const SUBTITULO_SECCION: CSSProperties = {
-  margin: 0,
-  fontSize: 6.8,
-  lineHeight: 1.3,
-  letterSpacing: 1.4,
-  textTransform: "uppercase",
-  fontWeight: 700,
-  color: TENUE,
-};
-
-type BrochureShowcaseSheetProps = {
+export type BrochureShowcaseSheetProps = {
   data: CourseBrochureData;
   pageNumber: number;
   totalPages: number;
 };
 
-/** Acorta el título de la píldora de la barra de ventana. */
-function tituloCorto(titulo: string, maximo = 26): string {
-  const limpio = titulo.trim();
-  if (limpio.length <= maximo) return limpio;
-  return `${limpio.slice(0, maximo - 1).trimEnd()}…`;
-}
+const SANS = '-apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+const DISPLAY = 'Georgia, "Times New Roman", serif';
+const MONO = 'ui-monospace, SFMono-Regular, Menlo, monospace';
 
-/**
- * La hoja siempre muestra tres marcos. Si el curso trae menos capturas, se
- * reutilizan las disponibles sin inventar imágenes nuevas.
- */
-function tresCapturas(imagenes: BrochureGalleryImage[]): BrochureGalleryImage[] {
-  if (imagenes.length === 0) return [];
-  const salida = imagenes.slice(0, 3);
-  for (let indice = 0; salida.length < 3; indice += 1) {
-    const imagen = imagenes[indice % imagenes.length];
-    if (!imagen) break;
-    salida.push(imagen);
-  }
-  return salida;
-}
+const TINTA = "#141519";
+const GRIS = "#5C5D63";
+const TENUE = "#77786F";
+const LINEA = "#E7E4DA";
+const LAVADO = "#F1EFE8";
+const BLANCO = "#FFFFFF";
 
-function CheckCircular({ accent }: { accent: string }) {
+/** Kicker de la hoja: 11px bold uppercase en el acento del curso. */
+const KICKER: CSSProperties = {
+  margin: 0,
+  fontSize: 11,
+  fontWeight: 700,
+  letterSpacing: "0.14em",
+  textTransform: "uppercase",
+  color: TINTA,
+};
+
+/** Título H2 de la hoja: 31px DISPLAY bold. */
+const TITULO: CSSProperties = {
+  margin: "6px 0 0",
+  fontFamily: DISPLAY,
+  fontSize: 31,
+  lineHeight: 1.1,
+  letterSpacing: -0.4,
+  fontWeight: 700,
+  color: TINTA,
+};
+
+/** Subtítulo de la hoja: 14px, lectura cómoda. */
+const SUBTITULO: CSSProperties = {
+  margin: "7px 0 0",
+  fontSize: 14,
+  lineHeight: 1.5,
+  color: GRIS,
+};
+
+/** Rótulo de sección: 11px bold uppercase TENUE. */
+const ROTULO: CSSProperties = {
+  margin: 0,
+  fontSize: 11,
+  fontWeight: 700,
+  letterSpacing: "0.12em",
+  textTransform: "uppercase",
+  color: TENUE,
+};
+
+/** Check de 16px en el acento del curso, sin depender de glifos del sistema. */
+function CheckAcento({ accent }: { accent: string }) {
   return (
     <svg
-      width="13"
-      height="13"
-      viewBox="0 0 13 13"
+      width="16"
+      height="16"
+      viewBox="0 0 16 16"
       aria-hidden="true"
-      style={{ display: "block" }}
+      style={{ display: "block", flex: "0 0 auto" }}
     >
-      <circle
-        cx="6.5"
-        cy="6.5"
-        r="6"
-        fill={`${accent}1A`}
-        stroke={`${accent}55`}
-        strokeWidth="1"
-      />
+      <circle cx="8" cy="8" r="7" fill={`${accent}1F`} stroke={`${accent}66`} strokeWidth="1" />
       <path
-        d="M3.7 6.6 5.6 8.5 9.3 4.6"
+        d="M4.6 8.2 6.9 10.5 11.4 5.6"
         fill="none"
         stroke={accent}
-        strokeWidth="1.35"
+        strokeWidth="1.7"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -99,36 +95,48 @@ function CheckCircular({ accent }: { accent: string }) {
   );
 }
 
-function Esquina({ style }: { style: CSSProperties }) {
+/** Sello circular del certificado: PB grande y PROGRAMBI al mínimo permitido. */
+function Sello({ accent }: { accent: string }) {
   return (
-    <span
+    <div
       aria-hidden="true"
       style={{
-        position: "absolute",
-        width: 12,
-        height: 12,
-        borderStyle: "solid",
-        borderWidth: 0,
-        borderColor: "rgba(197, 160, 89, 0.6)",
-        ...style,
-      }}
-    />
-  );
-}
-
-function PuntoVentana({ color }: { color: string }) {
-  return (
-    <span
-      aria-hidden="true"
-      style={{
-        width: 5,
-        height: 5,
-        borderRadius: "50%",
-        backgroundColor: color,
         flex: "0 0 auto",
-        display: "block",
+        width: 88,
+        height: 88,
+        borderRadius: "50%",
+        border: `2px solid ${accent}`,
+        backgroundColor: LAVADO,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 1,
       }}
-    />
+    >
+      <span
+        style={{
+          fontSize: 14,
+          lineHeight: 1.1,
+          fontWeight: 700,
+          letterSpacing: "0.02em",
+          color: TINTA,
+        }}
+      >
+        PB
+      </span>
+      <span
+        style={{
+          fontSize: 10.5,
+          lineHeight: 1.2,
+          fontWeight: 700,
+          letterSpacing: "0.08em",
+          color: TENUE,
+        }}
+      >
+        PROGRAMBI
+      </span>
+    </div>
   );
 }
 
@@ -136,11 +144,13 @@ export function BrochureShowcaseSheet({
   data,
   pageNumber,
   totalPages,
-}: BrochureShowcaseSheetProps) {
+}: BrochureShowcaseSheetProps): JSX.Element {
   const accent = data.accentColor;
-  const competencias = data.whatYouLearn.slice(0, 8);
-  const galeria = tresCapturas(data.galleryImages);
-  const codigo = `Código de verificación: PB-${data.slug.toUpperCase()}-${data.pais.toUpperCase()}-2026`;
+  // Máximo 6 competencias: se recorta antes que reducir la letra.
+  const competencias = data.whatYouLearn.slice(0, 6);
+  // Máximo 3 capturas; si el curso trae menos, la grilla se adapta a N.
+  const galeria = data.galleryImages.slice(0, 3);
+  const codigo = `PB-${data.slug.toUpperCase()}-2026`;
 
   return (
     <BrochureA4Sheet data={data} pageNumber={pageNumber} totalPages={totalPages}>
@@ -148,103 +158,75 @@ export function BrochureShowcaseSheet({
         style={{
           display: "flex",
           flexDirection: "column",
+          gap: 16,
           justifyContent: "space-between",
           height: "100%",
           minHeight: 0,
-          fontFamily: BODY,
+          fontFamily: SANS,
           color: TINTA,
         }}
       >
-        {/* 1. Encabezado de sección */}
-        <header>
-          <div
-            style={{
-              fontSize: 8,
-              lineHeight: 1.2,
-              letterSpacing: 2,
-              textTransform: "uppercase",
-              fontWeight: 700,
-              color: accent,
-            }}
-          >
-            RESULTADOS Y PROYECTOS
-          </div>
-          <h2
-            style={{
-              margin: "6px 0 0",
-              fontFamily: DISPLAY,
-              fontSize: 26,
-              lineHeight: 1.1,
-              letterSpacing: -0.4,
-              fontWeight: 400,
-              color: TINTA,
-            }}
-          >
-            Lo que vas a dominar
-          </h2>
-          <p
-            style={{
-              margin: "5px 0 0",
-              fontSize: 8.6,
-              lineHeight: 1.45,
-              color: GRIS,
-            }}
-          >
-            Competencias concretas y capturas reales de lo que se construye en
-            clase.
+        {/* 1. Cabecera editorial */}
+        <header style={{ flexShrink: 0 }}>
+          <p style={{ ...KICKER, color: accent }}>Lo que vas a dominar</p>
+          <h2 style={TITULO}>Proyectos reales, competencias y certificado</h2>
+          <p style={SUBTITULO}>
+            Cada módulo termina en un entregable aplicado a un caso real de
+            negocio.
           </p>
         </header>
 
-        {/* 2. Competencias */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            columnGap: 14,
-            rowGap: 6,
-            marginTop: 14,
-          }}
-        >
-          {competencias.map((texto, indice) => (
-            <div
-              key={`competencia-${indice}`}
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 8,
-                minHeight: 30,
-                padding: "5px 0",
-                boxSizing: "border-box",
-              }}
-            >
-              <span style={{ flex: "0 0 auto", marginTop: 1 }}>
-                <CheckCircular accent={accent} />
-              </span>
-              <span
-                style={{
-                  fontSize: 8.6,
-                  lineHeight: 1.4,
-                  color: TINTA,
-                }}
-              >
-                {texto}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* 3. Galería de capturas reales */}
-        {galeria.length > 0 ? (
-          <section style={{ marginTop: 18 }}>
-            <h3 style={SUBTITULO_SECCION}>
-              PROYECTOS Y ENTORNO REAL DE CLASES
-            </h3>
+        {/* 2. Competencias que dominarás */}
+        {competencias.length > 0 ? (
+          <section style={{ flexShrink: 0 }}>
+            <h3 style={ROTULO}>Competencias que dominarás</h3>
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "repeat(3, 1fr)",
-                gap: 9,
-                marginTop: 8,
+                gridTemplateColumns: "repeat(2, 1fr)",
+                columnGap: 18,
+                rowGap: 8,
+                marginTop: 10,
+              }}
+            >
+              {competencias.map((texto, indice) => (
+                <div
+                  key={`competencia-${indice}`}
+                  style={{
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 8,
+                    minWidth: 0,
+                  }}
+                >
+                  <span style={{ marginTop: 1, display: "block" }}>
+                    <CheckAcento accent={accent} />
+                  </span>
+                  <span
+                    style={{
+                      fontSize: 13,
+                      lineHeight: 1.45,
+                      color: TINTA,
+                    }}
+                  >
+                    {texto}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {/* 3. Galería de capturas reales de clase */}
+        {galeria.length > 0 ? (
+          <section style={{ flexShrink: 0 }}>
+            <h3 style={ROTULO}>Capturas reales de clase</h3>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: `repeat(${galeria.length}, 1fr)`,
+                gap: 12,
+                marginTop: 10,
               }}
             >
               {galeria.map((imagen, indice) => (
@@ -255,87 +237,38 @@ export function BrochureShowcaseSheet({
                     display: "flex",
                     flexDirection: "column",
                     border: `1px solid ${LINEA}`,
-                    borderRadius: 8,
+                    borderRadius: 10,
                     overflow: "hidden",
-                    backgroundColor: "#FFFFFF",
-                    boxShadow: "0 6px 16px rgba(20, 21, 25, 0.06)",
+                    backgroundColor: BLANCO,
                   }}
                 >
-                  <div
-                    style={{
-                      height: 20,
-                      flex: "0 0 20px",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 4,
-                      padding: "0 7px",
-                      backgroundColor: "#1B1D23",
-                      boxSizing: "border-box",
-                    }}
-                  >
-                    <PuntoVentana color="#E0655B" />
-                    <PuntoVentana color="#E3B341" />
-                    <PuntoVentana color="#63B37A" />
-                    <span
-                      style={{
-                        marginLeft: 5,
-                        flex: 1,
-                        minWidth: 0,
-                        padding: "1px 6px",
-                        borderRadius: 999,
-                        border: "1px solid rgba(255, 255, 255, 0.08)",
-                        backgroundColor: "rgba(255, 255, 255, 0.09)",
-                        fontSize: 5.4,
-                        lineHeight: 1.4,
-                        letterSpacing: 0.35,
-                        color: "rgba(255, 255, 255, 0.62)",
-                        textAlign: "center",
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      }}
-                    >
-                      {tituloCorto(imagen.title)}
-                    </span>
-                  </div>
                   <img
                     src={imagen.src}
                     alt={imagen.title}
                     crossOrigin="anonymous"
                     style={{
                       width: "100%",
-                      height: 160,
+                      height: 118,
                       objectFit: "cover",
                       display: "block",
                     }}
                   />
-                  <figcaption
-                    style={{
-                      padding: "7px 9px 8px",
-                      backgroundColor: "#FFFFFF",
-                      borderTop: `1px solid ${LINEA}`,
-                    }}
-                  >
+                  <figcaption style={{ padding: "8px 10px 10px" }}>
                     <div
                       style={{
-                        fontSize: 8,
-                        lineHeight: 1.25,
+                        fontSize: 12.5,
                         fontWeight: 700,
+                        lineHeight: 1.3,
                         color: TINTA,
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
                       }}
                     >
                       {imagen.title}
                     </div>
                     <div
                       style={{
-                        ...DOS_LINEAS,
                         marginTop: 2,
-                        minHeight: 17,
-                        fontSize: 6.8,
-                        lineHeight: 1.3,
+                        fontSize: 11,
+                        lineHeight: 1.35,
                         color: GRIS,
                       }}
                     >
@@ -348,206 +281,132 @@ export function BrochureShowcaseSheet({
           </section>
         ) : null}
 
-        {/* 4. Vista previa del certificado */}
-        <section style={{ marginTop: 18 }}>
-          <h3 style={SUBTITULO_SECCION}>
-            VISTA PREVIA DEL CERTIFICADO OFICIAL
-          </h3>
+        {/* 4. Vista previa del certificado oficial */}
+        <section style={{ flexShrink: 0 }}>
+          <h3 style={ROTULO}>Certificado oficial</h3>
           <div
             style={{
-              position: "relative",
-              marginTop: 8,
-              height: 292,
-              boxSizing: "border-box",
-              padding: "14px 22px",
-              borderRadius: 4,
-              border: `6px double ${ORO}`,
-              backgroundColor: "#FFFDF7",
-              textAlign: "center",
+              marginTop: 10,
               display: "flex",
-              flexDirection: "column",
               alignItems: "center",
-              overflow: "hidden",
+              gap: 22,
+              padding: "14px 18px",
+              border: `1px solid ${LINEA}`,
+              borderTop: `4px solid ${accent}`,
+              borderRadius: 12,
+              backgroundColor: BLANCO,
             }}
           >
-            <Esquina style={{ top: 4, left: 4, borderTopWidth: 1, borderLeftWidth: 1 }} />
-            <Esquina style={{ top: 4, right: 4, borderTopWidth: 1, borderRightWidth: 1 }} />
-            <Esquina style={{ bottom: 4, left: 4, borderBottomWidth: 1, borderLeftWidth: 1 }} />
-            <Esquina style={{ bottom: 4, right: 4, borderBottomWidth: 1, borderRightWidth: 1 }} />
-
-            <img
-              src={data.brandLogoUrl}
-              alt="ProgramBI"
-              crossOrigin="anonymous"
-              style={{
-                height: 26,
-                width: "auto",
-                maxWidth: 190,
-                objectFit: "contain",
-                display: "block",
-                margin: "0 auto",
-              }}
-            />
-
-            <div
-              style={{
-                marginTop: 7,
-                fontSize: 8,
-                lineHeight: 1.2,
-                letterSpacing: 3.2,
-                fontWeight: 700,
-                color: ORO_OSCURO,
-                textTransform: "uppercase",
-              }}
-            >
-              CERTIFICADO DE FINALIZACIÓN
-            </div>
-
-            <div
-              style={{
-                marginTop: 5,
-                fontSize: 6.6,
-                lineHeight: 1.3,
-                color: GRIS,
-              }}
-            >
-              Se certifica la finalización del programa
-            </div>
-
-            <div
-              style={{
-                ...DOS_LINEAS,
-                marginTop: 3,
-                maxWidth: 560,
-                fontFamily: DISPLAY,
-                fontSize: 17,
-                lineHeight: 1.2,
-                letterSpacing: -0.2,
-                color: TINTA,
-              }}
-            >
-              {data.title}
-            </div>
-
-            <div
-              style={{
-                marginTop: 5,
-                fontSize: 7.2,
-                lineHeight: 1.3,
-                color: GRIS,
-              }}
-            >
-              Otorgado con validación digital en programbi.com
-            </div>
-
-            <div style={{ marginTop: "auto", width: "100%", paddingTop: 8 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
               <div
                 style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr auto 1fr",
-                  alignItems: "end",
-                  gap: 10,
+                  fontSize: 12,
+                  lineHeight: 1.2,
+                  fontWeight: 700,
+                  letterSpacing: "0.16em",
+                  textTransform: "uppercase",
+                  color: accent,
                 }}
               >
-                <div
-                  style={{
-                    justifySelf: "start",
-                    fontSize: 7,
-                    lineHeight: 1.4,
-                    color: GRIS,
-                    textAlign: "left",
-                  }}
-                >
-                  Duración: {data.hours} horas académicas
-                </div>
+                CERTIFICADO DE FINALIZACIÓN
+              </div>
 
-                <div
-                  aria-hidden="true"
-                  style={{
-                    width: 46,
-                    height: 46,
-                    borderRadius: "50%",
-                    border: `1.5px double ${ORO}`,
-                    backgroundColor: "#FFFDF7",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    color: ORO_OSCURO,
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: 5.6,
-                      lineHeight: 1.2,
-                      letterSpacing: 0.5,
-                      fontWeight: 700,
-                    }}
-                  >
-                    PROGRAMBI
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 5.2,
-                      lineHeight: 1.2,
-                      letterSpacing: 0.4,
-                    }}
-                  >
-                    CERTIFICADO
-                  </span>
-                </div>
+              <div
+                style={{
+                  marginTop: 3,
+                  fontSize: 12,
+                  lineHeight: 1.35,
+                  color: GRIS,
+                }}
+              >
+                Se certifica la finalización del programa
+              </div>
 
-                <div
-                  style={{
-                    justifySelf: "end",
-                    width: 150,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    textAlign: "center",
-                  }}
-                >
+              <div
+                style={{
+                  marginTop: 7,
+                  fontFamily: DISPLAY,
+                  fontSize: 24,
+                  lineHeight: 1.15,
+                  fontWeight: 700,
+                  color: TINTA,
+                }}
+              >
+                {data.title}
+              </div>
+
+              <div
+                style={{
+                  marginTop: 6,
+                  fontSize: 12,
+                  lineHeight: 1.45,
+                  color: GRIS,
+                }}
+              >
+                Programa intensivo en vivo, con proyecto aplicado, evaluación y
+                código único de verificación.
+              </div>
+
+              <div
+                style={{
+                  marginTop: 12,
+                  paddingTop: 9,
+                  borderTop: `1px solid ${LINEA}`,
+                  display: "flex",
+                  alignItems: "flex-end",
+                  justifyContent: "space-between",
+                  gap: 16,
+                }}
+              >
+                <div style={{ minWidth: 0 }}>
                   <div
                     style={{
-                      width: 120,
-                      borderTop: `1px solid ${ORO_OSCURO}`,
-                      marginBottom: 4,
+                      width: 148,
+                      borderTop: `1px solid ${LINEA}`,
+                      marginBottom: 5,
                     }}
                   />
                   <div
                     style={{
-                      fontSize: 7.5,
-                      lineHeight: 1.2,
+                      fontSize: 11,
+                      lineHeight: 1.3,
                       fontWeight: 700,
                       color: TINTA,
                     }}
                   >
-                    Manuel Oliva
+                    Manuel Oliva · Director Académico
+                  </div>
+                </div>
+
+                <div style={{ textAlign: "right", minWidth: 0 }}>
+                  <div
+                    style={{
+                      fontSize: 10.5,
+                      lineHeight: 1.2,
+                      letterSpacing: "0.08em",
+                      textTransform: "uppercase",
+                      color: TENUE,
+                    }}
+                  >
+                    Código de verificación
                   </div>
                   <div
                     style={{
-                      fontSize: 6.4,
-                      lineHeight: 1.2,
-                      color: GRIS,
+                      marginTop: 3,
+                      fontFamily: MONO,
+                      fontSize: 11,
+                      lineHeight: 1.3,
+                      color: TENUE,
+                      whiteSpace: "nowrap",
                     }}
                   >
-                    CEO &amp; Director Académico
+                    {codigo}
                   </div>
                 </div>
               </div>
-
-              <div
-                style={{
-                  marginTop: 8,
-                  fontSize: 6.2,
-                  lineHeight: 1.2,
-                  letterSpacing: 0.3,
-                  color: TENUE,
-                }}
-              >
-                {codigo}
-              </div>
             </div>
+
+            <Sello accent={accent} />
           </div>
         </section>
       </div>

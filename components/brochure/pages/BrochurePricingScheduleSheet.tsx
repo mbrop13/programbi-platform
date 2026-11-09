@@ -1,11 +1,16 @@
 "use client";
 
 /**
- * Hoja 2 — Inversión, cuotas, medios de pago y calendario localizado.
+ * Hoja 2 — Inversión oficial en la moneda del visitante.
  *
- * El precio y las cohortes llegan ya calculados desde el servidor: aquí solo
- * se compone la pieza editorial. La tabla de equivalencias se parsea de
- * `data.equivalencias.cadenaMercados` y nunca inventa horarios.
+ * Dedicada 100 % al precio y a los beneficios: arancel, cuotas sin interés,
+ * medios de pago locales, qué incluye la inscripción y la banda de garantía.
+ * El calendario y la tabla de equivalencias viven en `BrochureScheduleSheet`
+ * (Hoja 3): esta hoja no renderiza cohortes.
+ *
+ * Tipografía grande: ningún texto baja de 11px y los textos de lectura van
+ * entre 12.5px y 15px, con el precio a 52px. Todo inline style para que la
+ * vista previa, la captura con `html-to-image` y el PDF midan igual.
  */
 
 import type { CSSProperties, JSX } from "react";
@@ -39,32 +44,33 @@ const INCLUYE = [
   "Certificado digital verificable",
 ];
 
-type FilaEquivalencia = { mercado: string; hora: string };
-
 /**
- * Primera fila: el país del brochure. Luego los mercados de la cadena
- * (`"10:00 en Argentina = 09:00 en Perú"`), sin duplicar el país actual.
+ * El acento del curso sobre la tarjeta oscura: si es un color oscuro no se
+ * leería, así que se cae a blanco puro.
  */
-function filasEquivalencia(data: CourseBrochureData): FilaEquivalencia[] {
-  const filas: FilaEquivalencia[] = [
-    { mercado: data.paisNombre, hora: data.equivalencias.inicio },
-  ];
+function acentoLegibleSobreOscuro(hex: string): string {
+  const limpio = (hex || "").replace("#", "").trim();
+  const completo =
+    limpio.length === 3
+      ? limpio
+          .split("")
+          .map((caracter) => caracter + caracter)
+          .join("")
+      : limpio;
 
-  for (const tramo of data.equivalencias.cadenaMercados.split(" = ")) {
-    const coincidencia = tramo.trim().match(/^(\d{1,2}:\d{2})\s+en\s+(.+)$/);
-    if (!coincidencia) continue;
+  if (!/^[0-9a-f]{6}$/i.test(completo)) return BLANCO;
 
-    const hora = coincidencia[1];
-    const mercado = coincidencia[2]?.trim();
-    if (!hora || !mercado) continue;
-    if (mercado === data.paisNombre) continue;
-    if (filas.some((fila) => fila.mercado === mercado)) continue;
+  const canal = (inicio: number): number => {
+    const valor = parseInt(completo.slice(inicio, inicio + 2), 16) / 255;
+    return valor <= 0.03928
+      ? valor / 12.92
+      : Math.pow((valor + 0.055) / 1.055, 2.4);
+  };
 
-    filas.push({ mercado, hora });
-    if (filas.length === 8) break;
-  }
+  const luminancia =
+    0.2126 * canal(0) + 0.7152 * canal(2) + 0.0722 * canal(4);
 
-  return filas;
+  return luminancia >= 0.4 ? hex : BLANCO;
 }
 
 export function BrochurePricingScheduleSheet({
@@ -73,101 +79,90 @@ export function BrochurePricingScheduleSheet({
   totalPages,
 }: BrochurePricingScheduleSheetProps): JSX.Element {
   const accent = data.accentColor;
+  const acentoOscuro = acentoLegibleSobreOscuro(accent);
   const whatsappUrl = data.whatsappUrl;
   const precioLista = data.precioListaFormateado;
-  const equivalencias = filasEquivalencia(data);
+  const mostrarLista = Boolean(precioLista) && data.descuentoPct > 0;
+  const urlInscripcion = `https://programbi.com${data.inscripcionUrl}`;
 
   const contenido: CSSProperties = {
-    flex: 1,
-    minHeight: 0,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
+    gap: 16,
+    height: "100%",
+    minHeight: 0,
     fontFamily: SANS,
     color: TINTA,
   };
 
+  /* ── Cabecera editorial ─────────────────────────────────────────────── */
+
   const kicker: CSSProperties = {
-    fontSize: 7.2,
+    margin: 0,
+    fontSize: 11,
     lineHeight: 1.2,
-    letterSpacing: 1.9,
     fontWeight: 700,
+    letterSpacing: "0.14em",
     textTransform: "uppercase",
     color: accent,
   };
 
-  const tituloSeccion: CSSProperties = {
-    marginTop: 8,
+  const titulo: CSSProperties = {
+    margin: "5px 0 0",
     fontFamily: DISPLAY,
-    fontSize: 27,
-    lineHeight: 1.12,
-    letterSpacing: -0.6,
-    fontWeight: 400,
+    fontSize: 32,
+    lineHeight: 1.1,
+    fontWeight: 700,
+    letterSpacing: "-0.01em",
     color: TINTA,
   };
 
-  const subtituloSeccion: CSSProperties = {
-    marginTop: 5,
-    fontSize: 8.6,
-    lineHeight: 1.45,
+  const subtitulo: CSSProperties = {
+    margin: "7px 0 0",
+    fontSize: 14.5,
+    lineHeight: 1.5,
     color: GRIS,
   };
 
+  /* ── Bloque de precio ───────────────────────────────────────────────── */
+
   const bloquePrecio: CSSProperties = {
-    display: "grid",
-    gridTemplateColumns: "minmax(0, 1fr) 232px",
-    gap: 12,
-    alignItems: "stretch",
-    marginTop: 14,
-    flex: 1.7,
-    minHeight: 0,
+    flexShrink: 0,
+    paddingTop: 16,
+    paddingBottom: 16,
+    borderTop: `1px solid ${LINEA}`,
+    borderBottom: `1px solid ${LINEA}`,
   };
 
-  const tarjetaPrecio: CSSProperties = {
-    backgroundColor: BLANCO,
-    border: `1px solid ${LINEA}`,
-    borderRadius: 14,
-    padding: 18,
-    boxSizing: "border-box",
-    minWidth: 0,
-  };
-
-  const etiquetaArancel: CSSProperties = {
-    fontSize: 7.4,
+  const etiquetaPrecio: CSSProperties = {
+    fontSize: 11,
     lineHeight: 1.2,
-    letterSpacing: 1.2,
+    fontWeight: 700,
+    letterSpacing: "0.12em",
     textTransform: "uppercase",
     color: TENUE,
-    fontWeight: 600,
   };
 
   const filaPrecio: CSSProperties = {
     display: "flex",
     alignItems: "flex-end",
-    gap: 10,
     flexWrap: "wrap",
-    marginTop: 4,
+    gap: 14,
+    marginTop: 6,
   };
 
   const precioGrande: CSSProperties = {
     fontFamily: DISPLAY,
-    fontSize: data.precio != null ? 40 : 22,
-    lineHeight: 1,
-    letterSpacing: -1,
+    fontSize: data.precio != null ? 52 : 30,
+    lineHeight: 1.02,
+    letterSpacing: "-0.02em",
     fontWeight: 700,
     color: TINTA,
   };
 
-  const columnaPrecioLista: CSSProperties = {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    gap: 4,
-    paddingBottom: 4,
-  };
-
   const precioListaTachado: CSSProperties = {
-    fontSize: 11,
+    paddingBottom: 8,
+    fontSize: 18,
     lineHeight: 1.2,
     color: TENUE,
     textDecoration: "line-through",
@@ -176,173 +171,150 @@ export function BrochurePricingScheduleSheet({
   const badgeDescuento: CSSProperties = {
     display: "inline-flex",
     alignItems: "center",
-    padding: "4px 8px",
+    marginBottom: 8,
+    padding: "3px 10px",
     borderRadius: 999,
-    backgroundColor: `${accent}18`,
+    backgroundColor: `${accent}1A`,
     color: accent,
-    fontSize: 7.4,
+    fontSize: 13,
     lineHeight: 1.2,
     fontWeight: 700,
-    letterSpacing: 0.4,
     whiteSpace: "nowrap",
   };
 
+  const notaPago: CSSProperties = {
+    margin: "8px 0 0",
+    fontSize: 12.5,
+    lineHeight: 1.45,
+    color: GRIS,
+  };
+
+  /* ── Caja de 3 cuotas sin interés ───────────────────────────────────── */
+
   const cajaCuotas: CSSProperties = {
-    marginTop: 10,
-    backgroundColor: LAVADO,
-    borderRadius: 10,
-    padding: "10px 12px",
+    flexShrink: 0,
+    display: "flex",
+    flexDirection: "column",
+    gap: 5,
+    border: `1px solid ${LINEA}`,
+    borderRadius: 12,
+    padding: "14px 18px",
+    backgroundColor: BLANCO,
   };
 
   const etiquetaCuotas: CSSProperties = {
-    fontSize: 7,
+    fontSize: 11.5,
     lineHeight: 1.2,
-    letterSpacing: 1.3,
-    textTransform: "uppercase",
     fontWeight: 700,
+    letterSpacing: "0.12em",
+    textTransform: "uppercase",
     color: accent,
   };
 
-  const textoCuotas: CSSProperties = {
-    marginTop: 3,
-    fontSize: 10.5,
-    lineHeight: 1.3,
+  const montoCuota: CSSProperties = {
+    fontSize: 20,
+    lineHeight: 1.25,
     fontWeight: 700,
     color: TINTA,
   };
 
   const notaCuotas: CSSProperties = {
-    marginTop: 3,
-    fontSize: 7,
-    lineHeight: 1.35,
-    color: TENUE,
+    margin: 0,
+    fontSize: 12.5,
+    lineHeight: 1.45,
+    color: GRIS,
+  };
+
+  /* ── Medios de pago locales ─────────────────────────────────────────── */
+
+  const bloqueMedios: CSSProperties = {
+    flexShrink: 0,
   };
 
   const tituloMedios: CSSProperties = {
-    marginTop: 12,
-    fontSize: 6.8,
+    fontSize: 11.5,
     lineHeight: 1.2,
-    letterSpacing: 1.2,
+    fontWeight: 700,
+    letterSpacing: "0.12em",
     textTransform: "uppercase",
     color: TENUE,
-    fontWeight: 600,
   };
 
   const filaMedios: CSSProperties = {
     display: "flex",
     flexWrap: "wrap",
-    gap: 4,
-    marginTop: 6,
+    gap: 7,
+    marginTop: 9,
   };
 
   const chipMedio: CSSProperties = {
     display: "inline-flex",
     alignItems: "center",
-    padding: "3px 7px",
+    padding: "6px 12px",
     borderRadius: 999,
     border: `1px solid ${LINEA}`,
-    backgroundColor: BLANCO,
+    backgroundColor: LAVADO,
     color: GRIS,
-    fontSize: 7,
+    fontSize: 12.5,
     lineHeight: 1.2,
+    fontWeight: 500,
     whiteSpace: "nowrap",
   };
 
-  const notaPago: CSSProperties = {
-    marginTop: 8,
-    fontSize: 6.4,
-    lineHeight: 1.35,
-    color: TENUE,
-  };
-
-  const filaStats: CSSProperties = {
-    display: "grid",
-    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-    gap: 6,
-    marginTop: 12,
-    paddingTop: 10,
-    borderTop: `1px solid ${LINEA}`,
-  };
-
-  const stat: CSSProperties = {
-    display: "flex",
-    flexDirection: "column",
-    gap: 1,
-    minWidth: 0,
-  };
-
-  const statValor: CSSProperties = {
-    fontFamily: DISPLAY,
-    fontSize: 15,
-    lineHeight: 1.1,
-    color: TINTA,
-  };
-
-  const statEtiqueta: CSSProperties = {
-    fontSize: 6.2,
-    lineHeight: 1.25,
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
-    color: TENUE,
-  };
+  /* ── Tarjeta oscura: qué incluye tu inscripción ─────────────────────── */
 
   const tarjetaOscura: CSSProperties = {
+    flex: 1,
+    minHeight: 0,
     display: "flex",
     flexDirection: "column",
     backgroundColor: OSCURO,
     borderRadius: 14,
-    padding: 16,
+    padding: "18px 20px",
     boxSizing: "border-box",
     color: BLANCO,
-    minWidth: 0,
   };
 
   const tituloIncluye: CSSProperties = {
-    fontSize: 6.8,
+    fontSize: 12,
     lineHeight: 1.2,
-    letterSpacing: 1.4,
+    fontWeight: 700,
+    letterSpacing: "0.12em",
     textTransform: "uppercase",
-    color: "rgba(255,255,255,0.55)",
-    fontWeight: 600,
+    color: acentoOscuro,
   };
 
   const listaIncluye: CSSProperties = {
     display: "flex",
     flexDirection: "column",
-    gap: 7,
+    gap: 6,
     marginTop: 10,
   };
 
   const itemIncluye: CSSProperties = {
     display: "flex",
     alignItems: "flex-start",
-    gap: 7,
-    fontSize: 7.8,
-    lineHeight: 1.35,
-    color: "rgba(255,255,255,0.9)",
+    gap: 9,
+    fontSize: 13.5,
+    lineHeight: 1.45,
+    color: "rgba(255,255,255,0.92)",
   };
 
   const check: CSSProperties = {
     flexShrink: 0,
-    width: 14,
-    height: 14,
-    borderRadius: 999,
-    backgroundColor: accent,
-    color: BLANCO,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: 8,
-    lineHeight: 1,
+    width: 18,
+    fontSize: 18,
+    lineHeight: 1.1,
     fontWeight: 700,
+    color: acentoOscuro,
   };
 
   const acciones: CSSProperties = {
     marginTop: "auto",
-    paddingTop: 12,
+    paddingTop: 14,
     display: "flex",
     flexDirection: "column",
-    gap: 6,
+    gap: 8,
   };
 
   const cta: CSSProperties = {
@@ -351,11 +323,11 @@ export function BrochurePricingScheduleSheet({
     justifyContent: "center",
     width: "100%",
     boxSizing: "border-box",
-    padding: "9px 12px",
+    padding: "12px 16px",
     borderRadius: 999,
     backgroundColor: BLANCO,
-    color: TINTA,
-    fontSize: 8.4,
+    color: OSCURO,
+    fontSize: 13.5,
     lineHeight: 1.2,
     fontWeight: 700,
     textDecoration: "none",
@@ -368,171 +340,63 @@ export function BrochurePricingScheduleSheet({
     justifyContent: "center",
     width: "100%",
     boxSizing: "border-box",
-    padding: "7px 12px",
+    padding: "12px 16px",
     borderRadius: 999,
-    border: "1px solid rgba(255,255,255,0.3)",
+    border: "1px solid rgba(255,255,255,0.34)",
+    backgroundColor: "rgba(255,255,255,0.06)",
     color: BLANCO,
-    fontSize: 7.4,
+    fontSize: 13.5,
     lineHeight: 1.2,
-    fontWeight: 600,
+    fontWeight: 700,
     textDecoration: "none",
     textAlign: "center",
   };
 
-  const bloqueFechas: CSSProperties = {
-    marginTop: 14,
-    flex: 0.85,
-    minHeight: 0,
-    display: "flex",
-    flexDirection: "column",
+  /* ── Banda de garantía y certificación ──────────────────────────────── */
+
+  const bandaGarantia: CSSProperties = {
+    flexShrink: 0,
+    backgroundColor: LAVADO,
+    borderRadius: 12,
+    padding: "14px 18px",
   };
 
-  const rotulo: CSSProperties = {
-    fontSize: 7.2,
-    lineHeight: 1.2,
-    letterSpacing: 1.4,
+  const tituloGarantia: CSSProperties = {
+    fontSize: 11.5,
+    lineHeight: 1.3,
+    fontWeight: 700,
+    letterSpacing: "0.06em",
     textTransform: "uppercase",
-    color: TENUE,
-    fontWeight: 600,
+    color: TINTA,
   };
 
-  const rotuloTabla: CSSProperties = {
-    fontSize: 6.8,
-    lineHeight: 1.2,
-    letterSpacing: 1.2,
-    textTransform: "uppercase",
-    color: TENUE,
-    fontWeight: 600,
-  };
-
-  const grillaFechas: CSSProperties = {
+  const filaKpis: CSSProperties = {
     display: "grid",
-    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    gap: 8,
-    marginTop: 8,
-    flex: 1,
-    alignItems: "stretch",
-    gridAutoRows: "1fr",
+    gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+    gap: 10,
+    marginTop: 10,
   };
 
-  const tarjetaFecha: CSSProperties = {
-    backgroundColor: BLANCO,
-    border: `1px solid ${LINEA}`,
-    borderRadius: 10,
-    padding: "12px 14px",
-    boxSizing: "border-box",
+  const kpi: CSSProperties = {
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
     minWidth: 0,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    height: "100%",
   };
 
-  const nivelFecha: CSSProperties = {
-    fontSize: 6.8,
-    lineHeight: 1.2,
-    letterSpacing: 1,
-    textTransform: "uppercase",
-    color: TENUE,
-    fontWeight: 600,
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
+  const kpiValor: CSSProperties = {
+    fontFamily: DISPLAY,
+    fontSize: 24,
+    lineHeight: 1.1,
+    fontWeight: 700,
+    color: TINTA,
   };
 
-  const fechaInicio: CSSProperties = {
-    marginTop: 2,
-    fontSize: 9.6,
+  const kpiEtiqueta: CSSProperties = {
+    fontSize: 11,
     lineHeight: 1.25,
-    fontWeight: 700,
-    color: TINTA,
-  };
-
-  const diasFecha: CSSProperties = {
-    marginTop: 2,
-    fontSize: 7.2,
-    lineHeight: 1.3,
-    color: GRIS,
-  };
-
-  const horarioFecha: CSSProperties = {
-    marginTop: 4,
-    fontSize: 9.2,
-    lineHeight: 1.2,
-    fontWeight: 700,
-    color: accent,
-  };
-
-  const horaChile: CSSProperties = {
-    marginTop: 1,
-    fontSize: 6.8,
-    lineHeight: 1.2,
-    color: TENUE,
-  };
-
-  const bloqueEquivalencias: CSSProperties = {
-    marginTop: 18,
-    flex: 1.15,
-    minHeight: 0,
-    display: "flex",
-    flexDirection: "column",
-  };
-
-  const subtituloTabla: CSSProperties = {
-    marginTop: 3,
-    fontSize: 7,
-    lineHeight: 1.4,
-    color: TENUE,
-  };
-
-  const marcoTabla: CSSProperties = {
-    marginTop: 6,
-    border: `1px solid ${LINEA}`,
-    borderRadius: 8,
-    overflow: "hidden",
-  };
-
-  const tabla: CSSProperties = {
-    width: "100%",
-    borderCollapse: "collapse",
-    fontSize: 7.6,
-  };
-
-  const th: CSSProperties = {
-    backgroundColor: OSCURO,
-    color: BLANCO,
-    fontSize: 6.8,
-    lineHeight: 1.2,
-    letterSpacing: 1.1,
+    letterSpacing: "0.06em",
     textTransform: "uppercase",
-    fontWeight: 600,
-    padding: "4px 8px",
-    textAlign: "left",
-  };
-
-  const thHora: CSSProperties = {
-    ...th,
-    textAlign: "right",
-  };
-
-  const td: CSSProperties = {
-    padding: "6px 9px",
-    lineHeight: 1.3,
-    color: TINTA,
-    borderTop: `1px solid ${LINEA}`,
-  };
-
-  const tdHora: CSSProperties = {
-    ...td,
-    textAlign: "right",
-    fontVariantNumeric: "tabular-nums",
-    fontWeight: 600,
-  };
-
-  const notaFinal: CSSProperties = {
-    marginTop: 6,
-    fontSize: 6.6,
-    lineHeight: 1.4,
     color: TENUE,
   };
 
@@ -544,186 +408,119 @@ export function BrochurePricingScheduleSheet({
       className="brochure-pricing-sheet"
     >
       <div style={contenido}>
-        <header>
-          <div style={kicker}>INVERSIÓN Y CALENDARIO</div>
-          <h2 style={tituloSeccion}>Tu inversión y próximas fechas</h2>
-          <p style={subtituloSeccion}>
-            {`Precios en ${data.moneda}, cuotas sin interés y fechas en la hora local de ${data.paisNombre}.`}
+        <header style={{ flexShrink: 0 }}>
+          <p style={kicker}>Inversión y beneficios</p>
+          <h2 style={titulo}>Inversión oficial en tu moneda</h2>
+          <p style={subtitulo}>
+            {`Arancel oficial en ${data.paisNombre}, con becas ya aplicadas y 3 cuotas sin interés. El valor que ves es el final: sin matrícula ni cargos ocultos.`}
           </p>
         </header>
 
-        {/* A. Precio, cuotas, medios de pago y qué incluye */}
-        <div style={bloquePrecio}>
-          <div style={tarjetaPrecio}>
-            <div style={etiquetaArancel}>
-              {`Arancel oficial en ${data.paisNombre}`}
-            </div>
-
-            <div style={filaPrecio}>
-              <span style={precioGrande}>{data.precioFormateado}</span>
-              {precioLista || data.descuentoPct > 0 ? (
-                <div style={columnaPrecioLista}>
-                  {precioLista ? (
-                    <span style={precioListaTachado}>{precioLista}</span>
-                  ) : null}
-                  {data.descuentoPct > 0 ? (
-                    <span style={badgeDescuento}>
-                      {`−${data.descuentoPct}% OFF`}
-                    </span>
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
-
-            <div style={cajaCuotas}>
-              <div style={etiquetaCuotas}>3 CUOTAS SIN INTERÉS</div>
-              <div style={textoCuotas}>{data.cuotaTexto}</div>
-              <div style={notaCuotas}>{data.notaCuotas}</div>
-            </div>
-
-            <div style={tituloMedios}>
-              {`MEDIOS DE PAGO EN ${data.paisNombre.toUpperCase()}`}
-            </div>
-            <div style={filaMedios}>
-              {data.mediosPago.slice(0, 6).map((medio) => (
-                <span key={medio} style={chipMedio}>
-                  {medio}
-                </span>
-              ))}
-            </div>
-
-            {data.notaPago ? <div style={notaPago}>{data.notaPago}</div> : null}
-
-            <div style={filaStats}>
-              <div style={stat}>
-                <span style={statValor}>{`${data.hours} h`}</span>
-                <span style={statEtiqueta}>en vivo</span>
-              </div>
-              <div style={stat}>
-                <span style={statValor}>{data.modulesCount}</span>
-                <span style={statEtiqueta}>módulos</span>
-              </div>
-              <div style={stat}>
-                <span style={statValor}>{data.levelsCount}</span>
-                <span style={statEtiqueta}>
-                  {data.levelsCount === 1 ? "nivel" : "niveles"}
-                </span>
-              </div>
-              <div style={stat}>
-                <span style={statValor}>100%</span>
-                <span style={statEtiqueta}>por Zoom</span>
-              </div>
-            </div>
+        {/* Precio oficial y descuento vigente */}
+        <section style={bloquePrecio}>
+          <div style={etiquetaPrecio}>
+            {`Arancel oficial · ${data.paisNombre}`}
           </div>
 
-          <aside style={tarjetaOscura}>
-            <div style={tituloIncluye}>QUÉ INCLUYE TU INSCRIPCIÓN</div>
+          <div style={filaPrecio}>
+            <span style={precioGrande}>{data.precioFormateado}</span>
 
-            <div style={listaIncluye}>
-              {INCLUYE.map((beneficio) => (
-                <div key={beneficio} style={itemIncluye}>
-                  <span aria-hidden="true" style={check}>
-                    ✓
-                  </span>
-                  <span>{beneficio}</span>
-                </div>
-              ))}
-            </div>
+            {mostrarLista && precioLista ? (
+              <span style={precioListaTachado}>{precioLista}</span>
+            ) : null}
 
-            <div style={acciones}>
-              <a
-                href={data.inscripcionUrl}
-                data-pdf-link={data.inscripcionUrl}
-                style={cta}
-              >
-                Inscribirme en programbi.com
-              </a>
-
-              {whatsappUrl ? (
-                <a
-                  href={whatsappUrl}
-                  data-pdf-link={whatsappUrl}
-                  style={ctaWhatsapp}
-                >
-                  Hablar por WhatsApp
-                </a>
-              ) : null}
-            </div>
-          </aside>
-        </div>
-
-        {/* B. Próximas fechas de inicio */}
-        <section style={bloqueFechas}>
-          <div style={rotulo}>
-            {`PRÓXIMAS FECHAS DE INICIO · Hora de ${data.paisNombre}`}
+            {data.descuentoPct > 0 ? (
+              <span style={badgeDescuento}>
+                {`−${data.descuentoPct}% OFF`}
+              </span>
+            ) : null}
           </div>
 
-          <div style={grillaFechas}>
-            {data.schedules.length === 0 ? (
-              <div style={{ ...tarjetaFecha, gridColumn: "1 / -1" }}>
-                <div style={fechaInicio}>
-                  Cupos abiertos — consulta la próxima fecha
-                </div>
-                <div style={diasFecha}>
-                  Escríbenos y te confirmamos la cohorte más cercana, con el
-                  horario ya convertido a la hora de {data.paisNombre}.
-                </div>
-              </div>
-            ) : (
-              data.schedules.slice(0, 4).map((cohorte) => (
-                <div key={cohorte.id} style={tarjetaFecha}>
-                  <div style={nivelFecha}>{cohorte.nivel}</div>
-                  <div style={fechaInicio}>{cohorte.fecha}</div>
-                  <div style={diasFecha}>
-                    {`${cohorte.dias}${
-                      cohorte.hours ? ` · ${cohorte.hours} horas` : ""
-                    }`}
-                  </div>
-                  <div style={horarioFecha}>{cohorte.horario}</div>
-                  {cohorte.horaChile && cohorte.horaChile !== cohorte.horario ? (
-                    <div style={horaChile}>{cohorte.horaChile}</div>
-                  ) : null}
-                </div>
-              ))
-            )}
+          {data.notaPago ? <p style={notaPago}>{data.notaPago}</p> : null}
+        </section>
+
+        {/* Tres cuotas sin interés */}
+        <section style={cajaCuotas}>
+          <div style={etiquetaCuotas}>3 CUOTAS SIN INTERÉS</div>
+          <div style={montoCuota}>{data.cuotaTexto}</div>
+          <p style={notaCuotas}>{data.notaCuotas}</p>
+        </section>
+
+        {/* Medios de pago locales (máximo 6 chips) */}
+        <section style={bloqueMedios}>
+          <div style={tituloMedios}>
+            {`Medios de pago en ${data.paisNombre}`}
+          </div>
+          <div style={filaMedios}>
+            {data.mediosPago.slice(0, 6).map((medio) => (
+              <span key={medio} style={chipMedio}>
+                {medio}
+              </span>
+            ))}
           </div>
         </section>
 
-        {/* C. Equivalencia horaria entre mercados */}
-        <section style={bloqueEquivalencias}>
-          <div style={rotuloTabla}>LA MISMA CLASE EN CADA PAÍS</div>
-          <div style={subtituloTabla}>
-            {`Inicio ${data.equivalencias.inicio} · Término ${data.equivalencias.fin} · ${data.equivalencias.offset} en ${data.paisNombre}`}
+        {/* Qué incluye tu inscripción + CTAs */}
+        <section style={tarjetaOscura}>
+          <div style={tituloIncluye}>Qué incluye tu inscripción</div>
+
+          <div style={listaIncluye}>
+            {INCLUYE.map((beneficio) => (
+              <div key={beneficio} style={itemIncluye}>
+                <span aria-hidden="true" style={check}>
+                  ✓
+                </span>
+                <span>{beneficio}</span>
+              </div>
+            ))}
           </div>
 
-          <div style={marcoTabla}>
-            <table style={tabla}>
-              <thead>
-                <tr>
-                  <th style={th}>Mercado</th>
-                  <th style={thHora}>Hora local</th>
-                </tr>
-              </thead>
-              <tbody>
-                {equivalencias.map((fila, indice) => (
-                  <tr
-                    key={fila.mercado}
-                    style={{
-                      backgroundColor: indice % 2 === 0 ? BLANCO : LAVADO,
-                    }}
-                  >
-                    <td style={td}>{fila.mercado}</td>
-                    <td style={tdHora}>{fila.hora}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div style={acciones}>
+            <a
+              href={urlInscripcion}
+              data-pdf-link={urlInscripcion}
+              style={cta}
+            >
+              Inscribirme en programbi.com
+            </a>
+
+            {whatsappUrl ? (
+              <a
+                href={whatsappUrl}
+                data-pdf-link={whatsappUrl}
+                style={ctaWhatsapp}
+              >
+                Hablar por WhatsApp
+              </a>
+            ) : null}
+          </div>
+        </section>
+
+        {/* Garantía académica y certificación */}
+        <section style={bandaGarantia}>
+          <div style={tituloGarantia}>
+            Garantía académica y certificación verificable ProgramBI
           </div>
 
-          <div style={notaFinal}>
-            Los horarios consideran el horario de verano de cada país y pueden
-            variar según la fecha de inicio. Todas las clases quedan grabadas y
-            disponibles de por vida.
+          <div style={filaKpis}>
+            <div style={kpi}>
+              <span style={kpiValor}>{`${data.hours} h`}</span>
+              <span style={kpiEtiqueta}>en vivo</span>
+            </div>
+            <div style={kpi}>
+              <span style={kpiValor}>{data.modulesCount}</span>
+              <span style={kpiEtiqueta}>módulos</span>
+            </div>
+            <div style={kpi}>
+              <span style={kpiValor}>{data.levelsCount}</span>
+              <span style={kpiEtiqueta}>
+                {data.levelsCount === 1 ? "nivel" : "niveles"}
+              </span>
+            </div>
+            <div style={kpi}>
+              <span style={kpiValor}>Verificable</span>
+              <span style={kpiEtiqueta}>certificado</span>
+            </div>
           </div>
         </section>
       </div>

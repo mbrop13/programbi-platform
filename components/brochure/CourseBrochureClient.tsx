@@ -11,6 +11,9 @@
  * Reglas que no se pueden romper:
  * - Las hojas vienen de `components/brochure/pages/*` (otro workstream) y son
  *   794 × 1123 px. Aquí solo se envuelven, escalan y enumeran.
+ * - El orden editorial es fijo: 1 Portada, 2 Inversión, 3 Calendario,
+ *   4 Proyectos/Certificado, 5 Equipo Docente y 6..N Temario. El total de
+ *   páginas sale siempre de `brochureTotalPages(data)`, nunca hardcodeado.
  * - El escalado se hace con `transform: scale()`, que no afecta el layout, así
  *   que el contenedor `.brochure-sheet-slot` reserva la altura ya escalada y
  *   la impresión la neutraliza (`height: auto`, `transform: none`).
@@ -32,6 +35,7 @@ import {
 
 import { BrochureCoverSheet } from "@/components/brochure/pages/BrochureCoverSheet";
 import { BrochurePricingScheduleSheet } from "@/components/brochure/pages/BrochurePricingScheduleSheet";
+import { BrochureScheduleSheet } from "@/components/brochure/pages/BrochureScheduleSheet";
 import { BrochureShowcaseSheet } from "@/components/brochure/pages/BrochureShowcaseSheet";
 import { BrochureFacultySheet } from "@/components/brochure/pages/BrochureFacultySheet";
 import { BrochureSyllabusSheets } from "@/components/brochure/pages/BrochureSyllabusSheets";
@@ -112,6 +116,11 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
 
   const totalPages = useMemo(() => brochureTotalPages(data), [data]);
   const nombreArchivo = useMemo(() => brochurePdfFileName(data), [data]);
+  /**
+   * Hojas A4 que el temario monta realmente. `totalPages` manda en los pies y
+   * en el índice; esto solo reserva alto de lienzo por si el plan crece.
+   */
+  const [hojasMedidas, setHojasMedidas] = useState(totalPages);
 
   /* ── Ajuste al ancho disponible ─────────────────────────────────────────── */
 
@@ -125,6 +134,18 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
     window.addEventListener("resize", medir);
     return () => window.removeEventListener("resize", medir);
   }, []);
+
+  /* ── Hojas realmente montadas ───────────────────────────────────────────── */
+
+  // `totalPages` sale de `brochureTotalPages(data)`. Se cuenta lo que el
+  // temario monta para reservar el alto exacto del lienzo: si el plan crece,
+  // la última hoja nunca queda recortada por el `overflow: hidden` del slot.
+  useEffect(() => {
+    const nodo = sheetsRef.current;
+    if (!nodo) return;
+    const total = nodo.querySelectorAll("[data-brochure-sheet]").length;
+    if (total > 0) setHojasMedidas(total);
+  }, [data, totalPages]);
 
   /* ── Blob del PDF nativo ────────────────────────────────────────────────── */
 
@@ -201,7 +222,7 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
     if (typeof document === "undefined") return;
     const nodo = document.getElementById(`brochure-page-${pagina}`);
     nodo?.scrollIntoView({ behavior: "smooth", block: "start" });
-    setIndiceActivo(Math.min(5, Math.max(1, pagina)));
+    setIndiceActivo(Math.min(totalPages, Math.max(1, pagina)));
   };
 
   /* ── Navegación lateral ─────────────────────────────────────────────────── */
@@ -209,15 +230,16 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
   const navegacion = useMemo(
     () => [
       { pagina: 1, etiqueta: "1 · Portada y Resumen" },
-      { pagina: 2, etiqueta: `2 · Precios (${data.moneda}) y Horarios` },
-      { pagina: 3, etiqueta: "3 · Proyectos y Certificado" },
-      { pagina: 4, etiqueta: "4 · Equipo Docente y Empresas" },
+      { pagina: 2, etiqueta: `2 · Inversión en ${data.moneda}` },
+      { pagina: 3, etiqueta: "3 · Fechas y Horarios" },
+      { pagina: 4, etiqueta: "4 · Proyectos y Certificado" },
+      { pagina: 5, etiqueta: "5 · Equipo Docente y Empresas" },
       {
-        pagina: 5,
+        pagina: 6,
         etiqueta:
-          totalPages > 5
-            ? `5–${totalPages} · Temario Módulo a Módulo`
-            : "5 · Temario Módulo a Módulo",
+          totalPages > 6
+            ? `6–${totalPages} · Temario Módulo a Módulo`
+            : "6 · Temario Módulo a Módulo",
       },
     ],
     [data.moneda, totalPages]
@@ -226,10 +248,11 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
   const miniaturas = useMemo(
     () => [
       { pagina: 1, etiqueta: "Portada y resumen" },
-      { pagina: 2, etiqueta: `Precios en ${data.moneda}` },
-      { pagina: 3, etiqueta: "Proyectos y certificado" },
-      { pagina: 4, etiqueta: "Equipo docente" },
-      { pagina: 5, etiqueta: "Temario del programa" },
+      { pagina: 2, etiqueta: `Inversión en ${data.moneda}` },
+      { pagina: 3, etiqueta: "Fechas y horarios" },
+      { pagina: 4, etiqueta: "Proyectos y certificado" },
+      { pagina: 5, etiqueta: "Equipo docente" },
+      { pagina: 6, etiqueta: "Temario del programa" },
     ],
     [data.moneda]
   );
@@ -237,21 +260,23 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
   /* ── Geometría del stack de hojas ───────────────────────────────────────── */
 
   const escala = zoom * fit;
+  /** Hojas que ocupan el lienzo: las del plan o las que montó el temario. */
+  const hojasEnLienzo = Math.max(totalPages, hojasMedidas);
   const altoStack = useMemo(
     () =>
-      (HOJA_ALTO * totalPages + GAP_HOJAS * Math.max(0, totalPages - 1)) * escala,
-    [escala, totalPages]
+      (HOJA_ALTO * hojasEnLienzo + GAP_HOJAS * Math.max(0, hojasEnLienzo - 1)) *
+      escala,
+    [escala, hojasEnLienzo]
   );
 
   const envolverHoja = (pagina: number, contenido: ReactNode, ultima: boolean) => (
     <div
       key={pagina}
-      id={`brochure-page-${pagina}`}
+      data-brochure-wrap={pagina}
       className="brochure-page-wrap"
       style={{
         position: "relative",
         marginBottom: ultima ? 0 : GAP_HOJAS,
-        scrollMarginTop: TOP_BARRA + 16,
       }}
     >
       <span className="brochure-page-label" aria-hidden="true" style={{
@@ -287,6 +312,14 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
         .brochure-secundario:hover { border-color: rgba(255,255,255,.4) !important; }
         .brochure-cta:hover { filter: brightness(1.08); }
 
+        /* El temario monta varias hojas dentro de un mismo envoltorio: se les
+           da el mismo aire que entre hojas fijas. El ancla de scroll vive en
+           cada hoja A4 (los envoltorios ya no duplican el id). */
+        .brochure-page-wrap > .brochure-a4-sheet + .brochure-a4-sheet {
+          margin-top: ${GAP_HOJAS}px;
+        }
+        [data-brochure-sheet] { scroll-margin-top: ${TOP_BARRA + 16}px; }
+
         @media print {
           @page { size: A4 portrait; margin: 0; }
           html, body { background: #FAF9F5 !important; margin: 0 !important; padding: 0 !important;
@@ -299,6 +332,7 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
           .brochure-sheets { position: static !important; left: auto !important; top: auto !important;
             width: auto !important; opacity: 1 !important; pointer-events: auto !important; }
           .brochure-page-wrap { margin: 0 !important; }
+          .brochure-page-wrap > .brochure-a4-sheet + .brochure-a4-sheet { margin-top: 0 !important; }
           .brochure-page-label { display: none !important; }
           [data-brochure-sheet] {
             width: 210mm !important; height: 297mm !important; margin: 0 !important;
@@ -909,7 +943,7 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                   )}
                   {envolverHoja(
                     3,
-                    <BrochureShowcaseSheet
+                    <BrochureScheduleSheet
                       data={data}
                       pageNumber={3}
                       totalPages={totalPages}
@@ -918,7 +952,7 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                   )}
                   {envolverHoja(
                     4,
-                    <BrochureFacultySheet
+                    <BrochureShowcaseSheet
                       data={data}
                       pageNumber={4}
                       totalPages={totalPages}
@@ -927,9 +961,18 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                   )}
                   {envolverHoja(
                     5,
+                    <BrochureFacultySheet
+                      data={data}
+                      pageNumber={5}
+                      totalPages={totalPages}
+                    />,
+                    totalPages === 5
+                  )}
+                  {envolverHoja(
+                    6,
                     <BrochureSyllabusSheets
                       data={data}
-                      startPage={5}
+                      startPage={6}
                       totalPages={totalPages}
                     />,
                     true

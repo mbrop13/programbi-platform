@@ -63,7 +63,7 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { formatMoneda, localizarMercado, NOTA_PAGO, porcentajeDescuento, precioListaVenta, precioVenta } from "@/lib/paises/precios";
+import { localizarMercado, precioVenta } from "@/lib/paises/precios";
 import { monedaPublica } from "@/config/pricing";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
 import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
@@ -261,17 +261,12 @@ export default function CourseDetailClient({
   const levels = levelsForView(course, view);
   const catalogLevelCount = course.levels?.length ?? 0;
 
-  // Gate de precios: el monto se calcula solo en cliente y solo se pinta con
-  // sesión iniciada o con el brochure ya desbloqueado. Nada de esto viaja en el
-  // HTML inicial ni en el flight data de RSC.
+  // Gate de precios: el monto se calcula solo en cliente y nunca se pinta en
+  // esta ficha. El precio vive en el Brochure PDF; aquí solo se usa para saber
+  // si el país tiene arancel aprobado (Paraguay todavía no lo tiene).
   const { unlocked: priceUnlocked, unlock } = usePriceUnlock();
   const canSeePrice = isLoggedIn || priceUnlocked;
   const precioLocalCliente = precioVenta(pais, course.slug);
-  const listaLocalCliente = precioListaVenta(pais, course.slug);
-  const descuentoLocalCliente =
-    listaLocalCliente != null && precioLocalCliente != null
-      ? porcentajeDescuento(listaLocalCliente, precioLocalCliente)
-      : 0;
   const brochureUrl = courseBrochureUrl(course.slug, pais);
 
   // Particular: la compra siempre está disponible (haya o no fecha publicada).
@@ -624,9 +619,9 @@ export default function CourseDetailClient({
               </div>
 
               <div className="mb-5 border-t border-line pt-5">
-                {/* El monto se calcula en cliente y solo se pinta con sesión
-                    iniciada o con el brochure ya desbloqueado: el HTML inicial
-                    nunca lo trae, ni en el flight data de RSC. */}
+                {/* La ficha nunca pinta el precio numérico: el arancel vive en
+                    el Brochure PDF. Solo se distingue empresa, país sin arancel
+                    aprobado (Paraguay) y venta individual con formulario. */}
                 {isEmpresa ? (
                   <p className="text-sm leading-relaxed text-mute">
                     {tiered
@@ -653,32 +648,28 @@ export default function CourseDetailClient({
                       Consultar el valor
                     </WhatsAppCta>
                   </div>
-                ) : !canSeePrice ? (
-                  <BrochureGateForm
-                    slug={course.slug}
-                    courseTitle={course.title}
-                    pais={pais}
-                    source="course_detail_gate"
-                    buttonLabel="Ver PDF con precios y temario"
-                    heading="Arancel, fechas y temario en PDF"
-                    subheading="Completa tus datos para abrir y descargar al instante el brochure oficial con los precios de tu país, descuentos y 3 cuotas sin interés."
-                    idPrefix="brochure-gate"
-                    compact
-                    onUnlocked={() => unlock()}
-                  />
                 ) : (
                   <div>
-                    {listaLocalCliente != null && descuentoLocalCliente > 0 ? (
-                      <p className="text-sm text-faint">
-                        <span className="line-through">{formatMoneda(pais, listaLocalCliente)}</span>
-                        <span className="ml-2 font-semibold text-ink">{descuentoLocalCliente}% off</span>
-                      </p>
-                    ) : null}
-                    <p className="text-3xl font-bold tracking-tight text-ink">
-                      {formatMoneda(pais, precioLocalCliente)}
-                    </p>
-                    <p className="mt-2 text-xs leading-snug text-mute">{NOTA_PAGO}</p>
-                    {levels.length > 1 ? <p className="mt-1 text-xs text-mute">Por nivel</p> : null}
+                    <BrochureGateForm
+                      slug={course.slug}
+                      courseTitle={course.title}
+                      pais={pais}
+                      source="course_detail_gate"
+                      buttonLabel="Descargar Brochure PDF"
+                      idPrefix="brochure-gate"
+                      onUnlocked={() => unlock()}
+                    />
+                    <div className="mt-4 text-center">
+                      <p className="text-xs font-medium text-mute">¿Ya revisaste el brochure?</p>
+                      <button
+                        type="button"
+                        onClick={handleCheckoutCTA}
+                        className="mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-semibold text-ink hover:bg-wash"
+                      >
+                        Inscribirme ahora
+                        <ArrowRight size={16} />
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -708,43 +699,6 @@ export default function CourseDetailClient({
                     WhatsApp
                   </WhatsAppCta>
                 </>
-              ) : canSeePrice && precioLocalCliente != null ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={handleCheckoutCTA}
-                    className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
-                  >
-                    {checkoutLabel}
-                    <ArrowRight size={16} />
-                  </button>
-                  <a
-                    href={brochureUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-medium text-ink no-underline hover:bg-wash"
-                  >
-                    <FileText size={16} /> Abrir / Descargar Brochure PDF
-                  </a>
-                  {activeSchedulesList.length === 0 ? (
-                    <>
-                      <p className="mt-2 text-center text-xs leading-snug text-mute">
-                        Sin fecha publicada: compra ahora y coordinamos la cohorte contigo.
-                      </p>
-                      <WhatsAppCta
-                        page={`/cursos/${course.slug}`}
-                        intent="fechas"
-                        course={course.title}
-                        courseSlug={course.slug}
-                        country={pais}
-                        className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-medium text-ink no-underline hover:bg-wash"
-                      >
-                        <MessageCircle size={16} />
-                        Consultar fechas
-                      </WhatsAppCta>
-                    </>
-                  ) : null}
-                </>
               ) : null}
 
               <CourseCardDescription lead={offerLead} more={offerMore} />
@@ -762,28 +716,14 @@ export default function CourseDetailClient({
                 <a href="#temario" className="inline-flex items-center gap-1.5 no-underline hover:text-mute">
                   <BookOpen size={15} /> Temario
                 </a>
-                {canSeePrice ? (
-                  <a
-                    href={brochureUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 no-underline hover:text-mute"
-                  >
-                    <FileText size={15} /> Folleto
-                  </a>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const input = document.getElementById("brochure-gate-name");
-                      (input as HTMLInputElement | null)?.focus();
-                      input?.scrollIntoView({ behavior: "smooth", block: "center" });
-                    }}
-                    className="inline-flex items-center gap-1.5 no-underline hover:text-mute"
-                  >
-                    <FileText size={15} /> Folleto
-                  </button>
-                )}
+                <a
+                  href={brochureUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 no-underline hover:text-mute"
+                >
+                  <FileText size={15} /> Folleto
+                </a>
                 {course.slug === "power-bi" ? (
                   <Link
                     href={rutaLocal(pais, "/curso-power-bi")}
@@ -838,7 +778,6 @@ export default function CourseDetailClient({
             <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Otros cursos</h2>
             <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {relatedCourses.map((rc) => {
-                const montoRelacionado = canSeePrice ? precioVenta(pais, rc.slug) : null;
                 return (
                   <Link
                     key={rc.slug}
@@ -861,11 +800,7 @@ export default function CourseDetailClient({
                     <div className="px-6 py-5">
                       <p className="text-lg font-bold tracking-tight text-ink">{rc.title}</p>
                       <p className="mt-1 text-sm text-mute">{rc.shortDescription}</p>
-                      {montoRelacionado != null ? (
-                        <p className="mt-2 text-sm font-semibold text-ink">{formatMoneda(pais, montoRelacionado)}</p>
-                      ) : (
-                        <span className="mt-2 block text-sm font-semibold text-ink">Ver brochure y precios →</span>
-                      )}
+                      <span className="mt-2 block text-sm font-semibold text-ink">Ver brochure y precios →</span>
                     </div>
                   </Link>
                 );

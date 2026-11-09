@@ -6,9 +6,12 @@
  * La repartición de módulos la decide `planBrochureSyllabus` (lógica pura
  * compartida con el visor): aquí solo se pinta cada hoja, con la grilla de dos
  * columnas y, en la última, el panel ejecutivo de inscripción. Ningún tópico se
- * recorta y no se reimplementa la paginación: el plan ya garantiza 4–6 módulos
- * por hoja, que ningún módulo se corte y que la última hoja tenga peso <= 7
- * para que el panel quepa.
+ * recorta y no se reimplementa la paginación: el plan ya garantiza máximo 4
+ * módulos por hoja (3 en la última, que reserva el panel) y que ningún módulo
+ * se corte.
+ *
+ * Sistema de diseño compartido con el resto del brochure: A4 794 × 1123 px,
+ * todo inline, y ningún texto por debajo de 10.5px.
  */
 
 import type { CSSProperties, JSX } from "react";
@@ -23,16 +26,25 @@ import {
 
 export type BrochureSyllabusSheetsProps = {
   data: CourseBrochureData;
-  /** Número de la primera hoja de temario (normalmente 5). */
+  /** Número de la primera hoja de temario; lo entrega el visor. */
   startPage: number;
   /** Total global de páginas del brochure. */
   totalPages: number;
 };
 
 const TINTA = "#141519";
-const BORDE = "#E7E4DA";
-const GRIS = "#5B5E66";
-const TENUE = "#8A8D95";
+const GRIS = "#5C5D63";
+const TENUE = "#77786F";
+const LINEA = "#E7E4DA";
+const LAVADO = "#F1EFE8";
+const BLANCO = "#FFFFFF";
+
+const SANS =
+  '-apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+const DISPLAY = 'Georgia, "Times New Roman", serif';
+
+/** Máximo de tópicos visibles por tarjeta; el resto se resume en «+N temas». */
+const MAX_TOPICS_VISIBLES = 10;
 
 /** Pasos fijos del panel de inscripción, idénticos en vista y PDF. */
 const PASOS = [
@@ -44,25 +56,7 @@ const PASOS = [
 const TEXTO_SIN_TEMARIO =
   "Programa en actualización — consulta el detalle por WhatsApp";
 
-/**
- * Acento con alfa en hex de 8 dígitos (los motores de PDF no entienden
- * `color-mix`). Si el acento no es hex, cae a tinta translúcida.
- */
-function conAlfa(color: string, alfa: number): string {
-  const hex = (color || "").trim();
-  const canal = Math.max(0, Math.min(255, Math.round(alfa * 255)))
-    .toString(16)
-    .padStart(2, "0");
-
-  if (/^#[0-9a-f]{6}$/i.test(hex)) return `${hex}${canal}`;
-  if (/^#[0-9a-f]{3}$/i.test(hex)) {
-    const [r, g, b] = [hex[1], hex[2], hex[3]];
-    return `#${r}${r}${g}${g}${b}${b}${canal}`;
-  }
-  return `rgba(20, 21, 25, ${alfa})`;
-}
-
-/** Cabecera compacta de la sección de temario, repetida en cada hoja. */
+/** Cabecera editorial de la sección de temario, repetida en cada hoja. */
 function SyllabusHeader({
   data,
   accent,
@@ -70,16 +64,33 @@ function SyllabusHeader({
   data: CourseBrochureData;
   accent: string;
 }): JSX.Element {
+  /**
+   * Horas reales del temario: `data.hours` trae las horas de la oferta pública
+   * (a veces por nivel), mientras que las tarjetas muestran la suma de todos
+   * los módulos. Si hay módulos con horas, manda esa suma para que el meta no
+   * se contradiga con el detalle.
+   */
+  const horasModulos = (data.temario ?? []).reduce(
+    (total, nivel) =>
+      total +
+      (nivel.modules ?? []).reduce(
+        (suma, modulo) => suma + (modulo.hours ?? 0),
+        0
+      ),
+    0
+  );
+  const horasTemario = horasModulos > 0 ? horasModulos : data.hours;
+
   const fila: CSSProperties = {
     display: "flex",
     alignItems: "flex-end",
     justifyContent: "space-between",
-    gap: 12,
+    gap: 16,
   };
 
   const kicker: CSSProperties = {
-    fontSize: 6.8,
-    letterSpacing: 1.8,
+    fontSize: 11,
+    letterSpacing: "0.14em",
     fontWeight: 700,
     textTransform: "uppercase",
     color: accent,
@@ -87,18 +98,19 @@ function SyllabusHeader({
   };
 
   const titulo: CSSProperties = {
-    fontFamily: "Georgia, 'Times New Roman', serif",
-    fontSize: 24,
-    fontWeight: 400,
+    fontFamily: DISPLAY,
+    fontSize: 28,
+    fontWeight: 700,
     lineHeight: 1.1,
     color: TINTA,
-    marginTop: 2,
+    marginTop: 4,
   };
 
   const meta: CSSProperties = {
-    fontSize: 8,
+    fontSize: 12.5,
+    fontWeight: 600,
     lineHeight: 1.3,
-    color: TENUE,
+    color: GRIS,
     whiteSpace: "nowrap",
     textAlign: "right",
     paddingBottom: 2,
@@ -107,19 +119,19 @@ function SyllabusHeader({
 
   const regla: CSSProperties = {
     height: 1,
-    backgroundColor: BORDE,
-    marginTop: 8,
+    backgroundColor: LINEA,
+    marginTop: 12,
   };
 
   return (
-    <header>
+    <header style={{ flexShrink: 0 }}>
       <div style={fila}>
         <div style={{ minWidth: 0 }}>
-          <div style={kicker}>PROGRAMA ACADÉMICO</div>
+          <div style={kicker}>Programa académico</div>
           <div style={titulo}>Programa Académico Detallado</div>
         </div>
         <div style={meta}>
-          {data.modulesCount} módulos · {data.hours} horas
+          {data.modulesCount} módulos · {horasTemario} horas
         </div>
       </div>
       <div style={regla} />
@@ -136,74 +148,91 @@ function ModuleCard({
   accent: string;
 }): JSX.Element {
   const tarjeta: CSSProperties = {
-    backgroundColor: "#FFFFFF",
-    border: `1px solid ${BORDE}`,
-    borderRadius: 9,
-    padding: "12px 13px",
-    breakInside: "avoid",
-    pageBreakInside: "avoid",
+    backgroundColor: BLANCO,
+    border: `1px solid ${LINEA}`,
+    borderRadius: 10,
+    padding: "14px 16px",
+    boxSizing: "border-box",
     display: "flex",
     flexDirection: "column",
-    boxSizing: "border-box",
   };
 
   const cabecera: CSSProperties = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 6,
+    gap: 8,
   };
 
   const numero: CSSProperties = {
-    fontSize: 6.8,
-    letterSpacing: 1.4,
+    fontSize: 11,
+    letterSpacing: "0.08em",
     fontWeight: 700,
+    textTransform: "uppercase",
     color: accent,
     lineHeight: 1.2,
   };
 
   const pill: CSSProperties = {
-    fontSize: 6.8,
+    fontSize: 11,
     lineHeight: 1.2,
     fontWeight: 700,
-    color: accent,
-    backgroundColor: conAlfa(accent, 0.1),
+    color: GRIS,
+    backgroundColor: LAVADO,
     borderRadius: 999,
-    padding: "2px 7px",
+    padding: "3px 9px",
     whiteSpace: "nowrap",
     flexShrink: 0,
   };
 
   const titulo: CSSProperties = {
-    fontSize: 11,
+    fontSize: 15,
     fontWeight: 700,
     lineHeight: 1.3,
     color: TINTA,
-    margin: "5px 0 0",
+    margin: "6px 0 0",
     overflowWrap: "break-word",
   };
 
   const lista: CSSProperties = {
     listStyle: "none",
-    margin: "6px 0 0",
+    margin: "8px 0 0",
     padding: 0,
+    display: "flex",
+    flexDirection: "column",
+    gap: 3,
   };
 
   const topico: CSSProperties = {
     display: "flex",
-    gap: 5,
-    fontSize: 8.8,
-    lineHeight: 1.45,
+    alignItems: "flex-start",
+    gap: 6,
+    fontSize: 12.5,
+    lineHeight: 1.48,
     color: GRIS,
   };
 
   const vineta: CSSProperties = {
     color: accent,
+    fontSize: 11,
+    lineHeight: 1.48,
     fontWeight: 700,
     flexShrink: 0,
+    width: 12,
+    textAlign: "center",
+  };
+
+  const masTemas: CSSProperties = {
+    marginTop: 6,
+    fontSize: 11.5,
+    lineHeight: 1.4,
+    fontWeight: 600,
+    color: TENUE,
   };
 
   const topics = Array.isArray(module.topics) ? module.topics : [];
+  const visibles = topics.slice(0, MAX_TOPICS_VISIBLES);
+  const restantes = topics.length - visibles.length;
   const horas = module.hours != null && module.hours > 0;
 
   return (
@@ -215,12 +244,12 @@ function ModuleCard({
         {horas ? <span style={pill}>{module.hours} h</span> : null}
       </div>
       <h3 style={titulo}>{module.title}</h3>
-      {topics.length > 0 ? (
+      {visibles.length > 0 ? (
         <ul style={lista}>
-          {topics.map((tema, indice) => (
+          {visibles.map((tema, indice) => (
             <li key={`${module.moduleNumber}-${indice}`} style={topico}>
               <span style={vineta} aria-hidden="true">
-                ·
+                ✓
               </span>
               <span style={{ minWidth: 0, overflowWrap: "break-word" }}>
                 {tema}
@@ -229,6 +258,7 @@ function ModuleCard({
           ))}
         </ul>
       ) : null}
+      {restantes > 0 ? <div style={masTemas}>+{restantes} temas</div> : null}
     </article>
   );
 }
@@ -247,51 +277,44 @@ function SyllabusGroup({
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    gap: 8,
-    backgroundColor: TINTA,
-    color: "#FFFFFF",
-    borderRadius: 6,
-    padding: "6px 11px",
-    minHeight: 27,
+    gap: 10,
+    backgroundColor: LAVADO,
+    borderLeft: `3px solid ${accent}`,
+    borderRadius: 8,
+    padding: "8px 14px",
   };
 
   const nivel: CSSProperties = {
-    fontSize: 9,
+    fontSize: 13.5,
     fontWeight: 700,
-    letterSpacing: 0.6,
     lineHeight: 1.2,
+    color: TINTA,
     minWidth: 0,
   };
 
-  const atajo: CSSProperties = {
-    fontSize: 6.8,
+  const subtitulo: CSSProperties = {
+    fontSize: 11.5,
     lineHeight: 1.2,
-    color: "rgba(255,255,255,.65)",
+    color: GRIS,
     whiteSpace: "nowrap",
     flexShrink: 0,
   };
 
   const grilla: CSSProperties = {
     display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    columnGap: 12,
-    rowGap: 10,
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gap: 12,
     alignItems: "start",
-    marginTop: 10,
+    marginTop: 12,
   };
 
   return (
-    <section
-      style={{
-        marginTop: primero ? 0 : 12,
-        flexShrink: 0,
-      }}
-    >
+    <section style={{ marginTop: primero ? 0 : 16, flexShrink: 0 }}>
       <div style={banda}>
         <span style={nivel}>{group.levelLabel}</span>
-        {group.levelShortLabel ? (
-          <span style={atajo}>{group.levelShortLabel}</span>
-        ) : null}
+        <span style={subtitulo}>
+          {group.levelShortLabel ?? "Módulos del programa"}
+        </span>
       </div>
       <div style={grilla}>
         {group.modules.map((modulo) => (
@@ -308,76 +331,84 @@ function SyllabusGroup({
 
 /** Panel ejecutivo de inscripción: resumen, pasos y llamadas a la acción. */
 function EnrollmentPanel({ data }: { data: CourseBrochureData }): JSX.Element {
+  const hrefInscripcion = `https://programbi.com${data.inscripcionUrl}`;
+
   const panel: CSSProperties = {
     backgroundColor: TINTA,
     borderRadius: 12,
-    padding: "13px 16px",
-    color: "#FFFFFF",
-    marginTop: 10,
+    padding: "16px 18px",
+    color: BLANCO,
+    boxSizing: "border-box",
   };
 
   const fila: CSSProperties = {
     display: "flex",
     alignItems: "center",
-    gap: 14,
+    justifyContent: "space-between",
+    gap: 18,
   };
 
   const izquierda: CSSProperties = {
-    flex: "1 1 62%",
+    flex: "1 1 auto",
     minWidth: 0,
   };
 
   const titulo: CSSProperties = {
-    fontSize: 12.5,
+    fontSize: 16.5,
     fontWeight: 700,
     lineHeight: 1.2,
   };
 
   const resumen: CSSProperties = {
-    fontSize: 7.6,
-    lineHeight: 1.35,
-    color: "rgba(255,255,255,.78)",
-    marginTop: 4,
+    fontSize: 12.5,
+    lineHeight: 1.45,
+    color: "rgba(255,255,255,.8)",
+    marginTop: 6,
     overflowWrap: "break-word",
   };
 
   const pasos: CSSProperties = {
-    marginTop: 6,
-    fontSize: 7.2,
-    lineHeight: 1.45,
+    marginTop: 8,
+    fontSize: 12,
+    lineHeight: 1.4,
     color: "rgba(255,255,255,.9)",
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
   };
 
   const acciones: CSSProperties = {
     display: "flex",
     flexDirection: "column",
-    gap: 5,
+    gap: 8,
     flex: "0 0 auto",
-    width: 118,
+    width: 216,
   };
 
   const botonBase: CSSProperties = {
     display: "block",
     borderRadius: 999,
-    padding: "7px 12px",
-    fontSize: 7.8,
+    padding: "10px 16px",
+    fontSize: 13,
     fontWeight: 700,
     lineHeight: 1.2,
     textAlign: "center",
     textDecoration: "none",
+    whiteSpace: "nowrap",
+    boxSizing: "border-box",
   };
 
   const botonPrimario: CSSProperties = {
     ...botonBase,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: BLANCO,
     color: TINTA,
-    border: "1px solid #FFFFFF",
+    border: `1px solid ${BLANCO}`,
   };
 
   const botonSecundario: CSSProperties = {
     ...botonBase,
     backgroundColor: "transparent",
-    color: "#FFFFFF",
+    color: BLANCO,
     border: "1px solid rgba(255,255,255,.45)",
   };
 
@@ -385,10 +416,9 @@ function EnrollmentPanel({ data }: { data: CourseBrochureData }): JSX.Element {
     <section style={panel}>
       <div style={fila}>
         <div style={izquierda}>
-          <div style={titulo}>Inscríbete hoy y asegura tu cupo</div>
+          <div style={titulo}>Inscríbete y asegura tu cupo</div>
           <div style={resumen}>
-            {data.title} · {data.precioFormateado} ({data.moneda}) o{" "}
-            {data.cuotaTexto}
+            {data.precioFormateado} ({data.moneda}) · {data.cuotaTexto}
           </div>
           <div style={pasos}>
             {PASOS.map((paso, indice) => (
@@ -400,11 +430,11 @@ function EnrollmentPanel({ data }: { data: CourseBrochureData }): JSX.Element {
         </div>
         <div style={acciones}>
           <a
-            href={data.inscripcionUrl}
-            data-pdf-link={data.inscripcionUrl}
+            href={hrefInscripcion}
+            data-pdf-link={hrefInscripcion}
             style={botonPrimario}
           >
-            Inscribirme Ahora
+            Inscribirme en programbi.com
           </a>
           {data.whatsappUrl ? (
             <a
@@ -424,13 +454,13 @@ function EnrollmentPanel({ data }: { data: CourseBrochureData }): JSX.Element {
 /** Aviso para cursos sin temario cargado (el plan devuelve una hoja vacía). */
 function EmptyNotice(): JSX.Element {
   const aviso: CSSProperties = {
-    marginTop: 14,
-    border: `1px dashed ${BORDE}`,
-    borderRadius: 8,
-    padding: "18px 16px",
+    marginTop: 16,
+    border: `1px dashed ${LINEA}`,
+    borderRadius: 10,
+    padding: "20px 18px",
     textAlign: "center",
-    fontSize: 9.5,
-    lineHeight: 1.4,
+    fontSize: 12.5,
+    lineHeight: 1.45,
     color: GRIS,
   };
 
@@ -452,15 +482,24 @@ function SyllabusSheetBody({
     display: "flex",
     flexDirection: "column",
     minHeight: "100%",
+    fontFamily: SANS,
+    color: TINTA,
   };
 
   const grupos: CSSProperties = {
-    marginTop: 12,
-    flex: 1,
+    marginTop: 14,
+    flex: "1 1 auto",
     minHeight: 0,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-evenly",
+    gap: 16,
+    justifyContent: "flex-start",
+  };
+
+  const piePanel: CSSProperties = {
+    marginTop: "auto",
+    paddingTop: 14,
+    flexShrink: 0,
   };
 
   return (
@@ -481,7 +520,7 @@ function SyllabusSheetBody({
         )}
       </div>
       {ultima ? (
-        <div style={{ marginTop: "auto" }}>
+        <div style={piePanel}>
           <EnrollmentPanel data={data} />
         </div>
       ) : null}

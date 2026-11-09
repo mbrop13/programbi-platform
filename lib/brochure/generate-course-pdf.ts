@@ -584,6 +584,29 @@ async function construirPdfWysiwyg(
 
 // ── Camino de respaldo: jsPDF vectorial con imágenes reales ───────────────────
 
+/**
+ * Escala tipográfica del respaldo, alineada con las hojas A4 (1 px = 0.75 pt):
+ * cuerpo 12.5px ≈ 9.4pt, títulos de página 17.3px ≈ 13pt, títulos de sección
+ * 16px ≈ 12pt y títulos de tarjeta/módulo 14.4px ≈ 10.8pt. Ningún texto baja
+ * de 8pt. El documento crece en páginas antes que recortar contenido.
+ */
+const TIPO = {
+  pie: 8,
+  meta: 8.6,
+  cuerpo: 9.4,
+  tarjeta: 10.8,
+  seccion: 12,
+  tituloPagina: 13,
+  kicker: 9.2,
+  display: 23,
+  precio: 26,
+} as const;
+
+/** Alto de una línea de texto en milímetros (1pt = 0.3528mm). */
+function altoLinea(tam: number, factor = 1.36): number {
+  return tam * 0.3528 * factor;
+}
+
 async function construirPdfVectorial(
   doc: JsPdfDocument,
   data: CourseBrochureData,
@@ -593,7 +616,12 @@ async function construirPdfVectorial(
   const acentoSuave = tinte(acento, 0.1);
   const acentoBorde = tinte(acento, 0.32);
 
-  const totalPasos = 7;
+  /**
+   * Pasos del respaldo: imágenes, portada, inversión, calendario, proyectos,
+   * equipo docente, temario y cierre. El progreso es monótono y los pies se
+   * numeran solos con `doc.getNumberOfPages()`: nada asume 4 ni 5 páginas.
+   */
+  const totalPasos = 8;
   let paso = 0;
   const avisar = (label: string): void => {
     paso += 1;
@@ -643,7 +671,7 @@ async function construirPdfVectorial(
   const marcaProgramBI = (x: number, top: number, w: number, h: number): void => {
     if (addImageSafe(doc, logo, x, top, w, h)) return;
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(15);
+    doc.setFontSize(16);
     tinta(TINTA);
     doc.text("ProgramBI", x, top + h * 0.72);
   };
@@ -653,13 +681,13 @@ async function construirPdfVectorial(
     marcaProgramBI(MARGEN, 10, 26, 8);
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(6.2);
+    doc.setFontSize(TIPO.meta);
     tinta(TENUE);
     doc.setCharSpace(0.7);
     doc.text(
       `BROCHURE · ${data.paisNombre.toUpperCase()}`,
       PAGE_W - MARGEN,
-      16,
+      16.5,
       { align: "right" }
     );
     doc.setCharSpace(0);
@@ -680,33 +708,145 @@ async function construirPdfVectorial(
     if (y + alto > LIMITE) nuevaPagina();
   };
 
+  /** Divide un texto al ancho dado y, si se pide, recorta con elipsis. */
+  const medirLineas = (
+    texto: string,
+    ancho: number,
+    tam: number,
+    estilo: "normal" | "bold" = "normal",
+    maximo = 0
+  ): string[] => {
+    if (!texto) return [];
+    doc.setFont("helvetica", estilo);
+    doc.setFontSize(tam);
+    const lineas = lineasDe(doc, texto, ancho);
+    return maximo > 0 ? recortar(lineas, maximo) : lineas;
+  };
+
+  /** Dibuja un bloque de líneas desde `top`; devuelve el alto consumido. */
+  const dibujarLineas = (
+    lineas: string[],
+    x: number,
+    top: number,
+    tam: number,
+    factor = 1.36
+  ): number => {
+    const alto = altoLinea(tam, factor);
+    lineas.forEach((linea, indice) => {
+      doc.text(linea, x, top + alto * (indice + 1));
+    });
+    return lineas.length * alto;
+  };
+
+  /** Párrafo que fluye y salta de página solo, sin recortar el texto. */
+  const parrafo = (
+    texto: string,
+    opciones: {
+      x?: number;
+      ancho?: number;
+      tam?: number;
+      estilo?: "normal" | "bold";
+      color?: RGB;
+      factor?: number;
+      maximo?: number;
+    } = {}
+  ): number => {
+    const x = opciones.x ?? MARGEN;
+    const ancho = opciones.ancho ?? ANCHO;
+    const tam = opciones.tam ?? TIPO.cuerpo;
+    const estilo = opciones.estilo ?? "normal";
+    const factor = opciones.factor ?? 1.36;
+    const lineas = medirLineas(texto, ancho, tam, estilo, opciones.maximo ?? 0);
+    if (lineas.length === 0) return 0;
+
+    doc.setFont("helvetica", estilo);
+    doc.setFontSize(tam);
+    tinta(opciones.color ?? GRIS);
+
+    const alto = altoLinea(tam, factor);
+    for (const linea of lineas) {
+      if (y + alto > LIMITE) nuevaPagina();
+      doc.text(linea, x, y + alto);
+      y += alto;
+    }
+    return lineas.length * alto;
+  };
+
+  /** Bullet con el mismo flujo y sangría francesa. */
+  const vineta = (
+    texto: string,
+    x: number,
+    ancho: number,
+    tam = TIPO.cuerpo,
+    color: RGB = GRIS
+  ): void => {
+    const lineas = medirLineas(texto, ancho - 5, tam, "normal", 4);
+    if (lineas.length === 0) return;
+
+    const alto = altoLinea(tam);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(tam);
+    for (let i = 0; i < lineas.length; i += 1) {
+      if (y + alto > LIMITE) nuevaPagina();
+      if (i === 0) {
+        tinta(acentoBorde);
+        doc.text("·", x, y + alto);
+      }
+      tinta(color);
+      doc.text(lineas[i], x + 5, y + alto);
+      y += alto;
+    }
+  };
+
+  const tituloSeccion = (texto: string, nota?: string): void => {
+    const lineas = medirLineas(texto, ANCHO, TIPO.seccion, "bold", 2);
+    const altoTitulo = lineas.length * altoLinea(TIPO.seccion, 1.2);
+    const altoNota = nota ? 2 + altoLinea(TIPO.meta, 1.32) * 2 : 0;
+    asegurar(altoTitulo + altoNota + 2);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(TIPO.seccion);
+    tinta(TINTA);
+    y += dibujarLineas(lineas, MARGEN, y, TIPO.seccion, 1.2);
+    y += 1.4;
+
+    if (nota) {
+      parrafo(nota, { tam: TIPO.meta, color: TENUE, factor: 1.32, maximo: 3 });
+      y += 1.4;
+    }
+  };
+
   const cabecera = (
     kicker: string,
     titulo: string,
     subtitulo?: string
   ): void => {
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(7.2);
+    doc.setFontSize(TIPO.kicker);
     tinta(acento);
     doc.setCharSpace(0.9);
-    doc.text(kicker.toUpperCase(), MARGEN, y + 4);
+    doc.text(kicker.toUpperCase(), MARGEN, y + 4.4);
     doc.setCharSpace(0);
 
+    const lineasTitulo = medirLineas(titulo, ANCHO, TIPO.tituloPagina, "bold", 2);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
+    doc.setFontSize(TIPO.tituloPagina);
     tinta(TINTA);
-    const tituloLineas = recortar(lineasDe(doc, titulo, ANCHO), 2);
-    doc.text(tituloLineas, MARGEN, y + 11);
-
-    let cursor = y + 11 + tituloLineas.length * (18 * 0.3528 * 1.15);
+    const altoTitulo = dibujarLineas(
+      lineasTitulo,
+      MARGEN,
+      y + 8,
+      TIPO.tituloPagina,
+      1.14
+    );
+    let cursor = y + 8 + altoTitulo;
 
     if (subtitulo) {
+      const lineasSub = medirLineas(subtitulo, ANCHO, TIPO.cuerpo, "normal", 2);
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(8.2);
+      doc.setFontSize(TIPO.cuerpo);
       tinta(GRIS);
-      const subLineas = recortar(lineasDe(doc, subtitulo, ANCHO), 2);
-      doc.text(subLineas, MARGEN, cursor + 4);
-      cursor += 4 + subLineas.length * (8.2 * 0.3528 * 1.3);
+      cursor += 2.5 + dibujarLineas(lineasSub, MARGEN, cursor + 2.5, TIPO.cuerpo, 1.35);
     }
 
     cursor += 4;
@@ -714,21 +854,6 @@ async function construirPdfVectorial(
     doc.setLineWidth(0.3);
     doc.line(MARGEN, cursor, PAGE_W - MARGEN, cursor);
     y = cursor + 8;
-  };
-
-  const tituloSeccion = (texto: string, nota?: string): void => {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10.5);
-    tinta(TINTA);
-    doc.text(texto, MARGEN, y);
-    y += 6;
-    if (nota) {
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(7.2);
-      tinta(TENUE);
-      doc.text(recortar(lineasDe(doc, nota, ANCHO), 2), MARGEN, y);
-      y += 4.2;
-    }
   };
 
   const pintarPies = (): void => {
@@ -739,18 +864,17 @@ async function construirPdfVectorial(
       doc.setLineWidth(0.3);
       doc.line(MARGEN, PIE_Y, PAGE_W - MARGEN, PIE_Y);
       relleno(acento);
-      doc.rect(MARGEN, PIE_Y - 1.3, 10, 0.8, "F");
+      doc.rect(MARGEN, PIE_Y - 1.6, 10, 1, "F");
 
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
+      doc.setFontSize(TIPO.pie);
       tinta(TENUE);
       doc.text(
         `ProgramBI · programbi.com · Página ${pagina} de ${paginas}`,
         MARGEN,
-        PIE_Y + 4.4
+        PIE_Y + 4.8
       );
-      doc.setFontSize(6.6);
-      doc.text(`Actualizado ${data.actualizado}`, PAGE_W - MARGEN, PIE_Y + 4.4, {
+      doc.text(`Actualizado ${data.actualizado}`, PAGE_W - MARGEN, PIE_Y + 4.8, {
         align: "right",
       });
     }
@@ -768,16 +892,16 @@ async function construirPdfVectorial(
   marcaProgramBI(MARGEN, 12, 34, 10);
 
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(7);
+  doc.setFontSize(TIPO.meta);
   tinta(GRIS);
   doc.setCharSpace(0.9);
-  doc.text("BROCHURE OFICIAL", PAGE_W - MARGEN, 16, { align: "right" });
+  doc.text("BROCHURE OFICIAL", PAGE_W - MARGEN, 16.5, { align: "right" });
   doc.setCharSpace(0);
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(6.8);
+  doc.setFontSize(TIPO.meta);
   tinta(TENUE);
-  doc.text(`Actualizado ${data.actualizado}`, PAGE_W - MARGEN, 21, {
+  doc.text(`Actualizado ${data.actualizado}`, PAGE_W - MARGEN, 21.8, {
     align: "right",
   });
 
@@ -787,7 +911,7 @@ async function construirPdfVectorial(
 
   y = 36;
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(7.4);
+  doc.setFontSize(TIPO.kicker);
   tinta(acento);
   doc.setCharSpace(0.9);
   doc.text(
@@ -800,35 +924,33 @@ async function construirPdfVectorial(
     y
   );
   doc.setCharSpace(0);
-  y += 9;
+  y += 9.5;
 
+  const tituloPortada = medirLineas(data.title, ANCHO, TIPO.display, "bold", 3);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
+  doc.setFontSize(TIPO.display);
   tinta(TINTA);
-  const tituloPortada = recortar(lineasDe(doc, data.title, ANCHO), 3);
-  doc.text(tituloPortada, MARGEN, y);
-  y += tituloPortada.length * (22 * 0.3528 * 1.12) + 5;
+  y += dibujarLineas(tituloPortada, MARGEN, y, TIPO.display, 1.12) + 5;
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9.4);
-  tinta(GRIS);
-  const resumenPortada = recortar(
-    lineasDe(doc, data.shortDescription, ANCHO - 4),
-    3
-  );
-  doc.text(resumenPortada, MARGEN, y);
-  y += resumenPortada.length * (9.4 * 0.3528 * 1.35) + 7;
+  parrafo(data.shortDescription, {
+    tam: 10.2,
+    color: GRIS,
+    factor: 1.4,
+    maximo: 4,
+  });
+  y += 7;
 
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(7.2);
-  const insigniaLineas = recortar(lineasDe(doc, data.insignia, ANCHO - 12), 2);
-  const altoInsignia = 6 + insigniaLineas.length * 3.4;
+  const insigniaLineas = medirLineas(data.insignia, ANCHO - 12, TIPO.kicker, "bold", 3);
+  const altoInsignia = 5.6 + insigniaLineas.length * altoLinea(TIPO.kicker, 1.3);
+  asegurar(altoInsignia + 8);
   relleno(acentoSuave);
   doc.roundedRect(MARGEN, y, ANCHO, altoInsignia, 2.2, 2.2, "F");
   relleno(acento);
   doc.rect(MARGEN, y, 1.5, altoInsignia, "F");
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(TIPO.kicker);
   tinta(TINTA);
-  doc.text(insigniaLineas, MARGEN + 5, y + 4.6);
+  dibujarLineas(insigniaLineas, MARGEN + 5, y + 1.2, TIPO.kicker, 1.3);
   y += altoInsignia + 8;
 
   const metricas: Array<{ valor: string; etiqueta: string }> = [
@@ -844,10 +966,12 @@ async function construirPdfVectorial(
     { valor: "100%", etiqueta: "en vivo por Zoom" },
   ];
 
-  const altoHero = 68;
-  const anchoHero = 106;
+  const altoHero = 66;
+  const anchoHero = 104;
   const anchoStats = ANCHO - anchoHero - 4;
   const xStats = MARGEN + anchoHero + 4;
+
+  asegurar(altoHero + 10);
 
   // Foto oficial del curso, recortada al marco sin deformarse.
   relleno(BLANCO);
@@ -869,7 +993,7 @@ async function construirPdfVectorial(
   ) {
     tinta(TENUE);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(9.5);
+    doc.setFontSize(TIPO.cuerpo);
     doc.text(
       ajustarTexto(
         doc,
@@ -898,52 +1022,56 @@ async function construirPdfVectorial(
       doc.line(xStats + 4, top, xStats + anchoStats - 4, top);
     }
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(13.5);
+    doc.setFontSize(15);
     tinta(TINTA);
-    doc.text(metrica.valor, xStats + 5, top + 7.6);
+    doc.text(metrica.valor, xStats + 5, top + 8.4);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(6.2);
+    doc.setFontSize(TIPO.meta);
     tinta(GRIS);
-    doc.text(ajustarTexto(doc, metrica.etiqueta, anchoStats - 9), xStats + 5, top + 12.2);
+    doc.text(
+      ajustarTexto(doc, metrica.etiqueta, anchoStats - 10),
+      xStats + 5,
+      top + 13.6
+    );
   });
 
   y += altoHero + 10;
 
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(7);
+  doc.setFontSize(TIPO.meta);
   tinta(TENUE);
   doc.setCharSpace(0.8);
   doc.text("CÓMO SE APRENDE EN PROGRAMBI", MARGEN, y);
   doc.setCharSpace(0);
-  y += 5;
+  y += 5.5;
 
   const pilares = data.methodologyPillars.slice(0, 4);
-  const anchoPilar = (ANCHO - 5) / 2;
+  const anchoPilar = (ANCHO - 6) / 2;
+  const altoPilar = 27;
+  asegurar(Math.ceil(pilares.length / 2) * altoPilar);
+
   pilares.forEach((pilar, indice) => {
     const columna = indice % 2;
     const fila = Math.floor(indice / 2);
-    const x = MARGEN + columna * (anchoPilar + 5);
-    const py = y + fila * 25;
+    const x = MARGEN + columna * (anchoPilar + 6);
+    const py = y + fila * altoPilar;
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(8.4);
+    doc.setFontSize(TIPO.cuerpo);
     tinta(acento);
-    doc.text(pilar.step, x, py + 4);
+    doc.text(pilar.step, x, py + 4.6);
 
-    doc.setFontSize(9);
+    doc.setFontSize(TIPO.tarjeta);
     tinta(TINTA);
-    doc.text(ajustarTexto(doc, pilar.title, anchoPilar - 9), x + 8, py + 4);
+    doc.text(ajustarTexto(doc, pilar.title, anchoPilar - 10), x + 9, py + 4.6);
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(6.9);
+    doc.setFontSize(9.2);
     tinta(GRIS);
-    const descripcion = recortar(
-      lineasDe(doc, pilar.description, anchoPilar - 8),
-      3
-    );
-    doc.text(descripcion, x + 8, py + 8.6);
+    const descripcion = medirLineas(pilar.description, anchoPilar - 9, 9.2, "normal", 3);
+    dibujarLineas(descripcion, x + 9, py + 6.4, 9.2, 1.35);
   });
-  y += Math.ceil(pilares.length / 2) * 25;
+  y += Math.ceil(pilares.length / 2) * altoPilar;
 
   // ── 2. Inversión ───────────────────────────────────────────────────────────
 
@@ -956,7 +1084,9 @@ async function construirPdfVectorial(
   );
 
   const conLista = Boolean(data.precioListaFormateado);
-  const altoPrecio = conLista ? 54 : 44;
+  const altoPrecio = conLista ? 50 : 42;
+  asegurar(altoPrecio + 8);
+
   relleno(BLANCO);
   doc.roundedRect(MARGEN, y, ANCHO, altoPrecio, 3, 3, "F");
   trazo(LINEA);
@@ -964,122 +1094,121 @@ async function construirPdfVectorial(
   doc.roundedRect(MARGEN, y, ANCHO, altoPrecio, 3, 3, "S");
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.8);
+  doc.setFontSize(TIPO.cuerpo);
   tinta(GRIS);
-  doc.text(`Precio oficial en ${data.paisNombre}`, MARGEN + 7, y + 9);
+  doc.text(`Precio oficial en ${data.paisNombre}`, MARGEN + 7, y + 10);
 
   const largoPrecio = data.precioFormateado.length;
-  const tamPrecio = largoPrecio > 18 ? 16 : largoPrecio > 12 ? 21 : 26;
+  const tamPrecio = largoPrecio > 18 ? 18 : largoPrecio > 12 ? 22 : TIPO.precio;
   doc.setFont("helvetica", "bold");
   doc.setFontSize(tamPrecio);
   tinta(TINTA);
   doc.text(
-    ajustarTexto(doc, data.precioFormateado, ANCHO - 60),
+    ajustarTexto(doc, data.precioFormateado, ANCHO - 66),
     MARGEN + 7,
-    y + (conLista ? 25 : 24)
+    y + (conLista ? 27 : 26)
   );
 
   if (data.precioListaFormateado) {
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(9.4);
+    doc.setFontSize(TIPO.cuerpo);
     tinta(TENUE);
-    doc.text(limpiarTexto(data.precioListaFormateado), MARGEN + 7, y + 35);
-    const anchoLista = doc.getTextWidth(limpiarTexto(data.precioListaFormateado));
+    const lista = limpiarTexto(data.precioListaFormateado);
+    doc.text(lista, MARGEN + 7, y + 39);
+    const anchoLista = doc.getTextWidth(lista);
     trazo(TENUE);
     doc.setLineWidth(0.3);
-    doc.line(MARGEN + 7, y + 33.8, MARGEN + 7 + anchoLista, y + 33.8);
+    doc.line(MARGEN + 7, y + 37.6, MARGEN + 7 + anchoLista, y + 37.6);
 
     if (data.descuentoPct > 0) {
       relleno(acentoSuave);
-      doc.roundedRect(PAGE_W - MARGEN - 44, y + 25, 36, 10, 2, 2, "F");
+      doc.roundedRect(PAGE_W - MARGEN - 50, y + 27, 42, 11, 2, 2, "F");
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(7.2);
+      doc.setFontSize(TIPO.kicker);
       tinta(acento);
       doc.text(
         `${data.descuentoPct}% de descuento`,
-        PAGE_W - MARGEN - 26,
-        y + 31.4,
+        PAGE_W - MARGEN - 29,
+        y + 34,
         { align: "center" }
       );
     }
   }
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
+  doc.setFontSize(TIPO.pie);
   tinta(TENUE);
   doc.text(
     limpiarTexto(`Moneda: ${data.moneda} (${data.simbolo})`),
     MARGEN + 7,
-    y + altoPrecio - 5
+    y + altoPrecio - 5.5
   );
   y += altoPrecio + 8;
 
-  const altoCuotas = 30;
+  const altoCuotas = 38;
+  asegurar(altoCuotas + 9);
   relleno(acentoSuave);
   doc.roundedRect(MARGEN, y, ANCHO, altoCuotas, 3, 3, "F");
+
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(8.4);
+  doc.setFontSize(TIPO.tarjeta);
   tinta(acento);
-  doc.text(`${data.cuotas} cuotas sin interés`, MARGEN + 7, y + 8);
-  doc.setFontSize(11.6);
+  doc.text(`${data.cuotas} cuotas sin interés`, MARGEN + 7, y + 10);
+
+  doc.setFontSize(16);
   tinta(TINTA);
-  doc.text(
-    ajustarTexto(doc, data.cuotaTexto, ANCHO - 14),
-    MARGEN + 7,
-    y + 16
-  );
+  doc.text(ajustarTexto(doc, data.cuotaTexto, ANCHO - 14), MARGEN + 7, y + 19);
+
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
+  doc.setFontSize(9.2);
   tinta(GRIS);
-  doc.text(
-    recortar(lineasDe(doc, data.notaCuotas, ANCHO - 14), 2),
-    MARGEN + 7,
-    y + 22
-  );
+  const notaCuotas = medirLineas(data.notaCuotas, ANCHO - 14, 9.2, "normal", 2);
+  dibujarLineas(notaCuotas, MARGEN + 7, y + 22.5, 9.2, 1.32);
   y += altoCuotas + 9;
 
   tituloSeccion("Medios de pago disponibles");
 
+  const altoChip = 9.4;
+  asegurar(altoChip * 2 + 10);
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.4);
+  doc.setFontSize(TIPO.cuerpo);
   let chipX = MARGEN;
   let chipY = y;
-  const altoChip = 7.5;
 
   for (const medio of data.mediosPago) {
-    const anchoChip = doc.getTextWidth(medio) + 8;
+    const etiqueta = limpiarTexto(medio);
+    const anchoChip = doc.getTextWidth(etiqueta) + 10;
     if (chipX + anchoChip > PAGE_W - MARGEN) {
       chipX = MARGEN;
-      chipY += altoChip + 2;
+      chipY += altoChip + 2.6;
     }
     relleno(BLANCO);
     trazo(LINEA);
     doc.setLineWidth(0.25);
-    doc.roundedRect(chipX, chipY - 4.8, anchoChip, altoChip, 3.6, 3.6, "FD");
+    doc.roundedRect(chipX, chipY - altoChip + 1.8, anchoChip, altoChip, 4.6, 4.6, "FD");
     tinta(TINTA);
-    doc.text(medio, chipX + 4, chipY);
-    chipX += anchoChip + 2.5;
+    doc.text(etiqueta, chipX + 5, chipY);
+    chipX += anchoChip + 3;
   }
-  y = chipY + 6;
+  y = chipY + 7;
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.4);
-  tinta(TENUE);
-  const notaPagoLineas = recortar(lineasDe(doc, data.notaPago, ANCHO), 3);
-  doc.text(notaPagoLineas, MARGEN, y);
-  y += notaPagoLineas.length * 3.6 + 7;
+  parrafo(data.notaPago, { tam: TIPO.cuerpo, color: TENUE, maximo: 4 });
+  y += 7;
 
-  const altoInscripcion = 26;
+  const altoInscripcion = 32;
+  asegurar(altoInscripcion + 6);
   relleno(TINTA);
   doc.roundedRect(MARGEN, y, ANCHO, altoInscripcion, 3, 3, "F");
+
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(8.2);
+  doc.setFontSize(TIPO.tarjeta);
   doc.setTextColor(255, 255, 255);
-  doc.text("Inscripción en línea", MARGEN + 7, y + 9);
+  doc.text("Inscripción en línea", MARGEN + 7, y + 10);
+
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.4);
+  doc.setFontSize(TIPO.cuerpo);
   doc.setTextColor(205, 204, 198);
-  doc.text(`programbi.com${data.inscripcionUrl}`, MARGEN + 7, y + 15.5);
+  doc.text(`programbi.com${data.inscripcionUrl}`, MARGEN + 7, y + 17.5);
   if (data.whatsappUrl) {
     doc.text(
       `WhatsApp: ${data.whatsappUrl.replace(
@@ -1087,11 +1216,11 @@ async function construirPdfVectorial(
         ""
       )}`,
       MARGEN + 7,
-      y + 21
+      y + 24.5
     );
   }
   try {
-    doc.link(MARGEN + 7, y + 12, ANCHO - 14, 10, { url: enlaceInscripcion });
+    doc.link(MARGEN + 7, y + 13.5, ANCHO - 14, 11, { url: enlaceInscripcion });
   } catch {
     // Sin enlace, el texto sigue siendo legible.
   }
@@ -1108,94 +1237,85 @@ async function construirPdfVectorial(
   );
 
   if (data.schedules.length === 0) {
-    const altoVacio = 30;
+    const altoVacio = 34;
+    asegurar(altoVacio + 8);
     relleno(acentoSuave);
     doc.roundedRect(MARGEN, y, ANCHO, altoVacio, 3, 3, "F");
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(11.5);
+    doc.setFontSize(TIPO.tarjeta);
     tinta(TINTA);
-    doc.text("Cupos abiertos · consulta fecha", MARGEN + 7, y + 11);
+    doc.text("Cupos abiertos · consulta fecha", MARGEN + 7, y + 12);
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.8);
+    doc.setFontSize(TIPO.cuerpo);
     tinta(GRIS);
-    doc.text(
-      recortar(
-        lineasDe(
-          doc,
-          "La próxima cohorte se confirma por WhatsApp o al inscribirte en línea. Escríbenos y te avisamos con la fecha exacta y el horario de tu país.",
-          ANCHO - 14
-        ),
-        2
-      ),
-      MARGEN + 7,
-      y + 18
+    const aviso = medirLineas(
+      "La próxima cohorte se confirma por WhatsApp o al inscribirte en línea. Escríbenos y te avisamos con la fecha exacta y el horario de tu país.",
+      ANCHO - 14,
+      TIPO.cuerpo,
+      "normal",
+      3
     );
+    dibujarLineas(aviso, MARGEN + 7, y + 16, TIPO.cuerpo, 1.34);
     y += altoVacio + 8;
   } else {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(10.5);
-    tinta(TINTA);
-    doc.text("Cohortes confirmadas", MARGEN, y);
-    y += 7;
+    tituloSeccion("Cohortes confirmadas");
 
+    const altoCohorte = 24;
     for (const cohorte of data.schedules.slice(0, 6)) {
-      asegurar(19);
+      asegurar(altoCohorte);
+
       relleno(BLANCO);
-      doc.roundedRect(MARGEN, y, ANCHO, 17, 2.4, 2.4, "F");
+      doc.roundedRect(MARGEN, y, ANCHO, altoCohorte - 2, 2.6, 2.6, "F");
       trazo(LINEA);
       doc.setLineWidth(0.25);
-      doc.roundedRect(MARGEN, y, ANCHO, 17, 2.4, 2.4, "S");
+      doc.roundedRect(MARGEN, y, ANCHO, altoCohorte - 2, 2.6, 2.6, "S");
 
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(6.6);
+      doc.setFontSize(TIPO.meta);
       tinta(TENUE);
       doc.text(
-        ajustarTexto(doc, cohorte.nivel.toUpperCase(), ANCHO - 84),
+        ajustarTexto(doc, cohorte.nivel.toUpperCase(), ANCHO - 92),
         MARGEN + 6,
-        y + 5.6
+        y + 6.4
       );
 
-      doc.setFontSize(9);
+      doc.setFontSize(TIPO.tarjeta);
       tinta(TINTA);
-      doc.text(
-        ajustarTexto(doc, cohorte.fecha, ANCHO - 84),
-        MARGEN + 6,
-        y + 10.6
-      );
+      doc.text(ajustarTexto(doc, cohorte.fecha, ANCHO - 92), MARGEN + 6, y + 12.4);
 
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(7);
+      doc.setFontSize(TIPO.cuerpo);
       tinta(GRIS);
       doc.text(
         ajustarTexto(
           doc,
           `${cohorte.dias}${cohorte.hours ? ` · ${cohorte.hours} horas` : ""}`,
-          ANCHO - 84
+          ANCHO - 92
         ),
         MARGEN + 6,
-        y + 14.6
+        y + 18.4
       );
 
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(7.6);
+      doc.setFontSize(TIPO.tarjeta);
       tinta(acento);
-      doc.text(ajustarTexto(doc, cohorte.horario, 68), PAGE_W - MARGEN - 6, y + 7.4, {
+      doc.text(ajustarTexto(doc, cohorte.horario, 74), PAGE_W - MARGEN - 6, y + 8.4, {
         align: "right",
       });
 
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(6.6);
+      doc.setFontSize(TIPO.pie);
       tinta(TENUE);
       doc.text(
-        ajustarTexto(doc, cohorte.horaChile, 68),
+        ajustarTexto(doc, cohorte.horaChile, 74),
         PAGE_W - MARGEN - 6,
-        y + 12.2,
+        y + 15,
         { align: "right" }
       );
 
-      y += 19;
+      y += altoCohorte;
     }
-    y += 3;
+    y += 2;
   }
 
   const filasHorario: Array<{ mercado: string; hora: string }> = [
@@ -1208,20 +1328,20 @@ async function construirPdfVectorial(
     }
   }
 
-  asegurar(46);
+  const altoFila = 8.2;
+  asegurar(altoFila * 4 + 18);
   tituloSeccion(
     "La misma clase en cada mercado",
     `Hora de inicio en ${data.paisNombre}: ${data.equivalencias.inicio} (${data.equivalencias.offset}) · término ${data.equivalencias.fin}`
   );
 
-  const altoFila = 7.4;
   relleno(LAVADO);
   doc.rect(MARGEN, y, ANCHO, altoFila, "F");
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(7);
+  doc.setFontSize(TIPO.meta);
   tinta(GRIS);
-  doc.text("MERCADO", MARGEN + 4, y + 4.9);
-  doc.text("HORA DE INICIO", PAGE_W - MARGEN - 4, y + 4.9, { align: "right" });
+  doc.text("MERCADO", MARGEN + 4, y + 5.4);
+  doc.text("HORA DE INICIO", PAGE_W - MARGEN - 4, y + 5.4, { align: "right" });
   y += altoFila;
 
   filasHorario.forEach((fila, indice) => {
@@ -1231,11 +1351,11 @@ async function construirPdfVectorial(
       doc.rect(MARGEN, y, ANCHO, altoFila, "F");
     }
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
+    doc.setFontSize(TIPO.cuerpo);
     tinta(TINTA);
-    doc.text(fila.mercado, MARGEN + 4, y + 4.9);
+    doc.text(fila.mercado, MARGEN + 4, y + 5.4);
     doc.setFont("helvetica", "bold");
-    doc.text(fila.hora, PAGE_W - MARGEN - 4, y + 4.9, { align: "right" });
+    doc.text(fila.hora, PAGE_W - MARGEN - 4, y + 5.4, { align: "right" });
     trazo(LINEA);
     doc.setLineWidth(0.2);
     doc.line(MARGEN, y + altoFila, PAGE_W - MARGEN, y + altoFila);
@@ -1243,19 +1363,10 @@ async function construirPdfVectorial(
   });
   y += 6;
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.2);
-  tinta(TENUE);
-  const notaHorario = recortar(
-    lineasDe(
-      doc,
-      "Los horarios respetan el horario de verano de cada país y se confirman al inscribirte. Si no puedes asistir en vivo, la clase queda grabada en el campus.",
-      ANCHO
-    ),
-    3
+  parrafo(
+    "Los horarios respetan el horario de verano de cada país y se confirman al inscribirte. Si no puedes asistir en vivo, la clase queda grabada en el campus.",
+    { tam: 9.2, color: TENUE, maximo: 4 }
   );
-  doc.text(notaHorario, MARGEN, y);
-  y += notaHorario.length * 3.5 + 4;
 
   // ── 4. Proyectos y certificado ─────────────────────────────────────────────
 
@@ -1268,10 +1379,11 @@ async function construirPdfVectorial(
   );
 
   const anchoCaptura = 82;
-  const altoCaptura = 42;
+  const altoCaptura = 46;
 
   galeria.forEach((captura, indice) => {
-    const top = y + indice * (altoCaptura + 4);
+    asegurar(altoCaptura + 4);
+    const top = y;
 
     relleno(LAVADO);
     doc.roundedRect(MARGEN, top, anchoCaptura, altoCaptura, 2.6, 2.6, "F");
@@ -1288,7 +1400,7 @@ async function construirPdfVectorial(
     ) {
       tinta(TENUE);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(8);
+      doc.setFontSize(TIPO.meta);
       doc.text(
         ajustarTexto(doc, captura.title, anchoCaptura - 8),
         MARGEN + anchoCaptura / 2,
@@ -1301,74 +1413,85 @@ async function construirPdfVectorial(
     const anchoTexto = ANCHO - anchoCaptura - 8;
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(6.4);
+    doc.setFontSize(TIPO.meta);
     tinta(acento);
     doc.setCharSpace(0.7);
-    doc.text(`PROYECTO ${String(indice + 1).padStart(2, "0")}`, textoX, top + 7);
+    doc.text(`PROYECTO ${String(indice + 1).padStart(2, "0")}`, textoX, top + 6.4);
     doc.setCharSpace(0);
 
-    doc.setFontSize(9.4);
+    const tituloCaptura = medirLineas(captura.title, anchoTexto, TIPO.tarjeta, "bold", 2);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(TIPO.tarjeta);
     tinta(TINTA);
-    doc.text(ajustarTexto(doc, captura.title, anchoTexto), textoX, top + 14.5);
+    const altoTituloCaptura = dibujarLineas(
+      tituloCaptura,
+      textoX,
+      top + 7.6,
+      TIPO.tarjeta,
+      1.2
+    );
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.2);
+    doc.setFontSize(9.2);
     tinta(GRIS);
-    doc.text(
-      recortar(lineasDe(doc, captura.subtitle, anchoTexto), 3),
+    const subCaptura = medirLineas(captura.subtitle, anchoTexto, 9.2, "normal", 4);
+    dibujarLineas(
+      subCaptura,
       textoX,
-      top + 20.5
+      top + 7.6 + altoTituloCaptura + 1.6,
+      9.2,
+      1.36
     );
+
+    y += altoCaptura + 5;
   });
 
-  y += galeria.length * (altoCaptura + 4) + 2;
-
-  const altoCertificado = 56;
+  const altoCertificado = 64;
+  asegurar(altoCertificado + 8);
   relleno(TINTA);
   doc.roundedRect(MARGEN, y, ANCHO, altoCertificado, 3.5, 3.5, "F");
   relleno(acento);
   doc.rect(MARGEN, y, 3.5, altoCertificado, "F");
 
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(6.6);
+  doc.setFontSize(TIPO.meta);
   doc.setTextColor(176, 175, 168);
   doc.setCharSpace(0.9);
-  doc.text("CERTIFICADO DIGITAL VERIFICABLE", MARGEN + 10, y + 10);
+  doc.text("CERTIFICADO DIGITAL VERIFICABLE", MARGEN + 10, y + 10.5);
   doc.setCharSpace(0);
 
-  doc.setFontSize(13.5);
+  doc.setFontSize(13);
   doc.setTextColor(255, 255, 255);
-  doc.text("Termina con un certificado que puedes mostrar", MARGEN + 10, y + 20);
+  doc.text("Termina con un certificado que puedes mostrar", MARGEN + 10, y + 21);
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.2);
+  doc.setFontSize(9.2);
   doc.setTextColor(198, 197, 191);
-  const textoCertificado = recortar(
-    lineasDe(
-      doc,
-      "Al completar los módulos recibes tu certificado digital con código de verificación, acceso permanente a las grabaciones y el material del curso.",
-      ANCHO - 78
-    ),
-    3
+  const textoCertificado = medirLineas(
+    "Al completar los módulos recibes tu certificado digital con código de verificación, acceso permanente a las grabaciones y el material del curso.",
+    ANCHO - 84,
+    9.2,
+    "normal",
+    4
   );
-  doc.text(textoCertificado, MARGEN + 10, y + 27);
+  dibujarLineas(textoCertificado, MARGEN + 10, y + 25.5, 9.2, 1.36);
 
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(7.6);
+  doc.setFontSize(TIPO.cuerpo);
   doc.setTextColor(255, 255, 255);
   doc.text("programbi.com", MARGEN + 10, y + altoCertificado - 10);
 
   trazo([255, 255, 255]);
   doc.setLineWidth(0.5);
-  doc.circle(PAGE_W - MARGEN - 27, y + 27, 14, "S");
+  doc.circle(PAGE_W - MARGEN - 28, y + 30, 15, "S");
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(12);
+  doc.setFontSize(13);
   doc.setTextColor(255, 255, 255);
-  doc.text("PB", PAGE_W - MARGEN - 27, y + 29, { align: "center" });
+  doc.text("PB", PAGE_W - MARGEN - 28, y + 32.5, { align: "center" });
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(5);
+  doc.setFontSize(TIPO.pie);
   doc.setTextColor(190, 189, 183);
-  doc.text("PROGRAMBI", PAGE_W - MARGEN - 27, y + 34, { align: "center" });
+  doc.text("PROGRAMBI", PAGE_W - MARGEN - 28, y + 37.5, { align: "center" });
 
   y += altoCertificado + 8;
 
@@ -1382,12 +1505,14 @@ async function construirPdfVectorial(
     "Profesionales en ejercicio que dictan lo mismo que aplican en banca, minería y retail."
   );
 
-  const anchoTarjeta = (ANCHO - 2 * 5) / 3;
+  const anchoTarjeta = (ANCHO - 2 * 6) / 3;
   const altoFoto = anchoTarjeta * 1.2;
-  const altoTarjeta = altoFoto + 34;
+  const altoTarjeta = altoFoto + 48;
+
+  asegurar(altoTarjeta + 8);
 
   profesores.forEach((profesor, indice) => {
-    const x = MARGEN + indice * (anchoTarjeta + 5);
+    const x = MARGEN + indice * (anchoTarjeta + 6);
 
     relleno(BLANCO);
     doc.roundedRect(x, y, anchoTarjeta, altoTarjeta, 3, 3, "F");
@@ -1410,39 +1535,35 @@ async function construirPdfVectorial(
       )
     ) {
       relleno(acentoSuave);
-      doc.circle(x + anchoTarjeta / 2, y + altoFoto / 2, 10.5, "F");
+      doc.circle(x + anchoTarjeta / 2, y + altoFoto / 2, 11, "F");
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(11);
+      doc.setFontSize(12);
       tinta(acento);
-      doc.text(iniciales(profesor.name), x + anchoTarjeta / 2, y + altoFoto / 2 + 1.6, {
+      doc.text(iniciales(profesor.name), x + anchoTarjeta / 2, y + altoFoto / 2 + 1.8, {
         align: "center",
       });
     }
 
-    let textoY = y + altoFoto + 6;
+    let textoY = y + altoFoto + 7;
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(9.4);
+    doc.setFontSize(TIPO.tarjeta);
     tinta(TINTA);
     doc.text(ajustarTexto(doc, profesor.name, anchoTarjeta - 8), x + 4, textoY);
-    textoY += 4.6;
+    textoY += 5;
 
-    doc.setFontSize(6.8);
+    doc.setFontSize(TIPO.meta);
     tinta(acento);
     doc.text(ajustarTexto(doc, profesor.role, anchoTarjeta - 8), x + 4, textoY);
-    textoY += 3.6;
+    textoY += 4.4;
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(6.6);
+    doc.setFontSize(9.2);
     tinta(GRIS);
-    doc.text(
-      recortar(lineasDe(doc, profesor.title, anchoTarjeta - 8), 2),
-      x + 4,
-      textoY
-    );
-    textoY += 2 * 3 + 2.4;
+    const tituloProfesor = medirLineas(profesor.title, anchoTarjeta - 8, 9.2, "normal", 3);
+    textoY += dibujarLineas(tituloProfesor, x + 4, textoY, 9.2, 1.32) + 1.2;
 
-    doc.setFontSize(6.3);
+    doc.setFontSize(TIPO.pie);
     tinta(TENUE);
     for (const credencial of profesor.credentials.slice(0, 2)) {
       doc.text(
@@ -1450,7 +1571,7 @@ async function construirPdfVectorial(
         x + 4,
         textoY
       );
-      textoY += 3.1;
+      textoY += 3.9;
     }
   });
 
@@ -1458,9 +1579,11 @@ async function construirPdfVectorial(
   tituloSeccion("Empresas que capacitaron a sus equipos");
 
   const columnasLogo = 6;
-  const separacion = 2.4;
+  const separacion = 2.6;
   const celdaW = (ANCHO - separacion * (columnasLogo - 1)) / columnasLogo;
-  const celdaH = 15;
+  const celdaH = 16.5;
+
+  asegurar(celdaH * 2 + separacion + 8);
 
   data.companyLogos.slice(0, 12).forEach((empresa, indice) => {
     const fila = Math.floor(indice / columnasLogo);
@@ -1475,28 +1598,20 @@ async function construirPdfVectorial(
 
     if (!addImageSafe(doc, logosEmpresas[indice], x + 2, top + 2, celdaW - 4, celdaH - 4)) {
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(5.4);
+      doc.setFontSize(TIPO.pie);
       tinta(TENUE);
       doc.text(
         ajustarTexto(doc, empresa.name, celdaW - 4),
         x + celdaW / 2,
-        top + celdaH / 2 + 1,
+        top + celdaH / 2 + 1.2,
         { align: "center" }
       );
     }
   });
 
-  y += 2 * celdaH + separacion + 5;
+  y += 2 * celdaH + separacion + 6;
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(6.8);
-  tinta(TENUE);
-  const nombresEmpresas = recortar(
-    lineasDe(doc, data.empresas.join(" · "), ANCHO),
-    2
-  );
-  doc.text(nombresEmpresas, MARGEN, y);
-  y += nombresEmpresas.length * 3.2 + 2;
+  parrafo(data.empresas.join(" · "), { tam: TIPO.meta, color: TENUE, maximo: 3 });
 
   // ── 6. Temario completo ────────────────────────────────────────────────────
 
@@ -1522,166 +1637,172 @@ async function construirPdfVectorial(
     const anchoColumna = (ANCHO - 8) / 2;
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.6);
+    doc.setFontSize(TIPO.cuerpo);
+
+    const lineasColumnas = columnas.map((columna) =>
+      columna.map((item) => recortar(lineasDe(doc, item, anchoColumna - 6), 3))
+    );
 
     let altoMaximo = 0;
-    columnas.forEach((columna, indice) => {
+    lineasColumnas.forEach((columna) => {
+      const alto = columna.reduce(
+        (total, lineas) => total + lineas.length * altoLinea(TIPO.cuerpo, 1.32) + 1.6,
+        0
+      );
+      altoMaximo = Math.max(altoMaximo, alto);
+    });
+
+    asegurar(altoMaximo + 6);
+
+    lineasColumnas.forEach((columna, indice) => {
       const x = MARGEN + indice * (anchoColumna + 8);
       let cursor = y;
-      for (const item of columna) {
-        const lineas = recortar(lineasDe(doc, item, anchoColumna - 5), 2);
+      for (const lineas of columna) {
         relleno(acento);
-        doc.circle(x + 1, cursor - 1, 0.7, "F");
+        doc.circle(x + 1, cursor + 2.8, 0.8, "F");
         tinta(GRIS);
-        doc.text(lineas, x + 4, cursor);
-        cursor += lineas.length * 3.4 + 1.2;
+        dibujarLineas(lineas, x + 4, cursor, TIPO.cuerpo, 1.32);
+        cursor += lineas.length * altoLinea(TIPO.cuerpo, 1.32) + 1.6;
       }
-      altoMaximo = Math.max(altoMaximo, cursor - y);
     });
 
     y += altoMaximo + 6;
   }
 
   const dibujarModulo = (modulo: BrochureModulo): void => {
+    const tituloLineas = medirLineas(modulo.title, ANCHO - 36, TIPO.tarjeta, "bold", 3);
+    const altoTitulo = tituloLineas.length * altoLinea(TIPO.tarjeta, 1.22);
+
+    if (y + altoTitulo + 12 > LIMITE) nuevaPagina();
+
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(8.8);
-    const tituloLineas = recortar(lineasDe(doc, modulo.title, ANCHO - 30), 2);
-    const altoCabecera = tituloLineas.length * 4 + 3;
-
-    if (y + altoCabecera + 9 > LIMITE) nuevaPagina();
-
+    doc.setFontSize(TIPO.tarjeta);
     tinta(TINTA);
-    doc.text(tituloLineas, MARGEN + 4, y);
+    dibujarLineas(tituloLineas, MARGEN + 4, y, TIPO.tarjeta, 1.22);
 
     if (modulo.hours) {
       const etiqueta = `${modulo.hours} h`;
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(6.4);
-      const anchoEtiqueta = doc.getTextWidth(etiqueta) + 7;
+      doc.setFontSize(TIPO.meta);
+      const anchoEtiqueta = doc.getTextWidth(etiqueta) + 8;
       relleno(acentoSuave);
       doc.roundedRect(
         PAGE_W - MARGEN - anchoEtiqueta,
-        y - 3.2,
+        y + 0.2,
         anchoEtiqueta,
-        5.4,
-        1.6,
-        1.6,
+        6.6,
+        2,
+        2,
         "F"
       );
       tinta(acento);
-      doc.text(
-        etiqueta,
-        PAGE_W - MARGEN - anchoEtiqueta / 2,
-        y + 0.6,
-        { align: "center" }
-      );
+      doc.text(etiqueta, PAGE_W - MARGEN - anchoEtiqueta / 2, y + 5, {
+        align: "center",
+      });
     }
 
-    y += altoCabecera;
+    y += altoTitulo + 1.6;
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.6);
+    doc.setFontSize(TIPO.cuerpo);
 
     for (const tema of modulo.topics) {
-      const lineas = recortar(lineasDe(doc, tema, ANCHO - 14), 4);
-      const altoTema = lineas.length * 3.3 + 1.1;
+      const lineas = medirLineas(tema, ANCHO - 16, TIPO.cuerpo, "normal", 5);
+      const altoTema = lineas.length * altoLinea(TIPO.cuerpo, 1.4);
 
       if (y + altoTema > LIMITE) {
         nuevaPagina();
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(7.8);
+        doc.setFontSize(TIPO.tarjeta);
         tinta(GRIS);
         doc.text(
           ajustarTexto(doc, `${modulo.title} (continuación)`, ANCHO),
           MARGEN + 4,
-          y
+          y + 5
         );
-        y += 5.4;
+        y += 8;
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(7.6);
+        doc.setFontSize(TIPO.cuerpo);
       }
 
       tinta(acentoBorde);
-      doc.text("·", MARGEN + 6, y);
+      doc.text("·", MARGEN + 6, y + altoLinea(TIPO.cuerpo, 1.4));
       tinta(GRIS);
-      doc.text(lineas, MARGEN + 9, y);
-      y += altoTema;
+      dibujarLineas(lineas, MARGEN + 9, y, TIPO.cuerpo, 1.4);
+      y += altoTema + 1.1;
     }
 
-    y += 4;
+    y += 3.4;
   };
 
   for (const nivel of data.temario) {
-    if (y + 26 > LIMITE) nuevaPagina();
+    if (y + 30 > LIMITE) nuevaPagina();
 
     relleno(LAVADO);
-    doc.roundedRect(MARGEN, y, ANCHO, 12, 2.2, 2.2, "F");
+    doc.roundedRect(MARGEN, y, ANCHO, 13.5, 2.2, 2.2, "F");
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(10);
+    doc.setFontSize(TIPO.seccion);
     tinta(TINTA);
-    doc.text(ajustarTexto(doc, nivel.label, ANCHO - 46), MARGEN + 5, y + 8);
+    doc.text(ajustarTexto(doc, nivel.label, ANCHO - 54), MARGEN + 6, y + 9);
     if (nivel.shortLabel) {
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(7.2);
+      doc.setFontSize(TIPO.meta);
       tinta(GRIS);
-      doc.text(
-        limpiarTexto(nivel.shortLabel),
-        PAGE_W - MARGEN - 5,
-        y + 8,
-        { align: "right" }
-      );
+      doc.text(limpiarTexto(nivel.shortLabel), PAGE_W - MARGEN - 6, y + 9, {
+        align: "right",
+      });
     }
-    y += 12 + 6;
+    y += 13.5 + 6;
 
     for (const modulo of nivel.modules) {
       dibujarModulo(modulo);
     }
 
-    y += 2;
+    y += 2.4;
   }
 
   // ── 7. Cierre e inscripción ────────────────────────────────────────────────
 
+  avisar("Componiendo el cierre e inscripción…");
   nuevaPagina();
   cabecera("Siguiente paso", "Tu cupo en la próxima cohorte");
 
-  const altoPanel = 78;
+  const altoPanel = 86;
+  asegurar(altoPanel + 10);
   relleno(TINTA);
   doc.roundedRect(MARGEN, y, ANCHO, altoPanel, 3.5, 3.5, "F");
   relleno(acento);
   doc.rect(MARGEN, y, 3.5, altoPanel, "F");
 
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(6.6);
+  doc.setFontSize(TIPO.meta);
   doc.setTextColor(176, 175, 168);
   doc.setCharSpace(0.9);
-  doc.text("CERTIFICADO DIGITAL VERIFICABLE", MARGEN + 10, y + 10);
+  doc.text("CERTIFICADO DIGITAL VERIFICABLE", MARGEN + 10, y + 11);
   doc.setCharSpace(0);
 
   doc.setFontSize(16);
   doc.setTextColor(255, 255, 255);
-  doc.text("Inscríbete y certifícate", MARGEN + 10, y + 21);
+  doc.text("Inscríbete y certifícate", MARGEN + 10, y + 23);
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.6);
+  doc.setFontSize(9.2);
   doc.setTextColor(198, 197, 191);
-  const textoCierre = recortar(
-    lineasDe(
-      doc,
-      "Al completar los módulos recibes tu certificado digital con código de verificación, el acceso permanente a las grabaciones y el material del curso. Las clases son 100% en vivo por Zoom.",
-      ANCHO - 22
-    ),
-    3
+  const textoCierre = medirLineas(
+    "Al completar los módulos recibes tu certificado digital con código de verificación, el acceso permanente a las grabaciones y el material del curso. Las clases son 100% en vivo por Zoom.",
+    ANCHO - 24,
+    9.2,
+    "normal",
+    5
   );
-  doc.text(textoCierre, MARGEN + 10, y + 29);
+  dibujarLineas(textoCierre, MARGEN + 10, y + 28, 9.2, 1.36);
 
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(8.4);
+  doc.setFontSize(TIPO.cuerpo);
   doc.setTextColor(255, 255, 255);
-  doc.text(`programbi.com${data.inscripcionUrl}`, MARGEN + 10, y + altoPanel - 12);
+  doc.text(`programbi.com${data.inscripcionUrl}`, MARGEN + 10, y + altoPanel - 13);
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
+  doc.setFontSize(TIPO.meta);
   doc.setTextColor(176, 175, 168);
   const contacto = data.whatsappUrl
     ? `WhatsApp: ${data.whatsappUrl.replace(
@@ -1689,12 +1810,12 @@ async function construirPdfVectorial(
         ""
       )}`
     : `Brochure ${data.paisNombre}`;
-  doc.text(contacto, PAGE_W - MARGEN - 10, y + altoPanel - 12, {
+  doc.text(contacto, PAGE_W - MARGEN - 10, y + altoPanel - 13, {
     align: "right",
   });
 
   try {
-    doc.link(MARGEN + 10, y + altoPanel - 17, ANCHO - 20, 9, {
+    doc.link(MARGEN + 10, y + altoPanel - 18, ANCHO - 20, 10, {
       url: enlaceInscripcion,
     });
   } catch {
@@ -1713,57 +1834,50 @@ async function construirPdfVectorial(
     { etiqueta: "Modalidad", valor: "100% en vivo por Zoom" },
   ];
 
-  const anchoResumen = (ANCHO - 5) / 2;
+  const anchoResumen = (ANCHO - 6) / 2;
+  const altoResumen = 26;
+
+  asegurar(2 * altoResumen + 8);
+
   resumen.forEach((dato, indice) => {
     const columna = indice % 2;
     const fila = Math.floor(indice / 2);
-    const x = MARGEN + columna * (anchoResumen + 5);
-    const top = y + fila * 26;
+    const x = MARGEN + columna * (anchoResumen + 6);
+    const top = y + fila * (altoResumen + 4);
 
     relleno(BLANCO);
     trazo(LINEA);
     doc.setLineWidth(0.25);
-    doc.roundedRect(x, top, anchoResumen, 22, 2.4, 2.4, "FD");
+    doc.roundedRect(x, top, anchoResumen, altoResumen, 2.4, 2.4, "FD");
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(6.6);
+    doc.setFontSize(TIPO.meta);
     tinta(TENUE);
     doc.text(
       ajustarTexto(doc, dato.etiqueta.toUpperCase(), anchoResumen - 10),
       x + 5,
-      top + 7
+      top + 8
     );
 
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(8.6);
+    doc.setFontSize(TIPO.tarjeta);
     tinta(TINTA);
-    doc.text(
-      ajustarTexto(doc, dato.valor, anchoResumen - 10),
-      x + 5,
-      top + 14.5
-    );
+    doc.text(ajustarTexto(doc, dato.valor, anchoResumen - 10), x + 5, top + 17.5);
   });
 
-  y += 2 * 26 + 4;
+  y += 2 * altoResumen + 8;
 
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(7);
-  tinta(TENUE);
-  const notaFinal = recortar(
-    lineasDe(
-      doc,
-      `Precios en ${data.moneda} para ${data.paisNombre}. ${data.notaPago}`,
-      ANCHO
-    ),
-    3
+  parrafo(
+    `Precios en ${data.moneda} para ${data.paisNombre}. ${data.notaPago}`,
+    { tam: 9.2, color: TENUE, maximo: 4 }
   );
-  doc.text(notaFinal, MARGEN, y + 4);
 
   pintarPies();
-  options?.onProgress?.({ current: 7, total: 7, label: "PDF listo" });
+  options?.onProgress?.({ current: totalPasos, total: totalPasos, label: "PDF listo" });
 
   return doc;
 }
+
 
 // ── Cierre común ─────────────────────────────────────────────────────────────
 

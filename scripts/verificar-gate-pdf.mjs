@@ -3,11 +3,13 @@
  * Verificación del gate de precios y del brochure PDF con precios.
  *
  * Comprueba contra un servidor Next ya levantado (`next start`) que:
- *   A. Las fichas de curso no expongan ningún precio en el HTML inicial y sí
- *      muestren el formulario de 3 campos que abre el brochure.
+ *   A. Las fichas de curso no expongan ningún precio en el HTML inicial, sí
+ *      muestren siempre el formulario grande de 3 campos que abre el brochure
+ *      y ofrezcan el CTA secundario de inscripción.
  *   B. Las rutas de brochure respondan 200, usen el visor estudio v2 sin
- *      filtrar `mail.programbi.com` y traigan precio local, horario del país,
- *      los tres profesores, el temario y la acción de descarga.
+ *      filtrar `mail.programbi.com` y traigan al menos 6 hojas A4, precio
+ *      local, horario del país, calendario, temario detallado, los tres
+ *      profesores y la acción de descarga.
  *   C. `/precios` muestre el gate antes de desbloquear y no filtre montos.
  *   D. El catálogo `/cursos` tampoco filtre montos.
  *
@@ -90,6 +92,25 @@ function exigirContiene(html, fragmentos) {
   }
 }
 
+/** Pasa a minúsculas y quita tildes para comparar textos de forma robusta. */
+function normalizar(texto) {
+  return texto
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+/** Como `exigirContiene`, pero sin importar mayúsculas ni tildes. */
+function exigirContieneNormalizado(html, fragmentos) {
+  const texto = normalizar(html);
+  const faltantes = fragmentos.filter(
+    (fragmento) => !texto.includes(normalizar(fragmento))
+  );
+  if (faltantes.length > 0) {
+    throw new Error(`falta ${faltantes.map((f) => `"${f}"`).join(", ")}`);
+  }
+}
+
 /**
  * Corre las verificaciones de una ruta. Si la ruta no responde, deja un único
  * fallo claro en vez de repetir el mismo error en cada aserción.
@@ -119,6 +140,15 @@ function revisarFicha(path) {
     check(`Ficha ${path} marca el formulario del gate`, () =>
       exigirContiene(html, ['data-gate-form="brochure"'])
     );
+    check(`Ficha ${path} muestra el formulario grande del brochure`, () =>
+      exigirContieneNormalizado(html, [
+        "BROCHURE OFICIAL PDF",
+        "Descarga el Brochure PDF con precios y temario",
+      ])
+    );
+    check(`Ficha ${path} ofrece el CTA secundario de inscripción`, () =>
+      exigirContieneNormalizado(html, ["Inscribirme ahora"])
+    );
     check(`Ficha ${path} enlaza al brochure`, () => exigirContiene(html, ["/brochure"]));
   });
 }
@@ -127,6 +157,20 @@ function revisarBrochure(path) {
   return revisarRuta("Brochure", path, ({ html }) => {
     check(`Brochure ${path} usa el visor estudio v2`, () =>
       exigirContiene(html, ['data-brochure-studio="v2"'])
+    );
+    check(`Brochure ${path} tiene al menos 6 hojas A4`, () => {
+      const faltan = [1, 2, 3, 4, 5, 6].filter(
+        (numero) => !html.includes(`data-brochure-sheet="${numero}"`)
+      );
+      if (faltan.length > 0) {
+        throw new Error(`faltan las hojas ${faltan.join(", ")}`);
+      }
+    });
+    check(`Brochure ${path} incluye la hoja de calendario`, () =>
+      exigirContieneNormalizado(html, ["Próximas fechas de inicio"])
+    );
+    check(`Brochure ${path} incluye el temario detallado`, () =>
+      exigirContieneNormalizado(html, ["Programa Académico Detallado"])
     );
     check(`Brochure ${path} no filtra mail.programbi.com`, () => {
       if (html.includes("mail.programbi.com")) {

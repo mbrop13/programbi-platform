@@ -79,12 +79,13 @@ export function BrochureA4Sheet({
 
   const pie: CSSProperties = {
     margin: "0 46px",
-    padding: "12px 0 16px",
+    padding: "14px 0 16px",
     borderTop: `1px solid ${LINEA}`,
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    fontSize: 8.2,
+    fontSize: 11,
+    lineHeight: 1.25,
     color: APAGADO,
     letterSpacing: "0.02em",
     flexShrink: 0,

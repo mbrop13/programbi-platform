@@ -1,9 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, FileText } from "lucide-react";
+import { ArrowRight, Check, FileText } from "lucide-react";
 import { COUNTRIES } from "@/lib/context/CountryContext";
-import { courseBrochureUrl, unlockPricesClient, type SavedLeadInfo } from "@/lib/pricing-gate";
+import {
+  courseBrochureUrl,
+  getSavedLeadInfo,
+  unlockPricesClient,
+  type SavedLeadInfo,
+} from "@/lib/pricing-gate";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { captureAndReadAttribution } from "@/lib/utm";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
@@ -24,19 +29,26 @@ export type BrochureGateFormProps = {
   subheading?: string;
   /** Prefijo de los `id` de los campos (evita ids duplicados si hay dos forms). */
   idPrefix?: string;
-  /** `true` para la tarjeta lateral de la ficha (tipografía más ajustada). */
+  /**
+   * @deprecated El formulario siempre se pinta en tamaño grande. Se mantiene
+   * la prop solo por compatibilidad con llamadas antiguas; se ignora.
+   */
   compact?: boolean;
   /** Se llama al desbloquear, con los datos normalizados del lead. */
   onUnlocked?: (lead: SavedLeadInfo) => void;
   className?: string;
 };
 
+export const BROCHURE_GATE_HEADING = "Descarga el Brochure PDF con precios y temario";
+export const BROCHURE_GATE_SUBHEADING =
+  "Completa tus datos y abre al instante el brochure oficial con el arancel de tu país, las fechas con horario local y la malla completa.";
+
 export function phoneCodeFor(iso: string): string {
   const country = COUNTRIES.find((item) => item.iso === iso);
   return country?.phoneCode || "+56";
 }
 
-/** Deja el teléfono en formato internacional E.164 simplificado (+56912345678). */
+/** Deja el teléfono en formato internacional E.164 simplificado (+569****5678). */
 export function withDialCode(raw: string, code: string): string {
   const trimmed = raw.trim();
   if (trimmed.startsWith("+")) return `+${trimmed.replace(/[^\d]/g, "")}`;
@@ -48,6 +60,38 @@ export function isValidEmail(value: string): boolean {
 }
 
 /**
+ * Separa un teléfono guardado en E.164 (`+56912345678`) en prefijo conocido y
+ * resto local. Si no hay prefijo reconocible deja el valor tal cual en el input
+ * y devuelve el prefijo por defecto del país.
+ */
+function splitDialCode(raw: string, fallbackCode: string): { code: string; rest: string } {
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return { code: fallbackCode, rest: "" };
+
+  const candidates = COUNTRIES.filter((country) =>
+    digits.startsWith(country.phoneCode.replace("+", ""))
+  ).sort((a, b) => b.phoneCode.length - a.phoneCode.length);
+
+  for (const country of candidates) {
+    const code = country.phoneCode;
+    const rest = digits.slice(code.replace("+", "").length);
+    if (rest.length >= 6) return { code, rest };
+  }
+
+  return { code: fallbackCode, rest: raw.trim() };
+}
+
+const INCLUDES = [
+  "Arancel oficial en tu moneda, becas y 3 cuotas sin interés",
+  "Próximas fechas y horarios convertidos a tu país",
+  "Malla curricular completa módulo a módulo y profesores",
+];
+
+const labelClass = "mb-1.5 block text-xs font-semibold tracking-wide text-ink/80 uppercase";
+const inputClass =
+  "h-12 w-full rounded-xl border border-line-strong bg-canvas px-4 text-base font-medium text-ink placeholder:text-faint";
+
+/**
  * Formulario de 3 campos que abre el brochure PDF con precios.
  *
  * Es el único camino para desbloquear precios en la web pública. Al enviar:
@@ -55,17 +99,19 @@ export function isValidEmail(value: string): boolean {
  *      los móviles no bloqueen el popup),
  *   2. desbloquea precios en toda la web,
  *   3. guarda el lead en `/api/leads/create` en segundo plano.
+ *
+ * El formulario nunca se destruye: tras el éxito se mantiene visible y editable
+ * y aparece un banner de confirmación con el enlace directo al PDF.
  */
 export function BrochureGateForm({
   slug,
   courseTitle,
   pais,
   source,
-  buttonLabel = "Completar y ver PDF con precios",
-  heading = "Arancel, fechas y temario en PDF",
-  subheading = "Completa tus datos para abrir y descargar al instante el brochure oficial con los precios de tu país, descuentos y 3 cuotas sin interés.",
+  buttonLabel = "Descargar Brochure PDF",
+  heading = BROCHURE_GATE_HEADING,
+  subheading = BROCHURE_GATE_SUBHEADING,
   idPrefix = "brochure-gate",
-  compact = false,
   onUnlocked,
   className = "",
 }: BrochureGateFormProps) {
@@ -76,6 +122,7 @@ export function BrochureGateForm({
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [sentEmail, setSentEmail] = useState("");
   const [brochureUrl, setBrochureUrl] = useState(() => courseBrochureUrl(slug, pais));
   const [popupBlocked, setPopupBlocked] = useState(false);
   const [honeypot, setHoneypot] = useState("");
@@ -86,9 +133,21 @@ export function BrochureGateForm({
     setBrochureUrl(courseBrochureUrl(slug, pais));
   }, [pais, slug]);
 
-  const fieldClass = compact
-    ? "h-11 w-full rounded-xl border border-line-strong bg-canvas px-3 text-sm text-ink placeholder:text-faint"
-    : "h-12 w-full rounded-xl border border-line-strong bg-canvas px-3 text-base text-ink placeholder:text-faint";
+  // Prefill del último lead guardado. Va después del efecto de país para que
+  // el prefijo recordado gane sobre el del país en el primer render.
+  useEffect(() => {
+    const saved = getSavedLeadInfo();
+    if (!saved) return;
+    if (saved.name) setName(saved.name);
+    if (saved.email) setEmail(saved.email);
+    if (saved.whatsapp) {
+      const { code, rest } = splitDialCode(saved.whatsapp, phoneCodeFor(pais));
+      setPrefix(code);
+      setPhone(rest);
+    }
+    // Solo al montar: no debe pisar lo que el usuario escriba después.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -131,8 +190,9 @@ export function BrochureGateForm({
 
     const lead: SavedLeadInfo = { name: nombre, email: correo, whatsapp };
 
-    // 2) Desbloqueo inmediato: la tarjeta muestra precio y botón de compra.
+    // 2) Desbloqueo inmediato y confirmación sin destruir el formulario.
     unlockPricesClient(lead);
+    setSentEmail(correo);
     setIsSuccess(true);
     setIsSubmitting(false);
     onUnlocked?.(lead);
@@ -165,102 +225,116 @@ export function BrochureGateForm({
       });
   };
 
-  if (isSuccess) {
-    return (
-      <div className={`rounded-2xl border border-line bg-paper p-4 ${className}`} data-gate-success="">
-        <p className="text-sm font-semibold text-ink">Listo. Tu brochure se abrió en otra pestaña.</p>
-        <p className="mt-1 text-xs leading-snug text-mute">
-          Ya puedes ver el precio de tu país, las fechas con horario local y el temario completo. También lo enviamos a{" "}
-          {email || "tu correo"}.
-        </p>
-        <a
-          href={brochureUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
-        >
-          <FileText size={16} /> Abrir Brochure PDF con precios
-        </a>
-        <a
-          href={`/pago?curso=${encodeURIComponent(slug)}${pais && pais !== "cl" ? `&pais=${encodeURIComponent(pais)}` : ""}`}
-          className="mt-2 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-line bg-canvas text-sm font-medium text-ink no-underline hover:bg-wash"
-        >
-          Ir a Inscripción / Pago <ArrowRight size={16} />
-        </a>
-        {popupBlocked ? (
-          <p className="mt-2 text-xs leading-snug text-mute">
-            Si no se abrió sola, usa el botón «Abrir Brochure PDF con precios».
-          </p>
-        ) : null}
-      </div>
-    );
-  }
-
   return (
     <form
       onSubmit={handleSubmit}
       noValidate
       data-gate-form="brochure"
-      className={`rounded-2xl border border-line bg-wash p-4 ${className}`}
+      className={`rounded-3xl border border-line bg-paper p-5 shadow-sm sm:p-6 ${className}`}
     >
-      <p className="text-sm font-semibold text-ink">{heading}</p>
-      <p className="mt-1 text-xs leading-snug text-mute">{subheading}</p>
-
-      <div className="mt-3 space-y-2">
-        <label htmlFor={`${idPrefix}-name`} className="sr-only">
-          Nombre
-        </label>
-        <input
-          id={`${idPrefix}-name`}
-          name="name"
-          type="text"
-          required
-          autoComplete="name"
-          placeholder="Nombre"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          className={fieldClass}
-        />
-
-        <label htmlFor={`${idPrefix}-email`} className="sr-only">
-          Email
-        </label>
-        <input
-          id={`${idPrefix}-email`}
-          name="email"
-          type="email"
-          required
-          autoComplete="email"
-          inputMode="email"
-          placeholder="Email"
-          value={email}
-          onChange={(event) => setEmail(event.target.value)}
-          className={fieldClass}
-        />
-
-        <div className="flex gap-2">
-          <label htmlFor={`${idPrefix}-prefix`} className="sr-only">
-            Código de país
-          </label>
-          <select
-            id={`${idPrefix}-prefix`}
-            name="phonePrefix"
-            value={prefix}
-            onChange={(event) => setPrefix(event.target.value)}
-            aria-label="Código de país"
-            className="h-11 w-[6.5rem] shrink-0 rounded-xl border border-line-strong bg-canvas px-2 text-sm text-ink"
+      {isSuccess ? (
+        <div
+          data-gate-success=""
+          role="status"
+          aria-live="polite"
+          className="mb-5 rounded-2xl border border-emerald-300 bg-emerald-50 p-4"
+        >
+          <p className="text-base font-bold text-emerald-900">¡Listo! Tu brochure ya está abierto.</p>
+          <p className="mt-1 text-sm leading-relaxed text-emerald-800">
+            También lo enviamos a {sentEmail || email || "tu correo"}. Puedes volver a abrirlo cuando
+            quieras.
+          </p>
+          <a
+            href={brochureUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-emerald-700 px-4 text-sm font-bold text-white no-underline"
           >
-            {COUNTRIES.map((country) => (
-              <option key={`${country.iso}-${country.phoneCode}`} value={country.phoneCode}>
-                {country.iso.toUpperCase()} {country.phoneCode}
-              </option>
-            ))}
-          </select>
+            <FileText size={17} aria-hidden /> Abrir Brochure PDF en nueva pestaña
+          </a>
+          {popupBlocked ? (
+            <p className="mt-2 text-xs text-emerald-800">
+              Si no se abrió sola, usa el botón de arriba.
+            </p>
+          ) : null}
+        </div>
+      ) : null}
 
-          <div className="min-w-0 flex-1">
-            <label htmlFor={`${idPrefix}-whatsapp`} className="sr-only">
-              Teléfono o WhatsApp
-            </label>
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1 text-xs font-bold tracking-wider text-canvas uppercase">
+        <FileText size={14} aria-hidden />
+        BROCHURE OFICIAL PDF · PRECIOS Y TEMARIO
+      </span>
+
+      <h3 className="mt-3 text-xl font-bold tracking-tight text-ink leading-snug sm:text-2xl">
+        {heading}
+      </h3>
+      <p className="mt-2 text-sm leading-relaxed text-mute sm:text-[15px]">{subheading}</p>
+
+      <ul className="mt-4 space-y-2">
+        {INCLUDES.map((item) => (
+          <li key={item} className="flex items-start gap-2 text-sm font-medium text-ink">
+            <Check size={17} strokeWidth={2.4} className="mt-0.5 shrink-0 text-ink" aria-hidden />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="mt-5 space-y-4">
+        <div>
+          <label htmlFor={`${idPrefix}-name`} className={labelClass}>
+            Nombre completo
+          </label>
+          <input
+            id={`${idPrefix}-name`}
+            name="name"
+            type="text"
+            required
+            autoComplete="name"
+            placeholder="Ej: María González"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            className={inputClass}
+          />
+        </div>
+
+        <div>
+          <label htmlFor={`${idPrefix}-email`} className={labelClass}>
+            Correo electrónico
+          </label>
+          <input
+            id={`${idPrefix}-email`}
+            name="email"
+            type="email"
+            required
+            autoComplete="email"
+            inputMode="email"
+            placeholder="tu@empresa.com"
+            value={email}
+            onChange={(event) => setEmail(event.target.value)}
+            className={inputClass}
+          />
+        </div>
+
+        <div>
+          <label htmlFor={`${idPrefix}-whatsapp`} className={labelClass}>
+            WhatsApp / Teléfono
+          </label>
+          <div className="flex gap-2">
+            <select
+              id={`${idPrefix}-prefix`}
+              name="phonePrefix"
+              value={prefix}
+              onChange={(event) => setPrefix(event.target.value)}
+              aria-label="Código de país"
+              className="h-12 w-[7.5rem] shrink-0 rounded-xl border border-line-strong bg-canvas px-3 text-sm font-medium text-ink"
+            >
+              {COUNTRIES.map((country) => (
+                <option key={`${country.iso}-${country.phoneCode}`} value={country.phoneCode}>
+                  {country.iso.toUpperCase()} {country.phoneCode}
+                </option>
+              ))}
+            </select>
+
             <input
               id={`${idPrefix}-whatsapp`}
               name="whatsapp"
@@ -268,10 +342,10 @@ export function BrochureGateForm({
               required
               autoComplete="tel"
               inputMode="tel"
-              placeholder="Teléfono / WhatsApp"
+              placeholder="9 8765 4321"
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
-              className={fieldClass}
+              className="h-12 min-w-0 flex-1 rounded-xl border border-line-strong bg-canvas px-4 text-base font-medium text-ink placeholder:text-faint"
             />
           </div>
         </div>
@@ -288,7 +362,7 @@ export function BrochureGateForm({
       </div>
 
       {error ? (
-        <p role="alert" className="mt-2 text-xs font-medium text-red-700">
+        <p role="alert" className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
           {error}
         </p>
       ) : null}
@@ -296,12 +370,12 @@ export function BrochureGateForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas transition-transform active:scale-[0.98] disabled:opacity-70"
+        className="mt-4 inline-flex h-13 min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-ink px-5 text-base font-bold text-canvas shadow-md transition-transform active:scale-[0.98] disabled:opacity-70"
       >
-        <FileText size={16} /> {buttonLabel} <ArrowRight size={16} />
+        <FileText size={18} aria-hidden /> {buttonLabel} <ArrowRight size={18} aria-hidden />
       </button>
 
-      <p className="mt-2 text-center text-[11px] leading-snug text-faint">
+      <p className="mt-3 text-center text-xs leading-snug text-faint">
         Sin spam. Usamos tus datos solo para enviarte el brochure y el detalle del curso.
       </p>
     </form>
