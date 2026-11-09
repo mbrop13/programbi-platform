@@ -1,6 +1,18 @@
 {
   "redirects": [
     {
+      "source": "/",
+      "has": [{ "type": "host", "value": "programbi.com" }],
+      "destination": "https://www.programbi.com/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "programbi.com" }],
+      "destination": "https://www.programbi.com/:path*",
+      "statusCode": 301
+    },
+    {
       "source": "/pages/cursos-1",
       "destination": "/cursos",
       "statusCode": 301
@@ -11,13 +23,33 @@
       "statusCode": 301
     },
     {
+      "source": "/pages/contacto",
+      "destination": "/empresas#contacto",
+      "statusCode": 301
+    },
+    {
+      "source": "/pages/contact",
+      "destination": "/empresas#contacto",
+      "statusCode": 301
+    },
+    {
+      "source": "/pages/empresas",
+      "destination": "/empresas",
+      "statusCode": 301
+    },
+    {
       "source": "/pages/bootcamp",
       "destination": "/cursos/analisis-de-datos",
       "statusCode": 301
     },
     {
-      "source": "/pages/contact",
-      "destination": "/empresas",
+      "source": "/pages/bootcamps",
+      "destination": "/cursos/analisis-de-datos",
+      "statusCode": 301
+    },
+    {
+      "source": "/pages/bootcamps/:rest*",
+      "destination": "/cursos/analisis-de-datos",
       "statusCode": 301
     },
     {
@@ -31,8 +63,53 @@
       "statusCode": 301
     },
     {
+      "source": "/contacto",
+      "destination": "/empresas#contacto",
+      "statusCode": 301
+    },
+    {
+      "source": "/consultorias",
+      "destination": "/empresas",
+      "statusCode": 301
+    },
+    {
+      "source": "/consultoria",
+      "destination": "/empresas",
+      "statusCode": 301
+    },
+    {
+      "source": "/asesorias",
+      "destination": "/empresas",
+      "statusCode": 301
+    },
+    {
       "source": "/campus",
       "destination": "/login",
+      "statusCode": 301
+    },
+    {
+      "source": "/auth/login",
+      "destination": "/login",
+      "statusCode": 301
+    },
+    {
+      "source": "/account",
+      "destination": "/login",
+      "statusCode": 301
+    },
+    {
+      "source": "/account/:rest*",
+      "destination": "/login",
+      "statusCode": 301
+    },
+    {
+      "source": "/checkout",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/search",
+      "destination": "/cursos",
       "statusCode": 301
     },
     {
@@ -46,12 +123,127 @@
       "statusCode": 301
     },
     {
-      "source": "/recommendations/products/:path*",
+      "source": "/recommendations/products/:rest*",
       "destination": "/cursos",
       "statusCode": 301
     },
     {
-      "source": "/apps/:path*",
+      "source": "/apps/:rest*",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/collections/:rest*",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/programa-bi",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/programa-bi/:rest*",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/blogs/news",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/blogs/:rest*",
+      "destination": "/blog",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/curso-analisis-de-datos-para-la-mineria",
+      "destination": "/cursos/analitica-mineria",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/curso-de-analisis-de-datos-para-el-sector-financiero",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/curso-power-bi",
+      "destination": "/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/curso-de-power-bi",
+      "destination": "/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/curso-power-bi-online",
+      "destination": "/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(power-bi.*)",
+      "destination": "/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(curso-analisis-de-datos.*)",
+      "destination": "/cursos/analisis-de-datos",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(curso-sql.*)",
+      "destination": "/cursos/sql-server",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(sql-server.*)",
+      "destination": "/cursos/sql-server",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(.*python.*)",
+      "destination": "/cursos/python",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(.*excel.*)",
+      "destination": "/cursos/excel",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(.*power-automate.*)",
+      "destination": "/cursos/power-automate",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(.*machine.*)",
+      "destination": "/cursos/machine-learning",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(.*mineria.*)",
+      "destination": "/cursos/analitica-mineria",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(.*mercado-financiero.*)",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:handle(.*financiero.*)",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/big-data-program-bi",
+      "destination": "/cursos",
+      "statusCode": 301
+    },
+    {
+      "source": "/products/:path*",
       "destination": "/cursos",
       "statusCode": 301
     },
@@ -81,130 +273,18 @@
       "statusCode": 301
     },
     {
-      "source": "/consultorias",
-      "destination": "/empresas",
+      "source": "/comunidad/configuracion",
+      "destination": "/comunidad/ajustes",
       "statusCode": 301
     },
     {
-      "source": "/consultoria",
-      "destination": "/empresas",
+      "source": "/comunidad/ai",
+      "destination": "/ai",
       "statusCode": 301
     },
     {
-      "source": "/asesorias",
-      "destination": "/empresas",
-      "statusCode": 301
-    },
-    {
-      "source": "/programa-bi",
-      "destination": "/cursos",
-      "statusCode": 301
-    },
-    {
-      "source": "/programa-bi/:rest*",
-      "destination": "/cursos",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/excel",
-      "destination": "/cursos/excel",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/curso-analisis-de-datos-para-la-mineria",
-      "destination": "/cursos/analitica-mineria",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/curso-de-analisis-de-datos-para-el-sector-financiero",
-      "destination": "/cursos/mercado-financiero",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/sql-server-program-bi",
-      "destination": "/cursos/sql-server",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/power-bi",
-      "destination": "https://www.programbi.com/cursos/power-bi",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/power-bi/:rest*",
-      "destination": "https://www.programbi.com/cursos/power-bi",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/sql-server",
-      "destination": "https://www.programbi.com/cursos/sql-server",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/sql-server/:rest*",
-      "destination": "https://www.programbi.com/cursos/sql-server",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/:handle(.*python.*)",
-      "destination": "https://www.programbi.com/cursos/python",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/:handle(.*python.*)/:rest*",
-      "destination": "https://www.programbi.com/cursos/python",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/power-automate",
-      "destination": "https://www.programbi.com/cursos/power-automate",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/power-automate/:rest*",
-      "destination": "https://www.programbi.com/cursos/power-automate",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/:handle(.*machine.*)",
-      "destination": "https://www.programbi.com/cursos/machine-learning",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/:handle(.*machine.*)/:rest*",
-      "destination": "https://www.programbi.com/cursos/machine-learning",
-      "statusCode": 301
-    },
-    {
-      "source": "/products/:path*",
-      "destination": "https://www.programbi.com/cursos",
-      "statusCode": 301
-    },
-    {
-      "source": "/pages/bootcamps",
-      "destination": "https://www.programbi.com/cursos/analisis-de-datos",
-      "statusCode": 301
-    },
-    {
-      "source": "/pages/bootcamps/:rest*",
-      "destination": "https://www.programbi.com/cursos/analisis-de-datos",
-      "statusCode": 301
-    },
-    {
-      "source": "/collections/:path*",
-      "destination": "https://www.programbi.com/cursos",
-      "statusCode": 301
-    },
-    {
-      "source": "/",
-      "has": [{ "type": "host", "value": "programbi.com" }],
-      "destination": "https://www.programbi.com/",
-      "statusCode": 301
-    },
-    {
-      "source": "/:path*",
-      "has": [{ "type": "host", "value": "programbi.com" }],
-      "destination": "https://www.programbi.com/:path*",
+      "source": "/comunidad/ai/:rest*",
+      "destination": "/ai/:rest*",
       "statusCode": 301
     }
   ],
