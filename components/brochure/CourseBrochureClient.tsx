@@ -1,713 +1,1006 @@
 "use client";
 
 /**
- * Vista imprimible del brochure (dossier ejecutivo).
+ * Visor de documento del brochure v2 — «estudio oscuro».
  *
- * Los precios llegan ya formateados desde el servidor: esta ruta es uno de los
- * pocos lugares donde un monto puede estar en el HTML inicial. La barra de
- * acciones se oculta al imprimir y el cuerpo queda en A4.
+ * No es una landing: es un visor de PDF con hojas A4 reales renderizadas en
+ * React, barra de documento fija, zoom (75 / 100 / 125 %), ajuste automático al
+ * ancho disponible, índice lateral con miniaturas, modo «Visor PDF Nativo»
+ * (iframe con blob generado en el navegador), descarga 1:1 e impresión A4.
+ *
+ * Reglas que no se pueden romper:
+ * - Las hojas vienen de `components/brochure/pages/*` (otro workstream) y son
+ *   794 × 1123 px. Aquí solo se envuelven, escalan y enumeran.
+ * - El escalado se hace con `transform: scale()`, que no afecta el layout, así
+ *   que el contenedor `.brochure-sheet-slot` reserva la altura ya escalada y
+ *   la impresión la neutraliza (`height: auto`, `transform: none`).
+ * - Las hojas se mantienen montadas incluso en modo nativo (fuera de pantalla)
+ *   porque `generateCoursePdf` las captura desde `sheetsRef`.
  */
 
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useRouter } from "next/navigation";
 import {
-  ArrowRight,
-  Award,
-  Building2,
-  CalendarDays,
-  Check,
-  Clock,
   Download,
   FileText,
-  GraduationCap,
-  Infinity as InfinityIcon,
-  MonitorPlay,
+  MessageCircle,
+  Minus,
+  Plus,
   Printer,
 } from "lucide-react";
+
+import { BrochureCoverSheet } from "@/components/brochure/pages/BrochureCoverSheet";
+import { BrochurePricingScheduleSheet } from "@/components/brochure/pages/BrochurePricingScheduleSheet";
+import { BrochureShowcaseSheet } from "@/components/brochure/pages/BrochureShowcaseSheet";
+import { BrochureFacultySheet } from "@/components/brochure/pages/BrochureFacultySheet";
+import { BrochureSyllabusSheets } from "@/components/brochure/pages/BrochureSyllabusSheets";
+import { brochureTotalPages } from "@/lib/brochure/brochure-pages";
+import { generateCoursePdf } from "@/lib/brochure/generate-course-pdf";
+import { brochurePdfFileName } from "@/lib/brochure/brochure-assets";
+import type { CourseBrochureData } from "@/lib/brochure/brochure-data";
 import { COUNTRIES } from "@/lib/context/CountryContext";
 import { esIsoPais } from "@/config/paises";
 import { courseBrochureUrl } from "@/lib/pricing-gate";
-import { generateCoursePdf } from "@/lib/brochure/generate-course-pdf";
-import type {
-  BrochureProfesor,
-  CourseBrochureData,
-} from "@/lib/brochure/brochure-data";
+
+/* ── Constantes del visor ─────────────────────────────────────────────────── */
+
+const ZOOMS = [0.75, 1, 1.25] as const;
+type Zoom = (typeof ZOOMS)[number];
+type Modo = "hojas" | "nativo";
+
+/** Tamaño A4 a 96 dpi, el mismo que usan las hojas y el generador de PDF. */
+const HOJA_ANCHO = 794;
+const HOJA_ALTO = 1123;
+const GAP_HOJAS = 26;
+/** Alto de la barra fija; el índice se pega justo debajo. */
+const TOP_BARRA = 60;
 
 const PAISES_DISPONIBLES = COUNTRIES.filter((pais) => esIsoPais(pais.iso));
 
+/** Forma del progreso que entrega `generateCoursePdf`. */
+type PdfProgress = { label: string; current: number; total: number };
+
+const ESTILO_ZOOM_BOTON: CSSProperties = {
+  width: 26,
+  height: 26,
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: "none",
+  borderRadius: 6,
+  background: "transparent",
+  color: "#fff",
+  cursor: "pointer",
+  padding: 0,
+};
+
+const ESTILO_BOTON_BARRA: CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  gap: 6,
+  height: 32,
+  borderRadius: 8,
+  fontSize: 11.5,
+  fontWeight: 600,
+  cursor: "pointer",
+  whiteSpace: "nowrap",
+};
+
 /**
- * Equipo docente fijo del brochure: Manuel Oliva, Emanuel Berrocal y
- * Rodrigo Vega (los tres primeros mentores por `sortOrder`). Los datos llegan
- * desde `getCourseBrochureData`, que los lee de `lib/data/mentors.ts`.
+ * Visor del brochure: barra de documento, zoom, índice, hojas A4 y visor PDF.
+ * Recibe los datos ya resueltos por país desde el servidor.
  */
-
-function iniciales(nombre: string): string {
-  return nombre
-    .split(/\s+/)
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((parte) => parte.charAt(0).toUpperCase())
-    .join("");
-}
-
-function RetratoProfesor({ profesor }: { profesor: BrochureProfesor }) {
-  const [rota, setRota] = useState(false);
-
-  if (!profesor.imageUrl || rota) {
-    return (
-      <div className="flex aspect-[4/5] w-full items-center justify-center bg-wash">
-        <span className="flex h-24 w-24 items-center justify-center rounded-full bg-canvas text-3xl font-semibold text-mute">
-          {iniciales(profesor.name)}
-        </span>
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={profesor.imageUrl}
-      alt={`Retrato de ${profesor.name}`}
-      referrerPolicy="no-referrer"
-      loading="lazy"
-      onError={() => setRota(true)}
-      className="aspect-[4/5] w-full object-cover"
-    />
-  );
-}
-
-function ImagenCurso({ data }: { data: CourseBrochureData }) {
-  const [rota, setRota] = useState(false);
-
-  if (rota) {
-    return (
-      <div
-        className="flex aspect-[4/3] w-full flex-col justify-end gap-3 p-8"
-        style={{
-          background: `linear-gradient(140deg, ${data.accentColor}26, ${data.accentColor}05)`,
-        }}
-      >
-        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-mute">
-          {data.categoryLabel}
-        </p>
-        <p className="text-3xl font-semibold tracking-tight text-ink">
-          {data.title}
-        </p>
-        <div className="flex flex-wrap gap-2">
-          {data.techStack.map((herramienta) => (
-            <span
-              key={herramienta}
-              className="rounded-full border border-line-strong bg-paper px-3 py-1 text-xs font-medium text-mute"
-            >
-              {herramienta}
-            </span>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={data.imageUrl}
-      alt={`${data.title} — ProgramBI`}
-      referrerPolicy="no-referrer"
-      onError={() => setRota(true)}
-      className="aspect-[4/3] w-full object-cover"
-    />
-  );
-}
-
 export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
   const router = useRouter();
-  const [generando, setGenerando] = useState(false);
-  const [errorPdf, setErrorPdf] = useState<string | null>(null);
 
-  const descargar = async () => {
-    if (generando) return;
-    setGenerando(true);
-    setErrorPdf(null);
-    try {
-      await generateCoursePdf(data);
-    } catch {
-      setErrorPdf(
-        "No pudimos generar el PDF en este navegador. Usa «Imprimir / Guardar PDF» y elige «Guardar como PDF»."
-      );
-    } finally {
-      setGenerando(false);
-    }
+  const [zoom, setZoom] = useState<Zoom>(1);
+  const [modo, setModo] = useState<Modo>("hojas");
+  const [generando, setGenerando] = useState(false);
+  const [progreso, setProgreso] = useState("");
+  const [avance, setAvance] = useState<{ current: number; total: number } | null>(
+    null
+  );
+  const [errorPdf, setErrorPdf] = useState<string | null>(null);
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfListo, setPdfListo] = useState(false);
+  const [fit, setFit] = useState(1);
+  const [indiceActivo, setIndiceActivo] = useState(1);
+
+  const sheetsRef = useRef<HTMLDivElement>(null);
+  const pdfUrlRef = useRef<string | null>(null);
+
+  const totalPages = useMemo(() => brochureTotalPages(data), [data]);
+  const nombreArchivo = useMemo(() => brochurePdfFileName(data), [data]);
+
+  /* ── Ajuste al ancho disponible ─────────────────────────────────────────── */
+
+  useEffect(() => {
+    const medir = () => {
+      const ancho = window.innerWidth;
+      const reservado = ancho >= 1280 ? 300 : 40;
+      setFit(Math.min(1, (ancho - reservado) / HOJA_ANCHO));
+    };
+    medir();
+    window.addEventListener("resize", medir);
+    return () => window.removeEventListener("resize", medir);
+  }, []);
+
+  /* ── Blob del PDF nativo ────────────────────────────────────────────────── */
+
+  useEffect(() => {
+    pdfUrlRef.current = pdfUrl;
+  }, [pdfUrl]);
+
+  useEffect(
+    () => () => {
+      if (pdfUrlRef.current) URL.revokeObjectURL(pdfUrlRef.current);
+    },
+    []
+  );
+
+  /* ── Generación del PDF ─────────────────────────────────────────────────── */
+
+  const generar = useCallback(
+    async (paraIframe = false) => {
+      if (generando) return;
+      setGenerando(true);
+      setErrorPdf(null);
+      setAvance(null);
+      setProgreso("");
+      try {
+        if (paraIframe) {
+          const url = await generateCoursePdf(data, {
+            sheetContainer: sheetsRef.current,
+            returnBlobUrl: true,
+            onProgress: (p: PdfProgress) => {
+              setProgreso(p.label);
+              setAvance({ current: p.current, total: p.total });
+            },
+          });
+          if (typeof url === "string") {
+            if (pdfUrlRef.current) URL.revokeObjectURL(pdfUrlRef.current);
+            pdfUrlRef.current = url;
+            setPdfUrl(url);
+            setPdfListo(true);
+            setModo("nativo");
+          }
+        } else {
+          await generateCoursePdf(data, {
+            sheetContainer: sheetsRef.current,
+            onProgress: (p: PdfProgress) => {
+              setProgreso(`${p.label} (${p.current}/${p.total})`);
+              setAvance({ current: p.current, total: p.total });
+            },
+          });
+          setPdfListo(true);
+        }
+      } catch {
+        setErrorPdf(
+          "No pudimos generar el PDF en este navegador. Usa «Imprimir» y elige «Guardar como PDF»."
+        );
+      } finally {
+        setGenerando(false);
+        setProgreso("");
+        setAvance(null);
+      }
+    },
+    [data, generando]
+  );
+
+  const cambiarModo = (siguiente: Modo) => {
+    setModo(siguiente);
+    if (siguiente === "nativo" && !pdfUrl && !generando) void generar(true);
   };
 
-  const equivalencias: { mercado: string; hora: string }[] = [
-    { mercado: data.paisNombre, hora: data.equivalencias.inicio },
-  ];
-  for (const tramo of data.equivalencias.cadenaMercados.split(" = ")) {
-    const partes = tramo.match(/^(\d{1,2}:\d{2})\s+en\s+(.+)$/);
-    if (partes && partes[2] !== data.paisNombre) {
-      equivalencias.push({ mercado: partes[2], hora: partes[1] });
-    }
-  }
+  const imprimir = () => {
+    if (typeof window !== "undefined") window.print();
+  };
+
+  const irAPagina = (pagina: number) => {
+    if (typeof document === "undefined") return;
+    const nodo = document.getElementById(`brochure-page-${pagina}`);
+    nodo?.scrollIntoView({ behavior: "smooth", block: "start" });
+    setIndiceActivo(Math.min(5, Math.max(1, pagina)));
+  };
+
+  /* ── Navegación lateral ─────────────────────────────────────────────────── */
+
+  const navegacion = useMemo(
+    () => [
+      { pagina: 1, etiqueta: "1 · Portada y Resumen" },
+      { pagina: 2, etiqueta: `2 · Precios (${data.moneda}) y Horarios` },
+      { pagina: 3, etiqueta: "3 · Proyectos y Certificado" },
+      { pagina: 4, etiqueta: "4 · Equipo Docente y Empresas" },
+      {
+        pagina: 5,
+        etiqueta:
+          totalPages > 5
+            ? `5–${totalPages} · Temario Módulo a Módulo`
+            : "5 · Temario Módulo a Módulo",
+      },
+    ],
+    [data.moneda, totalPages]
+  );
+
+  const miniaturas = useMemo(
+    () => [
+      { pagina: 1, etiqueta: "Portada y resumen" },
+      { pagina: 2, etiqueta: `Precios en ${data.moneda}` },
+      { pagina: 3, etiqueta: "Proyectos y certificado" },
+      { pagina: 4, etiqueta: "Equipo docente" },
+      { pagina: 5, etiqueta: "Temario del programa" },
+    ],
+    [data.moneda]
+  );
+
+  /* ── Geometría del stack de hojas ───────────────────────────────────────── */
+
+  const escala = zoom * fit;
+  const altoStack = useMemo(
+    () =>
+      (HOJA_ALTO * totalPages + GAP_HOJAS * Math.max(0, totalPages - 1)) * escala,
+    [escala, totalPages]
+  );
+
+  const envolverHoja = (pagina: number, contenido: ReactNode, ultima: boolean) => (
+    <div
+      key={pagina}
+      id={`brochure-page-${pagina}`}
+      className="brochure-page-wrap"
+      style={{
+        position: "relative",
+        marginBottom: ultima ? 0 : GAP_HOJAS,
+        scrollMarginTop: TOP_BARRA + 16,
+      }}
+    >
+      <span className="brochure-page-label" aria-hidden="true" style={{
+        position: "absolute",
+        left: -46,
+        top: 5,
+        fontSize: 9,
+        lineHeight: 1,
+        color: "rgba(255,255,255,.35)",
+        fontVariantNumeric: "tabular-nums",
+        userSelect: "none",
+      }}>
+        Página {pagina}
+      </span>
+      {contenido}
+    </div>
+  );
+
+  const porcentaje = avance
+    ? Math.max(4, Math.min(100, Math.round((avance.current / Math.max(1, avance.total)) * 100)))
+    : 6;
 
   return (
-    <div className="brochure-page bg-paper text-ink">
+    <>
       <style>{`
+        .brochure-sidebar { display: none; }
+        @media (min-width: 1280px) {
+          .brochure-sidebar { display: flex !important; flex-direction: column; }
+        }
+        .brochure-nav-item:hover { background: rgba(255,255,255,.06); }
+        .brochure-thumb:hover { border-color: rgba(255,255,255,.34) !important; }
+        .brochure-zoom-btn:hover:enabled { background: rgba(255,255,255,.08); }
+        .brochure-secundario:hover { border-color: rgba(255,255,255,.4) !important; }
+        .brochure-cta:hover { filter: brightness(1.08); }
+
         @media print {
-          @page { size: A4; margin: 12mm; }
-          body { background: white !important; }
+          @page { size: A4 portrait; margin: 0; }
+          html, body { background: #FAF9F5 !important; margin: 0 !important; padding: 0 !important;
+            -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           .brochure-no-print { display: none !important; }
-          .brochure-page { background: white !important; }
-          .brochure-card { box-shadow: none !important; break-inside: avoid; }
+          [data-brochure-studio] { display: block !important; background: #fff !important; padding: 0 !important; }
+          .brochure-canvas { padding: 0 !important; gap: 0 !important; display: block !important; }
+          .brochure-scaler { transform: none !important; width: auto !important; height: auto !important; margin-left: 0 !important; }
+          .brochure-sheet-slot { height: auto !important; overflow: visible !important; }
+          .brochure-sheets { position: static !important; left: auto !important; top: auto !important;
+            width: auto !important; opacity: 1 !important; pointer-events: auto !important; }
+          .brochure-page-wrap { margin: 0 !important; }
+          .brochure-page-label { display: none !important; }
+          [data-brochure-sheet] {
+            width: 210mm !important; height: 297mm !important; margin: 0 !important;
+            box-shadow: none !important; border: none !important; border-radius: 0 !important;
+            page-break-after: always !important; break-after: page !important;
+          }
         }
       `}</style>
 
-      {/* Barra de acciones */}
-      <div className="brochure-no-print sticky top-[72px] z-40 border-b border-line bg-paper">
-        <div className="mx-auto flex max-w-[1180px] flex-wrap items-center gap-3 px-5 py-3 md:px-8">
-          <div className="mr-auto flex min-w-0 items-center gap-3">
-            <span className="text-lg font-semibold tracking-tight text-ink">
-              ProgramBI
-            </span>
-            <span className="hidden h-4 w-px bg-line-strong sm:block" />
-            <span className="hidden truncate text-sm text-mute sm:block">
-              {data.title}
-            </span>
-          </div>
-
-          <label className="sr-only" htmlFor="brochure-pais">
-            Cambiar país
-          </label>
-          <select
-            id="brochure-pais"
-            value={data.pais}
-            onChange={(event) =>
-              router.push(courseBrochureUrl(data.slug, event.target.value))
-            }
-            className="h-10 rounded-full border border-line-strong bg-canvas px-3 text-sm font-medium text-ink"
+      <div
+        data-brochure-studio="v2"
+        style={{
+          background: "#181A20",
+          color: "#fff",
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        {/* ── Barra del documento ─────────────────────────────────────────── */}
+        <header
+          className="brochure-no-print"
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 50,
+            background: "rgba(17,19,24,.95)",
+            backdropFilter: "blur(14px)",
+            WebkitBackdropFilter: "blur(14px)",
+            borderBottom: "1px solid rgba(255,255,255,.08)",
+            color: "#fff",
+            padding: "10px 18px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 12,
+              flexWrap: "wrap",
+            }}
           >
-            {PAISES_DISPONIBLES.map((pais) => (
-              <option key={pais.iso} value={pais.iso}>
-                {pais.name} · {pais.currency.code}
-              </option>
-            ))}
-          </select>
-
-          <button
-            type="button"
-            onClick={descargar}
-            disabled={generando}
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-ink px-4 text-sm font-semibold text-canvas disabled:cursor-wait disabled:opacity-60"
-          >
-            <Download size={16} />
-            {generando ? "Generando…" : "Descargar PDF"}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => window.print()}
-            className="inline-flex h-10 items-center gap-2 rounded-full border border-line-strong px-4 text-sm font-semibold text-ink"
-          >
-            <Printer size={16} />
-            Imprimir / Guardar PDF
-          </button>
-
-          {data.customPdfUrl ? (
-            <a
-              href={data.customPdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex h-10 items-center gap-2 rounded-full border border-line-strong px-4 text-sm font-semibold text-ink"
+            {/* Identidad del archivo */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+                minWidth: 0,
+                marginRight: "auto",
+              }}
             >
-              <FileText size={16} />
-              PDF oficial
-            </a>
-          ) : null}
-
-          <a
-            href={data.inscripcionUrl}
-            className="inline-flex h-10 items-center gap-2 rounded-full bg-ink px-4 text-sm font-semibold text-canvas"
-          >
-            Inscribirme Ahora
-            <ArrowRight size={16} />
-          </a>
-        </div>
-        {errorPdf ? (
-          <div className="mx-auto max-w-[1180px] px-5 pb-3 text-sm text-mute md:px-8">
-            {errorPdf}
-          </div>
-        ) : null}
-      </div>
-
-      <div className="mx-auto max-w-[1180px] px-5 pb-20 md:px-8">
-        {/* Hero */}
-        <section className="grid gap-10 pt-12 md:pt-16 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-line-strong px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-mute">
-              Brochure oficial · {data.categoryLabel}
-            </span>
-
-            <h1 className="mt-6 text-4xl font-semibold leading-[1.02] tracking-tight text-ink md:text-6xl">
-              {data.title}
-            </h1>
-
-            <p className="mt-5 max-w-2xl text-lg leading-relaxed text-mute">
-              {data.shortDescription}
-            </p>
-
-            <ul className="mt-8 flex flex-wrap gap-x-6 gap-y-3">
-              {data.insignia.split(" · ").map((beneficio) => (
-                <li
-                  key={beneficio}
-                  className="flex items-center gap-2 text-sm font-medium text-ink"
-                >
-                  <span
-                    className="flex h-5 w-5 items-center justify-center rounded-full text-white"
-                    style={{ backgroundColor: data.accentColor }}
-                  >
-                    <Check size={12} strokeWidth={3} />
-                  </span>
-                  {beneficio}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="brochure-card overflow-hidden rounded-[26px] border border-line bg-white">
-            <ImagenCurso data={data} />
-            <div className="border-t border-line px-6 py-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-mute">
-                Programa en vivo · {data.paisNombre}
-              </p>
-              <p className="mt-1 text-sm text-ink">
-                {data.techStack.join(" · ")}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Métricas */}
-        <section className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
-          {[
-            { icono: Clock, valor: `${data.hours} h`, etiqueta: data.levelsCount > 1 ? "por nivel" : "en vivo" },
-            { icono: FileText, valor: `${data.modulesCount}`, etiqueta: "módulos" },
-            { icono: GraduationCap, valor: `${data.levelsCount}`, etiqueta: "niveles" },
-            { icono: MonitorPlay, valor: "Zoom", etiqueta: "clases en vivo" },
-            { icono: InfinityIcon, valor: "De por vida", etiqueta: "grabaciones" },
-            { icono: Award, valor: "Digital", etiqueta: "certificado verificable" },
-          ].map((metrica) => {
-            const Icono = metrica.icono;
-            return (
+              <img
+                src={data.brandLogoNavUrl}
+                alt="ProgramBI"
+                crossOrigin="anonymous"
+                style={{ height: 22, width: "auto", display: "block" }}
+              />
               <div
-                key={metrica.etiqueta}
-                className="brochure-card rounded-2xl border border-line bg-white px-5 py-5"
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
+                  minWidth: 0,
+                }}
               >
-                <Icono size={18} className="text-mute" />
-                <p className="mt-3 text-xl font-semibold tracking-tight text-ink">
-                  {metrica.valor}
-                </p>
-                <p className="text-xs text-mute">{metrica.etiqueta}</p>
-              </div>
-            );
-          })}
-        </section>
-
-        {/* Inversión */}
-        <section id="inversion" className="brochure-section mt-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-mute">
-            Inversión
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink md:text-4xl">
-            Precio oficial en {data.paisNombre}
-          </h2>
-
-          <div className="mt-8 grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
-            <div className="brochure-card rounded-[26px] border border-line bg-white p-7 md:p-10">
-              <div className="flex flex-wrap items-end gap-4">
-                <p className="text-5xl font-semibold tracking-tight text-ink md:text-6xl">
-                  {data.precioFormateado}
-                </p>
-                {data.precioListaFormateado ? (
-                  <p className="pb-1 text-xl text-mute line-through">
-                    {data.precioListaFormateado}
-                  </p>
-                ) : null}
-                {data.descuentoPct > 0 ? (
-                  <span
-                    className="mb-1 rounded-full px-3 py-1 text-sm font-semibold"
-                    style={{
-                      backgroundColor: `${data.accentColor}1f`,
-                      color: data.accentColor,
-                    }}
-                  >
-                    −{data.descuentoPct}%
-                  </span>
-                ) : null}
-              </div>
-
-              <p className="mt-2 text-sm text-mute">
-                Moneda: {data.moneda} ({data.simbolo}) · Actualizado{" "}
-                {data.actualizado}
-              </p>
-
-              <div className="mt-7 rounded-2xl bg-wash px-6 py-5">
-                <p className="text-sm font-semibold text-ink">
-                  {data.cuotaTexto}
-                </p>
-                <p className="mt-1 text-sm text-mute">{data.notaCuotas}</p>
-              </div>
-
-              <p className="mt-6 text-sm text-mute">{data.notaPago}</p>
-
-              <div className="mt-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-mute">
-                  Medios de pago
-                </p>
-                <ul className="mt-3 flex flex-wrap gap-2">
-                  {data.mediosPago.map((medio) => (
-                    <li
-                      key={medio}
-                      className="rounded-full border border-line-strong px-3 py-1.5 text-xs font-medium text-ink"
-                    >
-                      {medio}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-between gap-6 rounded-[26px] bg-ink p-8 text-canvas">
-              <div>
-                <Award size={22} />
-                <p className="mt-5 text-2xl font-semibold leading-tight tracking-tight">
-                  Inscríbete en línea y asegura tu cupo.
-                </p>
-                <p className="mt-3 text-sm text-canvas/70">
-                  Recibes el enlace de las clases, el material y el acceso al
-                  campus el mismo día de la inscripción.
-                </p>
-              </div>
-              <div className="flex flex-col gap-3">
-                <a
-                  href={data.inscripcionUrl}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-canvas px-5 py-3 text-sm font-semibold text-ink"
+                <span
+                  style={{
+                    fontSize: 12.5,
+                    fontWeight: 600,
+                    letterSpacing: "-.01em",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    maxWidth: 280,
+                  }}
                 >
-                  Inscribirme Ahora
-                  <ArrowRight size={16} />
-                </a>
-                {data.whatsappUrl ? (
-                  <a
-                    href={data.whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 rounded-full border border-canvas/30 px-5 py-3 text-sm font-semibold text-canvas"
-                  >
-                    Hablar por WhatsApp
-                  </a>
-                ) : null}
+                  {nombreArchivo}
+                </span>
+                <span
+                  style={{
+                    fontSize: 8.5,
+                    color: "rgba(255,255,255,.55)",
+                    letterSpacing: ".02em",
+                  }}
+                >
+                  {totalPages} páginas A4 · Vista previa 1:1
+                </span>
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* Fechas y horarios */}
-        <section className="brochure-section mt-16">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-mute">
-                Calendario
-              </p>
-              <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink md:text-4xl">
-                Próximas fechas
-              </h2>
+            {/* Zoom */}
+            <div
+              role="group"
+              aria-label="Zoom del documento"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                background: "rgba(255,255,255,.06)",
+                borderRadius: 8,
+                padding: 2,
+              }}
+            >
+              <button
+                type="button"
+                className="brochure-zoom-btn"
+                aria-label="Reducir zoom"
+                title="Reducir zoom"
+                onClick={() => setZoom(ZOOMS[Math.max(0, ZOOMS.indexOf(zoom) - 1)])}
+                disabled={zoom === ZOOMS[0]}
+                style={{
+                  ...ESTILO_ZOOM_BOTON,
+                  opacity: zoom === ZOOMS[0] ? 0.35 : 1,
+                  cursor: zoom === ZOOMS[0] ? "default" : "pointer",
+                }}
+              >
+                <Minus size={12} strokeWidth={2.4} />
+              </button>
+              <button
+                type="button"
+                className="brochure-zoom-btn"
+                aria-label="Restablecer zoom al 100%"
+                title="Restablecer zoom al 100%"
+                onClick={() => setZoom(1)}
+                style={{
+                  minWidth: 42,
+                  height: 26,
+                  border: "none",
+                  borderRadius: 6,
+                  background: "transparent",
+                  color: "#fff",
+                  fontSize: 11,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {Math.round(zoom * 100)}%
+              </button>
+              <button
+                type="button"
+                className="brochure-zoom-btn"
+                aria-label="Aumentar zoom"
+                title="Aumentar zoom"
+                onClick={() =>
+                  setZoom(ZOOMS[Math.min(ZOOMS.length - 1, ZOOMS.indexOf(zoom) + 1)])
+                }
+                disabled={zoom === ZOOMS[ZOOMS.length - 1]}
+                style={{
+                  ...ESTILO_ZOOM_BOTON,
+                  opacity: zoom === ZOOMS[ZOOMS.length - 1] ? 0.35 : 1,
+                  cursor: zoom === ZOOMS[ZOOMS.length - 1] ? "default" : "pointer",
+                }}
+              >
+                <Plus size={12} strokeWidth={2.4} />
+              </button>
             </div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-line-strong px-4 py-2 text-sm font-medium text-ink">
-              <CalendarDays size={16} />
-              Hora de {data.paisNombre}
-            </span>
-          </div>
 
-          <p className="mt-4 max-w-3xl text-base leading-relaxed text-mute">
-            Las clases se dictan desde Chile y cada horario está convertido a la
-            hora local de {data.paisNombre}. Si no puedes asistir en vivo, la
-            grabación queda disponible en el campus.
-          </p>
-
-          {data.schedules.length === 0 ? (
-            <div className="mt-8 rounded-[26px] border border-line bg-white px-7 py-8">
-              <p className="text-2xl font-semibold tracking-tight text-ink">
-                Cupos abiertos — consulta fecha
-              </p>
-              <p className="mt-2 max-w-2xl text-sm text-mute">
-                La próxima cohorte se confirma por WhatsApp o al inscribirte en
-                línea. Escríbenos y te avisamos con la fecha exacta y el horario
-                de tu país.
-              </p>
+            {/* Modo de vista */}
+            <div
+              role="group"
+              aria-label="Modo de visualización"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                background: "rgba(255,255,255,.06)",
+                borderRadius: 8,
+                padding: 2,
+              }}
+            >
+              <button
+                type="button"
+                aria-label="Vista Hojas A4"
+                aria-pressed={modo === "hojas"}
+                onClick={() => cambiarModo("hojas")}
+                style={{
+                  height: 26,
+                  padding: "0 10px",
+                  border: "none",
+                  borderRadius: 6,
+                  fontSize: 10.5,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background: modo === "hojas" ? "#fff" : "transparent",
+                  color: modo === "hojas" ? "#111318" : "rgba(255,255,255,.7)",
+                }}
+              >
+                Vista Hojas A4
+              </button>
+              <button
+                type="button"
+                aria-label="Visor PDF Nativo"
+                aria-pressed={modo === "nativo"}
+                title={
+                  pdfListo
+                    ? "PDF ya generado en esta sesión"
+                    : "Genera el PDF y lo abre en el visor del navegador"
+                }
+                onClick={() => cambiarModo("nativo")}
+                style={{
+                  height: 26,
+                  padding: "0 10px",
+                  border: "none",
+                  borderRadius: 6,
+                  fontSize: 10.5,
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  background: modo === "nativo" ? "#fff" : "transparent",
+                  color: modo === "nativo" ? "#111318" : "rgba(255,255,255,.7)",
+                }}
+              >
+                Visor PDF Nativo
+              </button>
             </div>
-          ) : (
-            <div className="mt-8 grid gap-3 md:grid-cols-2">
-              {data.schedules.map((cohorte) => (
-                <div
-                  key={cohorte.id}
-                  className="brochure-card rounded-2xl border border-line bg-white px-6 py-5"
+
+            {/* País */}
+            <select
+              aria-label="País del brochure"
+              title="Cambiar país del brochure"
+              value={data.pais}
+              onChange={(event) =>
+                router.push(courseBrochureUrl(data.slug, event.target.value))
+              }
+              style={{
+                height: 32,
+                background: "rgba(255,255,255,.06)",
+                color: "#fff",
+                border: "1px solid rgba(255,255,255,.14)",
+                borderRadius: 8,
+                padding: "0 8px",
+                fontSize: 11.5,
+                fontWeight: 500,
+                cursor: "pointer",
+                outline: "none",
+              }}
+            >
+              {PAISES_DISPONIBLES.map((pais) => (
+                <option
+                  key={pais.iso}
+                  value={pais.iso}
+                  style={{ background: "#111318", color: "#fff" }}
                 >
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-mute">
-                        {cohorte.nivel}
-                      </p>
-                      <p className="mt-2 text-lg font-semibold tracking-tight text-ink">
-                        {cohorte.fecha}
-                      </p>
-                      <p className="mt-1 text-sm text-mute">
-                        {cohorte.dias}
-                        {cohorte.hours ? ` · ${cohorte.hours} horas` : ""}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p
-                        className="text-base font-semibold"
-                        style={{ color: data.accentColor }}
-                      >
-                        {cohorte.horario}
-                      </p>
-                      <p className="mt-1 text-xs text-faint">
-                        {cohorte.horaChile}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+                  {pais.name} · {pais.currency.code}
+                </option>
               ))}
-            </div>
-          )}
+            </select>
 
-          <div className="mt-8 overflow-hidden rounded-[26px] border border-line bg-white">
-            <div className="border-b border-line px-6 py-5">
-              <p className="text-sm font-semibold text-ink">
-                La misma clase en cada mercado
-              </p>
-              <p className="mt-1 text-xs text-mute">
-                Hora de inicio local · {data.equivalencias.offset} en{" "}
-                {data.paisNombre} · término {data.equivalencias.fin}
-              </p>
-            </div>
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-wash text-left text-xs uppercase tracking-[0.14em] text-mute">
-                  <th className="px-6 py-3 font-semibold">Mercado</th>
-                  <th className="px-6 py-3 text-right font-semibold">
-                    Hora de inicio
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {equivalencias.map((fila) => (
-                  <tr key={fila.mercado} className="border-t border-line">
-                    <td className="px-6 py-3 text-ink">{fila.mercado}</td>
-                    <td className="px-6 py-3 text-right font-semibold text-ink">
-                      {fila.hora}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        {/* Equipo docente */}
-        <section className="brochure-section mt-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-mute">
-            Equipo docente
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink md:text-4xl">
-            Quién te enseña
-          </h2>
-          <p className="mt-4 max-w-3xl text-base leading-relaxed text-mute">
-            Profesionales en ejercicio que dictan lo mismo que aplican en banca,
-            minería y retail. Clases en vivo, con espacio para preguntas y
-            revisión de tus proyectos.
-          </p>
-
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {data.profesores.map((profesor) => (
-              <article
-                key={profesor.name}
-                className="brochure-card overflow-hidden rounded-[26px] border border-line bg-white"
+            {/* Acciones */}
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                flexWrap: "wrap",
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => void generar(false)}
+                disabled={generando}
+                style={{
+                  ...ESTILO_BOTON_BARRA,
+                  padding: "0 14px",
+                  border: "none",
+                  background: "#fff",
+                  color: "#111318",
+                  cursor: generando ? "wait" : "pointer",
+                  opacity: generando ? 0.72 : 1,
+                }}
               >
-                <RetratoProfesor profesor={profesor} />
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold tracking-tight text-ink">
-                    {profesor.name}
-                  </h3>
-                  <p
-                    className="mt-1 text-sm font-semibold"
-                    style={{ color: data.accentColor }}
-                  >
-                    {profesor.role}
-                  </p>
-                  <p className="text-sm text-mute">{profesor.title}</p>
+                <Download size={12} strokeWidth={2.4} />
+                {generando
+                  ? avance && avance.total > 0
+                    ? `Generando pág. ${avance.current}/${avance.total}…`
+                    : "Generando…"
+                  : "Descargar PDF"}
+              </button>
 
-                  <ul className="mt-4 space-y-2">
-                    {profesor.credentials.map((credencial) => (
-                      <li
-                        key={credencial}
-                        className="flex gap-2 text-sm leading-snug text-mute"
-                      >
-                        <Check
-                          size={14}
-                          className="mt-0.5 shrink-0"
-                          style={{ color: data.accentColor }}
-                        />
-                        {credencial}
-                      </li>
-                    ))}
-                  </ul>
-
-                  {profesor.founderCareer.length > 0 ? (
-                    <p className="mt-4 text-xs leading-relaxed text-faint">
-                      {profesor.founderCareer.join(" · ")}
-                    </p>
-                  ) : null}
-                </div>
-              </article>
-            ))}
-          </div>
-
-          <div className="mt-8 rounded-[26px] border border-line bg-wash px-6 py-6">
-            <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-mute">
-              <Building2 size={14} />
-              Empresas que capacitaron a sus equipos con ProgramBI
-            </p>
-            <p className="mt-3 text-sm font-medium leading-relaxed text-ink">
-              {data.empresas.join(" · ")}
-            </p>
-          </div>
-        </section>
-
-        {/* Programa académico */}
-        <section className="brochure-section mt-16">
-          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-mute">
-            Programa académico
-          </p>
-          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink md:text-4xl">
-            Todo lo que vas a dominar
-          </h2>
-          <p className="mt-4 max-w-3xl text-base leading-relaxed text-mute">
-            {data.modulesCount} módulos organizados por nivel. Cada módulo
-            combina clase en vivo, práctica guiada y proyecto.
-          </p>
-
-          <div className="mt-8 grid gap-3 md:grid-cols-2">
-            {data.whatYouLearn.map((resultado) => (
-              <div
-                key={resultado}
-                className="flex gap-3 rounded-2xl border border-line bg-white px-5 py-4"
+              <button
+                type="button"
+                className="brochure-secundario"
+                onClick={imprimir}
+                style={{
+                  ...ESTILO_BOTON_BARRA,
+                  padding: "0 12px",
+                  border: "1px solid rgba(255,255,255,.22)",
+                  background: "transparent",
+                  color: "#fff",
+                }}
               >
-                <Check
-                  size={16}
-                  className="mt-0.5 shrink-0"
-                  style={{ color: data.accentColor }}
-                />
-                <p className="text-sm leading-relaxed text-ink">{resultado}</p>
-              </div>
-            ))}
-          </div>
+                <Printer size={12} strokeWidth={2.2} />
+                Imprimir
+              </button>
 
-          <div className="mt-10 space-y-10">
-            {data.temario.map((nivel) => (
-              <div key={nivel.label}>
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line-strong pb-3">
-                  <h3 className="text-xl font-semibold tracking-tight text-ink">
-                    {nivel.label}
-                  </h3>
-                  {nivel.shortLabel ? (
-                    <span className="rounded-full bg-wash px-3 py-1 text-xs font-semibold text-mute">
-                      {nivel.shortLabel}
-                    </span>
-                  ) : null}
-                </div>
-
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  {nivel.modules.map((modulo) => (
-                    <article
-                      key={`${nivel.label}-${modulo.title}`}
-                      className="brochure-card rounded-2xl border border-line bg-white p-5"
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <h4 className="text-base font-semibold leading-snug text-ink">
-                          {modulo.title}
-                        </h4>
-                        {modulo.hours ? (
-                          <span
-                            className="shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold"
-                            style={{
-                              backgroundColor: `${data.accentColor}1f`,
-                              color: data.accentColor,
-                            }}
-                          >
-                            {modulo.hours} h
-                          </span>
-                        ) : null}
-                      </div>
-                      <ul className="mt-3 space-y-1.5">
-                        {modulo.topics.map((tema) => (
-                          <li
-                            key={tema}
-                            className="flex gap-2 text-sm leading-snug text-mute"
-                          >
-                            <span
-                              className="mt-2 h-1 w-1 shrink-0 rounded-full"
-                              style={{ backgroundColor: data.accentColor }}
-                            />
-                            {tema}
-                          </li>
-                        ))}
-                      </ul>
-                    </article>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Cierre */}
-        <section className="brochure-section mt-16">
-          <div className="rounded-[26px] bg-ink px-8 py-10 text-canvas md:px-12 md:py-14">
-            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-canvas/60">
-              Certificado digital verificable
-            </p>
-            <h2 className="mt-4 max-w-3xl text-3xl font-semibold leading-tight tracking-tight md:text-4xl">
-              Termina el programa con un certificado que puedes mostrar.
-            </h2>
-            <p className="mt-4 max-w-2xl text-sm leading-relaxed text-canvas/70">
-              Al completar los módulos recibes tu certificado digital con código
-              de verificación, además del acceso permanente a las grabaciones y
-              al material del curso.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
               <a
                 href={data.inscripcionUrl}
-                className="inline-flex items-center gap-2 rounded-full bg-canvas px-5 py-3 text-sm font-semibold text-ink"
+                className="brochure-cta"
+                style={{
+                  ...ESTILO_BOTON_BARRA,
+                  padding: "0 14px",
+                  textDecoration: "none",
+                  background: data.accentColor,
+                  color: "#fff",
+                }}
               >
                 Inscribirme Ahora
-                <ArrowRight size={16} />
               </a>
+
               {data.whatsappUrl ? (
                 <a
                   href={data.whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-canvas/30 px-5 py-3 text-sm font-semibold text-canvas"
+                  aria-label="Escribir por WhatsApp"
+                  title="Escribir por WhatsApp"
+                  className="brochure-secundario"
+                  style={{
+                    width: 32,
+                    height: 32,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    borderRadius: 8,
+                    border: "1px solid rgba(255,255,255,.22)",
+                    color: "#fff",
+                    textDecoration: "none",
+                  }}
                 >
-                  Hablar por WhatsApp
+                  <MessageCircle size={14} strokeWidth={2.1} />
                 </a>
               ) : null}
             </div>
-            <p className="mt-8 text-xs text-canvas/50">
-              Brochure actualizado {data.actualizado} · Precios en {data.moneda}{" "}
-              para {data.paisNombre} · programbi.com
-            </p>
           </div>
-        </section>
+
+          {/* Progreso de generación */}
+          {generando ? (
+            <div style={{ margin: "8px -18px 0" }}>
+              <div style={{ height: 2, background: "rgba(255,255,255,.1)" }}>
+                <div
+                  style={{
+                    height: 2,
+                    width: `${porcentaje}%`,
+                    background: data.accentColor,
+                    transition: "width .2s ease",
+                  }}
+                />
+              </div>
+              <div
+                aria-live="polite"
+                style={{
+                  padding: "5px 18px 0",
+                  fontSize: 9.5,
+                  color: "rgba(255,255,255,.6)",
+                  lineHeight: 1.3,
+                }}
+              >
+                {progreso || "Preparando el PDF…"}
+              </div>
+            </div>
+          ) : null}
+
+          {errorPdf ? (
+            <div
+              role="alert"
+              style={{
+                marginTop: 8,
+                padding: "7px 10px",
+                borderRadius: 8,
+                border: "1px solid rgba(248,113,113,.35)",
+                background: "rgba(248,113,113,.1)",
+                color: "#FCA5A5",
+                fontSize: 10.5,
+                lineHeight: 1.45,
+              }}
+            >
+              {errorPdf}
+            </div>
+          ) : null}
+        </header>
+
+        <div style={{ display: "flex", alignItems: "flex-start", flex: 1 }}>
+          {/* ── Índice lateral ─────────────────────────────────────────────── */}
+          <aside
+            className="brochure-no-print brochure-sidebar"
+            aria-label="Índice del documento"
+            style={{
+              position: "sticky",
+              top: TOP_BARRA,
+              alignSelf: "flex-start",
+              flex: "0 0 220px",
+              width: 220,
+              padding: "18px 14px",
+              height: `calc(100vh - ${TOP_BARRA}px)`,
+              overflowY: "auto",
+              borderRight: "1px solid rgba(255,255,255,.07)",
+            }}
+          >
+            <p
+              style={{
+                margin: 0,
+                fontSize: 8,
+                letterSpacing: 1.6,
+                fontWeight: 600,
+                color: "rgba(255,255,255,.45)",
+              }}
+            >
+              ÍNDICE DEL DOCUMENTO
+            </p>
+
+            <nav
+              aria-label="Secciones del brochure"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 3,
+                marginTop: 10,
+              }}
+            >
+              {navegacion.map((item) => {
+                const activo = indiceActivo === item.pagina;
+                return (
+                  <button
+                    key={item.pagina}
+                    type="button"
+                    className="brochure-nav-item"
+                    onClick={() => irAPagina(item.pagina)}
+                    aria-current={activo ? "true" : undefined}
+                    style={{
+                      textAlign: "left",
+                      padding: "8px 10px",
+                      borderRadius: 7,
+                      fontSize: 10.5,
+                      lineHeight: 1.35,
+                      cursor: "pointer",
+                      border: "none",
+                      borderLeft: `2px solid ${
+                        activo ? data.accentColor : "transparent"
+                      }`,
+                      background: activo ? "rgba(255,255,255,.1)" : "transparent",
+                      color: activo ? "#fff" : "rgba(255,255,255,.72)",
+                      fontWeight: activo ? 600 : 500,
+                    }}
+                  >
+                    {item.etiqueta}
+                  </button>
+                );
+              })}
+            </nav>
+
+            <div
+              style={{
+                height: 1,
+                background: "rgba(255,255,255,.08)",
+                margin: "14px 0 12px",
+              }}
+            />
+
+            <p
+              style={{
+                margin: "0 0 8px",
+                fontSize: 8,
+                letterSpacing: 1.4,
+                fontWeight: 600,
+                color: "rgba(255,255,255,.35)",
+              }}
+            >
+              MINIATURAS
+            </p>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {miniaturas.map((miniatura) => (
+                <button
+                  key={miniatura.pagina}
+                  type="button"
+                  className="brochure-thumb"
+                  onClick={() => irAPagina(miniatura.pagina)}
+                  title={`Ir a la página ${miniatura.pagina} · ${miniatura.etiqueta}`}
+                  aria-label={`Ir a la página ${miniatura.pagina}: ${miniatura.etiqueta}`}
+                  style={{
+                    width: 120,
+                    height: 170,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    alignItems: "flex-start",
+                    padding: 8,
+                    borderRadius: 3,
+                    border: "1px solid rgba(255,255,255,.12)",
+                    background: "#20232B",
+                    color: "rgba(255,255,255,.7)",
+                    cursor: "pointer",
+                    textAlign: "left",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 8,
+                      letterSpacing: 1.2,
+                      fontWeight: 600,
+                      color: "rgba(255,255,255,.35)",
+                      fontVariantNumeric: "tabular-nums",
+                    }}
+                  >
+                    {String(miniatura.pagina).padStart(2, "0")}
+                  </span>
+                  <span style={{ fontSize: 9.5, lineHeight: 1.3 }}>
+                    {miniatura.etiqueta}
+                  </span>
+                </button>
+              ))}
+            </div>
+
+            <p
+              style={{
+                marginTop: "auto",
+                paddingTop: 18,
+                fontSize: 8,
+                lineHeight: 1.6,
+                color: "rgba(255,255,255,.35)",
+              }}
+            >
+              ProgramBI · {data.paisNombre}
+            </p>
+          </aside>
+
+          {/* ── Lienzo del documento ──────────────────────────────────────── */}
+          <main
+            className="brochure-canvas"
+            style={{
+              flex: 1,
+              minWidth: 0,
+              padding: "26px 18px 60px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 26,
+            }}
+          >
+            <div
+              ref={sheetsRef}
+              className="brochure-sheets"
+              aria-hidden={modo === "nativo" ? "true" : undefined}
+              style={
+                modo === "hojas"
+                  ? { width: "100%" }
+                  : {
+                      position: "absolute",
+                      left: -100000,
+                      top: 0,
+                      width: HOJA_ANCHO,
+                      opacity: 0,
+                      pointerEvents: "none",
+                    }
+              }
+            >
+              <div
+                className="brochure-sheet-slot"
+                style={{ width: "100%", height: altoStack, overflow: "hidden" }}
+              >
+                <div
+                  className="brochure-scaler"
+                  style={{
+                    width: HOJA_ANCHO,
+                    marginLeft: `calc(50% - ${HOJA_ANCHO / 2}px)`,
+                    transform: `scale(${escala})`,
+                    transformOrigin: "top center",
+                    transition: "transform .15s ease",
+                  }}
+                >
+                  {envolverHoja(
+                    1,
+                    <BrochureCoverSheet
+                      data={data}
+                      pageNumber={1}
+                      totalPages={totalPages}
+                    />,
+                    totalPages === 1
+                  )}
+                  {envolverHoja(
+                    2,
+                    <BrochurePricingScheduleSheet
+                      data={data}
+                      pageNumber={2}
+                      totalPages={totalPages}
+                    />,
+                    totalPages === 2
+                  )}
+                  {envolverHoja(
+                    3,
+                    <BrochureShowcaseSheet
+                      data={data}
+                      pageNumber={3}
+                      totalPages={totalPages}
+                    />,
+                    totalPages === 3
+                  )}
+                  {envolverHoja(
+                    4,
+                    <BrochureFacultySheet
+                      data={data}
+                      pageNumber={4}
+                      totalPages={totalPages}
+                    />,
+                    totalPages === 4
+                  )}
+                  {envolverHoja(
+                    5,
+                    <BrochureSyllabusSheets
+                      data={data}
+                      startPage={5}
+                      totalPages={totalPages}
+                    />,
+                    true
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Visor PDF nativo */}
+            {modo === "nativo" ? (
+              <div
+                className="brochure-no-print"
+                style={{ width: "100%", alignSelf: "stretch" }}
+              >
+                {pdfUrl ? (
+                  <iframe
+                    src={pdfUrl}
+                    title="Vista PDF nativa"
+                    style={{
+                      width: "100%",
+                      height: "calc(100vh - 64px)",
+                      border: 0,
+                      background: "#fff",
+                      borderRadius: 6,
+                    }}
+                  />
+                ) : (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 12,
+                      minHeight: "52vh",
+                      padding: "32px 24px",
+                      border: "1px dashed rgba(255,255,255,.14)",
+                      borderRadius: 10,
+                      textAlign: "center",
+                    }}
+                  >
+                    <FileText size={22} color="rgba(255,255,255,.4)" />
+                    <p
+                      style={{
+                        margin: 0,
+                        maxWidth: 380,
+                        fontSize: 11.5,
+                        lineHeight: 1.55,
+                        color: "rgba(255,255,255,.65)",
+                      }}
+                    >
+                      El visor nativo abre el mismo PDF que descargas, generado
+                      una vez por sesión. Tarda unos segundos según la cantidad
+                      de hojas.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => void generar(true)}
+                      disabled={generando}
+                      style={{
+                        ...ESTILO_BOTON_BARRA,
+                        padding: "0 16px",
+                        border: "none",
+                        background: "#fff",
+                        color: "#111318",
+                        cursor: generando ? "wait" : "pointer",
+                        opacity: generando ? 0.72 : 1,
+                      }}
+                    >
+                      {generando ? "Generando…" : "Generar vista PDF"}
+                    </button>
+                    {generando && progreso ? (
+                      <p
+                        aria-live="polite"
+                        style={{
+                          margin: 0,
+                          fontSize: 10,
+                          color: "rgba(255,255,255,.5)",
+                        }}
+                      >
+                        {progreso}
+                      </p>
+                    ) : null}
+                  </div>
+                )}
+              </div>
+            ) : null}
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
