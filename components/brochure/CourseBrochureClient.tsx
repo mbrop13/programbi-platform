@@ -595,6 +595,25 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                 Imprimir
               </button>
 
+              {data.customPdfUrl ? (
+                <a
+                  href={data.customPdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    ...ESTILO_BOTON_BARRA,
+                    padding: "0 12px",
+                    border: "1px solid rgba(255,255,255,.22)",
+                    background: "transparent",
+                    color: "#fff",
+                    textDecoration: "none",
+                  }}
+                >
+                  <FileText size={12} strokeWidth={2.2} />
+                  PDF oficial
+                </a>
+              ) : null}
+
               <a
                 href={data.inscripcionUrl}
                 className="brochure-cta"
