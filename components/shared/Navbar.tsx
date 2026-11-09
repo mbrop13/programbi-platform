@@ -240,6 +240,10 @@ export default function Navbar() {
       .slice(0, 2);
   };
 
+  // El brochure se muestra como visor de documento a pantalla completa: sin navbar.
+  const isBrochure = pathname?.endsWith("/brochure") ?? false;
+  if (isBrochure) return null;
+
   return (
     <>
       {authModal.isOpen ? (
