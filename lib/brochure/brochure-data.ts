@@ -37,6 +37,13 @@ import {
 } from "@/lib/paises/precios";
 import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
 import { createAdminClient } from "@/lib/supabase/server";
+import {
+  BROCHURE_BRAND_LOGOS,
+  BROCHURE_COMPANY_LOGOS,
+  getCourseGalleryForBrochure,
+  type BrochureCompanyLogo,
+  type BrochureGalleryImage,
+} from "./brochure-assets";
 
 export type BrochureModulo = {
   title: string;
@@ -62,9 +69,18 @@ export type BrochureProfesor = {
   title: string;
   credentials: string[];
   imageUrl: string | null;
+  linkedinUrl: string | null;
   founderBio: string | null;
   founderCareer: string[];
   founderAcademics: string[];
+  studentCount: number;
+  yearsExperience: number;
+};
+
+export type BrochureMetodologiaPilar = {
+  step: "01" | "02" | "03" | "04";
+  title: string;
+  description: string;
 };
 
 export type BrochureCohorte = {
@@ -124,6 +140,11 @@ export type CourseBrochureData = {
   equivalencias: BrochureEquivalencias;
   profesores: BrochureProfesor[];
   empresas: string[];
+  brandLogoUrl: string;
+  brandLogoNavUrl: string;
+  companyLogos: BrochureCompanyLogo[];
+  galleryImages: BrochureGalleryImage[];
+  methodologyPillars: BrochureMetodologiaPilar[];
   customPdfUrl: string | null;
   inscripcionUrl: string;
   whatsappUrl: string | null;
@@ -149,6 +170,34 @@ const EMPRESAS = [
 /** Insignia fija de modalidad, compartida por la vista y el PDF. */
 const INSIGNIA =
   "Clases 100% en vivo por Zoom · Grabaciones de por vida · Certificado digital verificable";
+
+/** Los 4 pilares de la metodología en vivo, idénticos en vista y PDF. */
+const METODOLOGIA: BrochureMetodologiaPilar[] = [
+  {
+    step: "01",
+    title: "Aprende haciendo",
+    description:
+      "Cada clase en vivo combina explicación breve y práctica guiada sobre datos y casos reales de negocio.",
+  },
+  {
+    step: "02",
+    title: "Proyecto real",
+    description:
+      "Construyes un proyecto aplicado desde la primera semana y lo presentas al cierre del programa.",
+  },
+  {
+    step: "03",
+    title: "Feedback directo",
+    description:
+      "Profesores en ejercicio revisan tu trabajo, responden preguntas en vivo y destraban tus dudas.",
+  },
+  {
+    step: "04",
+    title: "Certificación verificable",
+    description:
+      "Terminas con un certificado digital con código de verificación y grabaciones de por vida.",
+  },
+];
 
 /** Etiqueta del país que convierte un horario ya localizado. */
 function etiquetarHora(iso: string, horario: string, paisNombre: string): string {
@@ -213,9 +262,12 @@ function armarProfesores(): BrochureProfesor[] {
       title: mentor.title,
       credentials: mentor.credentials,
       imageUrl: mentor.imageUrl ?? null,
+      linkedinUrl: mentor.linkedinUrl ?? null,
       founderBio: mentor.founderBio ?? null,
       founderCareer: mentor.founderCareer ?? [],
       founderAcademics: mentor.founderAcademics ?? [],
+      studentCount: mentor.studentCount,
+      yearsExperience: mentor.yearsExperience,
     }));
 }
 
@@ -386,6 +438,10 @@ export async function getCourseBrochureData(
   const schedules = await armarHorarios(course.slug, iso, paisNombre);
   const customPdfUrl = await leerPdfPersonalizado(course.slug);
 
+  // La ficha usa la tarjeta (`-card.webp`, más liviana). El brochure usa la
+  // foto oficial en alta resolución (`<slug>.jpg`) como imagen hero.
+  const heroImageUrl = course.imageUrl.replace(/-card\.webp$/i, ".jpg");
+
   return {
     slug: course.slug,
     title: course.title,
@@ -394,7 +450,7 @@ export async function getCourseBrochureData(
     categoryLabel: course.categoryLabel,
     badgeLabel: course.badgeLabel ?? null,
     accentColor: course.accentColor,
-    imageUrl: course.imageUrl,
+    imageUrl: heroImageUrl,
     techStack: course.techStack,
     modality: "Clases 100% en vivo por Zoom",
     hours,
@@ -423,6 +479,11 @@ export async function getCourseBrochureData(
     equivalencias: armarEquivalencias(iso, schedules),
     profesores: armarProfesores(),
     empresas: EMPRESAS,
+    brandLogoUrl: BROCHURE_BRAND_LOGOS.main,
+    brandLogoNavUrl: BROCHURE_BRAND_LOGOS.nav,
+    companyLogos: BROCHURE_COMPANY_LOGOS,
+    galleryImages: getCourseGalleryForBrochure(course.slug),
+    methodologyPillars: METODOLOGIA,
     customPdfUrl,
     inscripcionUrl: armarInscripcion(course.slug, iso),
     whatsappUrl: infoPais.contacto.whatsapp,
