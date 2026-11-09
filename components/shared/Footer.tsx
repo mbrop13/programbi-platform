@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { NAV_COURSE_GROUPS } from "@/lib/data/course-nav";
 import { getPais, ISO_CHILE } from "@/config/paises";
 import { etiquetaBoton } from "@/config/textos";
@@ -39,8 +40,13 @@ const GUIAS_POR_PAIS = new Set(["cl", "mx", "ar", "pe", "co", "uy", "py"]);
 
 export default function Footer({ compact: _compact = false }: { compact?: boolean }) {
   const pais = usePaisRuta();
+  const pathname = usePathname();
   const hrefLocal = (href: string) => rutaLocal(pais, href);
   const topCourses = NAV_COURSE_GROUPS.flatMap((g) => g.items).slice(0, 6);
+
+  // El brochure se muestra como visor de documento a pantalla completa: sin footer.
+  const isBrochure = pathname?.endsWith("/brochure") ?? false;
+  if (isBrochure) return null;
 
   return (
     <footer className="border-t border-line bg-paper px-4 py-12 sm:px-6 lg:px-8" aria-label="Pie de página">

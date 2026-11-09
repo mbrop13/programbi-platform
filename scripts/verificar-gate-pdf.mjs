@@ -5,8 +5,9 @@
  * Comprueba contra un servidor Next ya levantado (`next start`) que:
  *   A. Las fichas de curso no expongan ningún precio en el HTML inicial y sí
  *      muestren el formulario de 3 campos que abre el brochure.
- *   B. Las rutas de brochure respondan 200 y traigan precio local, horario del
- *      país, los tres profesores, el temario y la acción de descarga.
+ *   B. Las rutas de brochure respondan 200, usen el visor estudio v2 sin
+ *      filtrar `mail.programbi.com` y traigan precio local, horario del país,
+ *      los tres profesores, el temario y la acción de descarga.
  *   C. `/precios` muestre el gate antes de desbloquear y no filtre montos.
  *   D. El catálogo `/cursos` tampoco filtre montos.
  *
@@ -124,6 +125,14 @@ function revisarFicha(path) {
 
 function revisarBrochure(path) {
   return revisarRuta("Brochure", path, ({ html }) => {
+    check(`Brochure ${path} usa el visor estudio v2`, () =>
+      exigirContiene(html, ['data-brochure-studio="v2"'])
+    );
+    check(`Brochure ${path} no filtra mail.programbi.com`, () => {
+      if (html.includes("mail.programbi.com")) {
+        throw new Error('encontró "mail.programbi.com"');
+      }
+    });
     check(`Brochure ${path} incluye a los 3 profesores`, () =>
       exigirContiene(html, PROFESORES)
     );
