@@ -28,8 +28,7 @@ export const mentors: Mentor[] = [
     ],
     icon: "UserCheck",
     linkedinUrl: "https://cl.linkedin.com/in/manuel-oliva-riesgo-inversion",
-    imageUrl:
-      "https://mail.programbi.com/uploads/gempages_519842279402243040-8ae05cd1-dc25-44fb-9a7b-f1a78a0f121a.webp_202606132329.jpeg",
+    imageUrl: "/images/mentors/manuel-oliva.jpg",
     isFounder: true,
     founderBio:
       "Lidero un equipo dedicado a empoderar empresas con herramientas de datos avanzadas. Con años de experiencia como consultor en análisis y visualización, he desarrollado dashboards personalizados integrando web, servidores y bases de datos. Mi enfoque práctico ha ayudado a compañías líderes en Minería, Finanzas y Retail a optimizar procesos críticos y tomar decisiones informadas.",
@@ -59,7 +58,7 @@ export const mentors: Mentor[] = [
     ],
     icon: "BarChart3",
     linkedinUrl: "https://cl.linkedin.com/in/emanuelberrocal",
-    imageUrl: "https://mail.programbi.com/uploads/1579052175153.jpg_202606132330.jpeg",
+    imageUrl: "/images/mentors/emanuel-berrocal.jpg",
     isFounder: false,
     sortOrder: 2,
     studentCount: 800,
@@ -77,7 +76,7 @@ export const mentors: Mentor[] = [
     ],
     icon: "Monitor",
     linkedinUrl: "https://cl.linkedin.com/in/rodrigo-vega-olave-25581172?trk=org-employees",
-    imageUrl: "https://mail.programbi.com/uploads/Persona_en_lugar_con_camisa_202606132342.jpeg",
+    imageUrl: "/images/mentors/rodrigo-vega.jpg",
     isFounder: false,
     sortOrder: 4,
     studentCount: 400,
