@@ -13,7 +13,8 @@ const geist = Geist({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Página no encontrada | ProgramBI",
-  robots: { index: false, follow: false },
+  // Sin `robots`: Next ya inyecta `<meta name="robots" content="noindex">` en
+  // toda respuesta 404, así que declararlo aquí duplicaba la etiqueta.
 };
 
 /**

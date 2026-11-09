@@ -57,17 +57,11 @@ export const METADATA_BASE: Metadata = {
     description: PAGE_SEO.home.description,
     images: [DEFAULT_OG_IMAGE.url],
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
+  // Sin `robots` a propósito: `index, follow` es el comportamiento por defecto
+  // de Next y, si se declara explícito, se emite una <meta name="robots"> que
+  // choca con la `noindex` que Next inyecta solo en las respuestas 404
+  // (dos metas en la misma página). Las páginas que sí deben quedar fuera del
+  // índice declaran su propio noindex (ROBOTS_NOINDEX_FOLLOW o robotsLocal).
   verification: {
     // Search Console y Bing Webmaster Tools. Vacío = no se emite la meta.
     ...(GOOGLE_VERIFICATION ? { google: GOOGLE_VERIFICATION } : {}),
