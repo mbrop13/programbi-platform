@@ -431,6 +431,9 @@ export default function BlogClient({ articles }: { articles: any[] }) {
   const gridArticles =
     activeCategory === "all" || activeCategory === "datos" ? [...icpGrid, ...restGrid] : filtered;
 
+  // Sin artículos en absoluto (CMS vacío o Supabase caído): estado «pronto».
+  const sinArticulos = articles.length === 0;
+
   return (
     <div className="min-h-screen bg-white pb-28">
       {/* ── Main Header (Journal/Newspaper Header) ── */}
@@ -539,23 +542,27 @@ export default function BlogClient({ articles }: { articles: any[] }) {
           <div className="text-center py-24 bg-slate-50 rounded-2xl border border-slate-100">
             <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-5" />
             <h2 className="font-serif font-bold text-2xl text-slate-950 mb-2">
-              No se encontraron artículos
+              {sinArticulos ? "Pronto más artículos" : "No se encontraron artículos"}
             </h2>
             <p className="text-slate-500 text-sm max-w-md mx-auto leading-relaxed font-light">
-              Prueba otra búsqueda o revisa los cursos de Power BI, SQL y Python.
+              {sinArticulos
+                ? "Estamos preparando nuevo contenido sobre datos, BI e inteligencia artificial. Mientras tanto, revisa nuestros cursos de Power BI, SQL y Python."
+                : "Prueba otra búsqueda o revisa los cursos de Power BI, SQL y Python."}
             </p>
             <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchQuery("");
-                  setActiveCategory("all");
-                  setIsSearchActive(false);
-                }}
-                className="inline-flex h-11 items-center rounded-full bg-slate-950 px-6 text-sm font-semibold text-white"
-              >
-                Ver todos los artículos
-              </button>
+              {!sinArticulos && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchQuery("");
+                    setActiveCategory("all");
+                    setIsSearchActive(false);
+                  }}
+                  className="inline-flex h-11 items-center rounded-full bg-slate-950 px-6 text-sm font-semibold text-white"
+                >
+                  Ver todos los artículos
+                </button>
+              )}
               <Link
                 href="/cursos"
                 className="inline-flex h-11 items-center rounded-full border border-slate-200 bg-white px-6 text-sm font-semibold text-slate-950 no-underline"
