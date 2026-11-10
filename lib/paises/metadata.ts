@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { esIndexable, getPais, normalizarPais } from "@/config/paises";
+import { getPais, normalizarPais } from "@/config/paises";
 import { absoluteUrl, pageOg, tituloLocal } from "@/lib/seo";
+import { esRutaIndexablePais } from "@/lib/seo/indexabilidad";
 import { hreflangDe, localeOg, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 
@@ -42,8 +43,9 @@ function conPais(texto: string, iso: string, max: number = 60): string {
 
 /**
  * Meta robots de la versión por país.
- * Solo Chile (raíz), Argentina, México, Perú, Colombia y Uruguay se indexan.
- * Los demás países quedan en noindex, follow: el enlace se sigue, la página no.
+ * Solo los países indexables (y las rutas que WS6/WS9 no hayan pasado a
+ * noindex) se indexan. El resto queda en noindex, follow: el enlace se sigue,
+ * la página no.
  */
 export function robotsLocal(iso: string | null | undefined) {
   return {
@@ -60,7 +62,9 @@ export function metadataLocal(opts: {
   description: string;
 }): Metadata {
   const iso = normalizarPais(opts.pais);
-  const indexable = esIndexable(iso);
+  // Indexabilidad por país Y por ruta: la decide `lib/seo/indexabilidad.ts`,
+  // que es la misma fuente que usan el sitemap y hreflangDe().
+  const indexable = esRutaIndexablePais(iso, opts.path);
   const title = tituloLocal(conPais(localizarMercado(opts.title, iso), iso));
   const description = localizarMercado(opts.description, iso);
   const canonical = absoluteUrl(rutaLocal(iso, opts.path));
@@ -78,7 +82,8 @@ export function metadataLocal(opts: {
     description,
     alternates: {
       canonical,
-      // Los países que no se indexan no entran en el juego de hreflang.
+      // Solo las versiones indexables entran en el juego de hreflang; el
+      // helper ya excluye países noindex y variantes thin (WS6/WS9).
       ...(indexable ? { languages: hreflangDe(opts.path) } : {}),
     },
     // Sin `robots` se hereda el del layout raíz (index, follow).

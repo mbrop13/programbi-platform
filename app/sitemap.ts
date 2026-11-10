@@ -9,15 +9,35 @@ import {
   RUTAS_COMPARATIVAS_ACADEMIA,
 } from "@/lib/data/comparativas";
 import { SITE_URL, sitemapLoc } from "@/lib/seo";
-import { EQUIPO, EQUIPO_PUBLICADO, rutaPerfil } from "@/lib/data/equipo";
+import {
+  LISTADO_PROFESORES_INDEXABLE,
+  PROFESORES_INDEXABLES,
+  esRutaIndexablePais,
+  esRutaNoindexGlobal,
+  esRutaNoindexPais,
+} from "@/lib/seo/indexabilidad";
 import { TESTIMONIOS_PUBLICADOS } from "@/lib/data/testimonials";
 import { SITE_ACTUALIZADO, lastmodDe } from "@/lib/seo/lastmod";
-import { PAISES_CARPETA, esIndexable } from "@/config/paises";
+import { PAISES_CARPETA, esIndexable, esIsoPais } from "@/config/paises";
 import { GUIAS } from "@/lib/guias/generado";
 import { guiasDePais } from "@/lib/guias";
-import { rutaLocal } from "@/lib/paises/rutas";
+import { hreflangDe, paisDesdeRuta, rutaLocal } from "@/lib/paises/rutas";
 import { isVanityBlogPost } from "@/lib/seo/money";
 import { createAdminClient } from "@/lib/supabase/server";
+
+/**
+ * Sitemap único del sitio.
+ *
+ * ¿Por qué no un sitemap index? Hoy son ~500 URLs: un solo `urlset` está muy
+ * por debajo del límite de 50.000 de Google y evita rutas extra que habría que
+ * mantener sincronizadas. Si algún día pasa de ~20.000, se divide con
+ * `generateSitemaps()` sin cambiar las listas de abajo.
+ *
+ * Regla: aquí solo entra lo que responde 200, es indexable, tiene canonical
+ * propio y sus alternates son recíprocas. La decisión vive en
+ * `lib/seo/indexabilidad.ts` (misma fuente que `hreflangDe()`), nunca en una
+ * lista duplicada dentro de este archivo.
+ */
 
 const PRIMARY_COURSE_SLUGS = new Set([
   "analisis-de-datos",
@@ -36,46 +56,74 @@ const PRIMARY_COURSE_SLUGS = new Set([
  */
 const PAISES_DESTACADOS = new Set(["mx", "co", "ar", "pe", "uy", "py"]);
 
+/** Tope de espera para Supabase: el sitemap nunca queda colgado por el blog. */
+const BLOG_TIMEOUT_MS = 5000;
+
 type EntradaSitemap = MetadataRoute.Sitemap[number];
 type CambioFrecuencia = NonNullable<EntradaSitemap["changeFrequency"]>;
+type EntradaPosible = EntradaSitemap | null | undefined;
 
-function loc(path: string): string {
-  const url = sitemapLoc(path);
-  if (!url) throw new Error(`sitemap: rejected loc ${path}`);
-  return url;
-}
-
-function uniqueEntries(entries: MetadataRoute.Sitemap): MetadataRoute.Sitemap {
-  const seen = new Set<string>();
-  const out: MetadataRoute.Sitemap = [];
-  for (const entry of entries) {
-    const url = sitemapLoc(entry.url);
-    if (!url || seen.has(url)) continue;
-    if (url !== SITE_URL && !url.startsWith(`${SITE_URL}/`)) continue;
-    // Las imágenes generadas por ruta (/opengraph-image, /twitter-image) no son
-    // páginas: fuera del sitemap aunque alguna lista las arrastre.
-    if (/\/(opengraph-image|twitter-image)(\/|$)/.test(new URL(url).pathname)) continue;
-    seen.add(url);
-    out.push({ ...entry, url });
+function conTimeout<T>(promesa: PromiseLike<T>, ms: number): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error(`sitemap: timeout de ${ms} ms`)), ms);
+  });
+  try {
+    return Promise.race([Promise.resolve(promesa), timeout]);
+  } finally {
+    // `finally` corre cuando la carrera termina; si ganó la promesa, se apaga
+    // el timer para no retener el event loop.
+    if (timer) clearTimeout(timer);
   }
-  return out;
 }
 
 /**
- * Entrada del sitemap con la fecha real de su archivo. `lastmodDe` resuelve
- * también las rutas con prefijo de país; nunca devuelve la fecha del request.
+ * Entrada del sitemap con la fecha real de su archivo y sus alternates.
+ *
+ * Devuelve `null` si la ruta no se puede anunciar (redirección, noindex o URL
+ * inválida). Nunca lanza: una lista mal formada omite la entrada y sigue.
  */
 function entrada(
   path: string,
   priority: number,
-  changeFrequency: CambioFrecuencia
-): EntradaSitemap {
-  return {
-    url: loc(path),
-    lastModified: lastmodDe(path),
-    changeFrequency,
-    priority,
-  };
+  changeFrequency: CambioFrecuencia,
+  lastModified: string = lastmodDe(path)
+): EntradaPosible {
+  if (esRutaNoindexGlobal(path)) return null;
+  const url = sitemapLoc(path);
+  if (!url) return null;
+
+  const languages = hreflangDe(path);
+  const entry: EntradaSitemap = { url, lastModified, changeFrequency, priority };
+  if (Object.keys(languages).length > 0) entry.alternates = { languages };
+  return entry;
+}
+
+/**
+ * Deduplica y aplica un último control de indexabilidad directamente sobre la
+ * URL final. Es una red de seguridad: aunque una lista de arriba se equivoque,
+ * una URL noindex/redirigida no sale en el XML.
+ */
+function uniqueEntries(entries: EntradaPosible[]): MetadataRoute.Sitemap {
+  const seen = new Set<string>();
+  const out: MetadataRoute.Sitemap = [];
+  for (const entry of entries) {
+    if (!entry) continue;
+    const url = sitemapLoc(entry.url);
+    if (!url) continue;
+    if (url !== SITE_URL && !url.startsWith(`${SITE_URL}/`)) continue;
+    const { pathname } = new URL(url);
+    // Las imágenes generadas por ruta (/opengraph-image, /twitter-image) no
+    // son páginas: fuera aunque alguna lista las arrastre.
+    if (/\/(opengraph-image|twitter-image)(\/|$)/.test(pathname)) continue;
+    if (esRutaNoindexGlobal(pathname)) continue;
+    const iso = paisDesdeRuta(pathname);
+    if (iso && esRutaNoindexPais(iso, pathname)) continue;
+    if (seen.has(url)) continue;
+    seen.add(url);
+    out.push({ ...entry, url });
+  }
+  return out;
 }
 
 function blogSlug(raw: string): string | null {
@@ -84,13 +132,26 @@ function blogSlug(raw: string): string | null {
   return slug;
 }
 
+/** `YYYY-MM-DD` estable a partir de la fecha publicada en Supabase. */
+function fechaIso(valor: unknown): string | null {
+  if (typeof valor !== "string" && !(valor instanceof Date)) return null;
+  const fecha = valor instanceof Date ? valor : new Date(valor);
+  if (Number.isNaN(fecha.getTime())) return null;
+  return fecha.toISOString().slice(0, 10);
+}
+
+/**
+ * Artículos publicados del blog. Si Supabase falla, tarda o devuelve basura,
+ * devuelve `[]`: el sitemap se genera igual, sin esas entradas. Nunca lanza.
+ */
 async function publishedBlogUrls(): Promise<MetadataRoute.Sitemap> {
   try {
     const db = createAdminClient();
-    const { data, error } = await db
+    const consulta = db
       .from("newsletter_articles")
-      .select("slug, title, excerpt")
+      .select("slug, title, excerpt, published_at")
       .eq("status", "published");
+    const { data, error } = await conTimeout(consulta, BLOG_TIMEOUT_MS);
     if (error || !data) return [];
     return data.flatMap((row) => {
       const slug = typeof row.slug === "string" ? blogSlug(row.slug) : null;
@@ -98,14 +159,14 @@ async function publishedBlogUrls(): Promise<MetadataRoute.Sitemap> {
       if (isVanityBlogPost(row.title, row.excerpt, slug)) return [];
       return [
         {
-          url: loc(`/blog/${slug}`),
-          // La tabla no expone fecha de publicación en esta consulta: se usa
-          // una fecha estable, no la del render.
-          lastModified: SITE_ACTUALIZADO,
+          url: sitemapLoc(`/blog/${slug}`) ?? "",
+          // `published_at` es la fecha real del artículo; si viene vacía o
+          // inválida se usa la constante estable del sitio, nunca `new Date()`.
+          lastModified: fechaIso(row.published_at) ?? SITE_ACTUALIZADO,
           changeFrequency: "weekly" as const,
           priority: 0.4,
         },
-      ];
+      ].filter((entradaBlog) => Boolean(entradaBlog.url));
     });
   } catch (err) {
     console.error("sitemap blog posts:", err);
@@ -118,26 +179,26 @@ function prioridadPais(base: number, iso: string): number {
   return Math.round(base * factor * 100) / 100;
 }
 
-/**
- * Sitemap completo del sitio. Las landings de la fase 5 y las páginas de
- * /casos y /profesores se incluyen aquí; las dos últimas solo con su flag de
- * publicación encendido, para no anunciar rutas noindex.
- */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const staticPages: MetadataRoute.Sitemap = [
+  const staticPages: EntradaPosible[] = [
     entrada("/", 1, "weekly"),
     entrada("/empresas", 0.95, "weekly"),
     entrada("/implementacion-power-bi", 0.9, "monthly"),
     entrada("/migrar-excel-a-power-bi", 0.9, "monthly"),
     entrada("/por-que-fallan-proyectos-power-bi", 0.8, "monthly"),
-    entrada("/curso-power-bi", 0.85, "monthly"),
+    // `/curso-power-bi` ya no se anuncia: WS3 lo redirige 301 a /cursos/power-bi.
+    // Se deja fuera también por `esRutaNoindexGlobal`, pero no se lista dos veces.
     entrada("/curso-power-bi-vs-pack-adopcion", 0.8, "monthly"),
+    // WS3 aún evalúa si estas landings son 301. Si lo son, se agregan a
+    // RUTAS_NOINDEX_GLOBAL y desaparecen solas del sitemap y del hreflang.
     entrada("/curso-sql-online", 0.85, "weekly"),
     entrada("/curso-python", 0.85, "weekly"),
     entrada("/power-bi-mineria-chile", 0.8, "monthly"),
     entrada("/cursos", 0.85, "weekly"),
     entrada("/precios", 0.85, "monthly"),
     entrada("/verificar-certificado", 0.5, "monthly"),
+    // La raíz del test de nivel SÍ es indexable; las variantes país no (WS6)
+    // y se filtran más abajo por `esRutaIndexablePais`.
     entrada("/test-nivel", 0.75, "monthly"),
     entrada("/test-nivel/sql", 0.7, "monthly"),
     entrada("/test-nivel/excel", 0.7, "monthly"),
@@ -150,12 +211,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     // /casos y /profesores solo cuando su contenido es publicable: la primera
     // necesita testimonios visibles y la segunda, los perfiles completos.
     ...(TESTIMONIOS_PUBLICADOS ? [entrada("/casos", 0.5, "monthly")] : []),
-    ...(EQUIPO_PUBLICADO
-      ? [
-          entrada("/profesores", 0.6, "monthly"),
-          ...EQUIPO.map((miembro) => entrada(rutaPerfil(miembro.slug), 0.5, "monthly")),
-        ]
-      : []),
+    // WS1: lista declarativa en lib/seo/indexabilidad.ts. Hoy vacía porque
+    // /profesores sigue noindex; al integrar WS1 se enciende sola.
+    ...(LISTADO_PROFESORES_INDEXABLE ? [entrada("/profesores", 0.6, "monthly")] : []),
+    ...PROFESORES_INDEXABLES.map((path) => entrada(path, 0.5, "monthly")),
     entrada("/referidos", 0.7, "weekly"),
     entrada("/referidos/terminos", 0.2, "yearly"),
     entrada("/faq", 0.5, "monthly"),
@@ -174,34 +233,34 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const coursePriority = (slug: string) =>
     PRIMARY_COURSE_SLUGS.has(slug) ? 0.85 : 0.55;
 
-  const coursePages: MetadataRoute.Sitemap = courses.map((course) =>
+  const coursePages: EntradaPosible[] = courses.map((course) =>
     entrada(`/cursos/${course.slug}`, coursePriority(course.slug), "weekly")
   );
 
   // Casos de uso: páginas reales, con canonical propio y sin noindex.
-  const casePages: MetadataRoute.Sitemap = casesOfUse.map((caso) =>
+  const casePages: EntradaPosible[] = casesOfUse.map((caso) =>
     entrada(`/casos/${caso.slug}`, 0.45, "monthly")
   );
 
   const comparativasLastModified = COMPARATIVAS_ACTUALIZADO;
 
-  const versusPages: MetadataRoute.Sitemap = [
-    ...comparisons.map((comp) => ({
-      url: loc(`/versus/${comp.slug}`),
-      lastModified: comparativasLastModified,
-      changeFrequency: "monthly" as const,
-      priority: 0.4,
-    })),
-    ...RUTAS_COMPARATIVAS_ACADEMIA.map((path) => ({
-      url: loc(path),
-      lastModified: comparativasLastModified,
-      changeFrequency: "monthly" as const,
-      priority: 0.5,
-    })),
+  const versusPages: EntradaPosible[] = [
+    ...comparisons.map((comp) =>
+      entrada(`/versus/${comp.slug}`, 0.4, "monthly", comparativasLastModified)
+    ),
+    ...RUTAS_COMPARATIVAS_ACADEMIA.map((path) =>
+      entrada(path, 0.5, "monthly", comparativasLastModified)
+    ),
   ];
 
   const blogPages = await publishedBlogUrls();
 
+  /**
+   * Rutas con versión por país. Se mantienen TODAS aquí (incluidas las que hoy
+   * son noindex/301) y el filtro real lo aplica `esRutaIndexablePais`: una
+   * sola fuente, sin listas duplicadas. Así WS6 (`/test-nivel` país), WS3
+   * (`curso-power-bi` país) y WS9 (variantes thin) se resuelven en el helper.
+   */
   const localizedPaths: {
     path: string;
     priority: number;
@@ -230,12 +289,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  // Chile (raíz) ya está en staticPages. Aquí solo se agregan las carpetas
-  // indexables: Argentina, México, Perú, Colombia, Uruguay y los países con
-  // precio propio. uniqueEntries() descarta cualquier URL repetida.
-  const countryPages: MetadataRoute.Sitemap = PAISES_CARPETA.filter((pais) => pais.indexable).flatMap(
-    (pais) =>
-      localizedPaths.map((item) =>
+  // Chile (raíz) ya está en staticPages. Aquí solo las carpetas indexables.
+  const countryPages: EntradaPosible[] = PAISES_CARPETA.filter(
+    (pais) => pais.indexable
+  ).flatMap((pais) =>
+    localizedPaths
+      // Filtro por helper: país no indexable, ruta noindex en ese país o
+      // redirección global. Nunca una lista hardcodeada paralela.
+      .filter((item) => esRutaIndexablePais(pais.iso, item.path))
+      .map((item) =>
         entrada(
           rutaLocal(pais.iso, item.path),
           prioridadPais(item.priority, pais.iso),
@@ -245,44 +307,49 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   );
 
   // Comparativa de Coderhouse en los países donde opera y tiene versión propia.
-  const comparativaPaisPages: MetadataRoute.Sitemap = RUTAS_CODERHOUSE_PAIS.map((path) => ({
-    url: loc(path),
-    lastModified: comparativasLastModified,
-    changeFrequency: "monthly" as const,
-    priority: 0.5,
-  }));
+  const comparativaPaisPages: EntradaPosible[] = RUTAS_CODERHOUSE_PAIS.flatMap(
+    (path) => {
+      const iso = path.split("/").filter(Boolean)[0] ?? "";
+      if (!esIsoPais(iso) || !esRutaIndexablePais(iso, path)) return [];
+      return [entrada(path, 0.5, "monthly", comparativasLastModified)];
+    }
+  );
 
   // Listicle de Power BI en Chile: página propia, hermana de la ruta [slug].
-  const listiclePages: MetadataRoute.Sitemap = [
-    {
-      url: loc(RUTA_LISTICLE),
-      lastModified: comparativasLastModified,
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    },
+  const listiclePages: EntradaPosible[] = [
+    entrada(RUTA_LISTICLE, 0.7, "monthly", comparativasLastModified),
   ];
 
-  // Guías: las de país indexable, las transversales y la chilena. Paraguay
-  // queda fuera porque su versión es noindex hasta que tenga precio publicado.
-  const guidePages: MetadataRoute.Sitemap = GUIAS.filter(
-    (guia) => guia.country === "transversal" || esIndexable(guia.country)
-  ).map((guia) => ({
-    url: loc(guia.path),
-    lastModified: guia.updated,
-    changeFrequency: "monthly" as const,
-    priority: guia.country === "cl" || guia.country === "transversal" ? 0.7 : 0.6,
-  }));
+  // Guías: las transversales, la chilena y las de país indexable. Una guía de
+  // país que WS9 pase a noindex se filtra aquí y sale del sitemap sola.
+  const guidePages: EntradaPosible[] = GUIAS.flatMap((guia) => {
+    if (guia.country !== "transversal") {
+      if (!esIndexable(guia.country)) return [];
+      if (esRutaNoindexPais(guia.country, guia.path)) return [];
+    }
+    return [
+      entrada(
+        guia.path,
+        guia.country === "cl" || guia.country === "transversal" ? 0.7 : 0.6,
+        "monthly",
+        guia.updated
+      ),
+    ];
+  });
 
-  const guideIndexPages: MetadataRoute.Sitemap = [
+  const guideIndexPages: EntradaPosible[] = [
     entrada("/guias", 0.7, "weekly"),
-    ...PAISES_CARPETA.filter((pais) => pais.indexable && guiasDePais(pais.iso).length > 0).map(
-      (pais) => entrada(`/${pais.iso}/guias`, 0.6, "weekly")
-    ),
+    ...PAISES_CARPETA.filter(
+      (pais) =>
+        pais.indexable &&
+        guiasDePais(pais.iso).length > 0 &&
+        esRutaIndexablePais(pais.iso, "/guias")
+    ).map((pais) => entrada(`/${pais.iso}/guias`, 0.6, "weekly")),
     entrada("/preguntas-frecuentes", 0.6, "monthly"),
     // Preguntas frecuentes por país (mismo contenido, precio y hora local).
-    ...PAISES_CARPETA.filter((pais) => pais.indexable).map((pais) =>
-      entrada(`/${pais.iso}/preguntas-frecuentes`, 0.55, "monthly")
-    ),
+    ...PAISES_CARPETA.filter((pais) =>
+      esRutaIndexablePais(pais.iso, "/preguntas-frecuentes")
+    ).map((pais) => entrada(`/${pais.iso}/preguntas-frecuentes`, 0.55, "monthly")),
   ];
 
   return uniqueEntries([

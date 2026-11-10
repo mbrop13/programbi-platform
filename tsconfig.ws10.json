@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "noEmit": true
+  },
+  "include": [
+    "next-env.d.ts",
+    "app/sitemap.ts",
+    "lib/seo/indexabilidad.ts",
+    "lib/seo/lastmod.ts",
+    "lib/paises/rutas.ts",
+    "lib/paises/metadata.ts"
+  ]
+}

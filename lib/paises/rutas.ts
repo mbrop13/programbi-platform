@@ -1,5 +1,6 @@
 import { esIsoPais, getPais, ISO_CHILE, normalizarPais, PAISES_CARPETA, PAISES_INDEXABLES } from "@/config/paises";
 import { absoluteUrl } from "@/lib/seo";
+import { esRutaIndexablePais, esRutaNoindexGlobal } from "@/lib/seo/indexabilidad";
 
 /** Rutas con versión por país. El resto (blog, empleos, comunidad, pago) no lleva carpeta. */
 const RAICES = [
@@ -86,16 +87,37 @@ export function cambiarPais(pathname: string, iso: string): string {
 }
 
 /**
- * Hreflang recíproco entre las versiones indexables.
- * Solo entran Chile (raíz), Argentina, México, Perú, Colombia y Uruguay.
- * El x-default apunta a la versión chilena.
+ * Hreflang recíproco SOLO entre versiones indexables.
+ *
+ * Reglas (WS10):
+ * - Si la ruta no tiene versiones por país reales (blog, casos, landings de
+ *   nicho), devuelve `{}`: no se inventan alternates que darían 404.
+ * - Si la ruta es noindex/301 en todo el sitio (`/pago`, `/curso-power-bi`),
+ *   devuelve `{}`.
+ * - Solo entran países donde `esRutaIndexablePais()` es true (WS9 decide las
+ *   variantes thin; WS6 deja fuera `/test-nivel` país; WS3 deja fuera
+ *   `curso-power-bi` país).
+ * - El conjunto es el mismo en todas las versiones (incluida Chile y
+ *   `x-default`), por lo que la reciprocidad se cumple por construcción.
+ * - Si no queda ninguna versión de país indexable, no se emite hreflang: un
+ *   `x-default` solitario no aporta y confunde.
  */
 export function hreflangDe(path: string): Record<string, string> {
+  const ruta = quitarPais(path);
+  if (esRutaNoindexGlobal(ruta) || !esRutaLocalizable(ruta)) return {};
+
+  const paises = PAISES_INDEXABLES.filter(
+    (pais) => pais.iso !== ISO_CHILE && esRutaIndexablePais(pais.iso, ruta)
+  );
+  if (paises.length === 0) return {};
+
+  const chile = absoluteUrl(rutaLocal(ISO_CHILE, ruta));
   const languages: Record<string, string> = {
-    "x-default": absoluteUrl(rutaLocal(ISO_CHILE, path)),
+    "x-default": chile,
+    [getPais(ISO_CHILE).idioma]: chile,
   };
-  for (const pais of PAISES_INDEXABLES) {
-    languages[pais.idioma] = absoluteUrl(rutaLocal(pais.iso, path));
+  for (const pais of paises) {
+    languages[pais.idioma] = absoluteUrl(rutaLocal(pais.iso, ruta));
   }
   return languages;
 }
