@@ -13,6 +13,7 @@ import {
   getPersonaJsonLd,
   getProfilePageJsonLd,
 } from "@/lib/seo/course-jsonld";
+import { ROBOTS_NOINDEX_FOLLOW } from "@/lib/seo/metadata-base";
 import { SITE_URL, absoluteUrl, jsonLdString, pageOg, tituloSeo } from "@/lib/seo";
 
 export const dynamicParams = false;
@@ -55,7 +56,7 @@ export async function generateMetadata({
     alternates: { canonical },
     // Publicación por miembro: solo las fichas con datos base quedan fuera del
     // noindex. La bio larga no es requisito.
-    ...(perfilIndexable(miembro) ? {} : { robots: { index: false, follow: true } }),
+    ...(perfilIndexable(miembro) ? {} : { robots: ROBOTS_NOINDEX_FOLLOW }),
     openGraph: {
       title,
       description,

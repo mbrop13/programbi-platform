@@ -11,7 +11,7 @@ import {
 import { SITE_URL, WEBSITE_ID, ORG_ID, absoluteUrl } from "@/lib/seo";
 import { COURSE_SEO } from "@/lib/seo/money";
 import {
-  EQUIPO,
+  EQUIPO_INDEXABLE,
   fundadorEquipo,
   miembroPorCurso,
   rutaPerfil,
@@ -154,10 +154,15 @@ export function getPersonaJsonLd(miembro: MiembroEquipo) {
 
 /**
  * EducationalOrganization con el equipo enlazado por `@id`: el fundador en
- * `founder` y todas las personas en `employee`. Los nodos Person se incluyen
- * aparte, en el mismo @graph de la página.
+ * `founder` y todos los perfiles publicados en `employee`. Los nodos Person se
+ * incluyen aparte, en el mismo @graph de la página. Solo entran los miembros
+ * que cumplen `perfilIndexable`: la organización no declara empleados con
+ * ficha `noindex`.
  */
-export function getOrganizacionEquipoJsonLd(descripcion: string) {
+export function getOrganizacionEquipoJsonLd(
+  descripcion: string,
+  miembros: MiembroEquipo[] = EQUIPO_INDEXABLE
+) {
   return {
     "@type": "EducationalOrganization",
     "@id": ORG_ID,
@@ -167,7 +172,7 @@ export function getOrganizacionEquipoJsonLd(descripcion: string) {
     logo: { "@type": "ImageObject", url: LOGO_ORGANIZACION, width: 600, height: 160 },
     description: descripcion,
     founder: { "@id": idPersona(fundadorEquipo().slug) },
-    employee: EQUIPO.map((miembro) => ({ "@id": idPersona(miembro.slug) })),
+    employee: miembros.map((miembro) => ({ "@id": idPersona(miembro.slug) })),
   };
 }
 
@@ -214,9 +219,12 @@ export function getEquipoCollectionJsonLd(
       itemListElement: miembros.map((miembro, index) => ({
         "@type": "ListItem",
         position: index + 1,
-        item: { "@id": idPersona(miembro.slug) },
-        name: miembro.nombre,
-        url: absoluteUrl(rutaPerfil(miembro.slug)),
+        item: {
+          "@type": "Person",
+          "@id": idPersona(miembro.slug),
+          name: miembro.nombre,
+          url: absoluteUrl(rutaPerfil(miembro.slug)),
+        },
       })),
     },
   ];
