@@ -5,6 +5,8 @@ import { getCourseGallery } from "@/lib/data/course-gallery";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import CursosPageClient from "./CursosPageClient";
 import BloqueLocalPais from "@/components/paises/BloqueLocalPais";
+import CountryContext from "@/components/marketing/CountryContext";
+import BloqueLocalContenido from "@/components/paises/BloqueLocalContenido";
 import { ObjetivosCursos, RecursosDatos } from "@/components/marketing/EnlacesPrioritarios";
 import { getBloqueLocal } from "@/lib/data/contenido-paises";
 import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
@@ -143,6 +145,7 @@ export default async function CursosPage({
       {bloque ? (
         <BloqueLocalPais iso={pais} bloque={bloque} contexto="cursos" conFaq conEnlaces />
       ) : null}
+      <BloqueLocalContenido iso={pais} ruta="cursos" />
       {/* Solo Chile: las landings de nicho y las páginas de comparativas viven
           en la raíz y hablan del mercado chileno. */}
       {pais === ISO_CHILE ? <ObjetivosCursos contexto="cursos" /> : null}

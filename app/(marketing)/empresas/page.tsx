@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import EmpresasClient from "./EmpresasClient";
 import BloqueLocalPais from "@/components/paises/BloqueLocalPais";
+import BloqueLocalContenido from "@/components/paises/BloqueLocalContenido";
 import { ogImageUrl } from "@/lib/og/url";
 import { SITE_URL, absoluteUrl, jsonLdString, twitterShare } from "@/lib/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
@@ -111,6 +112,12 @@ export default async function EmpresasPage({
       <EmpresasClient curso={curso} nivel={nivel} paisNombre={getPais(pais).nombre} />
       {bloque ? (
         <BloqueLocalPais iso={pais} bloque={bloque} contexto="empresas" conEnlaces />
+      ) : null}
+      <BloqueLocalContenido iso={pais} ruta="empresas" conFaqJsonLd={false} />
+      {pais !== "cl" ? (
+        <p className="mx-auto max-w-[1400px] px-4 pb-10 text-sm text-mute sm:px-6">
+          {`Capacitación in-company en vivo para equipos de ${getPais(pais).nombre}, con los datos de tu empresa y factura corporativa.`}
+        </p>
       ) : null}
     </>
   );

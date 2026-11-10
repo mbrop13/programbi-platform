@@ -6,6 +6,7 @@ import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
 import BloquePaisFicha from "@/components/paises/BloquePaisFicha";
 import BloqueLocalPais from "@/components/paises/BloqueLocalPais";
+import BloqueLocalContenido from "@/components/paises/BloqueLocalContenido";
 import FichaSeoExtra from "@/components/marketing/FichaSeoExtra";
 import PlantillaVentasPowerBi from "@/components/marketing/PlantillaVentasPowerBi";
 import GuiasDelCurso from "@/components/guias/GuiasDelCurso";
@@ -21,6 +22,8 @@ import { robotsLocal } from "@/lib/paises/metadata";
 import { getBloqueLocal, getSeoBloque, esRutaSeoLocal } from "@/lib/data/contenido-paises";
 import { detalleCursoLocal } from "@/lib/paises/detalle-curso";
 import { horarioDeCohorte } from "@/lib/paises/horarios";
+import { aplicarSeoLocal } from "@/lib/paises/contenido-local/seo";
+import { rutaCursoBloque } from "@/lib/paises/contenido-local";
 
 export const revalidate = 3600;
 
@@ -89,7 +92,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // Solo los países indexables entran en el juego de hreflang.
   const indexable = esIndexable(pais);
 
-  return {
+  const metadata: Metadata = {
     title: pais === "cl" ? (seo?.title ? { absolute: seo.title } : titleBase) : { absolute: title },
     description,
     alternates: {
@@ -118,6 +121,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       images: [shareImage],
     },
   };
+
+  return aplicarSeoLocal(metadata, pais, rutaCursoBloque(slug));
 }
 
 export default async function CourseDetailPage({
@@ -215,6 +220,13 @@ export default async function CourseDetailPage({
       {bloque ? (
         <BloqueLocalPais iso={pais} bloque={bloque} contexto="ficha" conEnlaces />
       ) : null}
+      <BloqueLocalContenido
+        iso={pais}
+        ruta={rutaCursoBloque(course.slug)}
+        inicio={inicio}
+        fin={fin}
+        conFaqJsonLd={false}
+      />
       <FichaSeoExtra slug={course.slug} pais={pais} />
       {/* Bloque único de la antigua landing /curso-power-bi (plantilla CSV),
           migrado aquí antes de convertir esa landing en 301. */}

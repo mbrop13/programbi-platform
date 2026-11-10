@@ -7,6 +7,7 @@ import Team from "@/components/marketing/Team";
 import Quote from "@/components/marketing/Quote";
 import FaqSection from "@/components/marketing/FaqSection";
 import CountryContent from "@/components/marketing/CountryContent";
+import BloqueLocalContenido from "@/components/paises/BloqueLocalContenido";
 import HomeDeferred from "@/components/marketing/HomeDeferred";
 import { ObjetivosCursos, RecursosDatos } from "@/components/marketing/EnlacesPrioritarios";
 import IndicePais from "@/components/paises/IndicePais";
@@ -98,6 +99,7 @@ export default async function HomePage({
       {bloque ? (
         <BloqueLocalPais iso={pais} bloque={bloque} contexto="hub" conEnlaces={false} />
       ) : null}
+      <BloqueLocalContenido iso={pais} ruta="hub" conFaqJsonLd={false} />
       <Team />
       <Quote />
       <FaqSection
