@@ -298,45 +298,57 @@ async function revisarSitemap() {
     console.log(`  FAIL ${dentro - 15} URLs noindex adicionales en sitemap.xml`);
   }
   if (dentro === 0) ok("sitemap.xml sin URLs noindex");
-
-  return new Set(
-    paresNoindex().map(({ pais, ruta }) => rutaDe(`/${pais}${ruta}`, BASE))
-  );
 }
 
+/** Países con indexación global permitida; el noindex por ruta se resta aparte. */
+const PAISES_INDEXABLES = ["cl", "ar", "co", "mx", "pe", "uy", "ve", "bo", "cr", "do", "ec", "gt", "sv"];
+
+/** Variantes indexables de una ruta: todas menos las consolidadas por WS9. */
+function variantesIndexables(ruta) {
+  const afectados = new Set(RUTAS_NOINDEX[ruta] || []);
+  return PAISES_INDEXABLES.filter((pais) => !afectados.has(pais));
+}
+
+/**
+ * En cada variante que sigue indexable (la raíz chilena y las de los países
+ * no afectados), ninguna alternate puede apuntar a una URL noindex.
+ */
 async function revisarHreflang(noindexPaths) {
   console.log(`\n== Hreflang ==`);
   const rutas = [...new Set(paresNoindex().map(({ ruta }) => ruta))];
   for (const ruta of rutas) {
-    const url = `${BASE}${ruta}`;
-    let res;
-    try {
-      res = await get(url);
-    } catch (err) {
-      fallo(url, `sin respuesta (${err?.name || "error"})`);
-      continue;
-    }
-    if (res.status !== 200) {
-      // La raíz puede no existir para alguna ruta (p. ej. /versus): se avisa.
-      fallo(url, `status ${res.status} al comprobar hreflang desde la raíz`);
-      continue;
-    }
-    const alternates = alternatesDe(await res.text());
-    let malos = 0;
-    for (const alt of alternates) {
-      const destino = rutaDe(alt.href, BASE);
-      if (destino && noindexPaths.has(destino)) {
-        malos += 1;
-        if (malos <= 10) {
-          fallo(url, `hreflang "${alt.hreflang}" apunta a noindex ${destino}`);
+    for (const pais of variantesIndexables(ruta)) {
+      const path = pais === "cl" ? ruta : `/${pais}${ruta}`;
+      const url = `${BASE}${path}`;
+      let res;
+      try {
+        res = await get(url);
+      } catch (err) {
+        fallo(url, `sin respuesta (${err?.name || "error"})`);
+        continue;
+      }
+      if (res.status !== 200) {
+        // La raíz puede no existir para alguna ruta (p. ej. /versus): se avisa.
+        fallo(url, `status ${res.status} al comprobar hreflang`);
+        continue;
+      }
+      const alternates = alternatesDe(await res.text());
+      let malos = 0;
+      for (const alt of alternates) {
+        const destino = rutaDe(alt.href, BASE);
+        if (destino && noindexPaths.has(destino)) {
+          malos += 1;
+          if (malos <= 10) {
+            fallo(url, `hreflang "${alt.hreflang}" apunta a noindex ${destino}`);
+          }
         }
       }
+      if (malos > 10) {
+        fallos.push(`${url} — ${malos - 10} hreflang adicionales a noindex`);
+        console.log(`  FAIL ${url} — ${malos - 10} hreflang adicionales a noindex`);
+      }
+      if (malos === 0) ok(`${url} → hreflang sin destinos noindex`);
     }
-    if (malos > 10) {
-      fallos.push(`${url} — ${malos - 10} hreflang adicionales a noindex`);
-      console.log(`  FAIL ${url} — ${malos - 10} hreflang adicionales a noindex`);
-    }
-    if (malos === 0) ok(`${url} → hreflang sin destinos noindex`);
   }
 }
 
@@ -347,7 +359,10 @@ async function revisarHreflang(noindexPaths) {
   await revisarPaginas();
 
   if (!SOLO_PAGINAS) {
-    const noindexPaths = await revisarSitemap();
+    await revisarSitemap();
+    const noindexPaths = new Set(
+      paresNoindex().map(({ pais, ruta }) => rutaDe(`/${pais}${ruta}`, BASE))
+    );
     await revisarHreflang(noindexPaths);
   }
 
