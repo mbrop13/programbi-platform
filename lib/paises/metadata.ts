@@ -3,6 +3,7 @@ import { esIndexable, getPais, normalizarPais } from "@/config/paises";
 import { absoluteUrl, pageOg, tituloLocal } from "@/lib/seo";
 import { hreflangDe, localeOg, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
+import { esRutaNoindexPais } from "@/lib/paises/indexabilidad";
 
 /**
  * Nombre que cabe en un <title>. Los países con nombre largo usan su forma
@@ -41,11 +42,11 @@ function conPais(texto: string, iso: string, max: number = 60): string {
 }
 
 /**
- * Meta robots de la versión por país.
- * Solo Chile (raíz), Argentina, México, Perú, Colombia y Uruguay se indexan.
- * Los demás países quedan en noindex, follow: el enlace se sigue, la página no.
+ * Meta robots de una página que no se indexa.
+ * Se usa para los países no indexables y para las variantes thin que WS9
+ * consolida: el enlace se sigue, la página no se indexa.
  */
-export function robotsLocal(iso: string | null | undefined) {
+export function robotsLocal(_iso?: string | null) {
   return {
     index: false,
     follow: true,
@@ -58,9 +59,18 @@ export function metadataLocal(opts: {
   path: string;
   title: string;
   description: string;
+  /**
+   * Fuerza `noindex, follow` sin tocar `RUTAS_NOINDEX_PAIS`.
+   * Es la vía aditiva para frentes con noindex propio (p. ej. test-nivel por
+   * país, WS6): la decisión se toma en la página, no en la config de países.
+   */
+  noindex?: boolean;
 }): Metadata {
   const iso = normalizarPais(opts.pais);
-  const indexable = esIndexable(iso);
+  // Indexable = el país se indexa Y la ruta no está consolidada como variante
+  // thin de esta lista. El canonical siempre es el propio (nunca cruzado).
+  const indexable =
+    esIndexable(iso) && !opts.noindex && !esRutaNoindexPais(iso, opts.path);
   const title = tituloLocal(conPais(localizarMercado(opts.title, iso), iso));
   const description = localizarMercado(opts.description, iso);
   const canonical = absoluteUrl(rutaLocal(iso, opts.path));
@@ -78,7 +88,8 @@ export function metadataLocal(opts: {
     description,
     alternates: {
       canonical,
-      // Los países que no se indexan no entran en el juego de hreflang.
+      // Ni los países no indexables ni las rutas consolidadas entran en el
+      // juego de hreflang: solo se anuncian variantes indexables.
       ...(indexable ? { languages: hreflangDe(opts.path) } : {}),
     },
     // Sin `robots` se hereda el del layout raíz (index, follow).
