@@ -19,7 +19,9 @@ export default function NewsletterClient({
 }) {
   const [articles, setArticles] = useState<any[]>(initialArticles);
   const [categories, setCategories] = useState<any[]>(initialCategories);
-  const [loading, setLoading] = useState(initialArticles.length === 0);
+  // El SSR ya entrega el contenido (o el estado vacío): no bloquear con un
+  // spinner si Supabase está caído o lento.
+  const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
   const [user, setUser] = useState<any>(null);
 
@@ -107,7 +109,7 @@ export default function NewsletterClient({
       ) : articles.length === 0 ? (
         <div className="text-center py-32 max-w-lg mx-auto px-5">
           <Newspaper className="w-12 h-12 text-gray-200 mx-auto mb-6" />
-          <h2 className="serif text-3xl font-bold text-gray-900 mb-3">No hay artículos aún</h2>
+          <h2 className="serif text-3xl font-bold text-gray-900 mb-3">Pronto más artículos</h2>
           <p className="text-gray-400 text-sm leading-relaxed serif-body">
             Pronto publicaremos contenido increíble sobre análisis de datos, IA y tecnología. ¡Vuelve pronto!
           </p>

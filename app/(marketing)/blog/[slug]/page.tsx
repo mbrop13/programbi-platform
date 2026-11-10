@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getArticleBySlug, getPublishedArticles } from "@/lib/supabase/comunidad-ai";
+import { getArticuloPorSlug, getPublishedArticles } from "@/lib/blog/data";
 import BlogArticleClient from "./BlogArticleClient";
+import ContenidoNoDisponible from "@/components/blog/ContenidoNoDisponible";
 import { isVideoUrl, getOptimizedShareImage } from "@/lib/utils";
 import { ogImageUrl } from "@/lib/og/url";
 import { absoluteUrl, tituloSeo } from "@/lib/seo";
@@ -64,8 +65,21 @@ function getArticlePoster(article: ArticlePoster | null): string {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
-  if (!article) return { title: "Artículo no encontrado" };
+  const resultado = await getArticuloPorSlug(slug);
+
+  if (resultado.estado === "no_disponible") {
+    // Supabase no respondió: no indexar el estado de respaldo.
+    return {
+      title: "Artículo no disponible",
+      robots: { index: false, follow: false },
+    };
+  }
+
+  if (resultado.estado === "no_encontrado") {
+    return { title: "Artículo no encontrado" };
+  }
+
+  const article = resultado.articulo;
 
   const rawShareImage = getArticlePoster(article);
   const shareImage = getOptimizedShareImage(rawShareImage);
@@ -95,11 +109,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function BlogArticlePage({ params }: PageProps) {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
-  if (!article) notFound();
+  const resultado = await getArticuloPorSlug(slug);
+
+  // Slug inexistente o no publicado: 404 limpio (nunca 500).
+  if (resultado.estado === "no_encontrado") notFound();
+
+  // Supabase caído o lento: 200 con estado de respaldo, sin stacktrace.
+  if (resultado.estado === "no_disponible") {
+    return <ContenidoNoDisponible seccion="blog" />;
+  }
+
+  const article = resultado.articulo;
 
   // Fetch related articles (limit to 3, excluding current)
-  const allArticles = await getPublishedArticles(article.category);
+  const allArticles = await getPublishedArticles(article.category ?? undefined);
   const related = allArticles.filter((a) => a.slug !== slug).slice(0, 3);
 
   const rawShareImage = getArticlePoster(article);

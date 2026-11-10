@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getPublishedArticles, getNewsletterCategories } from "@/lib/supabase/comunidad-ai";
+import { getPublishedArticles, getNewsletterCategories } from "@/lib/blog/data";
 import NewsletterClient from "./NewsletterClient";
 import { absoluteUrl, DEFAULT_OG_IMAGE, twitterShare } from "@/lib/seo";
 
@@ -25,8 +25,11 @@ export const metadata: Metadata = {
 };
 
 export default async function NewsletterPage() {
-  const articles = await getPublishedArticles();
-  const categories = await getNewsletterCategories();
+  // En paralelo y con tope de tiempo: si Supabase falla, ambas devuelven [].
+  const [articles, categories] = await Promise.all([
+    getPublishedArticles(),
+    getNewsletterCategories(),
+  ]);
 
   return <NewsletterClient initialArticles={articles} initialCategories={categories} />;
 }

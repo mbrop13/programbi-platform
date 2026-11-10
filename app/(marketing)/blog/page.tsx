@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getPublishedArticles } from "@/lib/supabase/comunidad-ai";
+import { getPublishedArticles } from "@/lib/blog/data";
 import BlogClient from "./BlogClient";
 import { ogImageUrl } from "@/lib/og/url";
 import { absoluteUrl, tituloSeo } from "@/lib/seo";
