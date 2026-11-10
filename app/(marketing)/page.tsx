@@ -10,8 +10,9 @@ import CountryContent from "@/components/marketing/CountryContent";
 import HomeDeferred from "@/components/marketing/HomeDeferred";
 import { ObjetivosCursos, RecursosDatos } from "@/components/marketing/EnlacesPrioritarios";
 import IndicePais from "@/components/paises/IndicePais";
+import BloqueLocalPais from "@/components/paises/BloqueLocalPais";
 import { homeFaqs } from "@/lib/data/site";
-import { getContenidoPais } from "@/lib/data/contenido-paises";
+import { getBloqueLocal, getContenidoPais } from "@/lib/data/contenido-paises";
 import { courses } from "@/lib/data/courses";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
@@ -53,12 +54,17 @@ export default async function HomePage({
   const { pais: raw } = await params;
   const pais = normalizarPais(raw);
   const contenido = getContenidoPais(pais);
-  const faqs = contenido
-    ? contenido.faqs
-    : homeFaqs.map((faq) => ({
-        q: localizarMercado(faq.q, pais),
-        a: localizarMercado(faq.a, pais),
-      }));
+  const bloque = getBloqueLocal(pais);
+  // La FAQ del hub es la del bloque local cuando existe: así el texto visible
+  // y el FAQPage JSON-LD salen de la misma lista.
+  const faqs = bloque
+    ? bloque.faqs
+    : contenido
+      ? contenido.faqs
+      : homeFaqs.map((faq) => ({
+          q: localizarMercado(faq.q, pais),
+          a: localizarMercado(faq.a, pais),
+        }));
   const faqJsonLd = {
     ...faqJsonLdBase,
     mainEntity: faqs.map((faq) => ({
@@ -89,6 +95,9 @@ export default async function HomePage({
       />
       {pais === ISO_CHILE ? <ObjetivosCursos /> : null}
       {contenido ? <CountryContent contenido={contenido} /> : null}
+      {bloque ? (
+        <BloqueLocalPais iso={pais} bloque={bloque} contexto="hub" conEnlaces={false} />
+      ) : null}
       <Team />
       <Quote />
       <FaqSection

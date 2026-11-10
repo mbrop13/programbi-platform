@@ -1,4 +1,5 @@
 import type { ContenidoPais } from "./tipos";
+import type { DefinicionBloqueLocal } from "./bloque";
 
 const contenido: ContenidoPais = {
   iso: "pe",
@@ -154,3 +155,95 @@ const contenido: ContenidoPais = {
 };
 
 export default contenido;
+
+/**
+ * Bloque local de Perú: datos duros, FAQ y metadata de las siete rutas.
+ * Los montos y el horario los resuelve `bloque.ts` desde la fuente única.
+ */
+export const bloqueLocal: DefinicionBloqueLocal = {
+  iso: "pe",
+  titulo: "Estudiar datos en vivo desde Perú",
+  parrafos: [
+    "Perú combina operaciones mineras y agroindustriales con un retail y una banca que crecen rápido. En los tres mundos el reporte llega tarde, en formatos distintos y sin una definición común de cada indicador. El curso trabaja con la lógica de esos sectores: producción y costo por unidad, rendimiento por fundo, venta por tienda y cartera por zona.",
+    "Las clases se siguen por Zoom en hora de Perú, sin viajar y sin instalar nada más que Power BI Desktop. El catálogo se publica en soles y el pago se hace con Mercado Pago Perú, Yape o Plin; si estás en otra región, la ficha de la cohorte muestra la equivalencia exacta.",
+  ],
+  empresas:
+    "Para equipos en Perú, la capacitación in-company se arma con los datos de la empresa (ERP, comprobantes electrónicos, reportes de planta) y la propuesta indica moneda, alcance y condiciones de facturación. El alcance, los participantes y la modalidad se cotizan aparte de los cursos abiertos.",
+  notas: {
+    precio:
+      "El catálogo peruano se publica en soles (PEN) y no se convierte a dólares. El monto vigente y los descuentos están en el brochure del curso; el checkout muestra el total antes de pagar.",
+    horario:
+      "Perú no aplica horario de verano. En Chile la clase es de {horarioChile}; cuando Chile cambia de hora, la diferencia con Lima se mueve una hora. La ficha de la cohorte muestra la equivalencia exacta.",
+    pago:
+      "Mercado Pago Perú procesa tarjeta, Yape o Plin; la transferencia en soles se coordina con admisiones. {notaPago}",
+    cuotas:
+      "Aplican a todos los cursos, también a tarjetas emitidas en Perú. La pasarela confirma la promoción al pagar, sin recargo por financiamiento.",
+    "clase-gratis":
+      "La clase abierta se dicta por Zoom, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada; si aún no hay fecha, puedes pedir que te avisen.",
+    certificado:
+      "El certificado lleva código de verificación y se suma a las grabaciones de por vida en el campus. Es un certificado de ProgramBI, no la certificación oficial PL-300 de Microsoft.",
+  },
+  preguntas: [
+    {
+      q: "¿A qué hora son las clases en Perú y qué días?",
+      a: "Las clases en vivo por Zoom son de {horario}, {horaLocal}, lunes y miércoles o martes y jueves según la cohorte. En Chile son de {horarioChile}. Perú no cambia de horario, así que la diferencia se ajusta cuando Chile entra o sale del horario de verano.",
+    },
+    {
+      q: "¿Cuánto cuesta un curso en Perú y en qué moneda se paga?",
+      a: "El catálogo se publica en soles (PEN), sin conversión a dólares. El monto vigente de cada curso y los descuentos están en su brochure PDF, y el checkout muestra el total antes de pagar.",
+    },
+    {
+      q: "¿Puedo pagar desde Perú con tarjeta, Yape o Plin?",
+      a: "Sí. Mercado Pago Perú acepta tarjeta de crédito o débito, Yape y Plin; la transferencia en soles se coordina con admisiones. {notaPago}",
+    },
+    {
+      q: "¿Hay cuotas sin interés para Perú?",
+      a: "Sí: {cuotas} en todos los cursos, sin recargo por financiamiento. La pasarela confirma la disponibilidad con tu tarjeta al momento de pagar.",
+    },
+    {
+      q: "¿Hay clase gratis antes de inscribirme?",
+      a: "Sí. Hay una clase abierta por Zoom para conocer cómo se trabaja con datos, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada; mientras tanto puedes pedir que te avisen.",
+    },
+    {
+      q: "¿Qué certificado recibo al terminar?",
+      a: "Un certificado digital de ProgramBI con código de verificación y acceso permanente a las grabaciones. Es un certificado de la academia: la certificación PL-300 de Microsoft se rinde y se paga aparte.",
+    },
+  ],
+  seo: {
+    hub: {
+      title: "Cursos de datos en vivo para Perú | ProgramBI",
+      description:
+        "Cursos en vivo por Zoom para Perú: análisis de datos, Power BI, SQL y Python. Horario de Lima, precios en soles, 3 cuotas sin interés y certificado.",
+    },
+    cursos: {
+      title: "Cursos Power BI, SQL y Python en Perú | ProgramBI",
+      description:
+        "Catálogo en vivo para Perú: Power BI, SQL, Python y análisis de datos. Horario de Lima, precios en soles y proyecto final con certificado.",
+    },
+    "power-bi": {
+      title: "Curso de Power BI en vivo para Perú | ProgramBI",
+      description:
+        "Curso Power BI en vivo por Zoom para Perú: Power Query, modelo y DAX en 20 horas. Horario de Lima, precio en soles y 3 cuotas sin interés.",
+    },
+    "analisis-de-datos": {
+      title: "Curso de análisis de datos en vivo Perú | ProgramBI",
+      description:
+        "Análisis de datos en vivo para Perú: SQL, Power BI y Python, 60 horas por nivel. Horario de Lima, precio en soles y certificado digital.",
+    },
+    python: {
+      title: "Curso de Python para datos en vivo Perú | ProgramBI",
+      description:
+        "Curso Python para datos en vivo para Perú: Pandas, visualización y automatización. Horario de Lima, precio en soles y 3 cuotas sin interés.",
+    },
+    empresas: {
+      title: "Capacitación Power BI para empresas Perú | ProgramBI",
+      description:
+        "Capacitación in-company en Perú: Power BI, SQL, Python y automatización con los datos de tu empresa. En vivo, con factura corporativa.",
+    },
+    precios: {
+      title: "Precios de cursos en vivo en Perú | ProgramBI",
+      description:
+        "Precios de los cursos en vivo para Perú, publicados en soles: duración, qué incluye, medios de pago y 3 cuotas sin interés.",
+    },
+  },
+};

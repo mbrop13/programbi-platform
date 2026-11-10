@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { esIsoPais, ISO_CHILE } from "@/config/paises";
-import { getContenidoPais } from "@/lib/data/contenido-paises";
+import { getContenidoPais, getSeoBloque } from "@/lib/data/contenido-paises";
 import { metadataLocal } from "@/lib/paises/metadata";
 import { PAGE_SEO } from "@/lib/seo/money";
 
@@ -21,10 +21,11 @@ export async function generateMetadata({
   const { pais } = await params;
   if (!esIsoPais(pais) || pais === ISO_CHILE) return {};
   const contenido = getContenidoPais(pais);
+  const seo = getSeoBloque(pais, "hub");
   return metadataLocal({
     pais,
     path: "/",
-    title: contenido?.seo.title ?? PAGE_SEO.home.title,
-    description: contenido?.seo.description ?? PAGE_SEO.home.description,
+    title: seo?.title ?? contenido?.seo.title ?? PAGE_SEO.home.title,
+    description: seo?.description ?? contenido?.seo.description ?? PAGE_SEO.home.description,
   });
 }
