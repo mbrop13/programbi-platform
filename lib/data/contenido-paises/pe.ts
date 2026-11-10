@@ -166,6 +166,7 @@ export const bloqueLocal: DefinicionBloqueLocal = {
   parrafos: [
     "Perú combina operaciones mineras y agroindustriales con un retail y una banca que crecen rápido. En los tres mundos el reporte llega tarde, en formatos distintos y sin una definición común de cada indicador. El curso trabaja con la lógica de esos sectores: producción y costo por unidad, rendimiento por fundo, venta por tienda y cartera por zona.",
     "Las clases se siguen por Zoom en hora de Perú, sin viajar y sin instalar nada más que Power BI Desktop. El catálogo se publica en soles y el pago se hace con Mercado Pago Perú, Yape o Plin; si estás en otra región, la ficha de la cohorte muestra la equivalencia exacta.",
+    "Cada cohorte combina la sesión en vivo con trabajo entre clases: los ejercicios se resuelven sobre archivos de práctica y el proyecto final se presenta al grupo. Las grabaciones quedan en el campus para quienes trabajan en turnos o viajan, y la ficha del curso indica duración, nivel y requisitos antes de inscribirse.",
   ],
   empresas:
     "Para equipos en Perú, la capacitación in-company se arma con los datos de la empresa (ERP, comprobantes electrónicos, reportes de planta) y la propuesta indica moneda, alcance y condiciones de facturación. El alcance, los participantes y la modalidad se cotizan aparte de los cursos abiertos.",
@@ -175,9 +176,9 @@ export const bloqueLocal: DefinicionBloqueLocal = {
     horario:
       "Perú no aplica horario de verano. En Chile la clase es de {horarioChile}; cuando Chile cambia de hora, la diferencia con Lima se mueve una hora. La ficha de la cohorte muestra la equivalencia exacta.",
     pago:
-      "Mercado Pago Perú procesa tarjeta, Yape o Plin; la transferencia en soles se coordina con admisiones. {notaPago}",
+      "Mercado Pago Perú procesa tarjeta, Yape o Plin; la transferencia en soles se coordina con admisiones. Si la tarjeta fue emitida fuera de Perú, el cargo final lo define el banco emisor.",
     cuotas:
-      "Aplican a todos los cursos, también a tarjetas emitidas en Perú. La pasarela confirma la promoción al pagar, sin recargo por financiamiento.",
+      "Aplican a todos los cursos en Perú. La pasarela confirma la promoción al pagar, sin recargo por financiamiento.",
     "clase-gratis":
       "La clase abierta se dicta por Zoom, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada; si aún no hay fecha, puedes pedir que te avisen.",
     certificado:

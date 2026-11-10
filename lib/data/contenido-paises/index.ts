@@ -9,8 +9,8 @@ import {
   type DatosBloqueLocal,
   type DefinicionBloqueLocal,
   type RutaSeoLocal,
-  type SeoPagina,
 } from "./bloque";
+import type { SeoPagina } from "./tipos";
 
 /**
  * Países con contenido propio. Chile (raíz) mantiene su home actual y los

@@ -166,6 +166,7 @@ export const bloqueLocal: DefinicionBloqueLocal = {
   parrafos: [
     "México concentra manufactura, comercio y servicios financieros en unas pocas zonas metropolitanas y, al mismo tiempo, opera cadenas de suministro que cruzan el país. El reporte de planta, la venta por sucursal y la cartera se miran en tableros distintos; el curso los une con un modelo y una definición común de cada indicador.",
     "Las clases se siguen por Zoom en hora del centro de México, con grabaciones en el campus. El catálogo se publica en pesos mexicanos y el pago se hace con Mercado Pago México, SPEI u OXXO; si estás en otro huso, la ficha de la cohorte muestra la equivalencia.",
+    "Cada cohorte combina la sesión en vivo con trabajo entre clases: los ejercicios se resuelven sobre archivos de práctica y el proyecto final se presenta al grupo. Las grabaciones quedan en el campus para quienes trabajan en turnos o viajan, y la ficha del curso indica duración, nivel y requisitos antes de inscribirse.",
   ],
   empresas:
     "Para equipos en México, la capacitación in-company se arma con los datos de la empresa (ERP, punto de venta, nómina o cadena de suministro) y la propuesta indica moneda, alcance y condiciones de facturación. Los cursos abiertos se cotizan por separado.",
@@ -175,9 +176,9 @@ export const bloqueLocal: DefinicionBloqueLocal = {
     horario:
       "México centro no aplica horario de verano desde 2022. En Chile la clase es de {horarioChile}; si estás en Tijuana, Monterrey, Cancún o Mérida, el huso cambia y la hora se corre. La ficha de la cohorte muestra la equivalencia.",
     pago:
-      "Mercado Pago México procesa tarjeta, SPEI y OXXO; la transferencia se coordina con admisiones. {notaPago}",
+      "Mercado Pago México procesa tarjeta, SPEI y OXXO; la transferencia se coordina con admisiones. Si la tarjeta fue emitida fuera de México, el cargo final lo define el banco emisor.",
     cuotas:
-      "Aplican a todos los cursos, también a tarjetas emitidas en México. La pasarela confirma la promoción al pagar, sin recargo por financiamiento.",
+      "Aplican a todos los cursos en México. La pasarela confirma la promoción al pagar, sin recargo por financiamiento.",
     "clase-gratis":
       "La clase abierta se dicta por Zoom, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada; si aún no hay fecha, puedes pedir que te avisen.",
     certificado:
