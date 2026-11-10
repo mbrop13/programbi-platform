@@ -21,12 +21,19 @@ const COPY = {
 } as const;
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
-  const pais = normalizarPais((await params).pais);
+  const rawPais = (await params).pais;
+  const pais = normalizarPais(rawPais);
+  // La misma página sirve la raíz (/test-nivel) y las variantes por país
+  // (/ve/test-nivel). Solo la raíz se indexa: el test es idéntico en todos los
+  // mercados. Las variantes quedan `noindex, follow`, con canonical propio y
+  // sin hreflang; la raíz tampoco emite hreflang hacia variantes noindex.
   return metadataLocal({
     pais,
     path: PATH,
     title: COPY.titulo,
     description: COPY.descripcion,
+    forzarNoindex: Boolean(rawPais),
+    sinHreflang: true,
   });
 }
 

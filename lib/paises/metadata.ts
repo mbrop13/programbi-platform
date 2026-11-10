@@ -58,9 +58,21 @@ export function metadataLocal(opts: {
   path: string;
   title: string;
   description: string;
+  /**
+   * Fuerza `noindex, follow` aunque el país sea indexable. Aditivo: por
+   * defecto manda `esIndexable(iso)`. Lo usan las variantes por país que
+   * duplican una página nacional y no deben competir con ella (test de nivel).
+   */
+  forzarNoindex?: boolean;
+  /**
+   * Omite `alternates.languages`. Aditivo: por defecto se emite el hreflang
+   * recíproco de los países indexables. Se usa cuando las variantes por país
+   * de la ruta quedan en noindex y no deben recibir ni emitir hreflang.
+   */
+  sinHreflang?: boolean;
 }): Metadata {
   const iso = normalizarPais(opts.pais);
-  const indexable = esIndexable(iso);
+  const indexable = !opts.forzarNoindex && esIndexable(iso);
   const title = tituloLocal(conPais(localizarMercado(opts.title, iso), iso));
   const description = localizarMercado(opts.description, iso);
   const canonical = absoluteUrl(rutaLocal(iso, opts.path));
@@ -79,7 +91,7 @@ export function metadataLocal(opts: {
     alternates: {
       canonical,
       // Los países que no se indexan no entran en el juego de hreflang.
-      ...(indexable ? { languages: hreflangDe(opts.path) } : {}),
+      ...(indexable && !opts.sinHreflang ? { languages: hreflangDe(opts.path) } : {}),
     },
     // Sin `robots` se hereda el del layout raíz (index, follow).
     ...(indexable ? {} : { robots: robotsLocal(iso) }),

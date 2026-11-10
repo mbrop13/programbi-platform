@@ -24,11 +24,15 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const title = tituloSeo(`Test de nivel ${test.nombre} en ${paisInfo.nombre}`);
   const description = `Test de nivel ${test.nombre} gratis en ${paisInfo.nombre}: ${test.preguntas.length} preguntas para medir tu conocimiento y recibir una recomendación de curso. Sin registro.`;
 
+  // Raíz indexable; variantes por país `noindex, follow`, con canonical propio
+  // y sin hreflang (mismo test que la raíz, no compite en resultados).
   return metadataLocal({
     pais,
     path: `/test-nivel/${test.tema}`,
     title,
     description,
+    forzarNoindex: Boolean(rawPais),
+    sinHreflang: true,
   });
 }
 
