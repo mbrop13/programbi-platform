@@ -18,6 +18,20 @@ import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 
 export const revalidate = 3600;
 
+/**
+ * Rutas no-país que GSC marcó como «descubierta, sin indexar». Se enlazan desde
+ * el catálogo chileno para darles una ruta de rastreo real; las fichas de curso
+ * salen de `courses`, no se inventa contenido.
+ */
+const DESCUBIERTAS = [
+  { href: "/cursos/machine-learning", label: "Machine Learning" },
+  { href: "/cursos/mercado-financiero", label: "Mercado financiero" },
+  { href: "/glosario", label: "Glosario de datos" },
+  { href: "/empleos/para-empresas", label: "Publicar vacantes" },
+  { href: "/empleos/talento", label: "Talento certificado" },
+  { href: "/empleos/vacantes", label: "Vacantes abiertas" },
+] as const;
+
 export const metadata: Metadata = {
   title: { absolute: PAGE_SEO.cursos.title },
   description: PAGE_SEO.cursos.description,
@@ -150,6 +164,34 @@ export default async function CursosPage({
           en la raíz y hablan del mercado chileno. */}
       {pais === ISO_CHILE ? <ObjetivosCursos contexto="cursos" /> : null}
       {pais === ISO_CHILE ? <RecursosDatos contexto="cursos" /> : null}
+      {pais === ISO_CHILE ? (
+        <section
+          className="border-t border-line bg-canvas px-4 py-12 sm:px-6 lg:px-8"
+          aria-labelledby="especializaciones-y-recursos"
+        >
+          <div className="mx-auto max-w-[1400px]">
+            <h2 id="especializaciones-y-recursos" className="text-xl font-semibold text-ink">
+              Especializaciones y recursos para seguir avanzando
+            </h2>
+            <p className="mt-2 max-w-[52rem] text-sm leading-relaxed text-mute">
+              Fichas de especialización y páginas de apoyo para complementar tu formación y
+              conectar con el mercado laboral.
+            </p>
+            <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium text-ink">
+              {DESCUBIERTAS.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="no-underline underline-offset-2 hover:text-mute hover:underline"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
       <section className="bg-paper px-4 py-12 sm:px-6 lg:px-8" aria-labelledby="cursos-por-pais">
         <div className="mx-auto max-w-[1400px]">
           <h2 id="cursos-por-pais" className="text-xl font-semibold text-ink">
