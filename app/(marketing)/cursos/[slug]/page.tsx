@@ -5,6 +5,7 @@ import { getActiveSchedules, getMarketingDescription } from "@/lib/supabase/comu
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
 import BloquePaisFicha from "@/components/paises/BloquePaisFicha";
+import BloqueLocalPais from "@/components/paises/BloqueLocalPais";
 import FichaSeoExtra from "@/components/marketing/FichaSeoExtra";
 import PlantillaVentasPowerBi from "@/components/marketing/PlantillaVentasPowerBi";
 import GuiasDelCurso from "@/components/guias/GuiasDelCurso";
@@ -17,6 +18,7 @@ import { normalizarPais, esIndexable, ISO_CHILE } from "@/config/paises";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 import { robotsLocal } from "@/lib/paises/metadata";
+import { getBloqueLocal, getSeoBloque, esRutaSeoLocal } from "@/lib/data/contenido-paises";
 import { detalleCursoLocal } from "@/lib/paises/detalle-curso";
 import { horarioDeCohorte } from "@/lib/paises/horarios";
 
@@ -59,7 +61,10 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
   const seo = COURSE_SEO[slug];
   const titleBase = seo?.title ?? `${course.title} — Curso en vivo Chile`;
-  const title = tituloLocal(localizarMercado(titleBase, pais));
+  // Perú y México tienen title/meta escritos para su mercado; el resto sigue
+  // localizando el título chileno.
+  const seoLocal = esRutaSeoLocal(slug) ? getSeoBloque(pais, slug) : null;
+  const title = seoLocal ? tituloLocal(seoLocal.title) : tituloLocal(localizarMercado(titleBase, pais));
   const dbDescription = await getMarketingDescription(slug);
   // Chile puede declarar el precio en la meta; los demás mercados usan la
   // versión sin monto porque su precio va en otra moneda.
@@ -67,7 +72,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     pais === ISO_CHILE && seo?.descriptionCl
       ? seo.descriptionCl
       : seo?.description || dbDescription || course.description;
-  const description = localizarMercado(descripcionBase, pais);
+  const description = seoLocal ? seoLocal.description : localizarMercado(descripcionBase, pais);
   const canon = absoluteUrl(rutaLocal(pais, `/cursos/${slug}`));
 
   // Tarjeta OG de marca (tipográfica, papel-monócromo) — reemplaza las
@@ -146,6 +151,7 @@ export default async function CourseDetailPage({
   const detalle = detalleCursoLocal({ iso: pais, inicio, fin });
 
   const courseJsonLd = getCourseJsonLd(course, "publico", pais);
+  const bloque = getBloqueLocal(pais, { curso: slug });
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -203,6 +209,12 @@ export default async function CourseDetailPage({
       {/* Bloque propio del mercado: texto, horario, FAQ y enlaces internos.
           Reemplaza a CountryContext, que repetía los mismos datos. */}
       <BloquePaisFicha curso={course} pais={pais} inicio={inicio} fin={fin} />
+      {/* Datos del mercado para la ficha: precio en moneda local (gate del
+          brochure), horario convertido, pago, cuotas, clase gratis y
+          certificado, más el resto de fichas y guías del país. */}
+      {bloque ? (
+        <BloqueLocalPais iso={pais} bloque={bloque} contexto="ficha" conEnlaces />
+      ) : null}
       <FichaSeoExtra slug={course.slug} pais={pais} />
       {/* Bloque único de la antigua landing /curso-power-bi (plantilla CSV),
           migrado aquí antes de convertir esa landing en 301. */}

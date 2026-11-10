@@ -4,9 +4,9 @@ import { courses } from "@/lib/data/courses";
 import { getCourseGallery } from "@/lib/data/course-gallery";
 import { catalogHours, publicLevelCount } from "@/lib/data/course-views";
 import CursosPageClient from "./CursosPageClient";
-import CountryContext from "@/components/marketing/CountryContext";
+import BloqueLocalPais from "@/components/paises/BloqueLocalPais";
 import { ObjetivosCursos, RecursosDatos } from "@/components/marketing/EnlacesPrioritarios";
-import { getContenidoPais } from "@/lib/data/contenido-paises";
+import { getBloqueLocal } from "@/lib/data/contenido-paises";
 import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import { ogImageUrl } from "@/lib/og/url";
@@ -66,7 +66,7 @@ export default async function CursosPage({
   params: Promise<{ pais?: string }>;
 }) {
   const pais = normalizarPais((await params).pais);
-  const contenido = getContenidoPais(pais);
+  const bloque = getBloqueLocal(pais);
   const schedules = (await getActiveSchedules()) as CourseSchedule[];
   const featuredImage =
     courses.find((c) => c.slug === "analisis-de-datos")?.imageUrl ??
@@ -140,11 +140,8 @@ export default async function CursosPage({
               : undefined,
         }))}
       />
-      {contenido ? (
-        <CountryContext
-          contenido={contenido}
-          titulo={`Qué se practica en el catálogo de ${getPais(pais).nombre}`}
-        />
+      {bloque ? (
+        <BloqueLocalPais iso={pais} bloque={bloque} contexto="cursos" conFaq conEnlaces />
       ) : null}
       {/* Solo Chile: las landings de nicho y las páginas de comparativas viven
           en la raíz y hablan del mercado chileno. */}

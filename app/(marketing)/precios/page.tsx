@@ -13,6 +13,8 @@ import { cuotasSinInteres } from "@/config/cuotas";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 import { preciosDePais, type PrecioCursoPagina } from "@/lib/paises/precios-pagina";
+import { getBloqueLocal } from "@/lib/data/contenido-paises";
+import BloqueLocalPais from "@/components/paises/BloqueLocalPais";
 import { courseBrochurePath } from "@/lib/pricing-gate";
 import PreciosGateClient, { type CursoPrecioGate } from "@/components/marketing/PreciosGateClient";
 
@@ -102,7 +104,10 @@ export default async function PreciosPage({
 }) {
   const iso = normalizarPais((await params).pais);
   const { pais, cursos, moneda, cobroLocal } = await preciosDePais(iso);
-  const faqs = faqsDe(pais, cursos, moneda);
+  const bloque = getBloqueLocal(iso);
+  // Con bloque local, la FAQ de la página es la del mercado (4-6 preguntas):
+  // el texto visible y el FAQPage JSON-LD salen de la misma lista.
+  const faqs = bloque?.faqs ?? faqsDe(pais, cursos, moneda);
   const powerBi = cursos.find((curso) => curso.slug === "power-bi");
   const L = (texto: string) => localizarMercado(texto, iso);
   const href = (destino: string) => rutaLocal(iso, destino);
@@ -235,6 +240,12 @@ export default async function PreciosPage({
             cobroLocal={cobroLocal}
           />
 
+          {/* Datos del mercado: horario local, pago internacional, cuotas,
+              clase gratis y certificado, con las fichas y guías del país. */}
+          {bloque ? (
+            <BloqueLocalPais iso={iso} bloque={bloque} contexto="precios" conEnlaces />
+          ) : null}
+
           <section className="mt-14" aria-labelledby="que-incluye">
             <h2 id="que-incluye" className="text-2xl font-bold tracking-tight text-ink">
               Qué incluye
@@ -249,19 +260,21 @@ export default async function PreciosPage({
             </ul>
           </section>
 
-          <section className="mt-14" aria-labelledby="medios-de-pago">
-            <h2
-              id="medios-de-pago"
-              className="text-2xl font-bold tracking-tight text-ink"
-            >
-              Medios de pago en {pais.nombre}
-            </h2>
-            <ul className="mt-4 space-y-2 text-sm leading-relaxed text-mute">
-              {pais.mediosPago.map((medio) => (
-                <li key={medio}>{medio}.</li>
-              ))}
-            </ul>
-          </section>
+          {bloque ? null : (
+            <section className="mt-14" aria-labelledby="medios-de-pago">
+              <h2
+                id="medios-de-pago"
+                className="text-2xl font-bold tracking-tight text-ink"
+              >
+                Medios de pago en {pais.nombre}
+              </h2>
+              <ul className="mt-4 space-y-2 text-sm leading-relaxed text-mute">
+                {pais.mediosPago.map((medio) => (
+                  <li key={medio}>{medio}.</li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <section className="mt-14" aria-labelledby="preguntas-frecuentes">
             <h2

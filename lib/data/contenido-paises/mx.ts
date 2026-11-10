@@ -1,4 +1,5 @@
 import type { ContenidoPais } from "./tipos";
+import type { DefinicionBloqueLocal } from "./bloque";
 
 const contenido: ContenidoPais = {
   iso: "mx",
@@ -154,3 +155,96 @@ const contenido: ContenidoPais = {
 };
 
 export default contenido;
+
+/**
+ * Bloque local de México: datos duros, FAQ y metadata de las siete rutas.
+ * Los montos y el horario los resuelve `bloque.ts` desde la fuente única.
+ */
+export const bloqueLocal: DefinicionBloqueLocal = {
+  iso: "mx",
+  titulo: "Estudiar datos en vivo desde México",
+  parrafos: [
+    "México concentra manufactura, comercio y servicios financieros en unas pocas zonas metropolitanas y, al mismo tiempo, opera cadenas de suministro que cruzan el país. El reporte de planta, la venta por sucursal y la cartera se miran en tableros distintos; el curso los une con un modelo y una definición común de cada indicador.",
+    "Las clases se siguen por Zoom en hora del centro de México, con grabaciones en el campus. El catálogo se publica en pesos mexicanos y el pago se hace con Mercado Pago México, SPEI u OXXO; si estás en otro huso, la ficha de la cohorte muestra la equivalencia.",
+    "Cada cohorte combina la sesión en vivo con trabajo entre clases: los ejercicios se resuelven sobre archivos de práctica y el proyecto final se presenta al grupo. Las grabaciones quedan en el campus para quienes trabajan en turnos o viajan, y la ficha del curso indica duración, nivel y requisitos antes de inscribirse.",
+  ],
+  empresas:
+    "Para equipos en México, la capacitación in-company se arma con los datos de la empresa (ERP, punto de venta, nómina o cadena de suministro). Los ejercicios usan esos archivos y los casos de manufactura, retail, logística o finanzas que el equipo reconoce en su día a día. La propuesta indica moneda, alcance y condiciones de facturación; el programa se cotiza aparte de los cursos abiertos.",
+  notas: {
+    precio:
+      "El catálogo mexicano se publica en pesos (MXN) y no se convierte a dólares. El monto vigente y los descuentos están en el brochure del curso; el checkout muestra el total antes de pagar.",
+    horario:
+      "México centro no aplica horario de verano desde 2022. En Chile la clase es de {horarioChile}; si estás en Tijuana, Monterrey, Cancún o Mérida, el huso cambia y la hora se corre. La ficha de la cohorte muestra la equivalencia.",
+    pago:
+      "Mercado Pago México procesa tarjeta, SPEI y OXXO; la transferencia se coordina con admisiones. Si la tarjeta fue emitida fuera de México, el cargo final lo define el banco emisor.",
+    cuotas:
+      "Aplican a todos los cursos en México. La pasarela confirma la promoción al pagar, sin recargo por financiamiento.",
+    "clase-gratis":
+      "La clase abierta se dicta por Zoom, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada; si aún no hay fecha, puedes pedir que te avisen.",
+    certificado:
+      "El certificado lleva código de verificación y se suma a las grabaciones de por vida en el campus. Es un certificado de ProgramBI, no la certificación oficial PL-300 de Microsoft.",
+  },
+  preguntas: [
+    {
+      q: "¿A qué hora son las clases en México?",
+      a: "Las clases en vivo por Zoom son de {horario}, {horaLocal}, lunes y miércoles o martes y jueves según la cohorte. En Chile son de {horarioChile}. Si estás fuera del centro del país, ajusta por tu huso: Tijuana, Monterrey, Cancún y Mérida no comparten la hora de CDMX.",
+    },
+    {
+      q: "¿Cuánto cuesta un curso en México y en qué moneda se paga?",
+      a: "El catálogo se publica en pesos mexicanos (MXN), sin conversión a dólares. El monto vigente de cada curso y los descuentos están en su brochure PDF, y el checkout muestra el total antes de pagar.",
+    },
+    {
+      q: "¿Cómo pago desde México: tarjeta, SPEI u OXXO?",
+      a: "Mercado Pago México acepta tarjeta de crédito o débito, SPEI y OXXO; la transferencia se coordina con admisiones. {notaPago}",
+    },
+    {
+      q: "¿Puedo pagar en cuotas sin interés?",
+      a: "Sí: {cuotas} en todos los cursos, sin recargo por financiamiento. La pasarela confirma la disponibilidad con tu tarjeta al momento de pagar.",
+    },
+    {
+      q: "¿Hay clase gratis antes de inscribirme?",
+      a: "Sí. Hay una clase abierta por Zoom para conocer cómo se trabaja con datos, sin costo y sin crear cuenta. La fecha se publica cuando está confirmada; mientras tanto puedes pedir que te avisen.",
+    },
+    {
+      q: "¿Qué certificado recibo al terminar?",
+      a: "Un certificado digital de ProgramBI con código de verificación y acceso permanente a las grabaciones. Es un certificado de la academia: la certificación PL-300 de Microsoft se rinde y se paga aparte.",
+    },
+  ],
+  seo: {
+    hub: {
+      title: "Cursos de datos en vivo para México | ProgramBI",
+      description:
+        "Cursos en vivo por Zoom para México: análisis de datos, Power BI, SQL y Python. Horario del centro de México, precios en MXN, 3 cuotas y certificado.",
+    },
+    cursos: {
+      title: "Cursos Power BI, SQL y Python en México | ProgramBI",
+      description:
+        "Catálogo en vivo para México: Power BI, SQL, Python y análisis de datos. Horario de CDMX, precios en pesos y proyecto final con certificado.",
+    },
+    "power-bi": {
+      title: "Curso de Power BI en vivo para México | ProgramBI",
+      description:
+        "Curso Power BI en vivo por Zoom para México: Power Query, modelo y DAX en 20 horas. Horario de CDMX, precio en MXN y 3 cuotas sin interés.",
+    },
+    "analisis-de-datos": {
+      title: "Curso de análisis de datos en vivo México | ProgramBI",
+      description:
+        "Análisis de datos en vivo para México: SQL, Power BI y Python, 60 horas por nivel. Horario de CDMX, precio en MXN y certificado digital.",
+    },
+    python: {
+      title: "Curso de Python para datos en vivo México | ProgramBI",
+      description:
+        "Curso Python para datos en vivo para México: Pandas, visualización y automatización. Horario de CDMX, precio en MXN y 3 cuotas sin interés.",
+    },
+    empresas: {
+      title: "Capacitación Power BI para empresas México | ProgramBI",
+      description:
+        "Capacitación in-company en México: Power BI, SQL, Python y automatización con los datos de tu empresa. En vivo, con factura corporativa.",
+    },
+    precios: {
+      title: "Precios de cursos en vivo en México | ProgramBI",
+      description:
+        "Precios de los cursos en vivo para México, publicados en pesos: duración, qué incluye, medios de pago y 3 cuotas sin interés.",
+    },
+  },
+};
