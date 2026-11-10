@@ -4,6 +4,7 @@ import { getPais } from "@/config/paises";
 import type { ContenidoPais } from "@/lib/data/contenido-paises/tipos";
 import { horarioLocal } from "@/lib/paises/horarios";
 import { rutaLocal } from "@/lib/paises/rutas";
+import { courseBrochurePath } from "@/lib/pricing-gate";
 
 /**
  * Bloque de contenido local de la home. Solo se renderiza en los países que
@@ -135,7 +136,7 @@ export default function CountryContent({ contenido }: { contenido: ContenidoPais
                 el PDF de temario y precios del curso.
               </p>
               <Link
-                href={rutaLocal(pais.iso, "/cursos/power-bi/brochure")}
+                href={courseBrochurePath("power-bi", pais.iso)}
                 className="mt-3 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-canvas no-underline"
               >
                 Ver temario y precios (PDF)

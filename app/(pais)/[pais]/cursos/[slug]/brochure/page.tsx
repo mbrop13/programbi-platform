@@ -2,23 +2,36 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getCourseBrochureData } from "@/lib/brochure/brochure-data";
 import { CourseBrochureClient } from "@/components/brochure/CourseBrochureClient";
-import { getCourseBySlug } from "@/lib/data/courses";
-import { esIsoPais, ISO_CHILE, normalizarPais } from "@/config/paises";
+import { courses, getCourseBySlug } from "@/lib/data/courses";
+import {
+  esIsoPais,
+  ISO_CHILE,
+  normalizarPais,
+  PAISES_CARPETA,
+} from "@/config/paises";
 
 export const revalidate = 3600;
+export const dynamicParams = false;
 
 type Params = Promise<{ pais: string; slug: string }>;
-type SearchParams = Promise<{ pais?: string | string[] }>;
-
-function primerValor(valor: string | string[] | undefined): string | undefined {
-  const crudo = Array.isArray(valor) ? valor[0] : valor;
-  return crudo?.trim().toLowerCase() || undefined;
-}
 
 /**
  * Temario y precios del curso con carpeta de país (`/pe/cursos/<slug>/brochure`).
- * El query `?pais=` válido manda sobre el segmento; si no viene, manda la ruta.
+ *
+ * El país sale solo de la ruta. El antiguo `?pais=` ya no se lee: antes podía
+ * mandar sobre el segmento y eso obligaba a renderizar en cada visita.
+ *
+ * Se generan los mismos pares país × curso que hoy responden 200: las carpetas
+ * publicadas (`PAISES_CARPETA`, la misma lista que usa el layout de `(pais)`)
+ * por los slugs del catálogo. Con `dynamicParams = false`, cualquier otra
+ * combinación da 404 estático.
  */
+export function generateStaticParams(): { pais: string; slug: string }[] {
+  return PAISES_CARPETA.flatMap((pais) =>
+    courses.map((course) => ({ pais: pais.iso, slug: course.slug }))
+  );
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -39,22 +52,14 @@ export async function generateMetadata({
 
 export default async function CourseBrochurePaisPage({
   params,
-  searchParams,
 }: {
   params: Params;
-  searchParams: SearchParams;
 }) {
   const { pais: segmento, slug } = await params;
-  const query = await searchParams;
-  const paisQuery = primerValor(query.pais);
-  const pais =
-    paisQuery && esIsoPais(paisQuery)
-      ? paisQuery
-      : esIsoPais(segmento)
-        ? normalizarPais(segmento)
-        : ISO_CHILE;
+  // Misma condición que el layout de `(pais)`: Chile vive en la raíz.
+  if (!esIsoPais(segmento) || segmento === ISO_CHILE) notFound();
 
-  const data = await getCourseBrochureData(slug, pais);
+  const data = await getCourseBrochureData(slug, normalizarPais(segmento));
   if (!data) notFound();
 
   return <CourseBrochureClient data={data} />;

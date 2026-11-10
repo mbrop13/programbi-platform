@@ -10,8 +10,6 @@ import { EmpresasContactForm } from "./empresas-contact-form";
 import { EmpresasFaq } from "./empresas-faq";
 
 type EmpresasLandingProps = {
-  curso?: string;
-  nivel?: string;
   /** Nombre del país de la ruta (/empresas es Chile; /pe/empresas, Perú). */
   paisNombre?: string;
 };
@@ -77,7 +75,7 @@ const TOOLS = [
 
 const EMPRESA_COURSES = [...courses].sort((a, b) => a.sortOrder - b.sortOrder);
 
-export function EmpresasLanding({ curso, nivel, paisNombre = "Chile" }: EmpresasLandingProps) {
+export function EmpresasLanding({ paisNombre = "Chile" }: EmpresasLandingProps) {
   return (
     <div className="bg-canvas text-ink">
       <AnalyticsPageEvent event="view_empresas" />
@@ -88,7 +86,7 @@ export function EmpresasLanding({ curso, nivel, paisNombre = "Chile" }: Empresas
       <Topics />
       <Faq />
       <Tools />
-      <Contact curso={curso} nivel={nivel} />
+      <Contact />
     </div>
   );
 }
@@ -326,7 +324,7 @@ function Tools() {
   );
 }
 
-function Contact({ curso, nivel }: EmpresasLandingProps) {
+function Contact() {
   return (
     <section id="contacto" className="scroll-mt-24">
       <div className="mx-auto grid max-w-[1400px] gap-12 px-4 py-20 sm:px-6 lg:grid-cols-2 lg:items-start lg:px-8">
@@ -353,7 +351,7 @@ function Contact({ curso, nivel }: EmpresasLandingProps) {
             ))}
           </ul>
         </div>
-        <EmpresasContactForm curso={curso} nivel={nivel} />
+        <EmpresasContactForm />
       </div>
     </section>
   );

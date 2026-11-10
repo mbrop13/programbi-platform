@@ -139,9 +139,9 @@ export function courseBrochurePath(slug: string, pais?: string | null): string {
   return `/${iso}/cursos/${limpio}/brochure`;
 }
 
-/** Ruta del brochure con el país como query (`?pais=pe`), lista para abrir. */
+/** Ruta del brochure, lista para abrir. El país ya viaja en la ruta. */
 export function courseBrochureUrl(slug: string, pais?: string | null): string {
   const iso = (pais || "").trim().toLowerCase();
   const efectivo = esIsoPais(iso) ? iso : ISO_CHILE;
-  return `${courseBrochurePath(slug, efectivo)}?pais=${encodeURIComponent(efectivo)}`;
+  return courseBrochurePath(slug, efectivo);
 }

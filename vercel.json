@@ -296,6 +296,66 @@
       "source": "/comunidad/ai/:rest*",
       "destination": "/ai/:rest*",
       "statusCode": 301
+    },
+    {
+      "source": "/cl/curso-power-bi",
+      "destination": "/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/cl/cursos/copilot-studio",
+      "destination": "/cursos/copilot",
+      "statusCode": 301
+    },
+    {
+      "source": "/cl/cursos/analitica-financiera",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/cl/cursos/analitica-financiera/:rest*",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/curso-power-bi",
+      "destination": "/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/cursos/copilot-studio",
+      "destination": "/cursos/copilot",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/cursos/analitica-financiera",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/es/cursos/analitica-financiera/:rest*",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/curso-power-bi",
+      "destination": "/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/cursos/copilot-studio",
+      "destination": "/cursos/copilot",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/cursos/analitica-financiera",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
+    },
+    {
+      "source": "/en/cursos/analitica-financiera/:rest*",
+      "destination": "/cursos/mercado-financiero",
+      "statusCode": 301
     }
   ],
   "crons": [

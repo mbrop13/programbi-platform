@@ -12,6 +12,7 @@ import {
   sendNewLeadNotificationToAdmin,
 } from "@/lib/email/mailersend";
 import { paisDeCotizacion } from "@/lib/email/quote-data";
+import { courseBrochurePath } from "@/lib/pricing-gate";
 import { getPais } from "@/config/paises";
 
 // ─── Input Validation Schema ───
@@ -169,7 +170,7 @@ export async function POST(req: NextRequest) {
       resolveCourseSlug(data.sourceCourse || data.selectedCourses?.[0] || "") || "power-bi";
     const successBody = {
       success: true,
-      brochureUrl: `/cursos/${brochureSlug}/brochure?pais=${pais}`,
+      brochureUrl: courseBrochurePath(brochureSlug, pais),
     };
 
     // ─── Anti-Bot Checks (silent reject → 200 to avoid bot retries) ───

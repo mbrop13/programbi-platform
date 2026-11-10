@@ -202,7 +202,7 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
                 </dt>
                 <dd className="mt-2">
                   <Link
-                    href={courseBrochurePath(iso, curso.slug)}
+                    href={courseBrochurePath(curso.slug, iso)}
                     className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline underline-offset-4 hover:underline"
                   >
                     Ver temario y precios (PDF)
@@ -302,7 +302,7 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
                       {horarioVecino.inicio} a {horarioVecino.fin} ({etiquetaHoraLocal(vecino.iso)})
                     </p>
                     <Link
-                      href={courseBrochurePath(vecino.iso, curso.slug)}
+                      href={courseBrochurePath(curso.slug, vecino.iso)}
                       className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-ink no-underline underline-offset-4 hover:underline"
                     >
                       Ver temario y precios en {vecino.nombre}

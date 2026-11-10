@@ -26,7 +26,11 @@ function attachReferralCookie(request: NextRequest, response: NextResponse) {
 function attachGeoCookie(request: NextRequest, response: NextResponse) {
   const country = (request.headers.get('x-vercel-ip-country') || '').trim()
   if (!/^[A-Za-z]{2}$/.test(country)) return response
-  response.cookies.set(GEO_COOKIE, country.toLowerCase(), {
+  const value = country.toLowerCase()
+  // Active CPU y caché: un `Set-Cookie` en cada respuesta cuesta una escritura por
+  // request e impide que el CDN guarde el HTML. Solo se reescribe si falta o cambió.
+  if (request.cookies.get(GEO_COOKIE)?.value === value) return response
+  response.cookies.set(GEO_COOKIE, value, {
     httpOnly: false,
     path: '/',
     maxAge: GEO_COOKIE_MAX_AGE,
@@ -122,13 +126,14 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Match all request paths except for the ones starting with:
-     * - api (api routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public assets (svg, png, jpg, etc.)
+     * El middleware solo corre donde hace falta (auth, sesión, 301 de /cl y /es|/en):
+     * - api (incluye /api/og) y _next/* (static, image, data y prefetch RSC)
+     * - /og (imagen social) y las rutas de metadata: robots.txt, sitemap.xml, llms*.txt
+     * - assets públicos por extensión: ico (favicon incluido), png, jpg, jpeg, webp,
+     *   avif, svg, gif, woff, woff2, ttf, pdf, mp4, xml, txt, js, css, map, json
+     * Lo descartado aquí no lleva sesión de Supabase ni cookie geo, así que no gasta
+     * Fluid Active CPU ni invocaciones de función.
      */
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!api|_next|og|robots\\.txt$|sitemap\\.xml$|llms.*\\.txt$|.*\\.(?:ico|png|jpg|jpeg|webp|avif|svg|gif|woff|woff2|ttf|pdf|mp4|xml|txt|js|css|map|json)$).*)',
   ],
 }

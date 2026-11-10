@@ -3,20 +3,20 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { ChevronRight, MapPin, Globe, Users } from "lucide-react";
-import { createClient } from "@/lib/supabase/server";
+import { createPublicAnonClient } from "@/lib/supabase/server";
 import JobCard, { CompanyAvatar } from "@/components/empleos/JobCard";
 import { mapJobRow } from "@/lib/jobs/queries";
 import { COMPANY_SIZE_LABELS } from "@/lib/jobs/types";
 import { ogImageUrl } from "@/lib/og/url";
 import { tituloSeo } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600;
 
 type Props = { params: Promise<{ slug: string }> };
 
 // cache() evita duplicar la query entre generateMetadata y el render
 const getCompanyBySlug = cache(async (slug: string) => {
-  const supabase = await createClient();
+  const supabase = createPublicAnonClient();
   const { data } = await supabase
     .from("employer_companies")
     .select("*")
@@ -64,7 +64,7 @@ export default async function CompanyPage({ params }: Props) {
   const company = await getCompanyBySlug(slug);
   if (!company) notFound();
 
-  const supabase = await createClient();
+  const supabase = createPublicAnonClient();
   const { data: jobRows } = await supabase
     .from("jobs")
     .select(`

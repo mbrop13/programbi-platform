@@ -28,12 +28,14 @@ import { rutaCursoBloque } from "@/lib/paises/contenido-local";
 
 export const revalidate = 3600;
 
-type Params = Promise<{ slug: string; pais?: string }>;
-type SearchParams = Promise<{ para?: string | string[]; nivel?: string | string[] }>;
+/**
+ * Solo existen como ficha los slugs del catálogo publicado. Con
+ * `dynamicParams = false` un slug desconocido responde 404 estático: no se
+ * renderiza al vuelo (cada render dinámico gastaba CPU y consultas a Supabase).
+ */
+export const dynamicParams = false;
 
-function one(value: string | string[] | undefined) {
-  return Array.isArray(value) ? value[0] : value;
-}
+type Params = Promise<{ slug: string; pais?: string }>;
 
 /**
  * Cursos cuya ficha monta el bloque completo «Preguntas frecuentes»
@@ -142,18 +144,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   return aplicarSeoLocal(metadata, pais, rutaCursoBloque(slug));
 }
 
-export default async function CourseDetailPage({
-  params,
-  searchParams,
-}: {
-  params: Params;
-  searchParams: SearchParams;
-}) {
+export default async function CourseDetailPage({ params }: { params: Params }) {
   const { slug, pais: rawPais } = await params;
   const pais = normalizarPais(rawPais);
-  const query = await searchParams;
-  const para = one(query.para);
-  const nivel = one(query.nivel);
   const course = getCourseBySlug(slug);
   if (!course) notFound();
 
@@ -223,12 +216,13 @@ export default async function CourseDetailPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
+      {/* `?para=` y `?nivel=` los lee el cliente desde la URL: si un Server
+          Component espera `searchParams`, la ficha entera vuelve a renderizarse
+          dinámica y se pierde el ISR. */}
       <CourseDetailClient
         key={course.slug}
         course={cursoSinPrecios(course)}
         initialSchedules={schedules}
-        initialView={para === "empresas" ? "empresas" : "publico"}
-        initialLevelName={nivel}
         detalleLocal={detalle}
       />
       {/* Bloque propio del mercado: texto, horario, FAQ y enlaces internos.

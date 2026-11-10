@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth-helpers";
 import { createServiceClient } from "@/lib/supabase";
@@ -169,6 +170,10 @@ export async function PATCH(req: NextRequest) {
       if (error) {
         return NextResponse.json({ error: "No pudimos eliminar la vacante." }, { status: 500 });
       }
+      revalidatePath("/empleos");
+      revalidatePath("/empleos/vacantes");
+      revalidatePath("/empleos/[slug]", "page");
+      revalidatePath("/empleos/empresas/[slug]", "page");
       return NextResponse.json({ success: true });
     }
 
@@ -187,6 +192,11 @@ export async function PATCH(req: NextRequest) {
     if (error) {
       return NextResponse.json({ error: "No pudimos actualizar la vacante." }, { status: 500 });
     }
+
+    revalidatePath("/empleos");
+    revalidatePath("/empleos/vacantes");
+    revalidatePath("/empleos/[slug]", "page");
+    revalidatePath("/empleos/empresas/[slug]", "page");
 
     return NextResponse.json({ success: true });
   } catch (err: any) {

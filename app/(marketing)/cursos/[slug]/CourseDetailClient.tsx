@@ -215,6 +215,28 @@ function levelIndex(course: Course, audience: CourseOfferView, levelName?: strin
   return index >= 0 ? index : 0;
 }
 
+/**
+ * Vista que pide la URL (`?para=empresas`, `?nivel=Intermedio`).
+ *
+ * La ficha se sirve como HTML estático cacheado, así que `page.tsx` ya no lee
+ * `searchParams`: estos parámetros se aplican acá, una vez hidratada, con el
+ * mismo resultado visible que tenían cuando los resolvía el servidor.
+ *
+ * Se lee `window.location.search` a propósito: `useSearchParams()` obligaría a
+ * un bail-out del contenido SEO a render en cliente. El mapeo de `para` es el
+ * mismo que hacía `page.tsx`: solo `empresas` cambia la audiencia.
+ */
+function readOfferFromUrl(): { para: CourseOfferView | null; nivel: string | null } {
+  if (typeof window === "undefined") return { para: null, nivel: null };
+  const params = new URLSearchParams(window.location.search);
+  const para = params.get("para");
+  const nivel = params.get("nivel");
+  return {
+    para: para === null ? null : para === "empresas" ? "empresas" : "publico",
+    nivel: nivel ? nivel : null,
+  };
+}
+
 export default function CourseDetailClient({
   course,
   initialSchedules,
@@ -224,7 +246,13 @@ export default function CourseDetailClient({
 }: {
   course: Course;
   initialSchedules: CourseSchedule[];
+  /**
+   * Compatibilidad: la ficha se genera estática, así que el servidor ya no
+   * deriva esta vista de `?para=`. Si llega, se usa como estado inicial; una
+   * vez hidratada manda la URL (ver `readOfferFromUrl`).
+   */
   initialView?: CourseOfferView;
+  /** Igual que `initialView`, para `?nivel=`. */
   initialLevelName?: string;
   detalleLocal?: DetalleCursoLocal;
 }) {
@@ -313,6 +341,25 @@ export default function CourseDetailClient({
       monedaPublica(pais)
     );
   }, [course.slug, course.title, pais]);
+
+  // `?para=` y `?nivel=` se aplican una sola vez, ya hidratada la ficha: el
+  // HTML cacheado es el de la vista pública y el cliente ajusta audiencia y
+  // nivel sin volver a pedir la página. El ref evita que un refresh de props
+  // (misma ficha) pise el nivel que eligió el visitante.
+  const urlOfferApplied = useRef(false);
+  useEffect(() => {
+    if (urlOfferApplied.current) return;
+    urlOfferApplied.current = true;
+    const fromUrl = readOfferFromUrl();
+    if (fromUrl.para === null && fromUrl.nivel === null) return;
+    /* eslint-disable react-hooks/set-state-in-effect */
+    const nextAudience = fromUrl.para ?? startingView;
+    if (fromUrl.para !== null) setAudience(nextAudience);
+    if (fromUrl.nivel !== null) {
+      setSelectedLevel(levelIndex(course, nextAudience, fromUrl.nivel));
+    }
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [course, startingView]);
 
   useEffect(() => {
     const supabase = createClient();

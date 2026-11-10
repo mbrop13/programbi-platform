@@ -2,23 +2,28 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getCourseBrochureData } from "@/lib/brochure/brochure-data";
 import { CourseBrochureClient } from "@/components/brochure/CourseBrochureClient";
-import { getCourseBySlug } from "@/lib/data/courses";
-import { esIsoPais, ISO_CHILE } from "@/config/paises";
+import { courses, getCourseBySlug } from "@/lib/data/courses";
+import { ISO_CHILE } from "@/config/paises";
 
 export const revalidate = 3600;
+export const dynamicParams = false;
 
 type Params = Promise<{ slug: string }>;
-type SearchParams = Promise<{ pais?: string | string[] }>;
-
-function primerValor(valor: string | string[] | undefined): string | undefined {
-  const crudo = Array.isArray(valor) ? valor[0] : valor;
-  return crudo?.trim().toLowerCase() || undefined;
-}
 
 /**
  * Temario y precios del curso (versión Chile / raíz).
- * El país sale del query `?pais=` cuando es válido; si no, Chile.
+ *
+ * El país sale solo de la ruta: la raíz es Chile y `/<pais>/cursos/<slug>/brochure`
+ * es ese país. El antiguo `?pais=` ya no se lee, así que la página deja de
+ * depender de `searchParams` y puede servirse desde caché (ISR).
+ *
+ * Solo se generan los slugs del catálogo; el resto da 404 estático
+ * (`dynamicParams = false`), igual que la ficha del curso.
  */
+export function generateStaticParams(): { slug: string }[] {
+  return courses.map((course) => ({ slug: course.slug }));
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -39,17 +44,12 @@ export async function generateMetadata({
 
 export default async function CourseBrochurePage({
   params,
-  searchParams,
 }: {
   params: Params;
-  searchParams: SearchParams;
 }) {
   const { slug } = await params;
-  const query = await searchParams;
-  const paisQuery = primerValor(query.pais);
-  const pais = paisQuery && esIsoPais(paisQuery) ? paisQuery : ISO_CHILE;
 
-  const data = await getCourseBrochureData(slug, pais);
+  const data = await getCourseBrochureData(slug, ISO_CHILE);
   if (!data) notFound();
 
   return <CourseBrochureClient data={data} />;

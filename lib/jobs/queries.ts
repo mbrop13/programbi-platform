@@ -1,4 +1,4 @@
-import { createClient, createPublicAnonClient } from "@/lib/supabase/server";
+import { createPublicAnonClient } from "@/lib/supabase/server";
 import { createServiceClient } from "@/lib/supabase";
 import { skillsFromCourseTitles } from "@/lib/data/job-skills";
 import type { CandidateSnapshot, JobPublic } from "@/lib/jobs/types";
@@ -112,7 +112,7 @@ export async function getPublishedJobs(filters: JobFilters = {}) {
 
 /** Detalle de una vacante publicada por slug. */
 export async function getPublishedJobBySlug(slug: string): Promise<JobPublic | null> {
-  const supabase = await createClient();
+  const supabase = createPublicAnonClient();
   const { data, error } = await supabase
     .from("jobs")
     .select(JOB_PUBLIC_SELECT)
@@ -136,7 +136,7 @@ export async function incrementJobViews(jobId: string) {
 
 /** Vacantes similares: misma skill principal o misma empresa. */
 export async function getSimilarJobs(job: JobPublic, limit = 3): Promise<JobPublic[]> {
-  const supabase = await createClient();
+  const supabase = createPublicAnonClient();
   const primarySkill = job.skills[0];
   let query = supabase
     .from("jobs")

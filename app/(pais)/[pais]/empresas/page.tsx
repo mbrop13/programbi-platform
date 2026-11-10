@@ -7,6 +7,10 @@ import { PAGE_SEO } from "@/lib/seo/money";
 
 export { default } from "../../../(marketing)/empresas/page";
 
+// ISR también para la versión por país (el layout de [pais] ya fija
+// generateStaticParams y revalidate; esto fija el intervalo de la página).
+export const revalidate = 3600;
+
 export async function generateMetadata({
   params,
 }: {

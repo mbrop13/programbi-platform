@@ -115,7 +115,7 @@ export function OgCard({
               marginLeft: "auto",
             }}
           >
-            /{path.replace(/^\//, "")}
+            {`/${path.replace(/^\//, "")}`}
           </div>
         ) : null}
       </div>

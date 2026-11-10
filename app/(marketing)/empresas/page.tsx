@@ -11,6 +11,11 @@ import { hreflangDe } from "@/lib/paises/rutas";
 import { localizarMercado } from "@/lib/paises/precios";
 import { getBloqueLocal } from "@/lib/data/contenido-paises";
 
+// ISR: la página no lee searchParams en el servidor. `?curso=` y `?nivel=`
+// se resuelven en cliente dentro del formulario (EmpresasContactForm), así el
+// HTML del servidor es único y cacheable.
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   title: { absolute: PAGE_SEO.empresas.title },
   description: PAGE_SEO.empresas.description,
@@ -55,13 +60,10 @@ export const metadata: Metadata = {
 
 export default async function EmpresasPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ pais?: string }>;
-  searchParams: Promise<{ curso?: string; nivel?: string }>;
 }) {
   const pais = normalizarPais((await params).pais);
-  const { curso, nivel } = await searchParams;
   const bloque = getBloqueLocal(pais);
   const serviceJsonLd = {
     "@type": "Service",
@@ -109,7 +111,7 @@ export default async function EmpresasPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
-      <EmpresasClient curso={curso} nivel={nivel} paisNombre={getPais(pais).nombre} />
+      <EmpresasClient paisNombre={getPais(pais).nombre} />
       {bloque ? (
         <BloqueLocalPais iso={pais} bloque={bloque} contexto="empresas" conEnlaces />
       ) : null}

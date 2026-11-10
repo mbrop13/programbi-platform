@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { getCourseBySlug } from "@/lib/data/courses";
@@ -28,6 +28,11 @@ const WA = whatsappHref({
   intent: "empresas",
 });
 
+/**
+ * `curso` y `nivel` ya no vienen del servidor: se leen de la URL al montar
+ * (`?curso=...&nivel=...`), así /empresas se puede renderizar y cachear como
+ * estática. Las props quedan como valor inicial opcional para otros usos.
+ */
 export function EmpresasContactForm({
   curso,
   nivel,
@@ -35,12 +40,14 @@ export function EmpresasContactForm({
   curso?: string;
   nivel?: string;
 }) {
-  const preset = curso ? getCourseBySlug(curso)?.title : undefined;
+  const presetProp = curso ? getCourseBySlug(curso)?.title : undefined;
+  const [preset, setPreset] = useState<string | undefined>(presetProp);
+  const [nivelPreset, setNivelPreset] = useState<string | undefined>(nivel);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
   const [company, setCompany] = useState("");
-  const [selected, setSelected] = useState<string[]>(preset ? [preset] : []);
+  const [selected, setSelected] = useState<string[]>(presetProp ? [presetProp] : []);
   const [message, setMessage] = useState(nivel ? `Nos interesa el nivel ${nivel}.` : "");
   const [privacy, setPrivacy] = useState(false);
   const [honeypot, setHoneypot] = useState("");
@@ -49,6 +56,32 @@ export function EmpresasContactForm({
   const [sending, setSending] = useState(false);
   const formLoadedAt = useRef(Date.now());
   const pais = usePaisRuta();
+
+  // Mismo comportamiento visible que antes, pero resuelto en el cliente: al
+  // montar, `?curso=` marca el tema y `?nivel=` deja la nota en el mensaje.
+  // Se usa window.location.search (no useSearchParams) para no sacar la
+  // página del render estático.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+
+    if (!curso) {
+      const slug = params.get("curso")?.trim();
+      const titulo = slug ? getCourseBySlug(slug)?.title : undefined;
+      if (titulo) {
+        setPreset(titulo);
+        setSelected((prev) => (prev.includes(titulo) ? prev : [titulo, ...prev]));
+      }
+    }
+
+    if (!nivel) {
+      const valor = params.get("nivel")?.trim();
+      if (valor) {
+        setNivelPreset(valor);
+        setMessage((prev) => (prev.trim() ? prev : `Nos interesa el nivel ${valor}.`));
+      }
+    }
+  }, [curso, nivel]);
 
   const toggleTopic = (topic: string) => {
     setSelected((prev) =>
@@ -170,7 +203,7 @@ export function EmpresasContactForm({
         <div className="mb-5 flex flex-wrap gap-2">
           <span className="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-xs font-semibold text-canvas">
             Para empresas · {preset}
-            {nivel ? ` · ${nivel}` : ""}
+            {nivelPreset ? ` · ${nivelPreset}` : ""}
           </span>
         </div>
       ) : null}

@@ -619,6 +619,10 @@ export async function adminUpdateCourseDescription(courseId: string, description
   
   await adminDb.from("courses").update({ description }).eq("id", courseId);
   revalidatePath("/(comunidad)", "layout");
+  revalidatePath("/cursos/[slug]", "page");
+  revalidatePath("/[pais]/cursos/[slug]", "page");
+  revalidatePath("/cursos/[slug]/brochure", "page");
+  revalidatePath("/[pais]/cursos/[slug]/brochure", "page");
 }
 
 export async function adminUpdateCourseShortDescription(courseId: string, shortDescription: string) {
@@ -628,6 +632,10 @@ export async function adminUpdateCourseShortDescription(courseId: string, shortD
   
   await adminDb.from("courses").update({ short_description: shortDescription }).eq("id", courseId);
   revalidatePath("/(comunidad)", "layout");
+  revalidatePath("/cursos/[slug]", "page");
+  revalidatePath("/[pais]/cursos/[slug]", "page");
+  revalidatePath("/cursos/[slug]/brochure", "page");
+  revalidatePath("/[pais]/cursos/[slug]/brochure", "page");
 }
 
 export async function adminUploadCourseResource(formData: FormData) {
@@ -1618,6 +1626,9 @@ function revalidatePublicSchedules() {
   try {
     revalidatePath("/cursos");
     revalidatePath("/cursos/[slug]", "page");
+    revalidatePath("/[pais]/cursos/[slug]", "page");
+    revalidatePath("/cursos/[slug]/brochure", "page");
+    revalidatePath("/[pais]/cursos/[slug]/brochure", "page");
   } catch {
     /* revalidate is best-effort outside a request */
   }
@@ -2053,6 +2064,11 @@ export async function adminUpsertPriceOverride(override: {
       .insert(override);
     if (error) throw new Error(error.message);
   }
+
+  revalidatePath("/cursos/[slug]", "page");
+  revalidatePath("/[pais]/cursos/[slug]", "page");
+  revalidatePath("/cursos/[slug]/brochure", "page");
+  revalidatePath("/[pais]/cursos/[slug]/brochure", "page");
 }
 
 export async function getPriceOverrides() {
