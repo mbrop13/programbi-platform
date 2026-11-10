@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { esIsoPais, ISO_CHILE } from "@/config/paises";
 import { metadataLocal } from "@/lib/paises/metadata";
+import { aplicarSeoLocal, getSeoLocal } from "@/lib/paises/contenido-local/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 
 export { default } from "../../../(marketing)/empresas/page";
@@ -12,10 +13,15 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { pais } = await params;
   if (!esIsoPais(pais) || pais === ISO_CHILE) return {};
-  return metadataLocal({
+  const seo = getSeoLocal(pais, "empresas");
+  return aplicarSeoLocal(
+    metadataLocal({
+      pais,
+      path: "/empresas",
+      title: seo?.title ?? PAGE_SEO.empresas.title,
+      description: seo?.description ?? PAGE_SEO.empresas.description,
+    }),
     pais,
-    path: "/empresas",
-    title: PAGE_SEO.empresas.title,
-    description: PAGE_SEO.empresas.description,
-  });
+    "empresas"
+  );
 }

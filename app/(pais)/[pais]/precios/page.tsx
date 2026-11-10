@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { esIsoPais, ISO_CHILE } from "@/config/paises";
 import { metadataLocal } from "@/lib/paises/metadata";
+import { aplicarSeoLocal, getSeoLocal } from "@/lib/paises/contenido-local/seo";
 
 export const revalidate = 3600;
 
@@ -17,5 +18,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { pais } = await params;
   if (!esIsoPais(pais) || pais === ISO_CHILE) return {};
-  return metadataLocal({ pais, path: "/precios", title, description });
+  const seo = getSeoLocal(pais, "precios");
+  return aplicarSeoLocal(
+    metadataLocal({ pais, path: "/precios", title, description }),
+    pais,
+    "precios"
+  );
 }

@@ -15,6 +15,8 @@ import { localizarMercado } from "@/lib/paises/precios";
 import { preciosDePais, type PrecioCursoPagina } from "@/lib/paises/precios-pagina";
 import { courseBrochurePath } from "@/lib/pricing-gate";
 import PreciosGateClient, { type CursoPrecioGate } from "@/components/marketing/PreciosGateClient";
+import BloqueLocalContenido from "@/components/paises/BloqueLocalContenido";
+import { aplicarSeoLocal } from "@/lib/paises/contenido-local/seo";
 
 export const revalidate = 3600;
 
@@ -37,22 +39,26 @@ export async function generateMetadata({
     tags: ["Precios", "Power BI", "Análisis de datos"],
   });
 
-  return {
-    title: { absolute: title },
-    description,
-    alternates: {
-      canonical: absoluteUrl(rutaLocal(iso, PATH)),
-      languages: hreflangDe(PATH),
-    },
-    openGraph: {
-      title,
+  return aplicarSeoLocal(
+    {
+      title: { absolute: title },
       description,
-      url: absoluteUrl(rutaLocal(iso, PATH)),
-      type: "website",
-      images: share.images,
+      alternates: {
+        canonical: absoluteUrl(rutaLocal(iso, PATH)),
+        languages: hreflangDe(PATH),
+      },
+      openGraph: {
+        title,
+        description,
+        url: absoluteUrl(rutaLocal(iso, PATH)),
+        type: "website",
+        images: share.images,
+      },
+      twitter: share.twitter,
     },
-    twitter: share.twitter,
-  };
+    iso,
+    "precios"
+  );
 }
 
 function faqsDe(pais: Pais, cursos: PrecioCursoPagina[], moneda: string) {
@@ -316,6 +322,8 @@ export default async function PreciosPage({
           </div>
         </div>
       </article>
+
+      <BloqueLocalContenido iso={iso} ruta="precios" />
     </>
   );
 }

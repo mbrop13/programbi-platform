@@ -5,6 +5,7 @@ import { getActiveSchedules, getMarketingDescription } from "@/lib/supabase/comu
 import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
 import BloquePaisFicha from "@/components/paises/BloquePaisFicha";
+import BloqueLocalContenido from "@/components/paises/BloqueLocalContenido";
 import FichaSeoExtra from "@/components/marketing/FichaSeoExtra";
 import GuiasDelCurso from "@/components/guias/GuiasDelCurso";
 import TestimoniosDeCurso from "@/components/marketing/TestimoniosDeCurso";
@@ -18,6 +19,8 @@ import { localizarMercado } from "@/lib/paises/precios";
 import { robotsLocal } from "@/lib/paises/metadata";
 import { detalleCursoLocal } from "@/lib/paises/detalle-curso";
 import { horarioDeCohorte } from "@/lib/paises/horarios";
+import { aplicarSeoLocal } from "@/lib/paises/contenido-local/seo";
+import { rutaCursoBloque } from "@/lib/paises/contenido-local";
 
 export const revalidate = 3600;
 
@@ -83,7 +86,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   // Solo los países indexables entran en el juego de hreflang.
   const indexable = esIndexable(pais);
 
-  return {
+  const metadata: Metadata = {
     title: pais === "cl" ? (seo?.title ? { absolute: seo.title } : titleBase) : { absolute: title },
     description,
     alternates: {
@@ -112,6 +115,8 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
       images: [shareImage],
     },
   };
+
+  return aplicarSeoLocal(metadata, pais, rutaCursoBloque(slug));
 }
 
 export default async function CourseDetailPage({
@@ -202,6 +207,12 @@ export default async function CourseDetailPage({
       {/* Bloque propio del mercado: texto, horario, FAQ y enlaces internos.
           Reemplaza a CountryContext, que repetía los mismos datos. */}
       <BloquePaisFicha curso={course} pais={pais} inicio={inicio} fin={fin} />
+      <BloqueLocalContenido
+        iso={pais}
+        ruta={rutaCursoBloque(course.slug)}
+        inicio={inicio}
+        fin={fin}
+      />
       <FichaSeoExtra slug={course.slug} pais={pais} />
       <GuiasDelCurso curso={course.slug} pais={pais} />
       {/* Citas reales de alumnos de este curso (LinkedIn). Se oculta sola si no
