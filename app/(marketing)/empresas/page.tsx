@@ -107,7 +107,7 @@ export default async function EmpresasPage({
         dangerouslySetInnerHTML={{ __html: jsonLdString(jsonLd) }}
       />
       <EmpresasClient curso={curso} nivel={nivel} paisNombre={getPais(pais).nombre} />
-      <BloqueLocalContenido iso={pais} ruta="empresas" />
+      <BloqueLocalContenido iso={pais} ruta="empresas" conFaqJsonLd={false} />
       {pais !== "cl" ? (
         <p className="mx-auto max-w-[1400px] px-4 pb-10 text-sm text-mute sm:px-6">
           {`Capacitación in-company en vivo para equipos de ${getPais(pais).nombre}, con los datos de tu empresa y factura corporativa.`}

@@ -323,7 +323,7 @@ export default async function PreciosPage({
         </div>
       </article>
 
-      <BloqueLocalContenido iso={iso} ruta="precios" />
+      <BloqueLocalContenido iso={iso} ruta="precios" conFaqJsonLd={false} />
     </>
   );
 }

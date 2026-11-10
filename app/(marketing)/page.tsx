@@ -90,7 +90,7 @@ export default async function HomePage({
       />
       {pais === ISO_CHILE ? <ObjetivosCursos /> : null}
       {contenido ? <CountryContent contenido={contenido} /> : null}
-      <BloqueLocalContenido iso={pais} ruta="hub" />
+      <BloqueLocalContenido iso={pais} ruta="hub" conFaqJsonLd={false} />
       <Team />
       <Quote />
       <FaqSection

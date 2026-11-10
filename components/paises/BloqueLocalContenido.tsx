@@ -45,6 +45,12 @@ type Props = {
   /** Inicio y fin de la cohorte en hora de Chile; por defecto 19:30–21:30. */
   inicio?: string;
   fin?: string;
+  /**
+   * Emite el FAQPage JSON-LD del bloque. Se apaga en las rutas que ya declaran
+   * su propia FAQPage (hub, ficha, empresas y precios) para no duplicar el
+   * schema en la misma URL. La FAQ visible del bloque se mantiene siempre.
+   */
+  conFaqJsonLd?: boolean;
 };
 
 function slugRuta(ruta: string): string {
@@ -63,7 +69,13 @@ function slugRuta(ruta: string): string {
  * Stand-in de `components/paises/BloqueLocalPais.tsx` (WS7): la interfaz de
  * datos es la documentada en `lib/paises/contenido-local/tipos.ts`.
  */
-export default function BloqueLocalContenido({ iso, ruta, inicio, fin }: Props) {
+export default function BloqueLocalContenido({
+  iso,
+  ruta,
+  inicio,
+  fin,
+  conFaqJsonLd = true,
+}: Props) {
   const bloque = getBloqueLocalPais(iso);
   const pagina = getPaginaBloqueLocal(iso, ruta);
   if (!bloque || !pagina) return null;
@@ -79,15 +91,23 @@ export default function BloqueLocalContenido({ iso, ruta, inicio, fin }: Props) 
     ? courseBrochurePath(slugCurso, iso)
     : rutaLocal(iso, "/precios");
 
-  const faqJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: pagina.faqs.map((faq) => ({
-      "@type": "Question",
-      name: faq.q,
-      acceptedAnswer: { "@type": "Answer", text: faq.a },
-    })),
-  };
+  // Los textos de `contenido-local` usan el marcador `{cuotas}` para no
+  // duplicar el número que manda `config/cuotas.ts` (fuente única del dato).
+  const cuotas = textoCuotas(iso);
+  const t = (texto: string) => texto.replaceAll("{cuotas}", cuotas);
+  const faqs = pagina.faqs.map((faq) => ({ q: t(faq.q), a: t(faq.a) }));
+
+  const faqJsonLd = conFaqJsonLd
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.q,
+          acceptedAnswer: { "@type": "Answer", text: faq.a },
+        })),
+      }
+    : null;
 
   return (
     <section
@@ -95,10 +115,12 @@ export default function BloqueLocalContenido({ iso, ruta, inicio, fin }: Props) 
       aria-labelledby={id}
       className="border-t border-line bg-wash/30 px-4 py-16 sm:px-6 lg:px-8 lg:py-20"
     >
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: jsonLdString(faqJsonLd) }}
-      />
+      {faqJsonLd ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: jsonLdString(faqJsonLd) }}
+        />
+      ) : null}
 
       <div className="mx-auto max-w-6xl">
         <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
@@ -108,9 +130,9 @@ export default function BloqueLocalContenido({ iso, ruta, inicio, fin }: Props) 
           id={id}
           className="mt-3 max-w-[34ch] text-balance text-2xl font-bold tracking-tight text-ink sm:text-3xl"
         >
-          {pagina.titulo}
+          {t(pagina.titulo)}
         </h2>
-        <p className="mt-4 max-w-[70ch] text-base leading-relaxed text-mute">{pagina.intro}</p>
+        <p className="mt-4 max-w-[70ch] text-base leading-relaxed text-mute">{t(pagina.intro)}</p>
 
         <dl className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-2xl border border-line bg-paper p-5">
@@ -118,7 +140,7 @@ export default function BloqueLocalContenido({ iso, ruta, inicio, fin }: Props) 
               <Landmark size={14} aria-hidden /> {datos.precioTitulo}
             </dt>
             <dd className="mt-2 text-sm leading-relaxed text-mute">
-              {datos.precioDetalle}
+              {t(datos.precioDetalle)}
             </dd>
             <dd className="mt-3">
               <Link
@@ -165,28 +187,28 @@ export default function BloqueLocalContenido({ iso, ruta, inicio, fin }: Props) 
               <ListChecks size={14} aria-hidden /> Cuotas
             </dt>
             <dd className="mt-2 text-sm font-semibold text-ink">{textoCuotas(iso)}</dd>
-            <dd className="mt-1 text-xs leading-relaxed text-faint">{datos.cuotasDetalle}</dd>
+            <dd className="mt-1 text-xs leading-relaxed text-faint">{t(datos.cuotasDetalle)}</dd>
           </div>
 
           <div className="rounded-2xl border border-line bg-paper p-5">
             <dt className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-mute">
               <Gift size={14} aria-hidden /> Clase gratis
             </dt>
-            <dd className="mt-2 text-sm leading-relaxed text-mute">{datos.claseGratis}</dd>
+            <dd className="mt-2 text-sm leading-relaxed text-mute">{t(datos.claseGratis)}</dd>
           </div>
 
           <div className="rounded-2xl border border-line bg-paper p-5">
             <dt className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-mute">
               <BadgeCheck size={14} aria-hidden /> Certificado
             </dt>
-            <dd className="mt-2 text-sm leading-relaxed text-mute">{datos.certificado}</dd>
+            <dd className="mt-2 text-sm leading-relaxed text-mute">{t(datos.certificado)}</dd>
           </div>
         </dl>
 
         <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)] lg:gap-14">
           <div className="space-y-4 text-base leading-relaxed text-mute">
             {pagina.parrafos.map((parrafo) => (
-              <p key={parrafo}>{parrafo}</p>
+              <p key={parrafo}>{t(parrafo)}</p>
             ))}
 
             <div className="mt-8">
@@ -194,7 +216,7 @@ export default function BloqueLocalContenido({ iso, ruta, inicio, fin }: Props) 
                 Preguntas frecuentes en {pais.nombre}
               </h3>
               <div className="mt-4 divide-y divide-line border-y border-line">
-                {pagina.faqs.map((faq) => (
+                {faqs.map((faq) => (
                   <details key={faq.q} className="faq group py-4">
                     <summary className="flex cursor-pointer items-center justify-between gap-6 text-left">
                       <span className="text-sm font-semibold leading-snug text-ink sm:text-base">

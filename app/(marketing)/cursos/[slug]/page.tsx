@@ -212,6 +212,7 @@ export default async function CourseDetailPage({
         ruta={rutaCursoBloque(course.slug)}
         inicio={inicio}
         fin={fin}
+        conFaqJsonLd={false}
       />
       <FichaSeoExtra slug={course.slug} pais={pais} />
       <GuiasDelCurso curso={course.slug} pais={pais} />

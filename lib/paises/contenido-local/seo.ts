@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { textoCuotas } from "@/config/cuotas";
 import type { RutaBloqueLocal } from "./tipos";
 
 /**
@@ -18,7 +19,7 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
     hub: {
       title: "Cursos de datos en vivo en Argentina | ProgramBI",
       description:
-        "Cursos en vivo de análisis de datos, Power BI y SQL para profesionales de Argentina: horario de Buenos Aires, precios en ARS y 3 cuotas sin interés.",
+        "Cursos en vivo de análisis de datos, Power BI y SQL para profesionales de Argentina: horario de Buenos Aires, precios en ARS y {cuotas}.",
     },
     cursos: {
       title: "Cursos Power BI y datos en Argentina | ProgramBI",
@@ -28,7 +29,7 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
     "curso:power-bi": {
       title: "Curso Power BI en vivo en Argentina | ProgramBI",
       description:
-        "Curso Power BI en vivo para Argentina: Power Query, modelo estrella y DAX en 20 horas. Horario de Buenos Aires, valor en ARS y 3 cuotas sin interés.",
+        "Curso Power BI en vivo para Argentina: Power Query, modelo estrella y DAX en 20 horas. Horario de Buenos Aires, valor en ARS y {cuotas}.",
     },
     "curso:analisis-de-datos": {
       title: "Curso de análisis de datos en Argentina | ProgramBI",
@@ -38,7 +39,7 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
     "curso:python": {
       title: "Curso de Python para datos en Argentina | ProgramBI",
       description:
-        "Python para datos en vivo para Argentina: Pandas, visualización y automatización de reportes. Horario de Buenos Aires, valor en ARS y 3 cuotas.",
+        "Python para datos en vivo para Argentina: Pandas, visualización y automatización de reportes. Horario de Buenos Aires, valor en ARS y {cuotas}.",
     },
     empresas: {
       title: "Capacitación in-company en Argentina | ProgramBI",
@@ -48,14 +49,14 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
     precios: {
       title: "Precios de cursos en Argentina | ProgramBI",
       description:
-        "Precios de los cursos en vivo para Argentina: valores en ARS, brochure por curso, medios de pago y 3 cuotas sin interés. Sin letra chica.",
+        "Precios de los cursos en vivo para Argentina: valores en ARS, brochure por curso, medios de pago y {cuotas}. Sin letra chica.",
     },
   },
   co: {
     hub: {
       title: "Cursos de datos en vivo en Colombia | ProgramBI",
       description:
-        "Formación en vivo en Power BI, análisis de datos y Python para profesionales de Colombia: horario de Bogotá, precios en COP y 3 cuotas sin interés.",
+        "Formación en vivo en Power BI, análisis de datos y Python para profesionales de Colombia: horario de Bogotá, precios en COP y {cuotas}.",
     },
     cursos: {
       title: "Cursos Power BI y datos en Colombia | ProgramBI",
@@ -65,7 +66,7 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
     "curso:power-bi": {
       title: "Curso Power BI en vivo en Colombia | ProgramBI",
       description:
-        "Curso Power BI en vivo para Colombia: Power Query, modelo estrella y DAX en 20 horas. Horario de Bogotá, valor en COP y 3 cuotas sin interés.",
+        "Curso Power BI en vivo para Colombia: Power Query, modelo estrella y DAX en 20 horas. Horario de Bogotá, valor en COP y {cuotas}.",
     },
     "curso:analisis-de-datos": {
       title: "Curso de análisis de datos en Colombia | ProgramBI",
@@ -75,7 +76,7 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
     "curso:python": {
       title: "Curso de Python para datos en Colombia | ProgramBI",
       description:
-        "Python para datos en vivo para Colombia: Pandas, visualización y automatización de reportes. Horario de Bogotá, valor en COP y 3 cuotas sin interés.",
+        "Python para datos en vivo para Colombia: Pandas, visualización y automatización de reportes. Horario de Bogotá, valor en COP y {cuotas}.",
     },
     empresas: {
       title: "Capacitación in-company en Colombia | ProgramBI",
@@ -85,7 +86,7 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
     precios: {
       title: "Precios de cursos en Colombia | ProgramBI",
       description:
-        "Precios de los cursos en vivo para Colombia: valores en COP, brochure por curso, medios de pago como PSE o Nequi y 3 cuotas sin interés.",
+        "Precios de los cursos en vivo para Colombia: valores en COP, brochure por curso, medios de pago como PSE o Nequi y {cuotas}.",
     },
   },
 };
@@ -95,7 +96,14 @@ export function getSeoLocal(
   ruta: RutaBloqueLocal
 ): SeoLocal | null {
   if (!iso) return null;
-  return SEO[iso]?.[ruta] ?? null;
+  const seo = SEO[iso]?.[ruta];
+  if (!seo) return null;
+  // `{cuotas}` se resuelve desde `config/cuotas.ts` (fuente única del dato).
+  const cuotas = textoCuotas(iso);
+  return {
+    title: seo.title.replaceAll("{cuotas}", cuotas),
+    description: seo.description.replaceAll("{cuotas}", cuotas),
+  };
 }
 
 /**

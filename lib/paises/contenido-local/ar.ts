@@ -57,7 +57,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Hay cuotas sin interés?",
-          a: "Sí: todos los cursos se pueden pagar en 3 cuotas sin interés, sin recargo por financiamiento. La disponibilidad final de las cuotas la confirma la pasarela en el checkout.",
+          a: "Sí: todos los cursos se pueden pagar en {cuotas}, sin recargo por financiamiento. La disponibilidad final de las cuotas la confirma la pasarela en el checkout.",
         },
         {
           q: "¿El certificado sirve para LinkedIn?",
@@ -77,7 +77,7 @@ const datos: DatosBloqueLocal = {
       parrafos: [
         "Si tu trabajo es armar reportes de gestión, el recorrido corto es Excel y después Power BI. Si necesitas extraer datos de varias tablas o sistemas, suma SQL Server. Si el volumen, la limpieza o la automatización lo piden, entra Python. No hace falta hacer los tres: el orden depende del problema que tengas hoy en tu área.",
         "Para administración y procesos, Access resuelve la base de un área y Power Automate el circuito de tareas repetitivas. Para análisis avanzado o finanzas, machine learning y mercado financiero tienen ficha propia. Copilot, Claude e IA en productividad cubren el uso diario de asistentes; análisis para minería aplica el mismo programa de análisis de datos a turnos, flota y mantenimiento.",
-        "Cada ficha declara duración, nivel y temario antes de inscribirte. El brochure PDF de Argentina incluye el valor en pesos, las fechas de la cohorte y las tres cuotas sin interés. La tabla de precios muestra la duración de todos los cursos en una sola vista para comparar antes de elegir.",
+        "Cada ficha declara duración, nivel y temario antes de inscribirte. El brochure PDF de Argentina incluye el valor en pesos, las fechas de la cohorte y las {cuotas}. La tabla de precios muestra la duración de todos los cursos en una sola vista para comparar antes de elegir.",
         "Si dudas entre dos cursos, la pregunta útil es qué entregable necesitas: un tablero, una consulta, un script o una base. Esa respuesta ordena el recorrido mejor que la lista de herramientas. El equipo de admisiones también puede revisar tu caso antes de que pagues.",
       ],
       faqs: [
@@ -103,7 +103,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se paga desde Argentina?",
-          a: "Con Mercado Pago Argentina, Mercado Pago Wallet o transferencia bancaria en pesos. Todos los cursos se pueden pagar en 3 cuotas sin interés y el checkout confirma el monto final antes de pagar.",
+          a: "Con Mercado Pago Argentina, Mercado Pago Wallet o transferencia bancaria en pesos. Todos los cursos se pueden pagar en {cuotas} y el checkout confirma el monto final antes de pagar.",
         },
       ],
     },
@@ -136,7 +136,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cuánto cuesta y cómo se paga?",
-          a: "El valor vigente está en el brochure PDF del curso, en pesos argentinos. Se paga con Mercado Pago Argentina, Mercado Pago Wallet o transferencia, y todos los cursos admiten 3 cuotas sin interés.",
+          a: "El valor vigente está en el brochure PDF del curso, en pesos argentinos. Se paga con Mercado Pago Argentina, Mercado Pago Wallet o transferencia, y todos los cursos admiten {cuotas}.",
         },
         {
           q: "¿Qué certificado recibo?",
@@ -177,7 +177,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se consulta el valor?",
-          a: "El valor vigente del nivel que elijas se descarga en el brochure PDF del curso, en pesos argentinos. El checkout confirma el monto y permite pagar en 3 cuotas sin interés.",
+          a: "El valor vigente del nivel que elijas se descarga en el brochure PDF del curso, en pesos argentinos. El checkout confirma el monto y permite pagar en {cuotas}.",
         },
       ],
     },
@@ -214,7 +214,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se paga el curso?",
-          a: "El valor vigente se consulta en el brochure PDF, en pesos argentinos. Se paga con Mercado Pago Argentina o transferencia, y el curso admite 3 cuotas sin interés.",
+          a: "El valor vigente se consulta en el brochure PDF, en pesos argentinos. Se paga con Mercado Pago Argentina o transferencia, y el curso admite {cuotas}.",
         },
       ],
     },
@@ -254,7 +254,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Se puede pagar en cuotas?",
-          a: "Los cursos abiertos admiten 3 cuotas sin interés. En in-company, las condiciones de pago se acuerdan en la propuesta según el alcance y la modalidad de facturación.",
+          a: "Los cursos abiertos admiten {cuotas}. En in-company, las condiciones de pago se acuerdan en la propuesta según el alcance y la modalidad de facturación.",
         },
       ],
     },
@@ -262,9 +262,9 @@ const datos: DatosBloqueLocal = {
       kicker: "Precios · Argentina",
       titulo: "Cómo se publica el precio en Argentina",
       intro:
-        "Moneda ARS, brochure por curso y checkout con Mercado Pago. El monto se confirma antes de pagar y las tres cuotas sin interés aplican a todos los cursos.",
+        "Moneda ARS, brochure por curso y checkout con Mercado Pago. El monto se confirma antes de pagar y las {cuotas} aplican a todos los cursos.",
       parrafos: [
-        "Todos los cursos tienen un precio publicado en pesos argentinos. El valor vigente, los descuentos y las tres cuotas sin interés se descargan en el brochure PDF de cada curso; la tabla de esta página muestra duración y nivel, y el checkout confirma el monto antes de pagar. No hay un precio distinto por comprar desde otra ciudad: la moneda es la del mercado argentino.",
+        "Todos los cursos tienen un precio publicado en pesos argentinos. El valor vigente, los descuentos y las {cuotas} se descargan en el brochure PDF de cada curso; la tabla de esta página muestra duración y nivel, y el checkout confirma el monto antes de pagar. No hay un precio distinto por comprar desde otra ciudad: la moneda es la del mercado argentino.",
         "El pago se procesa con Mercado Pago Argentina: tarjeta de crédito o débito, Mercado Pago Wallet o transferencia bancaria en pesos. Si la cuenta local no está habilitada, el checkout muestra el equivalente en pesos chilenos (CLP) antes de confirmar. Esa conversión es informativa: el cargo final depende del medio de pago y de tu banco.",
         "Pagar desde el exterior es posible. El checkout muestra los medios disponibles y, si usas una tarjeta emitida en otro país, el cargo final lo define tu banco, incluidos los impuestos o comisiones que aplique. ProgramBI no fija ese cargo. Si necesitas una factura corporativa, el equipo de admisiones coordina los datos antes del pago.",
         "El precio incluye clases en vivo por Zoom, grabaciones en el campus y certificado digital al completar. No incluye licencias de pago de Microsoft ni el examen PL-300, que se pagan aparte si decides rendirlos. Las licencias de Power BI Pro solo hacen falta para publicar y compartir informes dentro de una organización.",
@@ -280,8 +280,8 @@ const datos: DatosBloqueLocal = {
           a: "Sí. El catálogo de Argentina se publica en pesos argentinos. Si el checkout usa la cuenta de Chile porque la cuenta local no está habilitada, muestra el equivalente en CLP antes de confirmar.",
         },
         {
-          q: "¿Las 3 cuotas sin interés aplican a todos los cursos?",
-          a: "Sí: todos los cursos admiten 3 cuotas sin interés, sin recargo por financiamiento. La pasarela confirma las cuotas disponibles según el medio de pago y el banco.",
+          q: "¿Las {cuotas} aplican a todos los cursos?",
+          a: "Sí: todos los cursos admiten {cuotas}, sin recargo por financiamiento. La pasarela confirma las cuotas disponibles según el medio de pago y el banco.",
         },
         {
           q: "¿Puedo pagar con una tarjeta del exterior?",
