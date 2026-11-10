@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import AvisoEquipoPreparacion from "@/components/equipo/AvisoEquipoPreparacion";
 import TarjetaProfesor from "@/components/equipo/TarjetaProfesor";
-import { EQUIPO, EQUIPO_PUBLICADO, rutaPerfil } from "@/lib/data/equipo";
-import { getOrganizacionEquipoJsonLd, getPersonaJsonLd } from "@/lib/seo/course-jsonld";
+import { EQUIPO_INDEXABLE } from "@/lib/data/equipo";
+import {
+  getEquipoCollectionJsonLd,
+  getOrganizacionEquipoJsonLd,
+  getPersonaJsonLd,
+} from "@/lib/seo/course-jsonld";
 import { SITE_URL, absoluteUrl, jsonLdString, pageOg, tituloSeo } from "@/lib/seo";
 
 const TITULO = "Profesores y equipo docente";
@@ -26,8 +29,6 @@ export const metadata: Metadata = {
   title: { absolute: TITLE_FINAL },
   description: DESCRIPCION,
   alternates: { canonical: CANONICAL },
-  // Mientras falten biografías, la página existe (200) pero no se indexa.
-  ...(EQUIPO_PUBLICADO ? {} : { robots: { index: false, follow: true } }),
   openGraph: {
     title: TITLE_FINAL,
     description: DESCRIPCION,
@@ -43,19 +44,8 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
     getOrganizacionEquipoJsonLd(DESCRIPCION_ORG),
-    ...EQUIPO.map(getPersonaJsonLd),
-    {
-      "@type": "ItemList",
-      "@id": `${CANONICAL}#equipo`,
-      name: TITLE_FINAL,
-      numberOfItems: EQUIPO.length,
-      itemListElement: EQUIPO.map((miembro, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        url: absoluteUrl(rutaPerfil(miembro.slug)),
-        name: miembro.nombre,
-      })),
-    },
+    ...EQUIPO_INDEXABLE.map(getPersonaJsonLd),
+    ...getEquipoCollectionJsonLd(EQUIPO_INDEXABLE, CANONICAL, TITLE_FINAL, DESCRIPCION),
     {
       "@type": "BreadcrumbList",
       itemListElement: [
@@ -87,10 +77,8 @@ export default function ProfesoresPage() {
             cursos de los que están a cargo.
           </p>
 
-          <AvisoEquipoPreparacion className="mt-8" />
-
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {EQUIPO.map((miembro) => (
+            {EQUIPO_INDEXABLE.map((miembro) => (
               <TarjetaProfesor key={miembro.slug} miembro={miembro} />
             ))}
           </div>

@@ -58,24 +58,27 @@ export default function PerfilProfesor({ miembro }: { miembro: MiembroEquipo }) 
           ) : null}
 
           {miembro.credenciales.length > 0 ? (
-            <ul className="mt-6 space-y-2">
-              {miembro.credenciales.map((linea) => (
-                <li key={linea} className="flex items-start gap-2 text-sm leading-relaxed text-mute">
-                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-ink" aria-hidden="true" />
-                  <span>{linea}</span>
-                </li>
-              ))}
-            </ul>
+            <section className="mt-8" aria-labelledby="formacion-credenciales">
+              <h2
+                id="formacion-credenciales"
+                className="text-xs font-semibold uppercase tracking-[0.18em] text-faint"
+              >
+                Formación y credenciales
+              </h2>
+              <ul className="mt-3 space-y-2">
+                {miembro.credenciales.map((linea) => (
+                  <li key={linea} className="flex items-start gap-2 text-sm leading-relaxed text-mute">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-ink" aria-hidden="true" />
+                    <span>{linea}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
           ) : null}
 
           {miembro.bio ? (
             <p className="mt-6 max-w-[65ch] text-base leading-relaxed text-mute">{miembro.bio}</p>
-          ) : (
-            <p className="mt-6 max-w-[65ch] rounded-2xl border border-line bg-paper px-5 py-4 text-sm leading-relaxed text-mute">
-              <span className="font-semibold text-ink">Perfil en preparación.</span> Estamos
-              completando este perfil; la ficha se publica cuando la biografía esté confirmada.
-            </p>
-          )}
+          ) : null}
 
           {miembro.trayectoria.length > 0 ? (
             <section className="mt-8" aria-labelledby="trayectoria-profesional">

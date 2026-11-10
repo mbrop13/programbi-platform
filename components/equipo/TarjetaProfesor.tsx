@@ -47,9 +47,11 @@ export default function TarjetaProfesor({ miembro }: { miembro: MiembroEquipo })
 
         {miembro.bio ? (
           <p className="mt-4 line-clamp-3 text-sm leading-relaxed text-mute">{miembro.bio}</p>
-        ) : (
-          <p className="mt-4 text-sm italic text-faint">Perfil en preparación</p>
-        )}
+        ) : miembro.credenciales.length > 0 ? (
+          <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-mute">
+            {miembro.credenciales[0]}
+          </p>
+        ) : null}
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-6">
           <Link

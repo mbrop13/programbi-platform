@@ -10,7 +10,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import MentorsSection from "@/components/marketing/MentorsSection";
-import { EQUIPO, fundadorEquipo, rutaPerfil } from "@/lib/data/equipo";
+import { EQUIPO, EQUIPO_INDEXABLE, fundadorEquipo, rutaPerfil } from "@/lib/data/equipo";
 import { getOrganizacionEquipoJsonLd, getPersonaJsonLd } from "@/lib/seo/course-jsonld";
 import { ogImageUrl } from "@/lib/og/url";
 import { twitterShare, absoluteUrl, jsonLdString, tituloSeo } from "@/lib/seo";
@@ -92,10 +92,10 @@ export default async function NosotrosPage({
         isPartOf: { "@id": "https://www.programbi.com/#website" },
         mainEntity: { "@id": "https://www.programbi.com/#organization" },
       },
-      // La organización enlaza al fundador en `founder` y a todo el equipo en
-      // `employee`; los nodos Person van en el mismo @graph.
+      // La organización enlaza al fundador en `founder` y a los perfiles
+      // publicados en `employee`; los nodos Person van en el mismo @graph.
       getOrganizacionEquipoJsonLd(descripcionOrg),
-      ...EQUIPO.map(getPersonaJsonLd),
+      ...EQUIPO_INDEXABLE.map(getPersonaJsonLd),
     ]
   };
 

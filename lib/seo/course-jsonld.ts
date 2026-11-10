@@ -11,7 +11,7 @@ import {
 import { SITE_URL, WEBSITE_ID, ORG_ID, absoluteUrl } from "@/lib/seo";
 import { COURSE_SEO } from "@/lib/seo/money";
 import {
-  EQUIPO,
+  EQUIPO_INDEXABLE,
   fundadorEquipo,
   miembroPorCurso,
   rutaPerfil,
@@ -104,7 +104,7 @@ export function getCourseJsonLd(
         jobTitle: instructor.cargo,
         url: absoluteUrl(rutaPerfil(instructor.slug)),
         worksFor: { "@id": ORG_ID },
-        ...(instructor.imageUrl ? { image: instructor.imageUrl } : {}),
+        ...(instructor.imageUrl ? { image: absoluteUrl(instructor.imageUrl) } : {}),
         ...(instructor.linkedinUrl ? { sameAs: [instructor.linkedinUrl] } : {}),
       },
     },
@@ -147,17 +147,22 @@ export function getPersonaJsonLd(miembro: MiembroEquipo) {
     url: absoluteUrl(rutaPerfil(miembro.slug)),
     worksFor: { "@id": ORG_ID },
     ...(miembro.bio ? { description: miembro.bio } : {}),
-    ...(miembro.imageUrl ? { image: miembro.imageUrl } : {}),
+    ...(miembro.imageUrl ? { image: absoluteUrl(miembro.imageUrl) } : {}),
     ...(miembro.linkedinUrl ? { sameAs: [miembro.linkedinUrl] } : {}),
   };
 }
 
 /**
  * EducationalOrganization con el equipo enlazado por `@id`: el fundador en
- * `founder` y todas las personas en `employee`. Los nodos Person se incluyen
- * aparte, en el mismo @graph de la página.
+ * `founder` y todos los perfiles publicados en `employee`. Los nodos Person se
+ * incluyen aparte, en el mismo @graph de la página. Solo entran los miembros
+ * que cumplen `perfilIndexable`: la organización no declara empleados con
+ * ficha `noindex`.
  */
-export function getOrganizacionEquipoJsonLd(descripcion: string) {
+export function getOrganizacionEquipoJsonLd(
+  descripcion: string,
+  miembros: MiembroEquipo[] = EQUIPO_INDEXABLE
+) {
   return {
     "@type": "EducationalOrganization",
     "@id": ORG_ID,
@@ -167,7 +172,7 @@ export function getOrganizacionEquipoJsonLd(descripcion: string) {
     logo: { "@type": "ImageObject", url: LOGO_ORGANIZACION, width: 600, height: 160 },
     description: descripcion,
     founder: { "@id": idPersona(fundadorEquipo().slug) },
-    employee: EQUIPO.map((miembro) => ({ "@id": idPersona(miembro.slug) })),
+    employee: miembros.map((miembro) => ({ "@id": idPersona(miembro.slug) })),
   };
 }
 
@@ -182,4 +187,45 @@ export function getProfilePageJsonLd(miembro: MiembroEquipo) {
     isPartOf: { "@id": WEBSITE_ID },
     mainEntity: { "@id": idPersona(miembro.slug) },
   };
+}
+
+/**
+ * CollectionPage del listado /profesores y su ItemList de fichas. Solo entran
+ * los miembros que cumplen `perfilIndexable`: los demás siguen existiendo con
+ * `noindex, follow` y no se anuncian como parte de la colección.
+ */
+export function getEquipoCollectionJsonLd(
+  miembros: MiembroEquipo[],
+  url: string,
+  nombre: string,
+  descripcion: string
+) {
+  return [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#webpage`,
+      url,
+      name: nombre,
+      description: descripcion,
+      inLanguage: "es-CL",
+      isPartOf: { "@id": WEBSITE_ID },
+      mainEntity: { "@id": `${url}#equipo` },
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${url}#equipo`,
+      name: nombre,
+      numberOfItems: miembros.length,
+      itemListElement: miembros.map((miembro, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "Person",
+          "@id": idPersona(miembro.slug),
+          name: miembro.nombre,
+          url: absoluteUrl(rutaPerfil(miembro.slug)),
+        },
+      })),
+    },
+  ];
 }

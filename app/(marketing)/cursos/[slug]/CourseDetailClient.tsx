@@ -30,9 +30,9 @@ import {
   syllabusIndexForLevel,
   type CourseOfferView,
 } from "@/lib/data/course-views";
-import { founderImage } from "@/lib/data/images";
 import { createClient } from "@/lib/supabase/client";
 import AuthModal from "@/components/shared/AuthModal";
+import TuProfesor from "@/components/equipo/TuProfesor";
 import TemarioSection from "@/components/marketing/temario/TemarioSection";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { captureAndReadAttribution } from "@/lib/utm";
@@ -748,21 +748,7 @@ export default function CourseDetailClient({
         </div>
       </section>
 
-      <section className="border-t border-line bg-canvas px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
-        <div className="mx-auto grid max-w-[1400px] grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-16">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[26px] border border-line bg-wash lg:col-span-4">
-            <CourseImage src={founderImage} alt="Manuel Oliva, instructor de ProgramBI" fill sizes="(max-width: 1024px) 100vw, 33vw" className="object-cover" />
-          </div>
-          <div className="lg:col-span-8">
-            <h2 className="text-2xl font-bold tracking-tight text-ink sm:text-3xl">Instructor</h2>
-            <p className="mt-2 text-lg font-semibold text-ink">Manuel Oliva</p>
-            <p className="mt-4 max-w-[54ch] text-base leading-relaxed text-mute">
-              Magíster en Data Science (UAI). Ha liderado capacitaciones en AngloAmerican, CAP, Deloitte y SQM, y
-              formado a más de 5.000 profesionales en SQL, Power BI, Python e IA.
-            </p>
-          </div>
-        </div>
-      </section>
+      <TuProfesor cursoSlug={course.slug} />
 
       {isCroTemplate ? (
         <CourseFaq slug={course.slug} extra={detalleLocal?.faqs} pais={pais} />
