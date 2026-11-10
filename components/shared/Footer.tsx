@@ -20,12 +20,10 @@ const socialLinks = [
 const companyLinks = [
   { label: "Ver Cursos", href: "/cursos" },
   { label: "Precios", href: "/precios" },
-  { label: "Empresas", href: "/empresas" },
   { label: "Referidos", href: "/referidos" },
-  { label: "Bolsa de Trabajo", href: "/empleos" },
-  { label: "Publicar vacantes", href: "/empleos/para-empresas" },
-  { label: "Talento certificado", href: "/empleos/talento" },
-  { label: "Vacantes abiertas", href: "/empleos/vacantes" },
+  // Una sola entrada a la bolsa: antes el pie repartía /empleos en cuatro
+  // anchors (publicar, talento, vacantes) y diluía el enlazado interno.
+  { label: "Bolsa de trabajo", href: "/empleos" },
   ...(COMUNIDAD_PUBLICA ? [{ label: "Comunidad", href: "/comunidad" }] : []),
   { label: "Blog", href: "/blog" },
   { label: "Preguntas frecuentes", href: "/preguntas-frecuentes" },
@@ -40,6 +38,19 @@ const companyLinks = [
 
 /** Países con guía publicada (/guias o /{pais}/guias). */
 const GUIAS_POR_PAIS = new Set(["cl", "mx", "ar", "pe", "co", "uy", "py"]);
+
+/**
+ * Fichas que el pie enlaza primero y con anchor descriptivo ("Curso de…").
+ * /cursos/power-bi y /cursos/analisis-de-datos reciben 58 enlaces internos
+ * frente a 359 de /terminos: estos anchors concentran autoridad en las dos
+ * páginas que compiten por «curso power bi» y «curso de análisis de datos».
+ */
+const CURSOS_PRIORITARIOS = [
+  { label: "Curso de Power BI", href: "/cursos/power-bi" },
+  { label: "Curso de análisis de datos", href: "/cursos/analisis-de-datos" },
+] as const;
+
+const CURSOS_PRIORITARIOS_SLUGS = new Set(["power-bi", "analisis-de-datos"]);
 
 export default function Footer({ compact: _compact = false }: { compact?: boolean }) {
   const pais = usePaisRuta();
@@ -92,16 +103,30 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
         </nav>
 
         <nav className="flex flex-col gap-3 text-sm font-medium text-ink" aria-label="Cursos">
-          {topCourses.map((course) => (
-            <Link key={course.slug} href={hrefLocal(`/cursos/${course.slug}`)} className="no-underline hover:text-mute">
-              {course.title}
+          {CURSOS_PRIORITARIOS.map((item) => (
+            <Link key={item.href} href={hrefLocal(item.href)} className="no-underline hover:text-mute">
+              {item.label}
             </Link>
           ))}
+          {topCourses
+            .filter((course) => !CURSOS_PRIORITARIOS_SLUGS.has(course.slug))
+            .map((course) => (
+              <Link
+                key={course.slug}
+                href={hrefLocal(`/cursos/${course.slug}`)}
+                className="no-underline hover:text-mute"
+              >
+                {course.title}
+              </Link>
+            ))}
           <Link href={hrefLocal("/cursos/machine-learning")} className="no-underline hover:text-mute">
             Machine Learning
           </Link>
           <Link href={hrefLocal("/cursos/mercado-financiero")} className="no-underline hover:text-mute">
             Mercado financiero
+          </Link>
+          <Link href={hrefLocal("/empresas")} className="no-underline hover:text-mute">
+            Power BI para empresas
           </Link>
         </nav>
 

@@ -6,6 +6,7 @@ import Script from "next/script";
 import {
   captureUtmFromUrl,
   initGa4,
+  isAnalyticsDisabledPath,
   markGa4Loaded,
   trackAiReferral,
   trackEvent,
@@ -20,10 +21,17 @@ import { paisDesdeRuta } from "@/lib/paises/rutas";
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
 const CLARITY_ID = process.env.NEXT_PUBLIC_CLARITY_PROJECT_ID || "";
 const WA_HREF_RE = /(?:wa\.me|whatsapp\.com|api\.whatsapp\.com)/i;
+/** Marcador que ponen los componentes que ya reportan su propio click_whatsapp. */
+const WA_TRACKED_ATTR = "data-wa-tracked";
 
 /**
  * Loads GA4 + Microsoft Clarity and tracks SPA page views + purchase success.
  * Safe when env IDs are missing (no scripts loaded).
+ *
+ * Rutas internas (`isAnalyticsDisabledPath`: /admin, /login, /auth/…) no cargan
+ * GA4 ni Clarity ni emiten eventos: son sesiones de administración y ensuciaban
+ * los informes (GA4 contaba /admin/formularios, /admin/miembros…). Si la pestaña
+ * entra por /admin y luego navega a una ruta pública, GA4 arranca ahí.
  *
  * gtag.js loads afterInteractive so the bootstrap page_view goes out as soon as
  * possible. `initGa4()` queues stub → config(send_page_view:false) → page_view;
@@ -36,32 +44,36 @@ const WA_HREF_RE = /(?:wa\.me|whatsapp\.com|api\.whatsapp\.com)/i;
 export default function MarketingAnalytics() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const analyticsDisabled = isAnalyticsDisabledPath(pathname);
 
   useEffect(() => {
+    if (analyticsDisabled) return;
     initGa4();
-  }, []);
+  }, [analyticsDisabled]);
 
   useEffect(() => {
+    if (analyticsDisabled) return;
     captureUtmFromUrl();
-  }, [pathname, searchParams]);
+  }, [pathname, searchParams, analyticsDisabled]);
 
   useEffect(() => {
-    if (!pathname) return;
+    if (analyticsDisabled || !pathname) return;
     // Pass the rendered route explicitly: window.location can lag behind the
     // router during a transition and would break the path+query dedupe key.
     const qs = searchParams?.toString() || "";
     trackPageView(qs ? `${pathname}?${qs}` : pathname);
-  }, [pathname, searchParams]);
+  }, [pathname, searchParams, analyticsDisabled]);
 
   useEffect(() => {
-    if (!pathname) return;
+    if (analyticsDisabled || !pathname) return;
     // Entradas desde asistentes IA (ChatGPT, Perplexity, Gemini…). Va después
     // del page_view: reutiliza ese hit y deduplica por sesión dentro del helper.
     // También cubre landings internas que llegan con ?utm_source=chatgpt.
     trackAiReferral({ path: pathname });
-  }, [pathname, searchParams]);
+  }, [pathname, searchParams, analyticsDisabled]);
 
   useEffect(() => {
+    if (analyticsDisabled) return;
     const payment = searchParams?.get("payment");
     if (payment === "success") {
       trackPurchase({
@@ -71,7 +83,7 @@ export default function MarketingAnalytics() {
         value: searchParams?.get("valor") ? Number(searchParams.get("valor")) : undefined,
       });
     }
-  }, [searchParams]);
+  }, [searchParams, analyticsDisabled]);
 
   useEffect(() => {
     if (searchParams?.get("reg_ok") !== "1") return;
@@ -91,18 +103,23 @@ export default function MarketingAnalytics() {
       if (!(target instanceof Element)) return;
 
       const anchor = target.closest("a[href]");
-      if (
-        anchor instanceof HTMLAnchorElement &&
-        WA_HREF_RE.test(anchor.href) &&
-        !anchor.hasAttribute("data-wa-tracked")
-      ) {
-        const pathname = window.location.pathname;
-        const courseMatch = pathname.match(/\/cursos\/([^/?#]+)/);
-        trackWhatsAppClick({
-          course: courseMatch?.[1],
-          country: paisDesdeRuta(pathname) ?? ISO_CHILE,
-          page: pathname + window.location.search,
-        });
+      if (anchor instanceof HTMLAnchorElement && WA_HREF_RE.test(anchor.href)) {
+        // Los componentes con su propio cta_position (WhatsAppCta,
+        // WhatsAppButton, fichas, calculadora…) marcan el <a> con
+        // data-wa-tracked="1": aquí solo se reportan los links sueltos, así un
+        // clic produce UN click_whatsapp (y no dos).
+        const marker = anchor.getAttribute(WA_TRACKED_ATTR);
+        const trackedByComponent = marker === "1" || marker === "true";
+        if (!trackedByComponent) {
+          const pathname = window.location.pathname;
+          const courseMatch = pathname.match(/\/cursos\/([^/?#]+)/);
+          trackWhatsAppClick({
+            course: courseMatch?.[1],
+            country: paisDesdeRuta(pathname) ?? ISO_CHILE,
+            page: pathname + window.location.search,
+            cta_position: "global_link",
+          });
+        }
       }
 
       const tracked = target.closest("[data-analytics-event]");
@@ -123,6 +140,8 @@ export default function MarketingAnalytics() {
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
   }, []);
+
+  if (analyticsDisabled) return null;
 
   return (
     <>

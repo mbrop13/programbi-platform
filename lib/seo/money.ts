@@ -19,18 +19,18 @@ export type MoneyFaq = {
 
 export const PAGE_SEO = {
   home: {
-    title: "Cursos de análisis de datos en vivo Chile | ProgramBI",
+    title: "Cursos de análisis de datos en vivo en Chile | ProgramBI",
     h1: "Cursos de análisis de datos en vivo en Chile",
     description:
       "Academia de datos en Chile: cursos en vivo de análisis de datos, Power BI y Power Automate. Clases por Zoom para profesionales. Inscríbete en ProgramBI.",
   },
   empresas: {
-    title: "Capacitación Power BI para empresas en Chile | ProgramBI",
+    title: "Power BI para empresas en Chile: curso en vivo | ProgramBI",
     description:
       "Capacitación Power BI in-company para empresas en Chile: en vivo, con los datos de tu equipo y factura corporativa. Pide una propuesta.",
   },
   cursos: {
-    title: "Cursos Power BI y análisis de datos Chile | ProgramBI",
+    title: "Cursos Power BI y análisis de datos en Chile | ProgramBI",
     description:
       "Cursos en vivo en Chile: Power BI, análisis de datos (SQL + Power BI + Python) y minería. Formación profesional con expertos.",
   },
@@ -54,11 +54,11 @@ export const COURSE_SEO: Record<
   }
 > = {
   "power-bi": {
-    title: "Curso Power BI Chile en vivo con certificado | ProgramBI",
+    title: "Curso Power BI Chile: en vivo y con certificado | ProgramBI",
     description:
-      "Curso Power BI en Chile, en vivo por Zoom: Power Query, DAX y dashboards para analistas. Básico-intermedio y avanzado, 20 horas cada uno. Inscríbete.",
+      "Curso Power BI en Chile: deja Excel y arma dashboards con Power Query y DAX. Clases en vivo, certificado y cuotas sin interés.",
     descriptionCl:
-      "Curso Power BI en Chile en vivo: arancel, descuentos y 3 cuotas sin interés en el PDF de temario y precios. Power Query, modelo y DAX.",
+      "Curso Power BI en Chile con clases en vivo: dashboards con Power Query y DAX. Certificado y cuotas sin interés; temario y precios en PDF.",
     h1: "Curso Power BI en vivo en Chile",
     audience:
       "Para analistas, control de gestión y finanzas que hoy reportan en Excel y quieren armar dashboards propios en Power BI.",
@@ -101,12 +101,12 @@ export const COURSE_SEO: Record<
     ],
   },
   "analisis-de-datos": {
-    title: "Curso de análisis de datos en vivo Chile | ProgramBI",
+    title: "Curso de análisis de datos en vivo | Chile | ProgramBI",
     description:
-      "Curso de análisis de datos en Chile, en vivo por Zoom: SQL, Power BI y Python. Dos niveles de 60 horas: básico-intermedio y avanzado.",
+      "Curso de análisis de datos en Chile, en vivo: SQL, Power BI y Python en dos niveles de 60 horas. Certificado y cuotas sin interés.",
     descriptionCl:
       "Curso de análisis de datos en Chile, en vivo: SQL, Power BI y Python, 60 h por nivel. Arancel, descuentos y cuotas en el PDF de temario y precios.",
-    h1: "Curso de análisis de datos en vivo en Chile",
+    h1: "Curso de análisis de datos en vivo",
     audience:
       "Para profesionales de finanzas, control de gestión y operaciones que hoy reportan en Excel y quieren el oficio de analista de datos: SQL, Power BI y Python.",
     intro:
@@ -277,9 +277,9 @@ export const COURSE_SEO: Record<
     ],
   },
   "power-automate": {
-    title: "Curso Power Automate Chile: flujos y RPA | ProgramBI",
+    title: "Curso de Power Automate en vivo: flujos y RPA | ProgramBI",
     description:
-      "Curso Power Automate en Chile, en vivo: flujos en la nube, RPA de escritorio y aprobaciones. Para analistas que automatizan sin código. Inscríbete.",
+      "Curso de Power Automate en vivo y sin código: automatiza correos, aprobaciones y tareas con flujos, RPA y Microsoft 365. Certificado.",
     h1: "Curso Power Automate y RPA en vivo en Chile",
     audience:
       "Para analistas y operaciones que pierden horas en correos, aprobaciones y copiar datos entre Excel, Outlook y Teams.",

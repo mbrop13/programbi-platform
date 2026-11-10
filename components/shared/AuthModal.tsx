@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X, LogIn, Mail, Lock, Sparkles, ArrowRight, CheckCircle, AlertCircle, Loader2, User, Eye, EyeOff } from "lucide-react";
+import { X, LogIn, Mail, Lock, Sparkles, ArrowRight, CheckCircle, AlertCircle, Loader2, User, Eye, EyeOff, MessageCircle } from "lucide-react";
 import { useState, useEffect, FormEvent, useRef } from "react";
 import { createPortal } from "react-dom";
 import Image from "next/image";
@@ -12,8 +12,38 @@ import { subscribeToNewsletter } from "@/lib/supabase/comunidad-ai";
 import { honeypotStyle } from "@/lib/antibot";
 import { persistRegistrationSource, readRegistrationSource } from "@/lib/registration-source";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
-import { courseSlugFromLocation, signUpCreatedUser, trackClickRegistro, trackSubmitRegistro } from "@/lib/analytics/marketing";
+import {
+  courseSlugFromLocation,
+  signUpCreatedUser,
+  trackClickRegistro,
+  trackRegistroStep,
+  trackSubmitRegistro,
+  trackWhatsAppClick,
+  type RegistroStep,
+} from "@/lib/analytics/marketing";
+import { mensajeErrorAuth } from "@/lib/auth/mensajes-auth";
+import { whatsappHref } from "@/lib/whatsapp";
 import { readBrowserReferralCode } from "@/lib/referrals/cookie";
+
+type RegistroModalMethod = "form" | "oauth";
+
+/**
+ * Embudo del registro dentro del modal: todos los pasos salen con
+ * surface "auth_modal". "open" se emite al mostrar la pestaña Crear cuenta.
+ */
+function trackModalStep(
+  step: RegistroStep,
+  extra?: { reason?: string; method?: RegistroModalMethod }
+): void {
+  trackRegistroStep({
+    step,
+    surface: "auth_modal",
+    course: courseSlugFromLocation(
+      typeof window !== "undefined" ? window.location.pathname + window.location.search : null
+    ),
+    ...extra,
+  });
+}
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -30,6 +60,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
   const [success, setSuccess] = useState<string | null>(null);
   const [honeypot, setHoneypot] = useState("");
   const formLoadedAt = useRef<number>(Date.now());
+  /** Evita emitir "open" más de una vez por entrada a la pestaña de registro. */
+  const openTrackedRef = useRef(false);
+  /** "start" se emite solo con el primer foco del formulario de registro. */
+  const startTrackedRef = useRef(false);
 
   useEffect(() => {
     setMounted(true);
@@ -64,6 +98,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     setSubscribeToBlog(true);
     setConfirmPending(false);
     setResendState("idle");
+    startTrackedRef.current = false;
   }, [isOpen, tab, redirectUrl]);
 
   // Update tab when defaultTab changes
@@ -71,7 +106,27 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     setTab(defaultTab);
   }, [defaultTab]);
 
+  // Embudo: la pestaña de registro se mostró (al abrir con defaultTab register
+  // o al cambiar a ella). Una emisión por entrada, no por re-render.
+  useEffect(() => {
+    if (!mounted) return;
+    if (!isOpen || tab !== "register") {
+      openTrackedRef.current = false;
+      return;
+    }
+    if (openTrackedRef.current) return;
+    openTrackedRef.current = true;
+    trackModalStep("open");
+  }, [mounted, isOpen, tab]);
+
   const supabase = createClient();
+
+  /** Primer foco en un campo del formulario de registro (evento "start"). */
+  const handleRegisterFocus = () => {
+    if (startTrackedRef.current) return;
+    startTrackedRef.current = true;
+    trackModalStep("start");
+  };
 
   // ═══ LOGIN ═══
   const handleLogin = async (e: FormEvent) => {
@@ -86,13 +141,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
       });
 
       if (error) {
-        if (error.message.includes("Invalid login")) {
-          setError("Correo o contraseña incorrectos. Intenta de nuevo.");
-        } else if (error.message.includes("Email not confirmed")) {
-          setError("Tu correo aún no ha sido verificado. Revisa tu bandeja de entrada.");
-        } else {
-          setError(error.message);
-        }
+        setError(mensajeErrorAuth(error.message).mensaje);
       } else {
         setSuccess("¡Bienvenido de vuelta! Redirigiendo...");
         setTimeout(() => {
@@ -130,17 +179,23 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
       return;
     }
 
+    // Embudo: el usuario (o el bot que pasó los filtros) intentó crear cuenta.
+    trackModalStep("submit_attempt", { method: "form" });
+
     if (!fullName.trim() || fullName.trim().length < 2) {
+      trackModalStep("validation_error", { reason: "nombre" });
       setError("Escribe tu nombre.");
       return;
     }
     if (!acceptsPrivacy) {
+      trackModalStep("validation_error", { reason: "privacidad" });
       setError("Debes aceptar la política de privacidad.");
       return;
     }
 
     const pwCheck = validatePassword(password);
     if (!pwCheck.ok) {
+      trackModalStep("validation_error", { reason: "password" });
       setError(pwCheck.error!);
       return;
     }
@@ -148,6 +203,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
     setLoading(true);
 
     if (await isBreachedPassword(password)) {
+      trackModalStep("validation_error", { reason: "filtrada" });
       setError("Esta contraseña aparece en filtraciones conocidas. Elige otra.");
       setLoading(false);
       return;
@@ -175,13 +231,13 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
       });
 
       if (error) {
-        if (error.message.includes("already registered")) {
-          setError("Este correo ya está registrado. Intenta iniciar sesión.");
-        } else {
-          setError(error.message);
-        }
+        const { mensaje, reason } = mensajeErrorAuth(error.message);
+        setError(mensaje);
+        trackModalStep("signup_error", { reason });
       } else if (!signUpCreatedUser(data?.user)) {
-        setError("Este correo ya está registrado. Intenta iniciar sesión.");
+        const { mensaje, reason } = mensajeErrorAuth("User already registered");
+        setError(mensaje);
+        trackModalStep("signup_error", { reason });
       } else {
         trackSubmitRegistro({
           method: "form",
@@ -213,8 +269,10 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
         if (loginError) {
           setConfirmPending(true);
           setSuccess("Cuenta creada. Revisa tu correo para confirmar tu cuenta.");
+          trackModalStep("confirm_pending", { method: "form" });
         } else {
           setSuccess("Cuenta creada. Ya puedes continuar.");
+          trackModalStep("success", { method: "form" });
 
           if (subscribeToBlog) {
             subscribeToNewsletter({
@@ -238,6 +296,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
       }
     } catch {
       setError("Ocurrió un error inesperado. Intenta de nuevo.");
+      trackModalStep("signup_error", { reason: "otro" });
     } finally {
       setLoading(false);
     }
@@ -264,6 +323,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
   const handleGoogleLogin = async () => {
     setError(null);
     setLoading(true);
+    if (tab === "register") trackModalStep("oauth_click", { method: "oauth" });
     try {
       // Persistir origen para el callback OAuth (nuevos registros con Google)
       const registrationSource = persistRegistrationSource();
@@ -287,6 +347,9 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
   };
 
   if (!mounted) return null;
+
+  // Alternativa humana al registro: WhatsApp con el origen real de la página.
+  const waHref = whatsappHref({ page: window.location.pathname, intent: "general" });
 
   return createPortal(
     <AnimatePresence>
@@ -402,7 +465,9 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                         {confirmPending ? (
                           <div className="mt-1 border-t border-emerald-200/70 pt-3">
                             <p className="text-xs leading-relaxed text-emerald-800">
-                              Te enviamos el enlace a {email || "tu correo"}. Revisa también la carpeta de spam.
+                              Te enviamos el enlace a{" "}
+                              <span className="font-semibold break-all">{email || "tu correo"}</span>. Si no
+                              aparece en unos minutos, revisa también las carpetas de Spam y Promociones.
                             </p>
                             <button
                               type="button"
@@ -426,6 +491,20 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                             >
                               Ir a iniciar sesión
                             </Link>
+                            <a
+                              href={waHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              data-wa-tracked="1"
+                              onClick={() => {
+                                trackModalStep("whatsapp_alt");
+                                trackWhatsAppClick({ cta_position: "auth_modal_confirm" });
+                              }}
+                              className="mt-3 flex items-start gap-1.5 text-xs font-semibold leading-relaxed text-emerald-800 underline underline-offset-2"
+                            >
+                              <MessageCircle size={14} className="mt-0.5 flex-shrink-0" />
+                              ¿Prefieres que te ayudemos? Escríbenos por WhatsApp
+                            </a>
                           </div>
                         ) : null}
                       </motion.div>
@@ -509,6 +588,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                             placeholder="Tu nombre"
                             value={fullName}
                             onChange={(e) => setFullName(e.target.value)}
+                            onFocus={handleRegisterFocus}
                             required
                             disabled={loading}
                             autoComplete="name"
@@ -526,6 +606,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                             placeholder="nombre@empresa.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            onFocus={handleRegisterFocus}
                             required
                             disabled={loading}
                             autoComplete="email"
@@ -543,6 +624,7 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                             placeholder="Mínimo 6 caracteres"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            onFocus={handleRegisterFocus}
                             required
                             minLength={6}
                             disabled={loading}
@@ -593,6 +675,22 @@ export default function AuthModal({ isOpen, onClose, defaultTab = "login", redir
                           </>
                         )}
                       </button>
+                      <p className="pt-1 text-center text-[11px] leading-relaxed text-slate-400">
+                        ¿Dudas antes de registrarte?{" "}
+                        <a
+                          href={waHref}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          data-wa-tracked="1"
+                          onClick={() => {
+                            trackModalStep("whatsapp_alt");
+                            trackWhatsAppClick({ cta_position: "auth_modal_form" });
+                          }}
+                          className="font-semibold text-slate-600 underline underline-offset-2"
+                        >
+                          Escríbenos por WhatsApp
+                        </a>
+                      </p>
                     </motion.form>
                   )}
 

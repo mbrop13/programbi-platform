@@ -53,6 +53,8 @@ export function getCourseJsonLd(
   const name = view === "avanzado" ? advancedHeading(baseName) : baseName;
   const hours = offerHours(course, view);
   const path = rutaLocal(pais, coursePath(course.slug, view));
+  // Chile publica en español neutro; los demás mercados, en su idioma.
+  const idioma = pais === ISO_CHILE ? "es" : getPais(pais).idioma;
   // Cada curso declara a su profesor en `equipo.ts`; sin match, lo dicta el
   // fundador. El `sameAs` a la página de empresa era un dato incorrecto.
   const instructor = miembroPorCurso(course.slug);
@@ -81,7 +83,7 @@ export function getCourseJsonLd(
     },
     image: course.imageUrl,
     educationalLevel: view === "avanzado" ? "avanzado" : course.level,
-    inLanguage: pais === ISO_CHILE ? "es" : getPais(pais).idioma,
+    inLanguage: idioma,
     courseMode: course.modality === "online" ? "Online" : "Blended",
     numberOfCredits: hours,
     timeRequired: `PT${hours}H`,
@@ -95,6 +97,10 @@ export function getCourseJsonLd(
     hasCourseInstance: {
       "@type": "CourseInstance",
       courseMode: "Online",
+      // Carga horaria de la instancia en formato ISO 8601 (`PT20H`). Google la
+      // pide para Course info y así no la infiere del temario.
+      courseWorkload: `PT${hours}H`,
+      inLanguage: idioma,
       // `Course` no define `instructor` en schema.org; el lugar válido es la
       // instancia del curso. El @id es el mismo que usa /profesores/<slug>.
       instructor: {
@@ -108,8 +114,19 @@ export function getCourseJsonLd(
         ...(instructor.linkedinUrl ? { sameAs: [instructor.linkedinUrl] } : {}),
       },
     },
-    // Sin bloque de precio: el arancel no viaja en el HTML público. Se
-    // descarga en el brochure PDF de la ficha, única superficie con precios.
+    // Gate de precios (decisión vigente): el arancel numérico NUNCA viaja en el
+    // HTML del servidor, así que `offers` declara la oferta sin `price` ni
+    // `priceCurrency`; solo que el curso es de pago. El monto se descarga en el
+    // brochure PDF de la ficha, única superficie con precios. `category: "Paid"`
+    // va también en los mercados sin precio publicado (p. ej. Paraguay): el
+    // curso se vende igual y lo que falta es el monto, no la condición de pago.
+    // Sin `aggregateRating` ni `review`: no hay reseñas verificables en la ficha.
+    offers: {
+      "@type": "Offer",
+      category: "Paid",
+      url: absoluteUrl(path),
+      availability: "https://schema.org/InStock",
+    },
     syllabusSections: offerSyllabusSections(course, view).map((section) => ({
       "@type": "Syllabus",
       name: section.name,

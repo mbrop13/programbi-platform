@@ -41,7 +41,6 @@ import {
   OPEN_COHORT_LABEL,
   convertSchedule,
   getAllActiveSchedules,
-  staticSchedules,
 } from "@/lib/data/course-schedules";
 import { conHoraPais, zonaDe } from "@/lib/paises/horarios";
 import {
@@ -49,6 +48,8 @@ import {
   trackCourseView,
   trackCtaClick,
   trackLeadSubmit,
+  trackTemario,
+  trackWhatsAppClick,
 } from "@/lib/analytics/marketing";
 import { readClientPricingVariant } from "@/lib/experiments/cookie";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
@@ -62,12 +63,13 @@ import { COURSE_SEO } from "@/lib/seo/money";
 import { etiquetaBoton } from "@/config/textos";
 import { usePaisRuta } from "@/lib/paises/cliente";
 import { rutaLocal } from "@/lib/paises/rutas";
-import { localizarMercado, precioVenta } from "@/lib/paises/precios";
+import { formatMoneda, localizarMercado, precioVenta } from "@/lib/paises/precios";
+import { whatsappHref } from "@/lib/whatsapp";
 import { monedaPublica } from "@/config/pricing";
 import type { DetalleCursoLocal } from "@/lib/paises/detalle-curso";
 import CourseLocalSeo from "@/components/marketing/CourseLocalSeo";
 import { ISO_CHILE } from "@/config/paises";
-import { NOTA_CUOTAS } from "@/config/cuotas";
+import { cuotasSinInteres } from "@/config/cuotas";
 import { COUNTRIES } from "@/lib/context/CountryContext";
 import { usePriceUnlock } from "@/hooks/usePriceUnlock";
 import { courseBrochureUrl } from "@/lib/pricing-gate";
@@ -260,13 +262,21 @@ export default function CourseDetailClient({
   const levels = levelsForView(course, view);
   const catalogLevelCount = course.levels?.length ?? 0;
 
-  // Gate de precios: el monto se calcula solo en cliente y nunca se pinta en
-  // esta ficha. El precio vive en el Brochure PDF; aquí solo se usa para saber
-  // si el país tiene arancel aprobado (Paraguay todavía no lo tiene).
+  // Gate de precios: el monto se calcula solo en cliente y nunca sale en el
+  // HTML del servidor. El arancel vive en el Brochure PDF; el bloque gated de la
+  // tarjeta recién lo muestra con `canSeePrice` (sesión o gate desbloqueado).
   const { unlocked: priceUnlocked, unlock } = usePriceUnlock();
   const canSeePrice = isLoggedIn || priceUnlocked;
   const precioLocalCliente = precioVenta(pais, course.slug);
   const brochureUrl = courseBrochureUrl(course.slug, pais);
+  const numCuotas = cuotasSinInteres(pais);
+  // Sin fecha futura en la BD, el CTA ofrece aviso por WhatsApp (intent `fechas`).
+  const avisameFechaHref = whatsappHref({
+    page: `/cursos/${course.slug}`,
+    intent: "fechas",
+    course: course.title,
+    country: pais,
+  });
 
   // Particular: la compra siempre está disponible (haya o no fecha publicada).
   // Logueado se nombra "Comprar ahora"; sin sesión, "Inscribirse" abre el registro
@@ -382,23 +392,14 @@ export default function CourseDetailClient({
     return getAllActiveSchedules(matched);
   }, [schedules, activeLevel, course.slug, catalogLevelCount, view]);
 
+  // Solo fechas reales que llegan por props desde la BD (`schedules`). Nunca
+  // fechas estáticas ni inventadas: si no hay ninguna futura, la tarjeta ofrece
+  // «Avísame cuando abra la próxima fecha».
   const activeSchedulesList = useMemo(() => {
-    if (levelSchedules.length > 0) return levelSchedules;
-    const matchedStatic = staticSchedules.filter((s) => {
-      if (s.course_slug !== course.slug) return false;
-      if (catalogLevelCount <= 1) return true;
-      if (view !== "empresas" && activeLevel?.name === OPEN_LEVEL_NAME) {
-        return s.level_name === "Básico" || s.level_name === "Intermedio";
-      }
-      return s.level_name === (activeLevel?.name === OPEN_LEVEL_NAME ? "Básico" : activeLevel?.name || "Básico");
-    });
-    const now = new Date();
-    const futureStatic = matchedStatic.filter((s) => new Date(s.start_date + "T12:00:00") >= now);
-    if (futureStatic.length > 0) {
-      return futureStatic.map((s, idx) => ({ ...s, id: `static-${idx}`, is_active: true }) as CourseSchedule);
-    }
-    return [];
-  }, [levelSchedules, course.slug, activeLevel]);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return levelSchedules.filter((s) => new Date(`${s.start_date}T12:00:00`) >= today);
+  }, [levelSchedules]);
 
   const levelSchedule = activeSchedulesList[selectedScheduleIndex] || activeSchedulesList[0] || null;
 
@@ -407,6 +408,9 @@ export default function CourseDetailClient({
   }, [selectedLevel, activeSchedulesList.length]);
 
   const hours = activeLevel?.durationHours || course.durationHours;
+  // Precio por hora de clase: mismo criterio que la calculadora pública.
+  const precioHora =
+    precioLocalCliente != null && hours > 0 ? Math.round(precioLocalCliente / hours) : null;
   const outcomes = activeLevel?.whatYouLearn?.length ? activeLevel.whatYouLearn : course.whatYouLearn;
   const nextStart = levelSchedule ? formatSchedule(levelSchedule, scheduleZone, pais) : null;
   const isCroTemplate = isCourseCroSlug(course.slug) && view === "publico";
@@ -440,6 +444,9 @@ export default function CourseDetailClient({
         ? introParagraphs.slice(1)
         : [];
   const quoteHref = rutaLocal(pais, empresaQuotePath(course.slug, activeLevel?.name));
+  // Vista de cotización de empresas (sin nivel): es el destino de «Factura
+  // disponible para empresas» del bloque de precio.
+  const facturaHref = rutaLocal(pais, empresaQuotePath(course.slug));
   const includes = [
     "Clases en vivo por Zoom",
     hours ? `${hours} horas de formación` : "Formación en vivo",
@@ -564,32 +571,61 @@ export default function CourseDetailClient({
 
               <div className="relative mb-4">
                 <p className="mb-2 text-sm font-medium text-ink">Próxima fecha</p>
-                <button
-                  type="button"
-                  disabled={activeSchedulesList.length === 0}
-                  onClick={() => setIsScheduleDropdownOpen((v) => !v)}
-                  className="flex w-full items-center justify-between rounded-xl border border-line-strong bg-canvas px-3 py-3 text-left disabled:opacity-70"
-                >
-                  <span className="flex min-w-0 items-start gap-2.5">
-                    <Calendar size={16} className="mt-0.5 shrink-0 text-ink" />
-                    {nextStart ? (
-                      <span>
-                        <span className="block text-sm font-semibold text-ink">{nextStart.date}</span>
-                        <span className="mt-0.5 block text-xs text-mute">
-                          {nextStart.days} · {nextStart.time}
-                          {view === "publico" && tiered && levelSchedule?.level_name
-                            ? ` · ${levelSchedule.level_name}`
-                            : ""}
-                        </span>
+                {activeSchedulesList.length === 0 ? (
+                  // Sin fecha futura en la BD no se inventa ninguna: se ofrece
+                  // aviso por WhatsApp (intent `fechas`).
+                  <a
+                    href={avisameFechaHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-wa-tracked="1"
+                    onClick={() =>
+                      trackWhatsAppClick({
+                        cta_position: "ficha_avisame_fecha",
+                        course: course.slug,
+                        country: pais,
+                      })
+                    }
+                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-line-strong bg-canvas px-3 py-3 text-left no-underline transition-colors hover:bg-wash"
+                  >
+                    <span className="flex min-w-0 items-start gap-2.5">
+                      <Calendar size={16} className="mt-0.5 shrink-0 text-ink" />
+                      <span className="text-sm font-semibold leading-snug text-ink">
+                        Avísame cuando abra la próxima fecha
                       </span>
-                    ) : (
-                      <span className="text-sm text-mute">Cupos abiertos — consulta fecha</span>
-                    )}
-                  </span>
-                  {activeSchedulesList.length > 1 ? (
-                    <ChevronDown size={16} className={`shrink-0 text-faint ${isScheduleDropdownOpen ? "rotate-180" : ""}`} />
-                  ) : null}
-                </button>
+                    </span>
+                    <MessageCircle size={16} className="shrink-0 text-mute" aria-hidden />
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setIsScheduleDropdownOpen((v) => !v)}
+                    className="flex w-full items-center justify-between rounded-xl border border-line-strong bg-canvas px-3 py-3 text-left"
+                  >
+                    <span className="flex min-w-0 items-start gap-2.5">
+                      <Calendar size={16} className="mt-0.5 shrink-0 text-ink" />
+                      {nextStart ? (
+                        <span>
+                          <span className="block text-sm font-semibold text-ink">{nextStart.date}</span>
+                          <span className="mt-0.5 block text-xs text-mute">
+                            {nextStart.days} · {nextStart.time}
+                            {view === "publico" && tiered && levelSchedule?.level_name
+                              ? ` · ${levelSchedule.level_name}`
+                              : ""}
+                          </span>
+                          {levelSchedule?.max_students ? (
+                            <span className="mt-0.5 block text-xs text-faint">
+                              Grupo de máximo {levelSchedule.max_students} alumnos
+                            </span>
+                          ) : null}
+                        </span>
+                      ) : null}
+                    </span>
+                    {activeSchedulesList.length > 1 ? (
+                      <ChevronDown size={16} className={`shrink-0 text-faint ${isScheduleDropdownOpen ? "rotate-180" : ""}`} />
+                    ) : null}
+                  </button>
+                )}
 
                 <AnimatePresence>
                   {isScheduleDropdownOpen && activeSchedulesList.length > 0 && (
@@ -633,9 +669,11 @@ export default function CourseDetailClient({
               </div>
 
               <div className="mb-5 border-t border-line pt-5">
-                {/* La ficha nunca pinta el precio numérico: el arancel vive en
-                    el Brochure PDF. Solo se distingue empresa, país sin arancel
-                    aprobado (Paraguay) y venta individual con formulario. */}
+                {/* El precio numérico no sale en el HTML del servidor: el
+                    arancel vive en el Brochure PDF y solo el bloque cliente de
+                    abajo (`canSeePrice`) muestra el monto con su contexto. Aquí
+                    solo se distingue empresa, país sin arancel aprobado
+                    (Paraguay) y venta individual con formulario. */}
                 {isEmpresa ? (
                   <p className="text-sm leading-relaxed text-mute">
                     {tiered
@@ -689,7 +727,30 @@ export default function CourseDetailClient({
               </div>
 
               {!isEmpresa && canSeePrice && precioLocalCliente != null ? (
-                <p className="mb-5 text-xs leading-snug text-mute">{NOTA_CUOTAS}</p>
+                <div className="mb-5 space-y-1 leading-snug">
+                  <p className="flex items-baseline gap-2">
+                    <span className="text-lg font-bold tracking-tight text-ink">
+                      {formatMoneda(pais, precioLocalCliente)}
+                    </span>
+                    <span className="text-[11px] text-faint">arancel del curso</span>
+                  </p>
+                  <p className="text-xs text-mute">
+                    {formatMoneda(pais, precioLocalCliente / numCuotas)} en {numCuotas} cuotas sin interés
+                  </p>
+                  {precioHora != null ? (
+                    <p className="text-xs text-mute">
+                      ≈ {formatMoneda(pais, precioHora)} por hora de clase
+                    </p>
+                  ) : null}
+                  <p className="text-xs text-mute">
+                    <Link
+                      href={facturaHref}
+                      className="font-semibold text-ink underline decoration-line underline-offset-2 hover:decoration-ink"
+                    >
+                      Factura disponible para empresas
+                    </Link>
+                  </p>
+                </div>
               ) : null}
 
               {isEmpresa ? (
@@ -734,6 +795,14 @@ export default function CourseDetailClient({
                   href={brochureUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={() =>
+                    trackTemario({
+                      action: "view",
+                      course: course.slug,
+                      country: pais,
+                      location: "ficha_sidebar",
+                    })
+                  }
                   className="inline-flex items-center gap-1.5 no-underline hover:text-mute"
                 >
                   <FileText size={15} /> Temario y precios (PDF)
@@ -973,6 +1042,14 @@ function CourseContactForm({ course }: { course: Course }) {
                     href={courseBrochureUrl(course.slug, pais)}
                     target="_blank"
                     rel="noopener noreferrer"
+                    onClick={() =>
+                      trackTemario({
+                        action: "view",
+                        course: course.slug,
+                        country: pais,
+                        location: "ficha_contacto",
+                      })
+                    }
                     className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
                   >
                     <FileText size={16} /> Abrir temario y precios (PDF)

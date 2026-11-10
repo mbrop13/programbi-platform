@@ -58,6 +58,23 @@ const STEPS = [
   },
 ];
 
+const TOOLS = [
+  {
+    href: "/empresas/diagnostico",
+    eyebrow: "Gratis · 2 minutos",
+    title: "Diagnóstico de madurez de datos (2 minutos)",
+    text: "Diez preguntas sobre fuentes, reportes y calidad de datos. Al final ves el nivel de madurez del equipo y qué conviene reforzar.",
+    cta: "Hacer el diagnóstico",
+  },
+  {
+    href: "/empresas/calculadora-capacitacion",
+    eyebrow: "Gratis · Cálculo en vivo",
+    title: "Calculadora de ahorro por capacitación",
+    text: "Cuántas horas al mes puede recuperar el equipo al automatizar reportes. Tú ajustas los supuestos y el cálculo se actualiza solo.",
+    cta: "Calcular el ahorro",
+  },
+];
+
 const EMPRESA_COURSES = [...courses].sort((a, b) => a.sortOrder - b.sortOrder);
 
 export function EmpresasLanding({ curso, nivel, paisNombre = "Chile" }: EmpresasLandingProps) {
@@ -70,6 +87,7 @@ export function EmpresasLanding({ curso, nivel, paisNombre = "Chile" }: Empresas
       <How />
       <Topics />
       <Faq />
+      <Tools />
       <Contact curso={curso} nivel={nivel} />
     </div>
   );
@@ -256,6 +274,53 @@ function Faq() {
           Preguntas sobre la capacitación in-company
         </h2>
         <EmpresasFaq />
+      </div>
+    </section>
+  );
+}
+
+function Tools() {
+  return (
+    <section className="mx-auto max-w-[1400px] px-4 py-16 sm:px-6 lg:px-8">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-[11px] font-semibold tracking-[0.16em] text-faint uppercase">
+            Autoservicio
+          </p>
+          <h2 className="mt-3 text-3xl font-bold tracking-tight sm:text-4xl">
+            Herramientas gratis para tu equipo
+          </h2>
+        </div>
+        <p className="max-w-sm text-sm leading-relaxed text-mute">
+          Sin costo. Sirven para llegar a la conversación con números concretos,
+          no con intuiciones.
+        </p>
+      </div>
+      <div className="mt-10 grid gap-5 sm:grid-cols-2">
+        {TOOLS.map((tool) => (
+          <Link
+            key={tool.href}
+            href={tool.href}
+            className="group flex flex-col justify-between rounded-[26px] border border-line bg-paper p-6 no-underline transition-colors hover:border-ink/20"
+          >
+            <div>
+              <p className="inline-flex rounded-full bg-wash px-2.5 py-1 text-[11px] font-semibold text-mute">
+                {tool.eyebrow}
+              </p>
+              <h3 className="mt-3 text-lg font-semibold tracking-tight text-ink">
+                {tool.title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-mute">{tool.text}</p>
+            </div>
+            <span className="mt-5 inline-flex items-center gap-1 text-sm font-semibold text-ink">
+              {tool.cta}{" "}
+              <ArrowRight
+                size={14}
+                className="transition-transform group-hover:translate-x-0.5"
+              />
+            </span>
+          </Link>
+        ))}
       </div>
     </section>
   );

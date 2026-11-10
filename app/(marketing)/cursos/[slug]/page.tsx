@@ -36,6 +36,22 @@ function one(value: string | string[] | undefined) {
 }
 
 /**
+ * Cursos cuya ficha monta el bloque completo «Preguntas frecuentes»
+ * (`CourseFaq`): las FAQ de `COURSE_SEO` más las del mercado. Es la misma
+ * lista que `COURSE_CRO_SLUGS` de `components/marketing/CourseLeadSections.tsx`;
+ * se repite acá porque ese módulo es `"use client"` y un Server Component no
+ * puede leer sus exports. Si cambia allá, cambia acá: el FAQPage declara solo
+ * las preguntas que la ficha pinta.
+ */
+const FICHA_CON_FAQ_CURSO = new Set<string>([
+  "analisis-de-datos",
+  "power-bi",
+  "power-automate",
+  "python",
+  "sql-server",
+]);
+
+/**
  * Copia del curso sin montos para el componente cliente.
  *
  * Los props de un Server Component viajan en el flight data de RSC dentro del
@@ -158,6 +174,25 @@ export default async function CourseDetailPage({
 
   const courseJsonLd = getCourseJsonLd(course, "publico", pais);
   const bloque = getBloqueLocal(pais, { curso: slug });
+  // El bloque «Preguntas frecuentes» de la ficha sale de dos fuentes y el
+  // FAQPage declara exactamente las que se ven: `CourseFaq` pinta las de
+  // `COURSE_SEO[slug]` (filtradas por `soloChile`) más `detalle.faqs`, y
+  // `CourseLocalSeo` pinta solo `detalle.faqs` en los cursos sin plantilla CRO.
+  const faqsCurso = FICHA_CON_FAQ_CURSO.has(slug)
+    ? (seo?.faqs ?? [])
+        .filter((faq) => !faq.soloChile || pais === ISO_CHILE)
+        .map((faq) => ({
+          "@type": "Question",
+          name: localizarMercado(faq.q, pais),
+          acceptedAnswer: { "@type": "Answer", text: localizarMercado(faq.a, pais) },
+        }))
+    : [];
+  // Preguntas del mercado: horario local y certificado. Sin el precio.
+  const faqsMercado = detalle.faqs.map((faq) => ({
+    "@type": "Question",
+    name: faq.q,
+    acceptedAnswer: { "@type": "Answer", text: faq.a },
+  }));
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -177,23 +212,7 @@ export default async function CourseDetailPage({
       },
       {
         "@type": "FAQPage",
-        mainEntity: [
-          ...(seo
-            ? seo.faqs
-                .filter((faq) => !faq.soloChile || pais === ISO_CHILE)
-                .map((faq) => ({
-                  "@type": "Question",
-                  name: localizarMercado(faq.q, pais),
-                  acceptedAnswer: { "@type": "Answer", text: localizarMercado(faq.a, pais) },
-                }))
-            : []),
-          // Preguntas del mercado: horario local y certificado. Sin el precio.
-          ...detalle.faqs.map((faq) => ({
-            "@type": "Question",
-            name: faq.q,
-            acceptedAnswer: { "@type": "Answer", text: faq.a },
-          })),
-        ],
+        mainEntity: [...faqsCurso, ...faqsMercado],
       },
     ].filter(Boolean),
   };

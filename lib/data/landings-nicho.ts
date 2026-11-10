@@ -80,10 +80,10 @@ export type LandingKey = (typeof LANDING_KEYS)[number];
 const FINANZAS: NicheLanding = {
   path: "/power-bi-para-finanzas",
   kicker: "Power BI · Finanzas y control de gestión",
-  h1: "Power BI para finanzas y control de gestión",
-  title: "Power BI para finanzas y control de gestión",
+  h1: "Analítica financiera con Power BI",
+  title: "Analítica financiera con Power BI: curso en vivo",
   description:
-    "Curso Power BI para finanzas y control de gestión en Chile: Power Query, modelo estrella, DAX y tableros de margen, presupuesto y variación. En vivo.",
+    "Analítica financiera con Power BI en vivo: modelo de datos, DAX y tableros de margen, presupuesto y variación. Curso en Chile, con certificado.",
   lead: "El cierre de mes no debería depender de tres planillas y de la persona que se acuerda de las fórmulas. Este curso enseña a modelar los datos financieros y a construir el tablero de control en Power BI, con el criterio de quien reporta a gerencia.",
   tags: ["Power BI", "Finanzas", "Control de gestión"],
   parentCrumb: { href: "/cursos", label: "Cursos" },
@@ -192,6 +192,14 @@ const FINANZAS: NicheLanding = {
     slugs: ["power-bi"],
   },
   faqs: [
+    {
+      q: "¿Qué es la analítica financiera?",
+      a: "Es el análisis de los datos financieros de la empresa —presupuesto, costo, margen, cuentas por cobrar— para explicar qué pasó y decidir con esa base. En la práctica se apoya en un modelo de datos y tableros, no en planillas armadas a mano cada mes.",
+    },
+    {
+      q: "¿Necesito saber programar?",
+      a: "No. El curso parte desde cero en DAX y no pide experiencia previa en programación: las medidas se escriben dentro de Power BI. Sí conviene manejar Excel a nivel de tablas y fórmulas.",
+    },
     {
       q: "¿Necesito saber DAX para tomar este curso?",
       a: "No. El curso parte desde cero en DAX y avanza hasta CALCULATE, FILTER, time intelligence, RANKX e iteradores. Sí conviene manejar Excel a nivel de tablas y fórmulas.",

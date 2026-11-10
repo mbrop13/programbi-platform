@@ -20,6 +20,7 @@ import ArticleBlockRenderer, { applyInlineMarkdown } from "@/components/shared/A
 import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
 import ArticleLikeButton from "@/components/shared/ArticleLikeButton";
 import { isVideoUrl } from "@/lib/utils";
+import { trackCourseCardClick } from "@/lib/analytics/marketing";
 
 function getVideoFromContent(content?: string): string | undefined {
   if (!content) return undefined;
@@ -151,6 +152,14 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
     ia: { slug: "ia-productividad", label: "IA para productividad" },
   };
   const relatedCourse = courseByCategory[article.category] || courseByCategory["power-bi"];
+  /**
+   * Cursos para el bloque «Aprende con clases en vivo» al cierre del artículo.
+   * Si el CTA por categoría ya apunta a uno de ellos, se omite para no duplicar.
+   */
+  const liveCourses = [
+    { slug: "power-bi", label: "Curso de Power BI" },
+    { slug: "analisis-de-datos", label: "Curso de análisis de datos" },
+  ].filter((course) => course.slug !== relatedCourse.slug);
 
   // Author details (E-E-A-T booster)
   const isManuel = !article.author_name || article.author_name.toLowerCase().includes("manuel oliva");
@@ -566,6 +575,38 @@ export default function BlogArticleClient({ article, related }: BlogArticleClien
           </div>
         </div>
       </section>
+
+      {/* ── APRENDE CON CLASES EN VIVO (blog → cursos) ── */}
+      {liveCourses.length > 0 && (
+        <section className="max-w-[800px] mx-auto px-6 mt-14">
+          <div className={`border-t pt-8 ${
+            prefs.theme === "dark" ? "border-slate-800" : "border-slate-100"
+          }`}>
+            <h3 className={`font-serif font-bold text-lg sm:text-xl tracking-tight mb-3 ${
+              prefs.theme === "dark" ? "text-white" : "text-slate-950"
+            }`}>
+              Aprende con clases en vivo
+            </h3>
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-8">
+              {liveCourses.map((course) => (
+                <Link
+                  key={course.slug}
+                  href={`/cursos/${course.slug}`}
+                  onClick={() => trackCourseCardClick(course.slug, "blog_article")}
+                  className={`group inline-flex items-center gap-1.5 text-sm font-semibold no-underline transition-colors w-fit ${
+                    prefs.theme === "dark" ? "text-slate-200 hover:text-[#1890FF]" : "text-slate-800 hover:text-[#1890FF]"
+                  }`}
+                >
+                  <span className="underline decoration-2 underline-offset-4 decoration-slate-300 group-hover:decoration-[#1890FF]">
+                    {course.label}
+                  </span>
+                  <ChevronRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── RELATED ARTICLES ── */}
       {related.length > 0 && (

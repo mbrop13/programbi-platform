@@ -45,6 +45,7 @@ import { generateCoursePdf } from "@/lib/brochure/generate-course-pdf";
 import { brochurePdfFileName } from "@/lib/brochure/brochure-assets";
 import type { CourseBrochureData } from "@/lib/brochure/brochure-data";
 import { FONT_SANS, SHADOW_SHEET, T } from "@/lib/brochure/brochure-theme";
+import { trackTemario } from "@/lib/analytics/marketing";
 
 /* ── Constantes del visor ─────────────────────────────────────────────────── */
 
@@ -60,6 +61,14 @@ const TOP_BARRA = 60;
 
 /** Forma del progreso que entrega `generateCoursePdf`. */
 type PdfProgress = { label: string; current: number; total: number };
+
+/**
+ * Temarios ya contados como vista en esta pestaña (curso + país).
+ * Mismo criterio que `trackEventOnce`: el módulo vive lo que vive la pestaña,
+ * así un remontaje del visor (o el doble efecto de StrictMode) no duplica
+ * `view_temario`.
+ */
+const temariosVistos = new Set<string>();
 
 const ESTILO_ZOOM_BOTON: CSSProperties = {
   width: 26,
@@ -178,6 +187,22 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
     if (total > 0) setHojasMedidas(total);
   }, [data, totalPages]);
 
+  /* ── Medición ───────────────────────────────────────────────────────────── */
+
+  // Vista del temario en el visor: una por curso y país en la pestaña.
+  useEffect(() => {
+    const clave = `${data.slug}:${data.pais}`;
+    if (temariosVistos.has(clave)) return;
+    temariosVistos.add(clave);
+    trackTemario({
+      action: "view",
+      method: "visor",
+      location: "visor_pdf",
+      course: data.slug,
+      country: data.pais,
+    });
+  }, [data.slug, data.pais]);
+
   /* ── Generación del PDF ─────────────────────────────────────────────────── */
 
   const generar = useCallback(async () => {
@@ -194,6 +219,14 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
           setAvance({ current: p.current, total: p.total });
         },
       });
+      // Se cuenta solo cuando el PDF salió: un fallo ya se avisa en `errorPdf`.
+      trackTemario({
+        action: "download",
+        method: "pdf",
+        location: "visor_pdf",
+        course: data.slug,
+        country: data.pais,
+      });
     } catch {
       setErrorPdf(
         "No pudimos generar el PDF en este navegador. Usa «Imprimir» y elige «Guardar como PDF»."
@@ -206,6 +239,14 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
   }, [data, generando]);
 
   const imprimir = () => {
+    // Se mide antes de `print()`: el diálogo del navegador bloquea el hilo.
+    trackTemario({
+      action: "download",
+      method: "print",
+      location: "visor_pdf",
+      course: data.slug,
+      country: data.pais,
+    });
     if (typeof window !== "undefined") window.print();
   };
 

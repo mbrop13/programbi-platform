@@ -182,6 +182,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: EntradaPosible[] = [
     entrada("/", 1, "weekly"),
     entrada("/empresas", 0.95, "weekly"),
+    // Herramientas B2B de autoservicio (diagnóstico de madurez y calculadora de
+    // ahorro): páginas propias e indexables, solo en Chile (sin carpeta de país).
+    entrada("/empresas/diagnostico", 0.7, "monthly"),
+    entrada("/empresas/calculadora-capacitacion", 0.7, "monthly"),
     entrada("/implementacion-power-bi", 0.9, "monthly"),
     entrada("/migrar-excel-a-power-bi", 0.9, "monthly"),
     entrada("/por-que-fallan-proyectos-power-bi", 0.8, "monthly"),

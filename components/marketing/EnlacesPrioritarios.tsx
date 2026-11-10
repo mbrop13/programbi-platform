@@ -13,7 +13,7 @@ const OBJETIVOS = [
   {
     href: "/power-bi-para-finanzas",
     kicker: "Finanzas",
-    title: "Power BI para finanzas y control de gestión",
+    title: "Analítica financiera con Power BI",
     text: "Presupuesto, margen y cierre de mes con un modelo que se actualiza solo.",
   },
   {
@@ -34,6 +34,17 @@ const OBJETIVOS = [
     title: "Capacitación in-company para equipos",
     text: "Un programa cerrado, armado con los datos y los reportes que ya usa tu área.",
   },
+] as const;
+
+/**
+ * Fichas que van primero en la home, con el anchor exacto por el que compiten:
+ * «curso power bi» y «curso de análisis de datos». El resto de enlaces del
+ * bloque se mantiene; estos solo se anteponen. En /cursos no hacen falta
+ * porque el catálogo ya muestra esas dos fichas arriba.
+ */
+const CURSOS_PRINCIPALES = [
+  { href: "/cursos/power-bi", title: "Curso de Power BI en vivo" },
+  { href: "/cursos/analisis-de-datos", title: "Curso de análisis de datos" },
 ] as const;
 
 type Contexto = "home" | "cursos";
@@ -61,6 +72,30 @@ export function ObjetivosCursos({ contexto = "home" }: { contexto?: Contexto }) 
           Cuatro rutas armadas según lo que necesitas hacer en el trabajo, no según la
           herramienta de moda. Cada una enlaza a la ficha o al programa que corresponde.
         </p>
+
+        {contexto === "home" ? (
+          <nav
+            aria-label="Cursos principales"
+            className="mt-6 flex flex-wrap items-baseline gap-x-6 gap-y-2 border-t border-line pt-5"
+          >
+            <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">
+              Cursos principales
+            </span>
+            <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold text-ink">
+              {CURSOS_PRINCIPALES.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="inline-flex items-center gap-1.5 no-underline underline-offset-4 hover:underline"
+                  >
+                    {item.title}
+                    <ArrowRight size={14} className="text-mute" aria-hidden />
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        ) : null}
 
         <ul className="mt-8 grid gap-4 sm:grid-cols-2">
           {OBJETIVOS.map((item) => (

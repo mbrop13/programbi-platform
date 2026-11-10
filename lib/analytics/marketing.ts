@@ -37,6 +37,37 @@ const DEBUG_FLAGS = ["debug_mode", "pb_debug", "pb_ga_debug"] as const;
 /** Same window GA4 uses to start a new session. */
 const GA_SESSION_TIMEOUT_MS = 30 * 60 * 1000;
 
+/**
+ * Primera ruta de la pestaña. `generate_lead` la envía como `landing_page`
+ * para no depender de la inferencia de GA4 (landing "(not set)" en 53% de
+ * las sesiones).
+ */
+const LANDING_PATH_KEY = "pb_landing_path";
+
+/**
+ * Parámetros que gtag interpreta como fuente de campaña manual
+ * (`source`/`medium`/`campaign`/`term`/`content` y sus variantes
+ * `campaign_*`). Si viajan dentro de un evento **pisan** la fuente real de la
+ * sesión: así aparecieron las fuentes falsas `empresas_contact` (95 sesiones),
+ * `course_detail_card` (9), `course_detail_gate` (4) y
+ * `course_detail_cotizar` (1), y se perdieron landings. Todo parámetro de
+ * negocio con esos nombres se renombra a `lead_*` antes de `gtag("event")`;
+ * el nombre del evento y el resto de los params no cambian.
+ */
+const RESERVED_CAMPAIGN_PARAM_ALIASES: Record<string, string> = {
+  source: "lead_source",
+  medium: "lead_medium",
+  campaign: "lead_campaign",
+  term: "lead_term",
+  content: "lead_content",
+  campaign_source: "lead_source",
+  campaign_medium: "lead_medium",
+  campaign_name: "lead_campaign",
+};
+
+/** Un clic de WhatsApp dispara el listener global y el onClick del CTA. */
+const WHATSAPP_CLICK_DEDUPE_MS = 1500;
+
 declare global {
   interface Window {
     dataLayer?: unknown[];
@@ -55,6 +86,23 @@ declare global {
 
 function isBrowser() {
   return typeof window !== "undefined";
+}
+
+/**
+ * true en rutas internas donde NO se carga GA4/Clarity ni se envían eventos:
+ * /admin, /admin/*, /comunidad/admin*, /referidos/admin*, /login*, /auth/* y
+ * cualquier ruta que contenga "/admin/" o termine en "/admin".
+ * Motivo: GA4 contaba /admin/formularios (60 vistas) y /admin/miembros (36).
+ */
+export function isAnalyticsDisabledPath(path?: string | null): boolean {
+  const raw = path ?? (isBrowser() ? window.location.pathname : "/");
+  const pathname = (raw || "/").split(/[?#]/)[0].trim().toLowerCase() || "/";
+  const normalized = pathname.startsWith("/") ? pathname : `/${pathname}`;
+  // Cubre /admin, /admin/*, /comunidad/admin*, /referidos/admin*.
+  if (/(^|\/)admin(\/|$)/.test(normalized)) return true;
+  if (normalized.startsWith("/login")) return true;
+  if (normalized === "/auth" || normalized.startsWith("/auth/")) return true;
+  return false;
 }
 
 /** Persist first-touch UTM from the current URL (session). */
@@ -197,6 +245,14 @@ export const GA_LEAD_EVENTS = {
   CLICK_COTIZAR_EMPRESAS: "click_cotizar_empresas",
   QUIZ_COMPLETE: "quiz_complete",
   WEBINAR_SIGNUP: "webinar_signup",
+  /** Vista / descarga del PDF «Temario y precios». */
+  VIEW_TEMARIO: "view_temario",
+  DOWNLOAD_TEMARIO: "download_temario",
+  /** Embudo de registro: param `step` (ver RegistroStep). */
+  REGISTRO_STEP: "registro_step",
+  /** Herramientas B2B. */
+  DIAGNOSTICO_COMPLETE: "diagnostico_complete",
+  CALCULADORA_USE: "calculadora_use",
   /** Entrada desde un asistente IA. No es un lead; vive aquí por ser la lista canónica. */
   AI_REFERRAL: "ai_referral",
 } as const;
@@ -382,16 +438,24 @@ function readGaClientId(): string | undefined {
   return undefined;
 }
 
-function gaSessionId(): string | undefined {
-  if (!GA_MEASUREMENT_ID) return undefined;
+/**
+ * `_ga_<ID>` cookie → id de sesión (`sid`) y contador (`sct`) con los que gtag
+ * etiqueta sus hits. El Measurement Protocol pide ambos: con `sid` solo, GA4
+ * no ata el hit a la sesión existente y la landing queda "(not set)".
+ */
+function gaSession(): { sid?: string; sct?: string } {
+  if (!GA_MEASUREMENT_ID) return {};
   const name = `_ga_${GA_MEASUREMENT_ID.replace(/^G-/, "")}`;
   try {
     const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`));
-    if (!match) return undefined;
+    if (!match) return {};
     const value = decodeURIComponent(match[1]);
-    return (value.match(/(?:^|\$|\.)s(\d{6,})/) || value.match(/^GS\d+\.\d+\.(\d{6,})/))?.[1];
+    const parsed = value.match(/^GS\d+\.\d+\.(\d{6,})\.(\d+)/);
+    if (parsed) return { sid: parsed[1], sct: parsed[2] };
+    const sid = (value.match(/(?:^|\$|\.)s(\d{6,})/) || value.match(/^GS\d+\.\d+\.(\d{6,})/))?.[1];
+    return sid ? { sid } : {};
   } catch {
-    return undefined;
+    return {};
   }
 }
 
@@ -407,12 +471,19 @@ function gaSessionId(): string | undefined {
  * would start a session whose first hit is generate_lead (landing_page = (not set)).
  * Same if gtag.js has not loaded yet: its page_view is still queued in dataLayer
  * and the beacon would reach GA first. In both cases the caller falls back to the
- * gtag event, queued after the page_view.
+ * gtag event (`transport_type: "beacon"`), queued after the page_view.
+ *
+ * Payload: `dl` (page_location) y `dr` (document.referrer) más el cid/sid/sct
+ * de gtag, para que el hit entre en la sesión abierta y no la reinicie.
  */
 function sendGenerateLeadBeacon(opts: {
   method: GenerateLeadMethod;
   course_slug?: string;
   page_path?: string;
+  lead_type?: string;
+  lead_source?: string;
+  country?: string;
+  landing_page?: string;
 }): boolean {
   if (!GA_MEASUREMENT_ID || typeof navigator.sendBeacon !== "function") return false;
   if (!window.__pbGtagLoaded) return false;
@@ -431,9 +502,19 @@ function sendGenerateLeadBeacon(opts: {
     "ep.pb_dbg": debug ? "1" : "0",
   });
   if (debug) params.set("_dbg", "1");
-  const sid = gaSessionId();
-  if (sid) params.set("sid", sid);
+  // `dr` (document.referrer): sin él el hit del beacon llega sin referrer y
+  // GA4 lo agrupa como tráfico directo.
+  if (document.referrer) params.set("dr", document.referrer);
+  // Mismo client + session id que gtag: el hit cae en la sesión ya abierta en
+  // vez de arrancar una nueva con landing_page "(not set)".
+  const session = gaSession();
+  if (session.sid) params.set("sid", session.sid);
+  if (session.sct) params.set("sct", session.sct);
   if (opts.course_slug) params.set("ep.course_slug", opts.course_slug);
+  if (opts.lead_type) params.set("ep.lead_type", opts.lead_type);
+  if (opts.lead_source) params.set("ep.lead_source", opts.lead_source);
+  if (opts.country) params.set("ep.country", opts.country);
+  if (opts.landing_page) params.set("ep.landing_page", opts.landing_page);
   // The normal /g/collect endpoint with _dbg=1 feeds DebugView. Do NOT use
   // /debug/g/collect: that validates the payload but records nothing anywhere.
   try {
@@ -451,20 +532,33 @@ export function trackGenerateLead(opts: {
   method: GenerateLeadMethod;
   course_slug?: string | null;
   page_path?: string;
+  /** Tipo de lead, igual al de `lead_submit` (asesoria_b2b, temario…). */
+  lead_type?: string;
+  /** Antes viajaba como `source`, nombre que GA4 leía como fuente de campaña. */
+  lead_source?: string;
+  country?: string;
+  /** Primera ruta de la pestaña (sessionStorage `pb_landing_path`). */
+  landing_page?: string;
 }): void {
   if (!isBrowser()) return;
-  // Public /registro, /referidos and marketing modals must count. Only auth walls stay quiet.
-  if (isQuietLeadPath()) {
-    gaDebug("generate_lead skipped", { reason: "quiet", path: window.location.pathname });
+  // Rutas internas (/admin, /login, /auth…): tampoco el beacon.
+  if (isAnalyticsDisabledPath(window.location.pathname)) {
+    gaDebug("generate_lead skipped", { reason: "internal", path: window.location.pathname });
     return;
   }
   const course_slug = inferCourseSlug(opts.course_slug);
+  const country = opts.country || analyticsContext().country;
+  const landing_page = opts.landing_page || readLandingPath();
   // (b) Never let a lead be the first hit: queue the page_view before it.
   ensurePageViewBeforeHit();
   const transport = sendGenerateLeadBeacon({
     method: opts.method,
     course_slug,
     page_path: opts.page_path,
+    lead_type: opts.lead_type,
+    lead_source: opts.lead_source,
+    country,
+    landing_page,
   })
     ? "beacon"
     : GA_MEASUREMENT_ID
@@ -479,6 +573,14 @@ export function trackGenerateLead(opts: {
       method: opts.method,
       course_slug,
       page_path: opts.page_path,
+      lead_type: opts.lead_type,
+      lead_source: opts.lead_source,
+      country,
+      landing_page,
+      // El beacon propio no puede llevar sesión (gtag aún no cargó o falta el
+      // _ga): gtag manda el evento con transporte beacon para que la
+      // redirección del registro no lo aborte.
+      transport_type: "beacon",
       ...(debug ? { _dbg: 1 } : {}),
     });
   }
@@ -486,11 +588,38 @@ export function trackGenerateLead(opts: {
     transport,
     method: opts.method,
     course_slug: course_slug || null,
+    lead_type: opts.lead_type || null,
+    lead_source: opts.lead_source || null,
+    landing_page: landing_page || null,
     pb_dbg: analyticsDebugEnabled() ? "1" : "0",
   });
 }
 
 type PageViewTarget = { key: string; page_path: string; page_location: string };
+
+/** Guarda la primera ruta de la pestaña; el resto de page_view no la pisan. */
+function rememberLandingPath(pagePath: string): void {
+  if (!isBrowser() || !pagePath) return;
+  try {
+    if (sessionStorage.getItem(LANDING_PATH_KEY)) return;
+    sessionStorage.setItem(LANDING_PATH_KEY, pagePath);
+  } catch {
+    // sessionStorage bloqueado: queda el landing_path de los UTM guardados
+  }
+}
+
+/** Primera ruta de la pestaña; si no se pudo guardar, la del primer UTM visto. */
+function readLandingPath(): string | undefined {
+  if (!isBrowser()) return undefined;
+  try {
+    const stored = sessionStorage.getItem(LANDING_PATH_KEY);
+    if (stored) return stored;
+  } catch {
+    // sigue con los UTM
+  }
+  const utm = getStoredUtm();
+  return utm.landing_path || undefined;
+}
 
 /**
  * Build a full page_location (origin + path + query). `reg_ok` is a one-shot
@@ -515,6 +644,9 @@ function buildPageViewTarget(rawPath?: string): PageViewTarget {
 /** One page_view via gtag event (not config: config re-runs duplicated hits). */
 function sendPageViewHit(target: PageViewTarget): void {
   if (typeof window.gtag !== "function") return;
+  // La primera page_view de la pestaña es la landing de la sesión: queda en
+  // sessionStorage para que generate_lead la mande como `landing_page`.
+  rememberLandingPath(target.page_path);
   const { country, page_type } = analyticsContext(target.page_path);
   window.gtag("event", "page_view", {
     page_location: target.page_location,
@@ -546,6 +678,8 @@ function sendPageViewHit(target: PageViewTarget): void {
  */
 function ensureGa4(): boolean {
   if (!isBrowser() || !GA_MEASUREMENT_ID) return false;
+  // Rutas internas: no se inicializa gtag (ni dataLayer) desde aquí.
+  if (isAnalyticsDisabledPath(window.location.pathname)) return false;
   window.dataLayer = window.dataLayer || [];
   if (typeof window.gtag !== "function") {
     window.gtag = function gtag() {
@@ -583,6 +717,9 @@ function ensurePageViewBeforeHit(): void {
 
 /** Safe to call on every client mount. */
 export function initGa4(): void {
+  if (!isBrowser()) return;
+  // No se carga GA4 en rutas internas (/admin, /login, /auth…).
+  if (isAnalyticsDisabledPath(window.location.pathname)) return;
   ensureGa4();
 }
 
@@ -605,15 +742,42 @@ function definedParams(params: AnalyticsParams): AnalyticsParams {
   return out;
 }
 
+/**
+ * Renombra a `lead_*` los params que GA4/gtag leen como fuente de campaña
+ * manual (`source`, `medium`, `campaign`, `term`, `content`, `campaign_*`).
+ * Sin esto, un evento de negocio (`lead_submit` con source "empresas_contact")
+ * reescribe la fuente de la sesión: de ahí las 95 sesiones atribuidas a
+ * `empresas_contact` (y 9/4/1 de `course_detail_*`) y las landings perdidas.
+ * Nunca se manda `source` dentro de un evento; el dato vive en `lead_source`.
+ */
+function stripReservedCampaignParams(params?: AnalyticsParams): AnalyticsParams | undefined {
+  if (!params) return params;
+  const out: AnalyticsParams = { ...params };
+  for (const [reserved, alias] of Object.entries(RESERVED_CAMPAIGN_PARAM_ALIASES)) {
+    if (!(reserved in out)) continue;
+    const value = out[reserved];
+    delete out[reserved];
+    const current = out[alias];
+    if (current === undefined || current === null || current === "") out[alias] = value;
+  }
+  return out;
+}
+
 /** Send event to GA4 (gtag) and tag Clarity custom event when available. */
 export function trackEvent(eventName: string, params?: AnalyticsParams): void {
   if (!isBrowser()) return;
+  // Rutas internas: ni un hit a GA4 ni a Clarity.
+  if (isAnalyticsDisabledPath(window.location.pathname)) return;
   // Guarantees the session's first hit (and any post-30-min hit) is a page_view.
   ensurePageViewBeforeHit();
   // Country / page_type / course / guide_slug viajan en todos los eventos.
   // Lo explícito del llamador pisa el contexto (p. ej. una landing que empuja
   // a otro curso distinto del de la URL).
-  const payload = definedParams({ ...analyticsContext(), ...withUtm(params), ...debugHitParams() });
+  const payload = definedParams({
+    ...analyticsContext(),
+    ...withUtm(stripReservedCampaignParams(params)),
+    ...debugHitParams(),
+  });
 
   try {
     if (GA_MEASUREMENT_ID && typeof window.gtag === "function") {
@@ -829,8 +993,12 @@ export function trackAiReferral(opts?: {
  */
 export function trackPageView(path?: string): void {
   if (!isBrowser()) return;
+  // Rutas internas (/admin, /login, /auth…): no se envía page_view.
+  if (isAnalyticsDisabledPath(path ?? window.location.pathname)) return;
   if (!ensureGa4()) return;
   const target = buildPageViewTarget(path);
+  // Landing de la sesión = primera page_view de la pestaña.
+  rememberLandingPath(target.page_path);
   if (window.__pbLastPageViewKey === target.key) return;
   sendPageViewHit(target);
 
@@ -858,6 +1026,32 @@ export function trackPlantillaDownload(opts: {
     pais: opts.pais,
     location: opts.location ?? "curso_power_bi",
   });
+}
+
+/**
+ * Vista o descarga del PDF «Temario y precios».
+ * Eventos: view_temario (se abrió/visualizó) | download_temario (se descargó).
+ * `location` es el punto de la UI (ficha_gate, ficha_sidebar, visor_pdf,
+ * precios…) y `method` cómo se obtuvo el archivo.
+ */
+export function trackTemario(opts: {
+  action: "view" | "download";
+  course?: string | null;
+  country?: string | null;
+  location: string;
+  method?: "pdf" | "print" | "visor";
+}): void {
+  const course = opts.course?.trim() || undefined;
+  trackEvent(
+    opts.action === "download" ? GA_LEAD_EVENTS.DOWNLOAD_TEMARIO : GA_LEAD_EVENTS.VIEW_TEMARIO,
+    {
+      course,
+      course_slug: course,
+      country: opts.country?.trim() || undefined,
+      location: opts.location,
+      method: opts.method,
+    },
+  );
 }
 
 export function trackCourseCardClick(courseSlug: string, location: string): void {
@@ -961,23 +1155,46 @@ export function trackPurchase(opts?: {
   });
 }
 
+/** Último click_whatsapp enviado, para descartar el doble aviso del mismo clic. */
+let lastWhatsAppClick: { page: string; href: string; at: number } | null = null;
+
 /**
  * `click_whatsapp` with the parameters requested by P6/P21:
  * course (slug), country (ISO or name) and page (current path).
+ *
+ * Dedupe: un mismo clic lo capturan el listener global de MarketingAnalytics y
+ * el onClick del CTA. Un segundo evento dentro de 1500 ms con el mismo href
+ * (o el mismo page cuando el CTA no pasa href) se ignora, así cada clic real
+ * cuenta una vez. `wa_location` duplica `cta_position` para los informes nuevos.
  */
 export function trackWhatsAppClick(opts?: {
   course?: string | null;
   country?: string | null;
   page?: string;
   cta_position?: string;
+  /** href del enlace wa.me; mejora el dedupe entre listener global y CTA. */
+  href?: string | null;
 }): void {
   const page =
     opts?.page ||
     (isBrowser() ? window.location.pathname + window.location.search : undefined);
+  const href = opts?.href?.trim() || "";
+  const now = Date.now();
+  if (
+    lastWhatsAppClick &&
+    now - lastWhatsAppClick.at < WHATSAPP_CLICK_DEDUPE_MS &&
+    lastWhatsAppClick.page === (page || "") &&
+    (!href || !lastWhatsAppClick.href || lastWhatsAppClick.href === href)
+  ) {
+    gaDebug("click_whatsapp skipped", { reason: "dedupe-1500ms", page });
+    return;
+  }
+  lastWhatsAppClick = { page: page || "", href, at: now };
   trackEvent(GA_LEAD_EVENTS.CLICK_WHATSAPP, {
     course: opts?.course || undefined,
     country: opts?.country || undefined,
     cta_position: opts?.cta_position || undefined,
+    wa_location: opts?.cta_position || undefined,
     page,
     // Keep legacy params for existing GA4 reports/explorations.
     page_path: page,
@@ -1001,13 +1218,30 @@ export function trackQuizComplete(opts: {
   });
 }
 
+/** Resultado del diagnóstico de madurez de datos (herramienta B2B, 0–30). */
+export function trackDiagnosticoComplete(opts: { score: number; nivel: string }): void {
+  trackEvent(GA_LEAD_EVENTS.DIAGNOSTICO_COMPLETE, {
+    score: opts.score,
+    nivel: opts.nivel,
+  });
+}
+
+/** Uso de la calculadora de ahorro por capacitación (herramienta B2B). */
+export function trackCalculadoraUse(opts: { personas: number; horasAhorradasMes: number }): void {
+  trackEvent(GA_LEAD_EVENTS.CALCULADORA_USE, {
+    personas: opts.personas,
+    horas_ahorradas_mes: opts.horasAhorradasMes,
+  });
+}
+
 export function trackViewEmpresas(): void {
   trackEvent(GA_LEAD_EVENTS.VIEW_EMPRESAS);
 }
 
 /**
  * Inscripción exitosa al webinar o a la clase gratis.
- * `source` separa el webinar histórico de la clase gratis del flag nuevo.
+ * `lead_source` separa el webinar histórico de la clase gratis del flag nuevo
+ * (antes se llamaba `source`, nombre que GA4 interpretaba como campaña).
  */
 export function trackWebinarSignup(opts?: {
   pais?: string | null;
@@ -1016,7 +1250,7 @@ export function trackWebinarSignup(opts?: {
 }): void {
   trackEvent(GA_LEAD_EVENTS.WEBINAR_SIGNUP, {
     country: opts?.pais || undefined,
-    source: opts?.source || "webinar",
+    lead_source: opts?.source || "webinar",
     course: opts?.course || undefined,
   });
 }
@@ -1061,6 +1295,43 @@ export function trackSubmitRegistro(opts?: {
   markRegistroLeadFired();
 }
 
+/**
+ * Pasos del embudo de registro. `225 click_registro → 21 submit_registro`
+ * (~90% se pierde) no se podía ubicar porque solo existían los extremos.
+ */
+export type RegistroStep =
+  | "open"
+  | "start"
+  | "submit_attempt"
+  | "validation_error"
+  | "signup_error"
+  | "confirm_pending"
+  | "success"
+  | "oauth_click"
+  | "whatsapp_alt";
+
+/**
+ * Un paso del embudo de registro (evento `registro_step`, param `step`).
+ * `reason` es un código corto y normalizado: nunca el email ni datos personales.
+ */
+export function trackRegistroStep(opts: {
+  step: RegistroStep;
+  surface: "registro_page" | "auth_modal" | "referidos";
+  reason?: string;
+  method?: "form" | "oauth";
+  course?: string | null;
+}): void {
+  const course = opts.course?.trim() || undefined;
+  trackEvent(GA_LEAD_EVENTS.REGISTRO_STEP, {
+    step: opts.step,
+    surface: opts.surface,
+    reason: opts.reason,
+    method: opts.method,
+    course,
+    course_slug: course,
+  });
+}
+
 export function trackClickCotizarEmpresas(): void {
   trackEvent(GA_LEAD_EVENTS.CLICK_COTIZAR_EMPRESAS);
 }
@@ -1079,14 +1350,19 @@ export function trackNavRegistro(pathname?: string): void {
 }
 
 export function trackLeadSubmit(leadType: string, source?: string, courseSlug?: string): void {
+  // `lead_source`, no `source`: GA4 lee `source` como fuente de campaña manual
+  // y la sesión quedaba atribuida a "empresas_contact" (95 sesiones).
   trackEvent("lead_submit", {
     lead_type: leadType,
-    source,
+    lead_source: source,
     course_slug: courseSlug,
   });
   // Marcar generate_lead como evento clave en GA4 Admin
   trackGenerateLead({
     method: "form",
     course_slug: courseSlug,
+    lead_type: leadType,
+    lead_source: source,
+    country: analyticsContext().country,
   });
 }

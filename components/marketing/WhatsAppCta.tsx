@@ -16,6 +16,7 @@ export default function WhatsAppCta({
   course,
   courseSlug,
   country,
+  ctaPosition = "course_detail_inline",
   children,
   className,
 }: {
@@ -27,6 +28,8 @@ export default function WhatsAppCta({
   courseSlug?: string;
   /** Fuerza un país (ISO o nombre). Por defecto se detecta desde la ruta. */
   country?: string | null;
+  /** Posición del CTA para GA4 (cta_position). Opcional: no cambia el copy. */
+  ctaPosition?: string;
   children: React.ReactNode;
   className?: string;
 }) {
@@ -55,7 +58,7 @@ export default function WhatsAppCta({
       course: slug,
       country: resolvedCountry,
       page: currentPath,
-      cta_position: "course_detail_inline",
+      cta_position: ctaPosition,
     });
   };
 
@@ -65,7 +68,7 @@ export default function WhatsAppCta({
       target="_blank"
       rel="noopener noreferrer"
       className={className}
-      data-wa-tracked="true"
+      data-wa-tracked="1"
       onClick={handleClick}
     >
       {children}

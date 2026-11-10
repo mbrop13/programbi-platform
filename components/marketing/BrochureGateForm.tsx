@@ -11,7 +11,7 @@ import {
 } from "@/lib/pricing-gate";
 import { getAntiBotFields, honeypotStyle } from "@/lib/antibot";
 import { captureAndReadAttribution } from "@/lib/utm";
-import { trackLeadSubmit } from "@/lib/analytics/marketing";
+import { trackLeadSubmit, trackTemario } from "@/lib/analytics/marketing";
 
 export type BrochureGateFormProps = {
   /** Slug del curso cuyo temario se abre al enviar. */
@@ -218,7 +218,11 @@ export function BrochureGateForm({
       body: JSON.stringify(payload),
     })
       .then((res) => {
-        if (res.ok) trackLeadSubmit("personal", source, slug);
+        if (!res.ok) return;
+        trackLeadSubmit("personal", source, slug);
+        // El PDF se abrió en otra pestaña; esto deja la vista del temario
+        // atribuida al curso y al país del gate que la originó.
+        trackTemario({ action: "view", course: slug, country: pais, location: source });
       })
       .catch(() => {
         // El PDF ya está abierto: un fallo de red no debe romper la experiencia.
