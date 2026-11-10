@@ -179,11 +179,11 @@ export function construirBloque(
     {
       clave: "precio",
       etiqueta: `Precio en ${pais.moneda}`,
-      valor: hayPrecio ? "En el brochure PDF" : "Consulta el valor",
+      valor: hayPrecio ? "En el PDF de temario y precios" : "Consulta el valor",
       detalle: nota(
         "precio",
         hayPrecio
-          ? `El monto vigente y los descuentos están en el brochure del curso; el checkout muestra el total antes de pagar.`
+          ? `El monto vigente y los descuentos están en el PDF de temario y precios del curso; el checkout muestra el total antes de pagar.`
           : `Sin precio público aprobado para ${pais.nombre}: se confirma con admisiones.`
       ),
     },

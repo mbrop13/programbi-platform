@@ -91,7 +91,7 @@ export default function GuiaCTA({
         {inicioTexto} · {horaLocal} · {ficha.horasTexto} · grabaciones de por vida y certificado.
       </p>
       <p className="mt-3 text-sm font-semibold text-ink">
-        {esGeneral ? "El arancel de cada curso está en su brochure PDF." : "El arancel vigente, las fechas y las cuotas están en el brochure PDF del curso."}
+        {esGeneral ? "El arancel de cada curso está en su PDF de temario y precios." : "El arancel vigente, las fechas y las cuotas están en el PDF de temario y precios del curso."}
       </p>
       <Link
         href={rutaBrochure}
@@ -99,7 +99,7 @@ export default function GuiaCTA({
         rel={esGeneral ? undefined : "noopener noreferrer"}
         className="mt-3 inline-flex items-center justify-center gap-2 rounded-full border border-line bg-canvas px-5 py-2.5 text-sm font-semibold text-ink no-underline hover:bg-wash"
       >
-        <FileText size={15} aria-hidden /> Descargar brochure PDF con precios →
+        <FileText size={15} aria-hidden /> Ver temario y precios (PDF) →
       </Link>
       <div className="mt-4 flex flex-col gap-2 sm:flex-row">
         <Link

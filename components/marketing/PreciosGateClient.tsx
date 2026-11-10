@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { FileText, LockKeyhole, Unlock } from "lucide-react";
 import { COUNTRIES } from "@/lib/context/CountryContext";
@@ -45,9 +45,9 @@ const FUENTE_NOTA = "Precios publicados y sujetos a cambios. El monto final se c
  * Tabla de precios de `/precios` detrás del gate.
  *
  * Con los precios bloqueados no se renderiza ningún monto: cada fila muestra
- * «En Brochure PDF» y el nombre del curso abre el brochure de su país. Arriba
- * aparece el formulario que desbloquea la tabla completa (Nombre, Email,
- * Teléfono con prefijo y curso principal) y abre el brochure en una pestaña.
+ * «En el PDF de temario y precios» y el nombre del curso abre el temario de su
+ * país. Arriba aparece el formulario que desbloquea la tabla completa (Nombre,
+ * Email, Teléfono con prefijo y curso principal) y abre el PDF en una pestaña.
  */
 export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: Props) {
   const { unlocked, unlock } = usePriceUnlock();
@@ -59,7 +59,12 @@ export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: 
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [honeypot, setHoneypot] = useState("");
-  const formLoadedAt = useRef(Date.now());
+  // Timestamp de montaje del formulario (antibot). Se fija en un efecto para no
+  // llamar a Date.now() durante el render (react-hooks/purity).
+  const formLoadedAt = useRef(0);
+  useEffect(() => {
+    formLoadedAt.current = Date.now();
+  }, []);
 
   const seleccionado = cursos.find((curso) => curso.slug === slug) ?? cursos[0];
 
@@ -90,18 +95,18 @@ export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: 
     const whatsapp = withDialCode(telefono, prefix);
     const curso = seleccionado;
     if (!curso) {
-      setError("Elige un curso para abrir su brochure.");
+      setError("Elige un curso para abrir su temario con precios.");
       setIsSubmitting(false);
       return;
     }
 
-    // 1) Abrir el brochure de forma sincrónica: el navegador lo trata como
+    // 1) Abrir el temario de forma sincrónica: el navegador lo trata como
     //    acción del usuario y no lo bloquea como popup.
     try {
       window.open(courseBrochureUrl(curso.slug, pais), "_blank", "noopener,noreferrer");
     } catch {
-      // Si el navegador bloquea la pestaña, el botón «Abrir brochure PDF con
-      // precios» queda disponible arriba de la tabla ya desbloqueada.
+      // Si el navegador bloquea la pestaña, el botón «Abrir temario y precios
+      // (PDF)» queda disponible arriba de la tabla ya desbloqueada.
     }
 
     // 2) Desbloqueo inmediato: la tabla muestra los montos al instante.
@@ -121,7 +126,7 @@ export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: 
       pais,
       pricingVariant: "gate",
       ...captureAndReadAttribution(),
-      ...getAntiBotFields(formLoadedAt.current, honeypot),
+      ...getAntiBotFields(formLoadedAt.current || Date.now(), honeypot),
     };
 
     void fetch("/api/leads/create", {
@@ -133,7 +138,7 @@ export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: 
         if (res.ok) trackLeadSubmit("personal", "precios", curso.slug);
       })
       .catch(() => {
-        // El brochure ya está abierto: un fallo de red no rompe la experiencia.
+        // El PDF ya está abierto: un fallo de red no rompe la experiencia.
       });
   };
 
@@ -153,7 +158,7 @@ export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: 
             </>
           ) : (
             <>
-              <LockKeyhole size={13} aria-hidden /> Aranceles en el brochure PDF
+              <LockKeyhole size={13} aria-hidden /> Aranceles en el PDF de temario y precios
             </>
           )}
         </p>
@@ -171,7 +176,7 @@ export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: 
               rel="noopener noreferrer"
               className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-ink px-5 text-sm font-semibold text-canvas no-underline"
             >
-              <FileText size={15} aria-hidden /> Abrir brochure PDF con precios
+              <FileText size={15} aria-hidden /> Abrir temario y precios (PDF)
             </Link>
           ) : null}
         </div>
@@ -183,12 +188,12 @@ export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: 
           className="mt-5 rounded-[26px] border border-line-strong bg-paper p-5 sm:p-6"
         >
           <p className="text-lg font-bold tracking-tight text-ink">
-            Desbloquea todos los precios y llévate el brochure
+            Desbloquea todos los precios y llévate el temario con precios
           </p>
           <p className="mt-1 max-w-[52rem] text-sm leading-relaxed text-mute">
-            Los aranceles de cada curso se publican en su brochure PDF, con el descuento vigente, las
-            fechas en hora de tu país y las 3 cuotas sin interés. Completa tus datos y abrimos el PDF
-            de tu curso principal en una pestaña nueva.
+            Los aranceles de cada curso se publican en su PDF de temario y precios, con el descuento
+            vigente, las fechas en hora de tu país y las 3 cuotas sin interés. Completa tus datos y
+            abrimos el PDF de tu curso principal en una pestaña nueva.
           </p>
 
           <div className="mt-4 grid gap-2 sm:grid-cols-2">
@@ -306,11 +311,11 @@ export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: 
             disabled={isSubmitting}
             className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-canvas transition-transform active:scale-[0.99] disabled:opacity-70 sm:w-auto"
           >
-            <FileText size={16} aria-hidden /> Desbloquear todos los precios y abrir Brochure PDF →
+            <FileText size={16} aria-hidden /> Desbloquear todos los precios y abrir el PDF de temario y precios →
           </button>
 
           <p className="mt-2 text-[11px] leading-snug text-faint">
-            Sin spam. Usamos tus datos para enviarte el brochure y el detalle del curso.
+            Sin spam. Usamos tus datos para enviarte el temario con precios y el detalle del curso.
           </p>
         </form>
       )}
@@ -389,7 +394,7 @@ export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: 
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline hover:text-mute"
                       >
-                        <FileText size={14} aria-hidden /> En Brochure PDF
+                        <FileText size={14} aria-hidden /> En el PDF de temario y precios
                       </Link>
                     )}
                   </td>
@@ -407,8 +412,8 @@ export default function PreciosGateClient({ cursos, pais, moneda, cobroLocal }: 
         </p>
       )}
       <p className="mt-3 text-xs leading-relaxed text-faint">
-        {NOTA_CUOTAS} El detalle de cada arancel, con descuentos y fechas, está en el brochure PDF del
-        curso.
+        {NOTA_CUOTAS} El detalle de cada arancel, con descuentos y fechas, está en el PDF de temario y
+        precios del curso.
       </p>
     </section>
   );

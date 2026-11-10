@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Generador del brochure PDF en el navegador.
+ * Generador del PDF «Temario y precios» en el navegador.
  *
  * Dos motores, en este orden:
  *
@@ -12,9 +12,9 @@
  *    anotaciones de enlace de jsPDF para que el PDF conserve los clics.
  *
  * 2. **Respaldo vectorial**. Si no hay hojas o la captura falla, se compone el
- *    brochure con `rect`, `text` y `line`, siempre con las imágenes reales
+ *    temario con `rect`, `text` y `line`, siempre con las imágenes reales
  *    (logo, hero, retratos, logos de empresas y capturas de proyectos). La
- *    estética replica el papel crema del sitio.
+ *    estética replica el papel blanco del sitio, con tinta oscura y hairlines.
  *
  * No se usa `autoTable` (no está instalado) y todos los activos son locales
  * (`/images/...`, `/logo.png`), así que nunca dependemos de CORS remoto.
@@ -72,17 +72,20 @@ const HOJA_PX_H = 1123;
 /** Destino de la captura: 2.5× sobre la hoja física. */
 const LIENZO_PX_W = 1985;
 const LIENZO_PX_H = 2808;
-const FONDO_HEX = "#FAF9F5";
+const FONDO_HEX = "#FFFFFF";
 
-// ── Paleta editorial ─────────────────────────────────────────────────────────
+// ── Paleta editorial (tema claro «Temario y precios») ────────────────────────
+//
+// Los valores replican los tokens de `lib/brochure/brochure-theme.ts`: papel
+// blanco, tinta #14161B, hairlines #E5E2DA y nada de paneles oscuros grandes.
 
-const PAPEL: RGB = [250, 249, 245];
-const TINTA: RGB = [24, 24, 22];
-const GRIS: RGB = [92, 91, 86];
-const TENUE: RGB = [124, 123, 116];
+const PAPEL: RGB = [255, 255, 255];
+const TINTA: RGB = [20, 22, 27];
+const GRIS: RGB = [59, 63, 73];
+const TENUE: RGB = [107, 111, 120];
 const BLANCO: RGB = [255, 255, 255];
-const LINEA: RGB = [228, 226, 219];
-const LAVADO: RGB = [240, 238, 232];
+const LINEA: RGB = [229, 226, 218];
+const LAVADO: RGB = [247, 246, 242];
 
 const HEX = /^#?([0-9a-f]{6})$/i;
 
@@ -632,7 +635,7 @@ async function construirPdfVectorial(
     });
   };
 
-  avisar("Cargando imágenes del brochure…");
+  avisar("Cargando imágenes del temario…");
 
   const profesores = data.profesores.slice(0, 3);
   const galeria = data.galleryImages.slice(0, 3);
@@ -685,7 +688,7 @@ async function construirPdfVectorial(
     tinta(TENUE);
     doc.setCharSpace(0.7);
     doc.text(
-      `BROCHURE · ${data.paisNombre.toUpperCase()}`,
+      `TEMARIO Y PRECIOS · ${data.paisNombre.toUpperCase()}`,
       PAGE_W - MARGEN,
       16.5,
       { align: "right" }
@@ -895,7 +898,7 @@ async function construirPdfVectorial(
   doc.setFontSize(TIPO.meta);
   tinta(GRIS);
   doc.setCharSpace(0.9);
-  doc.text("BROCHURE OFICIAL", PAGE_W - MARGEN, 16.5, { align: "right" });
+  doc.text("TEMARIO Y PRECIOS", PAGE_W - MARGEN, 16.5, { align: "right" });
   doc.setCharSpace(0);
 
   doc.setFont("helvetica", "normal");
@@ -1197,19 +1200,25 @@ async function construirPdfVectorial(
 
   const altoInscripcion = 32;
   asegurar(altoInscripcion + 6);
-  relleno(TINTA);
+  relleno(BLANCO);
   doc.roundedRect(MARGEN, y, ANCHO, altoInscripcion, 3, 3, "F");
+  trazo(LINEA);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(MARGEN, y, ANCHO, altoInscripcion, 3, 3, "S");
+  relleno(acento);
+  doc.rect(MARGEN, y, 1.6, altoInscripcion, "F");
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(TIPO.tarjeta);
-  doc.setTextColor(255, 255, 255);
+  tinta(TINTA);
   doc.text("Inscripción en línea", MARGEN + 7, y + 10);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(TIPO.cuerpo);
-  doc.setTextColor(205, 204, 198);
+  tinta(acento);
   doc.text(`programbi.com${data.inscripcionUrl}`, MARGEN + 7, y + 17.5);
   if (data.whatsappUrl) {
+    tinta(GRIS);
     doc.text(
       `WhatsApp: ${data.whatsappUrl.replace(
         /^https?:\/\/(wa\.me|api\.whatsapp\.com)\//i,
@@ -1448,25 +1457,28 @@ async function construirPdfVectorial(
 
   const altoCertificado = 64;
   asegurar(altoCertificado + 8);
-  relleno(TINTA);
+  relleno(BLANCO);
   doc.roundedRect(MARGEN, y, ANCHO, altoCertificado, 3.5, 3.5, "F");
+  trazo(LINEA);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(MARGEN, y, ANCHO, altoCertificado, 3.5, 3.5, "S");
   relleno(acento);
   doc.rect(MARGEN, y, 3.5, altoCertificado, "F");
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(TIPO.meta);
-  doc.setTextColor(176, 175, 168);
+  tinta(acento);
   doc.setCharSpace(0.9);
   doc.text("CERTIFICADO DIGITAL VERIFICABLE", MARGEN + 10, y + 10.5);
   doc.setCharSpace(0);
 
   doc.setFontSize(13);
-  doc.setTextColor(255, 255, 255);
+  tinta(TINTA);
   doc.text("Termina con un certificado que puedes mostrar", MARGEN + 10, y + 21);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9.2);
-  doc.setTextColor(198, 197, 191);
+  tinta(GRIS);
   const textoCertificado = medirLineas(
     "Al completar los módulos recibes tu certificado digital con código de verificación, acceso permanente a las grabaciones y el material del curso.",
     ANCHO - 84,
@@ -1478,19 +1490,19 @@ async function construirPdfVectorial(
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(TIPO.cuerpo);
-  doc.setTextColor(255, 255, 255);
+  tinta(TINTA);
   doc.text("programbi.com", MARGEN + 10, y + altoCertificado - 10);
 
-  trazo([255, 255, 255]);
+  trazo(acento);
   doc.setLineWidth(0.5);
   doc.circle(PAGE_W - MARGEN - 28, y + 30, 15, "S");
   doc.setFont("helvetica", "bold");
   doc.setFontSize(13);
-  doc.setTextColor(255, 255, 255);
+  tinta(acento);
   doc.text("PB", PAGE_W - MARGEN - 28, y + 32.5, { align: "center" });
   doc.setFont("helvetica", "normal");
   doc.setFontSize(TIPO.pie);
-  doc.setTextColor(190, 189, 183);
+  tinta(TENUE);
   doc.text("PROGRAMBI", PAGE_W - MARGEN - 28, y + 37.5, { align: "center" });
 
   y += altoCertificado + 8;
@@ -1768,25 +1780,28 @@ async function construirPdfVectorial(
 
   const altoPanel = 86;
   asegurar(altoPanel + 10);
-  relleno(TINTA);
+  relleno(BLANCO);
   doc.roundedRect(MARGEN, y, ANCHO, altoPanel, 3.5, 3.5, "F");
+  trazo(LINEA);
+  doc.setLineWidth(0.3);
+  doc.roundedRect(MARGEN, y, ANCHO, altoPanel, 3.5, 3.5, "S");
   relleno(acento);
   doc.rect(MARGEN, y, 3.5, altoPanel, "F");
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(TIPO.meta);
-  doc.setTextColor(176, 175, 168);
+  tinta(acento);
   doc.setCharSpace(0.9);
   doc.text("CERTIFICADO DIGITAL VERIFICABLE", MARGEN + 10, y + 11);
   doc.setCharSpace(0);
 
   doc.setFontSize(16);
-  doc.setTextColor(255, 255, 255);
+  tinta(TINTA);
   doc.text("Inscríbete y certifícate", MARGEN + 10, y + 23);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9.2);
-  doc.setTextColor(198, 197, 191);
+  tinta(GRIS);
   const textoCierre = medirLineas(
     "Al completar los módulos recibes tu certificado digital con código de verificación, el acceso permanente a las grabaciones y el material del curso. Las clases son 100% en vivo por Zoom.",
     ANCHO - 24,
@@ -1798,18 +1813,18 @@ async function construirPdfVectorial(
 
   doc.setFont("helvetica", "bold");
   doc.setFontSize(TIPO.cuerpo);
-  doc.setTextColor(255, 255, 255);
+  tinta(acento);
   doc.text(`programbi.com${data.inscripcionUrl}`, MARGEN + 10, y + altoPanel - 13);
 
   doc.setFont("helvetica", "normal");
   doc.setFontSize(TIPO.meta);
-  doc.setTextColor(176, 175, 168);
+  tinta(TENUE);
   const contacto = data.whatsappUrl
     ? `WhatsApp: ${data.whatsappUrl.replace(
         /^https?:\/\/(wa\.me|api\.whatsapp\.com)\//i,
         ""
       )}`
-    : `Brochure ${data.paisNombre}`;
+    : `Temario y precios · ${data.paisNombre}`;
   doc.text(contacto, PAGE_W - MARGEN - 10, y + altoPanel - 13, {
     align: "right",
   });
@@ -1886,6 +1901,15 @@ function finalizarPdf(
   data: CourseBrochureData,
   options?: { returnBlobUrl?: boolean }
 ): string | void {
+  // Metadatos que muestran los visores de PDF al abrir o compartir el archivo.
+  const tituloPdf = `Temario y precios — ${data.title}`;
+  doc.setProperties({
+    title: tituloPdf,
+    subject: tituloPdf,
+    author: "ProgramBI",
+    creator: "ProgramBI",
+  });
+
   if (options?.returnBlobUrl) {
     return URL.createObjectURL(doc.output("blob"));
   }
@@ -1893,7 +1917,7 @@ function finalizarPdf(
 }
 
 /**
- * Genera el brochure del curso en A4 multipágina.
+ * Genera el temario y precios del curso en A4 multipágina.
  *
  * Intenta primero la captura 1:1 de las hojas del visor y, ante cualquier
  * fallo, compone el respaldo vectorial con las imágenes reales. Devuelve la

@@ -56,7 +56,6 @@ import { CourseCohortFacts, CourseCohortStrip } from "@/components/marketing/Cou
 import {
   CourseAudienceAndResults,
   CourseFaq,
-  CourseSeoInternalLinks,
   isCourseCroSlug,
 } from "@/components/marketing/CourseLeadSections";
 import { COURSE_SEO } from "@/lib/seo/money";
@@ -457,6 +456,22 @@ export default function CourseDetailClient({
         <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="contents lg:col-span-7 lg:block lg:min-w-0">
             <div className="min-w-0">
+              <nav
+                aria-label="Ruta de navegación"
+                className="mb-4 flex flex-wrap items-center gap-1.5 text-xs text-mute"
+              >
+                <Link href={rutaLocal(pais, "/")} className="no-underline hover:text-ink">
+                  Inicio
+                </Link>
+                <span aria-hidden>/</span>
+                <Link href={rutaLocal(pais, "/cursos")} className="no-underline hover:text-ink">
+                  Cursos
+                </Link>
+                <span aria-hidden>/</span>
+                <span aria-current="page" className="text-ink">
+                  {heading}
+                </span>
+              </nav>
               {view === "empresas" ? (
                 <p className="mb-3 text-sm font-semibold text-mute">Para empresas</p>
               ) : view === "avanzado" ? (
@@ -465,7 +480,6 @@ export default function CourseDetailClient({
               <h1 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl lg:leading-[1.12]">
                 {heading}
               </h1>
-              <CourseSeoInternalLinks slug={course.slug} />
 
               <ul className="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm text-mute">
                 <li className="inline-flex items-center gap-1.5">
@@ -522,7 +536,7 @@ export default function CourseDetailClient({
           </div>
 
           <aside className="order-3 min-w-0 lg:order-none lg:col-span-5 lg:row-span-2">
-            <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-[var(--sticky-below-nav,6rem)] lg:transition-[top] lg:duration-300 lg:ease-out motion-reduce:transition-none">
+            <div className="rounded-[26px] border border-line bg-paper p-5 shadow-[0_20px_60px_rgba(23,23,22,0.06)] sm:p-6 lg:sticky lg:top-[var(--sticky-below-nav,6rem)] lg:max-h-[calc(100vh_-_var(--sticky-below-nav,6rem)_-_1.5rem)] lg:overflow-y-auto lg:overscroll-contain [scrollbar-width:thin] lg:transition-[top] lg:duration-300 lg:ease-out motion-reduce:transition-none">
               <div className="mb-4 flex justify-start">
                 {isEmpresa ? (
                   <button
@@ -655,12 +669,12 @@ export default function CourseDetailClient({
                       courseTitle={course.title}
                       pais={pais}
                       source="course_detail_gate"
-                      buttonLabel="Descargar Brochure PDF"
+                      buttonLabel="Ver temario y precios"
                       idPrefix="brochure-gate"
                       onUnlocked={() => unlock()}
                     />
                     <div className="mt-4 text-center">
-                      <p className="text-xs font-medium text-mute">¿Ya revisaste el brochure?</p>
+                      <p className="text-xs font-medium text-mute">¿Ya viste el temario y los precios?</p>
                       <button
                         type="button"
                         onClick={handleCheckoutCTA}
@@ -703,16 +717,16 @@ export default function CourseDetailClient({
 
               <CourseCardDescription lead={offerLead} more={offerMore} />
 
-              <ul className="mt-5 space-y-2 border-t border-line pt-5">
+              <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-line pt-4 text-[13px] leading-snug text-ink">
                 {includes.map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-sm text-ink">
-                    <Check size={15} className="mt-0.5 shrink-0" strokeWidth={2.2} />
+                  <li key={item} className="flex items-start gap-1.5">
+                    <Check size={13} className="mt-0.5 shrink-0" strokeWidth={2.4} />
                     {item}
                   </li>
                 ))}
               </ul>
 
-              <div className="mt-5 flex flex-wrap gap-4 text-sm font-semibold text-ink">
+              <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 text-[13px] font-semibold text-ink">
                 <a href="#temario" className="inline-flex items-center gap-1.5 no-underline hover:text-mute">
                   <BookOpen size={15} /> Temario
                 </a>
@@ -722,7 +736,7 @@ export default function CourseDetailClient({
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 no-underline hover:text-mute"
                 >
-                  <FileText size={15} /> Folleto
+                  <FileText size={15} /> Temario y precios (PDF)
                 </a>
                 {course.slug === "power-bi" ? (
                   <Link
@@ -786,7 +800,7 @@ export default function CourseDetailClient({
                     <div className="px-6 py-5">
                       <p className="text-lg font-bold tracking-tight text-ink">{rc.title}</p>
                       <p className="mt-1 text-sm text-mute">{rc.shortDescription}</p>
-                      <span className="mt-2 block text-sm font-semibold text-ink">Ver brochure y precios →</span>
+                      <span className="mt-2 block text-sm font-semibold text-ink">Ver temario y precios →</span>
                     </div>
                   </Link>
                 );
@@ -808,13 +822,15 @@ export default function CourseDetailClient({
 
 function CourseCardDescription({ lead, more }: { lead: string; more: string[] }) {
   if (!lead && more.length === 0) return null;
+  // En la tarjeta fija: entrada recortada (con «Ver más» para el resto) y
+  // tipografía un punto más chica para que el formulario quede a la vista.
   return (
-    <div className="mt-5 border-t border-line pt-5 text-sm leading-relaxed text-mute">
-      {lead ? <p>{lead}</p> : null}
+    <div className="mt-4 border-t border-line pt-4 text-[13px] leading-relaxed text-mute">
+      {lead ? <p className={more.length > 0 ? "line-clamp-3" : undefined}>{lead}</p> : null}
       {more.length > 0 ? (
-        <details className="mt-3">
-          <summary className="cursor-pointer text-sm font-semibold text-ink">Ver más</summary>
-          <div className="mt-3 space-y-3">
+        <details className="mt-2">
+          <summary className="cursor-pointer text-[13px] font-semibold text-ink">Ver más</summary>
+          <div className="mt-2 space-y-2">
             {more.map((paragraph) => (
               <p key={paragraph.slice(0, 48)}>{paragraph}</p>
             ))}
@@ -932,7 +948,7 @@ function CourseContactForm({ course }: { course: Course }) {
           </h2>
           <p className="mt-4 max-w-[36rem] text-base leading-relaxed text-mute">
             {isPersonal
-              ? "Escríbenos si tienes dudas del curso. Al enviar el formulario abrimos el brochure con precios, fechas y temario, y te llega el detalle por correo."
+              ? "Escríbenos si tienes dudas del curso. Al enviar el formulario abrimos el temario con precios, fechas y docentes, y te llega el detalle por correo."
               : "Programas in-company, dashboards y automatización para tu equipo."}
           </p>
         </div>
@@ -959,7 +975,7 @@ function CourseContactForm({ course }: { course: Course }) {
                     rel="noopener noreferrer"
                     className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-ink text-sm font-semibold text-canvas no-underline"
                   >
-                    <FileText size={16} /> 📄 Abrir Brochure PDF con precios
+                    <FileText size={16} /> Abrir temario y precios (PDF)
                   </a>
                   <Link
                     href={courseCheckoutUrl(course.slug, undefined, pais)}

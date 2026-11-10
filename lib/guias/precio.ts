@@ -6,7 +6,7 @@ import type { Guia } from "@/lib/guias/tipos";
  * en el brochure PDF del curso, que la guía enlaza en sus CTA.
  */
 export const TEXTO_PRECIO_BROCHURE =
-  "el arancel vigente de tu país (está en el brochure PDF del curso)";
+  "el arancel vigente de tu país (está en el PDF de temario y precios del curso)";
 
 /**
  * Montos de curso que quedaron escritos en el Markdown histórico. Se cubren

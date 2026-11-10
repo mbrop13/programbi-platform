@@ -118,7 +118,7 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
         </h2>
         <p className="mt-4 max-w-[70ch] text-base leading-relaxed text-mute">
           Cómo se dicta {nombreCurso} en {info.nombre}: medios de pago, horario local y el
-          brochure con los precios de ese mercado, con las preguntas y las guías del país.
+          PDF de temario y precios de ese mercado, con las preguntas y las guías del país.
         </p>
 
         <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,0.6fr)] lg:gap-12">
@@ -205,7 +205,7 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
                     href={courseBrochurePath(iso, curso.slug)}
                     className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline underline-offset-4 hover:underline"
                   >
-                    Ver brochure PDF con precios
+                    Ver temario y precios (PDF)
                     <ArrowRight size={14} aria-hidden />
                   </Link>
                 </dd>
@@ -279,8 +279,8 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
               El mismo curso en otros mercados
             </h3>
             <p className="mt-2 max-w-[70ch] text-sm leading-relaxed text-mute">
-              La ficha cambia de moneda en el brochure, horario y medios de pago según el país.
-              Estas son las versiones con brochure y hora local de los mercados vecinos.
+              La ficha cambia de moneda, horario y medios de pago según el país.
+              Estas son las versiones con temario, precios y hora local de los mercados vecinos.
             </p>
             <ul className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {vecinos.map((vecino) => {
@@ -305,7 +305,7 @@ export default function BloquePaisFicha({ curso, pais, inicio, fin }: Props) {
                       href={courseBrochurePath(vecino.iso, curso.slug)}
                       className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-ink no-underline underline-offset-4 hover:underline"
                     >
-                      Ver brochure en {vecino.nombre}
+                      Ver temario y precios en {vecino.nombre}
                       <ArrowRight size={12} aria-hidden />
                     </Link>
                     {guiaVecina ? (

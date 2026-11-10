@@ -110,7 +110,7 @@ export default function CalculadoraPrecioHora({
                 </strong>
               </>
             ) : (
-              "El arancel de este curso está en su brochure PDF."
+              "El arancel de este curso está en su PDF de temario y precios."
             )}
           </p>
         </div>

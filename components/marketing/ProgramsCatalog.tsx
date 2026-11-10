@@ -122,7 +122,7 @@ export default function ProgramsCatalog() {
                       rel="noopener noreferrer"
                       className="mt-4 inline-flex text-sm font-semibold text-ink no-underline hover:text-mute"
                     >
-                      Ver temario y brochure PDF →
+                      Ver temario y precios (PDF) →
                     </Link>
                   )}
                 </div>

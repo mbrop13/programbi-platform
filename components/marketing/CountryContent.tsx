@@ -132,13 +132,13 @@ export default function CountryContent({ contenido }: { contenido: ContenidoPais
               </p>
               <p className="mt-2 text-sm leading-relaxed text-mute">
                 El arancel vigente de tu país, los descuentos y las 3 cuotas sin interés están en
-                el brochure PDF del curso.
+                el PDF de temario y precios del curso.
               </p>
               <Link
                 href={rutaLocal(pais.iso, "/cursos/power-bi/brochure")}
                 className="mt-3 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-canvas no-underline"
               >
-                Ver precios en el brochure PDF
+                Ver temario y precios (PDF)
                 <ArrowRight size={15} />
               </Link>
             </div>

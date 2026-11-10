@@ -260,7 +260,7 @@ export async function sendQuoteConfirmationToLead(params: {
     })
     .join(". ");
 
-  // Versión texto plano: brochure, temario y equipo docente del primer curso.
+  // Versión texto plano: temario, precios y equipo docente del primer curso.
   const brochureUrl = featured?.brochureUrl;
   const highlights = featured?.highlights?.slice(0, 3) ?? [];
   const equipoDocente = (featured?.instructors ?? []).map((profesor) => profesor.name).join(", ");
@@ -268,7 +268,7 @@ export async function sendQuoteConfirmationToLead(params: {
   const textBody = [
     `Hola ${firstName}, aquí está tu cotización de ProgramBI.`,
     `${priceLines}.`,
-    brochureUrl ? `Brochure PDF con precios y temario: ${brochureUrl}` : "",
+    brochureUrl ? `Temario y precios (PDF): ${brochureUrl}` : "",
     highlights.length > 0 ? `Lo que aprenderás: ${highlights.join("; ")}.` : "",
     equipoDocente ? `Equipo docente: ${equipoDocente}.` : "",
     "Puedes inscribirte en programbi.com/pago o escribirnos al +56 9 3540 9699.",

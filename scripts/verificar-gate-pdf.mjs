@@ -140,10 +140,10 @@ function revisarFicha(path) {
     check(`Ficha ${path} marca el formulario del gate`, () =>
       exigirContiene(html, ['data-gate-form="brochure"'])
     );
-    check(`Ficha ${path} muestra el formulario grande del brochure`, () =>
+    check(`Ficha ${path} muestra el formulario del temario con precios`, () =>
       exigirContieneNormalizado(html, [
-        "BROCHURE OFICIAL PDF",
-        "Descarga el Brochure PDF con precios y temario",
+        "Descarga el temario con precios",
+        "Ver temario y precios",
       ])
     );
     check(`Ficha ${path} ofrece el CTA secundario de inscripción`, () =>
@@ -222,8 +222,8 @@ async function main() {
 
   await revisarRuta("Precios", "/precios", ({ html }) => {
     check("Precios /precios no expone precios", () => exigirSinPrecios(html));
-    check("Precios /precios muestra el gate de brochure", () =>
-      exigirContiene(html, ["Desbloquear", "Brochure"])
+    check("Precios /precios muestra el gate de temario y precios", () =>
+      exigirContieneNormalizado(html, ["desbloquear", "temario"])
     );
   });
 

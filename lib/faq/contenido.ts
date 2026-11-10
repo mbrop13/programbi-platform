@@ -145,11 +145,11 @@ function tablaPrecios(iso: string): FaqContenido["precios"] {
     filas: PAISES_TABLA.map((pais) => ({
       iso: pais.iso,
       pais: pais.nombre,
-      celdas: CURSOS_TABLA.map(() => "En el brochure PDF"),
+      celdas: CURSOS_TABLA.map(() => "En el PDF de temario y precios"),
       actual: pais.iso === iso,
     })),
     nota:
-      "El arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en el brochure PDF de la ficha del curso. En Paraguay el brochure se pide por WhatsApp porque todavía no hay un precio público aprobado.",
+      "El arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en el PDF de temario y precios de la ficha del curso. En Paraguay el PDF se pide por WhatsApp porque todavía no hay un precio público aprobado.",
   };
 }
 
@@ -245,7 +245,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
 
   const introPrecio = sinPrecio
     ? `En ${nombre} el arancel vigente se consulta por WhatsApp, porque todavía no hay un monto público publicado, y se puede pagar en ${CUOTAS}.`
-    : `En ${nombre}, el arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en el brochure PDF de la ficha del curso.`;
+    : `En ${nombre}, el arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en el PDF de temario y precios de la ficha del curso.`;
 
   const introHorario = esChile
     ? `El próximo inicio es el ${PROXIMO_INICIO}, con clases de ${HORA_CLASE_CHILE.inicio} a ${HORA_CLASE_CHILE.fin} (hora de Chile) los lunes y miércoles o los martes y jueves.`
@@ -380,15 +380,15 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
       id: "precios",
       titulo: "Precios por país y qué incluye",
       resumen:
-        `El arancel se publica en la moneda de cada país y se paga en ${CUOTAS}. El monto vigente, los descuentos y las 3 cuotas sin interés se descargan en el brochure PDF de cada curso; en Paraguay se consulta por WhatsApp.`,
+        `El arancel se publica en la moneda de cada país y se paga en ${CUOTAS}. El monto vigente, los descuentos y las 3 cuotas sin interés se descargan en el PDF de temario y precios de cada curso; en Paraguay se consulta por WhatsApp.`,
       tabla: "precios",
       items: [
         {
           id: "cuanto-cuestan",
           pregunta: "¿Cuánto cuestan los cursos?",
           respuesta: sinPrecio
-            ? `En Paraguay el arancel vigente se consulta por WhatsApp, porque todavía no hay un monto público publicado. El brochure PDF de cada curso se pide al mismo canal y el próximo inicio es el ${PROXIMO_INICIO}.`
-            : `El arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en su brochure PDF. El brochure se pide con tu nombre, email y WhatsApp, y el precio de venta de tu país lo confirma el checkout. El próximo inicio es el ${PROXIMO_INICIO}.`,
+            ? `En Paraguay el arancel vigente se consulta por WhatsApp, porque todavía no hay un monto público publicado. El PDF de temario y precios de cada curso se pide al mismo canal y el próximo inicio es el ${PROXIMO_INICIO}.`
+            : `El arancel vigente de cada curso, los descuentos y las 3 cuotas sin interés se descargan en su PDF de temario y precios. El PDF se pide con tu nombre, email y WhatsApp, y el precio de venta de tu país lo confirma el checkout. El próximo inicio es el ${PROXIMO_INICIO}.`,
         },
         {
           id: "moneda-local",
@@ -400,7 +400,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
           id: "precio-que-veo",
           pregunta: "¿El precio que veo es el que voy a pagar?",
           respuesta:
-            "El arancel del brochure PDF es el precio de venta publicado para tu país y es el que toma el checkout al momento de pagar. Si pagas con tarjeta internacional, tu banco puede agregar impuestos o comisiones, y ese cargo final no lo define ProgramBI.",
+            "El arancel del PDF de temario y precios es el precio de venta publicado para tu país y es el que toma el checkout al momento de pagar. Si pagas con tarjeta internacional, tu banco puede agregar impuestos o comisiones, y ese cargo final no lo define ProgramBI.",
         },
         {
           id: "licencia-power-bi",
@@ -645,7 +645,7 @@ export function faqDePais(isoPais: string | null | undefined): FaqContenido {
       { dato: "Próximo inicio", detalle: PROXIMO_INICIO.charAt(0).toUpperCase() + PROXIMO_INICIO.slice(1) },
       { dato: "Días", detalle: esChile ? "Lunes y miércoles, o martes y jueves" : "Lunes y miércoles" },
       { dato: "Horario", detalle: fichaHorario },
-      { dato: "Precio", detalle: sinPrecio ? "Se consulta por WhatsApp" : "Arancel vigente, descuentos y 3 cuotas sin interés en el brochure PDF de cada curso" },
+      { dato: "Precio", detalle: sinPrecio ? "Se consulta por WhatsApp" : "Arancel vigente, descuentos y 3 cuotas sin interés en el PDF de temario y precios de cada curso" },
       { dato: "Certificado", detalle: "ProgramBI al completar; la PL-300 se rinde aparte con Microsoft" },
     ],
     secciones,

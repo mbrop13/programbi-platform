@@ -58,7 +58,7 @@ export const COURSE_SEO: Record<
     description:
       "Curso Power BI en Chile, en vivo por Zoom: Power Query, DAX y dashboards para analistas. Básico-intermedio y avanzado, 20 horas cada uno. Inscríbete.",
     descriptionCl:
-      "Curso Power BI en Chile en vivo: arancel vigente, descuentos y 3 cuotas sin interés en el brochure PDF del curso. Power Query, modelo y DAX. Básico a avanzado.",
+      "Curso Power BI en Chile en vivo: arancel, descuentos y 3 cuotas sin interés en el PDF de temario y precios. Power Query, modelo y DAX.",
     h1: "Curso Power BI en vivo en Chile",
     audience:
       "Para analistas, control de gestión y finanzas que hoy reportan en Excel y quieren armar dashboards propios en Power BI.",
@@ -88,7 +88,7 @@ export const COURSE_SEO: Record<
       {
         q: "¿Cuánto cuesta el curso Power BI en Chile y se puede pagar en cuotas?",
         soloChile: true,
-        a: "El arancel vigente del curso, los descuentos y las 3 cuotas sin interés están en el brochure PDF de la ficha del curso. El brochure se descarga con tu nombre, email y WhatsApp, y el valor de la próxima cohorte se confirma en el checkout.",
+        a: "El arancel vigente del curso, los descuentos y las 3 cuotas sin interés están en el PDF de temario y precios de la ficha del curso. El PDF se descarga con tu nombre, email y WhatsApp, y el valor de la próxima cohorte se confirma en el checkout.",
       },
       {
         q: "¿El curso incluye la certificación PL-300?",
@@ -105,7 +105,7 @@ export const COURSE_SEO: Record<
     description:
       "Curso de análisis de datos en Chile, en vivo por Zoom: SQL, Power BI y Python. Dos niveles de 60 horas: básico-intermedio y avanzado.",
     descriptionCl:
-      "Curso de análisis de datos en Chile, en vivo: SQL, Power BI y Python, 60 h por nivel. Arancel, descuentos y 3 cuotas sin interés en el brochure PDF. Inscríbete.",
+      "Curso de análisis de datos en Chile, en vivo: SQL, Power BI y Python, 60 h por nivel. Arancel, descuentos y cuotas en el PDF de temario y precios.",
     h1: "Curso de análisis de datos en vivo en Chile",
     audience:
       "Para profesionales de finanzas, control de gestión y operaciones que hoy reportan en Excel y quieren el oficio de analista de datos: SQL, Power BI y Python.",
@@ -135,7 +135,7 @@ export const COURSE_SEO: Record<
       {
         q: "¿Cuánto cuesta el curso de análisis de datos y cómo se paga?",
         soloChile: true,
-        a: "El arancel vigente de cada nivel de 60 horas, los descuentos y las 3 cuotas sin interés están en el brochure PDF de la ficha del curso. Incluye clases en vivo por Zoom, grabaciones de por vida en el campus y certificado digital al completar. El programa completo son dos niveles de 60 horas y se paga por nivel.",
+        a: "El arancel vigente de cada nivel de 60 horas, los descuentos y las 3 cuotas sin interés están en el PDF de temario y precios de la ficha del curso. Incluye clases en vivo por Zoom, grabaciones de por vida en el campus y certificado digital al completar. El programa completo son dos niveles de 60 horas y se paga por nivel.",
       },
       {
         q: "¿Son 60 horas por nivel o 120 horas en total?",
@@ -144,7 +144,7 @@ export const COURSE_SEO: Record<
       {
         q: "¿Es lo mismo que el curso de análisis de datos para minería?",
         soloChile: true,
-        a: "Es el mismo programa, con el mismo arancel vigente por nivel, y los ejemplos puestos en faena: turnos, flota, OEE y mantención. El detalle de aranceles y descuentos se descarga en el brochure PDF del curso. Puedes ver ese enfoque en /analisis-de-datos-mineria. El certificado es el mismo certificado digital de ProgramBI al completar.",
+        a: "Es el mismo programa, con el mismo arancel vigente por nivel, y los ejemplos puestos en faena: turnos, flota, OEE y mantención. El detalle de aranceles y descuentos se descarga en el PDF de temario y precios del curso. Puedes ver ese enfoque en /analisis-de-datos-mineria. El certificado es el mismo certificado digital de ProgramBI al completar.",
       },
     ],
   },

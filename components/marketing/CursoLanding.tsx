@@ -33,13 +33,13 @@ export default function CursoLanding({
   const otroSeo = seoLandingCurso(otro, iso);
   // La FAQ de precio del mercado se arma en lib/paises/landing-curso con el
   // monto dentro del texto: se reescribe sin cifras y el arancel vive solo en
-  // el brochure PDF.
+  // el PDF de temario y precios.
   const mediosPago = getPais(iso).mediosPago;
   const faqs = contenido.faqs.map((faq) =>
     /cu[aá]nto cuesta/i.test(faq.q)
       ? {
           ...faq,
-          a: `El arancel vigente se descarga en el brochure PDF del curso, junto con el detalle de las cuotas sin interés. Los medios de pago publicados para ${contenido.paisNombre} son: ${mediosPago.join("; ")}. El checkout confirma las opciones disponibles para la cohorte.`,
+          a: `El arancel vigente se descarga en el PDF de temario y precios del curso, junto con el detalle de las cuotas sin interés. Los medios de pago publicados para ${contenido.paisNombre} son: ${mediosPago.join("; ")}. El checkout confirma las opciones disponibles para la cohorte.`,
         }
       : faq
   );
@@ -74,7 +74,7 @@ export default function CursoLanding({
             rel="noopener noreferrer"
             className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-ink px-6 text-sm font-semibold text-canvas no-underline"
           >
-            <FileText size={16} aria-hidden /> Descargar brochure PDF con precios →
+            <FileText size={16} aria-hidden /> Descargar temario con precios →
           </Link>
           <Link
             href={href(`/cursos/${course.slug}`)}
@@ -103,11 +103,11 @@ export default function CursoLanding({
               rel="noopener noreferrer"
               className="mt-2 inline-flex items-center gap-2 text-lg font-bold leading-snug tracking-tight text-ink no-underline hover:text-mute"
             >
-              <FileText size={18} aria-hidden /> Ver precios y temario en el brochure PDF →
+              <FileText size={18} aria-hidden /> Ver temario y precios (PDF) →
             </Link>
             <p className="mt-2 text-sm leading-relaxed text-mute">
-              El brochure trae el arancel vigente en {contenido.paisNombre}, el descuento publicado y{" "}
-              {textoCuotas(iso)}.
+              El PDF de temario y precios incluye el arancel vigente en {contenido.paisNombre}, el
+              descuento publicado y {textoCuotas(iso)}.
             </p>
             <p className="mt-2 text-sm leading-relaxed text-mute">{contenido.cohorteTexto}</p>
           </div>

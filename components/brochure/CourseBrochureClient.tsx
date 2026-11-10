@@ -1,12 +1,12 @@
 "use client";
 
 /**
- * Visor de documento del brochure v2 — «estudio oscuro».
+ * Visor del documento «Temario y precios» — estudio claro común a todos los
+ * cursos.
  *
- * No es una landing: es un visor de PDF con hojas A4 reales renderizadas en
- * React, barra de documento fija, zoom (75 / 100 / 125 %), ajuste automático al
- * ancho disponible, índice lateral con miniaturas, modo «Visor PDF Nativo»
- * (iframe con blob generado en el navegador), descarga 1:1 e impresión A4.
+ * No es una landing: es un visor con hojas A4 reales renderizadas en React,
+ * barra de documento fija, zoom (75 / 100 / 125 %), ajuste automático al ancho,
+ * índice lateral con miniaturas, descarga 1:1 e impresión A4.
  *
  * Reglas que no se pueden romper:
  * - Las hojas vienen de `components/brochure/pages/*` (otro workstream) y son
@@ -17,13 +17,14 @@
  * - El escalado se hace con `transform: scale()`, que no afecta el layout, así
  *   que el contenedor `.brochure-sheet-slot` reserva la altura ya escalada y
  *   la impresión la neutraliza (`height: auto`, `transform: none`).
- * - Las hojas se mantienen montadas incluso en modo nativo (fuera de pantalla)
- *   porque `generateCoursePdf` las captura desde `sheetsRef`.
+ * - Las hojas se mantienen montadas porque `generateCoursePdf` las captura
+ *   desde `sheetsRef`.
+ * - El tema es claro y único para todos los cursos: papel blanco sobre canvas
+ *   `T.canvas`. Del curso solo se usa el acento en detalles puntuales.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, ReactNode } from "react";
-import { useRouter } from "next/navigation";
 import {
   Download,
   FileText,
@@ -43,15 +44,12 @@ import { brochureTotalPages } from "@/lib/brochure/brochure-pages";
 import { generateCoursePdf } from "@/lib/brochure/generate-course-pdf";
 import { brochurePdfFileName } from "@/lib/brochure/brochure-assets";
 import type { CourseBrochureData } from "@/lib/brochure/brochure-data";
-import { COUNTRIES } from "@/lib/context/CountryContext";
-import { esIsoPais } from "@/config/paises";
-import { courseBrochureUrl } from "@/lib/pricing-gate";
+import { FONT_SANS, SHADOW_SHEET, T } from "@/lib/brochure/brochure-theme";
 
 /* ── Constantes del visor ─────────────────────────────────────────────────── */
 
 const ZOOMS = [0.75, 1, 1.25] as const;
 type Zoom = (typeof ZOOMS)[number];
-type Modo = "hojas" | "nativo";
 
 /** Tamaño A4 a 96 dpi, el mismo que usan las hojas y el generador de PDF. */
 const HOJA_ANCHO = 794;
@@ -59,8 +57,6 @@ const HOJA_ALTO = 1123;
 const GAP_HOJAS = 26;
 /** Alto de la barra fija; el índice se pega justo debajo. */
 const TOP_BARRA = 60;
-
-const PAISES_DISPONIBLES = COUNTRIES.filter((pais) => esIsoPais(pais.iso));
 
 /** Forma del progreso que entrega `generateCoursePdf`. */
 type PdfProgress = { label: string; current: number; total: number };
@@ -74,7 +70,7 @@ const ESTILO_ZOOM_BOTON: CSSProperties = {
   border: "none",
   borderRadius: 6,
   background: "transparent",
-  color: "#fff",
+  color: T.ink,
   cursor: "pointer",
   padding: 0,
 };
@@ -91,31 +87,66 @@ const ESTILO_BOTON_BARRA: CSSProperties = {
   whiteSpace: "nowrap",
 };
 
+/* ── Contraste del acento ─────────────────────────────────────────────────── */
+
+/** Luminancia relativa WCAG de un color hex de seis dígitos. */
+function luminancia(hex: string): number {
+  const limpio = hex.replace("#", "").trim();
+  if (!/^[0-9a-fA-F]{6}$/.test(limpio)) return 1;
+  const canales = [0, 2, 4].map((inicio) => {
+    const valor = parseInt(limpio.slice(inicio, inicio + 2), 16) / 255;
+    return valor <= 0.03928
+      ? valor / 12.92
+      : Math.pow((valor + 0.055) / 1.055, 2.4);
+  });
+  return (
+    0.2126 * (canales[0] ?? 0) +
+    0.7152 * (canales[1] ?? 0) +
+    0.0722 * (canales[2] ?? 0)
+  );
+}
+
+/** Acento del curso validado para filetes y numeración (nunca texto sobre él). */
+function acentoDe(hex: string): string {
+  return /^#[0-9a-fA-F]{6}$/.test(hex.trim()) ? hex : T.brand;
+}
+
 /**
- * Visor del brochure: barra de documento, zoom, índice, hojas A4 y visor PDF.
+ * Fondo del CTA principal: el acento del curso solo si el texto blanco llega a
+ * 4.5:1 (WCAG AA); si no (amarillos y verdes claros), el azul de marca.
+ */
+function fondoAcento(hex: string): string {
+  const contraste = 1.05 / (luminancia(hex) + 0.05);
+  return contraste >= 4.5 ? acentoDe(hex) : T.brand;
+}
+
+/**
+ * Visor del temario: barra de documento, zoom, índice y hojas A4.
  * Recibe los datos ya resueltos por país desde el servidor.
  */
 export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
-  const router = useRouter();
-
   const [zoom, setZoom] = useState<Zoom>(1);
-  const [modo, setModo] = useState<Modo>("hojas");
   const [generando, setGenerando] = useState(false);
   const [progreso, setProgreso] = useState("");
   const [avance, setAvance] = useState<{ current: number; total: number } | null>(
     null
   );
   const [errorPdf, setErrorPdf] = useState<string | null>(null);
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [pdfListo, setPdfListo] = useState(false);
   const [fit, setFit] = useState(1);
   const [indiceActivo, setIndiceActivo] = useState(1);
 
   const sheetsRef = useRef<HTMLDivElement>(null);
-  const pdfUrlRef = useRef<string | null>(null);
 
   const totalPages = useMemo(() => brochureTotalPages(data), [data]);
   const nombreArchivo = useMemo(() => brochurePdfFileName(data), [data]);
+  const acentoCurso = useMemo(
+    () => acentoDe(data.accentColor),
+    [data.accentColor]
+  );
+  const acentoFondo = useMemo(
+    () => fondoAcento(data.accentColor),
+    [data.accentColor]
+  );
   /**
    * Hojas A4 que el temario monta realmente. `totalPages` manda en los pies y
    * en el índice; esto solo reserva alto de lienzo por si el plan crece.
@@ -147,72 +178,32 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
     if (total > 0) setHojasMedidas(total);
   }, [data, totalPages]);
 
-  /* ── Blob del PDF nativo ────────────────────────────────────────────────── */
-
-  useEffect(() => {
-    pdfUrlRef.current = pdfUrl;
-  }, [pdfUrl]);
-
-  useEffect(
-    () => () => {
-      if (pdfUrlRef.current) URL.revokeObjectURL(pdfUrlRef.current);
-    },
-    []
-  );
-
   /* ── Generación del PDF ─────────────────────────────────────────────────── */
 
-  const generar = useCallback(
-    async (paraIframe = false) => {
-      if (generando) return;
-      setGenerando(true);
-      setErrorPdf(null);
-      setAvance(null);
+  const generar = useCallback(async () => {
+    if (generando) return;
+    setGenerando(true);
+    setErrorPdf(null);
+    setAvance(null);
+    setProgreso("");
+    try {
+      await generateCoursePdf(data, {
+        sheetContainer: sheetsRef.current,
+        onProgress: (p: PdfProgress) => {
+          setProgreso(`${p.label} (${p.current}/${p.total})`);
+          setAvance({ current: p.current, total: p.total });
+        },
+      });
+    } catch {
+      setErrorPdf(
+        "No pudimos generar el PDF en este navegador. Usa «Imprimir» y elige «Guardar como PDF»."
+      );
+    } finally {
+      setGenerando(false);
       setProgreso("");
-      try {
-        if (paraIframe) {
-          const url = await generateCoursePdf(data, {
-            sheetContainer: sheetsRef.current,
-            returnBlobUrl: true,
-            onProgress: (p: PdfProgress) => {
-              setProgreso(p.label);
-              setAvance({ current: p.current, total: p.total });
-            },
-          });
-          if (typeof url === "string") {
-            if (pdfUrlRef.current) URL.revokeObjectURL(pdfUrlRef.current);
-            pdfUrlRef.current = url;
-            setPdfUrl(url);
-            setPdfListo(true);
-            setModo("nativo");
-          }
-        } else {
-          await generateCoursePdf(data, {
-            sheetContainer: sheetsRef.current,
-            onProgress: (p: PdfProgress) => {
-              setProgreso(`${p.label} (${p.current}/${p.total})`);
-              setAvance({ current: p.current, total: p.total });
-            },
-          });
-          setPdfListo(true);
-        }
-      } catch {
-        setErrorPdf(
-          "No pudimos generar el PDF en este navegador. Usa «Imprimir» y elige «Guardar como PDF»."
-        );
-      } finally {
-        setGenerando(false);
-        setProgreso("");
-        setAvance(null);
-      }
-    },
-    [data, generando]
-  );
-
-  const cambiarModo = (siguiente: Modo) => {
-    setModo(siguiente);
-    if (siguiente === "nativo" && !pdfUrl && !generando) void generar(true);
-  };
+      setAvance(null);
+    }
+  }, [data, generando]);
 
   const imprimir = () => {
     if (typeof window !== "undefined") window.print();
@@ -285,7 +276,7 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
         top: 5,
         fontSize: 9,
         lineHeight: 1,
-        color: "rgba(255,255,255,.35)",
+        color: T.mute,
         fontVariantNumeric: "tabular-nums",
         userSelect: "none",
       }}>
@@ -306,11 +297,19 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
         @media (min-width: 1280px) {
           .brochure-sidebar { display: flex !important; flex-direction: column; }
         }
-        .brochure-nav-item:hover { background: rgba(255,255,255,.06); }
-        .brochure-thumb:hover { border-color: rgba(255,255,255,.34) !important; }
-        .brochure-zoom-btn:hover:enabled { background: rgba(255,255,255,.08); }
-        .brochure-secundario:hover { border-color: rgba(255,255,255,.4) !important; }
-        .brochure-cta:hover { filter: brightness(1.08); }
+        .brochure-nav-item:hover { background: ${T.wash} !important; }
+        .brochure-nav-item[aria-current="true"]:hover { background: ${T.brandSoft} !important; }
+        .brochure-thumb:hover {
+          border-color: #C9C4B8 !important;
+          box-shadow: 0 8px 20px rgba(20,22,27,.12) !important;
+        }
+        .brochure-zoom-btn:hover:enabled { background: ${T.wash} !important; }
+        .brochure-secundario:hover { border-color: ${T.mute} !important; background: ${T.wash} !important; }
+        .brochure-cta:hover { filter: brightness(1.06); }
+
+        /* Las hojas descansan sobre el canvas claro con la sombra del sistema.
+           Si la hoja A4 ya trae la suya inline, esta regla no la pisa. */
+        .brochure-canvas .brochure-a4-sheet { box-shadow: ${SHADOW_SHEET}; }
 
         /* El temario monta varias hojas dentro de un mismo envoltorio: se les
            da el mismo aire que entre hojas fijas. El ancla de scroll vive en
@@ -322,11 +321,11 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
 
         @media print {
           @page { size: A4 portrait; margin: 0; }
-          html, body { background: #FAF9F5 !important; margin: 0 !important; padding: 0 !important;
+          html, body { background: #FFFFFF !important; margin: 0 !important; padding: 0 !important;
             -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           .brochure-no-print { display: none !important; }
           [data-brochure-studio] { display: block !important; background: #fff !important; padding: 0 !important; }
-          .brochure-canvas { padding: 0 !important; gap: 0 !important; display: block !important; }
+          .brochure-canvas { padding: 0 !important; gap: 0 !important; display: block !important; background: #fff !important; }
           .brochure-scaler { transform: none !important; width: auto !important; height: auto !important; margin-left: 0 !important; }
           .brochure-sheet-slot { height: auto !important; overflow: visible !important; }
           .brochure-sheets { position: static !important; left: auto !important; top: auto !important;
@@ -345,8 +344,9 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
       <div
         data-brochure-studio="v2"
         style={{
-          background: "#181A20",
-          color: "#fff",
+          background: T.canvas,
+          color: T.ink,
+          fontFamily: FONT_SANS,
           minHeight: "100vh",
           display: "flex",
           flexDirection: "column",
@@ -359,11 +359,11 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
             position: "sticky",
             top: 0,
             zIndex: 50,
-            background: "rgba(17,19,24,.95)",
-            backdropFilter: "blur(14px)",
-            WebkitBackdropFilter: "blur(14px)",
-            borderBottom: "1px solid rgba(255,255,255,.08)",
-            color: "#fff",
+            background: "rgba(255,255,255,.92)",
+            backdropFilter: "blur(8px)",
+            WebkitBackdropFilter: "blur(8px)",
+            borderBottom: `1px solid ${T.line}`,
+            color: T.ink,
             padding: "10px 18px",
           }}
         >
@@ -401,9 +401,21 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
               >
                 <span
                   style={{
+                    fontSize: 8,
+                    fontWeight: 700,
+                    letterSpacing: "0.16em",
+                    color: T.mute,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  TEMARIO Y PRECIOS · {totalPages} PÁGINAS A4
+                </span>
+                <span
+                  style={{
                     fontSize: 12.5,
                     fontWeight: 600,
                     letterSpacing: "-.01em",
+                    color: T.ink,
                     whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -411,15 +423,6 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                   }}
                 >
                   {nombreArchivo}
-                </span>
-                <span
-                  style={{
-                    fontSize: 8.5,
-                    color: "rgba(255,255,255,.55)",
-                    letterSpacing: ".02em",
-                  }}
-                >
-                  {totalPages} páginas A4 · Vista previa 1:1
                 </span>
               </div>
             </div>
@@ -432,7 +435,8 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                 display: "flex",
                 alignItems: "center",
                 gap: 2,
-                background: "rgba(255,255,255,.06)",
+                background: T.wash,
+                border: `1px solid ${T.line}`,
                 borderRadius: 8,
                 padding: 2,
               }}
@@ -464,7 +468,7 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                   border: "none",
                   borderRadius: 6,
                   background: "transparent",
-                  color: "#fff",
+                  color: T.ink,
                   fontSize: 11,
                   fontWeight: 600,
                   cursor: "pointer",
@@ -492,95 +496,24 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
               </button>
             </div>
 
-            {/* Modo de vista */}
-            <div
-              role="group"
-              aria-label="Modo de visualización"
+            {/* Edición fija: cada ruta muestra solo su país */}
+            <span
               style={{
-                display: "flex",
+                display: "inline-flex",
                 alignItems: "center",
-                gap: 2,
-                background: "rgba(255,255,255,.06)",
-                borderRadius: 8,
-                padding: 2,
-              }}
-            >
-              <button
-                type="button"
-                aria-label="Vista Hojas A4"
-                aria-pressed={modo === "hojas"}
-                onClick={() => cambiarModo("hojas")}
-                style={{
-                  height: 26,
-                  padding: "0 10px",
-                  border: "none",
-                  borderRadius: 6,
-                  fontSize: 10.5,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  background: modo === "hojas" ? "#fff" : "transparent",
-                  color: modo === "hojas" ? "#111318" : "rgba(255,255,255,.7)",
-                }}
-              >
-                Vista Hojas A4
-              </button>
-              <button
-                type="button"
-                aria-label="Visor PDF Nativo"
-                aria-pressed={modo === "nativo"}
-                title={
-                  pdfListo
-                    ? "PDF ya generado en esta sesión"
-                    : "Genera el PDF y lo abre en el visor del navegador"
-                }
-                onClick={() => cambiarModo("nativo")}
-                style={{
-                  height: 26,
-                  padding: "0 10px",
-                  border: "none",
-                  borderRadius: 6,
-                  fontSize: 10.5,
-                  fontWeight: 600,
-                  cursor: "pointer",
-                  background: modo === "nativo" ? "#fff" : "transparent",
-                  color: modo === "nativo" ? "#111318" : "rgba(255,255,255,.7)",
-                }}
-              >
-                Visor PDF Nativo
-              </button>
-            </div>
-
-            {/* País */}
-            <select
-              aria-label="País del brochure"
-              title="Cambiar país del brochure"
-              value={data.pais}
-              onChange={(event) =>
-                router.push(courseBrochureUrl(data.slug, event.target.value))
-              }
-              style={{
                 height: 32,
-                background: "rgba(255,255,255,.06)",
-                color: "#fff",
-                border: "1px solid rgba(255,255,255,.14)",
+                padding: "0 11px",
                 borderRadius: 8,
-                padding: "0 8px",
+                border: `1px solid ${T.line}`,
+                background: T.paper,
+                color: T.inkSoft,
                 fontSize: 11.5,
-                fontWeight: 500,
-                cursor: "pointer",
-                outline: "none",
+                fontWeight: 600,
+                whiteSpace: "nowrap",
               }}
             >
-              {PAISES_DISPONIBLES.map((pais) => (
-                <option
-                  key={pais.iso}
-                  value={pais.iso}
-                  style={{ background: "#111318", color: "#fff" }}
-                >
-                  {pais.name} · {pais.currency.code}
-                </option>
-              ))}
-            </select>
+              Edición {data.paisNombre} · {data.moneda}
+            </span>
 
             {/* Acciones */}
             <div
@@ -593,14 +526,14 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
             >
               <button
                 type="button"
-                onClick={() => void generar(false)}
+                onClick={() => void generar()}
                 disabled={generando}
                 style={{
                   ...ESTILO_BOTON_BARRA,
                   padding: "0 14px",
                   border: "none",
-                  background: "#fff",
-                  color: "#111318",
+                  background: T.ink,
+                  color: "#fff",
                   cursor: generando ? "wait" : "pointer",
                   opacity: generando ? 0.72 : 1,
                 }}
@@ -620,9 +553,9 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                 style={{
                   ...ESTILO_BOTON_BARRA,
                   padding: "0 12px",
-                  border: "1px solid rgba(255,255,255,.22)",
-                  background: "transparent",
-                  color: "#fff",
+                  border: `1px solid ${T.line}`,
+                  background: T.paper,
+                  color: T.ink,
                 }}
               >
                 <Printer size={12} strokeWidth={2.2} />
@@ -634,12 +567,13 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                   href={data.customPdfUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="brochure-secundario"
                   style={{
                     ...ESTILO_BOTON_BARRA,
                     padding: "0 12px",
-                    border: "1px solid rgba(255,255,255,.22)",
-                    background: "transparent",
-                    color: "#fff",
+                    border: `1px solid ${T.line}`,
+                    background: T.paper,
+                    color: T.ink,
                     textDecoration: "none",
                   }}
                 >
@@ -655,11 +589,11 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                   ...ESTILO_BOTON_BARRA,
                   padding: "0 14px",
                   textDecoration: "none",
-                  background: data.accentColor,
+                  background: acentoFondo,
                   color: "#fff",
                 }}
               >
-                Inscribirme Ahora
+                Inscribirme ahora
               </a>
 
               {data.whatsappUrl ? (
@@ -677,8 +611,9 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                     alignItems: "center",
                     justifyContent: "center",
                     borderRadius: 8,
-                    border: "1px solid rgba(255,255,255,.22)",
-                    color: "#fff",
+                    border: `1px solid ${T.line}`,
+                    background: T.paper,
+                    color: T.whatsapp,
                     textDecoration: "none",
                   }}
                 >
@@ -691,12 +626,12 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
           {/* Progreso de generación */}
           {generando ? (
             <div style={{ margin: "8px -18px 0" }}>
-              <div style={{ height: 2, background: "rgba(255,255,255,.1)" }}>
+              <div style={{ height: 2, background: T.line }}>
                 <div
                   style={{
                     height: 2,
                     width: `${porcentaje}%`,
-                    background: data.accentColor,
+                    background: acentoCurso,
                     transition: "width .2s ease",
                   }}
                 />
@@ -706,7 +641,7 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                 style={{
                   padding: "5px 18px 0",
                   fontSize: 9.5,
-                  color: "rgba(255,255,255,.6)",
+                  color: T.mute,
                   lineHeight: 1.3,
                 }}
               >
@@ -722,9 +657,9 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                 marginTop: 8,
                 padding: "7px 10px",
                 borderRadius: 8,
-                border: "1px solid rgba(248,113,113,.35)",
-                background: "rgba(248,113,113,.1)",
-                color: "#FCA5A5",
+                border: "1px solid #F0CFCF",
+                background: "#FDF3F3",
+                color: "#9B2C2C",
                 fontSize: 10.5,
                 lineHeight: 1.45,
               }}
@@ -748,7 +683,8 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
               padding: "18px 14px",
               height: `calc(100vh - ${TOP_BARRA}px)`,
               overflowY: "auto",
-              borderRight: "1px solid rgba(255,255,255,.07)",
+              background: T.paper,
+              borderRight: `1px solid ${T.line}`,
             }}
           >
             <p
@@ -756,15 +692,15 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                 margin: 0,
                 fontSize: 8,
                 letterSpacing: 1.6,
-                fontWeight: 600,
-                color: "rgba(255,255,255,.45)",
+                fontWeight: 700,
+                color: T.mute,
               }}
             >
               ÍNDICE DEL DOCUMENTO
             </p>
 
             <nav
-              aria-label="Secciones del brochure"
+              aria-label="Secciones del temario"
               style={{
                 display: "flex",
                 flexDirection: "column",
@@ -790,10 +726,10 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                       cursor: "pointer",
                       border: "none",
                       borderLeft: `2px solid ${
-                        activo ? data.accentColor : "transparent"
+                        activo ? acentoCurso : "transparent"
                       }`,
-                      background: activo ? "rgba(255,255,255,.1)" : "transparent",
-                      color: activo ? "#fff" : "rgba(255,255,255,.72)",
+                      background: activo ? T.brandSoft : "transparent",
+                      color: activo ? T.ink : T.inkSoft,
                       fontWeight: activo ? 600 : 500,
                     }}
                   >
@@ -806,7 +742,7 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
             <div
               style={{
                 height: 1,
-                background: "rgba(255,255,255,.08)",
+                background: T.line,
                 margin: "14px 0 12px",
               }}
             />
@@ -816,8 +752,8 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                 margin: "0 0 8px",
                 fontSize: 8,
                 letterSpacing: 1.4,
-                fontWeight: 600,
-                color: "rgba(255,255,255,.35)",
+                fontWeight: 700,
+                color: T.mute,
               }}
             >
               MINIATURAS
@@ -833,27 +769,42 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                   title={`Ir a la página ${miniatura.pagina} · ${miniatura.etiqueta}`}
                   aria-label={`Ir a la página ${miniatura.pagina}: ${miniatura.etiqueta}`}
                   style={{
+                    position: "relative",
+                    overflow: "hidden",
                     width: 120,
                     height: 170,
                     display: "flex",
                     flexDirection: "column",
                     justifyContent: "space-between",
                     alignItems: "flex-start",
-                    padding: 8,
+                    padding: "10px 8px 8px",
                     borderRadius: 3,
-                    border: "1px solid rgba(255,255,255,.12)",
-                    background: "#20232B",
-                    color: "rgba(255,255,255,.7)",
+                    border: `1px solid ${T.line}`,
+                    background: T.paper,
+                    boxShadow: "0 1px 2px rgba(20,22,27,.05)",
+                    color: T.inkSoft,
                     cursor: "pointer",
                     textAlign: "left",
                   }}
                 >
                   <span
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      height: 2,
+                      background: acentoCurso,
+                      opacity: 0.9,
+                    }}
+                  />
+                  <span
                     style={{
                       fontSize: 8,
                       letterSpacing: 1.2,
-                      fontWeight: 600,
-                      color: "rgba(255,255,255,.35)",
+                      fontWeight: 700,
+                      color: T.mute,
                       fontVariantNumeric: "tabular-nums",
                     }}
                   >
@@ -872,10 +823,10 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                 paddingTop: 18,
                 fontSize: 8,
                 lineHeight: 1.6,
-                color: "rgba(255,255,255,.35)",
+                color: T.mute,
               }}
             >
-              ProgramBI · {data.paisNombre}
+              ProgramBI · Edición {data.paisNombre}
             </p>
           </aside>
 
@@ -890,24 +841,13 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
               flexDirection: "column",
               alignItems: "center",
               gap: 26,
+              background: T.canvas,
             }}
           >
             <div
               ref={sheetsRef}
               className="brochure-sheets"
-              aria-hidden={modo === "nativo" ? "true" : undefined}
-              style={
-                modo === "hojas"
-                  ? { width: "100%" }
-                  : {
-                      position: "absolute",
-                      left: -100000,
-                      top: 0,
-                      width: HOJA_ANCHO,
-                      opacity: 0,
-                      pointerEvents: "none",
-                    }
-              }
+              style={{ width: "100%" }}
             >
               <div
                 className="brochure-sheet-slot"
@@ -980,86 +920,6 @@ export function CourseBrochureClient({ data }: { data: CourseBrochureData }) {
                 </div>
               </div>
             </div>
-
-            {/* Visor PDF nativo */}
-            {modo === "nativo" ? (
-              <div
-                className="brochure-no-print"
-                style={{ width: "100%", alignSelf: "stretch" }}
-              >
-                {pdfUrl ? (
-                  <iframe
-                    src={pdfUrl}
-                    title="Vista PDF nativa"
-                    style={{
-                      width: "100%",
-                      height: "calc(100vh - 64px)",
-                      border: 0,
-                      background: "#fff",
-                      borderRadius: 6,
-                    }}
-                  />
-                ) : (
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 12,
-                      minHeight: "52vh",
-                      padding: "32px 24px",
-                      border: "1px dashed rgba(255,255,255,.14)",
-                      borderRadius: 10,
-                      textAlign: "center",
-                    }}
-                  >
-                    <FileText size={22} color="rgba(255,255,255,.4)" />
-                    <p
-                      style={{
-                        margin: 0,
-                        maxWidth: 380,
-                        fontSize: 11.5,
-                        lineHeight: 1.55,
-                        color: "rgba(255,255,255,.65)",
-                      }}
-                    >
-                      El visor nativo abre el mismo PDF que descargas, generado
-                      una vez por sesión. Tarda unos segundos según la cantidad
-                      de hojas.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => void generar(true)}
-                      disabled={generando}
-                      style={{
-                        ...ESTILO_BOTON_BARRA,
-                        padding: "0 16px",
-                        border: "none",
-                        background: "#fff",
-                        color: "#111318",
-                        cursor: generando ? "wait" : "pointer",
-                        opacity: generando ? 0.72 : 1,
-                      }}
-                    >
-                      {generando ? "Generando…" : "Generar vista PDF"}
-                    </button>
-                    {generando && progreso ? (
-                      <p
-                        aria-live="polite"
-                        style={{
-                          margin: 0,
-                          fontSize: 10,
-                          color: "rgba(255,255,255,.5)",
-                        }}
-                      >
-                        {progreso}
-                      </p>
-                    ) : null}
-                  </div>
-                )}
-              </div>
-            ) : null}
           </main>
         </div>
       </div>

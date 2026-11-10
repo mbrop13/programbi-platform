@@ -22,7 +22,7 @@ import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import PlantillaDescarga from "@/components/marketing/PlantillaDescarga";
 import CalculadoraPrecioHora, { type OpcionCalculadora } from "./CalculadoraPrecioHora";
 import ComparativaCta from "./ComparativaCta";
-import { sinMontosProgrambi } from "@/lib/comparativas/precios";
+import { TEXTO_PRECIO_PROGRAMBI, sinMontosProgrambi } from "@/lib/comparativas/precios";
 import { sinMontosDeCurso } from "@/lib/guias/precio";
 import ComparativaTracker from "./ComparativaTracker";
 
@@ -290,7 +290,7 @@ export default function ComparativaAcademia({
                 Precio
               </div>
               <div className="border-l border-t border-line bg-wash/70 px-4 py-3 font-bold text-ink">
-                en el brochure PDF
+                {TEXTO_PRECIO_PROGRAMBI}
               </div>
               <div className="border-l border-t border-line px-4 py-3 text-mute">
                 {contenido.resumen10s.precioRival}
@@ -562,7 +562,7 @@ export default function ComparativaAcademia({
           </h2>
           <p className="mt-2 max-w-[62ch] text-sm leading-relaxed text-canvas/80">
             {contenido.horasProgrambi} horas en vivo, grabaciones, certificado y un tablero propio al
-            terminar. El precio de tu país está en el brochure PDF del curso.
+            terminar. El precio de tu país está en el PDF de temario y precios del curso.
           </p>
 
           <div className="mt-5 flex flex-col gap-2 sm:flex-row sm:flex-wrap">

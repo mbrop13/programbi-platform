@@ -8,7 +8,7 @@
  *
  * `construirLlmsTxt()` es el resumen (el archivo corto que leen los asistentes
  * primero) y `construirLlmsFullTxt()` la versión extendida: todos los cursos
- * con su brochure PDF, los aranceles por país, todas las guías publicadas, las
+ * con su PDF de temario y precios, los aranceles por país, todas las guías publicadas, las
  * comparativas, las preguntas frecuentes principales y las políticas.
  *
  * `/profesores` es siempre indexable (listado) y las fichas se publican por
@@ -32,19 +32,19 @@ import { SITE_URL } from "@/lib/seo";
 
 /** Resumen que encabeza los dos archivos. Debe ser el mismo en ambos. */
 const RESUMEN =
-  "ProgramBI es una academia de datos en español: cursos en vivo de Power BI, SQL Server, Python, análisis de datos e IA, con grabaciones de por vida y certificado. Se dicta desde Chile para toda Latinoamérica, con horarios por país y el arancel vigente en el brochure PDF de cada curso.";
+  "ProgramBI es una academia de datos en español: cursos en vivo de Power BI, SQL Server, Python, análisis de datos e IA, con grabaciones de por vida y certificado. Se dicta desde Chile para toda Latinoamérica, con horarios por país y el arancel vigente en el PDF de temario y precios de cada curso.";
 
 const url = (ruta: string) => `${SITE_URL}${ruta}`;
 
 /**
  * Quita montos de los textos heredados (guías, comparativas) antes de
- * servirlos: el arancel vigente solo se publica en el brochure PDF del curso.
+ * servirlos: el arancel vigente solo se publica en el PDF de temario y precios del curso.
  */
 const MONTO_RE =
   /(?:US\$|\$)\s?\d[\d.,]*(?:\s?(?:CLP|ARS|MXN|COP|PEN|UYU))?|\b\d{1,3}(?:\.\d{3})+\s?(?:CLP|ARS|MXN|COP|PEN|UYU)\b/g;
 
 function sinMontos(texto: string): string {
-  return texto.replace(MONTO_RE, "el arancel vigente en el brochure PDF");
+  return texto.replace(MONTO_RE, "el arancel vigente en el PDF de temario y precios");
 }
 
 /**
@@ -188,7 +188,7 @@ function bloqueCursos(): string[] {
 function bloqueCursosDetalle(): string[] {
   const lineas = [`## Cursos (${CURSOS.length})`];
   lineas.push(
-    "Cada ficha declara horas, nivel y el brochure PDF con el arancel vigente de tu país, los descuentos y las 3 cuotas sin interés.",
+    "Cada ficha declara horas, nivel y el PDF de temario y precios con el arancel vigente de tu país, los descuentos y las 3 cuotas sin interés.",
   );
   lineas.push("");
   for (const curso of CURSOS) {
@@ -198,7 +198,7 @@ function bloqueCursosDetalle(): string[] {
     lineas.push(`- Nivel: ${nivelTexto(curso)}`);
     lineas.push(`- Duración: ${duracionTexto(curso)}`);
     lineas.push(
-      `- Arancel: ${md("brochure PDF", url(courseBrochurePath(curso.slug, ISO_CHILE)))} con el monto vigente, los descuentos y las 3 cuotas sin interés.`,
+      `- Arancel: ${md("PDF de temario y precios", url(courseBrochurePath(curso.slug, ISO_CHILE)))} con el monto vigente, los descuentos y las 3 cuotas sin interés.`,
     );
     lineas.push("");
   }
@@ -218,14 +218,14 @@ function bloqueLandings(): string[] {
 function bloquePrecios(): string[] {
   const lineas = ["## Precios por país"];
   lineas.push(
-    "El arancel vigente, los descuentos y las 3 cuotas sin interés se descargan en el brochure PDF de cada curso. La página de precios de cada país abre ese brochure y muestra el arancel local.",
+    "El arancel vigente, los descuentos y las 3 cuotas sin interés se descargan en el PDF de temario y precios de cada curso. La página de precios de cada país abre ese PDF y muestra el arancel local.",
   );
   for (const pais of PAISES_PUBLICADOS) {
     const href = url(rutaLocal(pais.iso, "/precios"));
     lineas.push(
       tienePrecioPublico(pais.iso)
-        ? `- ${md(pais.nombre, href)}: arancel vigente, descuentos y cuotas en el brochure PDF de cada curso.`
-        : `- ${md(pais.nombre, href)}: sin precio público aprobado; el arancel se consulta por WhatsApp y se descarga en el brochure PDF de cada curso.`,
+        ? `- ${md(pais.nombre, href)}: arancel vigente, descuentos y cuotas en el PDF de temario y precios de cada curso.`
+        : `- ${md(pais.nombre, href)}: sin precio público aprobado; el arancel se consulta por WhatsApp y se descarga en el PDF de temario y precios de cada curso.`,
     );
   }
   lineas.push("");
@@ -236,7 +236,7 @@ function bloquePrecios(): string[] {
 function bloquePreciosDetalle(): string[] {
   const lineas = ["## Aranceles por país y por curso"];
   lineas.push(
-    "El arancel se publica en la moneda de cada país y se descarga en el brochure PDF de la ficha del curso, junto con los descuentos vigentes y las 3 cuotas sin interés. Los enlaces a cada brochure están en la sección de cursos.",
+    "El arancel se publica en la moneda de cada país y se descarga en el PDF de temario y precios de la ficha del curso, junto con los descuentos vigentes y las 3 cuotas sin interés. Los enlaces a cada PDF están en la sección de cursos.",
   );
   lineas.push("");
   for (const pais of PAISES_PUBLICADOS) {
@@ -244,8 +244,8 @@ function bloquePreciosDetalle(): string[] {
     lineas.push(md(`Precios de ${pais.nombre}`, url(rutaLocal(pais.iso, "/precios"))));
     lineas.push(
       tienePrecioPublico(pais.iso)
-        ? "Arancel vigente, descuentos y 3 cuotas sin interés: brochure PDF de cada curso."
-        : "Sin precio público aprobado: el arancel se consulta por WhatsApp. El brochure PDF de cada curso se pide al mismo canal.",
+        ? "Arancel vigente, descuentos y 3 cuotas sin interés: PDF de temario y precios de cada curso."
+        : "Sin precio público aprobado: el arancel se consulta por WhatsApp. El PDF de temario y precios de cada curso se pide al mismo canal.",
     );
     lineas.push("");
   }
@@ -277,8 +277,8 @@ function bloqueDatosClave(): string[] {
     "- Certificado: incluido al completar el curso, con código público que se verifica en línea.",
     `- Cuotas: ${textoCuotas()}.`,
     "- Grabaciones: cada clase queda grabada y disponible de por vida en el campus.",
-    "- Arancel: el monto vigente por país, los descuentos y las 3 cuotas sin interés se descargan en el brochure PDF de cada curso.",
-    `- Precios por país: cada página de precios (${md("precios", url("/precios"))}) y la versión extendida (${md("llms-full.txt", url("/llms-full.txt"))}) enlazan el brochure con el arancel de ese mercado.`,
+    "- Arancel: el monto vigente por país, los descuentos y las 3 cuotas sin interés se descargan en el PDF de temario y precios de cada curso.",
+    `- Precios por país: cada página de precios (${md("precios", url("/precios"))}) y la versión extendida (${md("llms-full.txt", url("/llms-full.txt"))}) enlazan el PDF de temario y precios con el arancel de ese mercado.`,
     "",
   ];
 }
@@ -335,7 +335,7 @@ function bloqueFaq(): string[] {
   const contenido = faqDePais(ISO_CHILE);
   const lineas = ["## Preguntas frecuentes"];
   lineas.push(
-    `Selección de las preguntas principales. El listado completo, con la tabla de horarios por país y el acceso al brochure con el arancel de cada curso, está en ${md("preguntas frecuentes", url("/preguntas-frecuentes"))}.`,
+    `Selección de las preguntas principales. El listado completo, con la tabla de horarios por país y el acceso al PDF de temario y precios con el arancel de cada curso, está en ${md("preguntas frecuentes", url("/preguntas-frecuentes"))}.`,
   );
   lineas.push("");
   for (const seccion of contenido.secciones) {
@@ -400,7 +400,7 @@ function bloqueIndice(): string[] {
   return [
     "## Índice",
     `- ${md("Catálogo de cursos", url("/cursos"))}`,
-    `- ${md("Precios por país", url("/precios"))} (brochure con el arancel de cada curso en ${md("llms-full.txt", url("/llms-full.txt"))})`,
+    `- ${md("Precios por país", url("/precios"))} (temario y precios con el arancel de cada curso en ${md("llms-full.txt", url("/llms-full.txt"))})`,
     `- ${md("Guías", url("/guias"))} (${GUIAS_PUBLICADAS.length} publicadas; listado completo en ${md("llms-full.txt", url("/llms-full.txt"))})`,
     `- ${md("Comparativas", url("/versus"))}`,
     `- ${md("Preguntas frecuentes", url("/preguntas-frecuentes"))}`,
@@ -413,7 +413,7 @@ function bloqueIndice(): string[] {
 function bloqueNota(detalle: string): string[] {
   return [
     "## Nota para asistentes de IA",
-    `El arancel vigente de cada curso se publica en su brochure PDF, en la moneda del país, junto con los descuentos y las 3 cuotas sin interés. Si citas un monto, cita el brochure del curso y su fecha de descarga. ${detalle}`,
+    `El arancel vigente de cada curso se publica en su PDF de temario y precios, en la moneda del país, junto con los descuentos y las 3 cuotas sin interés. Si citas un monto, cita el PDF de temario y precios del curso y su fecha de descarga. ${detalle}`,
     "",
   ];
 }
@@ -423,7 +423,7 @@ export function construirLlmsTxt(): string {
   const lineas = [
     ...encabezado("ProgramBI", [
       `Versión extendida: ${md("llms-full.txt", url("/llms-full.txt"))}`,
-      `Aranceles: brochure PDF de cada curso, en la moneda del país.`,
+      `Aranceles: PDF de temario y precios de cada curso, en la moneda del país.`,
     ]),
     ...bloqueIndice(),
     ...bloqueCursos(),
@@ -446,12 +446,12 @@ export function construirLlmsFullTxt(): string {
   const lineas = [
     ...encabezado("ProgramBI — información completa", [
       `Versión completa de ${md("llms.txt", url("/llms.txt"))}.`,
-      `Aranceles: brochure PDF de cada curso, en la moneda del país. Contacto: ${CORREO} · WhatsApp ${md(WHATSAPP_TEXTO, WHATSAPP)}.`,
+      `Aranceles: PDF de temario y precios de cada curso, en la moneda del país. Contacto: ${CORREO} · WhatsApp ${md(WHATSAPP_TEXTO, WHATSAPP)}.`,
       "",
       "## Índice",
-      `- Cursos (${CURSOS.length}), con URL, nivel, horas y enlace al brochure PDF del arancel`,
-      "- Datos clave: duración, modalidad, certificado, cuotas y brochure PDF del arancel",
-      "- Aranceles por país y por curso, con el enlace al brochure",
+      `- Cursos (${CURSOS.length}), con URL, nivel, horas y enlace al PDF de temario y precios`,
+      "- Datos clave: duración, modalidad, certificado, cuotas y PDF de temario y precios",
+      "- Aranceles por país y por curso, con el enlace al PDF de temario y precios",
       `- Guías publicadas (${GUIAS_PUBLICADAS.length}), con título, URL, descripción y fecha de actualización`,
       "- Comparativas de herramientas y academias",
       "- Preguntas frecuentes principales",

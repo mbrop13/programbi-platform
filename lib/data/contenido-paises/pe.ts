@@ -172,7 +172,7 @@ export const bloqueLocal: DefinicionBloqueLocal = {
     "Para equipos en Perú, la capacitación in-company se arma con los datos de la empresa (ERP, comprobantes electrónicos, reportes de planta). Los ejercicios usan esos archivos y los casos de minería, agroexportación, retail o banca que el equipo reconoce en su día a día. Se dicta en vivo por Zoom, con grabaciones en el campus para quienes no pueden asistir a una sesión, y la cotización se emite en soles con factura corporativa; cada participante cierra el programa con su certificado y su código de verificación. La propuesta indica moneda, alcance y condiciones de facturación; el programa se cotiza aparte de los cursos abiertos.",
   notas: {
     precio:
-      "El catálogo peruano se publica en soles (PEN) y no se convierte a dólares. El monto vigente y los descuentos están en el brochure del curso; el checkout muestra el total antes de pagar.",
+      "El catálogo peruano se publica en soles (PEN) y no se convierte a dólares. El monto vigente y los descuentos están en el PDF de temario y precios del curso; el checkout muestra el total antes de pagar.",
     horario:
       "Perú no aplica horario de verano. En Chile la clase es de {horarioChile}; cuando Chile cambia de hora, la diferencia con Lima se mueve una hora. La ficha de la cohorte muestra la equivalencia exacta.",
     pago:
@@ -191,7 +191,7 @@ export const bloqueLocal: DefinicionBloqueLocal = {
     },
     {
       q: "¿Cuánto cuesta un curso en Perú y en qué moneda se paga?",
-      a: "El catálogo se publica en soles (PEN), sin conversión a dólares. El monto vigente de cada curso y los descuentos están en su brochure PDF, y el checkout muestra el total antes de pagar.",
+      a: "El catálogo se publica en soles (PEN), sin conversión a dólares. El monto vigente de cada curso y los descuentos están en su PDF de temario y precios, y el checkout muestra el total antes de pagar.",
     },
     {
       q: "¿Puedo pagar desde Perú con tarjeta, Yape o Plin?",

@@ -12,7 +12,7 @@ import { courseBrochurePath } from "@/lib/pricing-gate";
 function sinMontos(texto: string): string {
   return texto.replace(
     /(?:\$\s?)?\b(?:169|338|349|159|319|235|236)[.,]?(?:000|900)\b(?:\s*(?:CLP|ARS|MXN|PEN|COP|UYU))?/g,
-    "el arancel vigente (en el brochure PDF del curso)"
+    "el arancel vigente (en el PDF de temario y precios)"
   );
 }
 
@@ -105,7 +105,7 @@ export default function FichaSeoExtra({ slug, pais }: { slug: string; pais: stri
           rel="noopener noreferrer"
           className="mt-8 inline-flex items-center gap-2 rounded-full bg-ink px-6 py-3 text-sm font-semibold text-canvas no-underline"
         >
-          <FileText size={15} aria-hidden /> Ver precios y temario en el brochure PDF →
+          <FileText size={15} aria-hidden /> Ver temario y precios (PDF) →
         </Link>
       </div>
     </section>

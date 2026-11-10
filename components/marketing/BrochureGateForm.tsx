@@ -14,7 +14,7 @@ import { captureAndReadAttribution } from "@/lib/utm";
 import { trackLeadSubmit } from "@/lib/analytics/marketing";
 
 export type BrochureGateFormProps = {
-  /** Slug del curso cuyo brochure se abre al enviar. */
+  /** Slug del curso cuyo temario se abre al enviar. */
   slug: string;
   /** Título del curso, tal como se guarda en `course_leads`. */
   courseTitle: string;
@@ -39,9 +39,9 @@ export type BrochureGateFormProps = {
   className?: string;
 };
 
-export const BROCHURE_GATE_HEADING = "Descarga el Brochure PDF con precios y temario";
+export const BROCHURE_GATE_HEADING = "Descarga el temario con precios";
 export const BROCHURE_GATE_SUBHEADING =
-  "Completa tus datos y abre al instante el brochure oficial con el arancel de tu país, las fechas con horario local y la malla completa.";
+  "Completa tus datos y abre al instante el temario con el arancel de tu país, las fechas con horario local y la malla completa.";
 
 export function phoneCodeFor(iso: string): string {
   const country = COUNTRIES.find((item) => item.iso === iso);
@@ -82,20 +82,20 @@ function splitDialCode(raw: string, fallbackCode: string): { code: string; rest:
 }
 
 const INCLUDES = [
-  "Arancel oficial en tu moneda, becas y 3 cuotas sin interés",
+  "Arancel vigente en tu moneda, becas y 3 cuotas sin interés",
   "Próximas fechas y horarios convertidos a tu país",
   "Malla curricular completa módulo a módulo y profesores",
 ];
 
-const labelClass = "mb-1.5 block text-xs font-semibold tracking-wide text-ink/80 uppercase";
+const labelClass = "mb-1 block text-xs font-semibold tracking-wide text-ink/80 uppercase";
 const inputClass =
-  "h-12 w-full rounded-xl border border-line-strong bg-canvas px-4 text-base font-medium text-ink placeholder:text-faint";
+  "h-11 w-full rounded-xl border border-line-strong bg-canvas px-4 text-base font-medium text-ink placeholder:text-faint";
 
 /**
- * Formulario de 3 campos que abre el brochure PDF con precios.
+ * Formulario de 3 campos que abre el temario con precios en PDF.
  *
  * Es el único camino para desbloquear precios en la web pública. Al enviar:
- *   1. abre el brochure en una pestaña nueva (sincrónico, para que Safari y
+ *   1. abre el temario en una pestaña nueva (sincrónico, para que Safari y
  *      los móviles no bloqueen el popup),
  *   2. desbloquea precios en toda la web,
  *   3. guarda el lead en `/api/leads/create` en segundo plano.
@@ -108,7 +108,7 @@ export function BrochureGateForm({
   courseTitle,
   pais,
   source,
-  buttonLabel = "Descargar Brochure PDF",
+  buttonLabel = "Descargar temario y precios",
   heading = BROCHURE_GATE_HEADING,
   subheading = BROCHURE_GATE_SUBHEADING,
   idPrefix = "brochure-gate",
@@ -178,7 +178,7 @@ export function BrochureGateForm({
     const url = courseBrochureUrl(slug, pais);
     setBrochureUrl(url);
 
-    // 1) Abrir el brochure dentro del handler: el navegador lo trata como
+    // 1) Abrir el temario dentro del handler: el navegador lo trata como
     //    acción del usuario y no lo bloquea como popup.
     let opened: Window | null = null;
     try {
@@ -230,27 +230,29 @@ export function BrochureGateForm({
       onSubmit={handleSubmit}
       noValidate
       data-gate-form="brochure"
-      className={`rounded-3xl border border-line bg-paper p-5 shadow-sm sm:p-6 ${className}`}
+      className={`rounded-3xl border border-line bg-paper p-4 shadow-sm sm:p-5 ${className}`}
     >
       {isSuccess ? (
         <div
           data-gate-success=""
           role="status"
           aria-live="polite"
-          className="mb-5 rounded-2xl border border-emerald-300 bg-emerald-50 p-4"
+          className="mb-4 rounded-2xl border border-emerald-300 bg-emerald-50 p-3.5"
         >
-          <p className="text-base font-bold text-emerald-900">¡Listo! Tu brochure ya está abierto.</p>
-          <p className="mt-1 text-sm leading-relaxed text-emerald-800">
-            También lo enviamos a {sentEmail || email || "tu correo"}. Puedes volver a abrirlo cuando
-            quieras.
+          <p className="text-sm font-bold text-emerald-900">
+            ¡Listo! Ya abrimos tu temario y precios.
+          </p>
+          <p className="mt-1 text-[13px] leading-snug text-emerald-800">
+            También te enviamos el PDF a {sentEmail || email || "tu correo"}. Puedes volver a abrirlo
+            cuando quieras.
           </p>
           <a
             href={brochureUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-emerald-700 px-4 text-sm font-bold text-white no-underline"
+            className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-emerald-700 px-4 text-sm font-bold text-white no-underline"
           >
-            <FileText size={17} aria-hidden /> Abrir Brochure PDF en nueva pestaña
+            <FileText size={16} aria-hidden /> Abrir temario y precios
           </a>
           {popupBlocked ? (
             <p className="mt-2 text-xs text-emerald-800">
@@ -260,26 +262,19 @@ export function BrochureGateForm({
         </div>
       ) : null}
 
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-ink px-3 py-1 text-xs font-bold tracking-wider text-canvas uppercase">
-        <FileText size={14} aria-hidden />
-        BROCHURE OFICIAL PDF · PRECIOS Y TEMARIO
-      </span>
+      <h3 className="text-xl font-bold leading-snug tracking-tight text-ink">{heading}</h3>
+      <p className="mt-1.5 text-sm leading-snug text-mute">{subheading}</p>
 
-      <h3 className="mt-3 text-xl font-bold tracking-tight text-ink leading-snug sm:text-2xl">
-        {heading}
-      </h3>
-      <p className="mt-2 text-sm leading-relaxed text-mute sm:text-[15px]">{subheading}</p>
-
-      <ul className="mt-4 space-y-2">
+      <ul className="mt-3 space-y-1.5">
         {INCLUDES.map((item) => (
-          <li key={item} className="flex items-start gap-2 text-sm font-medium text-ink">
-            <Check size={17} strokeWidth={2.4} className="mt-0.5 shrink-0 text-ink" aria-hidden />
+          <li key={item} className="flex items-start gap-2 text-[13px] font-medium text-ink">
+            <Check size={15} strokeWidth={2.4} className="mt-0.5 shrink-0 text-ink" aria-hidden />
             <span>{item}</span>
           </li>
         ))}
       </ul>
 
-      <div className="mt-5 space-y-4">
+      <div className="mt-4 space-y-3">
         <div>
           <label htmlFor={`${idPrefix}-name`} className={labelClass}>
             Nombre completo
@@ -326,7 +321,7 @@ export function BrochureGateForm({
               value={prefix}
               onChange={(event) => setPrefix(event.target.value)}
               aria-label="Código de país"
-              className="h-12 w-[7.5rem] shrink-0 rounded-xl border border-line-strong bg-canvas px-3 text-sm font-medium text-ink"
+              className="h-11 w-[7.5rem] shrink-0 rounded-xl border border-line-strong bg-canvas px-3 text-sm font-medium text-ink"
             >
               {COUNTRIES.map((country) => (
                 <option key={`${country.iso}-${country.phoneCode}`} value={country.phoneCode}>
@@ -345,7 +340,7 @@ export function BrochureGateForm({
               placeholder="9 8765 4321"
               value={phone}
               onChange={(event) => setPhone(event.target.value)}
-              className="h-12 min-w-0 flex-1 rounded-xl border border-line-strong bg-canvas px-4 text-base font-medium text-ink placeholder:text-faint"
+              className="h-11 min-w-0 flex-1 rounded-xl border border-line-strong bg-canvas px-4 text-base font-medium text-ink placeholder:text-faint"
             />
           </div>
         </div>
@@ -370,13 +365,13 @@ export function BrochureGateForm({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="mt-4 inline-flex h-13 min-h-[52px] w-full items-center justify-center gap-2 rounded-full bg-ink px-5 text-base font-bold text-canvas shadow-md transition-transform active:scale-[0.98] disabled:opacity-70"
+        className="mt-3 inline-flex h-12 min-h-[48px] w-full items-center justify-center gap-2 rounded-full bg-ink px-5 text-[15px] font-bold text-canvas shadow-md transition-transform active:scale-[0.98] disabled:opacity-70"
       >
         <FileText size={18} aria-hidden /> {buttonLabel} <ArrowRight size={18} aria-hidden />
       </button>
 
-      <p className="mt-3 text-center text-xs leading-snug text-faint">
-        Sin spam. Usamos tus datos solo para enviarte el brochure y el detalle del curso.
+      <p className="mt-2.5 text-center text-xs leading-snug text-faint">
+        Sin spam. Usamos tus datos solo para enviarte el temario, los precios y el detalle del curso.
       </p>
     </form>
   );

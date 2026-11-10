@@ -29,10 +29,10 @@ export function isCourseCroSlug(slug: string): boolean {
  */
 const SIN_PRECIO = /(\$|S\/|US\$|MX\$)\s?\d[\d.,]{2,}|\b\d{3}\.\d{3}\b/;
 
-/** Reemplaza una respuesta con monto por la invitación al brochure PDF. */
+/** Reemplaza una respuesta con monto por la invitación al PDF de temario y precios. */
 function sinPrecio(texto: string): string {
   return SIN_PRECIO.test(texto)
-    ? "El arancel vigente de tu país, los descuentos y las 3 cuotas sin interés están en el brochure PDF de la ficha del curso."
+    ? "El arancel vigente de tu país, los descuentos y las 3 cuotas sin interés están en el PDF de temario y precios de la ficha del curso."
     : texto;
 }
 
@@ -296,7 +296,6 @@ export function CourseFaq({
             </details>
           ))}
         </div>
-        <CourseSeoInternalLinks slug={slug} />
       </div>
     </section>
   );

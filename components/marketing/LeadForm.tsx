@@ -30,7 +30,7 @@ const courseSlugMap: Record<string, string> = {
   Copilot: "copilot",
 };
 
-/** Slug del curso para el brochure y el checkout; Power BI si no hay match. */
+/** Slug del curso para el temario y el checkout; Power BI si no hay match. */
 function slugDelPrograma(titulo: string | undefined): string {
   if (!titulo) return "power-bi";
   return courseSlugMap[titulo] || courses.find((curso) => curso.title === titulo)?.slug || "power-bi";
@@ -85,7 +85,7 @@ export default function LeadForm() {
     setSending(true);
     setStatus("idle");
 
-    // El brochure se abre de forma síncrona dentro del submit: si se abre
+    // El PDF se abre de forma síncrona dentro del submit: si se abre
     // después de un `await`, Safari y los navegadores móviles bloquean la
     // pestaña nueva. El desbloqueo de precios se persiste en el mismo gesto.
     window.open(courseBrochureUrl(destSlug, pais), "_blank", "noopener,noreferrer");
@@ -133,12 +133,12 @@ export default function LeadForm() {
         <div className="px-4 py-16 sm:px-6 lg:px-16 lg:py-24">
           <h2 className="text-3xl font-bold tracking-tight text-ink sm:text-4xl lg:text-5xl">Cotiza Ahora</h2>
           <p className="mt-4 max-w-[36rem] text-base leading-relaxed text-mute">
-            Completa tus datos y abrimos el brochure PDF con el temario, las fechas, los cupos y los precios.
+            Completa tus datos y abrimos el PDF de temario y precios con las fechas, los cupos y el detalle del curso.
           </p>
 
           {status === "success" ? (
             <div className="mt-10 max-w-[36rem] rounded-2xl border border-line bg-paper px-5 py-6">
-              <p className="text-base font-semibold text-ink">¡Listo! Abrimos tu brochure PDF en una pestaña nueva.</p>
+              <p className="text-base font-semibold text-ink">¡Listo! Abrimos el PDF de temario y precios en una pestaña nueva.</p>
               <p className="mt-2 text-sm leading-relaxed text-mute">
                 Ahí ves el temario completo, las fechas y el arancel vigente con los descuentos y las 3 cuotas sin
                 interés. Los precios de la web ya quedaron desbloqueados en este navegador.
@@ -150,7 +150,7 @@ export default function LeadForm() {
                   rel="noopener noreferrer"
                   className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-6 text-sm font-semibold text-canvas transition-transform active:scale-[0.98]"
                 >
-                  📄 Abrir Brochure PDF con Precios
+                  Abrir temario y precios (PDF)
                 </a>
                 <Link
                   href={`/pago?curso=${destSlug}`}
@@ -171,7 +171,7 @@ export default function LeadForm() {
                   Seguir explorando el catálogo →
                 </Link>
               </div>
-              <p className="mt-4 text-xs text-mute">¿No se abrió la pestaña? Usa el botón «Abrir Brochure PDF con Precios».</p>
+              <p className="mt-4 text-xs text-mute">¿No se abrió la pestaña? Usa el botón «Abrir temario y precios (PDF)».</p>
             </div>
           ) : (
             <form onSubmit={onSubmit} className="relative mt-10 max-w-[36rem] space-y-5" noValidate>
@@ -275,7 +275,7 @@ export default function LeadForm() {
                 disabled={sending}
                 className="inline-flex h-12 items-center justify-center rounded-full bg-ink px-8 text-base font-semibold text-canvas transition-transform active:scale-[0.98] disabled:opacity-60"
               >
-                {sending ? "Abriendo brochure…" : "Ver Brochure PDF con Precios →"}
+                {sending ? "Abriendo temario y precios…" : "Ver temario y precios (PDF) →"}
               </button>
             </form>
           )}

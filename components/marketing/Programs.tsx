@@ -138,7 +138,7 @@ export default function Programs({
                   </p>
                 ) : (
                   <span className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-ink">
-                    Ver brochure y precios →
+                    Ver temario y precios →
                   </span>
                 )}
               </div>

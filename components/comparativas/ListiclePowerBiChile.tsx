@@ -20,7 +20,7 @@ import { absoluteUrl, jsonLdString, SITE_URL } from "@/lib/seo";
 import WhatsAppCta from "@/components/marketing/WhatsAppCta";
 import PlantillaDescarga from "@/components/marketing/PlantillaDescarga";
 import ComparativaCta from "./ComparativaCta";
-import { sinMontosProgrambi } from "@/lib/comparativas/precios";
+import { TEXTO_PRECIO_PROGRAMBI, sinMontosProgrambi } from "@/lib/comparativas/precios";
 import { sinMontosDeCurso } from "@/lib/guias/precio";
 
 export default function ListiclePowerBiChile() {
@@ -190,7 +190,7 @@ export default function ListiclePowerBiChile() {
               </div>
               <div className="flex items-baseline justify-between gap-4 px-5 py-4">
                 <dt className="text-xs font-semibold text-mute">Precio por hora</dt>
-                <dd className="text-lg font-bold tracking-tight text-ink">en el brochure PDF</dd>
+                <dd className="text-lg font-bold tracking-tight text-ink">{TEXTO_PRECIO_PROGRAMBI}</dd>
               </div>
             </dl>
             <p className="border-t border-line px-5 py-3 text-[11px] leading-relaxed text-faint">

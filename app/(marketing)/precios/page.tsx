@@ -70,7 +70,7 @@ function faqsDe(pais: Pais, cursos: PrecioCursoPagina[], moneda: string) {
   return [
     {
       q: `¿Cuánto cuestan los cursos en ${pais.nombre}?`,
-      a: `El arancel vigente de cada curso se publica en su brochure PDF, que se descarga gratis desde la tabla de esta página. Los montos están en ${moneda} y el valor final se confirma en el checkout.`,
+      a: `El arancel vigente de cada curso se publica en su PDF de temario y precios, que se descarga gratis desde la tabla de esta página. Los montos están en ${moneda} y el valor final se confirma en el checkout.`,
     },
     {
       q: "¿Qué incluye el precio?",
@@ -86,11 +86,11 @@ function faqsDe(pais: Pais, cursos: PrecioCursoPagina[], moneda: string) {
     },
     {
       q: `¿Cuánto cuesta el curso de Power BI en ${pais.nombre}?`,
-      a: `El arancel vigente de Power BI, por ${horasPowerBi}, se descarga en el brochure PDF del curso junto con el temario, las fechas en hora de ${pais.nombre} y el detalle de las ${cuotasSinInteres(pais.iso)} cuotas sin interés. Está publicado en ${moneda}.`,
+      a: `El arancel vigente de Power BI, por ${horasPowerBi}, se descarga en el PDF de temario y precios del curso, con las fechas en hora de ${pais.nombre} y el detalle de las ${cuotasSinInteres(pais.iso)} cuotas sin interés. Está publicado en ${moneda}.`,
     },
     {
       q: "¿Cuál es el mejor curso de Power BI en vivo en LatAm?",
-      a: `No hay un ranking único. Para comparar, revisa si las clases son en vivo, la duración, las grabaciones y el certificado. En ProgramBI, Power BI se dicta en vivo por Zoom${powerBi ? `, con ${powerBi.hours} horas` : ""}, grabaciones y certificado; el arancel de ${pais.nombre} está en el brochure PDF de cada curso.`,
+      a: `No hay un ranking único. Para comparar, revisa si las clases son en vivo, la duración, las grabaciones y el certificado. En ProgramBI, Power BI se dicta en vivo por Zoom${powerBi ? `, con ${powerBi.hours} horas` : ""}, grabaciones y certificado; el arancel de ${pais.nombre} está en el PDF de temario y precios de cada curso.`,
     },
     {
       q: `¿Cómo puedo pagar desde ${pais.nombre}?`,
@@ -98,7 +98,7 @@ function faqsDe(pais: Pais, cursos: PrecioCursoPagina[], moneda: string) {
     },
     {
       q: "¿Hay cuotas sin interés?",
-      a: `Sí: todos los cursos se pueden pagar en ${cuotasSinInteres(pais.iso)} cuotas sin interés, sin recargo por financiamiento. El detalle está en el brochure PDF de cada curso.`,
+      a: `Sí: todos los cursos se pueden pagar en ${cuotasSinInteres(pais.iso)} cuotas sin interés, sin recargo por financiamiento. El detalle está en el PDF de temario y precios de cada curso.`,
     },
   ];
 }
@@ -203,8 +203,8 @@ export default async function PreciosPage({
           </h1>
           <p className="mt-5 text-lg leading-relaxed text-mute">
             Aranceles publicados en {moneda} para {pais.nombre}. El detalle de cada
-            curso se descarga en su brochure PDF, con el temario, las fechas y las
-            cuotas sin interés.
+            curso, con las fechas y las cuotas sin interés, se descarga en su PDF de
+            temario y precios.
           </p>
 
           {powerBi ? (
@@ -220,7 +220,7 @@ export default async function PreciosPage({
                     rel="noopener noreferrer"
                     className="no-underline hover:text-mute"
                   >
-                    Precio y temario en el brochure PDF
+                    Ver temario y precios (PDF)
                   </Link>
                 </dd>
               </div>

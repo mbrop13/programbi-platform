@@ -8,7 +8,7 @@
  */
 const MONTO = /(?:\$\s?\d[\d.,]*|\b\d{1,3}(?:\.\d{3})+\s?(?:CLP|ARS|MXN|PEN|COP|UYU|USD)\b)/g;
 
-export const TEXTO_PRECIO_PROGRAMBI = "en el brochure PDF";
+export const TEXTO_PRECIO_PROGRAMBI = "en el PDF de temario y precios";
 
 export function sinMontosProgrambi(texto: string): string {
   if (!texto) return texto;

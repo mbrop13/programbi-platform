@@ -1,17 +1,28 @@
 "use client";
 
 /**
- * Hoja A4 editorial del brochure (794 × 1123 px, equivalente a 210 × 297 mm
- * a 96 dpi). Todas las medidas van inline para que la vista previa, la captura
- * con `html-to-image` y el PDF midan exactamente lo mismo, sin depender de
- * Tailwind ni de variables del tema.
+ * Hoja A4 editorial del «Temario y precios» (794 × 1123 px, equivalente a
+ * 210 × 297 mm a 96 dpi). Todas las medidas van inline para que la vista
+ * previa, la captura con `html-to-image` y el PDF midan exactamente lo mismo,
+ * sin depender de Tailwind ni de variables del tema.
  *
- * Estructura vertical: barra de acento, cabecera institucional, cuerpo
- * flexible y pie fijo al fondo (por flujo flex, no absoluto).
+ * Estructura vertical: filete de acento, cabecera de marca, cuerpo flexible y
+ * pie común fijo al fondo (por flujo flex, no absoluto). El pie es idéntico en
+ * todas las hojas: «ProgramBI · Temario y precios · {title}» a la izquierda,
+ * la edición al centro y la paginación a la derecha, separado por un hairline.
  */
 
 import type { CSSProperties, JSX, ReactNode } from "react";
 import type { CourseBrochureData } from "@/lib/brochure/brochure-data";
+import {
+  A4,
+  FONT_SANS,
+  SHADOW_SHEET,
+  SPACE,
+  T,
+  TYPE,
+  accentOf,
+} from "@/lib/brochure/brochure-theme";
 import { BrochureBrandHeader } from "./BrochureBrandHeader";
 
 export type BrochureA4SheetProps = {
@@ -23,14 +34,6 @@ export type BrochureA4SheetProps = {
   style?: CSSProperties;
 };
 
-const ANCHO_A4 = 794;
-const ALTO_A4 = 1123;
-const PAPEL = "#FAF9F5";
-const TINTA = "#141519";
-const APAGADO = "#77786F";
-const LINEA = "#E7E4DA";
-const FUENTE = '-apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
-
 export function BrochureA4Sheet({
   data,
   pageNumber,
@@ -39,32 +42,34 @@ export function BrochureA4Sheet({
   className,
   style,
 }: BrochureA4SheetProps): JSX.Element {
+  const acento = accentOf(data.accentColor);
+
   const raiz: CSSProperties = {
-    width: ANCHO_A4,
-    height: ALTO_A4,
-    backgroundColor: PAPEL,
-    color: TINTA,
+    width: A4.w,
+    height: A4.h,
+    backgroundColor: T.paper,
+    color: T.ink,
     position: "relative",
     overflow: "hidden",
     boxSizing: "border-box",
     display: "flex",
     flexDirection: "column",
-    border: `1px solid ${LINEA}`,
+    border: `1px solid ${T.line}`,
     borderRadius: 2,
-    boxShadow:
-      "0 30px 70px rgba(10,12,16,0.35), 0 1px 0 rgba(255,255,255,0.5) inset",
-    fontFamily: FUENTE,
+    boxShadow: SHADOW_SHEET,
+    fontFamily: FONT_SANS,
     flexShrink: 0,
   };
 
-  const barra: CSSProperties = {
+  /** Filete superior: único acento a sangre de la hoja. */
+  const filete: CSSProperties = {
     height: 6,
     flexShrink: 0,
-    backgroundColor: data.accentColor,
+    backgroundColor: acento,
   };
 
   const cabecera: CSSProperties = {
-    padding: "26px 46px 0",
+    padding: `${SPACE[5]}px ${A4.margin}px 0`,
     flexShrink: 0,
   };
 
@@ -73,47 +78,43 @@ export function BrochureA4Sheet({
     minHeight: 0,
     display: "flex",
     flexDirection: "column",
-    padding: "18px 46px 14px",
+    padding: `${SPACE[4]}px ${A4.margin}px ${SPACE[3]}px`,
     overflow: "hidden",
   };
 
   const pie: CSSProperties = {
-    margin: "0 46px",
-    padding: "14px 0 16px",
-    borderTop: `1px solid ${LINEA}`,
-    display: "flex",
-    justifyContent: "space-between",
+    margin: `0 ${A4.margin}px`,
+    padding: `${SPACE[3]}px 0 ${SPACE[4]}px`,
+    borderTop: `1px solid ${T.line}`,
+    display: "grid",
+    gridTemplateColumns: "minmax(0, 1fr) auto minmax(0, 1fr)",
     alignItems: "center",
-    fontSize: 11,
-    lineHeight: 1.25,
-    color: APAGADO,
-    letterSpacing: "0.02em",
+    columnGap: SPACE[3],
+    fontSize: TYPE.small.size,
+    lineHeight: 1.3,
+    color: T.mute,
     flexShrink: 0,
   };
 
-  const pieIzquierda: CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    gap: 7,
+  const pieTitulo: CSSProperties = {
     minWidth: 0,
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
   };
 
-  const barrita: CSSProperties = {
-    display: "block",
-    width: 18,
-    height: 3,
-    borderRadius: 2,
-    backgroundColor: data.accentColor,
-    flexShrink: 0,
+  const pieEdicion: CSSProperties = {
+    justifySelf: "center",
+    textAlign: "center",
+    whiteSpace: "nowrap",
   };
 
-  const pieDerecha: CSSProperties = {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-end",
-    gap: 2,
+  const piePagina: CSSProperties = {
+    justifySelf: "end",
     textAlign: "right",
     whiteSpace: "nowrap",
+    color: T.inkSoft,
+    fontWeight: 500,
   };
 
   return (
@@ -124,7 +125,7 @@ export function BrochureA4Sheet({
       className={className ? `brochure-a4-sheet ${className}` : "brochure-a4-sheet"}
       style={{ ...raiz, ...style }}
     >
-      <div aria-hidden="true" style={barra} />
+      <div aria-hidden="true" style={filete} />
 
       <header style={cabecera}>
         <BrochureBrandHeader data={data} />
@@ -133,25 +134,20 @@ export function BrochureA4Sheet({
       <main style={cuerpo}>{children}</main>
 
       <footer style={pie}>
-        <div style={pieIzquierda}>
-          <span aria-hidden="true" style={barrita} />
-          <span style={{ whiteSpace: "nowrap" }}>
-            ProgramBI · Escuela de Datos & IA en Vivo
-          </span>
-        </div>
-
-        <span style={{ letterSpacing: "0.06em", whiteSpace: "nowrap" }}>
-          programbi.com
+        <span
+          style={pieTitulo}
+          title={`ProgramBI · Temario y precios · ${data.title}`}
+        >
+          {`ProgramBI · Temario y precios · ${data.title}`}
         </span>
 
-        <div style={pieDerecha}>
-          <span>
-            Edición {data.paisNombre} · {data.moneda}
-          </span>
-          <span>
-            Página {pageNumber} de {totalPages}
-          </span>
-        </div>
+        <span style={pieEdicion}>
+          {`Edición ${data.paisNombre} · ${data.moneda}`}
+        </span>
+
+        <span style={piePagina}>
+          {`Página ${pageNumber} de ${totalPages}`}
+        </span>
       </footer>
     </div>
   );

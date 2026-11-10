@@ -52,7 +52,7 @@ export default function Bloque30Segundos({ guia }: { guia: Guia }) {
               rel={esGeneral ? undefined : "noopener noreferrer"}
               className="text-sm font-bold leading-snug text-ink no-underline hover:text-mute"
             >
-              Ver precio en el brochure PDF →
+              Ver temario y precios (PDF) →
             </Link>
             <span className="mt-0.5 block text-xs text-mute">
               {curso.porNivel ? "por nivel · " : ""}{textoCuotas(iso)}

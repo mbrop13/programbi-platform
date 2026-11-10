@@ -19,7 +19,7 @@ const datos: DatosBloqueLocal = {
   datos: {
     precioTitulo: "Precio en pesos argentinos",
     precioDetalle:
-      "El catálogo de Argentina se publica en ARS. Consulta el valor vigente de cada curso en su brochure PDF: ahí están el monto, los descuentos y las fechas. El checkout confirma el importe antes de pagar.",
+      "El catálogo de Argentina se publica en ARS. Consulta el valor vigente de cada curso en su PDF de temario y precios: ahí están el monto, los descuentos y las fechas. El checkout confirma el importe antes de pagar.",
     horarioDetalle:
       "Argentina usa UTC-3 todo el año. Cuando Chile está en horario de verano, la clase se ve a la misma hora; cuando Chile vuelve a UTC-4, se ve una hora más tarde. La ficha de la cohorte muestra la conversión exacta.",
     pagoDetalle:
@@ -38,7 +38,7 @@ const datos: DatosBloqueLocal = {
         "Las clases se dictan desde Chile y se siguen en hora de Buenos Aires. El programa, las grabaciones y el certificado son los mismos; cambian la moneda, el medio de pago y la conversión horaria.",
       parrafos: [
         "Argentina tiene una particularidad que atraviesa casi todos los tableros: los precios cambian dentro del año. Por eso los ejercicios trabajan con moneda constante, actualización de precios y tipo de cambio, además de los reportes habituales de ventas, costos y cartera. El objetivo es que el número que llega a la reunión sea comparable, no solo que esté actualizado.",
-        "El catálogo reúne trece fichas: Power BI, análisis de datos, SQL Server, Python, Excel, Access, Copilot, Claude, IA en productividad, Power Automate, machine learning, mercado financiero y análisis para minería. Cada ficha declara duración, nivel y temario, y su brochure en pesos argentinos concentra el valor y las fechas de la próxima cohorte.",
+        "El catálogo reúne trece fichas: Power BI, análisis de datos, SQL Server, Python, Excel, Access, Copilot, Claude, IA en productividad, Power Automate, machine learning, mercado financiero y análisis para minería. Cada ficha declara duración, nivel y contenido, y su PDF de temario y precios en pesos argentinos concentra el valor y las fechas de la próxima cohorte.",
         "Si trabajas en una pyme o en un área de finanzas, operaciones o comercial, el punto de partida suele ser el mismo: ordenar los datos que hoy viven en Excel, aprender a consultarlos y recién después armar el tablero. No se pide experiencia en programación para empezar; sí constancia para sostener dos clases por semana.",
         "Las clases quedan grabadas en el campus. Eso importa en un país con husos y rutinas distintas: quien no llega a la hora puede recuperar la sesión y traer las dudas a la clase siguiente. El campus también guarda las plantillas y los datasets de práctica.",
       ],
@@ -49,7 +49,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿El precio está en pesos argentinos?",
-          a: "Sí. El catálogo de Argentina se publica en ARS y el valor vigente de cada curso se descarga en su brochure PDF. El checkout confirma el monto antes de pagar y, si la cuenta local no está habilitada, muestra el equivalente en CLP.",
+          a: "Sí. El catálogo de Argentina se publica en ARS y el valor vigente de cada curso se descarga en su PDF de temario y precios. El checkout confirma el monto antes de pagar y, si la cuenta local no está habilitada, muestra el equivalente en CLP.",
         },
         {
           q: "¿Puedo pagar desde Argentina?",
@@ -77,7 +77,7 @@ const datos: DatosBloqueLocal = {
       parrafos: [
         "Si tu trabajo es armar reportes de gestión, el recorrido corto es Excel y después Power BI. Si necesitas extraer datos de varias tablas o sistemas, suma SQL Server. Si el volumen, la limpieza o la automatización lo piden, entra Python. No hace falta hacer los tres: el orden depende del problema que tengas hoy en tu área.",
         "Para administración y procesos, Access resuelve la base de un área y Power Automate el circuito de tareas repetitivas. Para análisis avanzado o finanzas, machine learning y mercado financiero tienen ficha propia. Copilot, Claude e IA en productividad cubren el uso diario de asistentes; análisis para minería aplica el mismo programa de análisis de datos a turnos, flota y mantenimiento.",
-        "Cada ficha declara duración, nivel y temario antes de inscribirte. El brochure PDF de Argentina incluye el valor en pesos, las fechas de la cohorte y las {cuotas}. La tabla de precios muestra la duración de todos los cursos en una sola vista para comparar antes de elegir.",
+        "Cada ficha declara duración, nivel y temario antes de inscribirte. El PDF de temario y precios de Argentina incluye el valor en pesos, las fechas de la cohorte y las {cuotas}. La tabla de precios muestra la duración de todos los cursos en una sola vista para comparar antes de elegir.",
         "Si dudas entre dos cursos, la pregunta útil es qué entregable necesitas: un tablero, una consulta, un script o una base. Esa respuesta ordena el recorrido mejor que la lista de herramientas. El equipo de admisiones también puede revisar tu caso antes de que pagues.",
       ],
       faqs: [
@@ -136,7 +136,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cuánto cuesta y cómo se paga?",
-          a: "El valor vigente está en el brochure PDF del curso, en pesos argentinos. Se paga con Mercado Pago Argentina, Mercado Pago Wallet o transferencia, y todos los cursos admiten {cuotas}.",
+          a: "El valor vigente está en el PDF de temario y precios del curso, en pesos argentinos. Se paga con Mercado Pago Argentina, Mercado Pago Wallet o transferencia, y todos los cursos admiten {cuotas}.",
         },
         {
           q: "¿Qué certificado recibo?",
@@ -177,7 +177,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se consulta el valor?",
-          a: "El valor vigente del nivel que elijas se descarga en el brochure PDF del curso, en pesos argentinos. El checkout confirma el monto y permite pagar en {cuotas}.",
+          a: "El valor vigente del nivel que elijas se descarga en el PDF de temario y precios del curso, en pesos argentinos. El checkout confirma el monto y permite pagar en {cuotas}.",
         },
       ],
     },
@@ -214,7 +214,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Cómo se paga el curso?",
-          a: "El valor vigente se consulta en el brochure PDF, en pesos argentinos. Se paga con Mercado Pago Argentina o transferencia, y el curso admite {cuotas}.",
+          a: "El valor vigente se consulta en el PDF de temario y precios, en pesos argentinos. Se paga con Mercado Pago Argentina o transferencia, y el curso admite {cuotas}.",
         },
       ],
     },
@@ -262,18 +262,18 @@ const datos: DatosBloqueLocal = {
       kicker: "Precios · Argentina",
       titulo: "Cómo se publica el precio en Argentina",
       intro:
-        "Moneda ARS, brochure por curso y checkout con Mercado Pago. El monto se confirma antes de pagar y las {cuotas} aplican a todos los cursos.",
+        "Moneda ARS, PDF de temario y precios de cada curso, y checkout con Mercado Pago. El monto se confirma antes de pagar y las {cuotas} aplican a todos los cursos.",
       parrafos: [
-        "Todos los cursos tienen un precio publicado en pesos argentinos. El valor vigente, los descuentos y las {cuotas} se descargan en el brochure PDF de cada curso; la tabla de esta página muestra duración y nivel, y el checkout confirma el monto antes de pagar. No hay un precio distinto por comprar desde otra ciudad: la moneda es la del mercado argentino.",
+        "Todos los cursos tienen un precio publicado en pesos argentinos. El valor vigente, los descuentos y las {cuotas} se descargan en el PDF de temario y precios de cada curso; la tabla de esta página muestra duración y nivel, y el checkout confirma el monto antes de pagar. No hay un precio distinto por comprar desde otra ciudad: la moneda es la del mercado argentino.",
         "El pago se procesa con Mercado Pago Argentina: tarjeta de crédito o débito, Mercado Pago Wallet o transferencia bancaria en pesos. Si la cuenta local no está habilitada, el checkout muestra el equivalente en pesos chilenos (CLP) antes de confirmar. Esa conversión es informativa: el cargo final depende del medio de pago y de tu banco.",
         "Pagar desde el exterior es posible. El checkout muestra los medios disponibles y, si usas una tarjeta emitida en otro país, el cargo final lo define tu banco, incluidos los impuestos o comisiones que aplique. ProgramBI no fija ese cargo. Si necesitas una factura corporativa, el equipo de admisiones coordina los datos antes del pago.",
         "El precio incluye clases en vivo por Zoom, grabaciones en el campus y certificado digital al completar. No incluye licencias de pago de Microsoft ni el examen PL-300, que se pagan aparte si decides rendirlos. Las licencias de Power BI Pro solo hacen falta para publicar y compartir informes dentro de una organización.",
-        "Antes de pagar puedes revisar la ficha del curso, el brochure y la fecha de la cohorte. Si el curso que buscas no tiene una cohorte abierta, admisiones confirma cuándo se publica la siguiente. No se anuncia una fecha ni cupos que no estén confirmados.",
+        "Antes de pagar puedes revisar la ficha del curso, el PDF de temario y precios, y la fecha de la cohorte. Si el curso que buscas no tiene una cohorte abierta, admisiones confirma cuándo se publica la siguiente. No se anuncia una fecha ni cupos que no estén confirmados.",
       ],
       faqs: [
         {
           q: "¿Cómo consulto el valor de un curso?",
-          a: "El valor vigente se descarga en el brochure PDF de cada curso, en pesos argentinos. Ahí también están los descuentos y las fechas de la cohorte; el checkout confirma el importe antes de pagar.",
+          a: "El valor vigente se descarga en el PDF de temario y precios de cada curso, en pesos argentinos. Ahí también están los descuentos y las fechas de la cohorte; el checkout confirma el importe antes de pagar.",
         },
         {
           q: "¿Los precios están en ARS?",
@@ -293,7 +293,7 @@ const datos: DatosBloqueLocal = {
         },
         {
           q: "¿Dónde veo las fechas y los cupos?",
-          a: "En la ficha del curso y en el brochure PDF. Cuando no hay una cohorte confirmada, la fecha se publica recién cuando está cerrada; no se anuncian cupos que todavía no existen.",
+          a: "En la ficha del curso y en el PDF de temario y precios. Cuando no hay una cohorte confirmada, la fecha se publica recién cuando está cerrada; no se anuncian cupos que todavía no existen.",
         },
       ],
     },

@@ -330,7 +330,7 @@ export default function CursosPageClient({
                         rel="noopener noreferrer"
                         className="inline-flex text-sm font-semibold text-ink no-underline hover:text-mute"
                       >
-                        Ver temario y brochure PDF →
+                        Ver temario y precios (PDF) →
                       </Link>
                       <Link
                         href={hrefLocal(`/cursos/${featured.slug}`)}
@@ -424,7 +424,7 @@ export default function CursosPageClient({
                         rel="noopener noreferrer"
                         className="mt-3 inline-flex text-sm font-semibold text-ink no-underline hover:text-mute"
                       >
-                        Ver temario y brochure PDF →
+                        Ver temario y precios (PDF) →
                       </Link>
                     )}
                   </div>

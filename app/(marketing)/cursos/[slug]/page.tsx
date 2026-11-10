@@ -10,6 +10,7 @@ import BloqueLocalContenido from "@/components/paises/BloqueLocalContenido";
 import FichaSeoExtra from "@/components/marketing/FichaSeoExtra";
 import PlantillaVentasPowerBi from "@/components/marketing/PlantillaVentasPowerBi";
 import GuiasDelCurso from "@/components/guias/GuiasDelCurso";
+import RecursosRelacionadosCurso from "@/components/marketing/RecursosRelacionadosCurso";
 import TestimoniosDeCurso from "@/components/marketing/TestimoniosDeCurso";
 import { ogImageUrl } from "@/lib/og/url";
 import { absoluteUrl, jsonLdString, tituloLocal } from "@/lib/seo";
@@ -232,6 +233,9 @@ export default async function CourseDetailPage({
           migrado aquí antes de convertir esa landing en 301. */}
       {course.slug === "power-bi" ? <PlantillaVentasPowerBi pais={pais} /> : null}
       <GuiasDelCurso curso={course.slug} pais={pais} />
+      {/* Enlaces internos que antes iban en el hero: landings, guías, caso y
+          catálogo, en tarjetas y renderizados en el servidor (valor SEO). */}
+      <RecursosRelacionadosCurso slug={course.slug} pais={pais} />
       {/* Citas reales de alumnos de este curso (LinkedIn). Se oculta sola si no
           hay testimonios o si el kill-switch NEXT_PUBLIC_TESTIMONIOS=0. */}
       <TestimoniosDeCurso cursoSlug={course.slug} />

@@ -179,5 +179,5 @@ export function getCourseGalleryForBrochure(slug: string): BrochureGalleryImage[
 
 /** Nombre del archivo PDF que ve el usuario al descargar. */
 export function brochurePdfFileName(data: { slug: string; pais: string }): string {
-  return `Brochure_ProgramBI_${data.slug}_${data.pais.toUpperCase()}.pdf`;
+  return `Temario-y-precios_ProgramBI_${data.slug}_${data.pais.toUpperCase()}.pdf`;
 }

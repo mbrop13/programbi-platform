@@ -199,7 +199,7 @@ export function buildQuoteEmailHtml(
                     <tr>
                       <td style="padding: 0 8px 6px 0;">
                         <a href="${c.brochureUrl}" target="_blank" style="display: inline-block; background-color: #FFFFFF; border: 1px solid #171716; color: #171716; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; font-weight: 700; text-decoration: none; padding: 10px 18px; border-radius: 9999px;">
-                          📄 Descargar Brochure PDF
+                          📄 Descargar temario y precios
                         </a>
                       </td>
                       <td style="padding: 0 0 6px;">
@@ -222,17 +222,17 @@ export function buildQuoteEmailHtml(
   const brochureUrl = selectedCourses[0]?.brochureUrl;
   const brochureBannerHtml = brochureUrl
     ? `
-      <!-- BANNER BROCHURE PDF -->
+      <!-- BANNER TEMARIO Y PRECIOS -->
       <tr>
         <td style="padding: 0 40px 26px;" class="mp">
           <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #171716; border-radius: 16px;">
             <tr>
               <td style="padding: 24px 26px; text-align: center;">
                 <div style="display: inline-block; background-color: #F59E0B; color: #78350F; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.1px; padding: 4px 12px; border-radius: 9999px; margin-bottom: 12px;">
-                  📄 Brochure PDF listo
+                  📄 Temario y precios listo
                 </div>
                 <p style="margin: 0 0 6px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 15.5px; font-weight: 800; color: #FFFFFF; line-height: 1.45;">
-                  Tu Brochure PDF con el temario completo, fechas y aranceles ya está listo
+                  Tu PDF con el temario completo, las fechas y los aranceles ya está listo
                 </p>
                 <p style="margin: 0 0 18px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 12px; color: #A1A1AA; line-height: 1.5;">
                   Descárgalo, guárdalo y compártelo con quien decida contigo.
@@ -241,7 +241,7 @@ export function buildQuoteEmailHtml(
                   <tr>
                     <td style="background-color: #FFFFFF; border-radius: 9999px;">
                       <a href="${brochureUrl}" target="_blank" style="display: inline-block; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 800; color: #171716; text-decoration: none; padding: 13px 26px;">
-                        📄 Ver y Descargar Brochure PDF →
+                        📄 Ver y descargar temario y precios →
                       </a>
                     </td>
                   </tr>

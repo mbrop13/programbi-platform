@@ -41,7 +41,7 @@ export const BLOQUES_POWER_BI: BloqueSeoFicha[] = [
       "Proyecto final: un tablero construido con datos de ejemplo o con tus propios extractos anonimizados, usando Power Query, modelo y DAX.",
       `Horario: dos veces por semana, de ${HORARIO}, hora de Chile; los días exactos dependen de la cohorte.`,
       "Grabaciones: cada clase queda en el campus y puedes verla cuando quieras; no expiran.",
-      "Pago: el arancel vigente de tu país y las 3 cuotas sin interés están en el brochure PDF del curso.",
+      "Pago: el arancel vigente de tu país y las 3 cuotas sin interés están en el PDF de temario y precios del curso.",
       "Certificado: certificado digital de ProgramBI al completar el curso.",
       "Mac: Power BI Desktop es solo para Windows; si usas Mac, sigues el curso con Power BI web desde el navegador.",
     ],

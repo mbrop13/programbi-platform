@@ -16,7 +16,7 @@ function primerValor(valor: string | string[] | undefined): string | undefined {
 }
 
 /**
- * Brochure del curso (versión Chile / raíz).
+ * Temario y precios del curso (versión Chile / raíz).
  * El país sale del query `?pais=` cuando es válido; si no, Chile.
  */
 export async function generateMetadata({
@@ -26,12 +26,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const course = getCourseBySlug(slug);
-  if (!course) return { title: "Brochure no encontrado | ProgramBI" };
+  if (!course) return { title: "Temario no encontrado | ProgramBI" };
 
-  const titulo = `Brochure ${course.title} — Precios y temario | ProgramBI`;
+  const titulo = `Temario y precios: ${course.title} | ProgramBI`;
   return {
     title: { absolute: titulo },
-    description: `${course.title}: precios en tu moneda, 3 cuotas sin interés, fechas, equipo docente y temario completo. Brochure oficial de ProgramBI.`,
+    description: `${course.title}: temario completo, precios en tu moneda, 3 cuotas sin interés, fechas y equipo docente.`,
     robots: { index: false, follow: true },
     openGraph: { title: titulo, type: "article" },
   };

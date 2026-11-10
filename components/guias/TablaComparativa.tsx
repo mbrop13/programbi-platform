@@ -118,7 +118,7 @@ export default function TablaComparativa({
           rel="noopener noreferrer"
           className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline hover:text-mute"
         >
-          <FileText size={14} aria-hidden /> Ver precios y temario en el brochure PDF →
+          <FileText size={14} aria-hidden /> Ver temario y precios (PDF) →
         </Link>
       ) : null}
     </section>

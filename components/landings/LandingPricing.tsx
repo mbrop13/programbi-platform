@@ -57,7 +57,7 @@ export function LandingPricing({ landing }: { landing: NicheLanding }) {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 text-sm font-semibold text-ink no-underline hover:text-mute"
                   >
-                    <FileText size={14} aria-hidden /> Ver precios y temario en el brochure PDF →
+                    <FileText size={14} aria-hidden /> Ver temario y precios (PDF) →
                   </Link>
                   <Link
                     href={`/cursos/${row.slug}`}
@@ -94,7 +94,7 @@ export function LandingPricing({ landing }: { landing: NicheLanding }) {
       <p className="mt-4 text-xs leading-relaxed text-faint">
         {pricing.mode === "catalog" ? (
           <>
-            El arancel vigente de cada curso, con sus descuentos y cuotas, está en el brochure PDF.
+            El arancel vigente de cada curso, con sus descuentos y cuotas, está en el PDF de temario y precios.
             Revisa el detalle en{" "}
             <Link href="/precios" className="font-semibold text-mute underline-offset-2 hover:underline">
               /precios

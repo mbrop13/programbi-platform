@@ -49,7 +49,7 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
     precios: {
       title: "Precios de cursos en Argentina | ProgramBI",
       description:
-        "Precios de los cursos en vivo para Argentina: valores en ARS, brochure por curso, medios de pago y {cuotas}. Sin letra chica.",
+        "Precios de los cursos en vivo para Argentina: valores en ARS, temario y precios de cada curso, medios de pago y {cuotas}. Sin letra chica.",
     },
   },
   co: {
@@ -86,7 +86,7 @@ const SEO: Record<string, Partial<Record<RutaBloqueLocal, SeoLocal>>> = {
     precios: {
       title: "Precios de cursos en Colombia | ProgramBI",
       description:
-        "Precios de los cursos en vivo para Colombia: valores en COP, brochure por curso, medios de pago como PSE o Nequi y {cuotas}.",
+        "Precios de los cursos en vivo para Colombia: valores en COP, temario y precios de cada curso, medios de pago como PSE o Nequi y {cuotas}.",
     },
   },
 };

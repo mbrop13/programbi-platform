@@ -242,7 +242,7 @@ export default function BloqueLocalContenido({
               <div>
                 <dt className="text-xs font-semibold text-ink">Moneda</dt>
                 <dd className="mt-1">
-                  {pais.moneda}. El valor vigente se consulta en el brochure PDF de cada curso.
+                  {pais.moneda}. El valor vigente se consulta en el PDF de temario y precios de cada curso.
                 </dd>
               </div>
               <div>
