@@ -1,5 +1,6 @@
 import { esIsoPais, getPais, ISO_CHILE, normalizarPais, PAISES_CARPETA, PAISES_INDEXABLES } from "@/config/paises";
 import { absoluteUrl } from "@/lib/seo";
+import { esRutaNoindexPais } from "@/lib/paises/indexabilidad";
 
 /** Rutas con versión por país. El resto (blog, empleos, comunidad, pago) no lleva carpeta. */
 const RAICES = [
@@ -86,8 +87,11 @@ export function cambiarPais(pathname: string, iso: string): string {
 }
 
 /**
- * Hreflang recíproco entre las versiones indexables.
- * Solo entran Chile (raíz), Argentina, México, Perú, Colombia y Uruguay.
+ * Hreflang recíproco entre las versiones indexables de una ruta.
+ *
+ * Entran Chile (raíz) y todos los países con `indexable: true`, salvo las
+ * variantes que `RUTAS_NOINDEX_PAIS` consolida como `noindex, follow` para
+ * esa ruta concreta (WS9). Así ninguna alternate apunta a una URL noindex.
  * El x-default apunta a la versión chilena.
  */
 export function hreflangDe(path: string): Record<string, string> {
@@ -95,6 +99,7 @@ export function hreflangDe(path: string): Record<string, string> {
     "x-default": absoluteUrl(rutaLocal(ISO_CHILE, path)),
   };
   for (const pais of PAISES_INDEXABLES) {
+    if (esRutaNoindexPais(pais.iso, path)) continue;
     languages[pais.idioma] = absoluteUrl(rutaLocal(pais.iso, path));
   }
   return languages;
