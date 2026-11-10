@@ -25,6 +25,9 @@ function arg(nombre, porDefecto = "") {
   const prefijo = `--${nombre}=`;
   const encontrado = args.find((a) => a.startsWith(prefijo));
   if (encontrado) return encontrado.slice(prefijo.length).trim();
+  // Solo la base admite argumento posicional; el resto de opciones se pasan
+  // siempre con `--nombre=...` para no confundirlas con la URL.
+  if (nombre !== "base") return porDefecto;
   const posicional = args.find((a) => !a.startsWith("--"));
   return posicional || porDefecto;
 }
