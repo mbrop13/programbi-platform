@@ -55,18 +55,46 @@ const nextConfig: NextConfig = {
     ],
   },
   async redirects() {
-    // `/clase-gratis` responde 404 con el flag apagado, así que el destino de
-    // /pages/webinar depende de NEXT_PUBLIC_CLASE_GRATIS. En vercel.json esa
-    // regla apunta a /cursos (el JSON no evalúa variables de entorno) y es la
-    // que manda en producción; al encender el flag hay que cambiarla a mano.
-    // Ver docs/fase5/WS4.md.
-    const claseGratis =
-      (process.env.NEXT_PUBLIC_CLASE_GRATIS || "").trim().toLowerCase() === "1";
-
+    // ── FUENTE ÚNICA DE REDIRECCIONES ─────────────────────────────────────
+    // La fuente de verdad es `vercel.json`: es la tabla que rige en
+    // Production (Vercel la aplica en el edge antes de Next).
+    //
+    // Esta función replica EXACTAMENTE esa tabla —mismo orden, mismos
+    // orígenes y mismos destinos— porque `next start` local NO lee
+    // `vercel.json` y el verificador `scripts/smoke-redirects.mjs` corre
+    // contra local. Si cambia una regla, se cambia en los dos archivos a la
+    // vez; si alguna vez difieren, en Vercel manda `vercel.json`.
+    //
+    // Reglas duras de esta tabla:
+    //  1. Cero cadenas: ningún destino vuelve a redirigir (todos dan 200,
+    //     salvo las rutas con sesión: /ai y /comunidad/ajustes).
+    //  2. Las reglas de `/products/*` específicas van ANTES del comodín
+    //     `/products/:path*`; si no, el comodín se las come.
+    //  3. Las reglas de apex → www van PRIMERO para que un request al apex
+    //     no encadene "legacy 301 + apex 301".
+    //  4. Nada de destinos que dependan de variables de entorno: `/pages/webinar`
+    //     va siempre a `/cursos`, igual que en Production (el JSON de Vercel no
+    //     evalúa env y una tabla env-dependiente rompe la paridad local/Vercel).
+    //  5. Destinos con `#ancla` (p. ej. `/empresas#contacto`): la sección
+    //     `id="contacto"` existe en /empresas (components/empresas/empresas-landing.tsx).
     return [
-      // URLs antiguas de Shopify/WordPress que Search Console reporta como 404.
-      // Las específicas van antes que los comodines. Todas son 301 explícitos
-      // (`statusCode: 301`), igual que en vercel.json.
+      // ── Apex → www (canónico). Primero de todo. ─────────────────────────
+      {
+        source: "/",
+        has: [{ type: "host", value: "programbi.com" }],
+        destination: "https://www.programbi.com/",
+        statusCode: 301,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "programbi.com" }],
+        destination: "https://www.programbi.com/:path*",
+        statusCode: 301,
+      },
+
+      // ── Legacy WordPress (`/pages/*`) ───────────────────────────────────
+      // `/pages/` (con barra final) lo normaliza la plataforma con un 308 a
+      // `/pages` antes de evaluar esta tabla; por eso no hay regla propia.
       {
         source: "/pages/cursos-1",
         destination: "/cursos",
@@ -78,18 +106,38 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
+        source: "/pages/contacto",
+        destination: "/empresas#contacto",
+        statusCode: 301,
+      },
+      {
+        source: "/pages/contact",
+        destination: "/empresas#contacto",
+        statusCode: 301,
+      },
+      {
+        source: "/pages/empresas",
+        destination: "/empresas",
+        statusCode: 301,
+      },
+      {
         source: "/pages/bootcamp",
         destination: "/cursos/analisis-de-datos",
         statusCode: 301,
       },
       {
-        source: "/pages/contact",
-        destination: "/empresas",
+        source: "/pages/bootcamps",
+        destination: "/cursos/analisis-de-datos",
+        statusCode: 301,
+      },
+      {
+        source: "/pages/bootcamps/:rest*",
+        destination: "/cursos/analisis-de-datos",
         statusCode: 301,
       },
       {
         source: "/pages/webinar",
-        destination: claseGratis ? "/clase-gratis" : "/cursos",
+        destination: "/cursos",
         statusCode: 301,
       },
       {
@@ -97,94 +145,11 @@ const nextConfig: NextConfig = {
         destination: "/cursos",
         statusCode: 301,
       },
+
+      // ── Contacto, cuenta y comercio legacy ──────────────────────────────
       {
-        source: "/campus",
-        destination: "/login",
-        statusCode: 301,
-      },
-      {
-        source: "/cart",
-        destination: "/cursos",
-        statusCode: 301,
-      },
-      {
-        source: "/recommendations/products",
-        destination: "/cursos",
-        statusCode: 301,
-      },
-      {
-        source: "/recommendations/products/:path*",
-        destination: "/cursos",
-        statusCode: 301,
-      },
-      {
-        source: "/apps/:path*",
-        destination: "/cursos",
-        statusCode: 301,
-      },
-      {
-        source: "/products/excel",
-        destination: "/cursos/excel",
-        statusCode: 301,
-      },
-      {
-        source: "/products/curso-analisis-de-datos-para-la-mineria",
-        destination: "/cursos/analitica-mineria",
-        statusCode: 301,
-      },
-      {
-        source: "/products/curso-de-analisis-de-datos-para-el-sector-financiero",
-        destination: "/cursos/mercado-financiero",
-        statusCode: 301,
-      },
-      {
-        source: "/products/sql-server-program-bi",
-        destination: "/cursos/sql-server",
-        statusCode: 301,
-      },
-      // Slugs de Shopify para Machine Learning: van explícitos porque el
-      // comodín de Next no soporta el filtro por regex que sí tiene Vercel.
-      {
-        source: "/products/machine-learning-program-bi",
-        destination: "/cursos/machine-learning",
-        statusCode: 301,
-      },
-      {
-        source: "/products/machine-learning",
-        destination: "/cursos/machine-learning",
-        statusCode: 301,
-      },
-      // Fallback de la familia /products (handles viejos de Shopify). Va después
-      // de las reglas específicas para no comérselas; en vercel.json el
-      // equivalente `/products/:path*` también está al final del bloque.
-      {
-        source: "/products/:path*",
-        destination: "/cursos",
-        statusCode: 301,
-      },
-      {
-        source: "/cursos/copilot-studio",
-        destination: "/cursos/copilot",
-        statusCode: 301,
-      },
-      {
-        source: "/cursos/analitica-financiera",
-        destination: "/cursos/mercado-financiero",
-        statusCode: 301,
-      },
-      {
-        source: "/cursos/analitica-financiera/:path*",
-        destination: "/cursos/mercado-financiero",
-        statusCode: 301,
-      },
-      {
-        source: "/:pais/cursos/analitica-financiera",
-        destination: "/:pais/cursos/mercado-financiero",
-        statusCode: 301,
-      },
-      {
-        source: "/:pais/cursos/analitica-financiera/:path*",
-        destination: "/:pais/cursos/mercado-financiero",
+        source: "/contacto",
+        destination: "/empresas#contacto",
         statusCode: 301,
       },
       {
@@ -202,18 +167,208 @@ const nextConfig: NextConfig = {
         destination: "/empresas",
         statusCode: 301,
       },
-      // Near-brand: /programa-bi aparece en Search Console y hoy da 404.
-      // No existe ninguna ruta bajo esa carpeta, así que el comodín es seguro.
+      {
+        source: "/campus",
+        destination: "/login",
+        statusCode: 301,
+      },
+      {
+        source: "/auth/login",
+        destination: "/login",
+        statusCode: 301,
+      },
+      {
+        source: "/account",
+        destination: "/login",
+        statusCode: 301,
+      },
+      {
+        source: "/account/:rest*",
+        destination: "/login",
+        statusCode: 301,
+      },
+      {
+        source: "/checkout",
+        destination: "/cursos",
+        statusCode: 301,
+      },
+      {
+        source: "/search",
+        destination: "/cursos",
+        statusCode: 301,
+      },
+      {
+        source: "/cart",
+        destination: "/cursos",
+        statusCode: 301,
+      },
+      {
+        source: "/recommendations/products",
+        destination: "/cursos",
+        statusCode: 301,
+      },
+      {
+        source: "/recommendations/products/:rest*",
+        destination: "/cursos",
+        statusCode: 301,
+      },
+      {
+        source: "/apps/:rest*",
+        destination: "/cursos",
+        statusCode: 301,
+      },
+      {
+        source: "/collections/:rest*",
+        destination: "/cursos",
+        statusCode: 301,
+      },
       {
         source: "/programa-bi",
         destination: "/cursos",
         statusCode: 301,
       },
       {
-        source: "/programa-bi/:path*",
+        source: "/programa-bi/:rest*",
         destination: "/cursos",
         statusCode: 301,
       },
+
+      // ── Blog legacy (WordPress) ─────────────────────────────────────────
+      {
+        source: "/blogs/news",
+        destination: "/blog",
+        statusCode: 301,
+      },
+      {
+        source: "/blogs/:rest*",
+        destination: "/blog",
+        statusCode: 301,
+      },
+
+      // ── Shopify `/products/*`: específicas primero, comodín al final ────
+      // Los slugs con "minería" y "financiero" van antes que los comodines
+      // genéricos que también los capturarían.
+      {
+        source: "/products/curso-analisis-de-datos-para-la-mineria",
+        destination: "/cursos/analitica-mineria",
+        statusCode: 301,
+      },
+      {
+        source: "/products/curso-de-analisis-de-datos-para-el-sector-financiero",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      {
+        source: "/products/curso-power-bi",
+        destination: "/cursos/power-bi",
+        statusCode: 301,
+      },
+      {
+        source: "/products/curso-de-power-bi",
+        destination: "/cursos/power-bi",
+        statusCode: 301,
+      },
+      {
+        source: "/products/curso-power-bi-online",
+        destination: "/cursos/power-bi",
+        statusCode: 301,
+      },
+      {
+        source: "/products/:handle(power-bi.*)",
+        destination: "/cursos/power-bi",
+        statusCode: 301,
+      },
+      {
+        source: "/products/:handle(curso-analisis-de-datos.*)",
+        destination: "/cursos/analisis-de-datos",
+        statusCode: 301,
+      },
+      {
+        source: "/products/:handle(curso-sql.*)",
+        destination: "/cursos/sql-server",
+        statusCode: 301,
+      },
+      {
+        source: "/products/:handle(sql-server.*)",
+        destination: "/cursos/sql-server",
+        statusCode: 301,
+      },
+      {
+        source: "/products/:handle(.*python.*)",
+        destination: "/cursos/python",
+        statusCode: 301,
+      },
+      {
+        source: "/products/:handle(.*excel.*)",
+        destination: "/cursos/excel",
+        statusCode: 301,
+      },
+      {
+        source: "/products/:handle(.*power-automate.*)",
+        destination: "/cursos/power-automate",
+        statusCode: 301,
+      },
+      {
+        source: "/products/:handle(.*machine.*)",
+        destination: "/cursos/machine-learning",
+        statusCode: 301,
+      },
+      {
+        source: "/products/:handle(.*mineria.*)",
+        destination: "/cursos/analitica-mineria",
+        statusCode: 301,
+      },
+      {
+        source: "/products/:handle(.*mercado-financiero.*)",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      {
+        source: "/products/:handle(.*financiero.*)",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      // No hay ficha de Big Data en el catálogo actual: al índice de cursos.
+      {
+        source: "/products/big-data-program-bi",
+        destination: "/cursos",
+        statusCode: 301,
+      },
+      // Comodín final de la familia /products. Siempre al final.
+      {
+        source: "/products/:path*",
+        destination: "/cursos",
+        statusCode: 301,
+      },
+
+      // ── Slugs de curso renombrados ──────────────────────────────────────
+      {
+        source: "/cursos/copilot-studio",
+        destination: "/cursos/copilot",
+        statusCode: 301,
+      },
+      {
+        source: "/cursos/analitica-financiera",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      {
+        source: "/cursos/analitica-financiera/:rest*",
+        destination: "/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      {
+        source: "/:pais/cursos/analitica-financiera",
+        destination: "/:pais/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+      {
+        source: "/:pais/cursos/analitica-financiera/:rest*",
+        destination: "/:pais/cursos/mercado-financiero",
+        statusCode: 301,
+      },
+
+      // ── Comunidad: rutas movidas (destinos con sesión, no SEO) ──────────
       {
         source: "/comunidad/configuracion",
         destination: "/comunidad/ajustes",
@@ -225,8 +380,8 @@ const nextConfig: NextConfig = {
         statusCode: 301,
       },
       {
-        source: "/comunidad/ai/:path*",
-        destination: "/ai/:path*",
+        source: "/comunidad/ai/:rest*",
+        destination: "/ai/:rest*",
         statusCode: 301,
       },
     ];
