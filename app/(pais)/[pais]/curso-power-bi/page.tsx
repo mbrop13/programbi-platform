@@ -1,23 +1,23 @@
-import type { Metadata } from "next";
-import { esIsoPais, ISO_CHILE } from "@/config/paises";
-import { metadataLocal } from "@/lib/paises/metadata";
-import { GUIDE_SEO } from "@/lib/seo/money";
+import { notFound, permanentRedirect } from "next/navigation";
+import { esIsoPais } from "@/config/paises";
 
-const copy = GUIDE_SEO["curso-power-bi"];
+/**
+ * Versión por país de la landing Power BI: misma decisión que la raíz, pero
+ * conservando el mercado en el destino (/co/curso-power-bi → /co/cursos/power-bi).
+ *
+ * El layout de (pais) ya limita `dynamicParams` a las carpetas publicadas.
+ * La regla 301 por país (12 mercados indexables) se entrega a WS2 para
+ * vercel.json/next.config.ts; este redirect cubre el resto de los países y los
+ * entornos sin configuración.
+ */
+export const dynamic = "force-dynamic";
 
-export { default } from "../../../(marketing)/curso-power-bi/page";
-
-export async function generateMetadata({
+export default async function Page({
   params,
 }: {
   params: Promise<{ pais: string }>;
-}): Promise<Metadata> {
+}) {
   const { pais } = await params;
-  if (!esIsoPais(pais) || pais === ISO_CHILE) return {};
-  return metadataLocal({
-    pais,
-    path: copy.path,
-    title: copy.title,
-    description: copy.description,
-  });
+  if (!esIsoPais(pais)) notFound();
+  permanentRedirect(`/${pais}/cursos/power-bi`);
 }

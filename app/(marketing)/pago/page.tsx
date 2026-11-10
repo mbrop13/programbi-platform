@@ -11,6 +11,10 @@ export const metadata: Metadata = {
   title: { absolute: tituloSeo("Inscripción") },
   description: "Selecciona tus cursos, revisa fechas disponibles y completa tu inscripción en ProgramBI.",
   alternates: { canonical: "/pago" },
+  // Checkout con sesión: fuera del índice y sin seguir enlaces. Se declara una
+  // sola meta (sin googleBot) para no duplicar etiquetas; robots.txt mantiene
+  // `Disallow: /pago`.
+  robots: { index: false, follow: false },
 };
 
 function uno(value: string | string[] | undefined) {

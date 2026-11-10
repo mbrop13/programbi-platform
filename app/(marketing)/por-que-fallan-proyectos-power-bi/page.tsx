@@ -122,7 +122,7 @@ export default async function Page({
         faqs={faqs}
         related={[
           { href: href("/empresas"), label: "Soluciones para empresas" },
-          { href: href("/curso-power-bi"), label: "Curso Power BI con plantilla de ventas gratis" },
+          { href: href("/cursos/power-bi#plantilla-power-bi"), label: "Plantilla de ventas gratis para Power BI" },
           { href: href("/curso-power-bi-vs-pack-adopcion"), label: "Curso Power BI vs Pack Adopción" },
           { href: href("/migrar-excel-a-power-bi"), label: "Migrar Excel a Power BI en control de gestión" },
           { href: href("/cursos/power-bi"), label: "Curso Power BI en vivo (particulares)" },
