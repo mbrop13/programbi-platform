@@ -169,7 +169,7 @@ export const bloqueLocal: DefinicionBloqueLocal = {
     "Cada cohorte combina la sesión en vivo con trabajo entre clases: los ejercicios se resuelven sobre archivos de práctica y el proyecto final se presenta al grupo. Las grabaciones quedan en el campus para quienes trabajan en turnos o viajan, y la ficha del curso indica duración, nivel y requisitos antes de inscribirse.",
   ],
   empresas:
-    "Para equipos en México, la capacitación in-company se arma con los datos de la empresa (ERP, punto de venta, nómina o cadena de suministro) y la propuesta indica moneda, alcance y condiciones de facturación. Los cursos abiertos se cotizan por separado.",
+    "Para equipos en México, la capacitación in-company se arma con los datos de la empresa (ERP, punto de venta, nómina o cadena de suministro). Los ejercicios usan esos archivos y los casos de manufactura, retail, logística o finanzas que el equipo reconoce en su día a día. La propuesta indica moneda, alcance y condiciones de facturación; el programa se cotiza aparte de los cursos abiertos.",
   notas: {
     precio:
       "El catálogo mexicano se publica en pesos (MXN) y no se convierte a dólares. El monto vigente y los descuentos están en el brochure del curso; el checkout muestra el total antes de pagar.",
