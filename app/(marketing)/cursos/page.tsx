@@ -19,17 +19,15 @@ import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 export const revalidate = 3600;
 
 /**
- * Rutas no-país que GSC marcó como «descubierta, sin indexar». Se enlazan desde
- * el catálogo chileno para darles una ruta de rastreo real; las fichas de curso
- * salen de `courses`, no se inventa contenido.
+ * Rutas no-país que GSC marcó como «descubierta, sin indexar» y que no
+ * aparecen en el bloque `RecursosDatos` de arriba. Se enlazan desde el
+ * catálogo chileno para darles una ruta de rastreo real; las fichas salen de
+ * `courses` y las páginas de empleo ya existen, no se inventa contenido.
  */
 const DESCUBIERTAS = [
-  { href: "/cursos/machine-learning", label: "Machine Learning" },
-  { href: "/cursos/mercado-financiero", label: "Mercado financiero" },
-  { href: "/glosario", label: "Glosario de datos" },
+  { href: "/cursos/mercado-financiero", label: "Curso de mercado financiero" },
   { href: "/empleos/para-empresas", label: "Publicar vacantes" },
   { href: "/empleos/talento", label: "Talento certificado" },
-  { href: "/empleos/vacantes", label: "Vacantes abiertas" },
 ] as const;
 
 export const metadata: Metadata = {
@@ -171,11 +169,11 @@ export default async function CursosPage({
         >
           <div className="mx-auto max-w-[1400px]">
             <h2 id="especializaciones-y-recursos" className="text-xl font-semibold text-ink">
-              Especializaciones y recursos para seguir avanzando
+              Especialización financiera y bolsa de trabajo
             </h2>
             <p className="mt-2 max-w-[52rem] text-sm leading-relaxed text-mute">
-              Fichas de especialización y páginas de apoyo para complementar tu formación y
-              conectar con el mercado laboral.
+              La ficha del curso de mercado financiero y las páginas para publicar vacantes o
+              contratar talento con certificados verificados.
             </p>
             <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium text-ink">
               {DESCUBIERTAS.map((item) => (

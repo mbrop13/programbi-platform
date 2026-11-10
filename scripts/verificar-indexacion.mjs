@@ -3,15 +3,22 @@
  * WS11 · Verificador de indexación de ProgramBI.
  *
  * Uso:
- *   node scripts/verificar-indexacion.mjs [baseUrl]
+ *   node scripts/verificar-indexacion.mjs [baseUrl] [--solo-fallos] [--estricto-robots]
+ *   node scripts/verificar-indexacion.mjs --self-check
  *
  * `baseUrl` por defecto es http://localhost:3107 (next start local). También
  * acepta https://www.programbi.com para sacar una foto del sitio publicado.
+ * `--solo-fallos` oculta las filas OK de la tabla del sitemap.
+ * `--estricto-robots` exige exactamente 1 meta robots en cada URL del sitemap;
+ * por defecto 0 metas se acepta como `index, follow` (default de Next).
+ * `--self-check` valida los parsers contra HTML sintético, sin red ni servidor.
  *
  * Qué valida:
- *   1. Todas las URLs del sitemap: 200 sin redirect, una sola meta robots sin
- *      noindex, canonical propio, hreflang recíproco con x-default, JSON-LD
- *      parseable, Person en profesores, Course en fichas y cero LocalBusiness.
+ *   1. Todas las URLs del sitemap: 200 sin redirect, sin noindex ni metas
+ *      robots duplicadas (0 metas = index por defecto; `--estricto-robots`
+ *      exige exactamente 1), canonical propio, hreflang recíproco con
+ *      x-default, JSON-LD parseable, Person en profesores, Course en fichas
+ *      y cero LocalBusiness.
  *   2. Lista fija del encargo (§1): profesores, 404 legacy, redirects de
  *      Shopify/WordPress, Power BI dual, /pago, test-nivel por país, blog,
  *      newsletter y precios de Paraguay.
@@ -25,6 +32,8 @@
 
 const RAW_BASE = process.argv.slice(2).find((arg) => !arg.startsWith("--")) || "http://localhost:3107";
 const SOLO_FALLOS = process.argv.includes("--solo-fallos");
+const SELF_CHECK = process.argv.includes("--self-check");
+const ROBOTS_ESTRICTO = process.argv.includes("--estricto-robots");
 const BASE = normalizarBase(RAW_BASE);
 const BASE_URL = new URL(BASE);
 const SITE_HOSTS = new Set(["www.programbi.com", "programbi.com"]);
@@ -89,6 +98,7 @@ function esHostDelSitio(host) {
 /** Reescribe URLs de producción al host base cuando se verifica en local. */
 function urlDeFetch(valor) {
   const url = new URL(valor, `${BASE}/`);
+  url.hash = "";
   if (url.host !== BASE_URL.host && esHostDelSitio(url.host)) {
     return new URL(`${url.pathname}${url.search}`, `${BASE}/`).href;
   }
@@ -407,9 +417,14 @@ async function revisarPaginaSitemap(url) {
   }
 
   const robots = metasRobots(respuesta.body);
-  fila.robots = String(robots.length);
-  if (robots.length !== 1) {
-    fila.errores.push(`meta robots: ${robots.length} (se esperaba exactamente 1)`);
+  // 0 metas equivale a `index, follow` (default de Next): se acepta salvo
+  // `--estricto-robots`. Lo que nunca se acepta es un noindex ni dos metas
+  // que se contradigan (el bug de `/clase-gratis` antes de WS4).
+  fila.robots = robots.length === 0 ? "0 (def)" : String(robots.length);
+  if (robots.length > 1) {
+    fila.errores.push(`meta robots: ${robots.length} (máximo 1)`);
+  } else if (robots.length === 0 && ROBOTS_ESTRICTO) {
+    fila.errores.push("meta robots: 0 (se esperaba exactamente 1)");
   }
   if (robots.some((meta) => tokensRobots(meta.content).includes("noindex"))) {
     fila.errores.push(`robots contiene noindex (${robots.map((m) => m.content).join(" | ")})`);
@@ -581,6 +596,9 @@ async function estadoBasico(path, opciones = {}) {
   if (opciones.robotsCount != null && robots.length !== opciones.robotsCount) {
     issues.push(`meta robots ${robots.length} (esperado ${opciones.robotsCount})`);
   }
+  if (opciones.robotsMax != null && robots.length > opciones.robotsMax) {
+    issues.push(`meta robots ${robots.length} (máximo ${opciones.robotsMax})`);
+  }
 
   const tokens = robots.flatMap((meta) => tokensRobots(meta.content));
   if (opciones.index === true && tokens.includes("noindex")) {
@@ -613,13 +631,21 @@ async function estadoBasico(path, opciones = {}) {
     }
   }
 
-  if (opciones.person === true || opciones.profilePage === true) {
+  if (opciones.person === true || opciones.profilePage === true || opciones.coleccion === true) {
     const { tipos, errores } = tiposJsonLd(respuesta.body);
     for (const error of errores) issues.push(error);
     if (opciones.person === true && !tipos.has("Person")) issues.push("falta Person");
     if (opciones.profilePage === true && !tipos.has("ProfilePage")) issues.push("falta ProfilePage");
+    if (
+      opciones.coleccion === true &&
+      !["CollectionPage", "ItemList", "ProfilePage"].some((tipo) => tipos.has(tipo))
+    ) {
+      issues.push("falta CollectionPage/ItemList en el listado");
+    }
     actual.push(
-      ["Person", "ProfilePage"].filter((tipo) => tipos.has(tipo)).join("+") || "sin schema"
+      ["Person", "ProfilePage", "CollectionPage", "ItemList"]
+        .filter((tipo) => tipos.has(tipo))
+        .join("+") || "sin schema"
     );
   }
 
@@ -680,11 +706,12 @@ async function bloqueFijo() {
     await revisar(path, "200 · index · canonical · Person", () =>
       estadoBasico(path, {
         status: 200,
-        robotsCount: 1,
+        robotsMax: 1,
         index: true,
         canonical: true,
         person: true,
         profilePage: path !== "/profesores",
+        coleccion: path === "/profesores",
       })
     );
   }
@@ -697,9 +724,25 @@ async function bloqueFijo() {
     await revisar(path, "301/308 → 200 en 1 salto", () => estadoRedirect(path));
   }
 
+  // Resto de la lista 404 de §1: WS2 los redirige a una página viva.
+  for (const path of [
+    "/pages/cursos",
+    "/pages/cursos-1",
+    "/pages/contact",
+    "/pages/bootcamps",
+    "/consultorias",
+    "/campus",
+    "/apps/ecomposer-visual-page-builder",
+  ]) {
+    await revisar(path, "301/308 → 200 en 1 salto", () => estadoRedirect(path));
+  }
+
   for (const path of [
     "/products/curso-power-bi",
+    "/products/curso-de-power-bi",
+    "/products/curso-power-bi-online",
     "/products/curso-analisis-de-datos",
+    "/products/curso-sql",
     "/products/machine-learning-program-bi",
     "/products/big-data-program-bi",
   ]) {
@@ -716,7 +759,7 @@ async function bloqueFijo() {
   await revisar("/cursos/power-bi", "200 · index · canonical propio", () =>
     estadoBasico("/cursos/power-bi", {
       status: 200,
-      robotsCount: 1,
+      robotsMax: 1,
       index: true,
       canonical: true,
     })
@@ -743,7 +786,7 @@ async function bloqueFijo() {
     })
   );
   await revisar("/test-nivel/sql", "200 · index", () =>
-    estadoBasico("/test-nivel/sql", { status: 200, robotsCount: 1, index: true })
+    estadoBasico("/test-nivel/sql", { status: 200, robotsMax: 1, index: true })
   );
 
   for (const path of ["/blog", "/newsletter"]) {
@@ -762,7 +805,7 @@ async function bloqueFijo() {
     await revisar(path, "200 · index · canonical propio", () =>
       estadoBasico(path, {
         status: 200,
-        robotsCount: 1,
+        robotsMax: 1,
         index: true,
         canonical: true,
       })
@@ -829,6 +872,14 @@ function shingles5(texto) {
   return conjunto;
 }
 
+function jaccardConjuntos(a, b) {
+  if (a.size === 0 || b.size === 0) return null;
+  let interseccion = 0;
+  for (const shingle of a) if (b.has(shingle)) interseccion++;
+  const union = a.size + b.size - interseccion;
+  return union === 0 ? 0 : (interseccion / union) * 100;
+}
+
 async function jaccard(pathPais, pathChile) {
   const [pais, chile] = await Promise.all([obtener(pathPais), obtener(pathChile)]);
   if (!pais.ok) return { error: `${pathPais}: ${pais.error}` };
@@ -838,12 +889,9 @@ async function jaccard(pathPais, pathChile) {
 
   const a = shingles5(textoVisible(pais.body));
   const b = shingles5(textoVisible(chile.body));
-  if (a.size === 0 || b.size === 0) return { error: "texto insuficiente para shingles" };
-
-  let interseccion = 0;
-  for (const shingle of a) if (b.has(shingle)) interseccion++;
-  const union = a.size + b.size - interseccion;
-  return { porcentaje: union === 0 ? 0 : (interseccion / union) * 100 };
+  const porcentaje = jaccardConjuntos(a, b);
+  if (porcentaje == null) return { error: "texto insuficiente para shingles" };
+  return { porcentaje };
 }
 
 async function bloqueSimilitud() {
@@ -917,40 +965,204 @@ async function bloqueEnlazado() {
     porPagina.set(pagina, contarEnlaces(respuesta.body, pagina));
   }
 
-  const filas = RUTAS_DESCUBIERTAS.map((ruta) => {
+  const filas = [];
+  for (const ruta of RUTAS_DESCUBIERTAS) {
     const enHome = porPagina.get("/")?.get(ruta) ?? 0;
     const enCursos = porPagina.get("/cursos")?.get(ruta) ?? 0;
     const total = enHome + enCursos;
-    return {
+    const issues = [];
+    if (total < 2) issues.push(`${total} enlace(s); mínimo 2 entre / y /cursos`);
+
+    // Enlazar una página rota o noindex sería peor que no enlazarla.
+    const destino = await estadoBasico(ruta, {
+      status: 200,
+      robotsMax: 1,
+      index: true,
+      canonical: true,
+    });
+    issues.push(...destino.issues);
+
+    filas.push({
       ruta,
+      status: destino.actual.split(" · ")[0]?.replace("status ", "") ?? "—",
+      robots: destino.actual.match(/robots (\d+)/)?.[1] ?? "—",
+      canonical: destino.actual.match(/canonical (\S+)/)?.[1] ?? "—",
       enHome,
       enCursos,
       total,
-      issues: total >= 2 ? [] : [`${total} enlace(s); mínimo 2 entre / y /cursos`],
-    };
-  });
+      issues,
+    });
+  }
 
   imprimirTabla(
-    ["RUTA", "/", "/CURSOS", "TOTAL", "MÍNIMO", "RESULTADO"],
+    ["RUTA", "STATUS", "ROBOTS", "CANONICAL", "/", "/CURSOS", "TOTAL", "RESULTADO"],
     filas.map((fila) => [
       fila.ruta,
+      fila.status,
+      fila.robots,
+      fila.canonical,
       String(fila.enHome),
       String(fila.enCursos),
       String(fila.total),
-      "2",
       fila.issues.length ? "FALLA" : "OK",
     ]),
-    [36, 5, 9, 7, 7, 9]
+    [36, 7, 6, 10, 5, 8, 6, 9]
   );
 
   for (const error of errores) console.log(`  ✗ ${error}`);
   for (const fila of filas) {
     if (!fila.issues.length) continue;
-    console.log(`  ✗ ${fila.ruta}: ${fila.issues.join("; ")}`);
+    console.log(`  ✗ ${fila.ruta}`);
+    for (const issue of fila.issues) console.log(`      - ${issue}`);
   }
 
   const fallos = filas.filter((fila) => fila.issues.length).length + errores.length;
   return { ok: Math.max(0, filas.length - fallos), fallos, total: filas.length };
+}
+
+// ---------------------------------------------------------------------------
+// Self-check offline (sin red)
+// ---------------------------------------------------------------------------
+
+/**
+ * Valida los parsers y helpers contra HTML/XML sintético. No descarga nada:
+ * sirve para comprobar el script en un worktree sin servidor levantado.
+ */
+function selfCheck() {
+  console.log("WS11 · self-check offline de parsers (sin red)\n");
+  const resultados = [];
+
+  const check = (nombre, fn) => {
+    try {
+      fn();
+      resultados.push({ nombre, ok: true, detalle: "" });
+    } catch (error) {
+      resultados.push({ nombre, ok: false, detalle: error.message });
+    }
+  };
+  const igual = (actual, esperado, etiqueta) => {
+    if (actual !== esperado) {
+      throw new Error(
+        `${etiqueta}: ${JSON.stringify(actual)} ≠ ${JSON.stringify(esperado)}`
+      );
+    }
+  };
+  const cierto = (condicion, etiqueta) => {
+    if (!condicion) throw new Error(etiqueta);
+  };
+
+  check("normalizarBase agrega esquema y quita slash final", () => {
+    igual(normalizarBase("localhost:3107/"), "http://localhost:3107", "local");
+    igual(normalizarBase("https://www.programbi.com/"), "https://www.programbi.com", "prod");
+  });
+
+  check("metasRobots detecta duplicados y noindex", () => {
+    const html = `<meta name="robots" content="noindex"><meta name="ROBOTS" content="index, follow">`;
+    igual(metasRobots(html).length, 2, "cantidad");
+    cierto(tieneNoindex(html), "noindex no detectado");
+    cierto(!tieneNoindex(`<meta name="robots" content="index, follow">`), "falso noindex");
+  });
+
+  check("canonicals decodifica entidades y reconoce rel múltiple", () => {
+    const html = `<link rel="canonical" href="https://www.programbi.com/cursos/power-bi?x=1&amp;y=2">`;
+    const canon = canonicals(html);
+    igual(canon.length, 1, "cantidad");
+    igual(canon[0].href, "https://www.programbi.com/cursos/power-bi?x=1&y=2", "href");
+  });
+
+  check("alternates extrae hreflang y x-default", () => {
+    const html =
+      `<link rel="alternate" hreflang="es-CL" href="/a">` +
+      `<link rel="alternate" hreflang="x-default" href="https://www.programbi.com/a">` +
+      `<link rel="stylesheet" href="/x.css">`;
+    const alts = alternates(html);
+    igual(alts.length, 2, "cantidad");
+    igual(alts[1].hreflang, "x-default", "x-default");
+  });
+
+  check("bloquesJsonLd separa bloques y detecta JSON inválido", () => {
+    const html =
+      `<script type="application/ld+json">{"@type":"Person"}</script>` +
+      `<script type="application/ld+json">{"@type":}</script>` +
+      `<script type="application/ld+json">{"@graph":[{"@type":"Course"}]}</script>`;
+    const ld = parsearJsonLd(html);
+    igual(ld.bloques.length, 3, "bloques");
+    igual(ld.errores.length, 1, "errores");
+  });
+
+  check("acumularTipos recorre @graph y arrays anidados", () => {
+    const tipos = new Set();
+    acumularTipos(
+      {
+        "@context": "https://schema.org",
+        "@graph": [{ "@type": ["ProfilePage", "WebPage"] }, { "@type": "Person" }],
+      },
+      tipos
+    );
+    cierto(tipos.has("ProfilePage") && tipos.has("WebPage") && tipos.has("Person"), "faltan tipos");
+  });
+
+  check("extraerLocs lee sitemap index con entidades", () => {
+    const xml =
+      `<sitemapindex><sitemap><loc> https://www.programbi.com/sitemap-1.xml </loc></sitemap>` +
+      `<sitemap><loc>https://www.programbi.com/sitemap-2.xml?a=1&amp;b=2</loc></sitemap></sitemapindex>`;
+    const locs = extraerLocs(xml);
+    igual(locs.length, 2, "cantidad");
+    igual(locs[1], "https://www.programbi.com/sitemap-2.xml?a=1&b=2", "entidad");
+  });
+
+  check("clavePagina normaliza slash final y conserva la ruta", () => {
+    igual(clavePagina("https://www.programbi.com/cursos/power-bi/"), "/cursos/power-bi", "URL");
+    igual(clavePagina("/pe/cursos/power-bi?x=1"), "/pe/cursos/power-bi", "ruta país");
+    igual(clavePagina("https://www.programbi.com/"), "/", "raíz");
+  });
+
+  check("textoVisible elimina scripts, estilos y etiquetas", () => {
+    const texto = textoVisible(
+      `<style>.x{}</style><script>var x="hola"</script><h1>Cursos &amp; datos</h1>`
+    );
+    igual(texto, "cursos & datos", "texto");
+  });
+
+  check("shingles5 y Jaccard", () => {
+    const a = shingles5("uno dos tres cuatro cinco seis");
+    igual(a.size, 2, "shingles");
+    igual(jaccardConjuntos(a, a), 100, "idénticos");
+    igual(jaccardConjuntos(a, shingles5("siete ocho nueve diez once doce")), 0, "disjuntos");
+    igual(jaccardConjuntos(new Set(), a), null, "vacío");
+  });
+
+  check("esFichaCurso distingue ficha de listado", () => {
+    cierto(esFichaCurso("/cursos/power-bi"), "/cursos/power-bi");
+    cierto(esFichaCurso("/pe/cursos/python"), "/pe/cursos/python");
+    cierto(!esFichaCurso("/cursos"), "/cursos no es ficha");
+    cierto(!esFichaCurso("/cursos/power-bi/nivel"), "subruta no es ficha");
+  });
+
+  check("parsearAtributos acepta comillas simples, dobles y sin comillas", () => {
+    const attrs = parsearAtributos(`<link rel='canonical' href=/a?b data-x="ok">`);
+    igual(attrs.rel, "canonical", "rel");
+    igual(attrs.href, "/a?b", "href");
+    igual(attrs["data-x"], "ok", "data-x");
+  });
+
+  check("contarEnlaces cuenta solo rutas internas exactas", () => {
+    const html =
+      `<a href="/cursos/machine-learning">A</a>` +
+      `<a href="https://www.programbi.com/cursos/machine-learning#x">B</a>` +
+      `<a href="/cursos/machine-learning-avanzado">C</a>` +
+      `<a href="mailto:x@y.cl">D</a>`;
+    const conteo = contarEnlaces(html, "/");
+    igual(conteo.get("/cursos/machine-learning"), 2, "conteo");
+    igual(conteo.get("/glosario"), 0, "otra ruta");
+  });
+
+  for (const fila of resultados) {
+    console.log(`  ${fila.ok ? "✓" : "✗"} ${fila.nombre}${fila.detalle ? ` — ${fila.detalle}` : ""}`);
+  }
+  const fallos = resultados.filter((fila) => !fila.ok).length;
+  console.log(`\n  ${resultados.length - fallos} OK / ${fallos} fallos`);
+  return fallos;
 }
 
 // ---------------------------------------------------------------------------
@@ -991,10 +1203,20 @@ async function main() {
   console.log(`  Exit code: ${fallos ? 1 : 0}`);
   console.log("=".repeat(96));
 
-  process.exit(fallos ? 1 : 0);
+  terminar(fallos ? 1 : 0);
 }
 
-main().catch((error) => {
-  console.error(`Error fatal: ${error?.stack || error}`);
-  process.exit(1);
-});
+/** Deja que stdout se vacíe antes de salir (en Windows, por pipe, es async). */
+function terminar(codigo) {
+  process.exitCode = codigo;
+  process.stdout.write("", () => process.exit(codigo));
+}
+
+if (SELF_CHECK) {
+  terminar(selfCheck() ? 1 : 0);
+} else {
+  main().catch((error) => {
+    console.error(`Error fatal: ${error?.stack || error}`);
+    terminar(1);
+  });
+}
