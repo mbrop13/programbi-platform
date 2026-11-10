@@ -1,4 +1,4 @@
-import { esIndexable, esIsoPais, ISO_CHILE } from "@/config/paises";
+import { esIndexable, esIsoPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 
 /**
  * Fuente única (lado SEO) de qué rutas pueden anunciarse en el sitemap y
@@ -10,6 +10,17 @@ import { esIndexable, esIsoPais, ISO_CHILE } from "@/config/paises";
  *
  * Regla de oro: si una URL no está en el sitemap, tampoco puede aparecer como
  * `alternate` de otra. Ambos lados salen de las mismas funciones.
+ *
+ * ──────────────────────────────────────────────────────────────────────────
+ * ESTADO AL CIERRE DE WS10 (9 nov 2026): esta rama NO tiene mergeados WS1–WS9,
+ * así que aquí viven las decisiones que el encargo (§3) ya conoce. Al integrar,
+ * Hermes solo debe reemplazar los dos bloques marcados «PUNTO DE INSERCIÓN»:
+ *   1. WS9: `RUTAS_NOINDEX_PAIS` / `esRutaNoindexPais` → re-exportar
+ *      `@/lib/paises/indexabilidad` (misma firma; ese helper manda).
+ *   2. WS1: `LISTADO_PROFESORES_INDEXABLE` / `PROFESORES_INDEXABLES` →
+ *      importar `RUTAS_PROFESORES_INDEXABLES` desde `@/lib/data/equipo`.
+ * El resto del archivo funciona sin cambios con ambos merges.
+ * ──────────────────────────────────────────────────────────────────────────
  */
 
 /** Quita query, hash, barra final y, si viene, el prefijo de país. */
@@ -58,46 +69,65 @@ export function esRutaNoindexGlobal(path: string): boolean {
  */
 const PREFIJOS_NOINDEX_PAIS: readonly string[] = ["/test-nivel", "/curso-power-bi"];
 
-/**
- * Rutas noindex para TODOS los países con carpeta (Chile nunca entra aquí).
- *
- * PUNTO DE INSERCIÓN WS9 (único): WS9 decide con GSC + similitud qué variantes
- * thin (`/precios`, `/preguntas-frecuentes`, `/faq`, landings `curso-*`, etc.)
- * pasan a `noindex, follow`. Al integrar:
- *
- *   1. Si WS9 exporta su helper desde `lib/paises/`, reemplazar el cuerpo de
- *      `esRutaNoindexPais()` por un re-export de ese helper (misma firma).
- *   2. Si no, volcar aquí las rutas decididas para todos los países y en
- *      `RUTAS_NOINDEX_PAIS` las excepciones por país.
- *
- * Con eso, sitemap, hreflang y `metadataLocal()` quedan coherentes sin tocar
- * una por una las páginas.
- */
-export const RUTAS_NOINDEX_PAIS_TODOS: readonly string[] = [
-  // Vacío a propósito: WS9 aún no está integrado y no se inventan decisiones.
-  // Ejemplo de entrada: "/precios".
+/** Países secundarios del frente WS9 (los que hoy sí se indexan). */
+export const PAISES_SECUNDARIOS: readonly string[] = [
+  "ec",
+  "uy",
+  "cr",
+  "do",
+  "gt",
+  "ve",
+  "bo",
+  "sv",
 ];
 
-/** Rutas noindex solo para ciertos países (excepciones de WS9). */
+/**
+ * Variantes por país que se consolidan como `noindex, follow` (WS9).
+ *
+ * Mapa `ruta sin prefijo de país → países afectados`, en espejo del helper de
+ * WS9 (`lib/paises/indexabilidad.ts`). Solo se listan países secundarios:
+ * Chile y los prioritarios (ar, mx, pe, co) no entran. Con esta sola tabla,
+ * sitemap, hreflang y `metadataLocal()` quedan coherentes sin listas paralelas.
+ *
+ * Excepciones documentadas (por eso el array de cada patrón no es siempre el
+ * mismo): Uruguay conserva `/faq`, `/implementacion-power-bi` y
+ * `/migrar-excel-a-power-bi` por contenido propio y < 70 % de similitud;
+ * Venezuela conserva `/implementacion-power-bi` porque tiene 1 clic en GSC.
+ */
 export const RUTAS_NOINDEX_PAIS: Readonly<Record<string, readonly string[]>> = {
-  // Vacío a propósito. Ejemplo: { ve: ["/implementacion-power-bi"] } (NO: esa
-  // URL tiene 1 clic en GSC y debe seguir indexable).
+  "/precios": PAISES_SECUNDARIOS,
+  "/preguntas-frecuentes": PAISES_SECUNDARIOS,
+  "/faq": ["ec", "cr", "do", "gt", "ve", "bo", "sv"],
+  "/curso-sql-online": PAISES_SECUNDARIOS,
+  "/curso-python": PAISES_SECUNDARIOS,
+  "/curso-power-bi-vs-pack-adopcion": PAISES_SECUNDARIOS,
+  "/implementacion-power-bi": ["ec", "cr", "do", "gt", "bo", "sv"],
+  "/migrar-excel-a-power-bi": ["ec", "cr", "do", "gt", "ve", "bo", "sv"],
+  "/por-que-fallan-proyectos-power-bi": PAISES_SECUNDARIOS,
+  // Hoy no hay página publicada para países secundarios; se declara para que,
+  // si se publica, nazca noindex y no se cuele en sitemap/hreflang.
+  "/versus": PAISES_SECUNDARIOS,
 };
 
 /**
- * Firma compatible con el helper que entregará WS9:
- * `esRutaNoindexPais(iso, path)`. Acepta la ruta con o sin prefijo de país.
+ * ¿La variante `iso + path` debe salir con `noindex, follow`?
+ *
+ * Acepta la ruta con o sin prefijo de país. Solo responde por la consolidación
+ * de rutas de países secundarios; la indexabilidad global del país sigue
+ * viviendo en `esIndexable()`.
  */
 export function esRutaNoindexPais(
   iso: string | null | undefined,
   path: string
 ): boolean {
-  if (!esIsoPais(iso) || iso === ISO_CHILE) return false;
+  const pais = normalizarPais(iso);
+  if (!esIsoPais(pais) || pais === ISO_CHILE || !esIndexable(pais)) return false;
   const ruta = normalizarRutaIndexabilidad(path);
   if (esRutaNoindexGlobal(ruta)) return true;
   if (PREFIJOS_NOINDEX_PAIS.some((patron) => coincide(ruta, patron))) return true;
-  if (RUTAS_NOINDEX_PAIS_TODOS.some((patron) => coincide(ruta, patron))) return true;
-  return (RUTAS_NOINDEX_PAIS[iso] ?? []).some((patron) => coincide(ruta, patron));
+  return Object.entries(RUTAS_NOINDEX_PAIS).some(
+    ([patron, paises]) => paises.includes(pais) && coincide(ruta, patron)
+  );
 }
 
 /** ¿La versión de esa ruta en ese país puede indexarse, anunciarse y llevar hreflang? */
@@ -109,26 +139,54 @@ export function esRutaIndexablePais(
   return !esRutaNoindexPais(iso, path);
 }
 
+/**
+ * Última red de seguridad para el sitemap: ¿esta URL (ruta o absoluta) puede
+ * anunciarse? Devuelve `false` para noindex globales, países no indexables y
+ * variantes thin de país. Es el ÚNICO punto que debe ajustar Hermes si al
+ * integrar cambia una decisión de indexabilidad.
+ */
+export function esRutaAnunciable(pathOrUrl: string): boolean {
+  const raw = (pathOrUrl || "").trim();
+  if (!raw) return false;
+  let pathname = raw;
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      pathname = new URL(raw).pathname;
+    } catch {
+      return false;
+    }
+  }
+  const ruta = (pathname.split("?")[0] ?? "/").split("#")[0] ?? "/";
+  if (esRutaNoindexGlobal(ruta)) return false;
+  const primero = ruta.split("/").filter(Boolean)[0];
+  if (primero && esIsoPais(primero) && primero !== ISO_CHILE) {
+    return esRutaIndexablePais(primero, ruta);
+  }
+  return true;
+}
+
 /* ──────────────────────────────────────────────────────────────────────────
- * WS1 · Profesores indexables
+ * WS1 · Profesores indexables — PUNTO DE INSERCIÓN
  *
- * PUNTO DE INSERCIÓN ÚNICO. Cuando WS1 esté integrado, `lib/data/equipo.ts`
- * exportará `perfilIndexable(miembro)` y `/profesores` será siempre indexable.
- * Ese día, reemplazar este bloque por:
+ * WS1 deja `perfilIndexable()` y `RUTAS_PROFESORES_INDEXABLES` en
+ * `lib/data/equipo.ts`. Como esta rama no lo tiene mergeado, se declara la
+ * lista que el encargo §3 ya conoce: el listado (siempre indexable) y las tres
+ * fichas con datos verificables. Al integrar, reemplazar este bloque por:
  *
- *   import { EQUIPO, perfilIndexable, rutaPerfil } from "@/lib/data/equipo";
+ *   import { RUTAS_PROFESORES_INDEXABLES } from "@/lib/data/equipo";
  *   export const LISTADO_PROFESORES_INDEXABLE = true;
- *   export const PROFESORES_INDEXABLES = EQUIPO
- *     .filter(perfilIndexable)
- *     .map((miembro) => rutaPerfil(miembro.slug));
+ *   export const PROFESORES_INDEXABLES =
+ *     RUTAS_PROFESORES_INDEXABLES.filter((p) => p !== "/profesores");
  *
- * Hoy WS1 no está en esta rama y `/profesores` responde `noindex, follow`
- * (flag `EQUIPO_PUBLICADO` apagado): anunciarlo en el sitemap sería anunciar
- * una URL noindex. Por eso la lista va vacía y el listado queda fuera.
+ * (o simplemente hacer que el sitemap consuma `RUTAS_PROFESORES_INDEXABLES`).
  * ────────────────────────────────────────────────────────────────────────── */
 
-/** ¿El listado `/profesores` puede anunciarse? (WS1 lo pondrá en `true`). */
-export const LISTADO_PROFESORES_INDEXABLE: boolean = false;
+/** ¿El listado `/profesores` puede anunciarse? (WS1 lo deja indexable). */
+export const LISTADO_PROFESORES_INDEXABLE: boolean = true;
 
 /** Rutas de fichas `/profesores/<slug>` que cumplen `perfilIndexable`. */
-export const PROFESORES_INDEXABLES: readonly string[] = [];
+export const PROFESORES_INDEXABLES: readonly string[] = [
+  "/profesores/manuel-oliva",
+  "/profesores/emanuel-berrocal",
+  "/profesores/rodrigo-vega",
+];

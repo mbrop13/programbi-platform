@@ -12,8 +12,8 @@ import { SITE_URL, sitemapLoc } from "@/lib/seo";
 import {
   LISTADO_PROFESORES_INDEXABLE,
   PROFESORES_INDEXABLES,
+  esRutaAnunciable,
   esRutaIndexablePais,
-  esRutaNoindexGlobal,
   esRutaNoindexPais,
 } from "@/lib/seo/indexabilidad";
 import { TESTIMONIOS_PUBLICADOS } from "@/lib/data/testimonials";
@@ -21,7 +21,7 @@ import { SITE_ACTUALIZADO, lastmodDe } from "@/lib/seo/lastmod";
 import { PAISES_CARPETA, esIndexable, esIsoPais } from "@/config/paises";
 import { GUIAS } from "@/lib/guias/generado";
 import { guiasDePais } from "@/lib/guias";
-import { hreflangDe, paisDesdeRuta, rutaLocal } from "@/lib/paises/rutas";
+import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 import { isVanityBlogPost } from "@/lib/seo/money";
 import { createAdminClient } from "@/lib/supabase/server";
 
@@ -63,16 +63,16 @@ type EntradaSitemap = MetadataRoute.Sitemap[number];
 type CambioFrecuencia = NonNullable<EntradaSitemap["changeFrequency"]>;
 type EntradaPosible = EntradaSitemap | null | undefined;
 
-function conTimeout<T>(promesa: PromiseLike<T>, ms: number): Promise<T> {
+async function conTimeout<T>(promesa: PromiseLike<T>, ms: number): Promise<T> {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const timeout = new Promise<never>((_, reject) => {
     timer = setTimeout(() => reject(new Error(`sitemap: timeout de ${ms} ms`)), ms);
   });
   try {
-    return Promise.race([Promise.resolve(promesa), timeout]);
+    // `await` es obligatorio: con `return Promise.race(...)` el `finally`
+    // correría antes de que la carrera termine y apagaría el timer en el acto.
+    return await Promise.race([Promise.resolve(promesa), timeout]);
   } finally {
-    // `finally` corre cuando la carrera termina; si ganó la promesa, se apaga
-    // el timer para no retener el event loop.
     if (timer) clearTimeout(timer);
   }
 }
@@ -89,7 +89,7 @@ function entrada(
   changeFrequency: CambioFrecuencia,
   lastModified: string = lastmodDe(path)
 ): EntradaPosible {
-  if (esRutaNoindexGlobal(path)) return null;
+  if (!esRutaAnunciable(path)) return null;
   const url = sitemapLoc(path);
   if (!url) return null;
 
@@ -116,9 +116,8 @@ function uniqueEntries(entries: EntradaPosible[]): MetadataRoute.Sitemap {
     // Las imágenes generadas por ruta (/opengraph-image, /twitter-image) no
     // son páginas: fuera aunque alguna lista las arrastre.
     if (/\/(opengraph-image|twitter-image)(\/|$)/.test(pathname)) continue;
-    if (esRutaNoindexGlobal(pathname)) continue;
-    const iso = paisDesdeRuta(pathname);
-    if (iso && esRutaNoindexPais(iso, pathname)) continue;
+    // Una sola fuente para noindex global, país no indexable y variantes thin.
+    if (!esRutaAnunciable(pathname)) continue;
     if (seen.has(url)) continue;
     seen.add(url);
     out.push({ ...entry, url });
@@ -208,11 +207,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entrada("/power-bi-sql-server-python", 0.8, "monthly"),
     entrada("/analisis-de-datos-mineria", 0.8, "monthly"),
     entrada("/capacitacion-empresas", 0.8, "monthly"),
-    // /casos y /profesores solo cuando su contenido es publicable: la primera
-    // necesita testimonios visibles y la segunda, los perfiles completos.
+    // /casos solo cuando hay testimonios publicables; /profesores es indexable
+    // por decisión de WS1 (lista en lib/seo/indexabilidad.ts).
     ...(TESTIMONIOS_PUBLICADOS ? [entrada("/casos", 0.5, "monthly")] : []),
-    // WS1: lista declarativa en lib/seo/indexabilidad.ts. Hoy vacía porque
-    // /profesores sigue noindex; al integrar WS1 se enciende sola.
     ...(LISTADO_PROFESORES_INDEXABLE ? [entrada("/profesores", 0.6, "monthly")] : []),
     ...PROFESORES_INDEXABLES.map((path) => entrada(path, 0.5, "monthly")),
     entrada("/referidos", 0.7, "weekly"),
