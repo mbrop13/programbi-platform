@@ -20,6 +20,18 @@ import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 
 export const revalidate = 3600;
 
+/**
+ * Rutas no-país que GSC marcó como «descubierta, sin indexar» y que no
+ * aparecen en el bloque `RecursosDatos` de arriba. Se enlazan desde el
+ * catálogo chileno para darles una ruta de rastreo real; las fichas salen de
+ * `courses` y las páginas de empleo ya existen, no se inventa contenido.
+ */
+const DESCUBIERTAS = [
+  { href: "/cursos/mercado-financiero", label: "Curso de mercado financiero" },
+  { href: "/empleos/para-empresas", label: "Publicar vacantes" },
+  { href: "/empleos/talento", label: "Talento certificado" },
+] as const;
+
 export const metadata: Metadata = {
   title: { absolute: PAGE_SEO.cursos.title },
   description: PAGE_SEO.cursos.description,
@@ -150,6 +162,34 @@ export default async function CursosPage({
           en la raíz y hablan del mercado chileno. */}
       {pais === ISO_CHILE ? <ObjetivosCursos contexto="cursos" /> : null}
       {pais === ISO_CHILE ? <RecursosDatos contexto="cursos" /> : null}
+      {pais === ISO_CHILE ? (
+        <section
+          className="border-t border-line bg-canvas px-4 py-12 sm:px-6 lg:px-8"
+          aria-labelledby="especializaciones-y-recursos"
+        >
+          <div className="mx-auto max-w-[1400px]">
+            <h2 id="especializaciones-y-recursos" className="text-xl font-semibold text-ink">
+              Especialización financiera y bolsa de trabajo
+            </h2>
+            <p className="mt-2 max-w-[52rem] text-sm leading-relaxed text-mute">
+              La ficha del curso de mercado financiero y las páginas para publicar vacantes o
+              contratar talento con certificados verificados.
+            </p>
+            <ul className="mt-6 flex flex-wrap gap-x-6 gap-y-3 text-sm font-medium text-ink">
+              {DESCUBIERTAS.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="no-underline underline-offset-2 hover:text-mute hover:underline"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      ) : null}
       <section className="bg-paper px-4 py-12 sm:px-6 lg:px-8" aria-labelledby="cursos-por-pais">
         <div className="mx-auto max-w-[1400px]">
           <h2 id="cursos-por-pais" className="text-xl font-semibold text-ink">

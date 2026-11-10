@@ -23,6 +23,9 @@ const companyLinks = [
   { label: "Empresas", href: "/empresas" },
   { label: "Referidos", href: "/referidos" },
   { label: "Bolsa de Trabajo", href: "/empleos" },
+  { label: "Publicar vacantes", href: "/empleos/para-empresas" },
+  { label: "Talento certificado", href: "/empleos/talento" },
+  { label: "Vacantes abiertas", href: "/empleos/vacantes" },
   ...(COMUNIDAD_PUBLICA ? [{ label: "Comunidad", href: "/comunidad" }] : []),
   { label: "Blog", href: "/blog" },
   { label: "Preguntas frecuentes", href: "/preguntas-frecuentes" },
@@ -94,6 +97,12 @@ export default function Footer({ compact: _compact = false }: { compact?: boolea
               {course.title}
             </Link>
           ))}
+          <Link href={hrefLocal("/cursos/machine-learning")} className="no-underline hover:text-mute">
+            Machine Learning
+          </Link>
+          <Link href={hrefLocal("/cursos/mercado-financiero")} className="no-underline hover:text-mute">
+            Mercado financiero
+          </Link>
         </nav>
 
         <div className="flex flex-col gap-3 text-sm text-mute">
