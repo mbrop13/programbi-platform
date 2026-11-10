@@ -68,9 +68,11 @@ function aMiembro(mentor: Mentor): MiembroEquipo {
 }
 
 /**
- * TODO_MANU: faltan las biografías de Emanuel Berrocal y Rodrigo Vega, y no hay
- * bio corta para las tarjetas. Hasta que existan, `bio` queda en `null` y las
- * páginas muestran «Perfil en preparación». No se inventa texto.
+ * TODO_MANU: faltan las biografías de Emanuel Berrocal y Rodrigo Vega. Ya no
+ * bloquean la publicación: su ficha se arma con los datos reales que existen
+ * (rol, cargo, credenciales, cursos, foto y LinkedIn). Cuando Manu entregue los
+ * textos, se agregan en `lib/data/mentors.ts` y aparecen solos en la ficha y en
+ * `Person.description` del JSON-LD. No se inventa texto.
  *
  * TODO_MANU: Joaquín Villagra solo aparece en un testimonio
  * (`lib/data/testimonials.ts`): no hay cargo, bio, LinkedIn ni foto, así que no
@@ -82,8 +84,34 @@ export const EQUIPO: MiembroEquipo[] = [...mentors]
   .map(aMiembro);
 
 /**
+ * Publicación por miembro, en código: no depende de variables de entorno de
+ * Vercel. Un perfil es indexable cuando tiene lo mínimo verificable para ser
+ * una ficha de entidad: nombre, rol, al menos una credencial real y foto.
+ *
+ * La bio larga es opcional a propósito: las fichas se arman con los hechos ya
+ * publicados en `mentors.ts` y nunca con texto de relleno.
+ */
+export function perfilIndexable(miembro: MiembroEquipo): boolean {
+  return (
+    miembro.nombre.trim().length > 0 &&
+    miembro.rol.trim().length > 0 &&
+    miembro.credenciales.some((credencial) => credencial.trim().length > 0) &&
+    Boolean(miembro.imageUrl)
+  );
+}
+
+/** Miembros con ficha indexable: alimentan el listado, el JSON-LD y el sitemap. */
+export const EQUIPO_INDEXABLE: MiembroEquipo[] = EQUIPO.filter(perfilIndexable);
+
+/** Miembros con ficha 200 pero `noindex, follow` (les falta algún dato base). */
+export const EQUIPO_NO_INDEXABLE: MiembroEquipo[] = EQUIPO.filter(
+  (miembro) => !perfilIndexable(miembro)
+);
+
+/**
  * ¿Están completos todos los perfiles? Solo cuenta lo que se publica: bio,
- * LinkedIn y foto. Hoy da `false` porque faltan dos biografías.
+ * LinkedIn y foto. No condiciona la indexación (eso lo decide
+ * `perfilIndexable`); sirve como termómetro editorial.
  */
 export function equipoCompleto(): boolean {
   return (
@@ -93,19 +121,27 @@ export function equipoCompleto(): boolean {
 }
 
 /**
- * Flag de publicación de /profesores. Se lee de entorno para no tocar código el
- * día que Manu complete los perfiles (no se edita `config/flags.ts`).
- *
- * TODO_MANU: encender con NEXT_PUBLIC_EQUIPO_PUBLICADO=1 cuando estén las tres
- * biografías. Mientras siga apagado, las páginas responden 200 pero con
- * `robots: noindex, follow` y un aviso de que el equipo está en preparación.
+ * @deprecated Usar `EQUIPO_INDEXABLE` / `perfilIndexable`. Se mantiene solo
+ * porque `app/sitemap.ts` (propiedad de WS10) todavía lo importa; ya no lee
+ * `NEXT_PUBLIC_EQUIPO_PUBLICADO` ni apaga el equipo completo.
  */
-export const EQUIPO_PUBLICADO = process.env.NEXT_PUBLIC_EQUIPO_PUBLICADO === "1";
+export const EQUIPO_PUBLICADO = EQUIPO_INDEXABLE.length > 0;
 
 /** Ruta pública de la ficha de una persona. */
 export function rutaPerfil(slug: string): string {
   return `/profesores/${slug}`;
 }
+
+/**
+ * Rutas de profesores que deben entrar al sitemap: el listado (siempre
+ * indexable) y una ficha por miembro que cumpla `perfilIndexable`.
+ *
+ * WS10: importar `RUTAS_PROFESORES_INDEXABLES` desde `@/lib/data/equipo`.
+ */
+export const RUTAS_PROFESORES_INDEXABLES: string[] = [
+  "/profesores",
+  ...EQUIPO_INDEXABLE.map((miembro) => rutaPerfil(miembro.slug)),
+];
 
 export function getMiembroPorSlug(slug: string): MiembroEquipo | undefined {
   return EQUIPO.find((miembro) => miembro.slug === slug);

@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import AvisoEquipoPreparacion from "@/components/equipo/AvisoEquipoPreparacion";
 import PerfilProfesor from "@/components/equipo/PerfilProfesor";
 import {
   EQUIPO,
-  EQUIPO_PUBLICADO,
   getMiembroPorSlug,
+  perfilIndexable,
   rutaPerfil,
   type MiembroEquipo,
 } from "@/lib/data/equipo";
@@ -54,7 +53,9 @@ export async function generateMetadata({
     title: { absolute: title },
     description,
     alternates: { canonical },
-    ...(EQUIPO_PUBLICADO ? {} : { robots: { index: false, follow: true } }),
+    // Publicación por miembro: solo las fichas con datos base quedan fuera del
+    // noindex. La bio larga no es requisito.
+    ...(perfilIndexable(miembro) ? {} : { robots: { index: false, follow: true } }),
     openGraph: {
       title,
       description,
@@ -107,9 +108,6 @@ export default async function ProfesorPage({
       />
 
       <div className="bg-canvas pb-20 pt-10 text-ink sm:pt-14">
-        <div className="mx-auto mb-8 max-w-6xl px-5">
-          <AvisoEquipoPreparacion />
-        </div>
         <PerfilProfesor miembro={miembro} />
       </div>
     </>

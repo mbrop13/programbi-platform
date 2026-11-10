@@ -11,10 +11,8 @@
  * con su brochure PDF, los aranceles por país, todas las guías publicadas, las
  * comparativas, las preguntas frecuentes principales y las políticas.
  *
- * TODO_MANU: `/profesores` existe en la rama de equipo (`feat/f5-equipo`)
- * detrás de `EQUIPO_PUBLICADO`, pero `lib/data/equipo.ts` todavía no está en
- * esta rama. Al integrar, importar el flag y agregar la línea marcada en
- * `bloqueInstitucional()` solo cuando sea `true`.
+ * `/profesores` es siempre indexable (listado) y las fichas se publican por
+ * miembro con `perfilIndexable`; por eso se anuncia sin depender de flags.
  */
 
 import { MEDIOS_CUOTAS, NOTA_CUOTAS, textoCuotas } from "@/config/cuotas";
@@ -24,7 +22,7 @@ import { comparativasAcademiaHub } from "@/lib/data/academias";
 import { comparisons } from "@/lib/data/comparisons";
 import { courses, getGroupedCourses, type Course } from "@/lib/data/courses";
 import { catalogHours, levelsForView } from "@/lib/data/course-views";
-import { EQUIPO_PUBLICADO } from "@/lib/data/equipo";
+import { EQUIPO_INDEXABLE } from "@/lib/data/equipo";
 import { faqDePais } from "@/lib/faq/contenido";
 import { GUIAS } from "@/lib/guias/generado";
 import { HORA_CLASE_CHILE } from "@/lib/paises/horarios";
@@ -355,14 +353,16 @@ function bloqueFaq(): string[] {
 /**
  * Institucional.
  *
- * `/profesores` solo se anuncia cuando `EQUIPO_PUBLICADO` está encendido: con
- * el flag apagado la ruta responde 200 pero noindex y no está en el sitemap.
+ * `/profesores` es siempre indexable: el listado no depende de flags y las
+ * fichas se publican una por una con `perfilIndexable`.
  */
 function bloqueInstitucional(): string[] {
   return [
     "## Institucional",
     `- ${md("Nosotros", url("/nosotros"))}: origen de la academia, metodología de clases en vivo y quién dicta los cursos.`,
-    ...(EQUIPO_PUBLICADO ? [`- ${md("Profesores", url("/profesores"))}: equipo docente y perfiles.`] : []),
+    `- ${md("Profesores", url("/profesores"))}: equipo docente, con ${
+      EQUIPO_INDEXABLE.length
+    } perfiles publicados y los cursos que dicta cada uno.`,
     `- ${md("Política de privacidad", url("/privacidad"))}.`,
     `- ${md("Términos y condiciones", url("/terminos"))}.`,
     "",

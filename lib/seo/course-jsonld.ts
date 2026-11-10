@@ -104,7 +104,7 @@ export function getCourseJsonLd(
         jobTitle: instructor.cargo,
         url: absoluteUrl(rutaPerfil(instructor.slug)),
         worksFor: { "@id": ORG_ID },
-        ...(instructor.imageUrl ? { image: instructor.imageUrl } : {}),
+        ...(instructor.imageUrl ? { image: absoluteUrl(instructor.imageUrl) } : {}),
         ...(instructor.linkedinUrl ? { sameAs: [instructor.linkedinUrl] } : {}),
       },
     },
@@ -147,7 +147,7 @@ export function getPersonaJsonLd(miembro: MiembroEquipo) {
     url: absoluteUrl(rutaPerfil(miembro.slug)),
     worksFor: { "@id": ORG_ID },
     ...(miembro.bio ? { description: miembro.bio } : {}),
-    ...(miembro.imageUrl ? { image: miembro.imageUrl } : {}),
+    ...(miembro.imageUrl ? { image: absoluteUrl(miembro.imageUrl) } : {}),
     ...(miembro.linkedinUrl ? { sameAs: [miembro.linkedinUrl] } : {}),
   };
 }
@@ -182,4 +182,42 @@ export function getProfilePageJsonLd(miembro: MiembroEquipo) {
     isPartOf: { "@id": WEBSITE_ID },
     mainEntity: { "@id": idPersona(miembro.slug) },
   };
+}
+
+/**
+ * CollectionPage del listado /profesores y su ItemList de fichas. Solo entran
+ * los miembros que cumplen `perfilIndexable`: los demás siguen existiendo con
+ * `noindex, follow` y no se anuncian como parte de la colección.
+ */
+export function getEquipoCollectionJsonLd(
+  miembros: MiembroEquipo[],
+  url: string,
+  nombre: string,
+  descripcion: string
+) {
+  return [
+    {
+      "@type": "CollectionPage",
+      "@id": `${url}#webpage`,
+      url,
+      name: nombre,
+      description: descripcion,
+      inLanguage: "es-CL",
+      isPartOf: { "@id": WEBSITE_ID },
+      mainEntity: { "@id": `${url}#equipo` },
+    },
+    {
+      "@type": "ItemList",
+      "@id": `${url}#equipo`,
+      name: nombre,
+      numberOfItems: miembros.length,
+      itemListElement: miembros.map((miembro, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        item: { "@id": idPersona(miembro.slug) },
+        name: miembro.nombre,
+        url: absoluteUrl(rutaPerfil(miembro.slug)),
+      })),
+    },
+  ];
 }
