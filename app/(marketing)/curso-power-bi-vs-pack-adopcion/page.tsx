@@ -127,7 +127,6 @@ export default async function Page({
         faqs={faqs}
         related={[
           { href: href("/empresas"), label: "Soluciones para empresas" },
-          { href: href("/curso-power-bi"), label: "Curso Power BI con plantilla de ventas gratis" },
           { href: href("/cursos/power-bi"), label: L("Curso Power BI en vivo Chile") },
           { href: href("/cursos/analisis-de-datos"), label: "Cursos de análisis de datos (SQL + Power BI + Python)" },
           { href: href("/por-que-fallan-proyectos-power-bi"), label: "Por qué fallan los proyectos Power BI" },

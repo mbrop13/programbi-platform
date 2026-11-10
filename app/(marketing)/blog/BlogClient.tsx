@@ -8,6 +8,8 @@ import { BookOpen, ChevronRight, Search, X, Sparkles, DollarSign, Cpu, Sliders, 
 import BlogPreferences, { BlogPrefs, defaultPrefs } from "@/components/shared/BlogPreferences";
 import { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 import { isVideoUrl } from "@/lib/utils";
+import type { Articulo } from "@/lib/blog/data";
+import type { User } from "@supabase/supabase-js";
 import { isVanityBlogPost, blogIcpScore } from "@/lib/seo/money";
 
 function getPosterFromContent(content?: string): string | undefined {
@@ -96,7 +98,7 @@ function DatosDestacados() {
 
 /* ── Featured News Slider (Editorial Carrusel) ─── */
 
-function BlogSlider({ articles }: { articles: any[] }) {
+function BlogSlider({ articles }: { articles: Articulo[] }) {
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState(0);
 
@@ -109,12 +111,11 @@ function BlogSlider({ articles }: { articles: any[] }) {
     return () => clearInterval(timer);
   }, [index, articles.length]);
 
-  // Reset index if filtered articles length changes to avoid out of bounds
-  useEffect(() => {
-    setIndex(0);
-  }, [articles.length]);
-
   if (articles.length === 0) return null;
+
+  // Índice acotado al largo actual: si el filtro reduce la lista no hace falta
+  // un efecto que resetee el estado (evita renders en cascada).
+  const safeIndex = index % articles.length;
 
   const handleNext = () => {
     setDirection(1);
@@ -141,8 +142,7 @@ function BlogSlider({ articles }: { articles: any[] }) {
     }),
   };
 
-  const current = articles[index];
-  const categoryLabel = categoryLabels[current.category] || current.category;
+  const current = articles[safeIndex];
 
   return (
     <div className="relative w-full mb-16 select-none overflow-hidden rounded-2xl border border-slate-100 shadow-sm bg-slate-950">
@@ -163,12 +163,12 @@ function BlogSlider({ articles }: { articles: any[] }) {
           >
             <Link href={`/blog/${current.slug}`} className="absolute inset-0 block no-underline group">
               {(() => {
-                const videoUrl = getVideoFromContent(current.content) || (isVideoUrl(current.cover_image) ? current.cover_image : undefined);
+                const videoUrl = getVideoFromContent(current.content ?? undefined) || (isVideoUrl(current.cover_image ?? undefined) ? current.cover_image : undefined);
                 if (videoUrl) {
                   return (
                     <video
                       src={videoUrl}
-                      poster={isVideoUrl(current.cover_image) ? getPosterFromContent(current.content) : current.cover_image}
+                      poster={isVideoUrl(current.cover_image ?? undefined) ? getPosterFromContent(current.content ?? undefined) : (current.cover_image ?? undefined)}
                       autoPlay
                       loop
                       muted
@@ -232,11 +232,11 @@ function BlogSlider({ articles }: { articles: any[] }) {
               <button
                 key={i}
                 onClick={() => {
-                  setDirection(i > index ? 1 : -1);
+                  setDirection(i > safeIndex ? 1 : -1);
                   setIndex(i);
                 }}
                 className={`w-2 h-2 rounded-full transition-all cursor-pointer p-0 border-none ${
-                  i === index ? "bg-[#171716] w-6" : "bg-white/40 hover:bg-white/60"
+                  i === safeIndex ? "bg-[#171716] w-6" : "bg-white/40 hover:bg-white/60"
                 }`}
               />
             ))}
@@ -249,11 +249,11 @@ function BlogSlider({ articles }: { articles: any[] }) {
 
 /* ── Article Card (Newspaper Style) ──────────── */
 
-function ArticleCard({ article, index }: { article: any; index: number }) {
-  const categoryLabel = categoryLabels[article.category] || article.category;
-  const poster = getPosterFromContent(article.content);
-  const displayImage = isVideoUrl(article.cover_image) ? (poster || article.cover_image) : article.cover_image;
-  const isDisplayVideo = isVideoUrl(displayImage);
+function ArticleCard({ article, index }: { article: Articulo; index: number }) {
+  const categoryLabel = categoryLabels[article.category ?? ""] || article.category || "General";
+  const poster = getPosterFromContent(article.content ?? undefined);
+  const displayImage = isVideoUrl(article.cover_image ?? undefined) ? (poster || article.cover_image) : article.cover_image;
+  const isDisplayVideo = isVideoUrl(displayImage ?? undefined);
 
   return (
     <motion.div
@@ -317,13 +317,13 @@ function ArticleCard({ article, index }: { article: any; index: number }) {
 
 /* ── Main Blog Client ────────────────────────── */
 
-export default function BlogClient({ articles }: { articles: any[] }) {
+export default function BlogClient({ articles }: { articles: Articulo[] }) {
   const [activeCategory, setActiveCategory] = useState("all");
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [prefs, setPrefs] = useState<BlogPrefs>(defaultPrefs);
   const [showPrefs, setShowPrefs] = useState(false);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     let unsub = () => {};
@@ -369,19 +369,19 @@ export default function BlogClient({ articles }: { articles: any[] }) {
     if (activeCategory === "datos") {
       temp = temp.filter(
         (a) =>
-          ["power-bi", "sql", "python"].includes(a.category) ||
+          ["power-bi", "sql", "python"].includes(a.category ?? "") ||
           blogIcpScore(a.title, a.excerpt, a.slug, a.category) > 0
       );
     } else if (activeCategory === "ia") {
       temp = temp.filter((a) => a.category === "ia");
     } else if (activeCategory === "economia") {
-      temp = temp.filter((a) => ["industria", "economia"].includes(a.category));
+      temp = temp.filter((a) => ["industria", "economia"].includes(a.category ?? ""));
     } else if (activeCategory === "tecnologia") {
-      temp = temp.filter((a) => ["power-bi", "sql", "python", "tecnologia"].includes(a.category));
+      temp = temp.filter((a) => ["power-bi", "sql", "python", "tecnologia"].includes(a.category ?? ""));
     } else if (activeCategory === "deporte") {
-      temp = temp.filter((a) => ["deporte", "futbol", "running", "deportes"].includes(a.category));
+      temp = temp.filter((a) => ["deporte", "futbol", "running", "deportes"].includes(a.category ?? ""));
     } else if (activeCategory === "cultura") {
-      temp = temp.filter((a) => ["general", "cultura"].includes(a.category));
+      temp = temp.filter((a) => ["general", "cultura"].includes(a.category ?? ""));
     }
 
     // Filter by search query

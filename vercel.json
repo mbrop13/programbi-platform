@@ -13,6 +13,16 @@
       "statusCode": 301
     },
     {
+      "source": "/curso-power-bi",
+      "destination": "/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
+      "source": "/:pais(ar|bo|co|cr|ec|sv|gt|hn|mx|ni|pa|py|pe|do|uy|ve)/curso-power-bi",
+      "destination": "/:pais/cursos/power-bi",
+      "statusCode": 301
+    },
+    {
       "source": "/pages/cursos-1",
       "destination": "/cursos",
       "statusCode": 301

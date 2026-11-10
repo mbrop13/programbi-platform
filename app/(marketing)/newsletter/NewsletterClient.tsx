@@ -9,21 +9,23 @@ import { getPublishedArticles, getNewsletterCategories } from "@/lib/supabase/co
 import { createClient } from "@/lib/supabase/client";
 import { applyInlineMarkdown } from "@/components/shared/ArticleBlockRenderer";
 import { isVideoUrl } from "@/lib/utils";
+import type { ArticuloLista, CategoriaNewsletter } from "@/lib/blog/data";
+import type { User } from "@supabase/supabase-js";
 
 export default function NewsletterClient({
   initialArticles = [],
   initialCategories = [],
 }: {
-  initialArticles?: any[];
-  initialCategories?: any[];
+  initialArticles?: ArticuloLista[];
+  initialCategories?: CategoriaNewsletter[];
 }) {
-  const [articles, setArticles] = useState<any[]>(initialArticles);
-  const [categories, setCategories] = useState<any[]>(initialCategories);
+  const [articles, setArticles] = useState<ArticuloLista[]>(initialArticles);
+  const [categories, setCategories] = useState<CategoriaNewsletter[]>(initialCategories);
   // El SSR ya entrega el contenido (o el estado vacío): no bloquear con un
   // spinner si Supabase está caído o lento.
   const [loading, setLoading] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   // Check auth
   useEffect(() => {
@@ -75,19 +77,20 @@ export default function NewsletterClient({
 
   const featured = articles.find((a) => a.is_featured) || articles[0];
   const secondary = articles.filter((a) => a.id !== featured?.id).slice(0, 3);
-  const rest = articles.filter((a) => a.id !== featured?.id && !secondary.find((s: any) => s.id === a.id));
+  const rest = articles.filter((a) => a.id !== featured?.id && !secondary.find((s) => s.id === a.id));
 
   // Group remaining by category
-  const groupedByCategory: Record<string, any[]> = {};
+  const groupedByCategory: Record<string, ArticuloLista[]> = {};
   rest.forEach((a) => {
     const cat = a.category || "general";
     if (!groupedByCategory[cat]) groupedByCategory[cat] = [];
     groupedByCategory[cat].push(a);
   });
 
-  const getCatLabel = (slug: string) => {
-    const found = categories.find(c => c.slug === slug);
-    return found ? found.name.toUpperCase() : slug.toUpperCase();
+  const getCatLabel = (slug?: string | null) => {
+    if (!slug) return "GENERAL";
+    const found = categories.find((c) => c.slug === slug);
+    return found?.name ? found.name.toUpperCase() : slug.toUpperCase();
   };
 
   const formatDate = (d: string) =>
