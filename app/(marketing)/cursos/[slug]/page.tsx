@@ -6,6 +6,7 @@ import type { CourseSchedule } from "@/lib/data/course-schedules";
 import CourseDetailClient from "@/app/(marketing)/cursos/[slug]/CourseDetailClient";
 import BloquePaisFicha from "@/components/paises/BloquePaisFicha";
 import FichaSeoExtra from "@/components/marketing/FichaSeoExtra";
+import PlantillaVentasPowerBi from "@/components/marketing/PlantillaVentasPowerBi";
 import GuiasDelCurso from "@/components/guias/GuiasDelCurso";
 import TestimoniosDeCurso from "@/components/marketing/TestimoniosDeCurso";
 import { ogImageUrl } from "@/lib/og/url";
@@ -203,6 +204,9 @@ export default async function CourseDetailPage({
           Reemplaza a CountryContext, que repetía los mismos datos. */}
       <BloquePaisFicha curso={course} pais={pais} inicio={inicio} fin={fin} />
       <FichaSeoExtra slug={course.slug} pais={pais} />
+      {/* Bloque único de la antigua landing /curso-power-bi (plantilla CSV),
+          migrado aquí antes de convertir esa landing en 301. */}
+      {course.slug === "power-bi" ? <PlantillaVentasPowerBi pais={pais} /> : null}
       <GuiasDelCurso curso={course.slug} pais={pais} />
       {/* Citas reales de alumnos de este curso (LinkedIn). Se oculta sola si no
           hay testimonios o si el kill-switch NEXT_PUBLIC_TESTIMONIOS=0. */}

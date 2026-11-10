@@ -726,7 +726,7 @@ export default function CourseDetailClient({
                 </a>
                 {course.slug === "power-bi" ? (
                   <Link
-                    href={rutaLocal(pais, "/curso-power-bi")}
+                    href="#plantilla-power-bi"
                     className="inline-flex items-center gap-1.5 no-underline hover:text-mute"
                   >
                     <FileText size={15} /> Plantilla CSV gratis
