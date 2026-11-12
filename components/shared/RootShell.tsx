@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { Suspense } from "react";
 import { Geist, Dancing_Script } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import Providers from "@/app/providers";
 import MarketingAnalytics from "@/components/shared/MarketingAnalytics";
 import AttributionCapture from "@/components/shared/AttributionCapture";
@@ -118,6 +119,7 @@ export default function RootShell({
           <MarketingAnalytics />
         </Suspense>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
