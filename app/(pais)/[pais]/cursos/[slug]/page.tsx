@@ -1,7 +1,7 @@
 import { PAISES_CARPETA } from "@/config/paises";
 import { courses } from "@/lib/data/courses";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 export const dynamicParams = false;
 
 /**

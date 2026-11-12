@@ -3,7 +3,7 @@ import ComparativaAcademia from "@/components/comparativas/ComparativaAcademia";
 import { metadataComparativa } from "@/components/comparativas/seo";
 import { comparativaDesafioLatam } from "@/lib/data/comparativas";
 
-export const revalidate = 3600;
+export const revalidate = false;
 
 const contenido = comparativaDesafioLatam();
 

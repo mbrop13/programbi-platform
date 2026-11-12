@@ -5,7 +5,7 @@ import { CourseBrochureClient } from "@/components/brochure/CourseBrochureClient
 import { courses, getCourseBySlug } from "@/lib/data/courses";
 import { ISO_CHILE } from "@/config/paises";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 export const dynamicParams = false;
 
 type Params = Promise<{ slug: string }>;

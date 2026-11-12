@@ -1,7 +1,9 @@
 "use server";
 
 import { createClient, createAdminClient } from "./server";
+import { cache } from "react";
 import { revalidatePath } from "next/cache";
+import { revalidatePublicCourse, revalidatePublicSchedule } from "@/lib/cache/revalidate-public-course";
 import { isCurrentUserAdmin } from "./comunidad";
 import type { RegistrationSourceCategory } from "@/lib/registration-source";
 
@@ -449,9 +451,10 @@ export async function adminUpdateCourseMeta(
   if (updates.tech_stack !== undefined) payload.tech_stack = updates.tech_stack;
   if (updates.duration_hours !== undefined) payload.duration_hours = updates.duration_hours;
 
-  const { error } = await adminDb.from("courses").update(payload).eq("id", courseId);
+  const { data, error } = await adminDb.from("courses").update(payload).eq("id", courseId).select("slug").single();
   if (error) throw new Error(error.message);
   revalidatePath("/(comunidad)", "layout");
+  revalidatePublicCourse(data.slug);
   return { success: true };
 }
 
@@ -617,12 +620,10 @@ export async function adminUpdateCourseDescription(courseId: string, description
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
   
-  await adminDb.from("courses").update({ description }).eq("id", courseId);
+  const { data, error } = await adminDb.from("courses").update({ description }).eq("id", courseId).select("slug").single();
+  if (error) throw new Error(error.message);
   revalidatePath("/(comunidad)", "layout");
-  revalidatePath("/cursos/[slug]", "page");
-  revalidatePath("/[pais]/cursos/[slug]", "page");
-  revalidatePath("/cursos/[slug]/brochure", "page");
-  revalidatePath("/[pais]/cursos/[slug]/brochure", "page");
+  revalidatePublicCourse(data.slug);
 }
 
 export async function adminUpdateCourseShortDescription(courseId: string, shortDescription: string) {
@@ -630,12 +631,10 @@ export async function adminUpdateCourseShortDescription(courseId: string, shortD
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
   
-  await adminDb.from("courses").update({ short_description: shortDescription }).eq("id", courseId);
+  const { data, error } = await adminDb.from("courses").update({ short_description: shortDescription }).eq("id", courseId).select("slug").single();
+  if (error) throw new Error(error.message);
   revalidatePath("/(comunidad)", "layout");
-  revalidatePath("/cursos/[slug]", "page");
-  revalidatePath("/[pais]/cursos/[slug]", "page");
-  revalidatePath("/cursos/[slug]/brochure", "page");
-  revalidatePath("/[pais]/cursos/[slug]/brochure", "page");
+  revalidatePublicCourse(data.slug);
 }
 
 export async function adminUploadCourseResource(formData: FormData) {
@@ -677,10 +676,14 @@ export async function adminUploadCourseResource(formData: FormData) {
   };
 }
 
-export async function getMarketingDescription(slug: string) {
+const readMarketingDescription = cache(async (slug: string) => {
   const adminDb = createAdminClient();
   const { data } = await adminDb.from("courses").select("description").eq("slug", slug).single();
   return data?.description || null;
+});
+
+export async function getMarketingDescription(slug: string) {
+  return readMarketingDescription(slug);
 }
 
 export async function getCourseDescriptions() {
@@ -1596,7 +1599,7 @@ export async function adminAddSchedule(schedule: {
 
   const { error } = await adminDb.from("course_schedules").insert(schedule);
   if (error) throw new Error(error.message);
-  revalidatePublicSchedules();
+  revalidatePublicSchedule(schedule.course_slug);
 }
 
 export async function adminDeleteSchedule(scheduleId: string) {
@@ -1604,9 +1607,9 @@ export async function adminDeleteSchedule(scheduleId: string) {
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { error } = await adminDb.from("course_schedules").delete().eq("id", scheduleId);
+  const { data, error } = await adminDb.from("course_schedules").delete().eq("id", scheduleId).select("course_slug").single();
   if (error) throw new Error(error.message);
-  revalidatePublicSchedules();
+  revalidatePublicSchedule(data.course_slug);
 }
 
 export async function adminToggleScheduleActive(scheduleId: string) {
@@ -1614,24 +1617,12 @@ export async function adminToggleScheduleActive(scheduleId: string) {
   const admin = await isCurrentUserAdmin();
   if (!admin) throw new Error("Solo administradores");
 
-  const { data: current } = await adminDb.from("course_schedules").select("is_active").eq("id", scheduleId).single();
+  const { data: current } = await adminDb.from("course_schedules").select("is_active, course_slug").eq("id", scheduleId).single();
   if (!current) throw new Error("Horario no encontrado");
 
   const { error } = await adminDb.from("course_schedules").update({ is_active: !current.is_active }).eq("id", scheduleId);
   if (error) throw new Error(error.message);
-  revalidatePublicSchedules();
-}
-
-function revalidatePublicSchedules() {
-  try {
-    revalidatePath("/cursos");
-    revalidatePath("/cursos/[slug]", "page");
-    revalidatePath("/[pais]/cursos/[slug]", "page");
-    revalidatePath("/cursos/[slug]/brochure", "page");
-    revalidatePath("/[pais]/cursos/[slug]/brochure", "page");
-  } catch {
-    /* revalidate is best-effort outside a request */
-  }
+  revalidatePublicSchedule(current.course_slug);
 }
 
 // ─── PROMO POPUPS ───
@@ -2065,10 +2056,7 @@ export async function adminUpsertPriceOverride(override: {
     if (error) throw new Error(error.message);
   }
 
-  revalidatePath("/cursos/[slug]", "page");
-  revalidatePath("/[pais]/cursos/[slug]", "page");
-  revalidatePath("/cursos/[slug]/brochure", "page");
-  revalidatePath("/[pais]/cursos/[slug]/brochure", "page");
+  revalidatePublicCourse(override.item_id);
 }
 
 export async function getPriceOverrides() {

@@ -5,7 +5,7 @@ import HubTestNivel from "../../../(marketing)/test-nivel/page";
 // detecta el país por `params` y la deja en noindex, follow (WS6).
 export { generateMetadata } from "../../../(marketing)/test-nivel/page";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 type Params = Promise<{ pais: string }>;
 

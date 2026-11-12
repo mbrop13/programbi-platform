@@ -16,7 +16,7 @@ import { robotsLocal } from "@/lib/paises/metadata";
 import { localeOg } from "@/lib/paises/rutas";
 import { absoluteUrl, jsonLdString } from "@/lib/seo";
 
-export const revalidate = 3600;
+export const revalidate = false;
 export const dynamicParams = false;
 
 type Params = { pais: string };

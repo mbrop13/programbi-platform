@@ -10,7 +10,7 @@ import {
   variantesCoderhouse,
 } from "@/lib/data/comparativas";
 
-export const revalidate = 3600;
+export const revalidate = false;
 export const dynamicParams = false;
 
 type Params = { pais: string };

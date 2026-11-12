@@ -24,7 +24,7 @@ import { getPais, ISO_CHILE, normalizarPais } from "@/config/paises";
 import { localizarMercado } from "@/lib/paises/precios";
 import { hreflangDe } from "@/lib/paises/rutas";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: { absolute: PAGE_SEO.home.title },

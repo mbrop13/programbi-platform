@@ -23,17 +23,26 @@ type Partes = {
   second: number;
 };
 
+// Reuse ICU formatters, never the calculated offset: DST still uses each date.
+const partesFormatters = new Map<string, Intl.DateTimeFormat>();
+const horaFormatters = new Map<string, Intl.DateTimeFormat>();
+
 function partesEnZona(date: Date, timeZone: string): Partes {
-  const fmt = new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h23",
-  });
+  let fmt = partesFormatters.get(timeZone);
+  if (!fmt) {
+    fmt = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hourCycle: "h23",
+    });
+    if (partesFormatters.size >= 64) partesFormatters.clear();
+    partesFormatters.set(timeZone, fmt);
+  }
   const out: Record<string, number> = {};
   for (const parte of fmt.formatToParts(date)) {
     if (parte.type !== "literal") out[parte.type] = parseInt(parte.value, 10);
@@ -73,12 +82,18 @@ function instanteDeHoraPared(referencia: Date, hora: string, timeZone: string): 
 /** Convierte una hora de Chile a la hora local de otra zona. */
 export function horaEnZona(horaChile: string, timeZone: string, referencia: Date = new Date()): string {
   const instante = instanteDeHoraPared(referencia, horaChile, "America/Santiago");
-  return new Intl.DateTimeFormat("es-CL", {
-    timeZone,
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-  }).format(instante);
+  let fmt = horaFormatters.get(timeZone);
+  if (!fmt) {
+    fmt = new Intl.DateTimeFormat("es-CL", {
+      timeZone,
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    });
+    if (horaFormatters.size >= 64) horaFormatters.clear();
+    horaFormatters.set(timeZone, fmt);
+  }
+  return fmt.format(instante);
 }
 
 /** Zona horaria del país. Chile no tiene carpeta: usa su zona. */

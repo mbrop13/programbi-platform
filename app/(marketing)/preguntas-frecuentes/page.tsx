@@ -9,7 +9,7 @@ import { hreflangDe } from "@/lib/paises/rutas";
  * Preguntas frecuentes. La misma página sirve a Chile (raíz) y a cada país
  * (carpeta): el contenido se arma con `faqDePais()` y el TSX es uno solo.
  */
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 const PATH = "/preguntas-frecuentes";
 const TITLE = tituloSeo("Preguntas frecuentes: cursos, clases y pagos");

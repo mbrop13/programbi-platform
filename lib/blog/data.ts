@@ -4,16 +4,16 @@ import { createAdminClient } from "@/lib/supabase/server";
 /**
  * Lecturas públicas de blog y newsletter a prueba de fallos de Supabase.
  *
- * Regla: estas funciones NUNCA lanzan. Si Supabase está caído, lento o mal
- * configurado devuelven lista vacía (`[]`) o el estado `no_disponible`, y el
- * error se registra una sola vez por proceso para no inundar los logs.
+ * Las lecturas de artículos lanzan ante fallos temporales: ISR conserva así
+ * la última página válida, en lugar de guardar una lista vacía o un noindex.
+ * Las categorías (opcionales) sí pueden degradar a una lista vacía.
  *
  * Cada consulta lleva `AbortSignal.timeout` + un tope duro propio para que un
  * cuelgue de red no bloquee el render (causa del 500 intermitente del 9-nov en
  * /blog y /newsletter).
  */
 
-const TIEMPO_MAXIMO_MS = 4_000;
+const TIEMPO_MAXIMO_MS = 10_000;
 
 const CAMPOS_LISTA =
   "id, title, slug, excerpt, cover_image, category, tags, author_name, author_avatar, is_featured, reading_time_min, published_at, created_at";
@@ -51,8 +51,7 @@ export type CategoriaNewsletter = {
 
 export type ResultadoArticulo =
   | { estado: "ok"; articulo: Articulo }
-  | { estado: "no_encontrado" }
-  | { estado: "no_disponible" };
+  | { estado: "no_encontrado" };
 
 const fallosRegistrados = new Set<string>();
 
@@ -60,7 +59,7 @@ function registrarFallo(operacion: string, error: unknown) {
   if (fallosRegistrados.has(operacion)) return;
   fallosRegistrados.add(operacion);
   console.error(
-    `[blog] Falló la lectura de Supabase en ${operacion}; se responde con contenido de respaldo.`,
+    `[blog] Falló la lectura de Supabase en ${operacion}.`,
     error
   );
 }
@@ -88,11 +87,20 @@ function conLimiteDeTiempo<T>(consulta: PromiseLike<T>, operacion: string): Prom
  * El builder de Supabase infiere `unknown` cuando el cliente no está tipado;
  * esta envoltura fija la forma de la respuesta que consumen los helpers.
  */
-async function leerConLimite<T>(
-  consulta: PromiseLike<unknown>,
+async function leerConLimite<T extends { error: unknown }>(
+  consulta: () => PromiseLike<unknown>,
   operacion: string
 ): Promise<T> {
-  return (await conLimiteDeTiempo(consulta, operacion)) as T;
+  // A fresh builder gives the retry its own AbortSignal. Never retry writes.
+  for (let intento = 0; ; intento++) {
+    try {
+      const resultado = (await conLimiteDeTiempo(consulta(), operacion)) as T;
+      if (!resultado.error || intento === 1) return resultado;
+    } catch (error) {
+      if (intento === 1) throw error;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
 }
 
 function senalDeTimeout() {
@@ -101,48 +109,39 @@ function senalDeTimeout() {
 
 /**
  * Artículos publicados, del más nuevo al más viejo.
- * Devuelve `[]` si Supabase falla o demora más de 4 s.
+ * Un error interrumpe la regeneración; no sustituye el índice por una lista vacía.
  */
 export const getPublishedArticles = cache(
   async (category?: string): Promise<ArticuloLista[]> => {
     try {
       const db = createAdminClient();
-      let consulta = db
-        .from("newsletter_articles")
-        .select(CAMPOS_LISTA)
-        .eq("status", "published");
-
-      if (category && category !== "all") {
-        consulta = consulta.eq("category", category);
-      }
-
       const { data, error } = await leerConLimite<{
         data: ArticuloLista[] | null;
         error: unknown;
       }>(
-        consulta
-          .order("published_at", { ascending: false })
-          .retry(false)
-          .abortSignal(senalDeTimeout()),
+        () => {
+          let consulta = db.from("newsletter_articles").select(CAMPOS_LISTA).eq("status", "published");
+          if (category && category !== "all") consulta = consulta.eq("category", category);
+          return consulta.order("published_at", { ascending: false }).retry(false).abortSignal(senalDeTimeout());
+        },
         "getPublishedArticles"
       );
 
       if (error) {
-        registrarFallo("getPublishedArticles", error);
-        return [];
+        throw new Error("No se pudieron cargar los artículos publicados", { cause: error });
       }
 
       return (data ?? []) as ArticuloLista[];
     } catch (error) {
       registrarFallo("getPublishedArticles", error);
-      return [];
+      throw error;
     }
   }
 );
 
 /**
- * Artículo por slug. Distingue «no existe» (404) de «Supabase no responde»
- * (estado de respaldo con 200) para no convertir una caída en un 404 falso.
+ * Artículo por slug. Solo una lectura correcta sin fila significa «no existe».
+ * Un fallo temporal se propaga para conservar el contenido anterior en ISR.
  */
 export const getArticuloPorSlug = cache(
   async (slug: string): Promise<ResultadoArticulo> => {
@@ -152,7 +151,7 @@ export const getArticuloPorSlug = cache(
         data: Articulo | null;
         error: unknown;
       }>(
-        db
+        () => db
           .from("newsletter_articles")
           .select("*")
           .eq("slug", slug)
@@ -164,8 +163,7 @@ export const getArticuloPorSlug = cache(
       );
 
       if (error) {
-        registrarFallo("getArticleBySlug", error);
-        return { estado: "no_disponible" };
+        throw new Error("No se pudo cargar el artículo", { cause: error });
       }
 
       if (!data) return { estado: "no_encontrado" };
@@ -173,7 +171,7 @@ export const getArticuloPorSlug = cache(
       return { estado: "ok", articulo: data as Articulo };
     } catch (error) {
       registrarFallo("getArticleBySlug", error);
-      return { estado: "no_disponible" };
+      throw error;
     }
   }
 );
@@ -191,7 +189,7 @@ export const getNewsletterCategories = cache(
         data: CategoriaNewsletter[] | null;
         error: unknown;
       }>(
-        db
+        () => db
           .from("newsletter_categories")
           .select("*")
           .eq("is_active", true)
@@ -221,7 +219,7 @@ export const getNewsletterCategories = cache(
           data: CategoriaNewsletter[] | null;
           error: unknown;
         }>(
-          db
+          () => db
             .from("newsletter_categories")
             .select("*")
             .eq("is_active", true)

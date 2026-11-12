@@ -8,7 +8,8 @@ import { cabecerasLlms, construirLlmsTxt } from "@/lib/llms/contenido";
  * cantidades salen de `config/` y `lib/data/`, nunca de este archivo. La
  * versión extendida se publica en `/llms-full.txt`.
  */
-export const revalidate = 3600;
+export const dynamic = "force-static";
+export const revalidate = false;
 
 export function GET() {
   return new NextResponse(construirLlmsTxt(), { headers: cabecerasLlms() });

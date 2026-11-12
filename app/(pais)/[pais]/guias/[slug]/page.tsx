@@ -16,7 +16,7 @@ import { localeOg } from "@/lib/paises/rutas";
 import { absoluteUrl } from "@/lib/seo";
 import { sinMontosDeCurso } from "@/lib/guias/precio";
 
-export const revalidate = 3600;
+export const revalidate = false;
 export const dynamicParams = false;
 
 type Params = { pais: string; slug: string };

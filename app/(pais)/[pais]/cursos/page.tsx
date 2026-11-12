@@ -5,7 +5,7 @@ import { metadataLocal } from "@/lib/paises/metadata";
 import { aplicarSeoLocal } from "@/lib/paises/contenido-local/seo";
 import { PAGE_SEO } from "@/lib/seo/money";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export { default } from "../../../(marketing)/cursos/page";
 

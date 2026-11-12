@@ -9,7 +9,7 @@
  *
  * Sin dependencias (Node >= 18, fetch nativo). Para cada <loc> del sitemap:
  *   - responde 200 sin redirección;
- *   - exactamente 1 <meta name="robots"> y sin `noindex`;
+ *   - sin `noindex`; meta robots opcional (index/follow es el valor por defecto);
  *   - <link rel="canonical"> = la propia URL;
  *   - hreflang recíproco: mismo juego de alternates en todas las versiones,
  *     con `x-default` y autorreferencia;
@@ -68,10 +68,10 @@ function parseAttrs(tag) {
   return attrs;
 }
 
-function metaRobots(html) {
+function metaRobots(html, name = "robots") {
   return [...html.matchAll(/<meta\b[^>]*>/gi)]
     .map((m) => parseAttrs(m[0]))
-    .filter((a) => (a.name || "").toLowerCase() === "robots")
+    .filter((a) => (a.name || "").toLowerCase() === name)
     .map((a) => (a.content || "").trim());
 }
 
@@ -101,7 +101,7 @@ async function pedir(url) {
       headers: { "user-agent": UA, accept: "text/html,application/xhtml+xml" },
       signal: AbortSignal.timeout(TIMEOUT_MS),
     });
-    return { status: res.status, text: await res.text() };
+    return { status: res.status, text: await res.text(), robotsHeader: res.headers.get("x-robots-tag") || "" };
   } catch (err) {
     return { status: 0, error: err?.message || String(err) };
   }
@@ -155,11 +155,14 @@ function validarPagina(rec) {
     ];
   }
   const fallos = [];
-  if (rec.robots.length !== 1) {
-    fallos.push(`${rec.robots.length} meta robots (debe haber exactamente 1)`);
+  // https://developers.google.com/search/docs/crawling-indexing/special-tags
+  // The absence of this tag is index/follow, not an indexing failure.
+  if (rec.robots.length > 1) {
+    fallos.push(`${rec.robots.length} meta robots (debe haber como máximo 1)`);
   }
-  if (rec.robots.some((c) => /\bnoindex\b/i.test(c))) {
-    fallos.push(`noindex (${rec.robots.join(" | ") || "sin contenido"})`);
+  const indexingRules = [...rec.robots, ...(rec.googlebot || []), rec.robotsHeader || ""];
+  if (indexingRules.some((c) => /\b(noindex|none)\b/i.test(c))) {
+    fallos.push(`noindex (${indexingRules.filter(Boolean).join(" | ")})`);
   }
   if (rec.canons.length !== 1) {
     fallos.push(`${rec.canons.length} canonical (debe haber exactamente 1)`);
@@ -203,6 +206,8 @@ async function main() {
       status: res.status,
       error: res.error,
       robots: res.text ? metaRobots(res.text) : [],
+      googlebot: res.text ? metaRobots(res.text, "googlebot") : [],
+      robotsHeader: res.robotsHeader,
       canons: res.text ? links(res.text, "canonical").map((a) => aBase(a.href || "")) : [],
       alternates: res.text
         ? links(res.text, "alternate")
@@ -234,6 +239,8 @@ async function main() {
       error: res.error,
       robots: res.text ? metaRobots(res.text) : [],
       canons: res.text ? links(res.text, "canonical").map((a) => aBase(a.href || "")) : [],
+      googlebot: res.text ? metaRobots(res.text, "googlebot") : [],
+      robotsHeader: res.robotsHeader,
       alternates: res.text
         ? links(res.text, "alternate")
             .filter((a) => a.hreflang && a.href)
@@ -287,7 +294,7 @@ async function main() {
   if (omitidas > 0) console.log(`Reciprocidades omitidas por el límite: ${omitidas}`);
 
   if (fallos.size === 0) {
-    console.log(`OK: ${total} URLs sin fallos (status 200, 1 robots, canonical propio, hreflang recíproco).`);
+    console.log(`OK: ${total} URLs sin fallos (status 200, sin noindex, canonical propio, hreflang recíproco).`);
     return 0;
   }
 

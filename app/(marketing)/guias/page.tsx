@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   openGraph: { title, description, url: absoluteUrl("/guias"), type: "website" },
 };
 
-export const revalidate = 3600;
+export const revalidate = false;
 
 export default function GuiasIndexPage() {
   // El hub general lista todas las guías publicadas; los filtros separan país y curso.

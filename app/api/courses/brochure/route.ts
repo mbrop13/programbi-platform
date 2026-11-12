@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePublicCourse } from "@/lib/cache/revalidate-public-course";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/server";
 import { isCurrentUserAdmin } from "@/lib/supabase/comunidad";
@@ -123,10 +123,7 @@ export async function POST(req: NextRequest) {
       throw error;
     }
 
-    revalidatePath("/cursos/[slug]", "page");
-    revalidatePath("/[pais]/cursos/[slug]", "page");
-    revalidatePath("/cursos/[slug]/brochure", "page");
-    revalidatePath("/[pais]/cursos/[slug]/brochure", "page");
+    revalidatePublicCourse(slug);
 
     return NextResponse.json({ success: true });
   } catch (err: any) {

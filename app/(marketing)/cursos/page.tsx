@@ -18,7 +18,7 @@ import { getPais, ISO_CHILE, normalizarPais, PAISES_INDEXABLES } from "@/config/
 import { muestraPrecioLocal, precioCurso } from "@/lib/paises/precios";
 import { hreflangDe, rutaLocal } from "@/lib/paises/rutas";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 /**
  * Rutas no-país que GSC marcó como «descubierta, sin indexar» y que no

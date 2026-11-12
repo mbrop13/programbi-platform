@@ -14,7 +14,7 @@ import { getBloqueLocal } from "@/lib/data/contenido-paises";
 // ISR: la página no lee searchParams en el servidor. `?curso=` y `?nivel=`
 // se resuelven en cliente dentro del formulario (EmpresasContactForm), así el
 // HTML del servidor es único y cacheable.
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: { absolute: PAGE_SEO.empresas.title },

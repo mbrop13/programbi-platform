@@ -9,7 +9,9 @@ import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import MarketingChrome from "@/components/shared/MarketingChrome";
 
-export const revalidate = 3600;
+// A shared one-hour timer also regenerated file-backed guides and all other
+// country pages. Each page now owns its freshness policy instead.
+export const revalidate = false;
 export const dynamicParams = false;
 
 export function generateStaticParams() {

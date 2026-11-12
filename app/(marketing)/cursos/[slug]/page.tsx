@@ -26,7 +26,7 @@ import { horarioDeCohorte } from "@/lib/paises/horarios";
 import { aplicarSeoLocal } from "@/lib/paises/contenido-local/seo";
 import { rutaCursoBloque } from "@/lib/paises/contenido-local";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 /**
  * Solo existen como ficha los slugs del catálogo publicado. Con

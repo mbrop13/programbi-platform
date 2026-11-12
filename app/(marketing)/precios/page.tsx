@@ -20,7 +20,7 @@ import PreciosGateClient, { type CursoPrecioGate } from "@/components/marketing/
 import BloqueLocalContenido from "@/components/paises/BloqueLocalContenido";
 import { aplicarSeoLocal } from "@/lib/paises/contenido-local/seo";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 const PATH = "/precios";
 

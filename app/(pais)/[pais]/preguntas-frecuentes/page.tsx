@@ -7,7 +7,7 @@ import { metadataLocal } from "@/lib/paises/metadata";
  * el contenido y el TSX son los mismos, cambian los precios, la hora local y
  * el canonical. Los países no indexables heredan noindex, follow.
  */
-export const revalidate = 3600;
+export const revalidate = 86400;
 export const dynamicParams = false;
 
 type Params = { pais: string };

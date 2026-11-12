@@ -9,7 +9,7 @@ export { default } from "../../../(marketing)/empresas/page";
 
 // ISR también para la versión por país (el layout de [pais] ya fija
 // generateStaticParams y revalidate; esto fija el intervalo de la página).
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export async function generateMetadata({
   params,

@@ -7,7 +7,7 @@ import {
   variantesCoderhouse,
 } from "@/lib/data/comparativas";
 
-export const revalidate = 3600;
+export const revalidate = false;
 
 const contenido = comparativaCoderhouse("cl");
 

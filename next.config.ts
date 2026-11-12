@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
     root: path.join(__dirname),
   },
   experimental: {
+    // Avoid exhausting memory while prerendering the country/course catalog.
+    cpus: 2,
     // Cada grupo de rutas tiene su propio root layout, así que el 404 global
     // se declara en app/global-not-found.tsx.
     globalNotFound: true,

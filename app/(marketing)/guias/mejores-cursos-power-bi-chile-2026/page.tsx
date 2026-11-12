@@ -3,7 +3,7 @@ import ListiclePowerBiChile from "@/components/comparativas/ListiclePowerBiChile
 import { RUTA_LISTICLE } from "@/lib/data/comparativas";
 import { absoluteUrl, pageOg, tituloLocal } from "@/lib/seo";
 
-export const revalidate = 3600;
+export const revalidate = false;
 
 const title = "Mejores cursos de Power BI en Chile 2026";
 const description =

@@ -10,7 +10,7 @@ import {
   PAISES_CARPETA,
 } from "@/config/paises";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 export const dynamicParams = false;
 
 type Params = Promise<{ pais: string; slug: string }>;

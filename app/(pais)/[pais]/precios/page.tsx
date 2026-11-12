@@ -4,7 +4,7 @@ import { getSeoBloque } from "@/lib/data/contenido-paises";
 import { metadataLocal } from "@/lib/paises/metadata";
 import { aplicarSeoLocal, getSeoLocal } from "@/lib/paises/contenido-local/seo";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 const title = "Precios de cursos en vivo en Chile | ProgramBI";
 const description =

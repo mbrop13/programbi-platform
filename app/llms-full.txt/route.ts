@@ -9,7 +9,8 @@ import { cabecerasLlms, construirLlmsFullTxt } from "@/lib/llms/contenido";
  * frecuentes y las políticas. Misma fuente de datos que `/llms.txt`:
  * `config/` y `lib/data/`.
  */
-export const revalidate = 3600;
+export const dynamic = "force-static";
+export const revalidate = false;
 
 export function GET() {
   return new NextResponse(construirLlmsFullTxt(), { headers: cabecerasLlms() });

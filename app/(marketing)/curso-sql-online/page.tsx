@@ -13,7 +13,7 @@ import {
 import { jsonLdString } from "@/lib/seo";
 import { getActiveSchedules } from "@/lib/supabase/comunidad-ai";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 const copy = LANDING_CURSOS["curso-sql-online"];
 

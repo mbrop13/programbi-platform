@@ -477,10 +477,10 @@ export function construirLlmsFullTxt(): string {
   return `${lineas.join("\n").trimEnd()}\n`;
 }
 
-/** Cabeceras de los dos endpoints: texto plano, cacheado una hora. */
+/** Cabeceras de los dos endpoints: texto plano generado desde archivos; se actualiza al desplegar. */
 export function cabecerasLlms(): Record<string, string> {
   return {
     "Content-Type": "text/plain; charset=utf-8",
-    "Cache-Control": "public, max-age=0, s-maxage=3600, stale-while-revalidate=86400",
+    "Cache-Control": "public, max-age=0, s-maxage=86400, stale-while-revalidate=86400",
   };
 }
