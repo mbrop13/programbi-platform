@@ -1,4 +1,5 @@
 import type { CourseBrochureData } from "@/lib/brochure/brochure-data";
+import { describeCourseLevels } from "@/lib/brochure/brochure-pages";
 import {
   FONT_MONO,
   FONT_SANS,
@@ -67,6 +68,7 @@ export function BrochurePricingScheduleSheet({
   const accent = accentOf(data.accentColor);
   const accentText = accentInk(data.accentColor);
   const darkAccent = accentOnDark(data.accentColor);
+  const levelInfo = describeCourseLevels(data);
 
   const hasDiscount =
     typeof data.descuentoPct === "number" &&
@@ -112,7 +114,7 @@ export function BrochurePricingScheduleSheet({
             border: `1px solid ${T.obsidian}`,
             borderRadius: 6,
             overflow: "hidden",
-            marginBottom: 22,
+            marginBottom: 16,
           }}
         >
           {/* Izquierda: placa obsidiana de arancel principal */}
@@ -120,7 +122,7 @@ export function BrochurePricingScheduleSheet({
             style={{
               background: T.obsidian,
               color: "#FFFFFF",
-              padding: "24px 26px",
+              padding: "20px 22px",
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
@@ -134,7 +136,7 @@ export function BrochurePricingScheduleSheet({
                   alignItems: "center",
                   justifyContent: "space-between",
                   gap: 8,
-                  marginBottom: 14,
+                  marginBottom: 10,
                 }}
               >
                 <span
@@ -147,7 +149,7 @@ export function BrochurePricingScheduleSheet({
                     color: darkAccent,
                   }}
                 >
-                  Arancel oficial · {data.moneda}
+                  {levelInfo.priceKicker}
                 </span>
                 {hasDiscount ? (
                   <span
@@ -169,7 +171,7 @@ export function BrochurePricingScheduleSheet({
               {hasDiscount ? (
                 <div
                   style={{
-                    fontSize: 15,
+                    fontSize: 14,
                     color: "#A5A39B",
                     textDecoration: "line-through",
                     marginBottom: 4,
@@ -182,7 +184,7 @@ export function BrochurePricingScheduleSheet({
 
               <div
                 style={{
-                  fontSize: 48,
+                  fontSize: 42,
                   lineHeight: 1.0,
                   fontWeight: 700,
                   letterSpacing: "-0.03em",
@@ -195,10 +197,22 @@ export function BrochurePricingScheduleSheet({
 
               <p
                 style={{
-                  margin: "12px 0 0",
+                  margin: "8px 0 0",
                   fontSize: 12,
-                  lineHeight: 1.45,
-                  color: "#C8C6BE",
+                  lineHeight: 1.42,
+                  fontWeight: 500,
+                  color: "#F0EFE9",
+                }}
+              >
+                {levelInfo.priceScopeNote}
+              </p>
+
+              <p
+                style={{
+                  margin: "5px 0 0",
+                  fontSize: 11.5,
+                  lineHeight: 1.4,
+                  color: "#B4B2AA",
                 }}
               >
                 {data.notaPago ||
@@ -208,8 +222,8 @@ export function BrochurePricingScheduleSheet({
 
             <div
               style={{
-                marginTop: 18,
-                paddingTop: 14,
+                marginTop: 14,
+                paddingTop: 12,
                 borderTop: "1px solid rgba(255,255,255,0.14)",
                 display: "flex",
                 alignItems: "center",
@@ -243,7 +257,7 @@ export function BrochurePricingScheduleSheet({
           <div
             style={{
               background: T.paperWarm,
-              padding: "24px 24px",
+              padding: "20px 22px",
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
@@ -331,6 +345,94 @@ export function BrochurePricingScheduleSheet({
           </div>
         </div>
 
+        {/* Estructura de niveles del curso (2 niveles independientes vs nivel único) */}
+        <div style={{ marginBottom: 15 }}>
+          <SectionDividerLabel
+            label={
+              levelInfo.isTwoLevel
+                ? "Cómo funcionan los 2 niveles"
+                : "Estructura de nivel único"
+            }
+            rightLabel={
+              levelInfo.isTwoLevel
+                ? "Inscripción independiente por nivel"
+                : "Sin separación en Básico/Avanzado"
+            }
+          />
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: levelInfo.levelCards.length > 1 ? "1fr 1fr" : "1fr",
+              gap: 12,
+            }}
+          >
+            {levelInfo.levelCards.map((card) => (
+              <div
+                key={card.code}
+                style={{
+                  padding: "10px 13px",
+                  border: `1px solid ${T.lineStrong}`,
+                  borderTop: `2.5px solid ${accent}`,
+                  borderRadius: 6,
+                  background: T.paperWarm,
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 8,
+                    marginBottom: 4,
+                  }}
+                >
+                  <span
+                    style={{
+                      fontFamily: FONT_MONO,
+                      fontSize: 11,
+                      fontWeight: 700,
+                      color: accentText,
+                      letterSpacing: "0.06em",
+                    }}
+                  >
+                    {card.code} · {card.hoursText}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: FONT_MONO,
+                      fontSize: 11,
+                      color: T.mute,
+                    }}
+                  >
+                    {card.badge}
+                  </span>
+                </div>
+                <div
+                  style={{
+                    fontSize: 14,
+                    fontWeight: 700,
+                    color: T.ink,
+                    letterSpacing: "-0.01em",
+                    marginBottom: 3,
+                  }}
+                >
+                  {card.name}
+                </div>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: 11.6,
+                    lineHeight: 1.38,
+                    color: T.inkSoft,
+                  }}
+                >
+                  {card.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Qué incluye tu inscripción: retícula estructurada 2x3 */}
         <div>
           <SectionDividerLabel
@@ -341,14 +443,14 @@ export function BrochurePricingScheduleSheet({
             style={{
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
-              gap: "12px 24px",
+              gap: "8px 18px",
             }}
           >
             {DEFAULT_INCLUDED_ITEMS.map((item) => (
               <div
                 key={item.code}
                 style={{
-                  padding: "13px 14px",
+                  padding: "10px 12px",
                   border: `1px solid ${T.line}`,
                   borderRadius: 6,
                   background: T.paper,
@@ -359,7 +461,7 @@ export function BrochurePricingScheduleSheet({
                     display: "flex",
                     alignItems: "center",
                     gap: 8,
-                    marginBottom: 5,
+                    marginBottom: 3,
                   }}
                 >
                   <span
@@ -374,7 +476,7 @@ export function BrochurePricingScheduleSheet({
                   </span>
                   <span
                     style={{
-                      fontSize: 13.5,
+                      fontSize: 13,
                       fontWeight: 700,
                       color: T.ink,
                       letterSpacing: "-0.01em",
@@ -386,8 +488,8 @@ export function BrochurePricingScheduleSheet({
                 <p
                   style={{
                     margin: 0,
-                    fontSize: 12,
-                    lineHeight: 1.45,
+                    fontSize: 11.6,
+                    lineHeight: 1.38,
                     color: T.inkSoft,
                   }}
                 >
@@ -402,7 +504,7 @@ export function BrochurePricingScheduleSheet({
         <div
           style={{
             marginTop: "auto",
-            padding: "18px 20px",
+            padding: "14px 18px",
             border: `1px solid ${T.lineStrong}`,
             borderRadius: 6,
             background: T.paperWarm,

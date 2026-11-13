@@ -1,6 +1,8 @@
 import type { CourseBrochureData } from "@/lib/brochure/brochure-data";
 import {
   type PlannedBrochureModule,
+  describeCourseLevels,
+  formatSyllabusGroupHeader,
   planBrochureSyllabus,
 } from "@/lib/brochure/brochure-pages";
 import {
@@ -203,15 +205,10 @@ export function BrochureSyllabusSheets({
   const darkAccent = accentOnDark(data.accentColor);
 
   const pages = planBrochureSyllabus(data);
+  const levelInfo = describeCourseLevels(data);
   const totalModules =
     data.modulesCount ||
     pages.reduce((acc, p) => acc + p.moduleCount, 0);
-  const syllabusHours = (data.temario ?? []).reduce(
-    (sum, lvl) =>
-      sum +
-      (lvl.modules ?? []).reduce((ms, m) => ms + (m.hours || 0), 0),
-    0
-  );
 
   const cuotasCopy =
     data.cuotaTexto || `${data.cuotas} cuotas sin interés`;
@@ -263,11 +260,33 @@ export function BrochureSyllabusSheets({
                       {rangeLabel}
                     </div>
                     <div>
-                      {data.levelsCount} {data.levelsCount === 1 ? "nivel" : "niveles"} · {syllabusHours || data.hours} h de programa
+                      {levelInfo.syllabusRightNote}
                     </div>
                   </div>
                 }
               />
+
+              {/* Nota explicativa de niveles en la primera hoja de temario */}
+              {pageIdx === 0 ? (
+                <div
+                  style={{
+                    marginBottom: 12,
+                    padding: "9px 13px",
+                    background: T.paperWarm,
+                    border: `1px solid ${T.lineStrong}`,
+                    borderLeft: `3px solid ${accent}`,
+                    borderRadius: 5,
+                    fontSize: 11.8,
+                    lineHeight: 1.4,
+                    color: T.inkSoft,
+                  }}
+                >
+                  <strong style={{ color: T.ink }}>
+                    {levelInfo.isTwoLevel ? "Dos niveles disponibles: " : "Nivel único: "}
+                  </strong>
+                  {levelInfo.syllabusGuideBanner}
+                </div>
+              ) : null}
 
               {/* Grupos por nivel y filas adaptables de módulos */}
               <div
@@ -279,12 +298,10 @@ export function BrochureSyllabusSheets({
               >
                 {page.groups.map((grp, gIdx) => {
                   const rows = groupModulesIntoRows(grp.modules);
-                  const levelObj = (data.temario ?? []).find(
-                    (l) => l.label === grp.levelLabel
+                  const groupHeader = formatSyllabusGroupHeader(
+                    data,
+                    grp.levelLabel
                   );
-                  const levelHours = levelObj
-                    ? (levelObj.modules ?? []).reduce((s, m) => s + (m.hours || 0), 0)
-                    : 0;
                   return (
                     <div
                       key={`${grp.levelLabel}-${gIdx}`}
@@ -315,20 +332,18 @@ export function BrochureSyllabusSheets({
                             color: "#FFFFFF",
                           }}
                         >
-                          {grp.levelLabel}
+                          {groupHeader.title}
                         </span>
-                        {levelHours > 0 ? (
-                          <span
-                            style={{
-                              fontFamily: FONT_MONO,
-                              fontSize: 11,
-                              fontWeight: 600,
-                              color: darkAccent,
-                            }}
-                          >
-                            {levelHours} horas del nivel
-                          </span>
-                        ) : null}
+                        <span
+                          style={{
+                            fontFamily: FONT_MONO,
+                            fontSize: 11,
+                            fontWeight: 600,
+                            color: darkAccent,
+                          }}
+                        >
+                          {groupHeader.badge}
+                        </span>
                       </div>
 
                       {rows.map((row, rIdx) =>
@@ -437,7 +452,7 @@ export function BrochureSyllabusSheets({
                           color: "#C8C6BE",
                         }}
                       >
-                        {data.moneda} · {cuotasCopy}
+                        {data.moneda} · {levelInfo.closingScopeLabel} · {cuotasCopy}
                       </span>
                     </div>
                   </div>

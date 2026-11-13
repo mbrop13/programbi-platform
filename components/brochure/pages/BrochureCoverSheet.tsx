@@ -1,5 +1,6 @@
 import type { CourseBrochureData } from "@/lib/brochure/brochure-data";
 import { BROCHURE_COMPANY_LOGOS } from "@/lib/brochure/brochure-assets";
+import { describeCourseLevels } from "@/lib/brochure/brochure-pages";
 import {
   FONT_MONO,
   FONT_SANS,
@@ -43,6 +44,7 @@ export function BrochureCoverSheet({
   const logoSrc = data.brandLogoUrl || "/images/logo.png";
   const heroSrc = data.imageUrl || "/images/courses/power-bi.webp";
   const heroTitleSize = computeTitleSize(data.title);
+  const levelInfo = describeCourseLevels(data);
 
   const learnItems = (data.whatYouLearn ?? []).slice(0, 4);
   const stackItems = (data.techStack ?? []).slice(0, 6);
@@ -54,17 +56,17 @@ export function BrochureCoverSheet({
     {
       value: `${data.hours}`,
       unit: "HORAS",
-      note: "Clases en directo",
+      note: levelInfo.coverHoursNote,
     },
     {
       value: `${data.modulesCount}`,
       unit: data.modulesCount === 1 ? "MÓDULO" : "MÓDULOS",
-      note: "Temario práctico",
+      note: levelInfo.coverModulesNote,
     },
     {
       value: `${data.levelsCount}`,
-      unit: data.levelsCount === 1 ? "NIVEL" : "NIVELES",
-      note: "Progresión guiada",
+      unit: levelInfo.coverKpiUnit,
+      note: levelInfo.coverKpiNote,
     },
     {
       value: "Digital",
@@ -258,10 +260,49 @@ export function BrochureCoverSheet({
           ))}
         </div>
 
+        {/* Franja aclaratoria de estructura por niveles (2 niveles vs nivel único) */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            padding: "9px 14px",
+            background: T.paper,
+            borderBottom: `1px solid ${T.line}`,
+          }}
+        >
+          <span
+            style={{
+              fontFamily: FONT_MONO,
+              fontSize: 11,
+              fontWeight: 700,
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
+              color: "#FFFFFF",
+              background: T.obsidian,
+              padding: "3px 9px",
+              borderRadius: 4,
+              flexShrink: 0,
+            }}
+          >
+            {levelInfo.coverBannerTitle}
+          </span>
+          <span
+            style={{
+              fontSize: 11.8,
+              lineHeight: 1.38,
+              color: T.inkSoft,
+              fontWeight: 500,
+            }}
+          >
+            {levelInfo.coverBannerDetail}
+          </span>
+        </div>
+
         {/* Marco panorámico limpio + cinta técnica obsidiana debajo (cero solape sobre imagen) */}
         <div
           style={{
-            marginTop: 18,
+            marginTop: 14,
             border: `1px solid ${T.lineStrong}`,
             borderRadius: 6,
             overflow: "hidden",
@@ -271,7 +312,7 @@ export function BrochureCoverSheet({
           <div
             style={{
               width: "100%",
-              height: 344,
+              height: 300,
               background: T.obsidian,
               overflow: "hidden",
               position: "relative",
@@ -354,7 +395,7 @@ export function BrochureCoverSheet({
 
         {/* Lo que vas a lograr: matriz numerada 2x2 sin cajas genéricas */}
         {learnItems.length > 0 ? (
-          <div style={{ marginTop: 20 }}>
+          <div style={{ marginTop: 16 }}>
             <SectionDividerLabel
               label="Lo que vas a dominar"
               rightLabel="Enfoque 100% aplicado"

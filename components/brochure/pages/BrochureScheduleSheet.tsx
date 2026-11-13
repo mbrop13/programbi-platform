@@ -1,4 +1,5 @@
 import type { CourseBrochureData } from "@/lib/brochure/brochure-data";
+import { describeCourseLevels } from "@/lib/brochure/brochure-pages";
 import {
   FONT_MONO,
   FONT_SANS,
@@ -78,6 +79,7 @@ export function BrochureScheduleSheet({
   const accent = accentOf(data.accentColor);
   const accentText = accentInk(data.accentColor);
   const darkAccent = accentOnDark(data.accentColor);
+  const levelInfo = describeCourseLevels(data);
 
   const schedules = (data.schedules ?? []).slice(0, 5);
   const marketHours = parseEquivalencias(data);
@@ -102,7 +104,11 @@ export function BrochureScheduleSheet({
         <SheetTitleBlock
           kicker="Fechas y horarios"
           title="Próximas fechas de inicio"
-          subtitle={`Horarios en hora de ${data.paisNombre} (${data.zonaHoraria || data.equivalencias?.offset || "hora local"}). La misma clase en vivo en cada país.`}
+          subtitle={`Horarios en hora de ${data.paisNombre} (${data.zonaHoraria || data.equivalencias?.offset || "hora local"}). ${
+            levelInfo.isTwoLevel
+              ? `Cada cohorte corresponde a un nivel (${levelInfo.levelsLabel}). `
+              : ""
+          }La misma clase en vivo en cada país.`}
           accentColor={data.accentColor}
           rightSlot={
             <div
@@ -114,9 +120,9 @@ export function BrochureScheduleSheet({
               }}
             >
               <div style={{ fontWeight: 700, color: T.ink }}>
-                {data.hours} horas académicas
+                {levelInfo.scheduleHoursTitle}
               </div>
-              <div>{data.modality || "Zoom en vivo"}</div>
+              <div>{levelInfo.scheduleHoursSubtitle}</div>
             </div>
           }
         />

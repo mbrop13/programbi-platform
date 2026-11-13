@@ -21,6 +21,10 @@
  */
 
 import { brochurePdfFileName } from "@/lib/brochure/brochure-assets";
+import {
+  describeCourseLevels,
+  formatSyllabusGroupHeader,
+} from "@/lib/brochure/brochure-pages";
 import type {
   BrochureModulo,
   CourseBrochureData,
@@ -967,6 +971,8 @@ async function construirPdfVectorial(
   dibujarLineas(insigniaLineas, MARGEN + 5, y + 1.2, TIPO.kicker, 1.3);
   y += altoInsignia + 8;
 
+  const fallbackLevelInfo = describeCourseLevels(data);
+
   const metricas: Array<{ valor: string; etiqueta: string }> = [
     {
       valor: `${data.hours}`,
@@ -975,7 +981,7 @@ async function construirPdfVectorial(
     { valor: `${data.modulesCount}`, etiqueta: "módulos" },
     {
       valor: `${data.levelsCount}`,
-      etiqueta: data.levelsCount === 1 ? "nivel" : "niveles",
+      etiqueta: data.levelsCount === 1 ? "nivel único" : "niveles independientes",
     },
     { valor: "100%", etiqueta: "en vivo por Zoom" },
   ];
@@ -1643,9 +1649,7 @@ async function construirPdfVectorial(
   cabecera(
     "Programa Académico Detallado",
     "Todo lo que vas a dominar",
-    `${data.modulesCount} módulos en ${data.levelsCount} ${
-      data.levelsCount === 1 ? "nivel" : "niveles"
-    }. Cada módulo combina clase en vivo, práctica guiada y proyecto.`
+    `${data.modulesCount} módulos · ${fallbackLevelInfo.levelsLabel}. ${fallbackLevelInfo.syllabusGuideBanner}`
   );
 
   if (data.whatYouLearn.length > 0) {
@@ -1760,20 +1764,19 @@ async function construirPdfVectorial(
   for (const nivel of data.temario) {
     if (y + 30 > LIMITE) nuevaPagina();
 
+    const groupHeader = formatSyllabusGroupHeader(data, nivel.label);
     relleno(LAVADO);
     doc.roundedRect(MARGEN, y, ANCHO, 13.5, 2.2, 2.2, "F");
     doc.setFont("helvetica", "bold");
     doc.setFontSize(TIPO.seccion);
     tinta(TINTA);
-    doc.text(ajustarTexto(doc, nivel.label, ANCHO - 54), MARGEN + 6, y + 9);
-    if (nivel.shortLabel) {
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(TIPO.meta);
-      tinta(GRIS);
-      doc.text(limpiarTexto(nivel.shortLabel), PAGE_W - MARGEN - 6, y + 9, {
-        align: "right",
-      });
-    }
+    doc.text(ajustarTexto(doc, groupHeader.title, ANCHO - 68), MARGEN + 6, y + 9);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(TIPO.meta);
+    tinta(GRIS);
+    doc.text(limpiarTexto(groupHeader.badge), PAGE_W - MARGEN - 6, y + 9, {
+      align: "right",
+    });
     y += 13.5 + 6;
 
     for (const modulo of nivel.modules) {
