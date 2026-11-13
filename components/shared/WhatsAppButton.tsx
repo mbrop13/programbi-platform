@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { usePathname } from "next/navigation";
 import { trackWhatsAppClick } from "@/lib/analytics/marketing";
 import { esIsoPais } from "@/config/paises";
@@ -89,14 +88,9 @@ export default function WhatsAppButton() {
 
   return (
     <div className="pointer-events-none fixed right-6 bottom-6 z-[9998] flex items-center justify-end select-none">
-      <AnimatePresence>
         {showTooltip && (
-          <motion.div
-            initial={{ opacity: 0, x: 8 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 8 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
-            className="relative mr-3 flex cursor-pointer items-center gap-2 rounded-full bg-ink px-3.5 py-2 text-[13px] font-semibold text-canvas shadow-lg pointer-events-auto"
+          <div
+            className="absolute right-full top-1/2 -translate-y-1/2 mr-3 flex cursor-pointer items-center gap-2 whitespace-nowrap rounded-full bg-ink px-3.5 py-2 text-[13px] font-semibold text-canvas shadow-lg pointer-events-auto"
             onClick={() => {
               handleWhatsAppClick();
               window.open(href, "_blank", "noopener,noreferrer");
@@ -104,9 +98,8 @@ export default function WhatsAppButton() {
           >
             <span>{MENSAJES[mensaje]}</span>
             <div className="absolute top-1/2 right-[-4px] h-2 w-2 -translate-y-1/2 rotate-45 bg-ink" />
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
 
       <div
         className="relative pointer-events-auto"

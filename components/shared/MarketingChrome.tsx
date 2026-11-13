@@ -20,7 +20,7 @@ export default function MarketingChrome() {
     <>
       <PromoPopup />
       <WhatsAppButton />
-      <BlogSubscribeWidget />
+      {pathname?.startsWith("/blog") ? <BlogSubscribeWidget /> : null}
     </>
   );
 }
